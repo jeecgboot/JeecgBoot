@@ -89,8 +89,8 @@ public class LoginController {
 	 * @return
 	 */
 	@Deprecated
-	@Operation(summary = "登录接口")
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+//	@Operation(summary = "登录接口")
+//	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();

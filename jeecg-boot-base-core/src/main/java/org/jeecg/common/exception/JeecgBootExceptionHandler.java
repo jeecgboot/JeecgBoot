@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -32,13 +33,14 @@ public class JeecgBootExceptionHandler {
 	 */
 
 	@ExceptionHandler(JeecgCaptchaException.class)
+	@ResponseStatus(HttpStatus.OK)
 	public Result<?> handleJeecgCaptchaException(JeecgCaptchaException e) {
 		log.error(e.getMessage(), e);
 		return Result.error(e.getCode(), e.getMessage());
 	}
 
 	@ExceptionHandler(AuthenticationException.class)
-	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	@ResponseStatus(HttpStatus.OK)
 	public Result<?> handleJeecgCaptchaException(AuthenticationException e) {
 		log.error(e.getMessage(), e);
 		return Result.error(401, e.getMessage());

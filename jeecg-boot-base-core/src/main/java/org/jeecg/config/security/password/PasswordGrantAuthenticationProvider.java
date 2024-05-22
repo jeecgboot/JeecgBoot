@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,6 +91,9 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         String captcha = (String) additionalParameter.get("captcha");
         String checkKey = (String) additionalParameter.get("checkKey");
 
+        OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(passwordGrantAuthenticationToken);
+        RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
+
         // 检查登录失败次数
         if(isLoginFailOvertimes(username)){
             throw new JeecgBootException("该用户登录失败次数过多，请于10分钟后再次登录！");
@@ -105,16 +109,15 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         Object checkCode = redisUtil.get(realKey);
         //当进入登录页时，有一定几率出现验证码错误 #1714
         if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
-            log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", checkKey, lowerCaseCaptcha, checkCode);
-            // 改成特殊的code 便于前端判断
-            throw new JeecgCaptchaException(HttpStatus.PRECONDITION_FAILED.value(), "验证码错误");
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", "验证码错误");
+            return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
         }
 
-        OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(passwordGrantAuthenticationToken);
-        RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
-
         if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
-            throw new JeecgBootException("非法登录");
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", "非法登录");
+            return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
         }
 
         // 通过用户名获取用户信息
@@ -132,7 +135,10 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         password = PasswordUtil.encrypt(username, password, loginUser.getSalt());
         if (!password.equals(loginUser.getPassword())) {
             addLoginFailOvertimes(username);
-            throw new JeecgBootException("用户名或密码不正确");
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", "用户名或密码不正确");
+            return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
         }
 
         //由于在上面已验证过用户名、密码，现在构建一个已认证的对象UsernamePasswordAuthenticationToken
@@ -157,9 +163,9 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();
         OAuth2Token generatedAccessToken = this.tokenGenerator.generate(tokenContext);
         if (generatedAccessToken == null) {
-            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
-                    "无法生成访问token，请联系管理系。", ERROR_URI);
-            throw new OAuth2AuthenticationException(error);
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", "无法生成访问token，请联系管理系。");
+            return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
         }
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
                 generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(),
@@ -181,9 +187,9 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
             tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.REFRESH_TOKEN).build();
             OAuth2Token generatedRefreshToken = this.tokenGenerator.generate(tokenContext);
             if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
-                OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
-                        "无法生成刷新token，请联系管理员。", ERROR_URI);
-                throw new OAuth2AuthenticationException(error);
+                Map<String, Object> map = new HashMap<>();
+                map.put("message", "无法生成访问token，请联系管理系。");
+                return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
             }
 
             refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
@@ -201,6 +207,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
 
         JSONObject addition = new JSONObject(new LinkedHashMap<>());
+        addition.put("token", accessToken.getTokenValue());
 
         // 设置租户
         JSONObject jsonObject = commonAPI.setLoginTenant(username);
@@ -225,8 +232,15 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
             addition.put("multi_depart", 2);
         }
 
+        // 兼容原有shiro登录结果处理
+        Map<String, Object> map = new HashMap<>();
+        map.put("result", addition);
+        map.put("code", 200);
+        map.put("success", true);
+        map.put("timestamp", System.currentTimeMillis());
+
         // 返回access_token、refresh_token以及其它信息给到前端
-        return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, addition);
+        return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, map);
     }
 
     @Override
