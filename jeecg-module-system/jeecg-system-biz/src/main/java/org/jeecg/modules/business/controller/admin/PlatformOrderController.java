@@ -1,18 +1,31 @@
 package org.jeecg.modules.business.controller.admin;
 
-import java.io.UnsupportedEncodingException;
 import java.io.IOException;
-import java.net.URLDecoder;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.mail.Authenticator;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
+import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
+import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
-import org.jeecg.modules.business.vo.PlatformOrderQuantity;
+import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.vo.*;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -25,11 +38,10 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.vo.PlatformOrderPage;
-import org.jeecg.modules.business.service.IPlatformOrderService;
-import org.jeecg.modules.business.service.IPlatformOrderContentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,10 +50,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import com.alibaba.fastjson.JSON;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+
+import static org.jeecg.modules.business.vo.PlatformOrderOperation.Action.CANCEL;
+import static org.jeecg.modules.business.vo.PlatformOrderOperation.Action.SUSPEND;
 
 /**
  * @Description: 平台订单表
@@ -54,15 +69,28 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 @RequestMapping("/business/platformOrder")
 @Slf4j
 public class PlatformOrderController {
-    private final IPlatformOrderService platformOrderService;
-
+    @Autowired
+    private IClientService clientService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private IPlatformOrderService platformOrderService;
     @Autowired
     private PlatformOrderMapper platformOrderMapper;
     @Autowired
-    public PlatformOrderController(IPlatformOrderService platformOrderService) {
-        this.platformOrderService = platformOrderService;
-    }
+    private IPlatformOrderMabangService platformOrderMabangService;
+    @Autowired
+    private IShopService shopService;
+    @Autowired
+    private ISysDepartService sysDepartService;
 
+    @Autowired
+    private Environment env;
+    @Autowired
+    private FreeMarkerConfigurer freemarkerConfigurer;
+
+    private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
+    private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
 
     /**
      * Fetchs all orders with erp_status = 1, no logicistic channel and product available
@@ -342,5 +370,122 @@ public class PlatformOrderController {
     public Result<List<PlatformOrderQuantity>> monthOrderNumber(){
         List<PlatformOrderQuantity> res = platformOrderService.monthOrderNumber();
         return Result.OK(res);
+    }
+
+    /**
+     * Get all orders by shop with erp status 1, 2 and 3
+     * @return
+     */
+    @GetMapping("/ordersByShop")
+    public Result<List<PlatformOrderOption>> ordersByShop(@RequestParam("shopID") String shopID) {
+        List<PlatformOrderOption> res = platformOrderService.ordersByShop(shopID);
+        return Result.OK(res);
+    }
+
+    @PostMapping("/orderManagement")
+    public Result<?> orderManagement(@RequestBody List<PlatformOrderOperation> orderOperations) throws IOException {
+        String companyOrgCode = sysDepartService.queryCodeByDepartName(env.getProperty("company.orgName"));
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        Client client;
+        if(!sysUser.getOrgCode().equals(companyOrgCode)) {
+            client = clientService.getCurrentClient();
+            if (client == null) {
+                return Result.error(500,"Client not found. Please contact administrator.");
+            }
+            String shopId = orderOperations.get(0).getShopId();
+            List<String> shopIds = shopService.listIdByClient(client.getId());
+            if(!shopIds.contains(shopId)) {
+                return Result.error(500,"You are not allowed to perform this operation.");
+            }
+        } else {
+            client = clientService.getByShopId(orderOperations.get(0).getShopId());
+        }
+
+        long suspendCount = 0, cancelCount = 0;
+        List<PlatformOrderOperation> ordersToSuspend = orderOperations.stream()
+                .filter(orderOperation -> orderOperation.getAction().equalsIgnoreCase(SUSPEND.getValue()))
+                .collect(Collectors.toList());
+        List<PlatformOrderOperation> ordersToCancel = orderOperations.stream()
+                .filter(orderOperation -> orderOperation.getAction().equalsIgnoreCase(CANCEL.getValue()))
+                .collect(Collectors.toList());
+        for(PlatformOrderOperation orderOperation : ordersToSuspend) {
+            suspendCount += orderOperation.getOrderIds().split(",").length;
+        }
+        for(PlatformOrderOperation orderOperation : ordersToCancel) {
+            cancelCount += orderOperation.getOrderIds().split(",").length;
+        }
+        log.info("{} Orders to suspend: {}", suspendCount, ordersToSuspend);
+        log.info("{} Orders to cancel: {}", cancelCount, ordersToCancel);
+
+        Responses cancelResponses = new Responses();
+        Responses suspendResponses = new Responses();
+        // Cancel orders
+        ExecutorService cancelExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<CompletableFuture<Responses>> futuresCancel = ordersToCancel.stream()
+                .map(orderOperation -> CompletableFuture.supplyAsync(
+                        () -> platformOrderMabangService.cancelOrders(orderOperation),
+                        cancelExecutorService)
+                ).collect(Collectors.toList());
+        List<Responses>cancelResults = futuresCancel.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        cancelResults.forEach(res -> {
+            cancelResponses.getSuccesses().addAll(res.getSuccesses());
+            cancelResponses.getFailures().addAll(res.getFailures());
+        });
+        log.info("{}/{} orders cancelled successfully.", cancelResponses.getSuccesses().size(), cancelCount);
+        log.info("Failed to cancel orders: {}", cancelResponses.getFailures());
+
+
+        // Suspend orders
+        ExecutorService suspendExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<CompletableFuture<Responses>> futuresSuspend = ordersToSuspend.stream()
+                .map(orderOperation -> CompletableFuture.supplyAsync(
+                        () -> platformOrderMabangService.suspendOrder(orderOperation),
+                        suspendExecutorService)
+                ).collect(Collectors.toList());
+        List<Responses> suspendResults = futuresSuspend.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        suspendResults.forEach(res -> {
+            suspendResponses.getSuccesses().addAll(res.getSuccesses());
+            suspendResponses.getFailures().addAll(res.getFailures());
+        });
+        log.info("{}/{} orders suspended successfully.", suspendResponses.getSuccesses().size(), suspendCount);
+
+        JSONObject result = new JSONObject();
+        result.put("cancelResult", cancelResponses);
+        result.put("suspendResult", suspendResponses);
+
+        // send mail
+        String subject = "[" + LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "] Orders management report";
+        String destEmail = sysUser.getEmail();
+        Properties prop = emailService.getMailSender();
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("firstname", client.getFirstName());
+        templateModel.put("lastname", client.getSurname());
+        if(cancelCount > 0)
+            templateModel.put("cancelSuccessCount", cancelResponses.getSuccesses().size() + "/" + cancelCount);
+        if(suspendCount > 0)
+            templateModel.put("suspendSuccessCount", suspendResponses.getSuccesses().size() + "/" + suspendCount);
+        templateModel.put("cancelFailures", cancelResponses.getFailures());
+        templateModel.put("suspendFailures", suspendResponses.getFailures());
+
+        Session session = Session.getInstance(prop, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
+            }
+        });
+        try {
+            freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+            Template freemarkerTemplate = freemarkerConfigurer.getConfiguration()
+                    .getTemplate("client/orderManagementNotification.ftl");
+            String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, templateModel);
+            emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
+            log.info("Mail sent successfully !");
+        } catch (TemplateException | MessagingException e) {
+            throw new RuntimeException(e);
+        }
+
+        return Result.OK(result);
     }
 }

@@ -126,8 +126,8 @@ public class AddPortraitTubeJob implements Job {
             HashSet<Pair<String, Integer>> adequateTubes = currentAndAdequateTubes.getRight();
             // Do nothing if current tubes are the adequate tubes
             if (!currentTubes.containsAll(adequateTubes) || !adequateTubes.containsAll(currentTubes)) {
-                ChangeOrderRequestBody changeOrderRequestBody = new ChangeOrderRequestBody(mabangOrder.getPlatformOrderId(),
-                        currentTubes, adequateTubes);
+                ChangeOrderRequestBody changeOrderRequestBody = new ChangeOrderRequestBody(mabangOrder.getPlatformOrderId(), null,
+                        currentTubes, adequateTubes, null);
                 changeOrderRequests.add(changeOrderRequestBody);
             }
         }

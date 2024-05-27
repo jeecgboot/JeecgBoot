@@ -2,7 +2,8 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
-import org.springframework.stereotype.Service;
+import org.jeecg.modules.business.vo.PlatformOrderOperation;
+import org.jeecg.modules.business.vo.Responses;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.List;
 /**
  * Services related to operations on {@code Order} entity
  */
-@Service
 public interface IPlatformOrderMabangService extends IService<Order> {
     /**
      * Save orders to DB from mabang api.
@@ -29,4 +29,7 @@ public interface IPlatformOrderMabangService extends IService<Order> {
      */
     void updateMergedOrderFromMabang(Order mergedOrder, Collection<String> sourceOrderErpId);
 
+    Responses suspendOrder(PlatformOrderOperation orderOperation);
+
+    Responses cancelOrders(PlatformOrderOperation orderOperation);
 }

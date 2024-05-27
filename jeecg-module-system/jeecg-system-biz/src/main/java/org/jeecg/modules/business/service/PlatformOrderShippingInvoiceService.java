@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service;
 
+import com.aspose.cells.PdfSaveOptions;
 import com.aspose.cells.SaveFormat;
 import com.aspose.cells.Workbook;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -781,9 +782,12 @@ public class PlatformOrderShippingInvoiceService {
                 pdfFilePath = INVOICE_PDF_DIR + "/" + m.group(2) + ".pdf";
             }
             // Créé un classeur pour charger le fichier Excel
+            PdfSaveOptions saveOptions = new PdfSaveOptions();
+            saveOptions.setDefaultFont("Arial");
+            saveOptions.setCheckWorkbookDefaultFont(false);
             Workbook workbook = new Workbook(excelFilePath);
             // On enregistre le document au format PDF
-            workbook.save(pdfFilePath, SaveFormat.PDF);
+            workbook.save(pdfFilePath, saveOptions);
             return pdfFilePath;
         }
         return "ERROR";

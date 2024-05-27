@@ -496,4 +496,9 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public void anonymizePersonalData(int indirectClientAnonymizationPeriod) {
         platformOrderMap.anonymizePersonalData(indirectClientAnonymizationPeriod);
     }
+
+    @Override
+    public List<PlatformOrderOption> ordersByShop(String shopID) {
+        return platformOrderMap.ordersByShop(shopID);
+    }
 }

@@ -891,4 +891,11 @@
         SET recipient = UUID()
         WHERE create_time &lt; DATE_SUB(NOW(), INTERVAL #{period} YEAR);
     </update>
+
+    <select id="ordersByShop" resultType="org.jeecg.modules.business.vo.PlatformOrderOption">
+        SELECT platform_order_id as value, platform_order_number as label, erp_status, IF(erp_status = 1 OR erp_status = 2, false, true) as disabled
+        FROM platform_order
+        WHERE shop_id = #{shopID}
+        AND erp_status IN (1,2,3)
+    </select>
 </mapper>

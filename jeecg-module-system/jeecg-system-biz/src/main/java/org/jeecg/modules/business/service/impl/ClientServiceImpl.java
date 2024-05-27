@@ -166,4 +166,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public void anonymizePersonalData(int directClientAnonymizationPeriod) {
         clientMapper.anonymizePersonalData(directClientAnonymizationPeriod);
     }
+
+    @Override
+    public Client getByShopId(String shopId) {
+        return clientMapper.getByShopId(shopId);
+    }
 }
