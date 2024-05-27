@@ -8,7 +8,9 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.ClientCategory;
 import org.jeecg.modules.business.service.IUserClientService;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,17 +26,23 @@ import java.util.Map;
 public class UserClientController {
     @Autowired
     private IUserClientService userClientService;
+    @Autowired
+    private ISysDepartService sysDepartService;
+    @Autowired
+    private Environment env;
     /**
      * Checks if the user is a client or internal user
      * @return the client's info OR a list of clients
      */
     @GetMapping(value = "/getClient")
     public Result<?> getClientByUserId() {
+        String companyOrgCode = sysDepartService.queryCodeByDepartName(env.getProperty("company.orgName"));
         LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String orgCode = loginUser.getOrgCode();
         String userId = loginUser.getId();
         Client client = userClientService.getClientMinInfoByUserId(userId);
         if(client == null) {
-            if(loginUser.getOrgCode().contains("A01") || loginUser.getOrgCode().contains("A03")) {
+            if(orgCode.equals(companyOrgCode)) {
                 Map<String, List<Client>> internalClientList = new HashMap<>();
                 internalClientList.put("internal", userClientService.listClients());
                 return Result.OK("internal usage", internalClientList);
