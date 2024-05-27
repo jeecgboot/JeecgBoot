@@ -6,6 +6,7 @@ import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
 import org.jeecg.modules.business.vo.OrderKpi;
+import org.jeecg.modules.business.vo.PlatformOrderOption;
 import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
@@ -221,4 +222,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     Map<String, String> fetchShippingPeriodAndType(@Param("invoiceNumber") String invoiceNumber);
 
     void anonymizePersonalData(@Param("period") int indirectClientAnonymizationPeriod);
+
+    List<PlatformOrderOption> ordersByShop(@Param("shopID") String shopID);
 }

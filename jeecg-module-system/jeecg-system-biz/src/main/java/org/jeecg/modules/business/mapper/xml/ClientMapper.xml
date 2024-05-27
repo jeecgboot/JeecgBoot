@@ -90,4 +90,10 @@
         WHERE active = 0
         AND IF (update_time IS NOT NULL, update_time, create_time) &lt; DATE_SUB(NOW(), INTERVAL #{period} YEAR);
     </update>
+    <select id="getByShopId" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+            JOIN shop s ON c.id = s.owner_id
+        WHERE s.id = #{shopId};
+    </select>
 </mapper>

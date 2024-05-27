@@ -60,4 +60,6 @@ public interface IClientService extends IService<Client> {
     Client getClientFromInvoice(String invoiceNumber);
 
     void anonymizePersonalData(int directClientAnonymizationPeriod);
+
+	Client getByShopId(String shopId);
 }

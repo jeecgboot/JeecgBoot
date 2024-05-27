@@ -287,8 +287,8 @@
     <select id="listSkus" resultType="org.jeecg.modules.business.entity.Sku">
         SELECT *
         FROM sku
-        JOIN client_sku cs ON sku.id = cs.sku_id
-        JOIN client c ON cs.client_id = c.id
+        JOIN client_sku ON sku.id = client_sku.sku_id
+        JOIN client c ON client_sku.client_id = c.id
         WHERE c.active = 1;
     </select>
     <select id="getByErpCode" resultType="org.jeecg.modules.business.entity.Sku">
