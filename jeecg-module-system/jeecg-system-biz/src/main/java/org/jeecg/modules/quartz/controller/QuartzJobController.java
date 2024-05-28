@@ -93,7 +93,7 @@ public class QuartzJobController {
 	 * @param quartzJob
 	 * @return
 	 */
-	@RequiresRoles("admin")
+//	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:edit")
 	@RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
 	public Result<?> eidt(@RequestBody QuartzJob quartzJob) {
@@ -271,7 +271,7 @@ public class QuartzJobController {
 	 * @param id
 	 * @return
 	 */
-	@RequiresRoles("admin")
+//	@RequiresRoles("admin")
     @RequiresPermissions("system:quartzJob:execute")
 	@GetMapping("/execute")
 	public Result<?> execute(@RequestParam(name = "id", required = true) String id) {
