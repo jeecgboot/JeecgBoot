@@ -2,14 +2,14 @@ package org.jeecg.modules.business.domain.api.mabang.dochangeorder;
 
 import org.jeecg.modules.business.domain.api.mabang.Request;
 
-public class EditLogisticRequest extends Request {
-    public EditLogisticRequest(EditLogisticRequestBody body) {
+public class ClearLogisticRequest extends Request {
+    public ClearLogisticRequest(ClearLogisticRequestBody body) {
         super(body);
     }
 
     @Override
-    public ChangeOrderResponse send() {
+    public ClearLogisticResponse send() {
         String jsonString = rawSend().getBody();
-        return ChangeOrderResponse.parse(jsonString);
+        return ClearLogisticResponse.parse(jsonString);
     }
 }

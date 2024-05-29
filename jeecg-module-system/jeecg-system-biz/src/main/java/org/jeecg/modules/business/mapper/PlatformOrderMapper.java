@@ -161,7 +161,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<String> fetchBillCodesOfParcelsWithoutTrace(@Param("startDate") Date startDate, @Param("endDate") Date endDate,
                                                      @Param("transporters") List<String> transporters);
 
-    List<String> fetchUninvoicedOrdersForShops(@Param("startDateTime") LocalDateTime startDateTime,
+    List<PlatformOrder> fetchUninvoicedOrdersForShops(@Param("startDateTime") LocalDateTime startDateTime,
                                                @Param("endDateTime") LocalDateTime endDateTime,
                                                @Param("shops") List<String> shops);
 

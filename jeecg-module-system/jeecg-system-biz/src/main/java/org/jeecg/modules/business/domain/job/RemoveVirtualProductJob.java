@@ -6,10 +6,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderResponse;
-import org.jeecg.modules.business.domain.api.mabang.dochangeorder.RemoveSkuRequest;
-import org.jeecg.modules.business.domain.api.mabang.dochangeorder.RemoveSkuRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.dochangeorder.*;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
+import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -81,7 +80,8 @@ public class RemoveVirtualProductJob implements Job {
             throw new RuntimeException("EndDateTime must be strictly greater than StartDateTime !");
         }
 
-        List<String> platformOrderIds = platformOrderService.fetchUninvoicedOrdersForShops(startDateTime, endDateTime, shops);
+        List<PlatformOrder> platformOrders = platformOrderService.fetchUninvoicedOrdersForShops(startDateTime, endDateTime, shops);
+        List<String> platformOrderIds = platformOrders.stream().map(PlatformOrder::getPlatformOrderId).collect(Collectors.toList());
         List<List<String>> platformOrderIdLists = Lists.partition(platformOrderIds, 10);
 
         List<OrderListRequestBody> requests = new ArrayList<>();
@@ -112,6 +112,7 @@ public class RemoveVirtualProductJob implements Job {
         log.info("{}/{} mabang orders have been retrieved.", mabangOrders.size(), platformOrderIds.size());
 
         log.info("Constructing virtual SKU removal requests");
+        List<Order> ordersWithLogistic = new ArrayList<>();
         List<RemoveSkuRequestBody> removeSkuRequests = new ArrayList<>();
         Set<String> shopErpCodes = virtualSkusByShop.keySet();
         for (Order mabangOrder : mabangOrders) {
@@ -126,6 +127,9 @@ public class RemoveVirtualProductJob implements Job {
                     }
                 }
                 if (!virtualSkuToRemove.isEmpty()) {
+                    if(!mabangOrder.getLogisticChannelName().isEmpty()) {
+                        ordersWithLogistic.add(mabangOrder);
+                    }
                     RemoveSkuRequestBody removeSkuRequestBody = new RemoveSkuRequestBody(mabangOrder.getPlatformOrderId(),
                             virtualSkuToRemove);
                     removeSkuRequests.add(removeSkuRequestBody);
@@ -133,6 +137,19 @@ public class RemoveVirtualProductJob implements Job {
             }
         }
         log.info("{} virtual SKU removal requests to be sent to MabangAPI", removeSkuRequests.size());
+
+        // First we delete the logistic channel names, otherwise we can't delete virtual skus
+        List<CompletableFuture<Boolean>> clearLogisticFutures = ordersWithLogistic.stream()
+                .map(orderWithLogistic -> CompletableFuture.supplyAsync(() -> {
+                    ClearLogisticRequestBody body = new ClearLogisticRequestBody(orderWithLogistic.getPlatformOrderId());
+                    ClearLogisticRequest request = new ClearLogisticRequest(body);
+                    ClearLogisticResponse response = request.send();
+                    return response.success();
+                }, executor))
+                .collect(Collectors.toList());
+        List<Boolean> logisticResults = clearLogisticFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long logisticClearSuccessCount = logisticResults.stream().filter(b -> b).count();
+        log.info("{}/{} logistic channel names cleared successfully.", logisticClearSuccessCount, ordersWithLogistic.size());
 
         List<CompletableFuture<Boolean>> removeSkuFutures = removeSkuRequests.stream()
                 .map(removeSkuRequestBody -> CompletableFuture.supplyAsync(() -> {

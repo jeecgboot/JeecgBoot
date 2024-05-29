@@ -404,8 +404,8 @@
           AND internal_tracking_number IS NOT NULL;
     </select>
 
-    <select id="fetchUninvoicedOrdersForShops" resultType="java.lang.String">
-        SELECT platform_order_id
+    <select id="fetchUninvoicedOrdersForShops" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT platform_order_id, logistic_channel_name
         FROM platform_order po join shop s ON po.shop_id = s.id
         WHERE erp_code IN
         <foreach
