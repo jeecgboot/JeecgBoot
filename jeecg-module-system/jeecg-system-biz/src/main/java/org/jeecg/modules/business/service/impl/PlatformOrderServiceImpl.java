@@ -501,4 +501,9 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public List<PlatformOrderOption> ordersByShop(String shopID) {
         return platformOrderMap.ordersByShop(shopID);
     }
+
+    @Override
+    public void updateShopifySynced(Collection<String> platformOrderIds) {
+        platformOrderMap.updateShopifySynced(platformOrderIds);
+    }
 }

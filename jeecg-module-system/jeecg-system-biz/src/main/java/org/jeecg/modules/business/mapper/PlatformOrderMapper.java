@@ -13,6 +13,7 @@ import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -224,4 +225,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     void anonymizePersonalData(@Param("period") int indirectClientAnonymizationPeriod);
 
     List<PlatformOrderOption> ordersByShop(@Param("shopID") String shopID);
+
+    void updateShopifySynced(@Param("platformOrderIds") Collection<String> platformOrderIds);
 }

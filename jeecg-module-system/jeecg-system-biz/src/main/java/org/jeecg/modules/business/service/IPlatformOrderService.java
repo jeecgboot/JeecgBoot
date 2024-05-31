@@ -248,4 +248,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     void anonymizePersonalData(int indirectClientAnonymizationPeriod);
 
     List<PlatformOrderOption> ordersByShop(String shopID);
+
+    void updateShopifySynced(Collection<String> platformOrderIds);
 }
