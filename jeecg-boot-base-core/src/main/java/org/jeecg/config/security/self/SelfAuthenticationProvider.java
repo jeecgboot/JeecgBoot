@@ -176,6 +176,13 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
             addition.put("multi_depart", 2);
         }
 
+        // 兼容原有shiro登录结果处理
+        Map<String, Object> map = new HashMap<>();
+        map.put("result", addition);
+        map.put("code", 200);
+        map.put("success", true);
+        map.put("timestamp", System.currentTimeMillis());
+
         // 返回access_token、refresh_token以及其它信息给到前端
         return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, map);
     }
