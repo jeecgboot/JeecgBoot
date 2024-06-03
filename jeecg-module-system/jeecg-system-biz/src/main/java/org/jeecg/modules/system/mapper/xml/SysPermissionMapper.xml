@@ -42,46 +42,104 @@
 	<!-- 获取登录用户拥有的权限 -->
 	<select id="queryByUser" parameterType="Object"  resultMap="SysPermission">
 		   SELECT * FROM (
-			   SELECT p.*
+				SELECT  p.id,
+						p.parent_id,
+						p.name,
+						p.url,
+						p.component,
+						p.is_route,
+						p.component_name,
+						p.redirect,
+						p.menu_type,
+						p.perms,
+						p.perms_type,
+						p.sort_no,
+						p.always_show,
+						p.icon,
+						p.is_leaf,
+						p.keep_alive,
+						p.hidden,
+						p.hide_tab,
+						p.rule_flag,
+						p.status,
+						p.internal_or_external
 			   FROM  sys_permission p
-			   WHERE (exists(
-						select a.id from sys_role_permission a
-						join sys_role b on a.role_id = b.id
-						join sys_user_role c on c.role_id = b.id
-						join sys_user d on d.id = c.user_id
-						where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
+			   WHERE p.del_flag = 0
+		       AND  ( p.id in (
+			   		SELECT DISTINCT a.permission_id
+					FROM sys_role_permission a
+					JOIN sys_role b ON a.role_id = b.id
+					JOIN sys_user_role c ON c.role_id = b.id AND c.user_id = #{userId,jdbcType=VARCHAR}
 					)
 					or (p.url like '%:code' and p.url like '/online%' and p.hidden = 1)
 					or (p.url like '%:id' and p.url like '/online%' and p.hidden = 1)
-					or p.url = '/online')
-			   and p.del_flag = 0
+					or p.url = '/online'
+		       )
 			<!--update begin Author:lvdandan  Date:20200213 for：加入部门权限 -->
 			   UNION
-			   SELECT p.*
-			   FROM  sys_permission p
-			   WHERE exists(
-					select a.id from sys_depart_role_permission a
-					join sys_depart_role b on a.role_id = b.id
-					join sys_depart_role_user c on c.drole_id = b.id
-					join sys_user d on d.id = c.user_id
-					where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
-			   )
+			   SELECT   p.id,
+						p.parent_id,
+						p.name,
+						p.url,
+						p.component,
+						p.is_route,
+						p.component_name,
+						p.redirect,
+						p.menu_type,
+						p.perms,
+						p.perms_type,
+						p.sort_no,
+						p.always_show,
+						p.icon,
+						p.is_leaf,
+						p.keep_alive,
+						p.hidden,
+						p.hide_tab,
+						p.rule_flag,
+						p.status,
+						p.internal_or_external
+			FROM  sys_permission p
+			WHERE p.id in(
+		        SELECT DISTINCT a.permission_id
+				FROM  sys_depart_role_permission a
+				INNER JOIN sys_depart_role b ON a.role_id = b.id
+				INNER JOIN sys_depart_role_user c ON c.drole_id = b.id AND c.user_id = #{userId,jdbcType=VARCHAR}
+				)
 			   and p.del_flag = 0
 			<!--update end Author:lvdandan  Date:20200213 for：加入部门权限 -->
 			
 			<!-- update begin Author: taoyan  Date:20200213 for：QQYUN-4303 【low app】 用户登录的时候 加载low app的套餐权限 加到用户信息 -->
-			    UNION 
-				SELECT p.* 
-				FROM  sys_permission p
-				WHERE exists(
-				select a.id from sys_tenant_pack_perms a
-				join sys_tenant_pack b on a.pack_id = b.id
-				join sys_tenant_pack_user c on c.pack_id = b.id
-				join sys_user d on d.id = c.user_id
-				where p.id = a.permission_id AND d.username = #{username,jdbcType=VARCHAR}
-				)
-				and p.del_flag = 0
-			<!-- update end Author: taoyan  Date:20200213 for：QQYUN-4303 【low app】 用户登录的时候 加载low app的套餐权限 加到用户信息 -->
+			UNION
+			SELECT  p.id,
+					p.parent_id,
+					p.name,
+					p.url,
+					p.component,
+					p.is_route,
+					p.component_name,
+					p.redirect,
+					p.menu_type,
+					p.perms,
+					p.perms_type,
+					p.sort_no,
+					p.always_show,
+					p.icon,
+					p.is_leaf,
+					p.keep_alive,
+					p.hidden,
+					p.hide_tab,
+					p.rule_flag,
+					p.status,
+					p.internal_or_external
+			FROM  sys_permission p
+			WHERE p.id in (
+				SELECT distinct a.permission_id
+				FROM sys_tenant_pack_perms a
+				INNER JOIN sys_tenant_pack b ON a.pack_id = b.id AND b.STATUS = '1'
+				INNER JOIN sys_tenant_pack_user c ON c.pack_id = b.id AND c.STATUS = '1' AND c.user_id = #{userId,jdbcType=VARCHAR}
+			)
+			and p.del_flag = 0
+		<!-- update end Author: taoyan  Date:20200213 for：QQYUN-4303 【low app】 用户登录的时候 加载low app的套餐权限 加到用户信息 -->
 			
 		   ) h order by h.sort_no ASC
 	</select>
@@ -128,6 +186,18 @@
 			select permission_id from sys_depart_permission where depart_id = #{departId}
 		)
 		order by sort_no ASC 
+	</select>
+	
+	<!--根据用户名称和test角色id查询权限-->
+	<select id="queryPermissionByTestRoleId" resultType="org.jeecg.modules.system.entity.SysPermission">
+		SELECT p.*
+		FROM  sys_permission p
+		WHERE exists(
+				   select a.id from sys_role_permission a
+				   join sys_role b on a.role_id = b.id
+				   where p.id = a.permission_id AND b.id= 'ee8626f80f7c2619917b6236f3a7f02b'
+			   )
+		  and p.del_flag = 0
 	</select>
 
 </mapper>

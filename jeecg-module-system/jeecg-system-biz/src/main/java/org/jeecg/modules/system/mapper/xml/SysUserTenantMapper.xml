@@ -18,6 +18,7 @@
             <bind name="bindRealName" value="'%'+user.realname+'%'"/>
             AND su.realname like #{bindRealName}
         </if>
+        ORDER BY su.create_time DESC
     </select>
 
     <!--根据租户id获取用户ids-->
@@ -38,9 +39,9 @@
 
     <!--通过用户id获取租户列表-->
     <select id="getTenantListByUserId" resultType="org.jeecg.modules.system.vo.SysUserTenantVo">
-        SELECT st.id as tenantUserId,st.name,st.trade,st.house_number,st.create_by,sut.status as userTenantStatus
+        SELECT st.id as tenantUserId,st.name,st.trade,st.house_number,st.create_by,sut.status as userTenantStatus,sut.user_id as id
         FROM sys_user_tenant sut
-        JOIN sys_tenant st ON sut.tenant_id = st.id
+        LEFT JOIN sys_tenant st ON sut.tenant_id = st.id
         WHERE st.status = 1
         AND st.del_flag = 0
         AND sut.user_id = #{userId}
@@ -69,9 +70,9 @@
     
     <!--联查用户和租户审核状态-->
     <select id="getUserTenantPageList" resultType="org.jeecg.modules.system.vo.SysUserTenantVo">
-        SELECT su.id,su.realname,su.username,su.email,su.phone,su.avatar,su.work_no,su.post,su.org_code,sut.status,st.create_by 
+        SELECT su.id,su.realname,su.username,su.email,su.phone,su.avatar,su.work_no,su.org_code,sut.status,st.create_by
         FROM sys_user_tenant sut
-        LEFT JOIN sys_user su on sut.user_id = su.id
+        RIGHT JOIN sys_user su on sut.user_id = su.id and su.del_flag = 0
         JOIN sys_tenant st ON sut.tenant_id = st.id
         WHERE sut.tenant_id = #{tenantId}
         AND st.del_flag = 0
@@ -114,6 +115,14 @@
         user_id = #{userId}
         and tenant_id = #{tenantId}
     </select>
+    
+    <!--查询未被注销的租户-->
+    <select id="getTenantNoCancel" resultType="org.jeecg.modules.system.entity.SysTenant">
+        SELECT st.id,st.name FROM sys_user_tenant sut
+        JOIN sys_tenant st ON sut.tenant_id = st.id AND st.del_flag = 0 AND st.status = 1
+        WHERE
+        user_id = #{userId}
+    </select>
 
     <!--用户租户取消离职-->
     <update id="putCancelQuit">
@@ -125,4 +134,52 @@
             #{userId}
         </foreach>
     </update>
+
+
+    <!--根据用户id获取我的租户-->
+    <select id="getTenantPageListByUserId" resultType="org.jeecg.modules.system.entity.SysTenant">
+        SELECT st.id,st.name,st.status,st.trade,st.company_size,st.company_address,st.company_logo,st.house_number,st.work_place,st.position,st.department,st.create_by FROM sys_user_tenant sut
+        JOIN sys_tenant st ON sut.tenant_id = st.id AND st.del_flag = 0 AND st.status = 1
+        WHERE sut.user_id = #{userId}
+        <if test="sysUserTenantVo.name != null and sysUserTenantVo.name != ''">
+            <bind name="bindName" value="'%'+sysUserTenantVo.name+'%'"/>
+            AND st.name like #{bindName}
+        </if>
+        <if test="sysUserTenantVo.status != null and sysUserTenantVo.status!= ''">
+            AND st.status = #{sysUserTenantVo.status}
+        </if>
+        AND sut.status in
+        <foreach collection="userTenantStatus" index="index" item="status" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+        order by st.create_time desc
+    </select>
+
+    <!-- 删除租户下的用户 -->
+    <delete id="deleteUserByTenantId">
+        DELETE FROM sys_user_tenant
+        WHERE
+        tenant_id in
+        <foreach collection="tenantIds" index="index" item="tenantId" open="(" separator="," close=")">
+            #{tenantId}
+        </foreach>
+    </delete>
+
+    <!-- 获取租户下的成员数量 -->
+    <select id="getUserCount" resultType="java.lang.Long">
+        SELECT count(1) FROM sys_user_tenant sut JOIN sys_user su on sut.user_id = su.id and su.del_flag = 0 and su.status = 1
+        WHERE sut.status = #{tenantStatus} 
+        AND sut.tenant_id = #{tenantId}
+    </select>
+
+    <!--根据租户id和名称获取用户数据-->
+    <select id="getUsersByTenantIdAndName" resultType="org.jeecg.modules.system.vo.thirdapp.JwUserDepartVo">
+        SELECT su.id userId,su.realname,su.avatar
+        FROM sys_user_tenant sut
+        JOIN sys_tenant st ON sut.tenant_id = st.id and st.status = 1 and st.del_flag = 0
+        JOIN sys_user su ON sut.user_id = su.id and su.status = 1 and su.del_flag = 0
+        WHERE
+        sut.status = 1
+        AND sut.tenant_id = #{tenantId}
+    </select>
 </mapper>

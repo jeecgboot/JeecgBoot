@@ -29,6 +29,7 @@ import org.jeecg.modules.business.service.impl.ProviderMabangServiceImpl;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -117,6 +118,10 @@ public class InvoiceController {
     private EmailService emailService;
     @Autowired
     private ISysBaseAPI ISysBaseApi;
+    @Autowired
+    private ISysDepartService sysDepartService;
+    @Autowired
+    private IUserClientService userClientService;
     @Autowired
     Environment env;
 
@@ -701,7 +706,6 @@ public class InvoiceController {
     public byte[] downloadInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
         InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
         List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
-        System.out.println(skuOrderPages);
         return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
     }
 
@@ -794,6 +798,7 @@ public class InvoiceController {
      * @param completeClientIds list of clients to invoice complete fees
      * @return list of invoice infos
      */
+    @Transactional
     @GetMapping(value = "/breakdown/makeInvoice")
     public Result<?> makeBreakdownInvoice(@RequestParam(value = "shipping[]", required = false) List<String> shippingClientIds,
                                           @RequestParam(value = "complete[]", required = false) List<String> completeClientIds) throws IOException {
@@ -957,6 +962,7 @@ public class InvoiceController {
 
     @GetMapping(value = "/checkInvoiceValidity")
     public Result<?> checkInvoiceValidity(@RequestParam("invoiceNumber") String invoiceNumber) {
+        String companyOrgCode = sysDepartService.queryCodeByDepartName(env.getProperty("company.orgName"));
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String orgCode = sysUser.getOrgCode();
         String email = sysUser.getEmail();
@@ -979,9 +985,11 @@ public class InvoiceController {
             client = clientService.getClientFromPurchase(invoiceID);
         customerFullName = client.fullName();
         String destEmail;
-        if(orgCode.contains("A04")) {
-            System.out.println(email + " - " + client.getEmail());
-            if(!client.getEmail().equals(email)) {
+        if(!orgCode.equals(companyOrgCode)) {
+            log.info("User {} is trying to access invoice {} from client {}", sysUser.getUsername(), invoiceNumber, client.getInternalCode());
+            Client userClient = userClientService.getClientByUserId(sysUser.getId());
+
+            if(!client.getId().equals(userClient.getId())) {
                 return Result.error(403,"Not authorized to view this page.");
             }
             else {

@@ -117,15 +117,13 @@ public class SysUserController {
         //------------------------------------------------------------------------------------------------
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-            String tenantId = oConvertUtils.getString(TenantContext.getTenant(), "0");
-            //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+            String tenantId = oConvertUtils.getString(TenantContext.getTenant(), "-1");
             List<String> userIds = userTenantService.getUserIdsByTenantId(Integer.valueOf(tenantId));
             if (oConvertUtils.listIsNotEmpty(userIds)) {
                 queryWrapper.in("id", userIds);
             }else{
                 queryWrapper.eq("id", "通过租户查询不到任何用户");
             }
-            //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
         }
         //------------------------------------------------------------------------------------------------
         return sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
@@ -140,7 +138,7 @@ public class SysUserController {
      * @param req
      * @return
      */
-    //@RequiresPermissions("system:user:listAll")
+    @RequiresPermissions("system:user:listAll")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Result<IPage<SysUser>> queryAllPageList(SysUser user, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
@@ -148,7 +146,7 @@ public class SysUserController {
         return sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
     }
 
-    //@RequiresPermissions("system:user:add")
+    @RequiresPermissions("system:user:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -178,7 +176,7 @@ public class SysUserController {
 		return result;
 	}
 
-    //@RequiresPermissions("system:user:edit")
+    @RequiresPermissions("system:user:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -216,7 +214,7 @@ public class SysUserController {
 	/**
 	 * 删除用户
 	 */
-    //@RequiresPermissions("system:user:delete")
+    @RequiresPermissions("system:user:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		baseCommonService.addLog("删除用户，id： " +id ,CommonConstant.LOG_TYPE_2, 3);
@@ -227,7 +225,7 @@ public class SysUserController {
 	/**
 	 * 批量删除用户
 	 */
-    //@RequiresPermissions("system:user:deleteBatch")
+    @RequiresPermissions("system:user:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		baseCommonService.addLog("批量删除用户， ids： " +ids ,CommonConstant.LOG_TYPE_2, 3);
@@ -240,19 +238,21 @@ public class SysUserController {
 	 * @param jsonObject
 	 * @return
 	 */
-    //@RequiresPermissions("system:user:frozenBatch")
+    @RequiresPermissions("system:user:frozenBatch")
 	@RequestMapping(value = "/frozenBatch", method = RequestMethod.PUT)
 	public Result<SysUser> frozenBatch(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
 			String ids = jsonObject.getString("ids");
+			sysUserService.checkUserAdminRejectDel(ids);
 			String status = jsonObject.getString("status");
 			String[] arr = ids.split(",");
-			for (String id : arr) {
+            for (String id : arr) {
 				if(oConvertUtils.isNotEmpty(id)) {
-					this.sysUserService.update(new SysUser().setStatus(Integer.parseInt(status)),
-							new UpdateWrapper<SysUser>().lambda().eq(SysUser::getId,id));
-				}
+                    //update-begin---author:liusq ---date:20230620  for：[QQYUN-5577]用户列表-冻结用户，再解冻之后，用户还是无法登陆，有缓存问题 #5066------------
+                    sysUserService.updateStatus(id,status);
+                    //update-end---author:liusq ---date:20230620  for：[QQYUN-5577]用户列表-冻结用户，再解冻之后，用户还是无法登陆，有缓存问题 #5066------------
+                }
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
@@ -263,7 +263,7 @@ public class SysUserController {
 
     }
 
-    //@RequiresPermissions("system:user:queryById")
+    @RequiresPermissions("system:user:queryById")
     @RequestMapping(value = "/queryById", method = RequestMethod.GET)
     public Result<SysUser> queryById(@RequestParam(name = "id", required = true) String id) {
         Result<SysUser> result = new Result<SysUser>();
@@ -277,7 +277,7 @@ public class SysUserController {
         return result;
     }
 
-    //@RequiresPermissions("system:user:queryUserRole")
+    @RequiresPermissions("system:user:queryUserRole")
     @RequestMapping(value = "/queryUserRole", method = RequestMethod.GET)
     public Result<List<String>> queryUserRole(@RequestParam(name = "userid", required = true) String userid) {
         Result<List<String>> result = new Result<>();
@@ -330,7 +330,7 @@ public class SysUserController {
     /**
      * 修改密码
      */
-    //@RequiresPermissions("system:user:changepwd")
+    @RequiresPermissions("system:user:changepwd")
     @RequestMapping(value = "/changePassword", method = RequestMethod.PUT)
     public Result<?> changePassword(@RequestBody SysUser sysUser) {
         SysUser u = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, sysUser.getUsername()));
@@ -438,12 +438,13 @@ public class SysUserController {
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name="realname",required=false) String realname,
             @RequestParam(name="username",required=false) String username,
+            @RequestParam(name="isMultiTranslate",required=false) String isMultiTranslate,
             @RequestParam(name="id",required = false) String id) {
         //update-begin-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
         String[] arr = new String[]{departId, realname, username, id};
         SqlInjectionUtil.filterContent(arr, SymbolConstant.SINGLE_QUOTATION_MARK);
         //update-end-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
-        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id);
+        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id,isMultiTranslate);
         return Result.OK(pageList);
     }
 
@@ -453,7 +454,7 @@ public class SysUserController {
      * @param request
      * @param sysUser
      */
-    //@RequiresPermissions("system:user:export")
+    @RequiresPermissions("system:user:export")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysUser sysUser,HttpServletRequest request) {
         // Step.1 组装查询条件
@@ -486,7 +487,7 @@ public class SysUserController {
      * @param response
      * @return
      */
-    //@RequiresPermissions("system:user:import")
+    @RequiresPermissions("system:user:import")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -569,7 +570,7 @@ public class SysUserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryByIds", method = RequestMethod.GET)
-	public Result<Collection<SysUser>> queryByIds(@RequestParam String userIds) {
+	public Result<Collection<SysUser>> queryByIds(@RequestParam(name = "userIds") String userIds) {
 		Result<Collection<SysUser>> result = new Result<>();
 		String[] userId = userIds.split(",");
 		Collection<String> idList = Arrays.asList(userId);
@@ -586,7 +587,7 @@ public class SysUserController {
      * @return
      */
     @RequestMapping(value = "/queryByNames", method = RequestMethod.GET)
-    public Result<Collection<SysUser>> queryByNames(@RequestParam String userNames) {
+    public Result<Collection<SysUser>> queryByNames(@RequestParam(name = "userNames") String userNames) {
         Result<Collection<SysUser>> result = new Result<>();
         String[] names = userNames.split(",");
         QueryWrapper<SysUser> queryWrapper=new QueryWrapper();
@@ -600,7 +601,7 @@ public class SysUserController {
 	/**
 	 * 首页用户重置密码
 	 */
-    //@RequiresPermissions("system:user:updatepwd")
+    @RequiresPermissions("system:user:updatepwd")
     @RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
 	public Result<?> updatePassword(@RequestBody JSONObject json) {
 		String username = json.getString("username");
@@ -641,10 +642,11 @@ public class SysUserController {
      * @param
      * @return
      */
-    //@RequiresPermissions("system:user:addUserRole")
+    @RequiresPermissions("system:user:addUserRole")
     @RequestMapping(value = "/addSysUserRole", method = RequestMethod.POST)
     public Result<String> addSysUserRole(@RequestBody SysUserRoleVO sysUserRoleVO) {
         Result<String> result = new Result<String>();
+        //TODO 判断当前操作的角色是当前登录租户下的
         try {
             String sysRoleId = sysUserRoleVO.getRoleId();
             for(String sysUserId:sysUserRoleVO.getUserIdList()) {
@@ -672,7 +674,7 @@ public class SysUserController {
      * @param
      * @return
      */
-    //@RequiresPermissions("system:user:deleteRole")
+    @RequiresPermissions("system:user:deleteRole")
     @RequestMapping(value = "/deleteUserRole", method = RequestMethod.DELETE)
     public Result<SysUserRole> deleteUserRole(@RequestParam(name="roleId") String roleId,
                                                     @RequestParam(name="userId",required=true) String userId
@@ -696,7 +698,7 @@ public class SysUserController {
      * @param
      * @return
      */
-    //@RequiresPermissions("system:user:deleteRoleBatch")
+    @RequiresPermissions("system:user:deleteRoleBatch")
     @RequestMapping(value = "/deleteUserRoleBatch", method = RequestMethod.DELETE)
     public Result<SysUserRole> deleteUserRoleBatch(
             @RequestParam(name="roleId") String roleId,
@@ -827,7 +829,7 @@ public class SysUserController {
     /**
      * 给指定部门添加对应的用户
      */
-    //@RequiresPermissions("system:user:editDepartWithUser")
+    @RequiresPermissions("system:user:editDepartWithUser")
     @RequestMapping(value = "/editSysDepartWithUser", method = RequestMethod.POST)
     public Result<String> editSysDepartWithUser(@RequestBody SysDepartUsersVO sysDepartUsersVO) {
         Result<String> result = new Result<String>();
@@ -856,7 +858,7 @@ public class SysUserController {
     /**
      *   删除指定机构的用户关系
      */
-    //@RequiresPermissions("system:user:deleteUserInDepart")
+    @RequiresPermissions("system:user:deleteUserInDepart")
     @RequestMapping(value = "/deleteUserInDepart", method = RequestMethod.DELETE)
     public Result<SysUserDepart> deleteUserInDepart(@RequestParam(name="depId") String depId,
                                                     @RequestParam(name="userId",required=true) String userId
@@ -888,7 +890,7 @@ public class SysUserController {
     /**
      * 批量删除指定机构的用户关系
      */
-    //@RequiresPermissions("system:user:deleteUserInDepartBatch")
+    @RequiresPermissions("system:user:deleteUserInDepartBatch")
     @RequestMapping(value = "/deleteUserInDepartBatch", method = RequestMethod.DELETE)
     public Result<SysUserDepart> deleteUserInDepartBatch(
             @RequestParam(name="depId") String depId,
@@ -1012,8 +1014,8 @@ public class SysUserController {
 			user.setPhone(phone);
 			user.setStatus(CommonConstant.USER_UNFREEZE);
 			user.setDelFlag(CommonConstant.DEL_FLAG_0);
-			user.setActivitiSync(CommonConstant.ACT_SYNC_0);
-			sysUserService.addUserWithRole(user,"ee8626f80f7c2619917b6236f3a7f02b");//默认临时角色 test
+			user.setActivitiSync(CommonConstant.ACT_SYNC_1);
+			sysUserService.addUserWithRole(user,"");//默认临时角色 test
 			result.success("注册成功");
 		} catch (Exception e) {
 			result.error500("注册失败");
@@ -1263,7 +1265,7 @@ public class SysUserController {
      * @param userIds 被删除的用户ID，多个id用半角逗号分割
      * @return
      */
-    //@RequiresPermissions("system:user:deleteRecycleBin")
+    @RequiresPermissions("system:user:deleteRecycleBin")
     @RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
     public Result deleteRecycleBin(@RequestParam("userIds") String userIds) {
         if (StringUtils.isNotBlank(userIds)) {
@@ -1407,15 +1409,35 @@ public class SysUserController {
      */
     @GetMapping("/appQueryUser")
     public Result<List<SysUser>> appQueryUser(@RequestParam(name = "keyword", required = false) String keyword,
+                                              @RequestParam(name = "username", required = false) String username,
                                               @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-                                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+                                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest request) {
         Result<List<SysUser>> result = new Result<List<SysUser>>();
         LambdaQueryWrapper<SysUser> queryWrapper =new LambdaQueryWrapper<SysUser>();
         //TODO 外部模拟登陆临时账号，列表不显示
         queryWrapper.ne(SysUser::getUsername,"_reserve_user_external");
-        if(StringUtils.isNotBlank(keyword)){
+        //增加 username传参
+        if(oConvertUtils.isNotEmpty(username)){
+            if(username.contains(",")){
+                queryWrapper.in(SysUser::getUsername,username.split(","));
+            }else{
+                queryWrapper.eq(SysUser::getUsername,username);
+            }
+        }else if(StringUtils.isNotBlank(keyword)){
             queryWrapper.and(i -> i.like(SysUser::getUsername, keyword).or().like(SysUser::getRealname, keyword));
         }
+        //------------------------------------------------------------------------------------------------
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            String tenantId = oConvertUtils.getString(TokenUtils.getTenantIdByRequest(request),"-1");
+            //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+            List<String> userIds = userTenantService.getUserIdsByTenantId(Integer.valueOf(tenantId));
+            if (oConvertUtils.listIsNotEmpty(userIds)) {
+                queryWrapper.in(SysUser::getId, userIds);
+            }
+            //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+        }
+        //------------------------------------------------------------------------------------------------
         Page<SysUser> page = new Page<>(pageNo, pageSize);
         IPage<SysUser> pageList = this.sysUserService.page(page, queryWrapper);
         //批量查询用户的所属部门
@@ -1528,7 +1550,8 @@ public class SysUserController {
             @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name = "roleId", required = false) String roleId,
-            @RequestParam(name="keyword",required=false) String keyword) {
+            @RequestParam(name="keyword",required=false) String keyword,
+            @RequestParam(name="excludeUserIdList",required = false) String excludeUserIdList) {
         //------------------------------------------------------------------------------------------------
         Integer tenantId = null;
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
@@ -1539,7 +1562,7 @@ public class SysUserController {
             }
         }
         //------------------------------------------------------------------------------------------------
-        IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo);
+        IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo,excludeUserIdList);
         return Result.OK(pageList);
     }
 
@@ -1614,21 +1637,29 @@ public class SysUserController {
         if(user==null) {
             return Result.error("未找到该用户数据");
         }
-        if(oConvertUtils.isNotEmpty(user.getPost())){
-            String post = user.getPost();
-            LambdaQueryWrapper<SysPosition> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.in(SysPosition::getCode,Arrays.asList(post.split(SymbolConstant.COMMA)));
-            queryWrapper.select(SysPosition::getName);
-            List<SysPosition> sysPositionList = sysPositionService.list(queryWrapper);
+
+        //update-begin---author:wangshuai ---date:20230220  for：[QQYUN-3980]组织管理中 职位功能 职位表加租户id 加职位-用户关联表------------
+        //获取用户id通过职位数据
+        List<SysPosition> sysPositionList = sysPositionService.getPositionList(user.getId());
+        if(null != sysPositionList && sysPositionList.size()>0){
+        //update-end---author:wangshuai ---date:20230220  for：[QQYUN-3980]组织管理中 职位功能 职位表加租户id 加职位-用户关联表------------
             StringBuilder nameBuilder = new StringBuilder();
+            StringBuilder idBuilder = new StringBuilder();
             String verticalBar = " | ";
             for (SysPosition sysPosition:sysPositionList){
                 nameBuilder.append(sysPosition.getName()).append(verticalBar);
+                idBuilder.append(sysPosition.getId()).append(SymbolConstant.COMMA);
             }
             String names = nameBuilder.toString();
             if(oConvertUtils.isNotEmpty(names)){
                 names = names.substring(0,names.lastIndexOf(verticalBar));
                 user.setPostText(names);
+            }
+            //拼接职位id
+            String ids = idBuilder.toString();
+            if(oConvertUtils.isNotEmpty(ids)){
+                ids = ids.substring(0,ids.lastIndexOf(SymbolConstant.COMMA));
+                user.setPost(ids);
             }
         }
         return Result.ok(user);
@@ -1640,7 +1671,7 @@ public class SysUserController {
      * @return
      */
     @PostMapping("/login/setting/userEdit")
-    //@RequiresPermissions("system:user:setting:edit")
+    @RequiresPermissions("system:user:setting:edit")
     public Result<String> userEdit(@RequestBody SysUser sysUser, HttpServletRequest request) {
         String username = JwtUtil.getUserNameByToken(request);
         SysUser user = sysUserService.getById(sysUser.getId());
@@ -1738,9 +1769,59 @@ public class SysUserController {
             return result.error500("非当前租户下的用户，不允许修改！");
         }
         String departs = req.getParameter("selecteddeparts");
-        String roles = req.getParameter("selectedroles");
-        sysUserService.editTenantUser(sysUser,tenantId,departs,roles);
+        sysUserService.editTenantUser(sysUser,tenantId,departs,null);
         return Result.ok("修改成功");
+    }
+
+    /**
+     * 切换租户时 需要修改 loginTenantId
+     * QQYUN-4491 【应用】一些小问题  1、上次选中登录的租户，下次登录未记忆
+     * @param sysUser
+     * @return
+     */
+    @PutMapping("/changeLoginTenantId")
+    public Result<?> changeLoginTenantId(@RequestBody SysUser sysUser){
+        Result<String> result = new Result<>();
+        Integer tenantId = sysUser.getLoginTenantId();
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String userId = loginUser.getId();
+
+        // 判断 指定的租户ID是不是当前登录用户的租户
+        LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
+        query.eq(SysUserTenant::getTenantId, tenantId);
+        query.eq(SysUserTenant::getUserId, userId);
+        SysUserTenant one = userTenantService.getOne(query);
+        if(null == one){
+            return result.error500("非租户下的用户，不允许修改！");
+        }
+
+        // 修改 loginTenantId
+        LambdaQueryWrapper<SysUser> update = new LambdaQueryWrapper<SysUser>()
+                .eq(SysUser::getId, userId);
+        SysUser updateUser = new SysUser();
+        updateUser.setLoginTenantId(tenantId);
+        sysUserService.update(updateUser, update);
+        return Result.ok();
+    }
+
+    /**
+     * 应用用户导出
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/exportAppUser")
+    public ModelAndView exportAppUser(HttpServletRequest request) {
+        return sysUserService.exportAppUser(request);
+    }
+
+   /**
+     * 应用用户导入
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/importAppUser", method = RequestMethod.POST)
+    public Result<?> importAppUser(HttpServletRequest request, HttpServletResponse response)throws IOException {
+        return sysUserService.importAppUser(request);
     }
     @GetMapping(value = "/getMabangUsername")
     public Result<?> getMabangUsername() {

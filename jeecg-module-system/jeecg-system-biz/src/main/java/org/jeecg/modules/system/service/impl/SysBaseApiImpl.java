@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -9,22 +10,35 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.Joiner;
+import freemarker.core.TemplateClassResolver;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.aspect.UrlMatchEnum;
 import org.jeecg.common.constant.*;
+import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
+import org.jeecg.common.constant.enums.SysAnnmentTypeEnum;
 import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
+import org.jeecg.common.system.query.QueryCondition;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.query.QueryRuleEnum;
 import org.jeecg.common.system.vo.*;
-import org.jeecg.common.util.*;
+import org.jeecg.common.util.HTMLUtils;
+import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.firewall.SqlInjection.IDictTableWhiteListHandler;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.handle.impl.DdSendMsgHandle;
 import org.jeecg.modules.message.handle.impl.EmailSendMsgHandle;
@@ -36,19 +50,26 @@ import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.util.SecurityUtil;
+import org.jeecg.modules.system.vo.lowapp.SysDictVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.PathMatcher;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 底层共通业务API，提供其他独立模块调用
@@ -103,7 +124,18 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Autowired
 	private ISysDataLogService sysDataLogService;
 	@Autowired
-	private ISysFilesService sysFilesService;
+	private ISysRoleService sysRoleService;
+	@Autowired
+	private ISysUserTenantService sysUserTenantService;
+
+	@Autowired
+	private ISysUserRoleService sysUserRoleService;
+
+	@Autowired
+	private ISysUserPositionService sysUserPositionService;
+
+	@Autowired
+	private IDictTableWhiteListHandler dictTableWhiteListHandler;
 
 	@Override
 	//@SensitiveDecode
@@ -149,7 +181,17 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
 			query.eq(SysPermission::getMenuType,2);
 			query.eq(SysPermission::getDelFlag,0);
-			query.eq(SysPermission::getUrl, requestPath);
+			
+			//update-begin-author:taoyan date:2023-2-21 for: 解决参数顺序问题
+			List<String> allPossiblePaths = this.getOnlinePossiblePaths(requestPath);
+			log.info("获取的菜单地址= {}", allPossiblePaths.toString());
+			if(allPossiblePaths.size()==1){
+				query.eq(SysPermission::getUrl, requestPath);
+			}else{
+				query.in(SysPermission::getUrl, allPossiblePaths);	
+			}
+			//update-end-author:taoyan date:2023-2-21 for: 解决参数顺序问题
+			
 			currentSyspermission = sysPermissionMapper.selectList(query);
 			//2.未找到 再通过自定义匹配URL 获取菜单
 			if(currentSyspermission==null || currentSyspermission.size()==0) {
@@ -258,6 +300,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			return null;
 		}
 		BeanUtils.copyProperties(sysUser, loginUser);
+		//去掉用户敏感信息
+		loginUser.setPassword(null);
+		loginUser.setRelTenantIds(null);
+		loginUser.setDepartIds(null);
 		return loginUser;
 	}
 
@@ -274,6 +320,30 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			result.add(depart.getId());
 		}
 		return result;
+	}
+
+	@Override
+	public Set<String> getDepartParentIdsByUsername(String username) {
+		List<SysDepart> list = sysDepartService.queryDepartsByUsername(username);
+		Set<String> result = new HashSet<>(list.size());
+		for (SysDepart depart : list) {
+			result.add(depart.getParentId());
+		}
+		return result;
+	}
+
+	@Override
+	public Set<String> getDepartParentIdsByDepIds(Set<String> depIds) {
+		LambdaQueryWrapper<SysDepart> departQuery = new LambdaQueryWrapper<SysDepart>().in(SysDepart::getId, depIds);
+		List<SysDepart> departList = departMapper.selectList(departQuery);
+
+		if(CollectionUtils.isEmpty(departList)){
+			return null;
+		}
+		Set<String> parentIds = departList.stream()
+				.map(SysDepart::getParentId)
+				.collect(Collectors.toSet());
+		return parentIds;
 	}
 
 	@Override
@@ -306,16 +376,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	@Override
-	public List<DictModel> queryTableDictItemsByCode(String table, String text, String code) {
-		//update-begin-author:taoyan date:20200820 for:【Online+系统】字典表加权限控制机制逻辑，想法不错 LOWCOD-799
-		if(table.indexOf(SymbolConstant.SYS_VAR_PREFIX)>=0){
-			table = QueryGenerator.getSqlRuleValue(table);
+	public List<DictModel> queryTableDictItemsByCode(String tableFilterSql, String text, String code) {
+		//【Online+系统】字典表加权限控制机制逻辑，想法不错 LOWCOD-799
+		if(tableFilterSql.indexOf(SymbolConstant.SYS_VAR_PREFIX)>=0){
+			tableFilterSql = QueryGenerator.getSqlRuleValue(tableFilterSql);
 		}
-		//update-end-author:taoyan date:20200820 for:【Online+系统】字典表加权限控制机制逻辑，想法不错 LOWCOD-799
-		String[] arr = new String[]{text, code};
-		SqlInjectionUtil.filterContent(arr);
-		SqlInjectionUtil.specialFilterContentForDictSql(table);
-		return sysDictService.queryTableDictItemsByCode(table, text, code);
+		return sysDictService.queryTableDictItemsByCode(tableFilterSql, text, code);
 	}
 
 	@Override
@@ -361,7 +427,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public void sendTemplateAnnouncement(TemplateMessageDTO message) {
 		String templateCode = message.getTemplateCode();
 		String title = message.getTitle();
-		Map<String,String> map = message.getTemplateParam();
+		Map<String,String> tmplateParam = message.getTemplateParam();
 		String fromUser = message.getFromUser();
 		String toUser = message.getToUser();
 
@@ -374,8 +440,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		title = title==null?sysSmsTemplate.getTemplateName():title;
 		//模板内容
 		String content = sysSmsTemplate.getTemplateContent();
-		if(map!=null) {
-			for (Map.Entry<String, String> entry : map.entrySet()) {
+		if(tmplateParam!=null) {
+			for (Map.Entry<String, String> entry : tmplateParam.entrySet()) {
 				String str = "${" + entry.getKey() + "}";
 				if(oConvertUtils.isNotEmpty(title)){
 					title = title.replace(str, entry.getValue());
@@ -383,7 +449,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				content = content.replace(str, entry.getValue());
 			}
 		}
-
+		String mobileOpenUrl = null;
+		if(tmplateParam!=null && oConvertUtils.isNotEmpty(tmplateParam.get(CommonConstant.MSG_HREF_URL))){
+			mobileOpenUrl = tmplateParam.get(CommonConstant.MSG_HREF_URL);
+		}
 		SysAnnouncement announcement = new SysAnnouncement();
 		announcement.setTitile(title);
 		announcement.setMsgContent(content);
@@ -420,7 +489,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 		try {
 			// 同步企业微信、钉钉的消息通知
-			dingtalkService.sendActionCardMessage(announcement, true);
+			dingtalkService.sendActionCardMessage(announcement, mobileOpenUrl, true);
 			wechatEnterpriseService.sendTextCardMessage(announcement, true);
 		} catch (Exception e) {
 			log.error("同步发送第三方APP消息失败！", e);
@@ -432,7 +501,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public void sendBusTemplateAnnouncement(BusTemplateMessageDTO message) {
 		String templateCode = message.getTemplateCode();
 		String title = message.getTitle();
-		Map<String,String> map = message.getTemplateParam();
+		Map<String,String> tmplateParam = message.getTemplateParam();
 		String fromUser = message.getFromUser();
 		String toUser = message.getToUser();
 		String busId = message.getBusId();
@@ -447,11 +516,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		title = title==null?sysSmsTemplate.getTemplateName():title;
 		//模板内容
 		String content = sysSmsTemplate.getTemplateContent();
-		if(map!=null) {
-			for (Map.Entry<String, String> entry : map.entrySet()) {
+		if(tmplateParam!=null) {
+			for (Map.Entry<String, String> entry : tmplateParam.entrySet()) {
 				String str = "${" + entry.getKey() + "}";
-				title = title.replace(str, entry.getValue());
-				content = content.replace(str, entry.getValue());
+				if (entry.getValue() != null) {
+					title = title.replace(str, entry.getValue());
+					content = content.replace(str, entry.getValue());
+				}
 			}
 		}
 		SysAnnouncement announcement = new SysAnnouncement();
@@ -462,6 +533,15 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
 		announcement.setSendStatus(CommonConstant.HAS_SEND);
 		announcement.setSendTime(new Date());
+		
+		if(tmplateParam!=null && oConvertUtils.isNotEmpty(tmplateParam.get(CommonSendStatus.MSG_ABSTRACT_JSON))){
+			announcement.setMsgAbstract(tmplateParam.get(CommonSendStatus.MSG_ABSTRACT_JSON));
+		}
+		String mobileOpenUrl = null;
+		if(tmplateParam!=null && oConvertUtils.isNotEmpty(tmplateParam.get(CommonConstant.MSG_HREF_URL))){
+			mobileOpenUrl = tmplateParam.get(CommonConstant.MSG_HREF_URL);
+		}
+	
 		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
 		announcement.setBusId(busId);
@@ -493,8 +573,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			}
 		}
 		try {
-			// 同步企业微信、钉钉的消息通知
-			dingtalkService.sendActionCardMessage(announcement, true);
+			// 钉钉的消息通知
+			dingtalkService.sendActionCardMessage(announcement, mobileOpenUrl, true);
+			// 企业微信通知
 			wechatEnterpriseService.sendTextCardMessage(announcement, true);
 		} catch (Exception e) {
 			log.error("同步发送第三方APP消息失败！", e);
@@ -531,7 +612,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 			updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);
 			updateWrapper.set(SysAnnouncementSend::getReadTime, new Date());
-			updateWrapper.last("where annt_id ='"+announcement.getId()+"' and user_id ='"+userId+"'");
+			updateWrapper.eq(SysAnnouncementSend::getAnntId,announcement.getId());
+			updateWrapper.eq(SysAnnouncementSend::getUserId,userId);
+			//updateWrapper.last("where annt_id ='"+announcement.getId()+"' and user_id ='"+userId+"'");
 			SysAnnouncementSend announcementSend = new SysAnnouncementSend();
 			sysAnnouncementSendMapper.update(announcementSend, updateWrapper);
 		}
@@ -727,7 +810,21 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public List<String> getDeptHeadByDepId(String deptId) {
-		List<SysUser> userList = userMapper.selectList(new QueryWrapper<SysUser>().like("depart_ids",deptId).eq("status",1).eq("del_flag",0));
+		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status", 1).eq("del_flag", 0);
+		//支持逗号分割传递多个部门id
+		if (oConvertUtils.isNotEmpty(deptId) && deptId.contains(SymbolConstant.COMMA)) {
+			String[] vals = deptId.split(SymbolConstant.COMMA);
+			queryWrapper.and(andWrapper -> {
+				for (int i = 0; i < vals.length; i++) {
+					andWrapper.like("depart_ids", vals[i]);
+					andWrapper.or();
+				}
+			});
+		} else {
+			queryWrapper.like("depart_ids", deptId);
+		}
+		
+		List<SysUser> userList = userMapper.selectList(queryWrapper);
 		List<String> list = new ArrayList<>();
 		for(SysUser user : userList){
 			list.add(user.getUsername());
@@ -743,13 +840,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	@Override
-	public List<LoginUser> queryAllUserByIds(String[] userIds) {
+	public List<UserAccountInfo> queryAllUserByIds(String[] userIds) {
 		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status",1).eq("del_flag",0);
 		queryWrapper.in("id",userIds);
-		List<LoginUser> loginUsers = new ArrayList<>();
+		List<UserAccountInfo> loginUsers = new ArrayList<>();
 		List<SysUser> sysUsers = userMapper.selectList(queryWrapper);
 		for (SysUser user:sysUsers) {
-			LoginUser loginUser=new LoginUser();
+			UserAccountInfo loginUser=new UserAccountInfo();
 			BeanUtils.copyProperties(user, loginUser);
 			loginUsers.add(loginUser);
 		}
@@ -770,17 +867,173 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	@Override
-	public List<LoginUser> queryUserByNames(String[] userNames) {
+	public List<UserAccountInfo> queryUserByNames(String[] userNames) {
 		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status",1).eq("del_flag",0);
 		queryWrapper.in("username",userNames);
-		List<LoginUser> loginUsers = new ArrayList<>();
+		List<UserAccountInfo> loginUsers = new ArrayList<>();
 		List<SysUser> sysUsers = userMapper.selectList(queryWrapper);
 		for (SysUser user:sysUsers) {
-			LoginUser loginUser=new LoginUser();
+			UserAccountInfo loginUser=new UserAccountInfo();
 			BeanUtils.copyProperties(user, loginUser);
 			loginUsers.add(loginUser);
 		}
 		return loginUsers;
+	}
+
+	@Override
+	public List<JSONObject> queryUserBySuperQuery(String superQuery,String matchType) {
+		List<JSONObject> result=new ArrayList<>();
+		Map<String, String[]> parameterMap=new HashMap<>();
+		parameterMap.put("superQueryMatchType",new String[]{matchType});
+		parameterMap.put("superQueryParams",new String[]{superQuery});
+		SysUser sysUser=new SysUser();
+		QueryWrapper<SysUser> queryWrapper = QueryGenerator.initQueryWrapper(sysUser, parameterMap);
+		List<SysUser> list= sysUserService.list(queryWrapper);
+		if(ObjectUtils.isNotEmpty(list)){
+		
+			//update-begin-author:taoyan date:2023-5-19 for: QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
+			String departKey = "depart";
+			QueryCondition departCondition = null;
+			try {
+				String temp = URLDecoder.decode(superQuery, "UTF-8");
+				List<QueryCondition> conditions = JSON.parseArray(temp, QueryCondition.class);
+				for(QueryCondition condition: conditions){
+					if(departKey.equals(condition.getField())){
+						departCondition = condition;
+						break;
+					}
+				}
+			} catch (UnsupportedEncodingException e) {
+				log.error("查询用户信息，查询条件json转化失败", e);
+			}
+			
+			for (SysUser user : list) {
+				JSONObject userJson = JSONObject.parseObject(JSONObject.toJSONString(user));
+				List<SysDepart> departList = sysDepartService.queryDepartsByUsername(user.getUsername());
+				List<String> departIds = null;
+				if(departList!=null && departList.size()>0){
+					departIds = departList.stream().map(i->i.getId()).collect(Collectors.toList());
+					List<String> departNames = departList.stream().map(i->i.getDepartName()).collect(Collectors.toList());
+					userJson.put(departKey, oConvertUtils.list2JSONArray(departIds));
+					userJson.put(departKey+"_dictText", String.join(",", departNames));
+				}
+				boolean flag = getDepartConditionResult(departCondition, departIds);
+				if(flag){
+					result.add(userJson);
+				}
+				//update-end-author:taoyan date:2023-5-19 for: QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
+				
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 判断用户的部门是否满足条件 -等于/不等于/在--中/不在--中/为空/不为空
+	 * QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
+	 * @param departCondition
+	 * @param departIds
+	 * @return
+	 */
+	private boolean getDepartConditionResult(QueryCondition departCondition, List<String> departIds){
+		if(departCondition == null){
+			return true;
+		}
+		QueryRuleEnum rule = QueryRuleEnum.getByValue(departCondition.getRule());
+		String conditionVal = departCondition.getVal();
+		if(rule == QueryRuleEnum.EMPTY){
+			if(departIds==null || departIds.size()==0){
+				return true;
+			}
+		}else if (rule == QueryRuleEnum.NOT_EMPTY){
+			if(departIds!=null && departIds.size()>0){
+				return true;
+			}
+		}else{
+			if(oConvertUtils.isEmpty(conditionVal)){
+				return false;
+			}
+			if(departIds==null || departIds.size()==0){
+				return false;
+			}
+			List<String> conditionList;
+			if(conditionVal.startsWith("[") && conditionVal.endsWith("]")){
+				conditionList = JSONArray.parseArray(conditionVal, String.class);
+			}else{
+				conditionList = new ArrayList<String>(Arrays.asList(conditionVal.split(",")));
+			}
+			if(rule == QueryRuleEnum.EQ){
+				if(oConvertUtils.isEqList(conditionList, departIds)){
+					return true;
+				}
+			}else if(rule == QueryRuleEnum.NE){
+				if(!oConvertUtils.isEqList(conditionList, departIds)){
+					return true;
+				}
+			}else if(rule == QueryRuleEnum.IN){
+				if(oConvertUtils.isInList(departIds, conditionList)){
+					return true;
+				}
+			}else if(rule == QueryRuleEnum.NOT_IN){
+				if(!oConvertUtils.isInList(departIds, conditionList)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public JSONObject queryUserById(String id) {
+		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+		queryWrapper.lambda().eq(true, SysUser::getId, id);
+		SysUser sysUser = sysUserService.getOne(queryWrapper);
+		if (ObjectUtils.isNotEmpty(sysUser)) {
+			return JSONObject.parseObject(JSONObject.toJSONString(sysUser));
+		}
+		return null;
+	}
+
+	@Override
+	public List<JSONObject> queryDeptBySuperQuery(String superQuery,String matchType) {
+		List<JSONObject> result=new ArrayList<>();
+		Map<String, String[]> parameterMap=new HashMap<>();
+		parameterMap.put("superQueryMatchType",new String[]{matchType});
+		parameterMap.put("superQueryParams",new String[]{superQuery});
+		SysDepart sysDepart=new SysDepart();
+		QueryWrapper<SysDepart> queryWrapper = QueryGenerator.initQueryWrapper(sysDepart, parameterMap);
+		List<SysDepart> list= sysDepartService.list(queryWrapper);
+		if(ObjectUtils.isNotEmpty(list)){
+			for (SysDepart depart: list) {
+				result.add(JSONObject.parseObject(JSONObject.toJSONString(depart)));
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<JSONObject> queryRoleBySuperQuery(String superQuery,String matchType) {
+		List<JSONObject> result=new ArrayList<>();
+		Map<String, String[]> parameterMap=new HashMap<>();
+		parameterMap.put("superQueryMatchType",new String[]{matchType});
+		parameterMap.put("superQueryParams",new String[]{superQuery});
+		SysRole sysDepart=new SysRole();
+		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(sysDepart, parameterMap);
+		List<SysRole> list= sysRoleService.list(queryWrapper);
+		if(ObjectUtils.isNotEmpty(list)){
+			for (SysRole role: list) {
+				result.add(JSONObject.parseObject(JSONObject.toJSONString(role)));
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<String> selectUserIdByTenantId(String tenantId) {
+		QueryWrapper queryWrapper=new QueryWrapper<SysUserTenant>();
+		queryWrapper.select("user_id");
+		queryWrapper.eq("tenant_id",tenantId);
+		return sysUserTenantService.listObjs(queryWrapper,e->e.toString());
 	}
 
 	@Override
@@ -842,13 +1095,22 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	/**
 	 * 查询用户拥有的权限集合
-	 * @param username
+	 * @param userId
 	 * @return
 	 */
 	@Override
-	public Set<String> getUserPermissionSet(String username) {
+	public Set<String> getUserPermissionSet(String userId) {
 		Set<String> permissionSet = new HashSet<>();
-		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
+		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(userId);
+		//================= begin 开启租户的时候 如果没有test角色，默认加入test角色================
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			if (permissionList == null) {
+				permissionList = new ArrayList<>();
+			}
+			List<SysPermission> testRoleList = sysPermissionMapper.queryPermissionByTestRoleId();
+			permissionList.addAll(testRoleList);
+		}
+		//================= end 开启租户的时候 如果没有test角色，默认加入test角色================
 		for (SysPermission po : permissionList) {
 //			// TODO URL规则有问题？
 //			if (oConvertUtils.isNotEmpty(po.getUrl())) {
@@ -858,7 +1120,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				permissionSet.add(po.getPerms());
 			}
 		}
-		log.info("-------通过数据库读取用户拥有的权限Perms------username： "+ username+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
+		log.info("-------通过数据库读取用户拥有的权限Perms------userId： "+ userId+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
 		return permissionSet;
 	}
 
@@ -883,7 +1145,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			sysPermission.setUrl(onlineFormUrl);
 			int count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
 			if(count<=0){
-				return false;
+				//update-begin---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
+				sysPermission.setUrl(onlineAuthDTO.getOnlineWorkOrderUrl());
+				count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
+				if(count<=0) {
+					return false;
+				}
+				//update-end---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
 			}
 		} else {
 			//找到菜单了
@@ -909,12 +1177,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	/**
 	 * 查询用户拥有的权限集合 common api 里面的接口实现
-	 * @param username
+	 * @param userId
 	 * @return
 	 */
 	@Override
-	public Set<String> queryUserAuths(String username) {
-		return getUserPermissionSet(username);
+	public Set<String> queryUserAuths(String userId) {
+		return getUserPermissionSet(userId);
 	}
 
 	/**
@@ -1063,6 +1331,42 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			EmailSendMsgHandle emailHandle=new EmailSendMsgHandle();
 			emailHandle.sendMsg(email, title, content);
 	}
+	
+	/**
+	 * 发送html模版邮件消息
+	 * @param email
+	 * @param title
+	 * @param emailTemplateEnum
+	 * @param params
+	 */
+	@Override
+	public void sendHtmlTemplateEmail(String email, String title, EmailTemplateEnum emailTemplateEnum,JSONObject params) {
+		EmailSendMsgHandle emailHandle=new EmailSendMsgHandle();
+		String htmlText="";
+		try{
+			//获取模板实例
+			Configuration configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+			//设置模板文件的目录
+			String url = emailTemplateEnum.getUrl();
+			configuration.setClassForTemplateLoading(this.getClass(), url.substring(0,url.lastIndexOf("/")));
+			configuration.setDefaultEncoding("UTF-8");
+			//空值报错设置
+			configuration.setClassicCompatible(true);
+			configuration.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
+			Template template = configuration.getTemplate(url.substring(url.lastIndexOf("/")));
+			//解析模板文件
+			htmlText= FreeMarkerTemplateUtils.processTemplateIntoString(template, params);
+		}catch(IOException e){
+			e.printStackTrace();
+		}catch(TemplateException e){
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+		log.info("Email Html Text：{}", htmlText);
+		emailHandle.sendMsg(email, title, htmlText);
+	}
 
 	/**
 	 * 获取公司下级部门和所有用户id信息
@@ -1113,6 +1417,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return sysCategoryService.loadDictItem(ids, false);
 	}
 
+	@Override
+	public List<String> loadCategoryDictItemByNames(String names, boolean delNotExist) {
+		return sysCategoryService.loadDictItemByNames(names, delNotExist);
+	}
+
 	/**
 	 * 根据字典code加载字典text
 	 *
@@ -1124,6 +1433,22 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public List<String> loadDictItem(String dictCode, String keys) {
 		String[] params = dictCode.split(",");
 		return sysDictService.queryTableDictByKeys(params[0], params[1], params[2], keys, false);
+	}
+
+	@Override
+	public Map<String, String> copyLowAppDict(String originalAppId, String appId, String tenantId) {
+		Map<String, String> dictCodeMapping = new HashMap<String, String>();
+		List<SysDictVo> ls = sysDictService.getDictListByLowAppId(originalAppId);
+		for (SysDictVo vo : ls) {
+			vo.setId(null);
+			vo.setLowAppId(appId);
+			vo.setTenantId(oConvertUtils.getInt(tenantId, null));
+			String newDictCode = sysDictService.addDictByLowAppId(vo);
+			dictCodeMapping.put(vo.getDictCode(), newDictCode);
+		}
+
+		log.info(" --- 批量复制应用下的字典到新租户下 —— 原应用ID:{}，新应用ID:{}，新租户ID：{}，字典个数：{} --- ", originalAppId, appId, tenantId, dictCodeMapping.size());
+		return dictCodeMapping;
 	}
 
 	/**
@@ -1170,13 +1495,17 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys) {
 		List<String> dictCodeList = Arrays.asList(dictCodes.split(","));
 		List<String> values = Arrays.asList(keys.split(","));
+		//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 		return sysDictService.queryManyDictByKeys(dictCodeList, values);
+		//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 	}
 
+	//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 	@Override
-	public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys) {
-		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")));
+	public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys, String dataSource) {
+		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")), dataSource);
 	}
+	//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
 	//-------------------------------------流程节点发送模板消息-----------------------------------------------
 	@Autowired
@@ -1194,6 +1523,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	public void sendTemplateMessage(MessageDTO message) {
 		String messageType = message.getType();
+		log.debug(" 【万能通用】推送消息 messageType = {}", messageType);
 		//update-begin-author:taoyan date:2022-7-9 for: 将模板解析代码移至消息发送, 而不是调用的地方
 		String templateCode = message.getTemplateCode();
 		if(oConvertUtils.isNotEmpty(templateCode)){
@@ -1207,8 +1537,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			message.setContent(content);
 		}
 		if(oConvertUtils.isEmpty(message.getContent())){
+			log.error("发送消息失败,消息内容为空！");
 			throw new JeecgBootException("发送消息失败,消息内容为空！");
 		}
+
 		//update-end-author:taoyan date:2022-7-9 for: 将模板解析代码移至消息发送, 而不是调用的地方
 		if(MessageTypeEnum.XT.getType().equals(messageType)){
 			if (message.isMarkdown()) {
@@ -1262,26 +1594,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		entity.setDataContent(dataLogDto.getContent());
 		entity.setType(dataLogDto.getType());
 		entity.setDataVersion("1");
+		if (oConvertUtils.isNotEmpty(dataLogDto.getCreateName())) {
+			entity.setCreateBy(dataLogDto.getCreateName());
+		} else {
+			entity.autoSetCreateName();
+		}
 		sysDataLogService.save(entity);
 	}
-
-    @Override
-    public void addSysFiles(SysFilesModel sysFilesModel) {
-        SysFiles sysFiles = new SysFiles();
-        BeanUtils.copyProperties(sysFilesModel,sysFiles);
-        String defaultValue = "0";
-        sysFiles.setIzStar(defaultValue);
-        sysFiles.setIzFolder(defaultValue);
-        sysFiles.setIzRootFolder(defaultValue);
-        sysFiles.setDelFlag(defaultValue);
-        sysFilesService.save(sysFiles);
-    }
-
-    @Override
-    public String getFileUrl(String fileId) {
-        SysFiles sysFiles = sysFilesService.getById(fileId);
-        return sysFiles.getUrl();
-    }
 
     @Override
     public void updateAvatar(LoginUser loginUser) {
@@ -1297,4 +1616,155 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		obj.put(WebsocketConst.MSG_USER_ID, userId);
 		webSocket.sendMessage(userId, obj.toJSONString());
 	}
+
+	@Override
+	public String getRoleCodeById(String id) {
+		SysRole role = roleMapper.selectById(id);
+		if(role!=null){
+			return role.getRoleCode();
+		}
+		return null;
+	}
+
+	@Override
+	public List<DictModel> queryRoleDictByCode(String roleCodes) {
+		if (oConvertUtils.isEmpty(roleCodes)) {
+			return new ArrayList<>();
+		}
+		List<String> codeList = Arrays.asList(roleCodes.split(","));
+		LambdaQueryWrapper<SysRole> queryWrapper = new LambdaQueryWrapper<>();
+		queryWrapper.in(SysRole::getRoleCode, codeList);
+		List<SysRole> list = roleMapper.selectList(queryWrapper);
+		// 转换成SysRoleVo
+		return list.stream().map(sysRole -> {
+			DictModel model = new DictModel();
+			model.setText(sysRole.getRoleName());
+			model.setValue(sysRole.getRoleCode());
+			return model;
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> queryUserIdsByDeptIds(List<String> deptIds) {
+		QueryWrapper<SysUserDepart> queryWrapper = new QueryWrapper<>();
+		queryWrapper.lambda().select(SysUserDepart::getUserId).in(true,SysUserDepart::getDepId,deptIds);
+		return sysUserDepartService.listObjs(queryWrapper,e->e.toString());
+	}
+	
+	@Override
+	public List<String> queryUserAccountsByDeptIds(List<String> deptIds) {
+		return departMapper.queryUserAccountByDepartIds(deptIds);
+	}
+
+	@Override
+	public List<String> queryUserIdsByRoleds(List<String> roleCodes) {
+		LambdaQueryWrapper<SysRole> query = new LambdaQueryWrapper<SysRole>()
+				.in(SysRole::getRoleCode, roleCodes);
+		List<SysRole> roleList = sysRoleService.list(query);
+		if(roleList!=null && roleList.size()>0){
+			List<String> idList = roleList.stream().map(role->role.getId()).collect(Collectors.toList());
+			QueryWrapper<SysUserRole> queryWrapper = new QueryWrapper<>();
+			queryWrapper.lambda().select(SysUserRole::getUserId).in(true,SysUserRole::getRoleId, idList);
+			return sysUserRoleService.listObjs(queryWrapper,e->e.toString());
+		}
+		return null;
+	}
+
+	@Override
+	public List<String> queryUserIdsByPositionIds(List<String> positionIds) {
+		QueryWrapper<SysUserPosition> queryWrapper = new QueryWrapper<>();
+		queryWrapper.lambda().select(SysUserPosition::getUserId).in(true,SysUserPosition::getPositionId,positionIds);
+		return sysUserPositionService.listObjs(queryWrapper,e->e.toString());
+	}
+
+	//update-begin-author:taoyan date:2023-2-21 for: 解决参数顺序问题
+	/**
+	 * 获取带参数的报表地址，因为多个参数可能顺序会变，所以要将参数顺序重排，获取所有可能的地址集合
+	 * 如下：参数顺序调整使用in查询，就能查询出菜单数据
+	 *  /online/cgreport/1624393012494286850?name=1&age=16
+	 *  /online/cgreport/1624393012494286850?age=16&name=1
+	 * @param path
+	 * @return
+	 */
+	private List<String> getOnlinePossiblePaths(String path){
+		List<String> result = new ArrayList<>();
+		log.info(" path = "+ path);
+		if (path.indexOf("?") >= 0 && (path.contains("/online/cgreport/") || path.contains("/online/cgformList/") || path.contains("/online/graphreport/"))) {
+			//包含?说明有多个参数
+			String[] pathArray = path.split("\\?");
+			if(oConvertUtils.isNotEmpty(pathArray[1])){
+				String[] params = pathArray[1].split("&");
+				if(params.length==1){
+					result.add(path);
+				}else{
+					result = anm(pathArray[0], Arrays.asList(params));
+				}
+			}else{
+				result.add(path);
+			}
+		}else{
+			result.add(path);
+		}
+		return result;
+	}
+
+
+	/**
+	 * 获取数组元素的 不同排列 a(n,m)
+	 * @param list
+	 * @return
+	 */
+	private List<String> anm(String baseUrl, List<String> list) {
+		int len = list.size();
+		int[] destArray = new int[len];
+		for (int i = 0; i < len; i++) {
+			destArray[i] = i;
+		}
+		int[] temp = new int[len];
+		List<String> result = new ArrayList<>();
+		while (temp[0] < len) {
+			temp[temp.length - 1]++;
+			for (int i = temp.length - 1; i > 0; i--) {
+				if (temp[i] == len) {
+					temp[i] = 0;
+					temp[i - 1]++;
+				}
+			}
+			int[] tt = temp.clone();
+			Arrays.sort(tt);
+			if (!Arrays.equals(tt, destArray)) {
+				continue;
+			}
+			String str = "";
+			for (int i = 0; i < len; i++) {
+				if(i>0){
+					str += "&";
+				}
+				str += list.get(temp[i]);
+			}
+			result.add(baseUrl+"?"+str);
+		}
+		return result;
+	}
+	//update-end-author:taoyan date:2023-2-21 for: 解决参数顺序问题
+
+	@Override
+	public List<String> getUserAccountsByDepCode(String orgCode) {
+		return userMapper.getUserAccountsByDepCode(orgCode);
+	}
+
+	@Override
+	public boolean dictTableWhiteListCheckBySql(String selectSql) {
+		return dictTableWhiteListHandler.isPassBySql(selectSql);
+	}
+
+	@Override
+	public boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String... fields) {
+		if (fields == null || fields.length == 0) {
+			return dictTableWhiteListHandler.isPassByDict(tableOrDictCode);
+		} else {
+			return dictTableWhiteListHandler.isPassByDict(tableOrDictCode, fields);
+		}
+	}
+
 }

@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -23,18 +24,20 @@ import com.jeecg.dingtalk.api.user.vo.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.dto.message.MessageDTO;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.constant.enums.MessageTypeEnum;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
-import org.jeecg.config.thirdapp.ThirdAppConfig;
-import org.jeecg.config.thirdapp.ThirdAppTypeItemVo;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.*;
-import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
-import org.jeecg.modules.system.mapper.SysUserMapper;
+import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.model.ThirdLoginModel;
 import org.jeecg.modules.system.service.*;
@@ -63,8 +66,6 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     @Autowired
     JeecgBaseConfig jeecgBaseConfig;
     @Autowired
-    ThirdAppConfig thirdAppConfig;
-    @Autowired
     private ISysDepartService sysDepartService;
     @Autowired
     private SysUserMapper userMapper;
@@ -76,21 +77,27 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     private ISysPositionService sysPositionService;
     @Autowired
     private SysAnnouncementSendMapper sysAnnouncementSendMapper;
+    @Autowired
+    private SysThirdAppConfigMapper configMapper;
+    @Autowired
+    private SysUserTenantMapper userTenantMapper;
+    @Autowired
+    private SysTenantMapper tenantMapper;
 
     /**
      * 第三方APP类型，当前固定为 dingtalk
      */
-    public final String THIRD_TYPE = ThirdAppConfig.DINGTALK.toLowerCase();
+    public final String THIRD_TYPE = "dingtalk";
 
     @Override
     public String getAccessToken() {
-        String appKey = thirdAppConfig.getDingtalk().getClientId();
-        String appSecret = thirdAppConfig.getDingtalk().getClientSecret();
-        AccessToken accessToken = JdtBaseAPI.getAccessToken(appKey, appSecret);
-        if (accessToken != null) {
-            return accessToken.getAccessToken();
+        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        SysThirdAppConfig config = getDingThirdAppConfig();
+        if(null != config){
+            return getTenantAccessToken(config);
         }
-        log.warn("获取AccessToken失败");
+        log.warn("租户下未配置钉钉");
+        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         return null;
     }
 
@@ -201,26 +208,28 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         }
     }
 
-    @Override
-    public SyncInfoVo syncThirdAppDepartmentToLocal(String ids) {
-        SyncInfoVo syncInfo = new SyncInfoVo();
-        String accessToken = this.getAccessToken();
-        if (accessToken == null) {
-            syncInfo.addFailInfo("accessToken获取失败！");
-            return syncInfo;
-        }
-        // 获取【钉钉】所有的部门
-        List<Department> departments = JdtDepartmentAPI.listAll(accessToken);
-        String username = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
-        List<JdtDepartmentTreeVo> departmentTreeList = JdtDepartmentTreeVo.listToTree(departments);
-        // 递归同步部门
-        this.syncDepartmentToLocalRecursion(departmentTreeList, null, username, syncInfo, accessToken);
-        return syncInfo;
-    }
+//    @Override
+//    public SyncInfoVo syncThirdAppDepartmentToLocal(String ids) {
+//        SyncInfoVo syncInfo = new SyncInfoVo();
+//        String accessToken = this.getAccessToken();
+//        if (accessToken == null) {
+//            syncInfo.addFailInfo("accessToken获取失败！");
+//            return syncInfo;
+//        }
+//        // 获取【钉钉】所有的部门
+//        List<Department> departments = JdtDepartmentAPI.listAll(accessToken);
+//        String username = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
+//        List<JdtDepartmentTreeVo> departmentTreeList = JdtDepartmentTreeVo.listToTree(departments);
+//        // 递归同步部门
+//        this.syncDepartmentToLocalRecursion(departmentTreeList, null, username, syncInfo, accessToken,false);
+//        return syncInfo;
+//    }
 
-    public void syncDepartmentToLocalRecursion(List<JdtDepartmentTreeVo> departmentTreeList, String sysParentId, String username, SyncInfoVo syncInfo, String accessToken) {
+    public void syncDepartmentToLocalRecursion(List<JdtDepartmentTreeVo> departmentTreeList, String sysParentId, String username, SyncInfoVo syncInfo, String accessToken,Boolean syncUser,Integer tenantId) {
 
         if (departmentTreeList != null && departmentTreeList.size() != 0) {
+            // 记录已经同步过的用户id，当有多个部门的情况时，只同步一次
+            Set<String> syncedUserIdSet = new HashSet<>();
             for (JdtDepartmentTreeVo departmentTree : departmentTreeList) {
                 LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
                 // 根据 source_identifier 字段查询
@@ -231,6 +240,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                     SysDepart updateSysDepart = this.dtDepartmentToSysDepart(departmentTree, sysDepart);
                     if (sysParentId != null) {
                         updateSysDepart.setParentId(sysParentId);
+                        //更新父级部门不是叶子结点
+                        sysDepartService.updateIzLeaf(sysParentId,CommonConstant.NOT_LEAF);
                     }
                     try {
                         sysDepartService.updateDepartDataById(updateSysDepart, username);
@@ -241,7 +252,11 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                     }
                     if (departmentTree.hasChildren()) {
                         // 紧接着同步子级
-                        this.syncDepartmentToLocalRecursion(departmentTree.getChildren(), updateSysDepart.getId(), username, syncInfo, accessToken);
+                        this.syncDepartmentToLocalRecursion(departmentTree.getChildren(), updateSysDepart.getId(), username, syncInfo, accessToken,syncUser,tenantId);
+                    }
+                    //判断是否需要同步用户
+                    if(syncUser){
+                        this.addDepartUser(updateSysDepart.getId(),departmentTree.getDept_id(), accessToken, syncInfo, syncedUserIdSet,tenantId);
                     }
                 } else {
                     //  执行新增操作
@@ -266,12 +281,16 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                         }
                         String str = String.format("部门 %s 创建成功！", newSysDepart.getDepartName());
                         syncInfo.addSuccessInfo(str);
+                        //判断是否需要同步用户
+                        if(syncUser){
+                            this.addDepartUser(newSysDepart.getId(),departmentTree.getDept_id(), accessToken, syncInfo, syncedUserIdSet,tenantId);
+                        }
                     } catch (Exception e) {
                         this.syncDepartCollectErrInfo(e, departmentTree, syncInfo);
                     }
                     // 紧接着同步子级
                     if (departmentTree.hasChildren()) {
-                        this.syncDepartmentToLocalRecursion(departmentTree.getChildren(), newSysDepart.getId(), username, syncInfo, accessToken);
+                        this.syncDepartmentToLocalRecursion(departmentTree.getChildren(), newSysDepart.getId(), username, syncInfo, accessToken,syncUser,tenantId);
                     }
                 }
             }
@@ -392,71 +411,71 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         return syncInfo;
     }
 
-    @Override
-    public SyncInfoVo syncThirdAppUserToLocal() {
-        SyncInfoVo syncInfo = new SyncInfoVo();
-        String accessToken = this.getAccessToken();
-        if (accessToken == null) {
-            syncInfo.addFailInfo("accessToken获取失败！");
-            return syncInfo;
-        }
+//    @Override
+//    public SyncInfoVo syncThirdAppUserToLocal() {
+//        SyncInfoVo syncInfo = new SyncInfoVo();
+//        String accessToken = this.getAccessToken();
+//        if (accessToken == null) {
+//            syncInfo.addFailInfo("accessToken获取失败！");
+//            return syncInfo;
+//        }
+//
+//        // 获取本地用户
+//        List<SysUser> sysUsersList = userMapper.selectList(Wrappers.emptyWrapper());
+//
+//        // 查询钉钉所有的部门，用于同步用户和部门的关系
+//        List<Department> allDepartment = JdtDepartmentAPI.listAll(accessToken);
+//        // 根据钉钉部门查询所有钉钉用户，用于反向同步到本地
+//        List<User> ddUserList = this.getDtAllUserByDepartment(allDepartment, accessToken);
+//        // 记录已经同步过的用户id，当有多个部门的情况时，只同步一次
+//        Set<String> syncedUserIdSet = new HashSet<>();
+//
+//        for (User dtUserInfo : ddUserList) {
+//            if (syncedUserIdSet.contains(dtUserInfo.getUserid())) {
+//                continue;
+//            }
+//            syncedUserIdSet.add(dtUserInfo.getUserid());
+//            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByThirdUserId(dtUserInfo.getUserid(), THIRD_TYPE);
+//            List<SysUser> collect = sysUsersList.stream().filter(user -> (dtUserInfo.getMobile().equals(user.getPhone()) || dtUserInfo.getUserid().equals(user.getUsername()))
+//                                                                 ).collect(Collectors.toList());
+//            if (collect != null && collect.size() > 0) {
+//                SysUser sysUserTemp = collect.get(0);
+//                // 循环到此说明用户匹配成功，进行更新操作
+//                SysUser updateSysUser = this.dtUserToSysUser(dtUserInfo, sysUserTemp);
+//                try {
+//                    userMapper.updateById(updateSysUser);
+//                    String str = String.format("用户 %s(%s) 更新成功！", updateSysUser.getRealname(), updateSysUser.getUsername());
+//                    syncInfo.addSuccessInfo(str);
+//                } catch (Exception e) {
+//                    this.syncUserCollectErrInfo(e, dtUserInfo, syncInfo);
+//                }
+//                //第三方账号关系表
+//                this.thirdAccountSaveOrUpdate(sysThirdAccount, updateSysUser.getId(), dtUserInfo.getUserid());
+//            }else{
+//                // 如果没有匹配到用户，则走创建逻辑
+//                SysUser newSysUser = this.dtUserToSysUser(dtUserInfo);
+//                try {
+//                    userMapper.insert(newSysUser);
+//                    String str = String.format("用户 %s(%s) 创建成功！", newSysUser.getRealname(), newSysUser.getUsername());
+//                    syncInfo.addSuccessInfo(str);
+//                } catch (Exception e) {
+//                    this.syncUserCollectErrInfo(e, dtUserInfo, syncInfo);
+//                }
+//                //第三方账号关系表
+//                this.thirdAccountSaveOrUpdate(null, newSysUser.getId(), dtUserInfo.getUserid());
+//            }
+//        }
+//        return syncInfo;
+//    }
 
-        // 获取本地用户
-        List<SysUser> sysUsersList = userMapper.selectList(Wrappers.emptyWrapper());
-
-        // 查询钉钉所有的部门，用于同步用户和部门的关系
-        List<Department> allDepartment = JdtDepartmentAPI.listAll(accessToken);
-        // 根据钉钉部门查询所有钉钉用户，用于反向同步到本地
-        List<User> ddUserList = this.getDtAllUserByDepartment(allDepartment, accessToken);
-        // 记录已经同步过的用户id，当有多个部门的情况时，只同步一次
-        Set<String> syncedUserIdSet = new HashSet<>();
-
-        for (User dtUserInfo : ddUserList) {
-            if (syncedUserIdSet.contains(dtUserInfo.getUserid())) {
-                continue;
-            }
-            syncedUserIdSet.add(dtUserInfo.getUserid());
-            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByThirdUserId(dtUserInfo.getUserid(), THIRD_TYPE);
-            List<SysUser> collect = sysUsersList.stream().filter(user -> (dtUserInfo.getMobile().equals(user.getPhone()) || dtUserInfo.getUserid().equals(user.getUsername()))
-                                                                 ).collect(Collectors.toList());
-            if (collect != null && collect.size() > 0) {
-                SysUser sysUserTemp = collect.get(0);
-                // 循环到此说明用户匹配成功，进行更新操作
-                SysUser updateSysUser = this.dtUserToSysUser(dtUserInfo, sysUserTemp);
-                try {
-                    userMapper.updateById(updateSysUser);
-                    String str = String.format("用户 %s(%s) 更新成功！", updateSysUser.getRealname(), updateSysUser.getUsername());
-                    syncInfo.addSuccessInfo(str);
-                } catch (Exception e) {
-                    this.syncUserCollectErrInfo(e, dtUserInfo, syncInfo);
-                }
-                //第三方账号关系表
-                this.thirdAccountSaveOrUpdate(sysThirdAccount, updateSysUser.getId(), dtUserInfo.getUserid());
-            }else{
-                // 如果没有匹配到用户，则走创建逻辑
-                SysUser newSysUser = this.dtUserToSysUser(dtUserInfo);
-                try {
-                    userMapper.insert(newSysUser);
-                    String str = String.format("用户 %s(%s) 创建成功！", newSysUser.getRealname(), newSysUser.getUsername());
-                    syncInfo.addSuccessInfo(str);
-                } catch (Exception e) {
-                    this.syncUserCollectErrInfo(e, dtUserInfo, syncInfo);
-                }
-                //第三方账号关系表
-                this.thirdAccountSaveOrUpdate(null, newSysUser.getId(), dtUserInfo.getUserid());
-            }
-        }
-        return syncInfo;
-    }
-
-    private List<User> getDtAllUserByDepartment(List<Department> allDepartment, String accessToken) {
-        // 根据钉钉部门查询所有钉钉用户，用于反向同步到本地
-        List<User> userList = new ArrayList<>();
-        for (Department department : allDepartment) {
-            this.getUserListByDeptIdRecursion(department.getDept_id(), 0, userList, accessToken);
-        }
-        return userList;
-    }
+//    private List<User> getDtAllUserByDepartment(List<Department> allDepartment, String accessToken) {
+//        // 根据钉钉部门查询所有钉钉用户，用于反向同步到本地
+//        List<User> userList = new ArrayList<>();
+//        for (Department department : allDepartment) {
+//            this.getUserListByDeptIdRecursion(department.getDept_id(), 0, userList, accessToken);
+//        }
+//        return userList;
+//    }
 
     /**
      * 递归查询所有用户
@@ -479,17 +498,22 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      *
      * @param sysThirdAccount 第三方账户表对象，为null就新增数据，否则就修改
      * @param sysUserId       本地系统用户ID
-     * @param dtUserId        钉钉用户ID
+     * @param user            钉钉用户
      */
-    private void thirdAccountSaveOrUpdate(SysThirdAccount sysThirdAccount, String sysUserId, String dtUserId) {
+    private void thirdAccountSaveOrUpdate(SysThirdAccount sysThirdAccount, String sysUserId, User user, Integer tenantId) {
         if (sysThirdAccount == null) {
             sysThirdAccount = new SysThirdAccount();
             sysThirdAccount.setSysUserId(sysUserId);
+            sysThirdAccount.setThirdUserUuid(user.getUnionid());
             sysThirdAccount.setStatus(1);
+            sysThirdAccount.setTenantId(tenantId);
             sysThirdAccount.setDelFlag(0);
             sysThirdAccount.setThirdType(THIRD_TYPE);
         }
-        sysThirdAccount.setThirdUserId(dtUserId);
+        sysThirdAccount.setThirdUserId(user.getUserid());
+        if(oConvertUtils.isEmpty(sysThirdAccount.getRealname())){
+            sysThirdAccount.setRealname(user.getName());
+        }
         sysThirdAccountService.saveOrUpdate(sysThirdAccount);
     }
 
@@ -515,6 +539,14 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         String msg;
         if (e instanceof DuplicateKeyException) {
             msg = e.getCause().getMessage();
+            String emailUniq = "uniq_sys_user_email";
+            if(msg.contains(emailUniq)){
+                msg = "邮箱重复，请更换邮箱";
+            }
+            String workNoUniq="uniq_sys_user_work_no";
+            if(msg.contains(workNoUniq)){
+                msg = "工号重复，请更换工号";
+            }
         } else {
             msg = e.getMessage();
         }
@@ -543,12 +575,14 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         user.setTelephone(sysUser.getTelephone());
         user.setJob_number(sysUser.getWorkNo());
         // 职务翻译
-        if (oConvertUtils.isNotEmpty(sysUser.getPost())) {
-            SysPosition position = sysPositionService.getByCode(sysUser.getPost());
-            if (position != null) {
-                user.setTitle(position.getName());
-            }
+        //update-begin---author:wangshuai ---date:20230220  for：[QQYUN-3980]组织管理中 职位功能 职位表加租户id 加职位-用户关联表------------
+        //获取用户职位名称
+        List<SysPosition> positionList = sysPositionService.getPositionList(sysUser.getId());
+        if(null != positionList && positionList.size()>0){
+            String positionName = positionList.stream().map(SysPosition::getName).collect(Collectors.joining(SymbolConstant.COMMA));
+            user.setTitle(positionName);
         }
+        //update-end---author:wangshuai ---date:20230220  for：[QQYUN-3980]组织管理中 职位功能 职位表加租户id 加职位-用户关联表------------
         user.setEmail(sysUser.getEmail());
         // 查询并同步用户部门关系
         List<SysDepart> departList = this.getUserDepart(sysUser);
@@ -584,9 +618,16 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         SysUser sysUser = new SysUser();
         sysUser.setDelFlag(0);
         // 通过 username 来关联
-        sysUser.setUsername(dtUser.getUserid());
-        // 密码默认为 “123456”，随机加盐
-        String password = "123456", salt = oConvertUtils.randomGen(8);
+        sysUser.setUsername(dtUser.getMobile());
+        // 密码默认为为手机号加门牌号，随机加盐
+        String password = "", salt = oConvertUtils.randomGen(8);
+        int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        if(tenantId>0){
+            SysTenant tenant = tenantMapper.selectById(tenantId);
+            password = tenant.getHouseNumber()+dtUser.getMobile();
+        }else{
+            password = dtUser.getMobile();
+        }
         String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), password, salt);
         sysUser.setSalt(salt);
         sysUser.setPassword(passwordEncode);
@@ -602,9 +643,11 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     private SysUser dtUserToSysUser(User dtUser, SysUser oldSysUser) {
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(oldSysUser, sysUser);
-        sysUser.setRealname(dtUser.getName());
         sysUser.setTelephone(dtUser.getTelephone());
-
+        //如果真实姓名为空的情况下，才会改真实姓名
+        if(oConvertUtils.isEmpty(oldSysUser.getRealname())){
+            sysUser.setRealname(dtUser.getName());
+        }
         // 因为唯一键约束的原因，如果原数据和旧数据相同，就不更新
         if (oConvertUtils.isNotEmpty(dtUser.getEmail()) && !dtUser.getEmail().equals(sysUser.getEmail())) {
             sysUser.setEmail(dtUser.getEmail());
@@ -699,12 +742,15 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     @Override
     public int removeThirdAppUser(List<String> userIdList) {
         // 判断启用状态
-        if (!thirdAppConfig.isDingtalkEnabled()) {
+        SysThirdAppConfig appConfig = getDingThirdAppConfig();
+        if (null == appConfig) {
             return -1;
         }
         int count = 0;
         if (userIdList != null && userIdList.size() > 0) {
-            String accessToken = this.getAccessToken();
+            //update-begin---author:wangshuai ---date:20230209  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+            String accessToken = this.getTenantAccessToken(appConfig);
+            //update-end---author:wangshuai ---date:20230209  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
             if (accessToken == null) {
                 return count;
             }
@@ -762,7 +808,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      * @return
      */
     public Response<String> sendMarkdownResponse(MessageDTO message, boolean verifyConfig) {
-        if (verifyConfig && !thirdAppConfig.isDingtalkEnabled()) {
+        SysThirdAppConfig config = this.getDingThirdAppConfig();
+        if (verifyConfig && null == config) {
             return null;
         }
         String accessToken = this.getAccessToken();
@@ -772,14 +819,15 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         // 封装钉钉消息
         String title = message.getTitle();
         String content = message.getContent();
-        String agentId = thirdAppConfig.getDingtalk().getAgentId();
+        String agentId = config.getAgentId();
         Message<MarkdownMessage> mdMessage = new Message<>(agentId, new MarkdownMessage(title, content));
         if (message.getToAll()) {
             mdMessage.setTo_all_user(true);
         } else {
             String[] toUsers = message.getToUser().split(",");
             // 通过第三方账号表查询出第三方userId
-            List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(toUsers, THIRD_TYPE);
+            int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), CommonConstant.TENANT_ID_DEFAULT_VALUE);
+            List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(toUsers, THIRD_TYPE,tenantId);
             List<String> dtUserIds = thirdAccountList.stream().map(SysThirdAccount::getThirdUserId).collect(Collectors.toList());
             mdMessage.setUserid_list(dtUserIds);
         }
@@ -787,7 +835,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     }
 
     public Response<String> sendMessageResponse(MessageDTO message, boolean verifyConfig) {
-        if (verifyConfig && !thirdAppConfig.isDingtalkEnabled()) {
+        SysThirdAppConfig config = this.getDingThirdAppConfig();
+        if (verifyConfig && null == config) {
             return null;
         }
         String accessToken = this.getAccessToken();
@@ -796,14 +845,15 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         }
         // 封装钉钉消息
         String content = message.getContent();
-        String agentId = thirdAppConfig.getDingtalk().getAgentId();
+        String agentId = config.getAgentId();
         Message<TextMessage> textMessage = new Message<>(agentId, new TextMessage(content));
         if (message.getToAll()) {
             textMessage.setTo_all_user(true);
         } else {
             String[] toUsers = message.getToUser().split(",");
             // 通过第三方账号表查询出第三方userId
-            List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(toUsers, THIRD_TYPE);
+            int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), CommonConstant.TENANT_ID_DEFAULT_VALUE);
+            List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(toUsers, THIRD_TYPE, tenantId);
             List<String> dtUserIds = thirdAccountList.stream().map(SysThirdAccount::getThirdUserId).collect(Collectors.toList());
             textMessage.setUserid_list(dtUserIds);
         }
@@ -825,31 +875,54 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      * @return
      */
     public Response<JSONObject> recallMessageResponse(String msgTaskId) {
-        String accessToken = this.getAccessToken();
+        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        SysThirdAppConfig config = this.getDingThirdAppConfig();
+        String accessToken = this.getTenantAccessToken(config);
         if (accessToken == null) {
             return null;
         }
-        String agentId = thirdAppConfig.getDingtalk().getAgentId();
-        return JdtMessageAPI.recallMessage(agentId, msgTaskId, getAccessToken());
+        String agentId = config.getAgentId();
+        return JdtMessageAPI.recallMessage(agentId, msgTaskId, accessToken);
+        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
     }
 
     /**
      * 发送卡片消息（SysAnnouncement定制）
      *
      * @param announcement
+     * @param ddMobileUrl 钉钉打开网页地址
      * @param verifyConfig 是否验证配置（未启用的APP会拒绝发送）
      * @return
      */
-    public Response<String> sendActionCardMessage(SysAnnouncement announcement, boolean verifyConfig) {
-        if (verifyConfig && !thirdAppConfig.isDingtalkEnabled()) {
+    public Response<String> sendActionCardMessage(SysAnnouncement announcement, String ddMobileUrl, boolean verifyConfig) {
+        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        SysThirdAppConfig config = this.getDingThirdAppConfig();
+        if (verifyConfig && null == config) {
             return null;
         }
-        String accessToken = this.getAccessToken();
+        String accessToken = this.getTenantAccessToken(config);
         if (accessToken == null) {
             return null;
         }
-        String agentId = thirdAppConfig.getDingtalk().getAgentId();
-        String markdown = "### " + announcement.getTitile() + "\n" + oConvertUtils.getString(announcement.getMsgAbstract(),"空");
+        String agentId = config.getAgentId();
+        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        String emptySuffix = null;
+        if (oConvertUtils.isNotEmpty(announcement.getMsgAbstract())) {
+            String msgAbstract = announcement.getMsgAbstract().trim();
+            log.info("获取钉钉通知参数，msgAbstract: {}", msgAbstract);
+            if (msgAbstract.startsWith("{") && msgAbstract.endsWith("}")) {
+                //如果摘要存的是业务扩展参数json，则取公告内容
+                emptySuffix = announcement.getMsgContent();
+            } else {
+                //如果摘要不为空且是文本格式，则使用摘要
+                emptySuffix = msgAbstract;
+            }
+        } else {
+            emptySuffix = "空";
+        }
+        
+        String markdown = "### " + announcement.getTitile() + "\n" + emptySuffix;
+        log.info("钉钉推送参数, markdown: {}", markdown);
         ActionCardMessage actionCard = new ActionCardMessage(markdown);
         actionCard.setTitle(announcement.getTitile());
         actionCard.setSingle_title("详情");
@@ -862,8 +935,17 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             baseUrl =  jeecgBaseConfig.getDomainUrl().getPc();
             //e.printStackTrace();
         }
+
+        log.info("获取钉钉打开网页地址，参数 ddMobileUrl: {}", ddMobileUrl);
+        String ddSingleUrl = null;
+        if (oConvertUtils.isNotEmpty(ddMobileUrl)) {
+            ddSingleUrl = ddMobileUrl;
+        } else {
+            ddSingleUrl = baseUrl + "/sys/annountCement/show/" + announcement.getId();
+        }
+        actionCard.setSingle_url(ddSingleUrl);
+        log.info("获取钉钉打开网页地址，最终地址 ddSingleUrl: {}", ddSingleUrl);
         
-        actionCard.setSingle_url(baseUrl + "/sys/annountCement/show/" + announcement.getId());
         Message<ActionCardMessage> actionCardMessage = new Message<>(agentId, actionCard);
         if (CommonConstant.MSG_TYPE_ALL.equals(announcement.getMsgType())) {
             actionCardMessage.setTo_all_user(true);
@@ -888,7 +970,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                 String[] usernameList = userList.stream().map(SysUser::getUsername).toArray(String[] :: new);
 
                 // 通过第三方账号表查询出第三方userId
-                List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(usernameList, THIRD_TYPE);
+                int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), CommonConstant.TENANT_ID_DEFAULT_VALUE);
+                List<SysThirdAccount> thirdAccountList = sysThirdAccountService.listThirdUserIdByUsername(usernameList, THIRD_TYPE, tenantId);
                 List<String> dtUserIds = thirdAccountList.stream().map(SysThirdAccount::getThirdUserId).collect(Collectors.toList());
                 actionCardMessage.setUserid_list(dtUserIds);
                 return JdtMessageAPI.sendActionCardMessage(actionCardMessage, accessToken);
@@ -900,49 +983,57 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     /**
      * OAuth2登录，成功返回登录的SysUser，失败返回null
      */
-    public SysUser oauth2Login(String authCode) {
-        ThirdAppTypeItemVo dtConfig = thirdAppConfig.getDingtalk();
+    public SysUser oauth2Login(String authCode,Integer tenantId) {
+        this.tenantIzExist(tenantId);
+        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        SysThirdAppConfig dtConfig = configMapper.getThirdConfigByThirdType(tenantId, MessageTypeEnum.DD.getType());
+        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         // 1. 根据免登授权码获取用户 AccessToken
         String userAccessToken = JdtOauth2API.getUserAccessToken(dtConfig.getClientId(), dtConfig.getClientSecret(), authCode);
         if (userAccessToken == null) {
             log.error("oauth2Login userAccessToken is null");
-            return null;
+            throw new JeecgBootException("请查看应用key和应用秘钥是否正确，组织ID是否匹配");
         }
         // 2. 根据用户 AccessToken 获取当前用户的基本信息（不包括userId）
         ContactUser contactUser = JdtOauth2API.getContactUsers("me", userAccessToken);
         if (contactUser == null) {
             log.error("oauth2Login contactUser is null");
-            return null;
+            throw new JeecgBootException("获取钉钉用户信息失败");
         }
         String unionId = contactUser.getUnionId();
         // 3. 根据获取到的 unionId 换取用户 userId
-        String accessToken = this.getAccessToken();
+        String accessToken = this.getTenantAccessToken(dtConfig);
         if (accessToken == null) {
             log.error("oauth2Login accessToken is null");
-            return null;
+            throw new JeecgBootException("请查看应用key和应用秘钥是否正确，组织ID是否匹配");
         }
         Response<String> getUserIdRes = JdtUserAPI.getUseridByUnionid(unionId, accessToken);
         if (!getUserIdRes.isSuccess()) {
             log.error("oauth2Login getUseridByUnionid failed: " + JSON.toJSONString(getUserIdRes));
-            return null;
+            throw new JeecgBootException("获取钉钉用户信息失败");
         }
         String appUserId = getUserIdRes.getResult();
         log.info("appUserId: " + appUserId);
         if (appUserId != null) {
             // 判断第三方用户表有没有这个人
             LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(SysThirdAccount::getThirdUserUuid, appUserId);
-            queryWrapper.or().eq(SysThirdAccount::getThirdUserId, appUserId);
             queryWrapper.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
+            queryWrapper.eq(SysThirdAccount::getTenantId, tenantId);
+            //update-begin---author:wangshuai---date:2023-12-04---for: auth登录需要联查一下---
+            queryWrapper.and((wrapper)->wrapper.eq(SysThirdAccount::getThirdUserUuid,appUserId).or().eq(SysThirdAccount::getThirdUserId,appUserId));
+            //update-end---author:wangshuai---date:2023-12-04---for: auth登录需要联查一下---
             SysThirdAccount thirdAccount = sysThirdAccountService.getOne(queryWrapper);
             if (thirdAccount != null) {
-                return this.getSysUserByThird(thirdAccount, null, appUserId, accessToken);
+                return this.getSysUserByThird(thirdAccount, null, appUserId, accessToken,tenantId);
             } else {
                 // 直接创建新账号
                 User appUser = JdtUserAPI.getUserById(appUserId, accessToken).getResult();
-                ThirdLoginModel tlm = new ThirdLoginModel(THIRD_TYPE, appUser.getUserid(), appUser.getName(), appUser.getAvatar());
-                thirdAccount = sysThirdAccountService.saveThirdUser(tlm);
-                return this.getSysUserByThird(thirdAccount, appUser, null, null);
+                //update-begin---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
+                //应该存uuid
+                ThirdLoginModel tlm = new ThirdLoginModel(THIRD_TYPE, appUser.getUnionid(), appUser.getName(), appUser.getAvatar());
+                //update-end---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
+                thirdAccount = sysThirdAccountService.saveThirdUser(tlm,tenantId);
+                return this.getSysUserByThird(thirdAccount, appUser, null, null,tenantId);
             }
         }
         return null;
@@ -955,9 +1046,10 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      * @param appUser
      * @param appUserId
      * @param accessToken
+     * @param tenantId
      * @return
      */
-    private SysUser getSysUserByThird(SysThirdAccount thirdAccount, User appUser, String appUserId, String accessToken) {
+    private SysUser getSysUserByThird(SysThirdAccount thirdAccount, User appUser, String appUserId, String accessToken, Integer tenantId) {
         String sysUserId = thirdAccount.getSysUserId();
         if (oConvertUtils.isNotEmpty(sysUserId)) {
             return userMapper.selectById(sysUserId);
@@ -972,16 +1064,178 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                 thirdAccount.setAvatar(appUser.getAvatar());
                 thirdAccount.setRealname(appUser.getName());
                 thirdAccount.setThirdUserId(appUser.getUserid());
-                thirdAccount.setThirdUserUuid(appUser.getUserid());
+                //update-begin---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
+                thirdAccount.setThirdUserUuid(appUser.getUnionid());
+                //update-end---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
                 thirdAccount.setSysUserId(sysUser.getId());
                 sysThirdAccountService.updateById(thirdAccount);
                 return sysUser;
             } else {
                 // 没有就走创建逻辑
-                return sysThirdAccountService.createUser(appUser.getMobile(), appUser.getUserid());
+                return sysThirdAccountService.createUser(appUser.getMobile(), appUser.getUnionid(),tenantId);
             }
 
         }
     }
 
+    //========================begin 应用低代码钉钉同步用户部门专用 ====================
+
+    /**
+     * 根据类型和租户id获取钉钉配置
+     * @return
+     */
+    private SysThirdAppConfig getDingThirdAppConfig(){
+        int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        this.tenantIzExist(tenantId);
+        return configMapper.getThirdConfigByThirdType(tenantId,MessageTypeEnum.DD.getType());
+    }
+
+    /**
+     * 获取钉钉accessToken
+     * @param config
+     * @return
+     */
+    private String getTenantAccessToken(SysThirdAppConfig config) {
+        if(null == config){
+            return null;
+        }
+        AccessToken accessToken = JdtBaseAPI.getAccessToken(config.getClientId(), config.getClientSecret());
+        if (accessToken != null) {
+            return accessToken.getAccessToken();
+        }
+        log.warn("获取AccessToken失败");
+        return null;
+    }
+
+    /**
+     * 添加或保存用户租户
+     * @param userId
+     * @param isUpdate 是否是新增
+     */
+    private void createUserTenant(String userId,Boolean isUpdate){
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+            int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+            //判断当前用户是否已在该租户下面
+            Integer count = userTenantMapper.userTenantIzExist(userId, tenantId);
+            //count 为0 新增租户用户,否则不用新增
+            if(count == 0){
+                SysUserTenant userTenant = new SysUserTenant();
+                userTenant.setTenantId(tenantId);
+                userTenant.setUserId(userId);
+                userTenant.setStatus(isUpdate?CommonConstant.USER_TENANT_UNDER_REVIEW:CommonConstant.USER_TENANT_NORMAL);
+                userTenantMapper.insert(userTenant);
+            }
+        }
+    }
+
+    /**
+     * 同步用户和部门
+     * @return
+     */
+    public SyncInfoVo syncThirdAppDepartmentUserToLocal() {
+        SyncInfoVo syncInfo = new SyncInfoVo();
+        String accessToken = this.getAccessToken();
+        if (accessToken == null) {
+            syncInfo.addFailInfo("accessToken获取失败！");
+            return syncInfo;
+        }
+        // 获取【钉钉】所有的部门
+        List<Department> departments = JdtDepartmentAPI.listAll(accessToken);
+        String username = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
+        List<JdtDepartmentTreeVo> departmentTreeList = JdtDepartmentTreeVo.listToTree(departments);
+        int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        // 递归同步部门
+        this.syncDepartmentToLocalRecursion(departmentTreeList, null, username, syncInfo, accessToken,true,tenantId);
+        return syncInfo;
+    }
+
+
+    /**
+     * 添加用户及用户部门关系
+     * @param departId 部门id
+     * @param dingDepartId 钉钉部门id
+     * @param accessToken
+     * @param syncInfo
+     * @param syncedUserIdSet
+     */
+    private void addDepartUser(String departId, Integer dingDepartId, String accessToken, SyncInfoVo syncInfo, Set<String> syncedUserIdSet, Integer tenantId) {
+        List<User> userList = new ArrayList<>();
+        getUserListByDeptIdRecursion(dingDepartId, 0, userList, accessToken);
+        for (User user : userList) {
+            if (syncedUserIdSet.contains(user.getUserid())) {
+                //需要同步用户部门
+                this.syncAddOrUpdateUserDepart(user.getUserid(),departId);
+                continue;
+            }
+            syncedUserIdSet.add(user.getUserid());
+            SysUser userByPhone = userMapper.getUserByPhone(user.getMobile());
+            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByUuidAndThirdType(user.getUnionid(), THIRD_TYPE,tenantId,user.getUserid());
+            if (null != userByPhone) {
+                // 循环到此说明用户匹配成功，进行更新操作
+                SysUser updateSysUser = this.dtUserToSysUser(user, userByPhone);
+                try {
+                    userMapper.updateById(updateSysUser);
+                    String str = String.format("用户 %s(%s) 更新成功！", updateSysUser.getRealname(), updateSysUser.getUsername());
+                    syncInfo.addSuccessInfo(str);
+                } catch (Exception e) {
+                    this.syncUserCollectErrInfo(e, user, syncInfo);
+                }
+                //第三方账号关系表
+                this.thirdAccountSaveOrUpdate(sysThirdAccount, updateSysUser.getId(), user, tenantId);
+                //创建当前租户
+                this.createUserTenant(updateSysUser.getId(),true);
+                //需要同步用户部门
+                this.syncAddOrUpdateUserDepart(updateSysUser.getId(),departId);
+            } else {
+                // 如果没有匹配到用户，则走创建逻辑
+                SysUser newSysUser = this.dtUserToSysUser(user);
+                try {
+                    userMapper.insert(newSysUser);
+                    String str = String.format("用户 %s(%s) 创建成功！", newSysUser.getRealname(), newSysUser.getUsername());
+                    syncInfo.addSuccessInfo(str);
+                } catch (Exception e) {
+                    this.syncUserCollectErrInfo(e, user, syncInfo);
+                }
+                //第三方账号关系表
+                this.thirdAccountSaveOrUpdate(sysThirdAccount, newSysUser.getId(), user,tenantId);
+                //创建当前租户
+                this.createUserTenant(newSysUser.getId(),false);
+                //需要同步用户部门
+                this.syncAddOrUpdateUserDepart(newSysUser.getId(),departId);
+            }
+        }
+    }
+
+    /**
+     * 通过用户id和部门id新增用户部门关系表
+     * @param userId
+     * @param departId
+     */
+    private void syncAddOrUpdateUserDepart(String userId, String departId) {
+        //查询用户是否在部门里面
+        LambdaQueryWrapper<SysUserDepart> query = new LambdaQueryWrapper<>();
+        query.eq(SysUserDepart::getDepId,departId);
+        query.eq(SysUserDepart::getUserId,userId);
+        long count = sysUserDepartService.count(query);
+        if(count == 0){
+            //不存在，则新增部门用户关系
+            SysUserDepart sysUserDepart = new SysUserDepart(null,userId,departId);
+            sysUserDepartService.save(sysUserDepart);
+        }
+    }
+
+    //========================end 应用低代码钉钉同步用户部门专用 ====================
+
+    /**
+     * 验证租户是否存在
+     * @param tenantId
+     */
+    public void tenantIzExist(Integer tenantId){
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+            Long count = tenantMapper.tenantIzExist(tenantId);
+            if(ObjectUtil.isEmpty(count) || 0 == count){
+                throw new JeecgBootException("租户不存在！");
+            }
+        }
+    }
 }

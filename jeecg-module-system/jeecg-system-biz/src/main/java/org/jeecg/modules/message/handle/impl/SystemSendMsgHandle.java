@@ -8,7 +8,7 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.message.enums.Vue3MessageHrefEnum;
+import org.jeecg.common.constant.enums.Vue3MessageHrefEnum;
 import org.jeecg.modules.message.handle.ISendMsgHandle;
 import org.jeecg.modules.message.websocket.WebSocket;
 import org.jeecg.modules.system.entity.SysAnnouncement;
@@ -91,6 +91,12 @@ public class SystemSendMsgHandle implements ISendMsgHandle {
             if(taskId!=null){
                 announcement.setBusId(taskId.toString());
                 announcement.setBusType(Vue3MessageHrefEnum.BPM_TASK.getBusType());
+            }
+
+            // 流程内消息节点 发消息会传一个busType
+            Object busType = data.get(CommonConstant.NOTICE_MSG_BUS_TYPE);
+            if(busType!=null){
+                announcement.setBusType(busType.toString());
             }
         }
         announcement.setTitile(title);

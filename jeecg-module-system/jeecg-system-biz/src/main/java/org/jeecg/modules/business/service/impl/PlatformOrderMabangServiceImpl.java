@@ -2,20 +2,31 @@ package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderRequest;
+import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderResponse;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderItem;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
+import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequest;
+import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendResponse;
+import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.mapper.PlatformOrderMabangMapper;
 import org.jeecg.modules.business.service.IPlatformOrderMabangService;
+import org.jeecg.modules.business.vo.PlatformOrderOperation;
+import org.jeecg.modules.business.vo.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -30,14 +41,11 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMabangMapper, Order> implements IPlatformOrderMabangService {
-
-    private final PlatformOrderMabangMapper platformOrderMabangMapper;
-
     @Autowired
-    public PlatformOrderMabangServiceImpl(PlatformOrderMabangMapper platformOrderMabangMapper) {
-        this.platformOrderMabangMapper = platformOrderMabangMapper;
-    }
+    private PlatformOrderMabangMapper platformOrderMabangMapper;
 
+    private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
+    private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
     @Override
     @Transactional
     public void saveOrderFromMabang(List<Order> orders) {
@@ -191,6 +199,72 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
 
         platformOrderMabangMapper.updateMergedOrder(targetID, sourceIDs);
         platformOrderMabangMapper.updateMergedOrderItems(targetID, sourceIDs);
+    }
+
+    @Override
+    public Responses suspendOrder(PlatformOrderOperation orderOperation) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<String> orderIds = Arrays.stream(orderOperation.getOrderIds().split(",")).map(String::trim).collect(toList());
+        // group id is the response from mabang API
+        Responses responses = new Responses();
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+
+        List<CompletableFuture<Responses>> futures =  orderIds.stream()
+            .map(id -> CompletableFuture.supplyAsync(() -> {
+                OrderSuspendRequestBody body = new OrderSuspendRequestBody(id, sysUser.getRealname() + " : " + orderOperation.getReason());
+                OrderSuspendRequest request = new OrderSuspendRequest(body);
+                OrderSuspendResponse response = request.send();
+                Responses r = new Responses();
+                if(response.success())
+                    r.addSuccess(id);
+                else
+                    r.addFailure(id);
+                return r;
+            }, throttlingExecutorService))
+            .collect(toList());
+        List<Responses> results = futures.stream()
+            .map(CompletableFuture::join)
+            .collect(toList());
+        results.forEach(r -> {
+            responses.getSuccesses().addAll(r.getSuccesses());
+            responses.getFailures().addAll(r.getFailures());
+        });
+        log.info("{}/{} orders suspended successfully.", responses.getSuccesses().size(), orderIds.size());
+        return responses;
+    }
+
+    @Override
+    public Responses cancelOrders(PlatformOrderOperation orderOperation) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<String> orderIds = Arrays.stream(orderOperation.getOrderIds().split(",")).map(String::trim).collect(toList());
+
+        Responses responses = new Responses();
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+
+        List<CompletableFuture<Responses>> futures =  orderIds.stream()
+                .map(id -> CompletableFuture.supplyAsync(() -> {
+                    ChangeOrderRequestBody body = new ChangeOrderRequestBody(id, "5",null, null, sysUser.getRealname() + " : " + orderOperation.getReason());
+                    ChangeOrderRequest request = new ChangeOrderRequest(body);
+                    ChangeOrderResponse response = request.send();
+                    Responses r = new Responses();
+                    if(response.success())
+                        r.addSuccess(id);
+                    else
+                        r.addFailure(id);
+                    return r;
+                }, throttlingExecutorService))
+                .collect(toList());
+        List<Responses> results = futures.stream()
+                .map(CompletableFuture::join)
+                .collect(toList());
+        results.forEach(r -> {
+            responses.getSuccesses().addAll(r.getSuccesses());
+            responses.getFailures().addAll(r.getFailures());
+        });
+        log.info("{}/{} orders cancelled successfully.", responses.getSuccesses().size(), orderIds.size());
+        return responses;
     }
 
     private void updateExistedOrders(List<Order> orders) {

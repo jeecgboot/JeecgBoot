@@ -1,13 +1,13 @@
 package org.jeecg.modules.system.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.poi.ss.formula.functions.T;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.ImportExcelUtil;
-import org.jeecg.common.util.PmsUtil;
-import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.jeecg.modules.system.entity.SysRole;
 import org.jeecg.modules.system.mapper.SysRoleMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,6 +37,17 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     SysRoleMapper sysRoleMapper;
     @Autowired
     SysUserMapper sysUserMapper;
+
+    
+    @Override
+    public Page<SysRole> listAllSysRole(Page<SysRole> page, SysRole role) {
+        return page.setRecords(sysRoleMapper.listAllSysRole(page,role));
+    }
+
+    @Override
+    public SysRole getRoleNoTenant(String roleCode) {
+        return sysRoleMapper.getRoleNoTenant(roleCode);
+    }
 
     @Override
     public Result importExcelCheckRoleCode(MultipartFile file, ImportParams params) throws Exception {
@@ -89,5 +99,21 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         //3.删除角色
         this.removeByIds(Arrays.asList(roleIds));
         return true;
+    }
+
+    @Override
+    public Long getRoleCountByTenantId(String id, Integer tenantId) {
+        return sysRoleMapper.getRoleCountByTenantId(id,tenantId);
+    }
+
+    @Override
+    public void checkAdminRoleRejectDel(String ids) {
+        LambdaQueryWrapper<SysRole> query = new  LambdaQueryWrapper<>();
+        query.in(SysRole::getId,Arrays.asList(ids.split(SymbolConstant.COMMA)));
+        query.eq(SysRole::getRoleCode,"admin");
+        Long adminRoleCount = sysRoleMapper.selectCount(query);
+        if(adminRoleCount>0){
+            throw new JeecgBootException("admin角色，不允许删除！");
+        }
     }
 }

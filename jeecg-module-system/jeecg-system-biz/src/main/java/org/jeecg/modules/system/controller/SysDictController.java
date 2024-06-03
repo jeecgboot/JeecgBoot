@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
@@ -19,16 +18,12 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.ImportExcelUtil;
-import org.jeecg.common.util.SqlInjectionUtil;
-import org.jeecg.common.util.TokenUtils;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
 import org.jeecg.modules.system.model.TreeSelectModel;
-import org.jeecg.modules.system.security.DictQueryBlackListHandler;
 import org.jeecg.modules.system.service.ISysDictItemService;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.vo.SysDictPage;
@@ -47,9 +42,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -72,7 +68,7 @@ public class SysDictController {
 	@Autowired
 	public RedisTemplate<String, Object> redisTemplate;
 	@Autowired
-	private DictQueryBlackListHandler dictQueryBlackListHandler;
+	private RedisUtil redisUtil;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysDict>> queryPageList(SysDict sysDict,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -171,11 +167,6 @@ public class SysDictController {
 	public Result<List<DictModel>> getDictItems(@PathVariable("dictCode") String dictCode, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		log.info(" dictCode : "+ dictCode);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
-		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return result.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		try {
 			List<DictModel> ls = sysDictService.getDictItems(dictCode);
 			if (ls == null) {
@@ -205,13 +196,19 @@ public class SysDictController {
 			@RequestParam(name="keyword",required = false) String keyword,
 			@RequestParam(value = "sign",required = false) String sign,
 			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+		
+		//update-begin-author:taoyan date:2023-5-22 for: /issues/4905 因为中括号(%5)的问题导致的 表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905 RouteToRequestUrlFilter
+		if(keyword!=null && keyword.indexOf("%5")>=0){
+			try {
+				keyword = URLDecoder.decode(keyword, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				log.error("下拉搜索关键字解码失败", e);
+			}
+		}
+		//update-end-author:taoyan date:2023-5-22 for: /issues/4905 因为中括号(%5)的问题导致的  表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905
+		
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
-		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return result.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		try {
 			List<DictModel> ls = sysDictService.loadDict(dictCode, keyword, pageSize);
 			if (ls == null) {
@@ -224,7 +221,7 @@ public class SysDictController {
 			return result;
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
-			result.error500("操作失败");
+			result.error500("操作失败：" + e.getMessage());
 			return result;
 		}
 	}
@@ -283,11 +280,6 @@ public class SysDictController {
 	@RequestMapping(value = "/loadDictItem/{dictCode}", method = RequestMethod.GET)
 	public Result<List<String>> loadDictItem(@PathVariable("dictCode") String dictCode,@RequestParam(name="key") String keys, @RequestParam(value = "sign",required = false) String sign,@RequestParam(value = "delNotExist",required = false,defaultValue = "true") boolean delNotExist,HttpServletRequest request) {
 		Result<List<String>> result = new Result<>();
-		//update-begin-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return result.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:taoyan date:20220317 for: VUEN-222【安全机制】字典接口、online报表、online图表等接口，加一些安全机制
 		try {
 			if(dictCode.indexOf(SymbolConstant.COMMA)!=-1) {
 				String[] params = dictCode.split(SymbolConstant.COMMA);
@@ -317,11 +309,16 @@ public class SysDictController {
 	 * 根据表名——显示字段-存储字段 pid 加载树形数据
 	 * @param hasChildField 是否叶子节点字段
 	 * @param converIsLeafVal 是否需要系统转换 是否叶子节点的值 (0标识不转换、1标准系统自动转换)
+	 * @param tableName 表名
+	 * @param text label字段
+	 * @param code value 字段
+	 * @param condition  查询条件  ？
+	 *
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/loadTreeData", method = RequestMethod.GET)
 	public Result<List<TreeSelectModel>> loadTreeData(@RequestParam(name="pid",required = false) String pid,@RequestParam(name="pidField") String pidField,
-												  @RequestParam(name="tableName") String tbname,
+												  @RequestParam(name="tableName") String tableName,
 												  @RequestParam(name="text") String text,
 												  @RequestParam(name="code") String code,
 												  @RequestParam(name="hasChildField") String hasChildField,
@@ -329,14 +326,14 @@ public class SysDictController {
 												  @RequestParam(name="condition") String condition,
 												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
+		// 1.获取查询条件参数
 		Map<String, String> query = null;
 		if(oConvertUtils.isNotEmpty(condition)) {
 			query = JSON.parseObject(condition, Map.class);
 		}
-		// SQL注入漏洞 sign签名校验(表名,label字段,val字段,条件)
-		String dictCode = tbname+","+text+","+code+","+condition;
-        SqlInjectionUtil.filterContent(dictCode);
-		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tbname, text, code, pidField, pid,hasChildField,converIsLeafVal);
+
+		// 2.返回查询结果
+		List<TreeSelectModel> ls = sysDictService.queryTreeList(query,tableName, text, code, pidField, pid,hasChildField,converIsLeafVal);
 		result.setSuccess(true);
 		result.setResult(ls);
 		return result;
@@ -356,14 +353,6 @@ public class SysDictController {
 												  @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
 												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request){
 		Result<List<DictModel>> res = new Result<List<DictModel>>();
-		// SQL注入漏洞 sign签名校验
-		String dictCode = query.getTable()+","+query.getText()+","+query.getCode();
-		SqlInjectionUtil.filterContent(dictCode);
-		//update-begin-author:taoyan date:2022-11-4 for: issues/4128 sql injection
-		if(!dictQueryBlackListHandler.isPass(dictCode)){
-			return res.error500(dictQueryBlackListHandler.getError());
-		}
-		//update-end-author:taoyan date:2022-11-4 for: issues/4128 sql injection
 		List<DictModel> ls = this.sysDictService.queryDictTablePageList(query,pageSize,pageNo);
 		res.setResult(ls);
 		res.setSuccess(true);
@@ -375,7 +364,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:add")
+    @RequiresPermissions("system:dict:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -396,7 +385,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:edit")
+    @RequiresPermissions("system:dict:edit")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -418,7 +407,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:delete")
+    @RequiresPermissions("system:dict:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -437,7 +426,7 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:deleteBatch")
+    @RequiresPermissions("system:dict:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -459,22 +448,33 @@ public class SysDictController {
 	public Result<?> refleshCache() {
 		Result<?> result = new Result<SysDict>();
 		//清空字典缓存
-		Set keys = redisTemplate.keys(CacheConstant.SYS_DICT_CACHE + "*");
-		Set keys7 = redisTemplate.keys(CacheConstant.SYS_ENABLE_DICT_CACHE + "*");
-		Set keys2 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_CACHE + "*");
-		Set keys21 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE + "*");
-		Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
-		Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
-		Set keys5 = redisTemplate.keys( "jmreport:cache:dict*");
-		Set keys6 = redisTemplate.keys( "jmreport:cache:dictTable*");
-		redisTemplate.delete(keys);
-		redisTemplate.delete(keys2);
-		redisTemplate.delete(keys21);
-		redisTemplate.delete(keys3);
-		redisTemplate.delete(keys4);
-		redisTemplate.delete(keys5);
-		redisTemplate.delete(keys6);
-		redisTemplate.delete(keys7);
+//		Set keys = redisTemplate.keys(CacheConstant.SYS_DICT_CACHE + "*");
+//		Set keys7 = redisTemplate.keys(CacheConstant.SYS_ENABLE_DICT_CACHE + "*");
+//		Set keys2 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_CACHE + "*");
+//		Set keys21 = redisTemplate.keys(CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE + "*");
+//		Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
+//		Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
+//		Set keys5 = redisTemplate.keys( "jmreport:cache:dict*");
+//		Set keys6 = redisTemplate.keys( "jmreport:cache:dictTable*");
+//		redisTemplate.delete(keys);
+//		redisTemplate.delete(keys2);
+//		redisTemplate.delete(keys21);
+//		redisTemplate.delete(keys3);
+//		redisTemplate.delete(keys4);
+//		redisTemplate.delete(keys5);
+//		redisTemplate.delete(keys6);
+//		redisTemplate.delete(keys7);
+
+		//update-begin-author:liusq date:20230404 for:  [issue/4358]springCache中的清除缓存的操作使用了“keys”
+		redisUtil.removeAll(CacheConstant.SYS_DICT_CACHE);
+		redisUtil.removeAll(CacheConstant.SYS_ENABLE_DICT_CACHE);
+		redisUtil.removeAll(CacheConstant.SYS_DICT_TABLE_CACHE);
+		redisUtil.removeAll(CacheConstant.SYS_DICT_TABLE_BY_KEYS_CACHE);
+		redisUtil.removeAll(CacheConstant.SYS_DEPARTS_CACHE);
+		redisUtil.removeAll(CacheConstant.SYS_DEPART_IDS_CACHE);
+		redisUtil.removeAll("jmreport:cache:dict");
+		redisUtil.removeAll("jmreport:cache:dictTable");
+		//update-end-author:liusq date:20230404 for:  [issue/4358]springCache中的清除缓存的操作使用了“keys”
 		return result;
 	}
 
@@ -527,7 +527,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
-    //@RequiresPermissions("system:dict:importExcel")
+    @RequiresPermissions("system:dict:importExcel")
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -600,9 +600,10 @@ public class SysDictController {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteList", method = RequestMethod.GET)
-	public Result<List<SysDict>> deleteList() {
+	public Result<List<SysDict>> deleteList(HttpServletRequest request) {
 		Result<List<SysDict>> result = new Result<List<SysDict>>();
-		List<SysDict> list = this.sysDictService.queryDeleteList();
+		String tenantId = TokenUtils.getTenantIdByRequest(request);
+		List<SysDict> list = this.sysDictService.queryDeleteList(tenantId);
 		result.setSuccess(true);
 		result.setResult(list);
 		return result;
@@ -663,7 +664,7 @@ public class SysDictController {
 	 */
 	@GetMapping("/getDictListByLowAppId")
 	public Result<List<SysDictVo>> getDictListByLowAppId(HttpServletRequest request){
-		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request));
 		List<SysDictVo> list = sysDictService.getDictListByLowAppId(lowAppId);
 		return Result.ok(list);
 	}
@@ -676,15 +677,17 @@ public class SysDictController {
 	 */
 	@PostMapping("/addDictByLowAppId")
 	public Result<String> addDictByLowAppId(@RequestBody SysDictVo sysDictVo,HttpServletRequest request){
-		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request));
+		String tenantId = oConvertUtils.getString(TokenUtils.getTenantIdByRequest(request));
 		sysDictVo.setLowAppId(lowAppId);
+		sysDictVo.setTenantId(oConvertUtils.getInteger(tenantId, null));
 		sysDictService.addDictByLowAppId(sysDictVo);
 		return Result.ok("添加成功");
 	}
 
 	@PutMapping("/editDictByLowAppId")
 	public Result<String> editDictByLowAppId(@RequestBody SysDictVo sysDictVo,HttpServletRequest request){
-		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request),"0");
+		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request));
 		sysDictVo.setLowAppId(lowAppId);
 		sysDictService.editDictByLowAppId(sysDictVo);
 		return Result.ok("编辑成功");

@@ -5,9 +5,8 @@ import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.mapper.PurchaseOrderMapper;
 import org.jeecg.modules.business.mapper.ShippingInvoiceMapper;
 import org.jeecg.modules.business.service.DashboardService;
-import org.jeecg.modules.business.vo.InvoiceKpi;
-import org.jeecg.modules.business.vo.Kpi;
-import org.jeecg.modules.business.vo.OrderKpi;
+import org.jeecg.modules.business.service.IParcelStatusService;
+import org.jeecg.modules.business.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +16,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.*;
 
 @Slf4j
 @Service
@@ -74,5 +75,20 @@ public class DashboardServiceImpl implements DashboardService {
         kpis.put("purchaseInvoices", purchaseInvoices);
         kpis.put("platformOrders", platformOrders);
         return kpis;
+    }
+
+    @Override
+    public Map<String, ParcelQtyAndInfos> getPackageStatuses(int period) {
+        List<ParcelInfos> packageStatusesAndTracking = shippingInvoiceMapper.getPackageStatusInPeriod(period);
+        System.out.println("got package statuses");
+        System.out.println(packageStatusesAndTracking);
+        return packageStatusesAndTracking.stream().collect(
+                groupingBy(ParcelInfos::getStatus, mapping(Function.identity(), toList()))).entrySet().stream().collect(
+                toMap(Map.Entry::getKey, e -> {
+                    ParcelQtyAndInfos parcelQtyAndInfos = new ParcelQtyAndInfos();
+                    parcelQtyAndInfos.setQuantity(e.getValue().size());
+                    parcelQtyAndInfos.setParcelInfos(e.getValue());
+                    return parcelQtyAndInfos;
+                }));
     }
 }

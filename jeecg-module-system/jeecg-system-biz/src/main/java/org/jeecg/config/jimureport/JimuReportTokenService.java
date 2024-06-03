@@ -10,10 +10,12 @@ import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 自定义积木报表鉴权(如果不进行自定义，则所有请求不做权限控制)
@@ -40,6 +42,16 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
     @Override
     public String getUsername(String token) {
         return JwtUtil.getUsername(token);
+    }
+
+    @Override
+    public String[] getRoles(String token) {
+        String username = JwtUtil.getUsername(token);
+        Set roles = sysBaseApi.getUserRoleSet(username);
+        if(CollectionUtils.isEmpty(roles)){
+            return null;
+        }
+        return (String[]) roles.toArray(new String[roles.size()]);
     }
 
     @Override

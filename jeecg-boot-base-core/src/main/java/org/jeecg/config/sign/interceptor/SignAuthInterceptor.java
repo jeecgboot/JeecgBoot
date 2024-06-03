@@ -42,7 +42,7 @@ public class SignAuthInterceptor implements HandlerInterceptor {
         String xTimestamp = request.getHeader(CommonConstant.X_TIMESTAMP);
         
         if(oConvertUtils.isEmpty(xTimestamp)){
-            Result<?> result = Result.error("Sign签名校验失败！");
+            Result<?> result = Result.error("Sign签名校验失败，时间戳为空！");
             log.error("Sign 签名校验失败！Header xTimestamp 为空");
             //校验失败返回前端
             response.setCharacterEncoding("UTF-8");
@@ -79,6 +79,7 @@ public class SignAuthInterceptor implements HandlerInterceptor {
             log.debug("Sign 签名通过！Header Sign : {}",headerSign);
             return true;
         } else {
+            log.info("sign allParams: {}", allParams);
             log.error("request URI = " + request.getRequestURI());
             log.error("Sign 签名校验失败！Header Sign : {}",headerSign);
             //校验失败返回前端

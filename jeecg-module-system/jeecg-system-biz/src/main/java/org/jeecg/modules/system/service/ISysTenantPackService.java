@@ -1,7 +1,7 @@
 package org.jeecg.modules.system.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysTenantPack;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
 
 import java.util.List;
@@ -71,5 +71,11 @@ public interface ISysTenantPackService extends IService<SysTenantPack> {
      * @param packCode
      * @return
      */
-    SysTenantPack getSysTenantPack(Integer tenantId , String packCode);
+    SysTenantPack getSysTenantPack(Integer tenantId ,String packCode);
+   
+    /**
+     * 添加由管理员创建的默认产品包
+     * @param id
+     */
+    void addTenantDefaultPack(Integer id);
 }

@@ -28,7 +28,7 @@ public class SysAnnouncementSend implements Serializable {
 	/**用户id*/
 	private java.lang.String userId;
 	/**阅读状态（0未读，1已读）*/
-	private java.lang.String readFlag;
+	private java.lang.Integer readFlag;
 	/**阅读时间*/
 	@JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")

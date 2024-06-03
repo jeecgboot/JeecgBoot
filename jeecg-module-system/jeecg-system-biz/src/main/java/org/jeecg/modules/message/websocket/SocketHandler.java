@@ -22,7 +22,7 @@ public class SocketHandler implements JeecgRedisListener {
 
     @Override
     public void onMessage(BaseMap map) {
-        log.info("【Redis发布订阅模式】redis Listener: {}，参数：{}",WebSocket.REDIS_TOPIC_NAME, map.toString());
+        log.debug("【Redis发布订阅模式】redis Listener: {}，参数：{}",WebSocket.REDIS_TOPIC_NAME, map.toString());
 
         String userId = map.get("userId");
         String message = map.get("message");

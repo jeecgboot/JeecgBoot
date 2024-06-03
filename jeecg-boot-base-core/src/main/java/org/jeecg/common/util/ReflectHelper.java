@@ -1,5 +1,6 @@
 package org.jeecg.common.util;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.Field;
@@ -7,6 +8,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author 张代浩
@@ -250,6 +252,88 @@ public class ReflectHelper {
             value[i] = getFieldValueByName(fieldNames[i], o);
         }
         return value;
+    }
+
+    /**
+     * 判断给定的字段是不是类中的属性
+     * @param field 字段名
+     * @param clazz 类对象
+     * @return
+     */
+    public static boolean isClassField(String field, Class clazz){
+        Field[] fields = clazz.getDeclaredFields();
+        for(int i=0;i<fields.length;i++){
+            String fieldName = fields[i].getName();
+            String tableColumnName = oConvertUtils.camelToUnderline(fieldName);
+            if(fieldName.equalsIgnoreCase(field) || tableColumnName.equalsIgnoreCase(field)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 获取class的 包括父类的
+     * @param clazz
+     * @return
+     */
+    public static List<Field> getClassFields(Class<?> clazz) {
+        List<Field> list = new ArrayList<Field>();
+        Field[] fields;
+        do{
+            fields = clazz.getDeclaredFields();
+            for(int i = 0;i<fields.length;i++){
+                list.add(fields[i]);
+            }
+            clazz = clazz.getSuperclass();
+        }while(clazz!= Object.class&&clazz!=null);
+        return list;
+    }
+
+    /**
+     * 获取表字段名
+     * @param clazz
+     * @param name
+     * @return
+     */
+    public static String getTableFieldName(Class<?> clazz, String name) {
+        try {
+            //如果字段加注解了@TableField(exist = false),不走DB查询
+            Field field = null;
+            try {
+                field = clazz.getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+                //e.printStackTrace();
+            }
+
+            //如果为空，则去父类查找字段
+            if (field == null) {
+                List<Field> allFields = getClassFields(clazz);
+                List<Field> searchFields = allFields.stream().filter(a -> a.getName().equals(name)).collect(Collectors.toList());
+                if(searchFields!=null && searchFields.size()>0){
+                    field = searchFields.get(0);
+                }
+            }
+
+            if (field != null) {
+                TableField tableField = field.getAnnotation(TableField.class);
+                if (tableField != null){
+                    if(tableField.exist() == false){
+                        //如果设置了TableField false 这个字段不需要处理
+                        return null;
+                    }else{
+                        String column = tableField.value();
+                        //如果设置了TableField value 这个字段是实体字段
+                        if(!"".equals(column)){
+                            return column;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return name;
     }
 
 }

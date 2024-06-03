@@ -3,6 +3,8 @@ package org.jeecg.modules.system.mapper;
 import java.util.Date;
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 
@@ -27,7 +29,7 @@ public interface SysAnnouncementMapper extends BaseMapper<SysAnnouncement> {
 	List<SysAnnouncement> querySysCementListByUserId(Page<SysAnnouncement> page, @Param("userId")String userId,@Param("msgCategory")String msgCategory);
 
     /**
-     * 分页查询消息列表
+     * 分页查询全部消息列表
      * @param page
      * @param userId
      * @param fromUser
@@ -35,5 +37,13 @@ public interface SysAnnouncementMapper extends BaseMapper<SysAnnouncement> {
      * @param endDate
      * @return
      */
-	List<SysAnnouncement> queryMessageList(Page<SysAnnouncement> page, @Param("userId")String userId, @Param("fromUser")String fromUser, @Param("starFlag")String starFlag, @Param("beginDate")Date beginDate, @Param("endDate")Date endDate);
+	List<SysAnnouncement> queryAllMessageList(Page<SysAnnouncement> page, @Param("userId")String userId, @Param("fromUser")String fromUser, @Param("starFlag")String starFlag, @Param("beginDate")Date beginDate, @Param("endDate")Date endDate);
+   
+    /**
+     * 查询用户未阅读的通知公告
+     * @param currDate
+     * @param userId
+     * @return
+     */
+    List<String> getNotSendedAnnouncementlist(@Param("currDate") Date currDate, @Param("userId")String userId);
 }

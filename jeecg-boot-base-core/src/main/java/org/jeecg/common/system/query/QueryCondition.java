@@ -20,6 +20,14 @@ public class QueryCondition implements Serializable {
 	private String dbType;
 	private String rule;
 	private String val;
+
+	public QueryCondition(String field, String type, String dbType, String rule, String val) {
+		this.field = field;
+		this.type = type;
+		this.dbType = dbType;
+		this.rule = rule;
+		this.val = val;
+	}
 	
 	public String getField() {
 		return field;

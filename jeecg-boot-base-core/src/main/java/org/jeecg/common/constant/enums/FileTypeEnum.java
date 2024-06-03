@@ -6,7 +6,7 @@ import org.jeecg.common.util.oConvertUtils;
  * 文件类型
  */
 public enum FileTypeEnum {
-    //    文档类型（folder:文件夹 excel:excel doc:word pp:ppt image:图片  archive:其他文档 video:视频）
+    //    文档类型（folder:文件夹 excel:excel doc:word pp:ppt image:图片  archive:其他文档 video:视频 voice:语音）
 //    FOLDER
     xls(".xls","excel","excel"),
     xlsx(".xlsx","excel","excel"),
@@ -26,7 +26,8 @@ public enum FileTypeEnum {
     flv(".flv","video","视频"),
     mp4(".mp4","video","视频"),
     zip(".zip","zip","压缩包"),
-    pdf(".pdf","pdf","pdf");
+    pdf(".pdf","pdf","pdf"),
+    mp3(".mp3","mp3","语音");
 
     private String type;
     private String value;

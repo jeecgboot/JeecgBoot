@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.vo.PlatformOrderOption;
 import org.jeecg.modules.business.vo.PlatformOrderQuantity;
 import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.SkuQuantity;
@@ -128,7 +129,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<String> fetchBillCodesOfParcelsWithoutTrace(Date startDate, Date endDate, List<String> transporters);
 
-    List<String> fetchUninvoicedOrdersForShops(LocalDateTime startDate, LocalDateTime endDate, List<String> shops);
+    List<PlatformOrder> fetchUninvoicedOrdersForShops(LocalDateTime startDate, LocalDateTime endDate, List<String> shops);
 
     /**
      * Fetch platformOrderId of shipped AND invoiced orders, from startDatetime to endDatetime, excluding orders from
@@ -177,7 +178,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * Cancel Invoice
      * @param invoiceNumber
      */
-    void cancelInvoice(String invoiceNumber);
+    void cancelInvoice(String invoiceNumber, String clientId);
     /**
      * Cancel Invoice
      * @param invoiceNumbers
@@ -229,7 +230,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
 
-    void removePurchaseInvoiceNumber(String purchaseInvoiceNumber);
+    void removePurchaseInvoiceNumber(String purchaseInvoiceNumber, String clientId);
     void removePurchaseInvoiceNumbers(List<String> invoiceNumbers);
 
     void updatePurchaseInvoiceNumber(List<String> orderIds, String invoiceCode);
@@ -243,4 +244,10 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     Map<String, String> fetchShippingPeriodAndType(String invoiceNumber);
 
+
+    void anonymizePersonalData(int indirectClientAnonymizationPeriod);
+
+    List<PlatformOrderOption> ordersByShop(String shopID);
+
+    void updateShopifySynced(Collection<String> platformOrderIds);
 }

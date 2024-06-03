@@ -23,6 +23,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Description: 邮箱发送信息
@@ -91,6 +92,20 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
             log.info("邮件内容："+ content);
             sendMsg(email, title, content);
         }
+        
+        //update-begin-author:taoyan date:2023-6-20 for: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
+        Set<String> toEmailList = messageDTO.getToEmailList();
+        if(toEmailList!=null && toEmailList.size()>0){
+            for(String email: toEmailList){
+                if (ObjectUtils.isEmpty(email)) {
+                    continue;
+                }
+                log.info("邮件内容："+ content);
+                sendMsg(email, title, content);
+            }
+        }
+        //update-end-author:taoyan date:2023-6-20 for: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
+        
         //发送给抄送人
         sendMessageToCopyUser(messageDTO);
     }
@@ -114,29 +129,55 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
                 }
                 content=replaceContent(user,content);
                 log.info("邮件内容：" + content);
-                JavaMailSender mailSender = (JavaMailSender) SpringContextUtils.getBean("mailSender");
-                MimeMessage message = mailSender.createMimeMessage();
-                MimeMessageHelper helper = null;
-                if (oConvertUtils.isEmpty(emailFrom)) {
-                    StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
-                    setEmailFrom(staticConfig.getEmailFrom());
-                }
-                try {
-                    helper = new MimeMessageHelper(message, true);
-                    // 设置发送方邮箱地址
-                    helper.setFrom(emailFrom);
-                    helper.setTo(email);
-                    //设置抄送人
-                    helper.setCc(email);
-                    helper.setSubject(title);
-                    helper.setText(content, true);
-                    mailSender.send(message);
-                } catch (MessagingException e) {
-                    e.printStackTrace();
+                
+            //update-begin-author:taoyan date:2023-6-20 for: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
+                sendEmail(email, content, title);
+            }
+
+            Set<String> ccEmailList = messageDTO.getCcEmailList();
+            if(ccEmailList!=null && ccEmailList.size()>0){
+                for(String email: ccEmailList){
+                    if (ObjectUtils.isEmpty(email)) {
+                        continue;
+                    }
+                    log.info("邮件内容："+ content);
+                    sendEmail(email, content, title);
                 }
             }
+            
         }
     }
+
+    /**
+     * 发送邮件给抄送人调用
+     * @param email
+     * @param content
+     * @param title
+     */
+    private void sendEmail(String email, String content, String title){
+        JavaMailSender mailSender = (JavaMailSender) SpringContextUtils.getBean("mailSender");
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = null;
+        if (oConvertUtils.isEmpty(emailFrom)) {
+            StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
+            setEmailFrom(staticConfig.getEmailFrom());
+        }
+        try {
+            helper = new MimeMessageHelper(message, true);
+            // 设置发送方邮箱地址
+            helper.setFrom(emailFrom);
+            helper.setTo(email);
+            //设置抄送人
+            helper.setCc(email);
+            helper.setSubject(title);
+            helper.setText(content, true);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+    //update-end-author:taoyan date:2023-6-20 for: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
+    
 
     /**
      * 替换邮件内容变量

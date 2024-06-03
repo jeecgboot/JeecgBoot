@@ -1,18 +1,16 @@
 package org.jeecg.modules.system.service.impl;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
+import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.mapper.SysDepartPermissionMapper;
 import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.mapper.SysPermissionMapper;
@@ -20,14 +18,15 @@ import org.jeecg.modules.system.mapper.SysRolePermissionMapper;
 import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysPermissionService;
+import org.jeecg.modules.system.service.ISysRoleIndexService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * <p>
@@ -54,6 +53,9 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
 	@Resource
 	private SysDepartRolePermissionMapper sysDepartRolePermissionMapper;
+
+	@Autowired
+	private ISysRoleIndexService roleIndexService;
 
 	@Override
 	public void switchVue3Menu() {
@@ -219,13 +221,38 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 				}
 				
 			}
+
+			// 同步更改默认菜单
+			SysRoleIndex defIndexCfg = this.roleIndexService.queryDefaultIndex();
+			boolean isDefIndex = defIndexCfg.getUrl().equals(p.getUrl());
+			if (isDefIndex) {
+				this.roleIndexService.updateDefaultIndex(sysPermission.getUrl(), sysPermission.getComponent(), sysPermission.isRoute());
+			}
+
 		}
 		
 	}
 
 	@Override
-	public List<SysPermission> queryByUser(String username) {
-		return this.sysPermissionMapper.queryByUser(username);
+	public List<SysPermission> queryByUser(String userId) {
+		List<SysPermission> permissionList = this.sysPermissionMapper.queryByUser(userId);
+		//================= begin 开启租户的时候 如果没有test角色，默认加入test角色================
+		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+			if (permissionList == null) {
+				permissionList = new ArrayList<>();
+			}
+			List<SysPermission> testRoleList = sysPermissionMapper.queryPermissionByTestRoleId();
+			//update-begin-author:liusq date:20230427 for: [QQYUN-5168]【vue3】为什么出现两个菜单 菜单根据id去重
+			for (SysPermission permission: testRoleList) {
+				boolean hasPerm = permissionList.stream().anyMatch(a->a.getId().equals(permission.getId()));
+				if(!hasPerm){
+					permissionList.add(permission);
+				}
+			}
+			//update-end-author:liusq date:20230427 for: [QQYUN-5168]【vue3】为什么出现两个菜单 菜单根据id去重
+		}
+		//================= end 开启租户的时候 如果没有test角色，默认加入test角色================
+		return permissionList;
 	}
 
 	/**

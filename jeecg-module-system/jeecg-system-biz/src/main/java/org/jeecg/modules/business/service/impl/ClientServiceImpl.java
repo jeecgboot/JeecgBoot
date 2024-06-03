@@ -144,6 +144,11 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     }
 
     @Override
+    public Client getClientFromInvoice(String invoiceNumber) {
+        return clientMapper.getClientFromInvoice(invoiceNumber);
+    }
+
+    @Override
     public String getClientEntity(String id) {
         return clientMapper.getClientEntity(id);
     }
@@ -155,5 +160,15 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     public String getClientIdByCode(String code) {
         return clientMapper.getClientIdByCode(code);
+    }
+
+    @Override
+    public void anonymizePersonalData(int directClientAnonymizationPeriod) {
+        clientMapper.anonymizePersonalData(directClientAnonymizationPeriod);
+    }
+
+    @Override
+    public Client getByShopId(String shopId) {
+        return clientMapper.getByShopId(shopId);
     }
 }

@@ -20,6 +20,29 @@ management:
         include: metrics,httptrace
 
 spring:
+  # flyway配置
+  flyway:
+    # 是否启用flyway
+    enabled: false
+    # 编码格式，默认UTF-8
+    encoding: UTF-8
+    # 迁移sql脚本文件存放路径，官方默认db/migration
+    locations: classpath:flyway/sql/mysql
+    # 迁移sql脚本文件名称的前缀，默认V
+    sql-migration-prefix: V
+    # 迁移sql脚本文件名称的分隔符，默认2个下划线__
+    sql-migration-separator: __
+    # 避免带${}sql执行失败
+    placeholder-prefix: '#('
+    placeholder-suffix: )
+    # 迁移sql脚本文件名称的后缀
+    sql-migration-suffixes: .sql
+    # 迁移时是否进行校验，默认true
+    validate-on-migrate: true
+    # 当迁移发现数据库非空且存在没有元数据的表时，自动执行基准迁移，新建schema_version表
+    baseline-on-migrate: true
+    # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
+    clean-disabled: true
   servlet:
     multipart:
       max-file-size: 10MB
@@ -95,7 +118,9 @@ spring:
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+    exclude:
+      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
       stat-view-servlet:
@@ -111,7 +136,7 @@ spring:
         # 初始化大小，最小，最大
         initial-size: 5
         min-idle: 5
-        maxActive: 20
+        maxActive: 1000
         # 配置获取连接等待超时的时间
         maxWait: 60000
         # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
@@ -127,8 +152,10 @@ spring:
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
         filters: stat,wall,slf4j
-        # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-        connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+        # 打开mergeSql功能；慢SQL记录
+        stat:
+          merge-sql: true
+          slow-sql-millis: 5000
       datasource:
         master:
           url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
@@ -167,11 +194,15 @@ mybatis-plus:
 minidao:
   base-package: org.jeecg.modules.jmreport.*
 jeecg:
-  # 是否启用安全模式
-  safeMode: false
+  # 平台上线安全配置
+  firewall:
+    # 数据源安全 (开启后，Online报表和图表的数据源为必填)
+    dataSourceSafe: false
+    # 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
+    lowCodeMode: dev
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
-  # 签名拦截接口
+  #签名拦截接口
   signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
   # local\minio\alioss
   uploadType: local
@@ -185,7 +216,7 @@ jeecg:
     #webapp文件路径
     webapp: D://opt//webapp
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/bigscreen/category/**,/bigscreen/visual/**,/bigscreen/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
@@ -196,7 +227,7 @@ jeecg:
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES
-    cluster-nodes: 81.70.47.128:9200
+    cluster-nodes: 192.168.1.188:9200
     check-enabled: false
   # 在线预览文件服务器地址配置
   file-view-domain: http://127.0.0.1:8012
@@ -208,17 +239,14 @@ jeecg:
     bucketName: ??
   #大屏报表参数设置
   jmreport:
-    mode: prod
-    #数据字典是否进行saas数据隔离，自己看自己的字典
-    saas: false
-    #是否开启租户模式 Support By v1.5.5+
-    openTenant: false
-    #安全模式(敏感接口校验、saas模式下不允许使用平台数据源)
-    #safeMode: true
-    #是否需要校验token
-    is_verify_token: false
-    #必须校验方法
-    verify_methods: remove,delete,save,add,update
+    #多租户模式，默认值为空(created:按照创建人隔离、tenant:按照租户隔离) (v1.6.2+ 新增)
+    saasMode: created
+    # 平台上线安全配置(v1.6.2+ 新增)
+    firewall:
+      # 数据源安全 (开启后，不允许使用平台数据源、SQL解析加签并且不允许查询数据库)
+      dataSourceSafe: true
+      # 低代码开发模式（dev:开发模式，prod:发布模式—关闭在线报表设计功能，分配角色admin、lowdeveloper可以放开限制）
+      lowCodeMode: prod
   #xxl-job配置
   xxljob:
     enabled: false
@@ -239,6 +267,7 @@ jeecg:
 #Mybatis输出sql日志
 logging:
   level:
+    org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
 #cas单点登录
 cas:
@@ -278,26 +307,3 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
-#第三方APP对接
-third-app:
-  enabled: false
-  type:
-    #企业微信
-    WECHAT_ENTERPRISE:
-      enabled: false
-      #CORP_ID
-      client-id: ??
-      #SECRET
-      client-secret: ??
-      #自建应用id
-      agent-id: ??
-      #自建应用秘钥（新版企微需要配置）
-      # agent-app-secret: ??
-    #钉钉
-    DINGTALK:
-      enabled: false
-      # appKey
-      client-id: ??
-      # appSecret
-      client-secret: ??
-      agent-id: ??
