@@ -12,6 +12,6 @@
         <td style="padding:10px 0;"><b>Client :</b> ${invoiceEntity}</td>
     </tr>
     <tr>
-        <td style="padding:10px 0;"><b>Numéro de facture :</b> <a href="http://app.wia-sourcing.com/business/admin/shippingInvoice/Invoice?invoice=${invoiceNumber}"> ${invoiceNumber} </a></td>
+        <td style="padding:10px 0;"><b>Numéro de facture :</b> <a href="http://app.wia-sourcing.com/business/admin/invoice/Invoice?invoice=${invoiceNumber}"> ${invoiceNumber} </a></td>
     </tr>
 <#include "components/footer.ftl">

@@ -10,6 +10,7 @@ import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderReq
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderResponse;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
+import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -87,7 +88,8 @@ public class AddPortraitTubeJob implements Job {
             throw new RuntimeException("EndDateTime must be strictly greater than StartDateTime !");
         }
 
-        List<String> platformOrderIds = platformOrderService.fetchUninvoicedOrdersForShops(startDateTime, endDateTime, shops);
+        List<PlatformOrder> platformOrders = platformOrderService.fetchUninvoicedOrdersForShops(startDateTime, endDateTime, shops);
+        List<String> platformOrderIds = platformOrders.stream().map(PlatformOrder::getPlatformOrderId).collect(Collectors.toList());
         List<List<String>> platformOrderIdLists = Lists.partition(platformOrderIds, 10);
 
         List<OrderListRequestBody> requests = new ArrayList<>();
