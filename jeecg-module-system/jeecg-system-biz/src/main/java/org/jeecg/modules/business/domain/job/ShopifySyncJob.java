@@ -16,10 +16,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -83,7 +80,7 @@ public class ShopifySyncJob implements Job {
                         GetFulfillmentRequest getFulfillmentRequest = new GetFulfillmentRequest(body);
                         String responseStr = getFulfillmentRequest.rawSend().getBody();
                         FulfillmentOrdersResponse response = mapper.readValue(responseStr, FulfillmentOrdersResponse.class);
-                        fulfillmentOrders.add(response.getFulfillmentOrders().get(0));
+                        fulfillmentOrders.addAll(response.getFulfillmentOrders());
                         success = true;
                     } catch (RuntimeException e) {
                         log.error("Error communicating with ShopifyAPI", e);
@@ -109,6 +106,7 @@ public class ShopifySyncJob implements Job {
         }
         log.info("{} fulfillment creation requests to be sent to ShopifyAPI", createFulfillmentRequests.size());
 
+        Set<String> syncedPlatformOrderIds = new HashSet<>();
         List<CompletableFuture<Boolean>> fulfillmentCreationFutures = createFulfillmentRequests.stream()
                 .map(changeOrderRequestBody -> CompletableFuture.supplyAsync(() -> {
                     boolean success = false;
@@ -117,6 +115,9 @@ public class ShopifySyncJob implements Job {
                         String responseStr = createFulfillmentRequest.rawSend().getBody();
                         FulfillmentCreationResponse response = mapper.readValue(responseStr, FulfillmentCreationResponse.class);
                         success = response.getFulfillment().isSuccess();
+                        if (success) {
+                            syncedPlatformOrderIds.add(response.getFulfillment().getOrderId());
+                        }
                     } catch (RuntimeException e) {
                         log.error("Error communicating with ShopifyAPI", e);
                     } catch (JsonProcessingException e) {
@@ -128,5 +129,10 @@ public class ShopifySyncJob implements Job {
         results = fulfillmentCreationFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
         nbSuccesses = results.stream().filter(b -> b).count();
         log.info("{}/{} fulfillment creation requests have succeeded.", nbSuccesses, createFulfillmentRequests.size());
+
+        if (!syncedPlatformOrderIds.isEmpty()) {
+            platformOrderService.updateShopifySynced(syncedPlatformOrderIds);
+            log.info("Those orders have been marked as shopify synced : {} ", syncedPlatformOrderIds);
+        }
     }
 }
