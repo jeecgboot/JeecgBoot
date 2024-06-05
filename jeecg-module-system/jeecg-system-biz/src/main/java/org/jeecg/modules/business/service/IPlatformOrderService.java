@@ -248,4 +248,11 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     void anonymizePersonalData(int indirectClientAnonymizationPeriod);
 
     List<PlatformOrderOption> ordersByShop(String shopID);
+
+    List<String> fetchUninvoicedOrdersWithSkusInCountry(LocalDateTime startDateTime, LocalDateTime endDateTime, String shop, List<String> skus, List<String> countries);
+    List<String> fetchUninvoicedOrdersWithSkusNotInCountry(LocalDateTime startDateTime, LocalDateTime endDateTime, String shop, List<String> skus, List<String> countries);
+
+    List<String> findReadyAbnormalOrders(List<String> skus, List<String> shops);
+
+    List<String> findReadyAbnormalOrdersWithSkus(List<String> skus);
 }

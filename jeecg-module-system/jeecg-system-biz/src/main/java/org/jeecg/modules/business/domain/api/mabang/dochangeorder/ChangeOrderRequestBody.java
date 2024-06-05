@@ -24,6 +24,7 @@ public class ChangeOrderRequestBody implements RequestBody {
 
     private final static String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
 
+    @Getter
     public enum OperationType {
         MODIFY(1),
         REMOVE(2),
