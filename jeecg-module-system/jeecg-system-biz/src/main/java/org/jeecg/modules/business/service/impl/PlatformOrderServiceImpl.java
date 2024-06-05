@@ -503,6 +503,24 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
+    public List<String> fetchUninvoicedOrdersWithSkusInCountry(LocalDateTime startDateTime, LocalDateTime endDateTime, String shop, List<String> skus, List<String> countries) {
+        return platformOrderMap.fetchUninvoicedOrdersWithSkusInCountry(startDateTime, endDateTime, shop, skus, countries);
+    }
+    @Override
+    public List<String> fetchUninvoicedOrdersWithSkusNotInCountry(LocalDateTime startDateTime, LocalDateTime endDateTime, String shop, List<String> skus, List<String> countries) {
+        return platformOrderMap.fetchUninvoicedOrdersWithSkusNotInCountry(startDateTime, endDateTime, shop, skus, countries);
+    }
+
+    @Override
+    public List<String> findReadyAbnormalOrders(List<String> skus, List<String> shops) {
+        return platformOrderMap.findReadyAbnormalOrders(skus, shops);
+    }
+
+    @Override
+    public List<String> findReadyAbnormalOrdersWithSkus(List<String> skus) {
+        return platformOrderMap.findReadyAbnormalOrdersWithSkus(skus);
+      
+    @Override
     public void updateShopifySynced(Collection<String> platformOrderIds) {
         platformOrderMap.updateShopifySynced(platformOrderIds);
     }

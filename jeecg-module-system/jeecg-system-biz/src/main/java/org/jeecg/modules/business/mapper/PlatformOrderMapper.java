@@ -226,5 +226,11 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     List<PlatformOrderOption> ordersByShop(@Param("shopID") String shopID);
 
+    List<String> fetchUninvoicedOrdersWithSkusInCountry(@Param("startDate") LocalDateTime startDateTime, @Param("endDate") LocalDateTime endDateTime, @Param("shop") String shop, @Param("skus") List<String> skus, @Param("countries") List<String> countries);
+    List<String> fetchUninvoicedOrdersWithSkusNotInCountry(@Param("startDate") LocalDateTime startDateTime, @Param("endDate") LocalDateTime endDateTime, @Param("shop") String shop, @Param("skus") List<String> skus, @Param("countries") List<String> countries);
+
+    List<String> findReadyAbnormalOrders(@Param("skus") List<String> skus, @Param("shops") List<String> shops);
+
+    List<String> findReadyAbnormalOrdersWithSkus(@Param("skus") List<String> skus);
     void updateShopifySynced(@Param("platformOrderIds") Collection<String> platformOrderIds);
 }

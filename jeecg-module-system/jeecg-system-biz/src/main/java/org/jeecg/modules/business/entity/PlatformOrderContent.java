@@ -139,6 +139,12 @@ public class PlatformOrderContent implements Serializable {
     @Excel(name = "商品多属性", width = 15)
     @ApiModelProperty(value = "商品多属性")
     private java.lang.String customizationData;
+    /**
+     * 仓库
+     */
+    @Excel(name = "Warehouse name", width = 15)
+    @ApiModelProperty(value = "添加的商品仓库")
+    private String warehouseName;
 
     @Override
     public boolean equals(Object o) {

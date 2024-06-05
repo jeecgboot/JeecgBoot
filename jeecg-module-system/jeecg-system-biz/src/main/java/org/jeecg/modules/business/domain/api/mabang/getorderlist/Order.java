@@ -90,6 +90,16 @@ public class Order {
     @JSONField(name = "postCode")
     private String postcode;
     /**
+     * 买家地址1
+     */
+    @JSONField(name = "street1")
+    private String address;
+    /**
+     * 买家地址2
+     */
+    @JSONField(name = "street2")
+    private String address2;
+    /**
      * 税号
      */
     @JSONField(name = "abnnumber")
@@ -126,6 +136,10 @@ public class Order {
     @JSONField(name = "orderItem")
     @TableField(exist = false)
     private List<OrderItem> orderItems;
+
+   @JSONField(name = "orderTypeNew")
+   @TableField(exist = false)
+    private OrderTypeNew orderType;
 
     @JSONField(name = "phone1")
     private String phone1;
