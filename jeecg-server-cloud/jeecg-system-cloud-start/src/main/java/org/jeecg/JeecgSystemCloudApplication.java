@@ -16,6 +16,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -35,6 +36,7 @@ public class JeecgSystemCloudApplication extends SpringBootServletInitializer im
     private RedisTemplate<String, Object> redisTemplate;
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+
         return application.sources(JeecgSystemCloudApplication.class);
     }
 
