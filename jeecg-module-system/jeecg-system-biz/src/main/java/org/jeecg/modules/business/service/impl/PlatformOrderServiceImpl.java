@@ -519,7 +519,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public List<String> findReadyAbnormalOrdersWithSkus(List<String> skus) {
         return platformOrderMap.findReadyAbnormalOrdersWithSkus(skus);
-      
+    }
     @Override
     public void updateShopifySynced(Collection<String> platformOrderIds) {
         platformOrderMap.updateShopifySynced(platformOrderIds);
