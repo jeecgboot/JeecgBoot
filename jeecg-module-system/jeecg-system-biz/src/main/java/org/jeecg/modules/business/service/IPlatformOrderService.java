@@ -255,4 +255,5 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<String> findReadyAbnormalOrders(List<String> skus, List<String> shops);
 
     List<String> findReadyAbnormalOrdersWithSkus(List<String> skus);
+    void updateShopifySynced(Collection<String> platformOrderIds);
 }

@@ -13,6 +13,7 @@ import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -231,4 +232,5 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<String> findReadyAbnormalOrders(@Param("skus") List<String> skus, @Param("shops") List<String> shops);
 
     List<String> findReadyAbnormalOrdersWithSkus(@Param("skus") List<String> skus);
+    void updateShopifySynced(@Param("platformOrderIds") Collection<String> platformOrderIds);
 }

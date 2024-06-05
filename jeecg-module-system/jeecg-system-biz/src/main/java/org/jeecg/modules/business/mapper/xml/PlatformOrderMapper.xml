@@ -463,6 +463,7 @@
             #{shop}
         </foreach>
         AND ready_for_shopify_sync = 1
+        AND shopify_synced = 0
         AND erp_status = 3
         ORDER BY shipping_time;
     </select>
@@ -1064,4 +1065,13 @@
         AND poc.erp_status &lt;&gt; 5
         AND poc.warehouse_name = '法国巴黎仓库-唯客路';
     </select>
+
+    <update id="updateShopifySynced">
+        UPDATE platform_order
+        SET shopify_synced = 1
+        WHERE platform_order_id IN
+        <foreach collection="platformOrderIds" separator="," open="(" close=")" index="index" item="platformOrderId">
+            #{platformOrderId}
+        </foreach>
+    </update>
 </mapper>
