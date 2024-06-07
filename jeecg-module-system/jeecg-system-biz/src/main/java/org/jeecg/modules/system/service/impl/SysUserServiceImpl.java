@@ -1,18 +1,18 @@
 package org.jeecg.modules.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -28,7 +28,6 @@ import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
 import org.jeecg.common.desensitization.annotation.SensitiveEncode;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.*;
@@ -43,9 +42,9 @@ import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.jeecg.modules.system.vo.SysUserPositionVo;
 import org.jeecg.modules.system.vo.UserAvatar;
+import org.jeecg.modules.system.vo.lowapp.AppExportUserVo;
 import org.jeecg.modules.system.vo.lowapp.DepartAndUserInfo;
 import org.jeecg.modules.system.vo.lowapp.DepartInfo;
-import org.jeecg.modules.system.vo.lowapp.AppExportUserVo;
 import org.jeecg.modules.system.vo.lowapp.UpdateDepartInfo;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -53,19 +52,15 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -81,7 +76,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements ISysUserService {
-	
+
+	private static final boolean useTenant = false;
+
 	@Autowired
 	private SysUserMapper userMapper;
 	@Autowired
@@ -173,7 +170,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			pageList.getRecords().forEach(item -> {
 				item.setOrgCodeTxt(useDepNames.get(item.getId()));
 				//查询用户的租户ids
-				List<Integer> list = userTenantMapper.getTenantIdsByUserId(item.getId());
+				List<Integer> list = new ArrayList<>();
+				if (useTenant) {
+					list = userTenantMapper.getTenantIdsByUserId(item.getId());
+				}
 				if (oConvertUtils.isNotEmpty(list)) {
 					item.setRelTenantIds(StringUtils.join(list.toArray(), SymbolConstant.COMMA));
 				} else {
@@ -270,7 +270,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		SysUser sysUser = userMapper.getUserByName(username);
 		//查询用户的租户ids
 		if(sysUser!=null){
-			List<Integer> list = userTenantMapper.getTenantIdsByUserId(sysUser.getId());
+			List<Integer> list = new ArrayList<>();
+			if (useTenant) {
+				list = userTenantMapper.getTenantIdsByUserId(sysUser.getId());
+			}
 			if (oConvertUtils.isNotEmpty(list)) {
 				sysUser.setRelTenantIds(StringUtils.join(list.toArray(), SymbolConstant.COMMA));
 			} else {
@@ -860,7 +863,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 //		List<SysTenant> tenantList = null;
         //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
 		//update-begin---author:wangshuai ---date:20230427  for：【QQYUN-5270】名下租户全部退出后，再次登录出现租户冻结------------
-		List<SysTenant> tenantList = relationMapper.getTenantNoCancel(sysUser.getId());
+		//List<SysTenant>
+		List<SysTenant> tenantList = new ArrayList<>();
+		if (useTenant) {
+			tenantList = relationMapper.getTenantNoCancel(sysUser.getId());
+		}
 		obj.put("tenantList", tenantList);
 		//update-end---author:wangshuai ---date:20230427  for：【QQYUN-5270】名下租户全部退出后，再次登录出现租户冻结------------
 //		if (null!=tenantIdList && tenantIdList.size()>0) {
@@ -915,7 +922,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      */
     private void setUserTenantIds(SysUser sysUser) {
 		if(ObjectUtils.isNotEmpty(sysUser)) {
-			List<Integer> list  = relationMapper.getTenantIdsNoStatus(sysUser.getId());
+			List<Integer> list  = new ArrayList<>();
+			if (useTenant) {
+				list  = relationMapper.getTenantIdsNoStatus(sysUser.getId());
+			}
 			if(null!=list && list.size()>0){
 				sysUser.setRelTenantIds(StringUtils.join(list.toArray(), ","));
 			}else{
@@ -978,7 +988,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
         query.eq(SysUserTenant::getUserId, userId);
         //数据库的租户id
-		List<Integer> oldTenantIds = relationMapper.getTenantIdsByUserId(userId);
+		List<Integer> oldTenantIds = new ArrayList<>();
+		if (useTenant) {
+			oldTenantIds = relationMapper.getTenantIdsByUserId(userId);
+		}
         //如果传过来的租户id为空，那么就删除租户
         if (oConvertUtils.isEmpty(relTenantIds) && CollectionUtils.isNotEmpty(oldTenantIds)) {
             this.deleteTenantByUserId(userId, null);
@@ -1346,12 +1359,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		long startTime = System.currentTimeMillis();
 		if (oConvertUtils.isNotEmpty(departs)) {
 			//获取当前租户下的部门id,根据前台
-			departList = sysUserDepartMapper.getTenantDepart(Arrays.asList(departs.split(SymbolConstant.COMMA)), tenantId);
+			if (useTenant) {
+				departList = sysUserDepartMapper.getTenantDepart(Arrays.asList(departs.split(SymbolConstant.COMMA)), tenantId);
+			}
 		}
 		long endTime = System.currentTimeMillis();
 		System.out.println("查询用户部门用时：" + (endTime - startTime) + "ms");
 		//查询当前租户下部门和用户已关联的部门
-		List<SysUserDepart> userDepartList = sysUserDepartMapper.getTenantUserDepart(user.getId(), tenantId);
+		List<SysUserDepart> userDepartList = new ArrayList<>();
+		if (useTenant) {
+			userDepartList = sysUserDepartMapper.getTenantUserDepart(user.getId(), tenantId);
+		}
 		if (userDepartList != null && userDepartList.size() > 0 && departList.size() > 0) {
 			for (SysUserDepart depart : userDepartList) {
 				//修改已关联部门删除部门用户角色关系

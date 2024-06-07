@@ -1,9 +1,9 @@
 package org.jeecg.common.util.dynamic.db;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.ReflectHelper;
@@ -11,8 +11,8 @@ import org.jeecg.common.util.oConvertUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +139,28 @@ public class DynamicDBUtil {
     }
 
     /**
+     * 批量更新/插入
+     * @param dbKey
+     * @param sql
+     * @param param
+     * @return
+     */
+    public static int batchUpdate(final String dbKey, String sql, List<Object[]> param) {
+        int effectCount = 0;
+        int[] counts = new int[]{};
+        JdbcTemplate jdbcTemplate = getJdbcTemplate(dbKey);
+        if (CollectionUtil.isEmpty(param)) {
+            if (!sql.contains("?")) {
+                counts = jdbcTemplate.batchUpdate(sql);
+            }
+        } else {
+            counts = jdbcTemplate.batchUpdate(sql, param);
+        }
+        effectCount = Arrays.stream(counts).sum();
+        return effectCount;
+    }
+
+    /**
      * 支持miniDao语法操作的Update
      *
      * @param dbKey 数据源标识
@@ -154,6 +176,19 @@ public class DynamicDBUtil {
         NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
         effectCount = namedParameterJdbcTemplate.update(sql, data);
         return effectCount;
+    }
+
+    /**
+     * 执行sql语句
+     * @param dbKey
+     * @param sqlArray
+     */
+    public static void execute(String dbKey, String... sqlArray) {
+        JdbcTemplate jdbcTemplate = getJdbcTemplate(dbKey);
+        if (ArrayUtils.isNotEmpty(sqlArray)) {
+            for (String sql : sqlArray)
+                jdbcTemplate.execute(sql);
+        }
     }
 
     public static Object findOne(final String dbKey, String sql, Object... param) {
