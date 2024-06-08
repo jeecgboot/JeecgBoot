@@ -28,9 +28,20 @@ public class OnlineController {
 	 * @return
 	 */
 	@RequestMapping(value = "/cgformFieldList", method = RequestMethod.GET)
-	public Result<JSONObject> selectDepart(@RequestParam(name="headId", required=true) String headId) {
+	public Result<JSONObject> selectFormField(@RequestParam(name="headId", required=true) String headId) {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String sql = "select db_field_name,db_field_txt,field_show_type,field_length,field_extend_json from onl_cgform_field where cgform_head_id=?";
+		List<Map<String, Object>> fieldList = DynamicDBUtil.findList(dbKey,sql,headId);
+		JSONObject obj = new JSONObject();
+		obj.put("data",fieldList);
+		result.setResult(obj);
+		return result;
+	}
+
+	@RequestMapping(value = "/cgreportFieldList", method = RequestMethod.GET)
+	public Result<JSONObject> selectReportField(@RequestParam(name="headId", required=true) String headId) {
+		Result<JSONObject> result = new Result<JSONObject>();
+		String sql = "select field_name,field_txt,field_width,field_type from onl_cgreport_item where cgrhead_id=?";
 		List<Map<String, Object>> fieldList = DynamicDBUtil.findList(dbKey,sql,headId);
 		JSONObject obj = new JSONObject();
 		obj.put("data",fieldList);
