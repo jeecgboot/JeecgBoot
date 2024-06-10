@@ -19,11 +19,7 @@
             <version>${jeecgboot.version}</version>
         </dependency>
         <!-- DEMO 示例模块 -->
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-module-demo</artifactId>
-            <version>${jeecgboot.version}</version>
-        </dependency>
+
         <!--人大金仓
         <dependency>
             <groupId>org.jeecgframework</groupId>

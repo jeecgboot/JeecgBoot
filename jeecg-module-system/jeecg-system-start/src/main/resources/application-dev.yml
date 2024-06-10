@@ -17,7 +17,7 @@ server:
     enabled: true
     min-response-size: 1024
     mime-types: application/javascript,application/json,application/xml,text/html,text/xml,text/plain,text/css,image/*
-
+  max-http-header-size: 102400
 management:
   endpoints:
     web:
@@ -163,9 +163,9 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-          username: root
-          password: root
+          url: jdbc:mysql://172.18.26.81:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          username: jeecg-boot
+          password: 552200
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:
@@ -176,8 +176,8 @@ spring:
   #redis 配置
   data:
     redis:
-      database: 0
-      host: 127.0.0.1
+      database: 3
+      host: 172.18.26.81
       port: 6379
       password:
 #mybatis plus 设置
@@ -265,7 +265,7 @@ jeecg:
     logRetentionDays: 30
   #分布式锁配置
   redisson:
-    address: 127.0.0.1:6379
+    address: 172.18.26.81:6379
     password:
     type: STANDALONE
     enabled: true
@@ -290,7 +290,7 @@ cas:
 logging:
   level:
     org.flywaydb: debug
-    org.jeecg.modules.system.mapper: info
+    org.jeecg.modules.system.mapper: debug
 #swagger
 knife4j:
   #开启增强配置

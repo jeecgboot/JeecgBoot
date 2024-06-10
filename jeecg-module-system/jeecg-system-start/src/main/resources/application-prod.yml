@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
   undertow:
     # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
     #    max-http-post-size: 10MB
@@ -249,9 +249,9 @@ jeecg:
     # 平台上线安全配置(v1.6.2+ 新增)
     firewall:
       # 数据源安全 (开启后，不允许使用平台数据源、SQL解析加签并且不允许查询数据库)
-      dataSourceSafe: true
+      dataSourceSafe: false
       # 低代码开发模式（dev:开发模式，prod:发布模式—关闭在线报表设计功能，分配角色admin、lowdeveloper可以放开限制）
-      lowCodeMode: prod
+      lowCodeMode: dev
   #xxl-job配置
   xxljob:
     enabled: false
@@ -284,7 +284,7 @@ knife4j:
   #开启生产环境屏蔽
   production: false
   basic:
-    enable: true
+    enable: false
     username: jeecg
     password: jeecg1314
 #第三方登录
