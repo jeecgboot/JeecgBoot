@@ -7,5 +7,15 @@
         where
         pack_id = #{packId}
     </select>
-    
+
+    <!--删除产品包对应的菜单权限-->
+    <delete id="deletePackPermByTenantIds">
+        delete from sys_tenant_pack_perms
+        where pack_id in(
+            select id from sys_tenant_pack where tenant_id in
+            <foreach collection="tenantIdList" index="index" item="tenantId" open="(" separator="," close=")">
+                #{tenantId}
+            </foreach>
+        )
+    </delete>
 </mapper>

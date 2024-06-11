@@ -121,6 +121,9 @@ export const searchFormSchema: FormSchema[] = [
     },
 <#elseif po.classType=='date'>
     component: 'DatePicker',
+    componentProps: {
+      valueFormat: 'YYYY-MM-DD'
+    },
 <#elseif po.classType=='datetime'>
     component: 'DatePicker',
     componentProps: {
@@ -201,6 +204,9 @@ export const formSchema: FormSchema[] = [
     field: ${autoStringSuffix(po)},
     <#if po.classType =='date'>
     component: 'DatePicker',
+    componentProps: {
+      valueFormat: 'YYYY-MM-DD'
+    },
      <#elseif po.classType =='datetime'>
     component: 'DatePicker',
     componentProps: {
@@ -238,11 +244,17 @@ export const formSchema: FormSchema[] = [
     },
     <#elseif po.classType =='textarea'>
     component: 'InputTextArea',
-    <#elseif po.classType=='list' || po.classType=='radio'>
+    <#elseif po.classType=='list'>
     component: 'JDictSelectTag',
     componentProps:{
-      dictCode: "${form_field_dictCode}"
-    },
+        dictCode:"${form_field_dictCode}"
+     },
+    <#elseif po.classType=='radio'>
+    component: 'JDictSelectTag',
+    componentProps:{
+        dictCode:"${form_field_dictCode}",
+        type: "radio"
+     },
     <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='list_multi'>
     component: 'JSelectMultiple',
@@ -320,13 +332,13 @@ export const formSchema: FormSchema[] = [
               {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema)[0]},
            <#-- 6到16位数字 -->
            <#elseif fieldValidType == 'n6-16'>
-              { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
+              { pattern: /^\d{6,16}$|^(?=\d+\.\d+)[\d.]{7,17}$/, message: '请输入6到16位数字!'},
            <#-- 6到16位任意字符 -->
            <#elseif fieldValidType == '*6-16'>
               { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
            <#-- 6到18位字符串 -->
            <#elseif fieldValidType == 's6-18'>
-              { pattern: /^.{6,18}$/, message: '请输入6到18位任意字符!'},
+              { pattern: /^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
            <#-- 网址 -->
            <#elseif fieldValidType == 'url'>
               { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},

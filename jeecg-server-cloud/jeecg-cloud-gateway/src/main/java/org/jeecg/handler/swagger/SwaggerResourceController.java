@@ -25,7 +25,7 @@ public class SwaggerResourceController {
      */
     @Value("${knife4j.production:#{null}}")
     private Boolean production;
-
+    
     @Autowired
     public SwaggerResourceController(MySwaggerResourceProvider swaggerResourceProvider) {
         this.swaggerResourceProvider = swaggerResourceProvider;

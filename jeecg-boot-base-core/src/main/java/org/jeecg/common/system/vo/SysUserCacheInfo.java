@@ -9,17 +9,29 @@ import org.jeecg.common.util.DateUtils;
  * @author: jeecg-boot
  */
 public class SysUserCacheInfo {
-	
+
+	private String sysUserId;
+
 	private String sysUserCode;
 	
 	private String sysUserName;
 	
 	private String sysOrgCode;
-	
+
+	/**
+	 * 当前用户部门ID
+	 */
+	private String sysOrgId;
+
 	private List<String> sysMultiOrgCode;
 	
 	private boolean oneDepart;
-	
+
+	/**
+	 * 当前用户角色code（多个逗号分割）
+	 */
+	private String sysRoleCode;
+
 	public boolean isOneDepart() {
 		return oneDepart;
 	}
@@ -68,4 +80,27 @@ public class SysUserCacheInfo {
 		this.sysMultiOrgCode = sysMultiOrgCode;
 	}
 
+	public String getSysUserId() {
+		return sysUserId;
+	}
+
+	public void setSysUserId(String sysUserId) {
+		this.sysUserId = sysUserId;
+	}
+
+	public String getSysOrgId() {
+		return sysOrgId;
+	}
+
+	public void setSysOrgId(String sysOrgId) {
+		this.sysOrgId = sysOrgId;
+	}
+
+	public String getSysRoleCode() {
+		return sysRoleCode;
+	}
+
+	public void setSysRoleCode(String sysRoleCode) {
+		this.sysRoleCode = sysRoleCode;
+	}
 }

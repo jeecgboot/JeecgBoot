@@ -28,6 +28,10 @@ public class TokenUtils {
      * @return
      */
     public static String getTokenByRequest(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        
         String token = request.getParameter("token");
         if (token == null) {
             token = request.getHeader("X-Access-Token");

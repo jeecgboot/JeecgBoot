@@ -125,11 +125,20 @@ export const searchFormSchema: FormSchema[] = [
       },
 <#elseif po.classType=='date'>
       component: 'DatePicker',
+      componentProps: {
+        valueFormat: 'YYYY-MM-DD'
+      },     
 <#elseif po.classType=='datetime'>
       component: 'DatePicker',
       componentProps: {
          showTime:true
        },
+<#elseif po.classType=='datetime'>
+     component: 'DatePicker',
+     componentProps: {
+        showTime:true,
+        valueFormat: 'YYYY-MM-DD HH:mm:ss'
+      },
 <#elseif po.classType=='pca'>
       component: 'JAreaLinkage',
 <#elseif po.classType=='popup'>
@@ -187,6 +196,10 @@ export const searchFormSchema: FormSchema[] = [
       },
 <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
       component: 'JRangeNumber',
+<#-- update-begin---author:chenrui ---date:20240527  for：[TV360X-388]时间范围查询控件---------- -->
+<#elseif po.classType=='time'>
+      component: 'RangeTime',
+<#-- update-end---author:chenrui ---date:20240527  for：[TV360X-388]时间范围查询控件---------- -->
 <#else>
       component: 'Input', //TODO 范围查询
 </#if>
@@ -241,11 +254,14 @@ export const formSchema: FormSchema[] = [
     },
     <#elseif po.classType =='date'>
     component: 'DatePicker',
+    componentProps: {
+      valueFormat: 'YYYY-MM-DD'
+    },    
      <#elseif po.classType =='datetime'>
     component: 'DatePicker',
     componentProps: {
        showTime:true,
-       valueFormat: 'YYYY-MM-DD hh:mm:ss'
+       valueFormat: 'YYYY-MM-DD HH:mm:ss'
      },
     <#elseif po.classType =='time'>
     component: 'TimePicker',
@@ -278,10 +294,16 @@ export const formSchema: FormSchema[] = [
      },
     <#elseif po.classType =='textarea'>
     component: 'InputTextArea',
-    <#elseif po.classType=='list' || po.classType=='radio'>
+    <#elseif po.classType=='list'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}"
+     },
+    <#elseif po.classType=='radio'>
+    component: 'JDictSelectTag',
+    componentProps:{
+        dictCode:"${form_field_dictCode}",
+        type: "radio"
      },
      <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='list_multi'>
@@ -363,7 +385,7 @@ export const formSchema: FormSchema[] = [
                  {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema)[0]},
            <#-- 6到16位数字 -->
            <#elseif fieldValidType == 'n6-16'>
-                 { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
+                 { pattern: /^\d{6,16}$|^(?=\d+\.\d+)[\d.]{7,17}$/, message: '请输入6到16位数字!'},
            <#-- 6到16位任意字符 -->
            <#elseif fieldValidType == '*6-16'>
                  { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},

@@ -45,7 +45,7 @@ public class FlywayConfig {
     /**
      * 迁移sql脚本文件存放路径，官方默认db/migration
      */
-    @Value("${spring.flyway.locations:}")
+    @Value("${spring.flyway.locations:classpath:flyway/sql/mysql}")
     private String locations;
 
     /**
@@ -123,12 +123,12 @@ public class FlywayConfig {
                                     .cleanDisabled(cleanDisabled)
                                     .load();
                             flyway.migrate();
-                            log.info("【升级提示】平台集成了MySQL库的Flyway，数据库版本自动升级! ");
+                            log.info("【数据库升级】平台集成了MySQL库的Flyway，数据库版本自动升级! ");
                     } catch (FlywayException e) {
-                        log.error("【升级提示】flyway执行sql脚本失败", e);
+                        log.error("【数据库升级】flyway执行sql脚本失败", e);
                     }
                 } else {
-                    log.warn("【升级提示】平台只集成了MySQL库的Flyway，实现了数据库版本自动升级! 其他类型的数据库，您可以考虑手工升级~");
+                    log.warn("【数据库升级】平台只集成了MySQL库的Flyway，实现了数据库版本自动升级! 其他类型的数据库，您可以考虑手工升级~");
                 }
             }
         });

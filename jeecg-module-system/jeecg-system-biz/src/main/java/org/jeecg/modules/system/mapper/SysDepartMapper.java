@@ -40,6 +40,14 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @return
 	 */
 	public List<SysDepart> queryDepartsByUsername(@Param("username") String username);
+	
+	/**
+	 * 根据用户名查询部门
+	 *
+	 * @param userId
+	 * @return
+	 */
+	public List<String> queryDepartsByUserId(@Param("userId") String userId);
 
     /**
      * 通过部门编码获取部门id

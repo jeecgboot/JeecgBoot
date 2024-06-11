@@ -36,7 +36,11 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public String getToken(HttpServletRequest request) {
-        return TokenUtils.getTokenByRequest(request);
+        try {
+            return TokenUtils.getTokenByRequest(request);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override

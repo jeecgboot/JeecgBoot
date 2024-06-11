@@ -1,6 +1,6 @@
 <#include "/common/utils.ftl">
 <template>
-  <div class="p-2">
+  <div class="p-2 erpNativeList">
     <#assign query_field_no=0>
     <#assign need_category = false>
     <#assign need_pca = false>
@@ -85,6 +85,7 @@
       </a-form>
     </div>
 <#-- 结束循环 -->
+  <div class="content">
     <!--引用表格-->
     <BasicTable @register="registerTable" :rowSelection="rowSelection">
       <!--插槽:table标题-->
@@ -139,7 +140,7 @@
       </template>
     </BasicTable>
     <!--子表表格tab-->
-    <a-tabs defaultActiveKey="1">
+    <a-tabs defaultActiveKey="1" style="margin: 10px">
       <#assign sub_seq=1>
       <#list subTables as sub>
       <a-tab-pane tab="${sub.ftlDescription}" key="${sub_seq}" <#if sub_seq gt 1>forceRender</#if>>
@@ -148,6 +149,7 @@
       <#assign sub_seq=sub_seq+1>
       </#list>
      </a-tabs>
+  </div>
     <!-- 表单区域 -->
     <${entityName}Modal ref="registerModal" @success="handleSuccess" />
   </div>
@@ -423,25 +425,19 @@
    * @param value
    */
   function handleFormJoinChange(key, value) {
-    queryParam[key] = value.join(',');
+    if (typeof value != 'string') {
+      queryParam[key] = value.join(',');
+    }
   }
   </#if>
 </script>
 <style lang="less" scoped>
-  .jeecg-basic-table-form-container {
-    padding: 0;
-    .table-page-search-submitButtons {
-      display: block;
-      margin-bottom: 24px;
-      white-space: nowrap;
-    }
-    .query-group-cust{
-      min-width: 100px !important;
-    }
-    .query-group-split-cust{
-      width: 30px;
-      display: inline-block;
-      text-align: center
-    }
+<#include "/common/form/native/vueNativeSearchStyle.ftl">
+  .erpNativeList {
+      height: 100%;
+      .content {
+        background-color: #fff;
+        height: 100%;
+      }
   }
 </style>

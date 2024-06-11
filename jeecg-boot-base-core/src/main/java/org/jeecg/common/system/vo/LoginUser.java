@@ -52,6 +52,17 @@ public class LoginUser {
 	@SensitiveField
     private String orgCode;
 	/**
+	 * 当前登录部门id
+	 */
+	@SensitiveField
+	private String orgId;
+	/**
+	 * 当前登录角色code（多个逗号分割）
+	 */
+	@SensitiveField
+	private String roleCode;
+
+	/**
 	 * 头像
 	 */
 	@SensitiveField

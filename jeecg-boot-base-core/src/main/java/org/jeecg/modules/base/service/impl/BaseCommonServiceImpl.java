@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.LogDTO;
+import org.jeecg.common.constant.enums.ClientTerminalTypeEnum;
+import org.jeecg.common.util.BrowserUtils;
 import org.jeecg.modules.base.mapper.BaseCommonMapper;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
@@ -33,7 +35,7 @@ public class BaseCommonServiceImpl implements BaseCommonService {
             logDTO.setId(String.valueOf(IdWorker.getId()));
         }
         //保存日志（异常捕获处理，防止数据太大存储失败，导致业务失败）JT-238
-        try {
+        try {   
             logDTO.setCreateTime(new Date());
             baseCommonMapper.saveLog(logDTO);
         } catch (Exception e) {
@@ -55,6 +57,17 @@ public class BaseCommonServiceImpl implements BaseCommonService {
             HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
             //设置IP地址
             sysLog.setIp(IpUtils.getIpAddr(request));
+
+            try {
+                //设置客户端
+                if(BrowserUtils.isDesktop(request)){
+                    sysLog.setClientType(ClientTerminalTypeEnum.PC.getKey());
+                }else{
+                    sysLog.setClientType(ClientTerminalTypeEnum.APP.getKey());
+                }
+            } catch (Exception e) {
+                //e.printStackTrace();
+            }
         } catch (Exception e) {
             sysLog.setIp("127.0.0.1");
         }

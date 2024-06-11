@@ -2,7 +2,6 @@ package org.jeecg;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.config.shiro.ignore.InMemoryIgnoreAuth;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

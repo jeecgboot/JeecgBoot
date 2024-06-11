@@ -84,8 +84,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		
 		// 2.SQL注入check（只限制非法串改数据库）
 		//关联表字典（举例：sys_user,realname,id）
-		SqlInjectionUtil.filterContent(table);
-		SqlInjectionUtil.filterContent(fieldName);
+		SqlInjectionUtil.filterContentMulti(table, fieldName);
 
 		String checkSql = table + SymbolConstant.COMMA + fieldName + SymbolConstant.COMMA;
 		// 【QQYUN-6533】表字典白名单check
@@ -251,7 +250,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}
 		
 		// 3.SQL注入check
-		SqlInjectionUtil.filterContent(table, text, code);
+		SqlInjectionUtil.filterContentMulti(table, text, code);
 		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
 		
 		// 4.针对采用 ${}写法的表名和字段进行转义和check
@@ -269,8 +268,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 		// 1.SQL注入校验（只限制非法串改数据库）
 		SqlInjectionUtil.specialFilterContentForDictSql(table);
-		SqlInjectionUtil.filterContent(text);
-		SqlInjectionUtil.filterContent(code);
+		SqlInjectionUtil.filterContentMulti(text, code);
 		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
 		
 		String str = table+","+text+","+code;
@@ -313,7 +311,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			return null;
 		}
 		// 2.sql注入check
-		SqlInjectionUtil.filterContent(table, text, code, key);
+		SqlInjectionUtil.filterContentMulti(table, text, code, key);
 
 		// 3.针对采用 ${}写法的表名和字段进行转义和check
 		table = SqlInjectionUtil.getSqlInjectTableName(table);
@@ -358,7 +356,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}
 		
 		// 3.SQL注入check
-		SqlInjectionUtil.filterContent(table, text, code);
+		SqlInjectionUtil.filterContentMulti(table, text, code);
 		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
 
 		// 4.针对采用 ${}写法的表名和字段进行转义和check
@@ -420,7 +418,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}
 
 		// 2.SQL注入check
-		SqlInjectionUtil.filterContent(table, text, code);
+		SqlInjectionUtil.filterContentMulti(table, text, code);
 		SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
 
 		String str = table+","+text+","+code;
@@ -626,9 +624,15 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		pidField = SqlInjectionUtil.getSqlInjectField(pidField);
 		hasChildField = SqlInjectionUtil.getSqlInjectField(hasChildField);
 
+		if(oConvertUtils.isEmpty(text) || oConvertUtils.isEmpty(code)){
+			log.warn("text={}，code={}", text, code);
+			log.warn("加载树字典参数有误，text和code不允许为空！");
+			return null;
+		}
+		
 		// 2.检测最终SQL是否存在SQL注入风险
 		String dictCode = table + "," + text + "," + code;
-		SqlInjectionUtil.filterContent(dictCode);
+		SqlInjectionUtil.filterContentMulti(dictCode);
 
 		// 【QQYUN-6533】表字典白名单check
 		sysBaseAPI.dictTableWhiteListCheckByDict(table, text, code);
@@ -697,7 +701,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}
 		
 		// 3.SQL注入check
-		SqlInjectionUtil.filterContent(dictCode);
+		SqlInjectionUtil.filterContentMulti(dictCode);
 		
 		Page<DictModel> pageList = baseMapper.queryDictTablePageList(page, query);
 		return pageList.getRecords();

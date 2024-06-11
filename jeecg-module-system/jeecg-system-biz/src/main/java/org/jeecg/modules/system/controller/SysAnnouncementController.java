@@ -1,6 +1,5 @@
 package org.jeecg.modules.system.controller;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,10 +17,7 @@ import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.DateUtils;
-import org.jeecg.common.util.RedisUtil;
-import org.jeecg.common.util.TokenUtils;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.message.enums.RangeDateEnum;
 import org.jeecg.modules.message.websocket.WebSocket;
@@ -40,6 +36,7 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +48,10 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -86,7 +86,9 @@ public class SysAnnouncementController {
 	@Autowired
 	@Lazy
 	private RedisUtil redisUtil;
-
+	@Autowired
+	public RedisTemplate redisTemplate;
+	
 	/**
 	 * QQYUN-5072【性能优化】线上通知消息打开有点慢
 	 */
@@ -332,12 +334,19 @@ public class SysAnnouncementController {
 	 * @return
 	 */
 	@RequestMapping(value = "/listByUser", method = RequestMethod.GET)
-	public Result<Map<String, Object>> listByUser(@RequestParam(required = false, defaultValue = "5") Integer pageSize) {
+	public Result<Map<String, Object>> listByUser(@RequestParam(required = false, defaultValue = "5") Integer pageSize, HttpServletRequest request) {
 		long start = System.currentTimeMillis();
 		Result<Map<String,Object>> result = new Result<Map<String,Object>>();
 		Map<String,Object> sysMsgMap = new HashMap(5);
 		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
 		String userId = sysUser.getId();
+
+
+		//update-begin---author:scott ---date:2024-05-11  for：【性能优化】优化系统通知，只查近2个月的通知---
+		// 获取上个月的第一天（只查近两个月的通知）
+		Date lastMonthStartDay = DateRangeUtils.getLastMonthStartDay();
+		log.info("-----查询近两个月收到的未读通知-----，近2月的第一天：{}", lastMonthStartDay);
+		//update-end---author:scott ---date::2024-05-11  for：【性能优化】优化系统通知，只查近2个月的通知---
 		
 //		//补推送数据（用户和通知的关系表）
 //		completeNoteThreadPool.execute(()->{
@@ -347,23 +356,41 @@ public class SysAnnouncementController {
 		// 2.查询用户未读的系统消息
 		Page<SysAnnouncement> anntMsgList = new Page<SysAnnouncement>(0, pageSize);
         //通知公告消息
-		anntMsgList = sysAnnouncementService.querySysCementPageByUserId(anntMsgList,userId,"1");
+		anntMsgList = sysAnnouncementService.querySysCementPageByUserId(anntMsgList,userId,"1",null, lastMonthStartDay);
 		sysMsgMap.put("anntMsgList", anntMsgList.getRecords());
 		sysMsgMap.put("anntMsgTotal", anntMsgList.getTotal());
 
-		log.info("begin 获取用户系统公告 (通知)" + (System.currentTimeMillis() - start) + "毫秒");
+		log.info("begin 获取用户近2个月的系统公告 (通知)" + (System.currentTimeMillis() - start) + "毫秒");
 		
         //系统消息
 		Page<SysAnnouncement> sysMsgList = new Page<SysAnnouncement>(0, pageSize);
-		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2");
+		sysMsgList = sysAnnouncementService.querySysCementPageByUserId(sysMsgList,userId,"2",null, lastMonthStartDay);
 		sysMsgMap.put("sysMsgList", sysMsgList.getRecords());
 		sysMsgMap.put("sysMsgTotal", sysMsgList.getTotal());
 
-		log.info("end 获取用户系统公告 (系统消息)" + (System.currentTimeMillis() - start) + "毫秒");
+		log.info("end 获取用户2个月的系统公告 (系统消息)" + (System.currentTimeMillis() - start) + "毫秒");
 		
 		result.setSuccess(true);
 		result.setResult(sysMsgMap);
 		return result;
+	}
+
+
+	/**
+	 * 获取未读消息通知数量
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/getUnreadMessageCount", method = RequestMethod.GET)
+	public Result<Integer> getUnreadMessageCount(@RequestParam(required = false, defaultValue = "5") Integer pageSize, HttpServletRequest request) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		String userId = sysUser.getId();
+
+		// 获取上个月的第一天（只查近两个月的通知）
+		Date lastMonthStartDay = DateRangeUtils.getLastMonthStartDay();
+		log.info(" ------查询近两个月收到的未读通知消息数量------，近2月的第一天：{}", lastMonthStartDay);
+		Integer unreadMessageCount = sysAnnouncementService.getUnreadMessageCountByUserId(userId, lastMonthStartDay);
+		return Result.ok(unreadMessageCount);
 	}
 
 
@@ -570,15 +597,37 @@ public class SysAnnouncementController {
      */
 	@GetMapping("/getLastAnnountTime")
 	public Result<Page<SysAnnouncementSend>> getLastAnnountTime(@RequestParam(name = "userId") String userId){
-        Result<Page<SysAnnouncementSend>> result = new Result<>();
-        Page<SysAnnouncementSend> page = new Page<>(1,1);
+		Result<Page<SysAnnouncementSend>> result = new Result<>();
+		//----------------------------------------------------------------------------------------
+		// step.1 此接口过慢，可以采用缓存一小时方案
+		String keyString = String.format(CommonConstant.CACHE_KEY_USER_LAST_ANNOUNT_TIME_1HOUR, userId);
+		if (redisTemplate.hasKey(keyString)) {
+			log.info("[SysAnnouncementSend Redis] 通过Redis缓存查询用户最后一次收到系统通知时间，userId={}", userId);
+			Page<SysAnnouncementSend> pageList = (Page<SysAnnouncementSend>) redisTemplate.opsForValue().get(keyString);
+			result.setSuccess(true);
+			result.setResult(pageList);
+			return result;
+		}
+		//----------------------------------------------------------------------------------------
+
+		Page<SysAnnouncementSend> page = new Page<>(1,1);
         LambdaQueryWrapper<SysAnnouncementSend> query = new LambdaQueryWrapper<>();
         query.eq(SysAnnouncementSend::getUserId,userId);
-        query.select(SysAnnouncementSend::getCreateTime);
+        //只查询上个月和本月，的通知的数据
+		query.ne(SysAnnouncementSend::getCreateTime, DateRangeUtils.getLastMonthStartDay());
+        query.select(SysAnnouncementSend::getCreateTime); // 提高查询效率
         query.orderByDesc(SysAnnouncementSend::getCreateTime);
         Page<SysAnnouncementSend> pageList = sysAnnouncementSendService.page(page, query);
-        result.setSuccess(true);
-        result.setResult(pageList);
+
+		//----------------------------------------------------------------------------------------
+		if (pageList != null && pageList.getSize() > 0) {
+			// step.3 保留1小时redis缓存
+			redisTemplate.opsForValue().set(keyString, pageList, 3600, TimeUnit.SECONDS);
+		}
+		//----------------------------------------------------------------------------------------
+
+		result.setSuccess(true);
+		result.setResult(pageList);
         return result;
     }
 

@@ -61,7 +61,17 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public List<String> getRolesByUserId(String userId) {
+        return null;
+    }
+
+    @Override
     public List<String> getDepartIdsByUsername(String username) {
+        return null;
+    }
+
+    @Override
+    public List<String> getDepartIdsByUserId(String userId) {
         return null;
     }
 
@@ -194,6 +204,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public Set<String> getUserRoleSetById(String userId) {
+        return null;
+    }
+
+    @Override
     public Set<String> getUserPermissionSet(String userId) {
         return null;
     }
@@ -219,6 +234,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public Set<String> queryUserRolesById(String userId) {
+        return null;
+    }
+
+    @Override
     public Set<String> queryUserAuths(String userId) {
         return null;
     }
@@ -236,6 +256,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     @Override
     public LoginUser getUserByName(String username) {
         log.error("jeecg-system服务节点不通，导致获取登录用户信息失败： " + cause.getMessage(), cause);
+        return null;
+    }
+
+    @Override
+    public String getUserIdByName(String username) {
         return null;
     }
 

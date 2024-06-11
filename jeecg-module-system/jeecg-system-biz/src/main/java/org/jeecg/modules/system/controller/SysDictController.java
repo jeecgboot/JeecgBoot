@@ -326,6 +326,13 @@ public class SysDictController {
 												  @RequestParam(name="condition") String condition,
 												  @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
 		Result<List<TreeSelectModel>> result = new Result<List<TreeSelectModel>>();
+
+		// 【QQYUN-9207】防止参数为空导致报错
+		if (oConvertUtils.isEmpty(tableName) || oConvertUtils.isEmpty(text) || oConvertUtils.isEmpty(code)) {
+			result.error500("字典Code格式不正确！");
+			return result;
+		}
+
 		// 1.获取查询条件参数
 		Map<String, String> query = null;
 		if(oConvertUtils.isNotEmpty(condition)) {

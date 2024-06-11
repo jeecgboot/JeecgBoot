@@ -52,7 +52,9 @@ public class DictAspect {
     /**
      * 定义切点Pointcut
      */
-    @Pointcut("execution(public * org.jeecg.modules..*.*Controller.*(..)) || @annotation(org.jeecg.common.aspect.annotation.AutoDict)")
+    @Pointcut("(@within(org.springframework.web.bind.annotation.RestController) || " +
+            "@within(org.springframework.stereotype.Controller) || @annotation(org.jeecg.common.aspect.annotation.AutoDict)) " +
+            "&& execution(public org.jeecg.common.api.vo.Result org.jeecg..*.*(..))")
     public void excudeService() {
     }
 
@@ -92,7 +94,8 @@ public class DictAspect {
      * @param result
      */
     private Object parseDictText(Object result) {
-        if (result instanceof Result) {
+        //if (result instanceof Result) {
+        if (true) {
             if (((Result) result).getResult() instanceof IPage) {
                 List<JSONObject> items = new ArrayList<>();
 

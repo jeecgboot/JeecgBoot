@@ -128,14 +128,16 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return objectMapper;
     }
 
-    /**
-     * SpringBootAdmin的Httptrace不见了
-     * https://blog.csdn.net/u013810234/article/details/110097201
-     */
-    @Bean
-    public InMemoryHttpTraceRepository getInMemoryHttpTrace(){
-        return new InMemoryHttpTraceRepository();
-    }
+    //update-begin---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
+//    /**
+//     * SpringBootAdmin的Httptrace不见了
+//     * https://blog.csdn.net/u013810234/article/details/110097201
+//     */
+//    @Bean
+//    public InMemoryHttpTraceRepository getInMemoryHttpTrace(){
+//        return new InMemoryHttpTraceRepository();
+//    }
+    //update-end---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
 
 
     /**

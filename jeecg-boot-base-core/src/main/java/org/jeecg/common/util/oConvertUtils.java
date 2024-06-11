@@ -2,7 +2,9 @@ package org.jeecg.common.util;
 
 import com.alibaba.fastjson.JSONArray;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.springframework.beans.BeanUtils;
@@ -14,10 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.sql.Date;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -48,6 +47,27 @@ public class oConvertUtils {
 			return (true);
 		}
 		return (false);
+	}
+
+	
+	/**
+	 * 返回decode解密字符串
+	 * 
+	 * @param inStr
+	 * @return
+	 */
+	public static String decodeString(String inStr) {
+		if (oConvertUtils.isEmpty(inStr)) {
+			return null;
+		}
+
+		try {
+			inStr = URLDecoder.decode(inStr, "UTF-8");
+		} catch (Exception e) {
+			// 解决：URLDecoder: Illegal hex characters in escape (%) pattern - For input string: "自动"
+			//e.printStackTrace();
+		}
+		return inStr;
 	}
 
 	public static String decode(String strIn, String sourceCode, String targetCode) {
@@ -238,6 +258,20 @@ public class oConvertUtils {
 		return (String.valueOf(i));
 	}
 
+	/**
+	 * 返回常规字符串（只保留字符串中的数字、字母、中文）
+	 *
+	 * @param input
+	 * @return
+	 */
+	public static String getNormalString(String input) {
+		if (oConvertUtils.isEmpty(input)) {
+			return null;
+		}
+		String result = input.replaceAll("[^0-9a-zA-Z\\u4e00-\\u9fa5]", "");
+		return result;
+	}
+
 	public static String getString(String s, String defval) {
 		if (isEmpty(s)) {
 			return (defval);
@@ -287,6 +321,22 @@ public class oConvertUtils {
 		return (clazz.equals(String.class) || clazz.equals(Integer.class) || clazz.equals(Byte.class) || clazz.equals(Long.class) || clazz.equals(Double.class) || clazz.equals(Float.class) || clazz.equals(Character.class) || clazz.equals(Short.class) || clazz.equals(BigDecimal.class) || clazz.equals(BigInteger.class) || clazz.equals(Boolean.class) || clazz.equals(Date.class) || clazz.isPrimitive());
 	}
 
+	/**
+	 * 解码base64
+	 *
+	 * @param base64Str base64字符串
+	 * @return 被加密后的字符串
+	 */
+	public static String decodeBase64Str(String base64Str) {
+		byte[] byteContent = Base64.decodeBase64(base64Str);
+		if (byteContent == null) {
+			return null;
+		}
+		String decodedString = new String(byteContent);
+		return decodedString;
+	}
+	
+	
 	/**
 	 * @param request
 	 *            IP
@@ -750,6 +800,16 @@ public class oConvertUtils {
 		}
 		return obj.getClass().isArray();
 	}
+
+	/**
+	 * 获取集合的大小
+	 * 
+	 * @param collection
+	 * @return
+	 */
+	public static int getCollectionSize(Collection<?> collection) {
+		return collection != null ? collection.size() : 0;
+	}
 	
 	/**
 	 * 判断两个数组是否相等（数组元素不分顺序）
@@ -940,6 +1000,33 @@ public class oConvertUtils {
 			return count;
 		}
 		return count;
+	}
+
+	/**
+	 * map转str
+	 *
+	 * @param map
+	 * @return
+	 */
+	public static String mapToString(Map<String, String[]> map) {
+		if (map == null || map.size() == 0) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<String, String[]> entry : map.entrySet()) {
+			String key = entry.getKey();
+			String[] values = entry.getValue();
+			sb.append(key).append("=");
+			sb.append(values != null ? StringUtils.join(values, ",") : "");
+			sb.append("&");
+		}
+
+		String result = sb.toString();
+		if (result.endsWith("&")) {
+			result = result.substring(0, sb.length() - 1);
+		}
+		return result;
 	}
 	
 }

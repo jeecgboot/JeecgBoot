@@ -402,25 +402,12 @@
    * @param value
    */
   function handleFormJoinChange(key, value) {
-    queryParam[key] = value.join(',');
+    if (typeof value != 'string') {
+      queryParam[key] = value.join(',');
+    }
   }
   </#if>
 </script>
 <style lang="less" scoped>
-  .jeecg-basic-table-form-container {
-    padding: 0;
-  .table-page-search-submitButtons {
-    display: block;
-    margin-bottom: 24px;
-    white-space: nowrap;
-  }
-  .query-group-cust{
-    min-width: 100px !important;
-  }
-  .query-group-split-cust{
-    width: 30px;
-    display: inline-block;
-    text-align: center
-  }
-  }
+<#include "/common/form/native/vueNativeSearchStyle.ftl">
 </style>

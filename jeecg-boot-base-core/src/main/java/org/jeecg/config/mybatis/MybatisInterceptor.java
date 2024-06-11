@@ -10,6 +10,8 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.stereotype.Component;
 
@@ -94,7 +96,17 @@ public class MybatisInterceptor implements Interceptor {
 							field.setAccessible(false);
 							if (localTenantId == null) {
 								field.setAccessible(true);
-								field.set(parameter, oConvertUtils.getInt(TenantContext.getTenant(),0));
+
+								String tenantId = TenantContext.getTenant();
+								//如果通过线程获取租户ID为空，则通过当前请求的request获取租户（shiro排除拦截器的请求会获取不到租户ID）
+								if(oConvertUtils.isEmpty(tenantId) && MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+									try {
+										tenantId = TokenUtils.getTenantIdByRequest(SpringContextUtils.getHttpServletRequest());
+									} catch (Exception e) {
+										//e.printStackTrace();
+									}
+								}
+								field.set(parameter, tenantId);
 								field.setAccessible(false);
 							}
 						}

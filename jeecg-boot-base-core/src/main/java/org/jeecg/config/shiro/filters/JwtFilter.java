@@ -52,6 +52,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             if (InMemoryIgnoreAuth.contains(((HttpServletRequest) request).getServletPath())) {
                 return true;
             }
+            
             executeLogin(request, response);
             return true;
         } catch (Exception e) {

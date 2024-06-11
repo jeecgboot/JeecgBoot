@@ -113,10 +113,12 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deletePackPermissions(String ids) {
+    public void deleteTenantPack(String ids) {
         String[] idsArray = ids.split(SymbolConstant.COMMA);
         for (String id : idsArray) {
             this.deletePackPermission(id,null);
+            //删除产品包下面的用户
+            this.deletePackUser(id);
             sysTenantPackMapper.deleteById(id);
         }
     }
@@ -251,4 +253,13 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         }
     }
 
+    /**
+     * 删除产品包下面的用户
+     * @param packId
+     */
+    private void deletePackUser(String packId) {
+        LambdaQueryWrapper<SysTenantPackUser> query = new LambdaQueryWrapper<>();
+        query.eq(SysTenantPackUser::getPackId, packId);
+        sysTenantPackUserMapper.delete(query);
+    }
 }

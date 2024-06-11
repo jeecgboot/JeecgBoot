@@ -23,7 +23,7 @@ public enum CgformEnum {
     /**
      * 多表（jvxe风格）
      *  */
-    JVXE_TABLE(2, "jvxe", "/jeecg/code-template-online", "jvxe.onetomany", "JVXE风格" ,new String[]{"vue3","vue","vue3Native"}),
+    JVXE_TABLE(2, "jvxe", "/jeecg/code-template-online", "jvxe.onetomany", "默认风格" ,new String[]{"vue3","vue","vue3Native"}),
 
     /**
      * 多表 (erp风格)

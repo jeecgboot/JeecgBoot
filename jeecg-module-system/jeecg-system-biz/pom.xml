@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-module-system</artifactId>
-		<version>3.6.3</version>
+		<version>3.7.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -29,17 +29,16 @@
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>jeewx-api</artifactId>
 		</dependency>
-		<!-- 积木报表设计 -->
+		<!-- 积木报表 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
 		</dependency>
-		<!-- 积木仪表盘 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-drag</artifactId>
 		</dependency>
-		<!-- 积木报表 mongo redis 支持包 
+	<!-- 积木报表 mongo redis 支持包 
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>

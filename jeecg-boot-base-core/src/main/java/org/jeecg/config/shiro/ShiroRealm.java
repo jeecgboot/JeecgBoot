@@ -71,7 +71,7 @@ public class ShiroRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
 
         // 设置用户拥有的角色集合，比如“admin,test”
-        Set<String> roleSet = commonApi.queryUserRoles(username);
+        Set<String> roleSet = commonApi.queryUserRolesById(userId);
         //System.out.println(roleSet.toString());
         info.setRoles(roleSet);
 

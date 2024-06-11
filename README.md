@@ -7,13 +7,13 @@
 JEECG BOOT 低代码开发平台
 ===============
 
-当前最新版本： 3.6.3（发布日期：2024-03-11） 
+当前最新版本： 3.7.0（发布日期：2024-06-17） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://jeecg.com/aboutusIndex)
 [![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.6.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.7.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -93,12 +93,6 @@ Docker快速启动项目
 > ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
 
 
-大龄码农的思考
------------------------------------
-> 作为码农年纪大了写不动代码了怎么办？？哎！！
-所以我们团队在追求不写代码也可实现复杂业务系统！目前已经做到了，不信你到敲敲云零代码试试（通过流程串联修改业务数据）
-
-- https://www.qiaoqiaoyun.com
 
 
 技术支持

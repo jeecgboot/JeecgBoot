@@ -1,5 +1,6 @@
 <#list subTables as sub>
 #segment#${sub.entityName}List.vue
+<#assign need_pca = false>
 <template>
  <div class="p-2">
    <#-- 结束循环 -->
@@ -43,6 +44,7 @@
           <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
          </#if>
          <#if po.classType=='pca'>
+           <#assign need_pca = true>
            <!--省市区字段回显插槽-->
            {{ getAreaTextByCode(text) }}
          </#if>
@@ -66,6 +68,9 @@
   import { isEmpty } from "/@/utils/is";
   import { useMessage } from '/@/hooks/web/useMessage';
   import { downloadFile } from '/@/utils/common/renderUtils';
+<#if need_pca>
+  import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
+</#if>
   
   const toggleSearchStatus = ref<boolean>(false);
   //接收主表id

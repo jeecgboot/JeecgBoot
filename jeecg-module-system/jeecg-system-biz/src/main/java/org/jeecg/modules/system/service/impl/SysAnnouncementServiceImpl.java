@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateRangeUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysAnnouncement;
@@ -139,12 +140,17 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	}
 
 	@Override
-	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory) {
+	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory, Integer tenantId, Date beginDate) {
 		if (page.getSize() == -1) {
-			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(null, userId, msgCategory));
+			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(null, userId, msgCategory,tenantId,beginDate));
 		} else {
-			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(page, userId, msgCategory));
+			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(page, userId, msgCategory,tenantId,beginDate));
 		}
+	}
+
+	@Override
+	public Integer getUnreadMessageCountByUserId(String userId, Date beginDate) {
+		return sysAnnouncementMapper.getUnreadMessageCountByUserId(userId, beginDate);
 	}
 
 	@Override

@@ -31,5 +31,17 @@ public interface SysTenantPackUserMapper extends BaseMapper<SysTenantPackUser> {
      * @param tenantId
      * @return
      */
-    Long izHaveBuyAuth(@Param("userId") String userId, @Param("tenantId") String tenantId);
+    Long izHaveBuyAuth(@Param("userId") String userId, @Param("tenantId") Integer tenantId);
+
+    /**
+     * 根据租户id 删除租户产品包下的 用户
+     * @param tenantId
+     */
+    void deletePackUserByTenantId(@Param("tenantId") Integer tenantId, @Param("userIds") List<String> userIds);
+
+    /**
+     * 根据多个租户id 删除租户产品包下的 用户
+     * @param
+     */
+    void deletePackUserByTenantIds(@Param("tenantIds") List<Integer> tenantIds);
 }

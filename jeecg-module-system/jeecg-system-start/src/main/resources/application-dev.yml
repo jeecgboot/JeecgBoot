@@ -17,7 +17,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,httptrace
+        include: metrics,httptrace-new
 
 spring:
   # flyway配置
@@ -152,6 +152,9 @@ spring:
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
         filters: stat,wall,slf4j
+        # 允许SELECT语句的WHERE子句是一个永真条件
+        wall:
+          selectWhereAlwayTrueCheck: false
         # 打开mergeSql功能；慢SQL记录
         stat:
           merge-sql: true
@@ -176,7 +179,7 @@ spring:
     password: ''
 #mybatis plus 设置
 mybatis-plus:
-  mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
+  mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
   global-config:
     # 关闭MP3.0自带的banner
     banner: false
@@ -203,7 +206,7 @@ jeecg:
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   #签名拦截接口
-  signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
+  signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys,/sys/sendChangePwdSms,/sys/user/sendChangePhoneSms,/sys/sms,/desform/api/sendVerifyCode
   # 本地：local、Minio：minio、阿里云：alioss
   uploadType: local
   # 前端访问地址
@@ -216,7 +219,7 @@ jeecg:
     #webapp文件路径
     webapp: /opt/webapp
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/jmreport/bigscreen2/**
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/bigscreen/category/**,/bigscreen/visual/**,/bigscreen/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??

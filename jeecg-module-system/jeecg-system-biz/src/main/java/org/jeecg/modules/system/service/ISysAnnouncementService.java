@@ -43,7 +43,15 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
      * @param msgCategory 消息类型
      * @return Page<SysAnnouncement>
      */
-	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory);
+	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory, Integer tenantId, Date beginDate);
+
+    /**
+     * 获取用户未读消息数量
+     *
+     * @param userId 用户id
+     * @return
+     */
+    public Integer getUnreadMessageCountByUserId(String userId, Date beginDate);
 
 
     /**

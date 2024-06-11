@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -17,15 +16,17 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
+import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
-import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.common.modules.redis.client.JeecgRedisClient;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -101,6 +102,9 @@ public class SysUserController {
     @Autowired
     private ISysUserTenantService userTenantService;
 
+    @Autowired
+    private JeecgRedisClient jeecgRedisClient;
+    
     /**
      * 获取租户下用户数据（支持租户隔离）
      * @param user
@@ -1129,7 +1133,7 @@ public class SysUserController {
         }
         sysUser = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username).eq(SysUser::getPhone,phone));
         if (sysUser == null) {
-            result.setMessage("未找到用户！");
+            result.setMessage("当前登录用户和绑定的手机号不匹配，无法修改密码！");
             result.setSuccess(false);
             return result;
         } else {
@@ -1143,6 +1147,8 @@ public class SysUserController {
             //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]密码重置添加敏感日志------------
             result.setSuccess(true);
             result.setMessage("密码重置完成！");
+            //修改完密码后清空redis
+            redisUtil.removeAll(redisKey);
             return result;
         }
     }
@@ -1551,15 +1557,15 @@ public class SysUserController {
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name = "roleId", required = false) String roleId,
             @RequestParam(name="keyword",required=false) String keyword,
-            @RequestParam(name="excludeUserIdList",required = false) String excludeUserIdList) {
+            @RequestParam(name="excludeUserIdList",required = false) String excludeUserIdList,
+            HttpServletRequest req) {
         //------------------------------------------------------------------------------------------------
         Integer tenantId = null;
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
         if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
             String tenantStr = TenantContext.getTenant();
-            if(oConvertUtils.isNotEmpty(tenantStr)){
-                tenantId = Integer.parseInt(tenantStr);
-            }
+            tenantId = oConvertUtils.getInteger(tenantStr, oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(req), -1));
+            log.info("---------简流中选择用户接口，通过租户筛选，租户ID={}", tenantId);
         }
         //------------------------------------------------------------------------------------------------
         IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo,excludeUserIdList);

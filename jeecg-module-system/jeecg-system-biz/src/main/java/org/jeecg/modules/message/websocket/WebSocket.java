@@ -31,8 +31,13 @@ public class WebSocket {
      * Redis触发监听名字
      */
     public static final String REDIS_TOPIC_NAME = "socketHandler";
+
+    //避免初次调用出现空指针的情况
+    private static JeecgRedisClient jeecgRedisClient;
     @Autowired
-    private JeecgRedisClient jeecgRedisClient;
+    private void setJeecgRedisClient(JeecgRedisClient jeecgRedisClient){
+        WebSocket.jeecgRedisClient = jeecgRedisClient;
+    }
 
 
     //==========【websocket接受、推送消息等方法 —— 具体服务节点推送ws消息】========================================================================================
@@ -109,6 +114,9 @@ public class WebSocket {
             log.debug("【系统 WebSocket】收到客户端消息:" + message);
         }else{
             log.debug("【系统 WebSocket】收到客户端消息:" + message);
+            //update-begin---author:wangshuai---date:2024-05-07---for:【issues/1161】前端websocket因心跳导致监听不起作用---
+            this.sendMessage(userId, "ping");
+            //update-end---author:wangshuai---date:2024-05-07---for:【issues/1161】前端websocket因心跳导致监听不起作用---
         }
         
 //        //------------------------------------------------------------------------------

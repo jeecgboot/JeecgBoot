@@ -23,6 +23,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.UUIDGenerator;
+import org.jeecg.config.shiro.IgnoreAuth;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -232,6 +233,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * @param modelAndView
      * @return
      */
+    @IgnoreAuth
     @RequestMapping("/html")
     public ModelAndView ftl(ModelAndView modelAndView) {
         modelAndView.setViewName("demo3");

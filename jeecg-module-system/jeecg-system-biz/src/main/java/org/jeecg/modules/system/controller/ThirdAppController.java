@@ -61,8 +61,13 @@ public class ThirdAppController {
     @GetMapping("/getEnabledType")
     public Result getEnabledType() {
         Map<String, Boolean> enabledMap = new HashMap(5);
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]通过租户模式隔离 ------------
-        int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        int tenantId;
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            tenantId = oConvertUtils.getInt(TenantContext.getTenant(), -1);
+        } else {
+            tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        }
         //查询当前租户下的第三方配置
         List<SysThirdAppConfig> list = appConfigService.getThirdConfigListByThirdType(tenantId);
         //钉钉是否已配置

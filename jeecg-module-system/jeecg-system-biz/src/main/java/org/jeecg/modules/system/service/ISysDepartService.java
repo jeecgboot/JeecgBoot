@@ -103,6 +103,14 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
     List<SysDepart> queryDepartsByUsername(String username);
+    
+    /**
+     * 根据用户ID查询部门
+     *
+     * @param userId
+     * @return
+     */
+    List<String> queryDepartsByUserId(String userId);
 
 	 /**
      * 根据部门id批量删除并删除其可能存在的子级部门

@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * 使用内存存储通过@IgnoreAuth注解的url，配合JwtFilter进行免登录校验
  * PS：无法使用ThreadLocal进行存储，因为ThreadLocal装载时，JwtFilter已经初始化完毕，导致该类获取ThreadLocal为空
- * @author eightmonth@qq.com
+ * @author eightmonth
  * @date 2024/4/18 15:02
  */
 public class InMemoryIgnoreAuth {

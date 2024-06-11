@@ -33,12 +33,21 @@ public enum QueryRuleEnum {
     RIGHT_LIKE("RIGHT_LIKE","right_like","右模糊"),
     /**查询规则 带加号等于*/
     EQ_WITH_ADD("EQWITHADD","eq_with_add","带加号等于"),
-    /**查询规则 多词模糊匹配*/
+    /**查询规则 多词模糊匹配(and)*/
     LIKE_WITH_AND("LIKEWITHAND","like_with_and","多词模糊匹配————暂时未用上"),
+    /**查询规则 多词模糊匹配(or)*/
+    LIKE_WITH_OR("LIKEWITHOR","like_with_or","多词模糊匹配(or)"),
     /**查询规则 自定义SQL片段*/
     SQL_RULES("USE_SQL_RULES","ext","自定义SQL片段"),
-    
+
+    /** 查询工作表 */
+    LINKAGE("LINKAGE","linkage","查询工作表"),
+
     // ------- 当前表单设计器内专用 -------
+    /**查询规则 不以…结尾*/
+    NOT_LEFT_LIKE("NOT_LEFT_LIKE","not_left_like","不以…结尾"),
+    /**查询规则 不以…开头*/
+    NOT_RIGHT_LIKE("NOT_RIGHT_LIKE","not_right_like","不以…开头"),
     /** 值为空 */
     EMPTY("EMPTY","empty","值为空"),
     /** 值不为空 */
@@ -49,7 +58,10 @@ public enum QueryRuleEnum {
     ELE_MATCH("ELE_MATCH","elemMatch","多词匹配"),
     /**查询规则 范围查询*/
     RANGE("RANGE","range","范围查询"),
-    NOT_RANGE("NOT_RANGE","not_range","不在范围查询");
+    /**查询规则 不在范围内查询*/
+    NOT_RANGE("NOT_RANGE","not_range","不在范围查询"),
+    /** 自定义mongodb查询语句 */
+    CUSTOM_MONGODB("CUSTOM_MONGODB","custom_mongodb","自定义mongodb查询语句");
     // ------- 当前表单设计器内专用 -------
 
     private String value;

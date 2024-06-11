@@ -284,7 +284,9 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
                 if (sysDepart != null) {
                     //  执行更新操作
                     SysDepart updateSysDepart = this.qwDepartmentToSysDepart(departmentTree, sysDepart);
-                    if (sysParentId != null) {
+                    //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】企业微信同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
+                    if (sysParentId != null && !"0".equals(sysParentId)) {
+                    //update-end---author:wangshuai---date:2024-04-10---for:【issues/6017】企业微信同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
                         updateSysDepart.setParentId(sysParentId);
                     }
                     try {
@@ -302,7 +304,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
                 } else {
                     // 执行新增操作
                     SysDepart newSysDepart = this.qwDepartmentToSysDepart(departmentTree, null);
-                    if (sysParentId != null) {
+                    if (sysParentId != null && !"0".equals(sysParentId)) {
                         newSysDepart.setParentId(sysParentId);
                         // 2 = 组织机构
                         newSysDepart.setOrgCategory("2");
@@ -390,7 +392,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
                 int errCode = JwUserAPI.updateUser(qwUser, accessToken);
                 // 收集错误信息
                 this.syncUserCollectErrInfo(errCode, sysUser, syncInfo);
-                this.thirdAccountSaveOrUpdate(sysThirdAccount, sysUser.getId(), qwUser.getUserid(),qwUser.getName());
+                this.thirdAccountSaveOrUpdate(sysThirdAccount, sysUser.getId(), qwUser.getUserid(),qwUser.getName(), null);
                 // 更新完成，直接跳到下一次外部循环继续
                 continue for1;
             }
@@ -400,7 +402,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
             // 收集错误信息
             boolean apiSuccess = this.syncUserCollectErrInfo(errCode, sysUser, syncInfo);
             if (apiSuccess) {
-                this.thirdAccountSaveOrUpdate(sysThirdAccount, sysUser.getId(), qwUser.getUserid(),qwUser.getName());
+                this.thirdAccountSaveOrUpdate(sysThirdAccount, sysUser.getId(), qwUser.getUserid(),qwUser.getName(), null);
             }
         }
         return syncInfo;
@@ -471,13 +473,16 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
      * @param qwUserId        企业微信用户ID
      * @param wechatRealName  企业微信用户真实姓名
      */
-    private void thirdAccountSaveOrUpdate(SysThirdAccount sysThirdAccount, String sysUserId, String qwUserId, String wechatRealName) {
+    private void thirdAccountSaveOrUpdate(SysThirdAccount sysThirdAccount, String sysUserId, String qwUserId, String wechatRealName, Integer tenantId) {
         if (sysThirdAccount == null) {
             sysThirdAccount = new SysThirdAccount();
             sysThirdAccount.setSysUserId(sysUserId);
             sysThirdAccount.setStatus(1);
             sysThirdAccount.setDelFlag(0);
             sysThirdAccount.setThirdType(THIRD_TYPE);
+            if(oConvertUtils.isNotEmpty(tenantId)){
+                sysThirdAccount.setTenantId(tenantId);
+            }
         }
         sysThirdAccount.setThirdUserId(qwUserId);
         sysThirdAccount.setThirdUserUuid(qwUserId);
@@ -1184,7 +1189,7 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
                     this.createUserTenant(sysUserId,false,tenantId);
                     //step 3 新建或更新第三方账号表
                     SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByUuidAndThirdType(wechatUserId, THIRD_TYPE, tenantId, wechatUserId);
-                    this.thirdAccountSaveOrUpdate(sysThirdAccount,sysUserId,wechatUserId,wechatRealName);
+                    this.thirdAccountSaveOrUpdate(sysThirdAccount,sysUserId,wechatUserId,wechatRealName,tenantId);
                     //step 4 新建或更新用户部门关系表
                     if(oConvertUtils.isNotEmpty(wechatDepartId)){
                         String wechatDepartIds = wechatDepartId.toString();

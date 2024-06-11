@@ -151,7 +151,7 @@
         <#assign dictCode="dictCode: '${po.dictField}'">
     </#if>
 
-    <#if po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='checkbox'>
+    <#if po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='checkbox' || po.classType=='radio'>
         <#assign extAttrs="${dictCode},">
     <#elseif po.classType=='cat_tree'>
     <#-- 分类字典树 -->

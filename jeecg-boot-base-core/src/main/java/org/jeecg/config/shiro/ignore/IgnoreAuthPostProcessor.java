@@ -1,6 +1,7 @@
 package org.jeecg.config.shiro.ignore;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.config.shiro.IgnoreAuth;
 import org.springframework.aop.framework.Advised;
 import org.springframework.context.ApplicationContext;
@@ -8,7 +9,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
@@ -16,9 +16,10 @@ import java.util.*;
 
 /**
  * 在spring boot初始化时，根据@RestController注解获取当前spring容器中的bean
- * @author eightmonth@qq.com
+ * @author eightmonth
  * @date 2024/4/18 11:35
  */
+@Slf4j
 @Component
 @AllArgsConstructor
 public class IgnoreAuthPostProcessor implements ApplicationListener<ContextRefreshedEvent> {
@@ -27,6 +28,8 @@ public class IgnoreAuthPostProcessor implements ApplicationListener<ContextRefre
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        long startTime = System.currentTimeMillis();
+        
         List<String> ignoreAuthUrls = new ArrayList<>();
         if (event.getApplicationContext().getParent() == null) {
             // 只处理根应用上下文的事件，避免在子上下文中重复处理
@@ -39,9 +42,15 @@ public class IgnoreAuthPostProcessor implements ApplicationListener<ContextRefre
             }
         }
 
+        log.info("Init Token ignoreAuthUrls Config [ 集合 ]  ：{}", ignoreAuthUrls);
         if (!CollectionUtils.isEmpty(ignoreAuthUrls)) {
             InMemoryIgnoreAuth.set(ignoreAuthUrls);
         }
+
+        // 计算方法的耗时
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        log.info("Init Token ignoreAuthUrls Config [ 耗时 ] ：" + elapsedTime + "毫秒");
     }
 
     private List<String> postProcessRestController(Object restController) {

@@ -157,6 +157,18 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return user;
 	}
 
+
+	@Override
+	@Cacheable(cacheNames=CommonConstant.SYS_USER_ID_MAPPING_CACHE, key="#username")
+	public String getUserIdByName(String username) {
+		if (oConvertUtils.isEmpty(username)) {
+			return null;
+		}
+		String userId = userMapper.getUserIdByName(username);
+		return userId;
+	}
+	
+
 	@Override
 	public String translateDictFromTable(String table, String text, String code, String key) {
 		return sysDictService.queryTableDictTextByKey(table, text, code, key);
@@ -265,9 +277,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 //		}
 
 		if(user!=null) {
+			info.setSysUserId(user.getId());
 			info.setSysUserCode(user.getUsername());
 			info.setSysUserName(user.getRealname());
 			info.setSysOrgCode(user.getOrgCode());
+			info.setSysOrgId(user.getOrgId());
+			info.setSysRoleCode(user.getRoleCode());
 		}else{
 			return null;
 		}
@@ -311,6 +326,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public List<String> getRolesByUsername(String username) {
 		return sysUserRoleMapper.getRoleByUserName(username);
 	}
+	
+	@Override
+	public List<String> getRolesByUserId(String userId) {
+		return sysUserRoleMapper.getRoleCodeByUserId(userId);
+	}
 
 	@Override
 	public List<String> getDepartIdsByUsername(String username) {
@@ -320,6 +340,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			result.add(depart.getId());
 		}
 		return result;
+	}
+	
+	@Override
+	public List<String> getDepartIdsByUserId(String userId) {
+		return sysDepartService.queryDepartsByUserId(userId);
 	}
 
 	@Override
@@ -1092,6 +1117,20 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		log.info("-------通过数据库读取用户拥有的角色Rules------username： " + username + ",Roles size: " + (roles == null ? 0 : roles.size()));
 		return new HashSet<>(roles);
 	}
+	
+	
+	/**
+	 * 查询用户拥有的角色集合
+	 * @param useId
+	 * @return
+	 */
+	@Override
+	public Set<String> getUserRoleSetById(String useId) {
+		// 查询用户拥有的角色集合
+		List<String> roles = sysUserRoleMapper.getRoleCodeByUserId(useId);
+		log.info("-------通过数据库读取用户拥有的角色Rules------useId： " + useId + ",Roles size: " + (roles == null ? 0 : roles.size()));
+		return new HashSet<>(roles);
+	}
 
 	/**
 	 * 查询用户拥有的权限集合
@@ -1173,6 +1212,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	public Set<String> queryUserRoles(String username) {
 		return getUserRoleSet(username);
+	}
+
+	@Override
+	public Set<String> queryUserRolesById(String userId) {
+		return getUserRoleSetById(userId);
 	}
 
 	/**
@@ -1588,25 +1632,33 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public void saveDataLog(DataLogDTO dataLogDto) {
-		SysDataLog entity = new SysDataLog();
-		entity.setDataTable(dataLogDto.getTableName());
-		entity.setDataId(dataLogDto.getDataId());
-		entity.setDataContent(dataLogDto.getContent());
-		entity.setType(dataLogDto.getType());
-		entity.setDataVersion("1");
-		if (oConvertUtils.isNotEmpty(dataLogDto.getCreateName())) {
-			entity.setCreateBy(dataLogDto.getCreateName());
-		} else {
-			entity.autoSetCreateName();
+		try {
+			SysDataLog entity = new SysDataLog();
+			entity.setDataTable(dataLogDto.getTableName());
+			entity.setDataId(dataLogDto.getDataId());
+			entity.setDataContent(dataLogDto.getContent());
+			entity.setType(dataLogDto.getType());
+			entity.setDataVersion("1");
+			if (oConvertUtils.isNotEmpty(dataLogDto.getCreateName())) {
+				entity.setCreateBy(dataLogDto.getCreateName());
+			} else {
+				entity.autoSetCreateName();
+			}
+			sysDataLogService.save(entity);
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
+			//e.printStackTrace();
 		}
-		sysDataLogService.save(entity);
 	}
 
     @Override
     public void updateAvatar(LoginUser loginUser) {
-        SysUser sysUser = new SysUser();
-        BeanUtils.copyProperties(loginUser, sysUser);
-        sysUserService.updateById(sysUser);
+		SysUser sysUser = new SysUser();
+		// 创建UpdateWrapper对象
+		UpdateWrapper<SysUser> updateWrapper = new UpdateWrapper<>();
+		updateWrapper.eq("id", loginUser.getId()); // 设置更新条件
+		sysUser.setAvatar(loginUser.getAvatar()); // 设置要更新的字段
+		sysUserService.update(sysUser, updateWrapper);
     }
 
 	@Override
