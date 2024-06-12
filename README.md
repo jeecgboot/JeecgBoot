@@ -104,31 +104,6 @@ Docker快速启动项目
 
 
 
-
-VUE2版本专题介绍
------------------------------------
-#### 项目介绍 
-- 项目名称：ant-design-vue-jeecg
-- 说明：JeecgBoot前端提供两套解决方案，一套VUE2和一套VUE3版本，目前vue2版本最新代码只支持到jeecgboot 3.4.3版本，一定注意。
-
-#### 源码下载
-| 源码                | 源码地址                     | 
-|--------------------|------------------------|
-| 后端JAVA源码 `Vue2版`  |https://gitee.com/jeecg/jeecg-boot/tree/v3.4.3last    |
-| 前端vue2源码 `Vue2版`  |https://gitee.com/jeecg/ant-design-vue-jeecg    |
-
-#### Vue2与Vue3版本区别
-> - VUE3版本彻底抛弃IE兼容，不兼容IE和低版本浏览器，只适配高版本谷歌和Edge
- （政府、事业类单位项目需要谨慎选择——国产化迁移是一个漫长的过程，万一过程中要求IE兼容，这个不可逆）
-> - 所以如果对浏览器有要求的项目，请选择VUE2版本。
-> - VUE3版是全新的技术栈，紧跟主流（前端重写），各个功能都做了优化，拥有更好的体验效果
-
-#### 技术文档
-- 在线演示：[Vue2版演示](http://boot.jeecg.com) 
-- 开发文档：| [开发文档](http://doc.jeecg.com)  | [Vue2前端快速启动](http://doc.jeecg.com/2678320) |  [Vue2前端采用Docker启动](http://doc.jeecg.com/3043612)
-
-
-
 Star走势图
 -----------------------------------
 

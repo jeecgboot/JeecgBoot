@@ -92,13 +92,6 @@ Technical documentation
 > [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
 
 
-
-Thinking
------------------------------------
-> We are pursuing the goal of implementing complex business systems without writing code! That has been done so far
-- https://www.qiaoqiaoyun.com
-
-
 Star charts
 -----------------------------------
 
