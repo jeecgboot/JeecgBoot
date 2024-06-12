@@ -413,8 +413,8 @@
 			<!-- 积木仪表盘-->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
-				<artifactId>jimureport-drag</artifactId>
-				<version>2.0.1</version>
+				<artifactId>drag-free</artifactId>
+				<version>1.1.0</version>
 			</dependency>
 			<!-- chatgpt -->
 			<dependency>

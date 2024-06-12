@@ -36,7 +36,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimureport-drag</artifactId>
+			<artifactId>drag-free</artifactId>
 		</dependency>
 	<!-- 积木报表 mongo redis 支持包 
 		<dependency>
