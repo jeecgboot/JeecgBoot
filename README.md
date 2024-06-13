@@ -49,7 +49,6 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 | Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)   | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
 | 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)   | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
-> 官方已推出 `SpringBoot3+JDK17版本` [分支源码下载](https://github.com/jeecgboot/jeecg-boot/tree/springboot3)  |  [升级SpringBoot3博客](https://blog.csdn.net/zhangdaiscott/article/details/134805602)
 
 #### 项目说明
 
