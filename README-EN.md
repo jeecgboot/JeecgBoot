@@ -46,7 +46,7 @@ Download the source code
 -----------------------------------
 项目源码
 -----------------------------------
-| Source |Front-end source (Vue3 version) | The background source |
+| Source |Front-end source | The background source |
 |-|-|-|
 | Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
 | Gitee | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)    | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
@@ -58,7 +58,6 @@ Download the source code
 | `jeecg-boot`    | SpringBoot background source code (support microservices)      |
 | `jeecgboot-vue3` | Vue3+TS new front-end source code|
 | `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
-| `SpringBoot3+JDK17`    | [BranchSourceCode](https://github.com/jeecgboot/jeecg-boot/tree/springboot3)  [UpgradeBlog](https://blog.csdn.net/zhangdaiscott/article/details/134805602)        |
 | `More` | [Download more source code](http://jeecg.com/download) |
 
 
@@ -74,7 +73,7 @@ Docker starts the project
 -----------------------------------
 
 - [Docker starts the monomer background](https://help.jeecg.com/java/setup/docker/up.html)
-- [Docker starts the Vue3 front-end](http://help.jeecg.com/publish/docker.html)
+- [Docker starts the front-end](http://help.jeecg.com/publish/docker.html)
 - [Docker starts the micro-service background](https://help.jeecg.com/java/springcloud/docker.html)
 - [ChatGPT AI Config](https://help.jeecg.com/java/chatgpt.html)
 
@@ -88,7 +87,7 @@ Technical documentation
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
 - Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
 - QQ group ： ⑨808791225、⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
-- Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com)  | [APP](http://jeecg.com/appIndex)
+- Demo ： [OnlineDemo](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
 > [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
 
 
@@ -221,8 +220,7 @@ Technical Architecture:
 
 #### The front end
 
-- Vue2 version：`Vue2.6+@vue/cli+AntDesignVue+Viser-vue+Vuex`  [detail](https://github.com/jeecgboot/ant-design-vue-jeecg)
-- Vue3 version：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts` [detail](https://github.com/jeecgboot/jeecgboot-vue3)
+- TechnologyStack：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts` [detail](https://github.com/jeecgboot/jeecgboot-vue3)
 
 #### Support library
 

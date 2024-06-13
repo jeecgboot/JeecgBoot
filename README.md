@@ -44,7 +44,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 项目源码
 -----------------------------------
-| 仓库 |前端源码 Vue3版 | 后端JAVA源码 |
+| 仓库 |前端源码 | 后端JAVA源码 |
 |-|-|-|
 | Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)   | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
 | 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)   | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
@@ -55,7 +55,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
-| `jeecgboot-vue3` | 前端源码 (Vue3版本) |
+| `jeecgboot-vue3` | 前端源码 |
 | `jeecg-boot`    | 后端JAVA源码（支持微服务）        |
 | `jeecg-uniapp` | [APP开发框架，一份代码多终端适配，同时支持APP、小程序、H5](https://github.com/jeecgboot/jeecg-uniapp) |
 | `更多开源项目` | [更多底层源码下载](http://jeecg.com/download) |
@@ -67,7 +67,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - [通过IDEA导入项目](https://help.jeecg.com/java/setup/idea.html)
 - [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
-- [Vue3前端项目快速启动](http://help.jeecg.com/setup/startup.html)
+- [前端项目快速启动](http://help.jeecg.com/setup/startup.html)
 - [单体快速切换为微服务版](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
 - [ChatGPT AI助手配置文档](https://help.jeecg.com/java/chatgpt.html)
 
@@ -75,7 +75,7 @@ Docker快速启动项目
 -----------------------------------
 
 - [Docker启动单体后台](https://help.jeecg.com/java/setup/docker/up.html)
-- [Docker启动Vue3前端](http://help.jeecg.com/publish/docker.html)
+- [Docker启动前端](http://help.jeecg.com/publish/docker.html)
 - [Docker启动微服务后台](https://help.jeecg.com/java/springcloud/docker.html)
 
 
@@ -86,7 +86,7 @@ Docker快速启动项目
 - 开发文档：  [https://help.jeecg.com](https://help.jeecg.com)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa) |  [视频教程](https://space.bilibili.com/454617261/channel/series)  |  [1分钟低代码体验](https://my.oschina.net/jeecg/blog/3083313) 
 
-- 在线演示 ：  [Vue3演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex) |  [敲敲云零代码](https://qiaoqiaoyun.com)
+- 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
 >
 - QQ交流群 ： ⑨808791225、⑧825232878、⑦791696430(满)、⑥730954414(满)、683903138(满)、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
@@ -231,8 +231,7 @@ Star走势图
 
 #### 前端
 
-- Vue2版本：`Vue2.6+@vue/cli+AntDesignVue+Viser-vue+Vuex等`  [详细查看](https://github.com/jeecgboot/ant-design-vue-jeecg)
-- Vue3版本：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等新方案` [详细查看](https://github.com/jeecgboot/jeecgboot-vue3)
+- 技术栈：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等新方案` [详细查看](https://github.com/jeecgboot/jeecgboot-vue3)
 
 #### 支持库
 
