@@ -220,7 +220,7 @@
    */
   function handleSuperQuery(params) {
     Object.keys(params).map((k) => {
-      queryParam[k] = params[k];
+      queryParam.value[k] = params[k];
     });
     reload();
   }
@@ -288,8 +288,13 @@
       if (changeParent) {
         reload();
       } else {
-        // 编辑回调
-        updateTableDataRecord(values.id, values);
+        let data = await list({ id: values.id, pageSize: 1, pageNo: 1, ${pidFieldName}: values['${pidFieldName}'] });
+        if (data && data.records && data.records.length > 0) {
+          // 编辑回调
+          updateTableDataRecord(values.id, data.records[0]);
+        }else{
+          updateTableDataRecord(values.id, values);
+        }
       }
     } else {
       if (!values['id'] || !values['pid']) {
@@ -528,7 +533,7 @@
    */
   function handleFormJoinChange(key, value) {
     if (typeof value != 'string') {
-      queryParam[key] = value.join(',');
+      queryParam.value[key] = value.join(',');
     }
   }
   </#if>

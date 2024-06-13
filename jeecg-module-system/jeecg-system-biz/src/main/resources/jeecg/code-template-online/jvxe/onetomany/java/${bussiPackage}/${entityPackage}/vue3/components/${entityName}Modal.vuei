@@ -112,7 +112,7 @@
     const [handleChangeTabs,handleSubmit,requestSubTableData,formRef] = useJvxeMethod(requestAddOrEdit,classifyIntoFormData,tableRefs,activeKey,refKeys<#if hasOne2One==true>,validateSubForm</#if>);
 
     //设置标题
-    const title = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
+    const title = computed(() => (!unref(isUpdate) ? '新增' : !unref(formDisabled) ? '编辑' : '详情'));
 
     async function reset(){
       await resetFields();
@@ -182,11 +182,11 @@
 
 <style lang="less" scoped>
 	/** 时间和数字输入框样式 */
-    :deep(.ant-input-number){
-		width: 100%
-	}
+  :deep(.ant-input-number) {
+    width: 100%;
+  }
 
-	:deep(.ant-calendar-picker){
-		width: 100%
-	}
+  :deep(.ant-calendar-picker) {
+    width: 100%;
+  }
 </style>

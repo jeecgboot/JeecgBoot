@@ -17,70 +17,70 @@
 </#if>
 </#list>
 <#-- 结束循环 -->
- <div class="content">
- <!--引用表格-->
-   <BasicTable @register="registerTable" :rowSelection="rowSelection">
-     <!--插槽:table标题-->
-      <template #tableTitle>
+    <div class="content">
+      <!--引用表格-->
+      <BasicTable @register="registerTable" :rowSelection="rowSelection">
+        <!--插槽:table标题-->
+        <template #tableTitle>
           <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
-          <a-button  type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
-          <j-upload-button  type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
+          <a-button type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
+          <j-upload-button type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
           <a-dropdown v-if="selectedRowKeys.length > 0">
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="1" @click="batchHandleDelete">
-                    <Icon icon="ant-design:delete-outlined"></Icon>
-                    删除
-                  </a-menu-item>
-                </a-menu>
-              </template>
-              <a-button>批量操作
-                <Icon icon="mdi:chevron-down"></Icon>
-              </a-button>
-        </a-dropdown>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item key="1" @click="batchHandleDelete">
+                  <Icon icon="ant-design:delete-outlined"></Icon>
+                  删除
+                </a-menu-item>
+              </a-menu>
+            </template>
+            <a-button>批量操作
+              <Icon icon="mdi:chevron-down"></Icon>
+            </a-button>
+          </a-dropdown>
         <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
-        <!-- 高级查询 -->
-        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+          <!-- 高级查询 -->
+          <super-query :config="superQueryConfig" @search="handleSuperQuery" />
         <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
-      </template>
-       <!--操作栏-->
-      <template #action="{ record }">
-        <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
-      </template>
-      <!--字段回显插槽-->
-      <template v-slot:bodyCell="{ column, record, index, text }">
-      <#list columns as po>
-        <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
-        <template v-if="column.dataIndex==='${po.fieldName}'">
-        <#if po.classType=='umeditor'>
-          <!--富文本件字段回显插槽-->
-          <div v-html="text"></div>
-        </#if>
-        <#if po.classType=='pca'>
-          <!--省市区字段回显插槽-->
-          {{ getAreaTextByCode(text) }}
-        </#if>
-        <#if po.classType=='file'>
-          <!--文件字段回显插槽-->
-          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-          <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
-        </#if>
         </template>
-        </#if>
-      </#list>
-      </template>
-    </BasicTable>
-   <!--子表表格tab-->
-    <a-tabs defaultActiveKey="1" style="margin: 10px">
+        <!--操作栏-->
+        <template #action="{ record }">
+          <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
+        </template>
+        <!--字段回显插槽-->
+        <template v-slot:bodyCell="{ column, record, index, text }">
+        <#list columns as po>
+          <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
+          <template v-if="column.dataIndex==='${po.fieldName}'">
+          <#if po.classType=='umeditor'>
+            <!--富文本件字段回显插槽-->
+            <div v-html="text"></div>
+          </#if>
+          <#if po.classType=='pca'>
+            <!--省市区字段回显插槽-->
+            {{ getAreaTextByCode(text) }}
+          </#if>
+          <#if po.classType=='file'>
+            <!--文件字段回显插槽-->
+            <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+            <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+          </#if>
+          </template>
+          </#if>
+        </#list>
+        </template>
+      </BasicTable>
+      <!--子表表格tab-->
+      <a-tabs defaultActiveKey="1" style="margin: 10px">
         <#assign sub_seq=1>
         <#list subTables as sub>
         <a-tab-pane tab="${sub.ftlDescription}" key="${sub_seq}" <#if sub_seq gt 1>forceRender</#if>>
-           <${sub.entityName}List/>
+          <${sub.entityName}List />
         </a-tab-pane>
         <#assign sub_seq=sub_seq+1>
         </#list>
-    </a-tabs>
- </div>
+      </a-tabs>
+    </div>
     <!-- 表单区域 -->
     <${entityName}Modal @register="registerModal" @success="handleSuccess"></${entityName}Modal>
   </div>

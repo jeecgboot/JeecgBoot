@@ -201,6 +201,11 @@
       beforeFetch: (params) => {
         return Object.assign(params, queryParam);
       },
+      pagination: {
+        current: 1,
+        pageSize: 5,
+        pageSizeOptions: ['5', '10', '20'],
+      },
     },
     exportConfig: {
       name:"${tableVo.ftlDescription}",
@@ -211,7 +216,7 @@
       url: getImportUrl,
       success: handleSuccess,
     },
-    })
+  })
 
   const [registerTable, { reload },{ rowSelection, selectedRowKeys }] = tableContext
   const mainId = computed(() => (unref(selectedRowKeys).length > 0 ? unref(selectedRowKeys)[0] : ''));

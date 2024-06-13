@@ -31,7 +31,7 @@
       TimePicker,
 </#if>
 <#if need_pca>
-      JAreaSelect,
+      JAreaLinkage,
 </#if>
 <#if need_upload>
       JUpload,

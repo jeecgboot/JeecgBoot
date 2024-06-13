@@ -147,7 +147,7 @@
       <#-- update-end-author:taoyan date:2022-11-14 for:VUEN-2674 【代码生成】对接流程表单 附加单据显示问题 5.多tab生成代码后，新增 没有滚动条，只能填写部分字段 -->
     })
     //设置标题
-    const title = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
+    const title = computed(() => (!unref(isUpdate) ? '新增' : !unref(formDisabled) ? '编辑' : '详情'));
     //重置
     async function reset(){
       await resetFields();
@@ -216,30 +216,30 @@
 </script>
 
 <style lang="less" scoped>
-/** 时间和数字输入框样式 */
-    :deep(.ant-input-number){
-        width: 100%
-    }
+  /** 时间和数字输入框样式 */
+  :deep(.ant-input-number) {
+    width: 100%;
+  }
 
-    :deep(.ant-calendar-picker){
-        width: 100%
-    }
+  :deep(.ant-calendar-picker) {
+    width: 100%;
+  }
 
-    .titleArea {
-        display: flex;
-        align-content: center;
-        padding-right: 70px;
-        .title {
-          margin-right: 16px;
-          line-height: 32px;
-        }
-        .right {
-          overflow-x: auto;
-          overflow-y: hidden;
-          flex: 1;
-          white-space: nowrap;
-        }
+  .titleArea {
+    display: flex;
+    align-content: center;
+    padding-right: 70px;
+    .title {
+      margin-right: 16px;
+      line-height: 32px;
     }
+    .right {
+      overflow-x: auto;
+      overflow-y: hidden;
+      flex: 1;
+      white-space: nowrap;
+    }
+  }
 </style>
 
 <style lang="less">

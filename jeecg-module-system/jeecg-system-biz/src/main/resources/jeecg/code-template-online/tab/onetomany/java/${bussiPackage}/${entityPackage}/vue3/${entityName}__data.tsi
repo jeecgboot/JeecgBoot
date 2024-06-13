@@ -134,6 +134,9 @@ export const searchFormSchema: FormSchema[] = [
        },
 <#elseif po.classType=='pca'>
       component: 'JAreaLinkage',
+      componentProps: {
+        saveCode: 'region',
+      },
 <#elseif po.classType=='popup'>
     <#include "/common/form/vue3popup.ftl">
 <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
@@ -245,6 +248,9 @@ export const formSchema: FormSchema[] = [
      },
      <#elseif po.classType =='pca'>
     component: 'JAreaLinkage',
+    componentProps: {
+      saveCode: 'region',
+    },
     <#elseif po.classType =='markdown'>
     component: 'JMarkdownEditor',//注意string转换问题
      <#elseif po.classType =='password'>
@@ -470,6 +476,9 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
      },
      <#elseif po.classType =='pca'>
     component: 'JAreaLinkage',
+    componentProps: {
+      saveCode: 'region',
+    },
     <#elseif po.classType =='markdown'>
     component: 'JMarkdownEditor',//注意string转换问题
      <#elseif po.classType =='password'>
