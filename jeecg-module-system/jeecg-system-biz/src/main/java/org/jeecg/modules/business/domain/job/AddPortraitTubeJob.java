@@ -252,8 +252,9 @@ public class AddPortraitTubeJob implements Job {
         if (tube40SingleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_40_SKU_SINGLE, tube40SingleCount));
         }
+        // 2024-06-13 Temporarily replace 40cm multiple tubes by 50cm multiple tubes
         if (tube40MultipleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_40_SKU_MULTIPLE, tube40MultipleCount));
+            adequateTubes.add(Pair.of(TUBE_50_SKU_MULTIPLE, tube40MultipleCount));
         }
         if (tube30SingleDoubleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_30_SKU_SINGLE_DOUBLE, tube30SingleDoubleCount));
