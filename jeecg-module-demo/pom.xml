@@ -16,12 +16,6 @@
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-base-core</artifactId>
         </dependency>
-
-        <!-- chatgpt -->
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-chatgpt</artifactId>
-        </dependency>
     </dependencies>
 
 </project>
