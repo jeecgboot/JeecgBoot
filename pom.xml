@@ -50,7 +50,7 @@
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
 		<hutool.version>5.8.25</hutool.version>
 		<!-- 国产数据库驱动 -->
-		<kingbase8.version>8</kingbase8.version>
+		<kingbase8.version>9.0.0</kingbase8.version>
 		<dm8.version>8.1.1.49</dm8.version>
 		
 		<!-- 持久层 -->

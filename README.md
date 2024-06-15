@@ -42,9 +42,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 
 
-项目源码
+项目说明
 -----------------------------------
-| 仓库 |前端源码 | 后端JAVA源码 |
+| 仓库 |前端源码VUE3 | 后端源码JAVA |
 |-|-|-|
 | Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)   | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
 | 码云 | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)   | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
@@ -54,11 +54,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
-| `jeecgboot-vue3` | 前端源码 |
-| `jeecg-boot`    | 后端JAVA源码（支持微服务）        |
+| `jeecgboot-vue3` | 前端源码VUE3 |
+| `jeecg-boot`    | 后端源码JAVA（支持微服务）        |
 | `jeecg-uniapp` | [APP开发框架，一份代码多终端适配，同时支持APP、小程序、H5](https://github.com/jeecgboot/jeecg-uniapp) |
-| `更多开源项目` | [更多底层源码下载](http://jeecg.com/download) |
-
 
 
 快速搭建开发环境
@@ -73,8 +71,8 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 Docker快速启动项目
 -----------------------------------
 
-- [Docker启动单体后台](https://help.jeecg.com/java/setup/docker/up.html)
 - [Docker启动前端](http://help.jeecg.com/publish/docker.html)
+- [Docker启动单体后台](https://help.jeecg.com/java/setup/docker/up.html)
 - [Docker启动微服务后台](https://help.jeecg.com/java/springcloud/docker.html)
 
 
