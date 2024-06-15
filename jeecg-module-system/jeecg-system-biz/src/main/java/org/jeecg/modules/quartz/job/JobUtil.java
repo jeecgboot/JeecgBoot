@@ -1,10 +1,17 @@
 package org.jeecg.modules.quartz.job;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.DateUtils;
+import org.jeecg.config.ComponentUtil;
+import org.jeecg.config.Constant;
+import org.quartz.JobExecutionException;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,8 +50,11 @@ public class JobUtil {
      * eg:<AliyundriveShare,阿里云盘>
      */
     private static Map<String,String> driverMap = new HashMap<>();
+
     //记录方法耗时时间
     private static Map<String,Long> recordMap = new HashMap<>(200);
+
+    private static OkHttpClient client = new OkHttpClient().newBuilder().build();
 
     static {
         typeMap.put("pan.quark.cn","夸克网盘");
@@ -209,9 +219,82 @@ public class JobUtil {
     public static String getShareLink(String str) {
         String url = getUrl(str);
         if (isShareLink(url)) {
+            if (url.contains("?pwd=")) {
+                url = url.substring(0,url.indexOf("?pwd="));
+            } else if (url.contains("?password=")) {
+                url = url.substring(0,url.indexOf("?password="));
+            } else if (url.endsWith("#")) {
+                url = url.substring(0,url.length()-1);
+            }
             return url;
         }
         return "";
+    }
+
+    public static String getPassword(String text) {
+        for (String str : text.split(" ")) {
+            str += " ";
+            String password = "";
+            if ((str.contains("分享码:") || str.contains("分享码：") || str.contains("分享码 ")) && StringUtils.isBlank(password)) {
+                if (str.indexOf(" ",str.indexOf("分享码")+5)>0) {
+                    password = str.substring(str.indexOf("分享码")+4,str.indexOf(" ",str.indexOf("分享码")+5)).trim();
+                }
+            } else if ((str.contains("访问码:") || str.contains("访问码：") || str.contains("访问码 ")) && StringUtils.isBlank(password)) {
+                if (str.indexOf(" ",str.indexOf("访问码")+5)>0) {
+                    password = str.substring(str.indexOf("访问码")+4,str.indexOf(" ",str.indexOf("访问码")+5)).trim();
+                }
+            } else if ((str.contains("提取码:") || str.contains("提取码：") || str.contains("提取码 ")) && StringUtils.isBlank(password)) {
+                if (str.indexOf(" ",str.indexOf("提取码")+5)>0) {
+                    password = str.substring(str.indexOf("提取码")+4,str.indexOf(" ",str.indexOf("提取码")+5)).trim();
+                }
+            } else if ((str.contains("密码:") || str.contains("密码：") || str.contains("密码 ")) && StringUtils.isBlank(password)) {
+                if (str.indexOf(" ", str.indexOf("密码") + 4) > 0) {
+                    password = str.substring(str.indexOf("密码")+3,str.indexOf(" ",str.indexOf("密码")+4)).trim();
+                }
+            } else if (str.contains("密码") && StringUtils.isBlank(password)) {
+                if (str.indexOf(" ", str.indexOf("密码") + 4) > 0) {
+                    password = str.substring(str.indexOf("密码")+2,str.indexOf(" ",str.indexOf("密码")+3)).trim();
+                }
+            } else if (str.contains("?password=") && StringUtils.isBlank(password)) {
+                int endIndex = str.indexOf("&", str.indexOf("?password="), str.indexOf(" "));
+                password = str.substring(str.indexOf("?password=") + 10, endIndex > 0 ? endIndex : str.length()).trim();
+            } else if (str.contains("?pwd=") && StringUtils.isBlank(password)) {
+                int endIndex = str.indexOf("&", str.indexOf("?pwd="), str.indexOf(" "));
+                password = str.substring(str.indexOf("?pwd=") + 5, endIndex > 0 ? endIndex : str.length()).trim();
+            }
+            if (!password.matches("^[a-zA-Z0-9].*")) {
+                password = "";
+            }
+            if (StringUtils.isNotBlank(password)) {
+                if (password.endsWith("#") && password.length() > 4) {
+                    password = password.substring(0,password.length()-1);
+                }
+                return password;
+            }
+        }
+        return "";
+    }
+
+    public static String getSize(String str) {
+        str += " ";
+        String size = "";
+        if ((str.contains("Size:") || str.startsWith("Size：") || str.startsWith("Size ")) && StringUtils.isBlank(size)) {
+            if (str.indexOf(" ",str.indexOf("Size")+6)>0) {
+                size = str.substring(str.indexOf("Size")+5,str.indexOf(" ",str.indexOf("Size")+6)).trim();
+            }
+        } else if ((str.contains("容量:") || str.startsWith("容量：") || str.startsWith("容量 ")) && StringUtils.isBlank(size)) {
+            if (str.indexOf(" ",str.indexOf("容量")+4)>0) {
+                size = str.substring(str.indexOf("容量")+3,str.indexOf(" ",str.indexOf("容量")+4)).trim();
+            }
+        } else if ((str.contains("大小:") || str.startsWith("大小：") || str.startsWith("大小 ")) && StringUtils.isBlank(size)) {
+            if (str.indexOf(" ",str.indexOf("大小")+4)>0) {
+                size = str.substring(str.indexOf("大小")+3,str.indexOf(" ",str.indexOf("大小")+4)).trim();
+            }
+        }
+        if (!size.matches("^\\d+.*")) {
+            size = "";
+        }
+        return size;
     }
 
     public static boolean validResourceName(String str) {
@@ -255,7 +338,7 @@ public class JobUtil {
         return false;
     }
 
-    public static void updateMountPath(List<DictModel> resourceTypeList, List<Map<String, Object>> result, List<Object[]> storagesParams, List<Object[]> sharesParams) {
+    public static void updateMountPath(List<DictModel> resourceTypeList, List<Map<String, Object>> result, List<Object[]> sharesParams, List<Object[]> deleteStorages) {
         Set<String> pathSet = new HashSet<>();
         for (Map map : result) {
             String path = map.get("mount_path").toString();
@@ -271,10 +354,48 @@ public class JobUtil {
             if (pathSet.contains(newPath) || path.equals(newPath)) {
                 continue;
             }
-            storagesParams.add(new Object[]{newPath,resourceType,path,newPath});
-            String mountPath = "/共享/"+(StringUtils.isBlank(resourceType)?driverName:resourceType)+"/"+name;
-            sharesParams.add(new Object[]{resourceType,mountPath,name,driverName});
+            sharesParams.add(new Object[]{newPath,resourceType,name,driverName});
+            deleteStorages.add(new Object[]{path});
             log.info(String.format("%s -> %s", path,newPath));
         }
     }
+
+    public static JSONObject alistPostRequest(String api, Map<String, Object> param) throws JobExecutionException {
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, JSON.toJSONString(param));
+        Request request = new Request.Builder()
+                .url(ComponentUtil.getAListDomain() + api)
+                .method("POST", body)
+                .addHeader("Authorization", ComponentUtil.getAListToken())
+                .addHeader("User-Agent", "Apifox/1.0.0 (https://apifox.com)")
+                .addHeader("Content-Type", "application/json")
+                .build();
+        Response response = null;
+        String result = "";
+        try {
+            log.info("api: {} \t param: {}",api,JSON.toJSONString(param));
+            response = client.newCall(request).execute();
+            result = response.body().string();
+        } catch (IOException e) {
+            log.error("{} connet timeout",api);
+        }
+        return JSONObject.parseObject(result);
+    }
+
+    public static JSONObject updateStorage(Map map) throws JobExecutionException {
+        map.remove("status");
+        map.remove("remark");
+        map.remove("disabled");
+        map.remove("proxy_range");
+        map.remove("resource_type");
+        map.remove("modified");
+        map.remove("update_date");
+        return alistPostRequest(Constant.ALIST_STORAGE_UPDATE,map);
+    }
+
+    public static void main(String args[]) {
+        System.out.println(delHTMLTag("链接： <a href=\"https://115.com/s/swzs2p433f7?password=lIIl#\">https://115.com/s/swzs2p433f7?password=lIIl#</a>"));
+        System.out.println(getPassword("https://115.com/s/swzs2p433f7?password=lIIl#"));
+    }
+
 }

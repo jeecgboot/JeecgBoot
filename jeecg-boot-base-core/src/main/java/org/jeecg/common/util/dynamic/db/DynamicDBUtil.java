@@ -205,6 +205,24 @@ public class DynamicDBUtil {
     }
 
     /**
+     * 查询一条记录，且只有一个字段
+     * @param dbKey
+     * @param sql
+     * @param param
+     * @return
+     */
+    public static String getOne(final String dbKey, String sql, Object... param) {
+        JdbcTemplate jdbcTemplate = getJdbcTemplate(dbKey);
+        String result;
+        if (ArrayUtils.isEmpty(param)) {
+            result = jdbcTemplate.queryForObject(sql,String.class);
+        } else {
+            result = jdbcTemplate.queryForObject(sql,String.class,param);
+        }
+        return result;
+    }
+
+    /**
      * 支持miniDao语法操作的查询 返回HashMap
      *
      * @param dbKey 数据源标识

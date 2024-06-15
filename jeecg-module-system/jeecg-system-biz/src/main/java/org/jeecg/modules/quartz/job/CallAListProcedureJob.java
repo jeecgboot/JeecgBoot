@@ -10,11 +10,9 @@ import org.quartz.*;
  * 2、更新meta
  * 3、删除search
  */
-@PersistJobDataAfterExecution
-@DisallowConcurrentExecution
 @Slf4j
 public class CallAListProcedureJob implements Job {
-    private static final String dbKey = "alist";
+    private static final String dbKey = "jeecg-boot";
 
     /**
      * 执行存储过程

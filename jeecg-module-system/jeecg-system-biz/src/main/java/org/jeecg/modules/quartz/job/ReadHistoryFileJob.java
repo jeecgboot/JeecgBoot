@@ -29,9 +29,9 @@ import java.util.Map;
 @Component
 public class ReadHistoryFileJob implements Job {
 
-    private static final String dbKey = "alist";
+    private static final String dbKey = "jeecg-boot";
 
-    private static final boolean reAdd = false;
+    private static final boolean reAdd = true;
 
     private static final String[] nameFilter = new String[]{"(&lt;|&gt);","[,;，；。]\\s*希望大佬能转存一下","(链接|提取码)[:：]"};
 
@@ -56,7 +56,7 @@ public class ReadHistoryFileJob implements Job {
         log.info(" Job Execution key："+jobExecutionContext.getJobDetail().getKey());
         JobUtil.startTime("ReadHistoryFileJob");
         try {
-            List<String> result = DynamicDBUtil.findList(dbKey,"select distinct links from x_shares",String.class);
+            List<String> result = DynamicDBUtil.findList(dbKey,"select distinct links from alist_shares",String.class);
             for (String link : result) {
                 linkMap.put(link,"");
             }
@@ -110,7 +110,7 @@ public class ReadHistoryFileJob implements Job {
                         }
                         str = JobUtil.delHTMLTag(str);
                         if (StringUtils.isBlank(password)) {// 密码
-                            password = getPassword(str);
+                            password = JobUtil.getPassword(str);
                         }
                         if (str.startsWith("\uD83D\uDCC1 大小：")) {
                             size = str.substring(6);
@@ -164,11 +164,11 @@ public class ReadHistoryFileJob implements Job {
                         str = JobUtil.replaceAll(str,"[()（）]","").trim();
                         // 密码
                         if (StringUtils.isBlank(password)) {
-                            password = getPassword(str);
+                            password = JobUtil.getPassword(str);
                         }
                         // 大小
                         if (StringUtils.isBlank(size)) {
-                            size = getSize(str);
+                            size = JobUtil.getSize(str);
                         }
                     }
                     if (StringUtils.isNotBlank(links)) { //name默认为括号内容、备注、分享码
@@ -203,7 +203,7 @@ public class ReadHistoryFileJob implements Job {
                     if (line.contains("链接:") || line.startsWith("链接：")) {
                         name = line.substring(0,line.indexOf("链接"));
                     }
-                    password = getPassword(line);
+                    password = JobUtil.getPassword(line);
                 }
                 if (StringUtils.isBlank(name) || StringUtils.isBlank(links)) {
                     continue;
@@ -235,65 +235,13 @@ public class ReadHistoryFileJob implements Job {
                 addParamList.add(new Object[]{name,links,password,size,resourceType,driverType,mountPath,remark});
                 linkMap.put(links,name);
             }
-            DynamicDBUtil.batchUpdate(dbKey,"delete from x_shares where links=?",delParamList);
-            DynamicDBUtil.batchUpdate(dbKey,"INSERT INTO x_shares (name, links, password, size, resource_type, driver,mount_path, remark) VALUES (?,?,?,?,?,?,?,?)",addParamList);
+            DynamicDBUtil.batchUpdate(dbKey,"delete from alist_shares where links=?",delParamList);
+            DynamicDBUtil.batchUpdate(dbKey,"INSERT INTO alist_shares (name, links, password, size, resource_type, driver,mount_path, remark) VALUES (?,?,?,?,?,?,?,?)",addParamList);
             log.info(String.format("文件名：%s\t成功%d；总数%d",htmlFile.getName(),addParamList.size(),totalCount));
         } catch (Exception e) {
-            log.error(line);
+            log.error(JobUtil.delHTMLTag(line));
             throw new JobExecutionException(e);
         }
-    }
-
-    private String getSize(String str) {
-        str += " ";
-        String size = "";
-        if ((str.contains("Size:") || str.startsWith("Size：") || str.startsWith("Size ")) && StringUtils.isBlank(size)) {
-            if (str.indexOf(" ",str.indexOf("Size")+6)>0) {
-                size = str.substring(str.indexOf("Size")+5,str.indexOf(" ",str.indexOf("Size")+6)).trim();
-            }
-        } else if ((str.contains("容量:") || str.startsWith("容量：") || str.startsWith("容量 ")) && StringUtils.isBlank(size)) {
-            if (str.indexOf(" ",str.indexOf("容量")+4)>0) {
-                size = str.substring(str.indexOf("容量")+3,str.indexOf(" ",str.indexOf("容量")+4)).trim();
-            }
-        } else if ((str.contains("大小:") || str.startsWith("大小：") || str.startsWith("大小 ")) && StringUtils.isBlank(size)) {
-            if (str.indexOf(" ",str.indexOf("大小")+4)>0) {
-                size = str.substring(str.indexOf("大小")+3,str.indexOf(" ",str.indexOf("大小")+4)).trim();
-            }
-        }
-        if (!size.matches("^\\d+.*")) {
-            size = "";
-        }
-        return size;
-    }
-
-    private String getPassword(String str) {
-        str += " ";
-        String password = "";
-        if ((str.contains("分享码:") || str.contains("分享码：") || str.contains("分享码 ")) && StringUtils.isBlank(password)) {
-            if (str.indexOf(" ",str.indexOf("分享码")+5)>0) {
-                password = str.substring(str.indexOf("分享码")+4,str.indexOf(" ",str.indexOf("分享码")+5)).trim();
-            }
-        } else if ((str.contains("访问码:") || str.contains("访问码：") || str.contains("访问码 ")) && StringUtils.isBlank(password)) {
-            if (str.indexOf(" ",str.indexOf("访问码")+5)>0) {
-                password = str.substring(str.indexOf("访问码")+4,str.indexOf(" ",str.indexOf("访问码")+5)).trim();
-            }
-        } else if ((str.contains("提取码:") || str.contains("提取码：") || str.contains("提取码 ")) && StringUtils.isBlank(password)) {
-            if (str.indexOf(" ",str.indexOf("提取码")+5)>0) {
-                password = str.substring(str.indexOf("提取码")+4,str.indexOf(" ",str.indexOf("提取码")+5)).trim();
-            }
-        } else if ((str.contains("密码:") || str.contains("密码：") || str.contains("密码 ")) && StringUtils.isBlank(password)) {
-            if (str.indexOf(" ", str.indexOf("密码") + 4) > 0) {
-                password = str.substring(str.indexOf("密码")+3,str.indexOf(" ",str.indexOf("密码")+4)).trim();
-            }
-        } else if (str.contains("密码") && StringUtils.isBlank(password)) {
-            if (str.indexOf(" ", str.indexOf("密码") + 4) > 0) {
-                password = str.substring(str.indexOf("密码")+2,str.indexOf(" ",str.indexOf("密码")+3)).trim();
-            }
-        }
-        if (!password.matches("^[a-zA-Z0-9].*")) {
-            password = "";
-        }
-        return password;
     }
 
     private boolean validDriveLink(String link,String type) {
@@ -338,7 +286,6 @@ public class ReadHistoryFileJob implements Job {
     }
 
     public static void main(String args[]) {
-        ReadHistoryFileJob job = new ReadHistoryFileJob();
-        System.out.println(job.getPassword(" 提取码: 5761 "));
+        System.out.println(JobUtil.getPassword(" 提取码: 5761 "));
     }
 }
