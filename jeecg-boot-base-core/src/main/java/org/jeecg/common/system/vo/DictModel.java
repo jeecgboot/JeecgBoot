@@ -43,6 +43,10 @@ public class DictModel implements Serializable{
 	 */
 	private String text;
 	/**
+	 * 描述
+	 */
+	private String description;
+	/**
 	 * 字典颜色
 	 */
 	private String color;
