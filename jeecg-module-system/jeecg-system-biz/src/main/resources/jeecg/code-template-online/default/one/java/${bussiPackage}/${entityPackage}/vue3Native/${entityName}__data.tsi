@@ -3,6 +3,7 @@ import {BasicColumn} from '/@/components/Table';
 import {FormSchema} from '/@/components/Table';
 import { rules} from '/@/utils/helper/validator';
 import { render } from '/@/utils/common/renderUtils';
+import { getWeekMonthQuarterYear } from '/@/utils';
 //列表数据
 export const columns: BasicColumn[] = [
  <#list columns as po>
@@ -18,7 +19,16 @@ export const columns: BasicColumn[] = [
     <#if po.classType=='date'>
     dataIndex: '${po.fieldName}',
     customRender:({text}) =>{
-      return !text?"":(text.length>10?text.substr(0,10):text);
+      text = !text ? "" : (text.length > 10 ? text.substr(0,10) : text);
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      if(text) {
+        return getWeekMonthQuarterYear(text)['${po.extendParams.picker}'];
+      } else {
+        return text;
+      }
+      <#else>
+      return text;
+      </#if>
     },
     <#elseif po.fieldDbType=='Blob'>
     dataIndex: '${po.fieldName}String'

@@ -348,5 +348,5 @@
 </script>
 
 <style scoped>
-
+<#include "/common/form/vue3SearchStyle.ftl">
 </style>

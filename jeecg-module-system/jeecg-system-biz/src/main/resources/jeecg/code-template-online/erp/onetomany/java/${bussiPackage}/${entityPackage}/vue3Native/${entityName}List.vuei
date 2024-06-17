@@ -193,6 +193,7 @@
       columns,
       canResize:false,
       useSearchForm: false,
+      clickToRowSelect: true,
       rowSelection: {type: 'radio'},
       actionColumn: {
         width: 120,

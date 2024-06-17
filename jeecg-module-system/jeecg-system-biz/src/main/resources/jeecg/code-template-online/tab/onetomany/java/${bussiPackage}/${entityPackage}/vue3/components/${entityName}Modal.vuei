@@ -238,8 +238,21 @@
       overflow-y: hidden;
       flex: 1;
       white-space: nowrap;
+      .ant-radio-group {
+       font-weight: normal;
+      }
     }
   }
+
+  html[data-theme='light'] {
+      .right {
+        .ant-radio-group {
+          :deep(.ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked)) {
+            color: #555;
+          }
+        }
+      }
+    }
 </style>
 
 <style lang="less">

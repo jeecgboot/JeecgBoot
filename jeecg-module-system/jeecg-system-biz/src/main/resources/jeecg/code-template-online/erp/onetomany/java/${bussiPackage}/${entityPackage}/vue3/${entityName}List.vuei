@@ -119,7 +119,8 @@
            title: '${tableVo.ftlDescription}',
            api: list,
            columns,
-           canResize:false,
+           canResize: false,
+           clickToRowSelect: true,
            rowSelection: {type: 'radio'},
            formConfig: {
                 schemas: searchFormSchema,
@@ -349,4 +350,6 @@
       }
     }
   }
+  
+  <#include "/common/form/vue3SearchStyle.ftl">
 </style>
