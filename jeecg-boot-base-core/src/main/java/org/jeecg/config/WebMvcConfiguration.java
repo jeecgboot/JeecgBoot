@@ -75,7 +75,53 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
      */
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("doc.html");
+        //registry.addViewController("/").setViewName("doc.html");
+       handleMappingViewControllers(registry);
+    }
+
+    @Bean
+    @MvcMapping
+    public Map defaultMvcMapping() {
+        Map result = new HashMap();
+        MvcDef root = MvcDef.create("/","doc.html");
+        result.put(root.getPath(),root);
+        return result;
+    }
+
+    private void handleMappingViewControllers(ViewControllerRegistry registry) {
+
+        ApplicationContext context = SpringContextUtils.getApplicationContext();
+
+        Map<String, Object> beanMaps = context.getBeansWithAnnotation(MvcMapping.class);
+
+        if (null == beanMaps) {
+            return;
+        }
+        HashMap<String,MvcDef> mvc = new HashMap();
+        for (Object val : beanMaps.values()) {
+            if (!(val instanceof Map)) {continue;}
+            Map mvcMaps = (Map)val;
+            for (Object def : mvcMaps.values()) {
+                if (def instanceof MvcDef) {
+                    handleOverrideMapping(mvc, (MvcDef)def);
+                }
+            }
+        }
+
+        for (MvcDef def : mvc.values()) {
+           registry.addViewController(def.getPath()).setViewName(def.getView());
+        }
+    }
+    private void handleOverrideMapping(HashMap mvc,MvcDef def){
+        Object val = mvc.get(def.getPath());
+        if (null == val){
+            mvc.put(def.getPath(),def);
+            return ;
+        }
+        MvcDef existDef = (MvcDef)val;
+        if (existDef.getPriority()< def.getPriority()){
+            mvc.put(def.getPath(),def);
+        }
     }
 
     @Bean
