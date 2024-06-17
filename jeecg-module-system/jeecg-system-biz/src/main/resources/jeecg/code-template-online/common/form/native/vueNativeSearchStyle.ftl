@@ -18,5 +18,8 @@
       margin-bottom: 16px;
       height: 32px;
     }
+    :deep(.ant-picker),:deep(.ant-input-number){
+      width: 100%;
+    }
   }
   

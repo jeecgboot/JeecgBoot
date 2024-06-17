@@ -3,6 +3,7 @@ import {BasicColumn} from '/@/components/Table';
 import {FormSchema} from '/@/components/Table';
 import { rules} from '/@/utils/helper/validator';
 import { render } from '/@/utils/common/renderUtils';
+import { getWeekMonthQuarterYear } from '/@/utils';
 //列表数据
 export const columns: BasicColumn[] = [
  <#list columns as po>
@@ -18,7 +19,16 @@ export const columns: BasicColumn[] = [
     <#if po.classType=='date'>
     dataIndex: '${po.fieldName}',
     customRender:({text}) =>{
-      return !text?"":(text.length>10?text.substr(0,10):text)
+      text = !text ? "" : (text.length > 10 ? text.substr(0,10) : text);
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      if(text) {
+        return getWeekMonthQuarterYear(text)['${po.extendParams.picker}'];
+      } else {
+        return text;
+      }
+      <#else>
+      return text;
+      </#if>
     },
     <#elseif po.fieldDbType=='Blob'>
     dataIndex: '${po.fieldName}String'
@@ -123,6 +133,9 @@ export const searchFormSchema: FormSchema[] = [
 <#elseif po.classType=='date'>
       component: 'DatePicker',
       componentProps: {
+        <#if po.extendParams?exists && po.extendParams.picker?exists>
+        picker: '${po.extendParams.picker}',
+        </#if>
         valueFormat: 'YYYY-MM-DD'
       },
 <#elseif po.classType=='datetime'>
@@ -153,6 +166,22 @@ export const searchFormSchema: FormSchema[] = [
           dictCode:"${po.dictField}"
         </#if>
       },
+<#elseif po.classType == 'sel_tree'>
+      component: 'JTreeSelect',
+      componentProps:{
+          <#if po.dictText??>
+          <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+          dict:"${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}",
+          <#elseif po.dictText?split(',')[1]??>
+          pidField:"${po.dictText?split(',')[1]}",
+          <#elseif po.dictText?split(',')[3]??>
+          hasChildField:"${po.dictText?split(',')[3]}",
+          </#if>
+          </#if>
+          pidValue:"${po.dictField}",
+      },
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+      component: 'InputNumber',
 <#else>
       component: 'Input',
 </#if>
@@ -165,7 +194,10 @@ export const searchFormSchema: FormSchema[] = [
 <#if po.classType=='date'>
       component: 'RangePicker',
       componentProps: {
-          valueType: 'Date',
+        <#if po.extendParams?exists && po.extendParams.picker?exists>
+        picker: '${po.extendParams.picker}',
+        </#if>
+        valueType: 'Date',
       },
 <#elseif po.classType=='datetime'>
       component: 'RangePicker',
@@ -226,6 +258,9 @@ export const formSchema: FormSchema[] = [
     <#if po.classType =='date'>
     component: 'DatePicker',
     componentProps: {
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      picker: '${po.extendParams.picker}',
+      </#if>
       valueFormat: 'YYYY-MM-DD'
     },
      <#elseif po.classType =='datetime'>
@@ -319,7 +354,9 @@ export const formSchema: FormSchema[] = [
      componentProps:{
      <#if po.uploadnum??>
         fileMax:${po.uploadnum}
-    </#if>
+     <#else>
+        fileMax: 0
+     </#if>
       },
   <#elseif po.classType=='umeditor'>
     component: 'JEditor',
