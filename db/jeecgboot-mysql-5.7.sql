@@ -14,11 +14,170 @@ USE `jeecg-boot`;
  Target Server Version : 50738
  File Encoding         : 65001
 
- Date: 13/06/2024 11:42:46
+ Date: 17/06/2024 09:23:08
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for ces_order_customer
+-- ----------------------------
+DROP TABLE IF EXISTS `ces_order_customer`;
+CREATE TABLE `ces_order_customer`  (
+  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '客户名字',
+  `sex` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '客户性别',
+  `birthday` datetime NULL DEFAULT NULL COMMENT '客户生日',
+  `age` int(11) NULL DEFAULT NULL COMMENT '年龄',
+  `address` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '常用地址',
+  `order_main_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单ID',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of ces_order_customer
+-- ----------------------------
+INSERT INTO `ces_order_customer` VALUES ('1281792646935842818', 'admin', '2020-07-11 11:29:16', NULL, NULL, 'A01', NULL, NULL, NULL, NULL, NULL, '1260135645520654338');
+INSERT INTO `ces_order_customer` VALUES ('1281794386984779777', 'admin', '2020-07-11 11:36:11', NULL, NULL, 'A01', '管理员', '1', '2018-12-05 00:00:00', NULL, NULL, '1281794386716344321');
+INSERT INTO `ces_order_customer` VALUES ('1335894537933430785', 'admin', '2020-12-07 18:30:52', NULL, NULL, 'A01', '张三', '1', NULL, NULL, NULL, '1335894537597886465');
+INSERT INTO `ces_order_customer` VALUES ('1533106655112916994', 'admin', '2022-06-04 23:21:24', NULL, NULL, 'A01', NULL, '1', '2022-06-04 23:21:11', 11, '11', '1533106654659932162');
+INSERT INTO `ces_order_customer` VALUES ('15889531549290863128', 'admin', '2020-05-08 23:54:00', NULL, NULL, 'A01', '小王', '1', '2020-05-08 00:00:00', 1, '', '1258787241599250433');
+INSERT INTO `ces_order_customer` VALUES ('15889531551231672264', 'admin', '2020-05-08 23:54:00', NULL, NULL, 'A01', '校长', '2', '2020-05-23 00:00:00', 2, '', '1258787241599250433');
+INSERT INTO `ces_order_customer` VALUES ('15889531554322486243', 'admin', '2020-05-08 23:54:00', NULL, NULL, 'A01', '小明', '2', '2020-05-03 00:00:00', 3, '', '1258787241599250433');
+INSERT INTO `ces_order_customer` VALUES ('15892741044590530487', 'admin', '2020-05-12 17:02:32', NULL, NULL, 'A01A05', '111', '1', '2020-05-12 00:00:00', NULL, '', '1260133243631562754');
+INSERT INTO `ces_order_customer` VALUES ('15892741436981375151', 'admin', '2020-05-12 17:02:32', NULL, NULL, 'A01A05', '11', '1', '2020-05-14 00:00:00', NULL, '', '1260133243631562754');
+
+-- ----------------------------
+-- Table structure for ces_order_goods
+-- ----------------------------
+DROP TABLE IF EXISTS `ces_order_goods`;
+CREATE TABLE `ces_order_goods`  (
+  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `good_name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品名字',
+  `price` double NULL DEFAULT NULL COMMENT '价格',
+  `num` int(11) NULL DEFAULT NULL COMMENT '数量',
+  `zong_price` double NULL DEFAULT NULL COMMENT '单品总价',
+  `order_main_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单ID',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of ces_order_goods
+-- ----------------------------
+INSERT INTO `ces_order_goods` VALUES ('1335894537799213058', 'admin', '2022-05-07 18:39:13', NULL, NULL, 'A01', '商品11', 11, NULL, NULL, '1335894537597886465');
+INSERT INTO `ces_order_goods` VALUES ('1335894537857933313', 'admin', '2022-05-07 18:39:13', NULL, NULL, 'A01', '商品22', 22, NULL, NULL, '1335894537597886465');
+INSERT INTO `ces_order_goods` VALUES ('1335894537878904833', 'admin', '2022-05-07 18:39:13', NULL, NULL, 'A01', '商品22', 33, NULL, NULL, '1335894537597886465');
+INSERT INTO `ces_order_goods` VALUES ('1522892799560265730', 'admin', '2022-05-07 18:55:12', NULL, NULL, 'A01', '商品假名陆刚', 200.33, 223, 2222.222, '1335894537597886465');
+INSERT INTO `ces_order_goods` VALUES ('1533106654966116354', 'admin', '2022-06-04 23:21:24', NULL, NULL, 'A01', '11', 211, 22, 4642, '1533106654659932162');
+INSERT INTO `ces_order_goods` VALUES ('1533106654982893570', 'admin', '2022-06-04 23:21:24', NULL, NULL, 'A01', '22', 22, 22, 484, '1533106654659932162');
+INSERT INTO `ces_order_goods` VALUES ('15889531536650244013', 'admin', '2020-05-08 23:54:00', NULL, NULL, 'A01', '显示器', 11, 1, 11, '1258787241599250433');
+INSERT INTO `ces_order_goods` VALUES ('15889531538491119218', 'admin', '2020-05-08 23:54:00', NULL, NULL, 'A01', '鼠标', 22, 2, 44, '1258787241599250433');
+INSERT INTO `ces_order_goods` VALUES ('15889532051192650399', 'admin', '2020-05-08 23:54:00', NULL, NULL, 'A01', '键盘', 33, 3, 99, '1258787241599250433');
+INSERT INTO `ces_order_goods` VALUES ('15892741033410312304', 'admin', '2020-05-12 17:02:32', NULL, NULL, 'A01A05', '雷蛇键盘', 200, 2, NULL, '1260133243631562754');
+INSERT INTO `ces_order_goods` VALUES ('15892741162151118866', 'admin', '2020-05-12 17:02:32', NULL, NULL, 'A01A05', '樱桃键盘', 200, 4, NULL, '1260133243631562754');
+INSERT INTO `ces_order_goods` VALUES ('15892747180850346324', 'admin', '2020-07-11 11:29:16', NULL, NULL, 'A01', '11', 11, NULL, NULL, '1260135645520654338');
+INSERT INTO `ces_order_goods` VALUES ('15892934593221167669', 'admin', '2020-07-11 11:29:16', NULL, NULL, 'A01', '', NULL, NULL, NULL, '1260135645520654338');
+INSERT INTO `ces_order_goods` VALUES ('15892934594762635052', 'admin', '2020-07-11 11:29:16', NULL, NULL, 'A01', '', NULL, NULL, NULL, '1260135645520654338');
+INSERT INTO `ces_order_goods` VALUES ('15944385645060861881', 'admin', '2022-05-07 18:16:58', NULL, NULL, 'A01', '11', 333, NULL, NULL, '1281794386716344321');
+INSERT INTO `ces_order_goods` VALUES ('15944385663981814101', 'admin', '2022-05-07 18:16:58', NULL, NULL, 'A01', '22', 33, NULL, NULL, '1281794386716344321');
+INSERT INTO `ces_order_goods` VALUES ('16519186144192894656', 'admin', '2022-05-07 18:16:58', NULL, NULL, 'A01', '333', 33, NULL, NULL, '1281794386716344321');
+
+-- ----------------------------
+-- Table structure for ces_order_main
+-- ----------------------------
+DROP TABLE IF EXISTS `ces_order_main`;
+CREATE TABLE `ces_order_main`  (
+  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `order_code` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单编码',
+  `xd_date` datetime NULL DEFAULT NULL COMMENT '下单时间',
+  `money` double NULL DEFAULT NULL COMMENT '订单总额',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of ces_order_main
+-- ----------------------------
+INSERT INTO `ces_order_main` VALUES ('1258787241599250433', 'admin', '2020-05-08 23:54:00', NULL, NULL, 'A01', '20200508-0001', '2020-05-08 23:52:32', 50000, NULL);
+INSERT INTO `ces_order_main` VALUES ('1260133243631562754', 'admin', '2020-05-12 17:02:32', NULL, NULL, 'A01A05', '202005120001', '2020-05-12 17:01:39', NULL, NULL);
+INSERT INTO `ces_order_main` VALUES ('1260135645520654338', 'admin', '2020-05-12 17:12:04', 'admin', '2020-07-11 11:29:16', 'A01', 'JDFX2020051217115656', '2020-07-11 11:29:12', NULL, NULL);
+INSERT INTO `ces_order_main` VALUES ('1281794386716344321', 'admin', '2020-07-11 11:36:11', 'admin', '2022-05-07 18:16:58', 'A01', 'CN2020071111360067', '2020-07-11 11:36:00', NULL, NULL);
+INSERT INTO `ces_order_main` VALUES ('1335894537597886465', 'admin', '2020-12-07 18:30:52', 'admin', '2022-05-07 18:39:13', 'A01', 'CN2020120718303277', '2020-12-16 18:30:32', NULL, NULL);
+INSERT INTO `ces_order_main` VALUES ('1533106654659932162', 'admin', '2022-06-04 23:21:25', NULL, NULL, 'A01', 'CN2022060423210253', '2022-06-18 23:21:04', 111, NULL);
+
+-- ----------------------------
+-- Table structure for ces_shop_goods
+-- ----------------------------
+DROP TABLE IF EXISTS `ces_shop_goods`;
+CREATE TABLE `ces_shop_goods`  (
+  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '主键',
+  `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品名字',
+  `price` decimal(10, 5) NULL DEFAULT NULL COMMENT '价格',
+  `chuc_date` datetime NULL DEFAULT NULL COMMENT '出厂时间',
+  `contents` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '商品简介',
+  `good_type_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品分类',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of ces_shop_goods
+-- ----------------------------
+INSERT INTO `ces_shop_goods` VALUES ('1258408897326149634', 'admin', '2020-05-07 22:50:35', 'admin', '2020-05-07 22:52:17', 'A01', '华为手机note', 5000.00000, '2020-05-07 00:00:00', '<div class=\"page1-content\" style=\"margin: 0px 0px 20px; padding: 0px; display: flex; justify-content: space-around; color: #2c3e50; font-family: Avenir, Helvetica, Arial, sans-serif; text-align: center; background-color: #eeeeee;\">\n<div class=\"page1-item\" style=\"margin: auto; padding: 0px; width: 180px;\">\n<div class=\"page1-item-img\" style=\"margin: 0px; padding: 0px; width: 180px; height: 180px; display: flex; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; border-radius: 100%; background: #ffffff; position: relative; z-index: 1; transition: box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s; box-shadow: rgba(166, 55, 112, 0.1) 0px 16px 32px;\"><img style=\"margin: 0px; padding: 0px; width: 100px;\" src=\"http://www.jeecg.com/images/soo.png\" alt=\"img\" /></div>\n<div class=\"page1-item-title\" style=\"margin: 56px 0px 0px; padding: 0px; font-size: 20px; color: #0d1a26;\"><span style=\"margin: 0px; padding: 0px;\">快速开发</span></div>\n</div>\n<div class=\"page1-item\" style=\"margin: auto; padding: 0px; width: 180px;\">\n<div class=\"page1-item-img\" style=\"margin: 0px; padding: 0px; width: 180px; height: 180px; display: flex; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; border-radius: 100%; background: #ffffff; position: relative; z-index: 1; transition: box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s; box-shadow: rgba(191, 188, 21, 0.1) 0px 16px 32px;\"><img style=\"margin: 0px; padding: 0px; width: 100px;\" src=\"http://www.jeecg.com/images/rule.png\" alt=\"img\" /></div>\n<div class=\"page1-item-title\" style=\"margin: 56px 0px 0px; padding: 0px; font-size: 20px; color: #0d1a26;\"><span style=\"margin: 0px; padding: 0px;\">数据权限</span></div>\n</div>\n<div class=\"page1-item\" style=\"margin: auto; padding: 0px; width: 180px;\">\n<div class=\"page1-item-img\" style=\"margin: 0px; padding: 0px; width: 180px; height: 180px; display: flex; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; border-radius: 100%; background: #ffffff; position: relative; z-index: 1; transition: box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s; box-shadow: rgba(73, 101, 166, 0.1) 0px 16px 32px;\"><img style=\"margin: 0px; padding: 0px; width: 100px;\" src=\"http://www.jeecg.com/images/bpm2.png\" alt=\"img\" /></div>\n<div class=\"page1-item-title\" style=\"margin: 56px 0px 0px; padding: 0px; font-size: 20px; color: #0d1a26;\"><span style=\"margin: 0px; padding: 0px;\">工作流</span></div>\n</div>\n<div class=\"page1-item\" style=\"margin: auto; padding: 0px; width: 180px;\">\n<div class=\"page1-item-img\" style=\"margin: 0px; padding: 0px; width: 180px; height: 180px; display: flex; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; border-radius: 100%; background: #ffffff; position: relative; z-index: 1; transition: box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s; box-shadow: rgba(135, 85, 255, 0.1) 0px 16px 32px;\"><img style=\"margin: 0px; padding: 0px; width: 100px;\" src=\"http://www.jeecg.com/images/report1.png\" alt=\"img\" /></div>\n<div class=\"page1-item-title\" style=\"margin: 56px 0px 0px; padding: 0px; font-size: 20px; color: #0d1a26;\"><span style=\"margin: 0px; padding: 0px;\">丰富组件库</span></div>\n</div>\n</div>\n<div class=\"page1-content\" style=\"margin: 0px; padding: 0px; display: flex; justify-content: space-around; color: #2c3e50; font-family: Avenir, Helvetica, Arial, sans-serif; text-align: center; background-color: #eeeeee;\">\n<div class=\"page1-item\" style=\"margin: auto; padding: 0px; width: 180px;\">\n<div class=\"page1-item-img\" style=\"margin: 0px; padding: 0px; width: 180px; height: 180px; display: flex; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; border-radius: 100%; background: #ffffff; position: relative; z-index: 1; transition: box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s; box-shadow: rgba(166, 55, 112, 0.1) 0px 16px 32px;\"><img style=\"margin: 0px; padding: 0px; width: 100px;\" src=\"http://www.jeecg.com/images/icon1.png\" alt=\"img\" /></div>\n<div class=\"page1-item-title\" style=\"margin: 56px 0px 0px; padding: 0px; font-size: 20px; color: #0d1a26;\"><span style=\"margin: 0px; padding: 0px;\">代码生成器</span></div>\n</div>\n<div class=\"page1-item\" style=\"margin: auto; padding: 0px; width: 180px;\">\n<div class=\"page1-item-img\" style=\"margin: 0px; padding: 0px; width: 180px; height: 180px; display: flex; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; border-radius: 100%; background: #ffffff; position: relative; z-index: 1; transition: box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s; box-shadow: rgba(191, 188, 21, 0.1) 0px 16px 32px;\"><img style=\"margin: 0px; padding: 0px; width: 100px;\" src=\"http://www.jeecg.com/images/Automation.png\" alt=\"img\" /></div>\n<div class=\"page1-item-title\" style=\"margin: 56px 0px 0px; padding: 0px; font-size: 20px; color: #0d1a26;\"><span style=\"margin: 0px; padding: 0px;\">Online在线开发</span></div>\n</div>\n<div class=\"page1-item\" style=\"margin: auto; padding: 0px; width: 180px;\">\n<div class=\"page1-item-img\" style=\"margin: 0px; padding: 0px; width: 180px; height: 180px; display: flex; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; border-radius: 100%; background: #ffffff; position: relative; z-index: 1; transition: box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s; box-shadow: rgba(73, 101, 166, 0.1) 0px 16px 32px;\"><img style=\"margin: 0px; padding: 0px; width: 100px;\" src=\"http://www.jeecg.com/images/form2.png\" alt=\"img\" /></div>\n<div class=\"page1-item-title\" style=\"margin: 56px 0px 0px; padding: 0px; font-size: 20px; color: #0d1a26;\"><span style=\"margin: 0px; padding: 0px;\">表单设计器</span></div>\n</div>\n<div class=\"page1-item\" style=\"margin: auto; padding: 0px; width: 180px;\">\n<div class=\"page1-item-img\" style=\"margin: 0px; padding: 0px; width: 180px; height: 180px; display: flex; -webkit-box-align: center; align-items: center; -webkit-box-pack: center; justify-content: center; border-radius: 100%; background: #ffffff; position: relative; z-index: 1; transition: box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-box-shadow 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s, -webkit-transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0s; box-shadow: rgba(135, 85, 255, 0.1) 0px 16px 32px;\"><img style=\"margin: 0px; padding: 0px; width: 100px;\" src=\"http://www.jeecg.com/images/bpm3.png\" alt=\"img\" /></div>\n<div class=\"page1-item-title\" style=\"margin: 56px 0px 0px; padding: 0px; font-size: 20px; color: #0d1a26;\"><span style=\"margin: 0px; padding: 0px;\">流程设计器</span></div>\n</div>\n</div>', '1258408044439597058');
+INSERT INTO `ces_shop_goods` VALUES ('1258783909887422466', 'admin', '2020-05-08 23:40:45', 'admin', '2020-05-08 23:43:03', 'A01', '雷蛇鼠标', 500.00000, '2020-05-08 00:00:00', '', '1258408003595464706');
+INSERT INTO `ces_shop_goods` VALUES ('1285114089585082370', 'admin', '2020-07-20 15:27:29', NULL, NULL, 'A01', NULL, NULL, NULL, NULL, NULL);
+
+-- ----------------------------
+-- Table structure for ces_shop_type
+-- ----------------------------
+DROP TABLE IF EXISTS `ces_shop_type`;
+CREATE TABLE `ces_shop_type`  (
+  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '分类名字',
+  `content` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '描述',
+  `pics` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '图片',
+  `pid` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '父级节点',
+  `has_child` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '是否有子节点',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of ces_shop_type
+-- ----------------------------
+INSERT INTO `ces_shop_type` VALUES ('1258408003595464706', 'admin', '2020-05-07 22:47:02', NULL, NULL, 'A01', '衣服', NULL, 'e1fe9925bc315c60addea1b98eb1cb1349547719_1588862821565.jpg', '0', '1');
+INSERT INTO `ces_shop_type` VALUES ('1258408044439597058', 'admin', '2020-05-07 22:47:12', NULL, NULL, 'A01', '鞋子', NULL, 'jeewxshop测试号_1588862831749.jpg', '0', '1');
+INSERT INTO `ces_shop_type` VALUES ('1258408076693794818', 'admin', '2020-05-07 22:47:20', 'admin', '2020-07-10 16:51:10', 'A01', '耐克', NULL, 'd52a2834349b033b6d20d5cc16ce36d3d539bd7f_1594371069797.jpg', '1258408044439597058', '0');
+INSERT INTO `ces_shop_type` VALUES ('1258408105487691777', 'admin', '2020-05-07 22:47:27', 'admin', '2022-05-07 18:15:46', 'A01', '阿迪', '', 'temp/20180607175028Fn1Lq7zw_1589293474710.png', '1258408044439597058', '0');
+INSERT INTO `ces_shop_type` VALUES ('1522882875102998529', 'admin', '2022-05-07 18:15:46', 'admin', '2022-05-09 22:50:12', 'A01', '夏桂英', '111', 'temp/5_1651918545051.png', '1522923951901822979', '0');
+INSERT INTO `ces_shop_type` VALUES ('1522882977309798401', 'admin', '2022-05-07 18:16:10', 'admin', '2022-05-09 22:50:36', 'A01', '许娜', '11', 'temp/11_1651928215765.jpg', '1522923951901822979', '0');
+INSERT INTO `ces_shop_type` VALUES ('1522911901133754369', 'admin', '2022-05-07 20:11:06', 'admin', '2022-05-09 22:58:43', 'A01', '90', '6', 'temp/4afbfbedab64034f9015f1bca8c379310b551dab_1651925465436.jpg', '1522923951901822979', '0');
+INSERT INTO `ces_shop_type` VALUES ('1522923951901822979', 'admin', '2022-05-07 20:58:59', 'admin', '2022-05-09 22:58:36', 'A01', '鞋子', NULL, 'temp/20180607175028Fn1Lq7zw_1652108315203.png', '0', '1');
+INSERT INTO `ces_shop_type` VALUES ('1524304566551183361', 'admin', '2022-05-11 16:25:04', 'admin', '2022-05-11 16:25:11', 'A01', '5676', '5676', NULL, '1258408003595464706', '0');
 
 -- ----------------------------
 -- Table structure for demo
@@ -44,7 +203,7 @@ CREATE TABLE `demo`  (
   `tenant_id` int(10) NULL DEFAULT 0,
   `update_count` int(11) NULL DEFAULT NULL COMMENT '乐观锁测试',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of demo
@@ -74,7 +233,7 @@ CREATE TABLE `demo_field_def_val_main`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of demo_field_def_val_main
@@ -98,7 +257,7 @@ CREATE TABLE `demo_field_def_val_sub`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of demo_field_def_val_sub
@@ -129,7 +288,7 @@ CREATE TABLE `flyway_schema_history`  (
   `success` tinyint(1) NOT NULL,
   PRIMARY KEY (`installed_rank`) USING BTREE,
   INDEX `flyway_schema_history_s_idx`(`success`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of flyway_schema_history
@@ -150,7 +309,7 @@ CREATE TABLE `jeecg_monthly_growth_analysis`  (
   `main_income` decimal(18, 2) NULL DEFAULT 0.00 COMMENT '佣金/主营收入',
   `other_income` decimal(18, 2) NULL DEFAULT 0.00 COMMENT '其他收入',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 25 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jeecg_monthly_growth_analysis
@@ -197,7 +356,7 @@ CREATE TABLE `jeecg_order_customer`  (
   `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '修改人',
   `update_time` datetime NULL DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jeecg_order_customer
@@ -282,7 +441,7 @@ CREATE TABLE `jeecg_order_main`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '修改时间',
   `bpm_status` varchar(3) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '流程状态',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jeecg_order_main
@@ -316,7 +475,7 @@ CREATE TABLE `jeecg_order_ticket`  (
   `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '修改人',
   `update_time` datetime NULL DEFAULT NULL COMMENT '修改时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jeecg_order_ticket
@@ -382,7 +541,7 @@ CREATE TABLE `jeecg_project_nature_income`  (
   `bidding_consulting_fee` decimal(18, 2) NULL DEFAULT 0.00 COMMENT '投标咨询费',
   `interol_consulting_fee` decimal(18, 2) NULL DEFAULT 0.00 COMMENT '内控咨询费',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jeecg_project_nature_income
@@ -414,7 +573,7 @@ CREATE TABLE `jimu_dict`  (
   `tenant_id` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '多租户标识',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_sd_dict_code`(`dict_code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_dict
@@ -482,7 +641,7 @@ CREATE TABLE `jimu_dict_item`  (
   INDEX `idx_sdi_role_sort_order`(`sort_order`) USING BTREE,
   INDEX `idx_sdi_status`(`status`) USING BTREE,
   INDEX `idx_sdi_dict_val`(`dict_id`, `item_value`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_dict_item
@@ -641,7 +800,7 @@ CREATE TABLE `jimu_report`  (
   UNIQUE INDEX `uniq_jmreport_code`(`code`) USING BTREE,
   INDEX `uniq_jmreport_createby`(`create_by`) USING BTREE,
   INDEX `uniq_jmreport_delflag`(`del_flag`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '在线excel设计器' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '在线excel设计器' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report
@@ -714,7 +873,7 @@ CREATE TABLE `jimu_report_data_source`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_jmdatasource_report_id`(`report_id`) USING BTREE,
   INDEX `idx_jmdatasource_code`(`code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report_data_source
@@ -757,7 +916,7 @@ CREATE TABLE `jimu_report_db`  (
   INDEX `idx_jmreportdb_db_key`(`db_key`) USING BTREE,
   INDEX `idx_jimu_report_id`(`jimu_report_id`) USING BTREE,
   INDEX `idx_db_source_id`(`db_source`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report_db
@@ -859,7 +1018,7 @@ CREATE TABLE `jimu_report_db_field`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_jrdf_jimu_report_db_id`(`jimu_report_db_id`) USING BTREE,
   INDEX `idx_dbfield_order_num`(`order_num`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report_db_field
@@ -1531,7 +1690,7 @@ CREATE TABLE `jimu_report_db_param`  (
   `ext_json` text CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '参数配置',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_jrdp_jimu_report_head_id`(`jimu_report_head_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report_db_param
@@ -1581,7 +1740,7 @@ CREATE TABLE `jimu_report_export_log`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `tenant_id` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '多租户标识',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积木报表自动导出记录表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积木报表自动导出记录表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report_export_log
@@ -1605,7 +1764,7 @@ CREATE TABLE `jimu_report_link`  (
   `requirement` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '条件',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `uniq_link_reportid`(`report_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '超链接配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '超链接配置表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report_link
@@ -1630,7 +1789,7 @@ CREATE TABLE `jimu_report_map`  (
   `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属部门',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_jmreport_map_name`(`name`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '地图配置表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '地图配置表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report_map
@@ -1654,7 +1813,7 @@ CREATE TABLE `jimu_report_share`  (
   UNIQUE INDEX `uniq_report_id`(`report_id`) USING BTREE,
   UNIQUE INDEX `uniq_jrs_report_id`(`report_id`) USING BTREE COMMENT '报表id唯一索引',
   UNIQUE INDEX `uniq_jrs_share_token`(`share_token`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积木报表预览权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '积木报表预览权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of jimu_report_share
@@ -1676,7 +1835,7 @@ CREATE TABLE `joa_demo`  (
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime NULL DEFAULT NULL COMMENT '修改时间',
   `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '修改人id'
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '流程测试' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '流程测试' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of joa_demo
@@ -1701,7 +1860,7 @@ CREATE TABLE `oauth2_registered_client`  (
   `client_settings` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `token_settings` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of oauth2_registered_client
@@ -1725,7 +1884,7 @@ CREATE TABLE `onl_auth_data`  (
   `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_auth_data
@@ -1748,7 +1907,7 @@ CREATE TABLE `onl_auth_page`  (
   `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_auth_page
@@ -1769,7 +1928,7 @@ CREATE TABLE `onl_auth_relation`  (
   `cgform_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'online表单ID',
   `auth_mode` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '授权方式role角色，depart部门，user人',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_auth_relation
@@ -1796,7 +1955,7 @@ CREATE TABLE `onl_cgform_button`  (
   INDEX `idx_ocb_BUTTON_CODE`(`BUTTON_CODE`) USING BTREE,
   INDEX `idx_ocb_BUTTON_STATUS`(`BUTTON_STATUS`) USING BTREE,
   INDEX `idx_ocb_ORDER_NUM`(`ORDER_NUM`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'Online表单自定义按钮' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'Online表单自定义按钮' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgform_button
@@ -1827,7 +1986,7 @@ CREATE TABLE `onl_cgform_enhance_java`  (
   INDEX `idx_ejava_cgform_head_id`(`CGFORM_HEAD_ID`) USING BTREE,
   INDEX `idx_ocej_BUTTON_CODE`(`BUTTON_CODE`) USING BTREE,
   INDEX `idx_ocej_ACTIVE_STATUS`(`ACTIVE_STATUS`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgform_enhance_java
@@ -1846,7 +2005,7 @@ CREATE TABLE `onl_cgform_enhance_js`  (
   PRIMARY KEY (`ID`) USING BTREE,
   INDEX `idx_ejs_cgform_head_id`(`CGFORM_HEAD_ID`) USING BTREE,
   INDEX `idx_ejs_cg_js_type`(`CG_JS_TYPE`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgform_enhance_js
@@ -1886,7 +2045,7 @@ CREATE TABLE `onl_cgform_enhance_sql`  (
   `CGFORM_HEAD_ID` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '表单ID',
   PRIMARY KEY (`ID`) USING BTREE,
   INDEX `idx_oces_CGFORM_HEAD_ID`(`CGFORM_HEAD_ID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgform_enhance_sql
@@ -1947,7 +2106,7 @@ CREATE TABLE `onl_cgform_field`  (
   `sort_flag` varchar(3) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '是否支持排序1是0否',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_ocf_cgform_head_id`(`cgform_head_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgform_field
@@ -2734,7 +2893,7 @@ CREATE TABLE `onl_cgform_head`  (
   INDEX `idx_och_table_name`(`form_template`) USING BTREE,
   INDEX `idx_och_form_template_mobile`(`form_template_mobile`) USING BTREE,
   INDEX `idx_och_table_version`(`table_version`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgform_head
@@ -2773,7 +2932,7 @@ CREATE TABLE `onl_cgform_index`  (
   `del_flag` int(1) NULL DEFAULT 0 COMMENT '是否删除 0未删除 1删除',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_oci_cgform_head_id`(`cgform_head_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgform_index
@@ -2801,7 +2960,7 @@ CREATE TABLE `onl_cgreport_head`  (
   `create_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人id',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `index_onlinereport_code`(`code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgreport_head
@@ -2842,7 +3001,7 @@ CREATE TABLE `onl_cgreport_item`  (
   INDEX `idx_oci_cgrhead_id`(`cgrhead_id`) USING BTREE,
   INDEX `idx_oci_is_show`(`is_show`) USING BTREE,
   INDEX `idx_oci_order_num`(`order_num`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgreport_item
@@ -2921,7 +3080,7 @@ CREATE TABLE `onl_cgreport_param`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_ocp_cgrhead_id`(`cgrhead_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of onl_cgreport_param
@@ -4067,7 +4226,7 @@ CREATE TABLE `oss_file`  (
   `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人登录名称',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'Oss File' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = 'Oss File' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of oss_file
@@ -4088,7 +4247,7 @@ CREATE TABLE `qrtz_blob_triggers`  (
   `BLOB_DATA` blob NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_blob_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_blob_triggers
@@ -4103,7 +4262,7 @@ CREATE TABLE `qrtz_calendars`  (
   `CALENDAR_NAME` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `CALENDAR` blob NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `CALENDAR_NAME`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_calendars
@@ -4121,7 +4280,7 @@ CREATE TABLE `qrtz_cron_triggers`  (
   `TIME_ZONE_ID` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_cron_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_cron_triggers
@@ -4146,7 +4305,7 @@ CREATE TABLE `qrtz_fired_triggers`  (
   `IS_NONCONCURRENT` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `REQUESTS_RECOVERY` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`SCHED_NAME`, `ENTRY_ID`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_fired_triggers
@@ -4168,7 +4327,7 @@ CREATE TABLE `qrtz_job_details`  (
   `REQUESTS_RECOVERY` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `JOB_DATA` blob NULL,
   PRIMARY KEY (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_job_details
@@ -4182,7 +4341,7 @@ CREATE TABLE `qrtz_locks`  (
   `SCHED_NAME` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `LOCK_NAME` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `LOCK_NAME`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_locks
@@ -4198,7 +4357,7 @@ CREATE TABLE `qrtz_paused_trigger_grps`  (
   `SCHED_NAME` varchar(120) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `TRIGGER_GROUP` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_GROUP`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_paused_trigger_grps
@@ -4214,12 +4373,12 @@ CREATE TABLE `qrtz_scheduler_state`  (
   `LAST_CHECKIN_TIME` bigint(13) NOT NULL,
   `CHECKIN_INTERVAL` bigint(13) NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `INSTANCE_NAME`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_scheduler_state
 -- ----------------------------
-INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'qin1718249664022', 1718250166707, 15000);
+INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'qin1718587315180', 1718587368600, 15000);
 
 -- ----------------------------
 -- Table structure for qrtz_simple_triggers
@@ -4234,7 +4393,7 @@ CREATE TABLE `qrtz_simple_triggers`  (
   `TIMES_TRIGGERED` bigint(10) NOT NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_simple_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_simple_triggers
@@ -4261,7 +4420,7 @@ CREATE TABLE `qrtz_simprop_triggers`  (
   `BOOL_PROP_2` varchar(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_simprop_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) REFERENCES `qrtz_triggers` (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_simprop_triggers
@@ -4291,7 +4450,7 @@ CREATE TABLE `qrtz_triggers`  (
   PRIMARY KEY (`SCHED_NAME`, `TRIGGER_NAME`, `TRIGGER_GROUP`) USING BTREE,
   INDEX `SCHED_NAME`(`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) USING BTREE,
   CONSTRAINT `qrtz_triggers_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) REFERENCES `qrtz_job_details` (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of qrtz_triggers
@@ -4313,7 +4472,7 @@ CREATE TABLE `rep_demo_dxtj`  (
   `jperson` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '紧急联系人',
   `sex` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'xingbie',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of rep_demo_dxtj
@@ -4381,7 +4540,7 @@ CREATE TABLE `rep_demo_employee`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '修改时间',
   `del_flag` tinyint(1) NULL DEFAULT NULL COMMENT '删除标识0-正常,1-已删除',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of rep_demo_employee
@@ -4402,7 +4561,7 @@ CREATE TABLE `rep_demo_gongsi`  (
   `zhaiyao` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `num` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of rep_demo_gongsi
@@ -4426,7 +4585,7 @@ CREATE TABLE `rep_demo_jianpiao`  (
   `shihelv` varchar(125) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `s_id` int(11) NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 87 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 87 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of rep_demo_jianpiao
@@ -4644,7 +4803,7 @@ CREATE TABLE `sys_announcement`  (
   INDEX `idx_sanno_tenant_id`(`tenant_id`) USING BTREE,
   INDEX `idx_sanno_sender`(`sender`) USING BTREE,
   INDEX `idx_sanno_create_time`(`create_time`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统通告表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统通告表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_announcement
@@ -4686,7 +4845,7 @@ CREATE TABLE `sys_announcement_send`  (
   INDEX `idx_sacm_user_id`(`user_id`) USING BTREE,
   INDEX `idx_sacm_read_flag`(`read_flag`) USING BTREE,
   INDEX `idx_sacm_star_flag`(`star_flag`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户通告阅读标记表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户通告阅读标记表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_announcement_send
@@ -4731,7 +4890,7 @@ CREATE TABLE `sys_category`  (
   `tenant_id` int(10) NULL DEFAULT 0 COMMENT '租户ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `index_scg_code`(`code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_category
@@ -4782,7 +4941,7 @@ CREATE TABLE `sys_check_rule`  (
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_scr_rule_code`(`rule_code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_check_rule
@@ -4808,7 +4967,7 @@ CREATE TABLE `sys_comment`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_table_data_id`(`table_name`, `table_data_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统评论回复表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统评论回复表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_comment
@@ -4850,7 +5009,7 @@ CREATE TABLE `sys_data_log`  (
   `type` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'json' COMMENT '类型',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_sdl_data_table_id`(`data_table`, `data_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_data_log
@@ -5157,7 +5316,7 @@ CREATE TABLE `sys_data_source`  (
   `tenant_id` int(10) NULL DEFAULT 0 COMMENT '租户ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_sdc_rule_code`(`code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_data_source
@@ -5197,7 +5356,7 @@ CREATE TABLE `sys_depart`  (
   UNIQUE INDEX `uniq_depart_org_code`(`org_code`) USING BTREE,
   INDEX `idx_sd_parent_id`(`parent_id`) USING BTREE,
   INDEX `idx_sd_depart_order`(`depart_order`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '组织机构表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '组织机构表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_depart
@@ -5222,7 +5381,7 @@ CREATE TABLE `sys_depart_permission`  (
   `permission_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '权限id',
   `data_rule_ids` varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '数据规则id',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_depart_permission
@@ -5249,7 +5408,7 @@ CREATE TABLE `sys_depart_role`  (
   `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人',
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门角色表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_depart_role
@@ -5272,7 +5431,7 @@ CREATE TABLE `sys_depart_role_permission`  (
   INDEX `idx_sdrp_role_per_id`(`role_id`, `permission_id`) USING BTREE,
   INDEX `idx_sdrp_role_id`(`role_id`) USING BTREE,
   INDEX `idx_sdrp_per_id`(`permission_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门角色权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门角色权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_depart_role_permission
@@ -5291,7 +5450,7 @@ CREATE TABLE `sys_depart_role_user`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_sdr_user_id`(`user_id`) USING BTREE,
   INDEX `idx_sdr_role_id`(`drole_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门角色用户表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '部门角色用户表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_depart_role_user
@@ -5317,7 +5476,7 @@ CREATE TABLE `sys_dict`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_sd_dict_code`(`dict_code`) USING BTREE,
   INDEX `uk_sd_tenant_id`(`tenant_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_dict
@@ -5393,7 +5552,7 @@ CREATE TABLE `sys_dict_item`  (
   INDEX `idx_sditem_role_sort_order`(`sort_order`) USING BTREE,
   INDEX `idx_sditem_status`(`status`) USING BTREE,
   INDEX `idx_sditem_dict_val`(`dict_id`, `item_value`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_dict_item
@@ -5610,7 +5769,7 @@ CREATE TABLE `sys_files`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `index_tenant_id`(`tenant_id`) USING BTREE,
   INDEX `index_del_flag`(`del_flag`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '知识库-文档管理' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '知识库-文档管理' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_files
@@ -5635,7 +5794,7 @@ CREATE TABLE `sys_fill_rule`  (
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_sfr_rule_code`(`rule_code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_fill_rule
@@ -5659,7 +5818,7 @@ CREATE TABLE `sys_form_file`  (
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_table_form`(`table_name`, `table_data_id`) USING BTREE,
   INDEX `index_file_id`(`file_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_form_file
@@ -5692,7 +5851,7 @@ CREATE TABLE `sys_gateway_route`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
   `sys_org_code` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '所属部门',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_gateway_route
@@ -5730,7 +5889,7 @@ CREATE TABLE `sys_log`  (
   INDEX `idx_sl_log_type`(`log_type`) USING BTREE,
   INDEX `idx_sl_operate_type`(`operate_type`) USING BTREE,
   INDEX `idx_sl_create_time`(`create_time`) USING BTREE
-) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统日志表' ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '系统日志表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_log
@@ -6630,6 +6789,9 @@ INSERT INTO `sys_log` VALUES ('1801096936876027906', 2, 'online列表加载,Onli
 INSERT INTO `sys_log` VALUES ('1801097090085564419', 2, 'online表单加载,表名:test_demo,操作成功', 1, 'jeecg', 'jeecg', '127.0.0.1', 'org.jeecg.modules.online.cgform.c.a.c()', NULL, '', NULL, 200, NULL, '2024-06-13 11:39:44', NULL, NULL, NULL, NULL);
 INSERT INTO `sys_log` VALUES ('1801097090085564418', 2, 'online表单加载,表名:test_demo,操作成功', 1, 'jeecg', 'jeecg', '127.0.0.1', 'org.jeecg.modules.online.cgform.c.a.c()', NULL, '', NULL, 193, NULL, '2024-06-13 11:39:44', NULL, NULL, NULL, NULL);
 INSERT INTO `sys_log` VALUES ('1801097090408525825', 2, 'online列表加载,表名:test_demo,操作成功', 1, 'jeecg', 'jeecg', '127.0.0.1', 'org.jeecg.modules.online.cgform.c.a.a()', NULL, '', NULL, 277, NULL, '2024-06-13 11:39:44', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1802512096341741569', 1, '用户名: admin,登录成功！', NULL, 'admin', '管理员', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 09:22:27', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802512146501423106', 2, '修改角色ID: 1501570619841810433 的权限配置，操作人： admin', 2, 'admin', '管理员', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 09:22:39', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802512173349163010', 2, '修改角色ID: f6817f48af4fb3af11b9e8bf182f618b 的权限配置，操作人： admin', 2, 'admin', '管理员', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 09:22:46', NULL, NULL, NULL, 'pc');
 
 -- ----------------------------
 -- Table structure for sys_permission
@@ -6670,7 +6832,7 @@ CREATE TABLE `sys_permission`  (
   INDEX `index_menu_del_flag`(`del_flag`) USING BTREE,
   INDEX `index_menu_url`(`url`) USING BTREE,
   INDEX `index_menu_sort_no`(`sort_no`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_permission
@@ -7025,6 +7187,7 @@ INSERT INTO `sys_permission` VALUES ('1701575168519839746', 'd7d6e2e4e2934f2c938
 INSERT INTO `sys_permission` VALUES ('1746709108126285826', '1455100420297859074', 'AUTO在线表单详情', '/online/cgformDetail/:id', 'super/online/cgform/auto/default/OnlineAutoDetail', 1, '', NULL, 1, NULL, '0', 21.00, 0, NULL, 1, 0, 1, 0, NULL, 'jeecg', '2024-01-15 09:41:18', 'jeecg', '2024-06-13 11:37:01', 0, 0, NULL, 0);
 INSERT INTO `sys_permission` VALUES ('1750128461040648193', '1170592628746878978', '设置默认首页', NULL, NULL, 0, NULL, NULL, 2, 'system:permission:setDefIndex', '1', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2024-01-24 20:08:35', NULL, NULL, 0, NULL, '1', 0);
 INSERT INTO `sys_permission` VALUES ('1783334031927627777', '1438108198113501186', '原生总结栏', '/comp/table/tableSummary', 'demo/table/AntdTableSummary', 1, '', NULL, 1, NULL, '0', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2024-04-25 11:15:40', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission` VALUES ('1801954937339428865', '1460888189937176577', '测试数据源连接', NULL, NULL, 0, NULL, NULL, 2, 'online:report:testConnection', '1', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2024-06-15 20:28:30', NULL, NULL, 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('190c2b43bec6a5f7a4194a85db67d96a', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '角色管理', '/system/role', 'system/role/index', 1, NULL, NULL, 1, NULL, NULL, 2.00, 0, 'ant-design:solution', 0, 1, 0, NULL, NULL, NULL, '2018-12-25 20:34:38', 'admin', '2021-09-17 15:58:00', 0, 0, NULL, 0);
 INSERT INTO `sys_permission` VALUES ('1a0811914300741f4e11838ff37a1d3a', '3f915b2769fc80648e92d04e84ca059d', '手机号禁用', '', '', 0, NULL, NULL, 2, 'user:form:phone', '2', 1.00, 0, NULL, 1, NULL, 0, NULL, NULL, 'admin', '2019-05-11 17:19:30', 'admin', '2019-05-11 18:00:22', 0, 0, '1', NULL);
 INSERT INTO `sys_permission` VALUES ('1d592115213910765570', '3f915b2769fc80648e92d04e84ca059d', '通过ID查询用户拥有的角色', NULL, NULL, 0, NULL, NULL, 2, 'system:user:queryUserRole', '1', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2022-11-14 19:20:22', NULL, NULL, 0, 0, '1', 0);
@@ -7052,7 +7215,7 @@ CREATE TABLE `sys_permission_data_rule`  (
   `update_by` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '修改人',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_spdr_permission_id`(`permission_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_permission_data_rule
@@ -7084,6 +7247,270 @@ INSERT INTO `sys_permission_data_rule` VALUES ('4028ef81574ae99701574aed26530005
 INSERT INTO `sys_permission_data_rule` VALUES ('f852d85d47f224990147f2284c0c0005', NULL, '小于', 'test', '<=', '11', '1', '2014-08-20 14:43:52', '8a8ab0b246dc81120146dc8181950052', NULL, NULL);
 
 -- ----------------------------
+-- Table structure for sys_permission_v3
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_permission_v3`;
+CREATE TABLE `sys_permission_v3`  (
+  `id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '主键id',
+  `parent_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '父id',
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '菜单标题',
+  `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '路径',
+  `component` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '组件',
+  `is_route` tinyint(1) NULL DEFAULT 1 COMMENT '是否路由菜单: 0:不是  1:是（默认值1）',
+  `component_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '组件名字',
+  `redirect` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '一级菜单跳转地址',
+  `menu_type` int(11) NULL DEFAULT NULL COMMENT '菜单类型(0:一级菜单; 1:子菜单:2:按钮权限)',
+  `perms` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '菜单权限编码',
+  `perms_type` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '0' COMMENT '权限策略1显示2禁用',
+  `sort_no` double(8, 2) NULL DEFAULT NULL COMMENT '菜单排序',
+  `always_show` tinyint(1) NULL DEFAULT NULL COMMENT '聚合子路由: 1是0否',
+  `icon` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '菜单图标',
+  `is_leaf` tinyint(1) NULL DEFAULT NULL COMMENT '是否叶子节点:    1是0否',
+  `keep_alive` tinyint(1) NULL DEFAULT NULL COMMENT '是否缓存该页面:    1:是   0:不是',
+  `hidden` int(2) NULL DEFAULT 0 COMMENT '是否隐藏路由: 0否,1是',
+  `hide_tab` int(2) NULL DEFAULT NULL COMMENT '是否隐藏tab: 0否,1是',
+  `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述',
+  `create_by` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  `del_flag` int(11) NULL DEFAULT 0 COMMENT '删除状态 0正常 1已删除',
+  `rule_flag` int(3) NULL DEFAULT 0 COMMENT '是否添加数据权限1是0否',
+  `status` varchar(2) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '按钮权限状态(0无效1有效)',
+  `internal_or_external` tinyint(1) NULL DEFAULT NULL COMMENT '外链菜单打开方式 0/内部打开 1/外部打开',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `index_menu_type`(`menu_type`) USING BTREE,
+  INDEX `index_menu_hidden`(`hidden`) USING BTREE,
+  INDEX `index_menu_status`(`status`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '菜单权限表' ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_permission_v3
+-- ----------------------------
+INSERT INTO `sys_permission_v3` VALUES ('1170592628746878978', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '菜单管理', '/system/menu', 'system/menu/index', 1, NULL, NULL, 1, NULL, '1', 3.00, 0, 'ant-design:menu-fold-outlined', 1, 0, 0, NULL, NULL, 'admin', '2019-09-08 15:00:05', 'admin', '2021-09-17 15:40:01', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1211885237487923202', '1207203817658105858', 'btn:add', '', '', 1, NULL, NULL, 2, 'btn:add', '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2019-12-31 13:42:11', 'admin', '2020-01-07 20:07:53', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1214376304951664642', '3f915b2769fc80648e92d04e84ca059d', '用户编辑', '', '', 1, NULL, NULL, 2, 'user:edit', '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2020-01-07 10:40:47', 'admin', '2020-01-07 10:41:04', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1214462306546319362', '3f915b2769fc80648e92d04e84ca059d', '新增用户', '', '', 1, NULL, NULL, 2, 'user:add', '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2020-01-07 16:22:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1280350452934307841', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '租户管理', '/system/tenant', 'system/tenant/index', 1, NULL, NULL, 1, NULL, '1', 99.00, 0, 'ant-design:appstore-twotone', 1, 0, 0, NULL, NULL, 'admin', '2020-07-07 11:58:30', 'admin', '2021-09-17 15:40:41', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108176273760258', '', 'Dashboard', '/dashboard', 'layouts/default/index', 1, NULL, '/dashboard/analysis', 0, NULL, '1', 1.00, 0, 'ion:grid-outline', 0, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:23', 'admin', '2021-10-22 20:39:20', 0, 1, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108176814825473', '1438108176273760258', '工作台', '/dashboard/workbench', 'dashboard/workbench/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, 'ant-design:appstore-twotone', 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', 'admin', '2021-09-17 15:42:42', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108176932265985', '1438108178010202113', '权限管理', '/permission', 'layouts/default/index', 1, NULL, '/permission/front/page', 0, NULL, '1', 2.00, 0, 'ion:key-outline', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108177074872321', '1438108176932265985', '基于前端权限', '/permission/front', NULL, 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108177188118529', '1438108176932265985', '基于后台权限', '/permission/back', NULL, 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108177351696386', '1438108177074872321', '页面权限', '/permission/front/page', 'demo/permission/front/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', 'admin', '2021-09-16 14:37:49', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108177565605889', '1438108177074872321', '按钮权限', '/permission/front/btn', 'demo/permission/front/Btn', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', 'admin', '2021-09-15 19:57:23', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108177720795137', '1438108177188118529', '页面权限', '/permission/back/page', 'demo/permission/back/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', 'admin', '2021-09-15 19:56:40', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108177880178689', '1438108177188118529', '按钮权限', '/permission/back/btn', 'demo/permission/back/Btn', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', 'admin', '2021-09-15 19:57:00', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108178010202113', '1438108196993622018', '功能示例', '/feat', 'layouts/default/index', 1, NULL, '/feat/icon', 0, NULL, '1', 20.00, 0, 'ion:git-compare-outline', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108178127642626', '1438108197958315557', '图标', '/comp/basic/icon', 'demo/feat/icon/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108178257666049', '1438108178010202113', 'websocket测试', '/feat/ws', 'demo/feat/ws/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108178421243905', '1438108178010202113', '登录过期', '/feat/session-timeout', 'demo/feat/session-timeout/index', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108178643542017', '1438108197958311677', '打印', '/comp/third/print', 'demo/feat/print/index', 1, NULL, NULL, 1, NULL, '1', 3.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108178781954049', '1438108197958315557', 'Tab操作', '/comp/basic/tabs', 'demo/feat/tabs/index', 1, NULL, NULL, 1, NULL, '1', 4.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108178781954050', '1438108197958315557', 'TabDetail', '/comp/basic/tabs/detail/:id', 'demo/feat/tabs/TabDetail', 1, NULL, '/comp/basic/tabs/detail', 1, NULL, '1', 4.00, 0, NULL, 1, 0, 1, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108178911977473', '1438108187455774722', '面包屑导航', '/feat/breadcrumb', 'layouts/default/index', 1, NULL, '/feat/breadcrumb/flat', 1, NULL, '1', 5.00, 0, 'ant-design:right-square-filled', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', 'admin', '2021-09-17 15:48:07', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108179226550273', '1438108197958311677', '右键菜单', '/comp/third/context-menu', 'demo/feat/context-menu/index', 1, NULL, NULL, 1, NULL, '1', 6.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108179381739521', '1438108197958311677', '文件下载', '/comp/third/download', 'demo/feat/download/index', 1, NULL, NULL, 1, NULL, '1', 7.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108179599843330', '1438108197958311677', 'ClickOutSide组件', '/comp/third/click-out-side', 'demo/feat/click-out-side/index', 1, NULL, NULL, 1, NULL, '1', 8.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:23', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108179910221825', '1438108197958311677', '图片预览', '/comp/third/img-preview', 'demo/feat/img-preview/index', 1, NULL, NULL, 1, NULL, '1', 9.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108180077993985', '1438108197958311677', '剪切板', '/comp/third/copy', 'demo/feat/copy/index', 1, NULL, NULL, 1, NULL, '1', 10.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108180258349057', '1438108197958315557', '消息提示', '/comp/basic/msg', 'demo/feat/msg/index', 1, NULL, NULL, 1, NULL, '1', 11.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108180434509826', '1438108197958311677', '水印', '/comp/third/watermark', 'demo/feat/watermark/index', 1, NULL, NULL, 1, NULL, '1', 12.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108180631642113', '1438108197958311677', '水波纹', '/comp/third/ripple', 'demo/feat/ripple/index', 1, NULL, NULL, 1, NULL, '1', 13.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108180770054145', '1438108178010202113', '全屏', '/feat/full-screen', 'demo/feat/full-screen/index', 1, NULL, NULL, 1, NULL, '1', 14.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108182116425729', '1438108197958311677', '日历(New)', '/comp/third/fullCalendar', 'demo/fullcalendar/index', 1, NULL, NULL, 1, NULL, '1', 16.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', NULL, NULL, 1, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108183085309954', '1438108178010202113', '错误日志', '/feat/error-log', 'sys/error-log/index', 1, NULL, NULL, 1, NULL, '1', 17.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108183219527682', '1438108196993622018', 'Excel', '/feat/excel', 'layouts/default/index', 1, NULL, '/feat/excel/customExport', 1, NULL, '1', 18.00, 0, 'ant-design:file-excel-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', 'admin', '2021-09-17 15:54:57', 1, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108183395688450', '1438108187455774722', 'Tab带参', '/feat/testTab/:id', 'demo/feat/tab-params/index', 1, NULL, NULL, 1, NULL, '1', 19.00, 0, 'ant-design:insert-row-above-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', 'admin', '2021-09-17 15:48:57', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108183492157442', '1438108187455774722', 'Menu带参', '/feat/testParam/:id', 'layouts/default/index', 1, NULL, NULL, 1, NULL, '1', 20.00, 0, 'ant-design:menu-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', 'admin', '2021-09-17 15:49:12', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108183630569474', '1438108178911977473', '平级模式', '/feat/breadcrumb/flat', 'demo/feat/breadcrumb/FlatList', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', 'admin', '2021-09-15 20:12:01', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108183630569477', '1438108178911977473', '平级详情', '/feat/breadcrumb/flatDetail', 'demo/feat/breadcrumb/FlatListDetail', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 1, 1, NULL, 'admin', '2021-09-15 19:51:24', 'admin', '2021-09-18 11:07:07', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108183777370114', '1438108183630569474', '平级详情', '/feat/breadcrumb/flatDetail', 'demo/feat/breadcrumb/FlatListDetail', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 1, NULL, NULL, 'admin', '2021-09-15 19:51:24', 'admin', '2021-09-15 20:13:41', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108183907393538', '1438108178911977473', '层级模式', '/feat/breadcrumb/children', 'demo/feat/breadcrumb/ChildrenList', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', 'admin', '2021-09-15 20:11:57', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108184049999873', '1438108183907393538', '层级详情', '/feat/breadcrumb/children/childrenDetail', 'demo/feat/breadcrumb/ChildrenListDetail', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:24', 'admin', '2021-09-15 20:11:49', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108185660612609', '1438108183219527682', '选择导出格式', '/feat/excel/customExport', 'demo/excel/CustomExport', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-15 20:15:59', 1, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108185815801858', '1438108183219527682', 'JSON数据导出', '/feat/excel/jsonExport', 'demo/excel/JsonExport', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-15 20:16:15', 1, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108185958408193', '1438108183219527682', 'Array数据导出', '/feat/excel/arrayExport', 'demo/excel/ArrayExport', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-15 20:16:32', 1, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108186289758209', '1438108183219527682', '导入', '/feat/excel/importExcel', 'demo/excel/ImportExcel', 1, NULL, NULL, 1, NULL, '1', 3.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-15 20:16:43', 1, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108186717577217', '1438108183492157442', 'Menu带参1', '/feat/testParam/:id/sub1', 'demo/feat/menu-params/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-15 20:17:23', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108187103453186', '1438108183492157442', 'Menu带参2', '/feat/testParam/:id/sub2', 'demo/feat/menu-params/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-15 20:17:36', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108187455774722', '', '页面&导航', '/page-demo', 'layouts/default/index', 1, NULL, '/page-demo/form/basic', 0, NULL, '1', 12.00, 0, 'ion:aperture-outline', 0, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-11-18 10:48:15', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108187678072833', '1438108187455774722', '表单页', '/page-demo/form', 'layouts/default/index', 1, NULL, '/page-demo/form/basic', 1, NULL, '1', 0.00, 0, 'ant-design:form-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-17 15:45:30', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108187871010818', '1438108187455774722', '详情页', '/page-demo/desc', 'layouts/default/index', 1, NULL, '/page-demo/desc/basic', 1, NULL, '1', 1.00, 0, 'ant-design:border-right-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-17 15:46:10', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108188034588674', '1438108187455774722', '结果页', '/page-demo/result', 'layouts/default/index', 1, NULL, '/page-demo/result/success', 1, NULL, '1', 2.00, 0, 'ant-design:account-book-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:25', 'admin', '2021-09-17 15:47:04', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108188378521602', '1438108187455774722', '个人页', '/page-demo/account', 'layouts/default/index', 1, NULL, '/page-demo/account/setting', 1, NULL, '1', 3.00, 0, 'ant-design:user-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', 'admin', '2021-09-17 15:47:23', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108188542099458', '1438108187455774722', '异常页', '/page-demo/exception', 'layouts/default/index', 1, NULL, '/page-demo/exception/404', 1, NULL, '1', 4.00, 0, 'ant-design:bug-twotone', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', 'admin', '2021-09-17 15:47:41', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108188714065922', '1438108187455774722', '列表页', '/page-demo/list', 'layouts/default/index', 1, NULL, '/page-demo/list/card', 1, NULL, '1', 5.00, 0, 'ant-design:table-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', 'admin', '2021-09-17 15:48:19', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108189062193153', '1438108187678072833', '基础表单', '/page-demo/form/basic', 'demo/page/form/basic/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108189427097601', '1438108187678072833', '分步表单', '/page-demo/form/step', 'demo/page/form/step/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108189754253313', '1438108187678072833', '高级表单', '/page-demo/form/high', 'demo/page/form/high/index', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108190110769154', '1438108187871010818', '基础详情页', '/page-demo/desc/basic', 'demo/page/desc/basic/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108190404370433', '1438108187871010818', '高级详情页', '/page-demo/desc/high', 'demo/page/desc/high/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108190777663490', '1438108188034588674', '成功页', '/page-demo/result/success', 'demo/page/result/success/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108191356477442', '1438108188034588674', '失败页', '/page-demo/result/fail', 'demo/page/result/fail/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:26', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108192623157249', '1438108188378521602', '个人中心', '/page-demo/account/center', 'demo/page/account/center/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:27', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108193701093378', '1438108188378521602', '个人设置', '/page-demo/account/setting', 'demo/page/account/setting/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:27', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108194992939010', '1438108188542099458', '403', '/page-demo/exception/403', 'sys/exception/NotAccessException', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:27', 'admin', '2021-09-18 18:02:47', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108195307511809', '1438108188542099458', '404', '/page-demo/exception/404', 'sys/exception/Exception', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:27', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108195487866881', '1438108188542099458', '500', '/page-demo/exception/500', 'sys/exception/ServerErrorException', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:27', 'admin', '2021-09-18 18:04:34', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108195638861825', '1438108188542099458', '网络错误', '/page-demo/exception/net-work-error', 'sys/exception/NetworkErrorException', 1, NULL, NULL, 1, NULL, '1', 3.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:27', 'admin', '2021-09-18 18:05:05', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108195924074497', '1438108188542099458', '无数据', '/page-demo/exception/not-data', 'sys/exception/NotDataErrorException', 1, NULL, NULL, 1, NULL, '1', 4.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:27', 'admin', '2021-09-18 18:05:40', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108196263813121', '1438108188714065922', '标准列表', '/page-demo/list/basic', 'demo/page/list/basic/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:27', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108196528054273', '1438108188714065922', '卡片列表', '/page-demo/list/card', 'demo/page/list/card/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:27', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108196855209985', '1438108188714065922', '搜索列表', '/page-demo/list/search', 'demo/page/list/search/index', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108196993622018', '', '组件&功能', '/comp', 'layouts/default/index', 1, NULL, '/comp/basic', 0, NULL, '1', 11.00, 0, 'ion:layers-outline', 0, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-11-18 10:48:06', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108197270446081', '1438108197958311537', '自定义组件示例', '/comp/jeecg/basic', 'demo/jeecg/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108197790539778', '1438108197958315557', 'Button组件', '/comp/basic/button', 'demo/comp/button/index', 1, NULL, NULL, 1, NULL, '1', 8.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 09:31:48', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108197958311537', '1438108196993622018', 'Jeecg组件示例', '/comp/jeecg', 'layouts/default/index', 1, NULL, '/comp/jeecg/basic', 1, NULL, '1', 1.00, 0, 'ant-design:sketch-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:49:57', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108197958311637', '1438108196993622018', '弹框抽屉', '/comp/modal', 'layouts/default/index', 1, NULL, '/comp/modal/basic', 1, NULL, '1', 6.00, 0, 'ant-design:laptop-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:53:10', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108197958311677', '1438108196993622018', '第三方组件', '/comp/third', 'layouts/default/index', 1, NULL, '/comp/third/basic', 1, NULL, '1', 7.00, 0, 'ant-design:slack-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:53:31', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108197958311937', '1438108196993622018', 'Form示例', '/comp/form', 'layouts/default/index', 1, NULL, '/comp/form/basic', 1, NULL, '1', 2.00, 0, 'ant-design:pic-left-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:50:39', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108197958315557', '1438108196993622018', '基础组件', '/comp/basic', 'layouts/default/index', 1, NULL, '/comp/basic', 1, NULL, '1', 1.00, 0, 'ant-design:insert-row-left-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:50:27', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108198113501186', '1438108196993622018', 'Table示例', '/comp/table', 'layouts/default/index', 1, NULL, '/comp/table/basic', 1, NULL, '1', 3.00, 0, 'ant-design:table-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:50:51', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108198339993602', '1438108197958311677', '动画组件', '/comp/third/transition', 'demo/comp/transition/index', 1, NULL, NULL, 1, NULL, '1', 9.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108198679732226', '1438108197958311537', '一对多示例', '/comp/jeecg/oneToMore', 'demo/vextable/index', 1, NULL, NULL, 1, NULL, '1', 6.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108198855892993', '1438108197958311677', '图片裁剪', '/comp/third/basic', 'demo/comp/cropper/index', 1, NULL, NULL, 1, NULL, '1', 7.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108199120134145', '1438108197958311677', '相对时间', '/comp/third/timestamp', 'demo/comp/time/index', 1, NULL, NULL, 1, NULL, '1', 8.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108199304683521', '1438108197958311677', '数字动画', '/comp/third/countTo', 'demo/comp/count-to/index', 1, NULL, NULL, 1, NULL, '1', 9.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108199413735425', '1438108196993622018', 'Tree示例', '/comp/tree', 'layouts/default/index', 1, NULL, '/comp/tree/basic', 1, NULL, '1', 4.00, 0, 'ant-design:partition-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:54:17', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108199539564546', '1438108196993622018', '编辑器', '/comp/editor', 'layouts/default/index', 1, NULL, '/comp/editor/markdown', 1, NULL, '1', 5.00, 0, 'ant-design:credit-card-twotone', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:52:47', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108199631839234', '1438108196993622018', '滚动组件', '/comp/scroll', 'layouts/default/index', 1, NULL, '/comp/scroll/basic', 1, NULL, '1', 11.00, 0, 'ant-design:column-height-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:53:43', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108200076435458', '1438108197958311637', '弹窗扩展', '/comp/modal/basic', 'demo/comp/modal/index', 1, NULL, NULL, 1, NULL, '1', 12.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108200391008257', '1438108197958311637', '抽屉扩展', '/comp/modal/drawer', 'demo/comp/drawer/index', 1, NULL, NULL, 1, NULL, '1', 13.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108200672026626', '1438108197958315557', '详情组件', '/comp/desc', 'demo/comp/desc/index', 1, NULL, NULL, 1, NULL, '1', 14.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108200802050050', '1438108196993622018', '懒加载组件', '/comp/lazy', 'layouts/default/index', 1, NULL, '/comp/lazy/basic', 1, NULL, '1', 15.00, 0, 'ant-design:small-dash-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:28', 'admin', '2021-09-17 15:53:59', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108200919490562', '1438108196993622018', '验证组件', '/comp/verify', 'layouts/default/index', 1, NULL, '/comp/verify/drag', 1, NULL, '1', 16.00, 0, 'ant-design:field-binary-outlined', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', 'admin', '2021-09-17 15:54:36', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108201150177281', '1438108197958311677', '二维码组件', '/comp/third/qrcode', 'demo/comp/qrcode/index', 1, NULL, NULL, 1, NULL, '1', 17.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108201502498817', '1438108197958311677', '密码强度组件', '/comp/third/strength-meter', 'demo/comp/strength-meter/index', 1, NULL, NULL, 1, NULL, '1', 18.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108201712214018', '1438108197958311677', '上传组件', '/comp/third/upload', 'demo/comp/upload/index', 1, NULL, NULL, 1, NULL, '1', 19.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108202060341249', '1438108197958311677', 'Loading', '/comp/third/loading', 'demo/comp/loading/index', 1, NULL, NULL, 1, NULL, '1', 20.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108202366525441', '1438108197958311937', '基础表单', '/comp/form/basic', 'demo/form/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108203649982466', '1438108197958311937', 'useForm', '/comp/form/useForm', 'demo/form/UseForm', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108203817754625', '1438108197958311937', 'RefForm', '/comp/form/refForm', 'demo/form/RefForm', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108204023275521', '1438108197958311937', '可收缩表单', '/comp/form/advancedForm', 'demo/form/AdvancedForm', 1, NULL, NULL, 1, NULL, '1', 3.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108204232990721', '1438108197958311937', '表单验证', '/comp/form/ruleForm', 'demo/form/RuleForm', 1, NULL, NULL, 1, NULL, '1', 4.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108204400762881', '1438108197958311937', '动态表单', '/comp/form/dynamicForm', 'demo/form/DynamicForm', 1, NULL, NULL, 1, NULL, '1', 5.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108204576923649', '1438108197958311937', '自定义组件', '/comp/form/customerForm', 'demo/form/CustomerForm', 1, NULL, NULL, 1, NULL, '1', 6.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108204732112898', '1438108197958311937', '表单增删示例', '/comp/form/appendForm', 'demo/form/AppendForm', 1, NULL, NULL, 1, NULL, '1', 7.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108205004742657', '1438108198113501186', '基础表格', '/comp/table/basic', 'demo/table/Basic', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108205180903426', '1438108198113501186', '树形表格', '/comp/table/treeTable', 'demo/table/TreeTable', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108205357064193', '1438108198113501186', '远程加载示例', '/comp/table/fetchTable', 'demo/table/FetchTable', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108205587750914', '1438108198113501186', '固定列', '/comp/table/fixedColumn', 'demo/table/FixedColumn', 1, NULL, NULL, 1, NULL, '1', 3.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108205742940161', '1438108198113501186', '自定义列', '/comp/table/customerCell', 'demo/table/CustomerCell', 1, NULL, NULL, 1, NULL, '1', 4.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108205919100930', '1438108198113501186', '开启搜索区域', '/comp/table/formTable', 'demo/table/FormTable', 1, NULL, NULL, 1, NULL, '1', 5.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108206086873089', '1438108198113501186', 'UseTable', '/comp/table/useTable', 'demo/table/UseTable', 1, NULL, NULL, 1, NULL, '1', 6.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108206258839553', '1438108198113501186', 'RefTable', '/comp/table/refTable', 'demo/table/RefTable', 1, NULL, NULL, 1, NULL, '1', 7.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108206489526274', '1438108198113501186', '多级表头', '/comp/table/multipleHeader', 'demo/table/MultipleHeader', 1, NULL, NULL, 1, NULL, '1', 8.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108206661492738', '1438108198113501186', '合并单元格', '/comp/table/mergeHeader', 'demo/table/MergeHeader', 1, NULL, NULL, 1, NULL, '1', 9.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108206959288321', '1438108198113501186', '嵌套子表格', '/comp/table/nestedTable', 'demo/table/NestedTable', 1, NULL, NULL, 1, NULL, '1', 10.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108207160614913', '1438108198113501186', '可展开表格', '/comp/table/expandTable', 'demo/table/ExpandTable', 1, NULL, NULL, 1, NULL, '1', 11.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108207374524418', '1438108198113501186', '定高/头部自定义', '/comp/table/fixedHeight', 'demo/table/FixedHeight', 1, NULL, NULL, 1, NULL, '1', 12.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108207563268097', '1438108198113501186', '表尾行合计', '/comp/table/footerTable', 'demo/table/FooterTable', 1, NULL, NULL, 1, NULL, '1', 13.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108207793954818', '1438108198113501186', '可编辑单元格', '/comp/table/editCellTable', 'demo/table/EditCellTable', 1, NULL, NULL, 1, NULL, '1', 14.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108208024641538', '1438108198113501186', '可编辑行', '/comp/table/editRowTable', 'demo/table/EditRowTable', 1, NULL, NULL, 1, NULL, '1', 15.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108208297271297', '1438108198113501186', '权限列', '/comp/table/authColumn', 'demo/table/AuthColumn', 1, NULL, NULL, 1, NULL, '1', 16.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108208817364993', '1438108199413735425', '基础树', '/comp/tree/basic', 'demo/tree/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108208980942850', '1438108199413735425', '可搜索/工具栏', '/comp/tree/editTree', 'demo/tree/EditTree', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108209228406785', '1438108199413735425', '函数操作示例', '/comp/tree/actionTree', 'demo/tree/ActionTree', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:30', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108210117599234', '1438108199539564546', 'Json编辑器', '/comp/editor/json', 'demo/editor/json/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:31', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108210260205570', '1438108199539564546', 'markdown编辑器', '/comp/editor/markdown', NULL, 1, NULL, '/comp/editor/markdown/index', 1, NULL, '1', 1.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:31', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108211325558785', '1438108210260205570', '基础使用', '/comp/editor/markdown/index', 'demo/editor/markdown/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:31', 'admin', '2021-09-16 14:40:59', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108211661103106', '1438108210260205570', '嵌入form', '/comp/editor/markdown/editor', 'demo/editor/markdown/Editor', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:31', 'admin', '2021-09-16 14:41:04', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108211778543618', '1438108199539564546', '富文本', '/comp/editor/tinymce', NULL, 1, NULL, '/comp/editor/tinymce/index', 1, NULL, '1', 2.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:31', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108214882328577', '1438108211778543618', '基础使用', '/comp/editor/tinymce/index', 'demo/editor/tinymce/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108215335313409', '1438108211778543618', '嵌入form', '/comp/editor/tinymce/editor', 'demo/editor/tinymce/Editor', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108215511474177', '1438108199631839234', '基础滚动', '/comp/scroll/basic', 'demo/comp/scroll/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108215687634945', '1438108199631839234', '滚动函数', '/comp/scroll/action', 'demo/comp/scroll/Action', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108215989624834', '1438108199631839234', '虚拟滚动', '/comp/scroll/virtualScroll', 'demo/comp/scroll/VirtualScroll', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108216300003330', '1438108200802050050', '基础示例', '/comp/lazy/basic', 'demo/comp/lazy/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108216597798914', '1438108200802050050', '动画效果', '/comp/lazy/transition', 'demo/comp/lazy/Transition', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108216971091969', '1438108200919490562', '拖拽校验', '/comp/verify/drag', 'demo/comp/verify/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108217449242626', '1438108200919490562', '图片还原', '/comp/verify/rotate', 'demo/comp/verify/Rotate', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108217562488834', '1438108187455774722', '图表', '/charts', 'layouts/default/index', 1, NULL, '/charts/echarts/map', 0, NULL, '1', 7.00, 0, 'ion:bar-chart-outline', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:32', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108217860284417', '1438108217562488834', '百度地图', '/charts/baiduMap', 'demo/charts/map/Baidu', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108218049028097', '1438108217562488834', '高德地图', '/charts/aMap', 'demo/charts/map/Gaode', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108218409738242', '1438108217562488834', 'Echarts', '/charts/echarts', NULL, 1, NULL, '/charts/echarts/map', 1, NULL, '1', 3.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108218787225601', '1438108218409738242', '地图', '/charts/echarts/map', 'demo/charts/Map', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108219034689538', '1438108218409738242', '折线图', '/charts/echarts/line', 'demo/charts/Line', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108219240210434', '1438108218409738242', '饼图', '/charts/echarts/pie', 'demo/charts/Pie', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108219445731330', '1438108187455774722', '外部页面', '/frame', 'layouts/default/index', 1, NULL, '/frame/doc', 0, NULL, '1', 8.00, 0, 'ion:tv-outline', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108219592531970', '1438108219445731330', '项目文档(内嵌)', '/frame/doc', 'http://vue3.jeecg.com', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:33', 'admin', '2021-11-15 17:59:32', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108219793858561', '1438108219445731330', 'antVue文档(内嵌)', '/frame/antv', 'https://2x.antdv.com/docs/vue/introduce-cn', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:33', 'admin', '2021-11-11 17:11:10', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108220137791489', '1438108219445731330', '项目文档(外链)', '/', 'http://vue3.jeecg.com/', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-15 19:51:33', 'admin', '2021-10-25 13:46:59', 0, 0, '1', 1);
+INSERT INTO `sys_permission_v3` VALUES ('1438108220418809857', '1438108187455774722', '多级菜单', '/level', 'layouts/default/index', 1, NULL, '/level/menu1/menu1-1/menu1-1-1', 0, NULL, '1', 9.00, 0, 'ion:menu-outline', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108220523667458', '1438108220418809857', 'Menu1', '/level/menu1', NULL, 1, NULL, '/level/menu1/menu1-1/menu1-1-1', 1, NULL, '1', 0.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108220724994049', '1438108220418809857', 'Menu2', '/level/menu2', 'demo/level/Menu2', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108220896960513', '1438108220523667458', 'Menu1-1', '/level/menu1/menu1-1', NULL, 1, NULL, '/level/menu1/menu1-1/menu1-1-1', 1, NULL, '1', 0.00, 0, NULL, 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108221127647234', '1438108220896960513', 'Menu1-1-1', '/level/menu1/menu1-1/menu1-1-1', 'demo/level/Menu111', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108221270253570', '1438108220523667458', 'Menu1-2', '/level/menu1/menu1-2', 'demo/level/Menu12', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108221551271937', '', 'Mock示例', '/system', 'layouts/default/index', 1, NULL, '/system/account', 0, NULL, '1', 10.00, 0, 'ion:settings-outline', 0, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:33', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108221849067522', '1438108221551271937', '测试功能', '/system/test', 'demo/system/test/index', 1, NULL, NULL, 1, NULL, '1', 0.00, 0, 'ant-design:bulb-outlined', 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:34', 'admin', '2021-09-17 15:55:36', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108222218166273', '1438108221551271937', '账号管理', '/system/account', 'demo/system/account/index', 1, NULL, NULL, 1, NULL, '1', 1.00, 0, 'ant-design:user-outlined', 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:34', 'admin', '2021-09-17 15:55:46', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108222721482753', '1438108221551271937', '账号详情', '/system/account_detail/:id', 'demo/system/account/AccountDetail', 1, NULL, NULL, 1, NULL, '1', 2.00, 0, 'ant-design:idcard-twotone', 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:34', 'admin', '2021-09-17 15:56:12', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108223489040385', '1438108221551271937', '部门管理', '/system/dept', 'demo/system/dept/index', 1, NULL, NULL, 1, NULL, '1', 5.00, 0, 'ant-design:usergroup-add-outlined', 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:34', 'admin', '2021-09-17 15:56:34', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108223661006850', '1438108221551271937', '修改密码', '/system/changePassword', 'demo/system/password/index', 1, NULL, NULL, 1, NULL, '1', 6.00, 0, 'ant-design:field-number-outlined', 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:34', 'admin', '2021-09-17 15:56:46', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108225263230978', '1438108178010202113', '引导页', '/setup/index', 'demo/setup/index', 1, NULL, NULL, 1, NULL, '1', 12.00, 0, 'whh:paintroll', 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:34', 'admin', '2021-09-17 09:02:19', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438108225451974658', '', '关于', '/about/index', 'sys/about/index', 1, NULL, NULL, 0, NULL, '1', 13.00, 0, 'simple-icons:about-dot-me', 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 19:51:34', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438115924159881218', '1438108183395688450', 'Tab带参1', '/testTab/id1', 'demo/feat/tab-params/index', 1, NULL, NULL, 1, NULL, '0', 0.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 20:22:10', 'admin', '2021-09-16 14:38:32', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438116003012796418', '1438108183395688450', 'Tab带参2', '/feat/testTab/id2', 'demo/feat/tab-params/index', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, NULL, 1, 0, 0, NULL, NULL, 'admin', '2021-09-15 20:22:29', NULL, NULL, 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438469604861403137', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '职务管理', '/system/position', 'system/position/index', 1, NULL, NULL, 1, NULL, '0', 5.00, 0, 'ant-design:database-filled', 1, 0, 0, NULL, NULL, 'admin', '2021-09-16 19:47:33', 'admin', '2021-09-17 15:58:22', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438782530717495298', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '分类字典', '/system/category', 'system/category/index', 1, NULL, NULL, 1, NULL, '0', 9.00, 0, 'ant-design:group-outlined', 1, 0, 0, NULL, NULL, 'admin', '2021-09-17 16:31:01', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438782641187074050', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '数据字典', '/system/dict', 'system/dict/index', 1, NULL, NULL, 1, NULL, '0', 10.00, 0, 'ant-design:hdd-twotone', 1, 0, 0, NULL, NULL, 'admin', '2021-09-17 16:31:27', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438782851980210178', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '通知公告', '/system/notice', 'system/notice/index', 1, NULL, NULL, 1, NULL, '0', 8.00, 0, 'ant-design:bell-outlined', 1, 0, 0, NULL, NULL, 'admin', '2021-09-17 16:32:17', 'admin', '2021-09-17 16:36:15', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1438783058792951810', '1438108197958311537', '单表示例', '/system/examples/demo', 'system/examples/demo/index', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-17 16:33:07', 'admin', '2021-12-08 14:10:47', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439398677984878593', '', '系统监控', '/monitor', 'layouts/RouteView', 1, NULL, NULL, 0, NULL, '0', 3.00, 0, 'ant-design:video-camera-filled', 0, 0, 0, 0, NULL, 'admin', '2021-09-19 09:19:22', 'admin', '2021-11-15 18:21:14', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439399179791409153', '1439398677984878593', '网关路由', '/monitor/route', 'monitor/route/index', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, 'ant-design:branches-outlined', 1, 0, 0, 0, NULL, 'admin', '2021-09-19 09:21:21', 'admin', '2021-09-19 09:26:42', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439488251473993730', '1439398677984878593', '定时任务', '/monitor/quartz', 'monitor/quartz/index', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, 'ant-design:history-outlined', 1, 0, 0, 0, NULL, 'admin', '2021-09-19 15:15:18', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439511654494937090', '1439398677984878593', '数据源管理', '/monitor/datasource', 'monitor/datasource/index', 1, NULL, NULL, 1, NULL, '0', 3.00, 0, 'ant-design:hdd-filled', 1, 0, 0, 0, NULL, 'admin', '2021-09-19 16:48:17', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439531077792473089', '1439398677984878593', '数据日志', '/monitor/datalog', 'monitor/datalog/index', 1, NULL, NULL, 1, NULL, '0', 4.00, 0, 'ant-design:funnel-plot-twotone', 1, 0, 0, 0, NULL, 'admin', '2021-09-19 18:05:28', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439533711676973057', '1439398677984878593', '日志管理', '/monitor/log', 'monitor/log/index', 1, NULL, NULL, 1, NULL, '0', 5.00, 0, 'ant-design:interaction-outlined', 1, 0, 0, 0, NULL, 'admin', '2021-09-19 18:15:56', 'admin', '2021-09-19 18:16:56', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439542701152575489', '1443390062919208961', '我的消息', '/monitor/mynews', 'monitor/mynews/index', 1, NULL, NULL, 1, NULL, '0', 6.00, 0, 'ant-design:wechat-outlined', 1, 0, 0, 0, NULL, 'admin', '2021-09-19 18:51:40', 'admin', '2021-09-19 18:53:23', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439784356766064642', '1439398677984878593', 'SQL监控', '/monitor/druid', '{{ window._CONFIG[\'domianURL\'] }}/druid', 1, NULL, NULL, 1, NULL, '0', 8.00, 0, 'ant-design:rocket-filled', 1, 0, 0, 0, NULL, 'admin', '2021-09-20 10:51:55', 'admin', '2021-11-15 18:21:20', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439797053314342913', '1439398677984878593', '性能监控', '/monitor/server', 'monitor/server/index', 1, NULL, NULL, 1, NULL, '0', 9.00, 0, 'ant-design:thunderbolt-filled', 1, 0, 0, 0, NULL, 'admin', '2021-09-20 11:42:22', 'admin', '2021-09-20 14:13:14', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439839507094740994', '1439398677984878593', 'Redis监控', '/monitor/redis', 'monitor/redis/index', 1, NULL, NULL, 1, NULL, '0', 10.00, 0, 'ant-design:trademark-outlined', 1, 0, 0, 0, NULL, 'admin', '2021-09-20 14:31:04', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1439842640030113793', '1439398677984878593', '请求追踪', '/monitor/trace', 'monitor/trace/index', 1, NULL, NULL, 1, NULL, '0', 11.00, 0, 'ant-design:ie-circle-filled', 1, 0, 0, 0, NULL, 'admin', '2021-09-20 14:43:31', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1441340399835742209', '1438108197958311537', '打印示例', '/jeecg/PrintDemo', 'demo/jeecg/PrintDemo', 1, NULL, NULL, 1, NULL, '0', 7.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-24 17:55:05', 'admin', '2021-09-24 17:55:20', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1441357157443371009', '1438108197958311537', '表格合计', '/jeecg/tableTotal', 'demo/jeecg/TableTotal', 1, NULL, NULL, 1, NULL, '0', 8.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-24 19:01:40', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1441361249200832513', '1438108197958311537', '异步树表格', '/jeecg/AsyncTreeTable', 'demo/jeecg/AsyncTreeTable', 1, NULL, NULL, 1, NULL, '0', 9.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-24 19:17:56', 'admin', '2021-09-26 16:05:55', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1442055284830769154', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '对象存储', '/system/ossfile', 'system/ossfile/index', 1, NULL, NULL, 1, NULL, '0', 11.00, 0, 'ant-design:file-add-outlined', 1, 0, 0, 0, NULL, 'jeecg', '2021-09-26 17:15:47', 'jeecg', '2021-09-26 17:18:01', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1443390062919208961', '', '消息中心', '/message', 'layouts/default/index', 1, NULL, '/message/manage', 0, NULL, '0', 4.00, 0, 'ant-design:message-outlined', 0, 0, 0, 0, NULL, 'admin', '2021-09-30 09:39:43', 'admin', '2021-11-18 10:47:28', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1443391428723003394', '1443390062919208961', '消息管理', '/message/manage', 'system/message/manage/index', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-30 09:45:08', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1443391584864358402', '1443390062919208961', '消息模板管理', '/message/template', 'system/message/template/index', 1, NULL, NULL, 1, NULL, '0', 2.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-09-30 09:45:45', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1446778415130722306', '1438108219445731330', 'JEECG官网', '/', 'http://www.jeecg.com', 0, NULL, NULL, 1, NULL, '0', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'jeecg', '2021-10-09 18:03:49', 'admin', '2021-11-15 18:01:26', 0, 0, NULL, 1);
+INSERT INTO `sys_permission_v3` VALUES ('1447535997560909826', '1438108197270446081', '禁用', NULL, NULL, 0, NULL, NULL, 2, 'demo.dbarray', '2', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-10-11 20:14:10', 'admin', '2021-10-11 20:18:48', 0, 0, '1', 0);
+INSERT INTO `sys_permission_v3` VALUES ('1447763172274495489', '', '统计报表', '/report', 'layouts/default/index', 1, NULL, NULL, 0, NULL, '0', 7.00, 0, 'ant-design:bar-chart-outlined', 0, 0, 0, 0, NULL, 'jeecg', '2021-10-12 11:16:53', 'jeecg', '2021-10-12 11:17:05', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1447763517847396354', '1447763172274495489', 'EChartDemo', '/report/chartDemo', 'report/chartdemo/index', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'jeecg', '2021-10-12 11:18:15', 'jeecg', '2021-10-14 14:36:38', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1448252726202859522', '1447763172274495489', '布局统计报表', '/statisticst', 'report/statisticst/index', 1, NULL, NULL, 1, NULL, '0', 2.00, 0, NULL, 1, 0, 0, 0, NULL, 'jeecg', '2021-10-13 19:42:12', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1450308897429536769', '1438108197958311537', 'JVxeTable示例', '/jeecg/j-vxe-table-demo', 'demo/jeecg/JVxeTableDemo/index', 1, NULL, NULL, 1, NULL, '0', 10.00, 0, NULL, 0, 0, 0, 0, NULL, 'admin', '2021-10-19 11:52:41', 'admin', '2021-10-19 11:54:46', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1452508868884353026', '1456520526287917057', '报表设计', '/report', '{{ window._CONFIG[\'domianURL\'] }}/jmreport/list?token=${token}', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, 'ant-design:radar-chart-outlined', 1, 0, 0, 0, NULL, 'admin', '2021-10-25 13:34:35', 'admin', '2021-11-05 15:19:33', 0, 0, '1', 1);
+INSERT INTO `sys_permission_v3` VALUES ('1453250018282573826', '1438108197958311537', '一对多内嵌', '/innerTable', 'demo/jeecg/InnerExpandTable', 1, NULL, NULL, 1, NULL, '0', 12.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-10-27 14:39:39', 'admin', '2021-10-27 14:40:29', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1454031324835807233', '1450308897429536769', '综合示例', '/jeecg/j-vxe-table-demo/normal', 'demo/jeecg/JVxeTableDemo/index', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-10-29 18:24:17', 'admin', '2021-10-29 18:25:28', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1454031820661260289', '1450308897429536769', '即时保存', '/jeecg/j-vxe-table-demo/jsbc', 'demo/jeecg/JVxeTableDemo/func-demo/JSBCDemo', 1, NULL, NULL, 1, NULL, '0', 2.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-10-29 18:26:15', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1454034512171302914', '1450308897429536769', '无痕刷新', '/jeecg/j-vxe-table-demo/whsx', 'demo/jeecg/JVxeTableDemo/func-demo/SocketReload', 1, NULL, NULL, 1, NULL, '0', 3.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-10-29 18:36:57', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1455019819440021505', '1450308897429536769', '弹出子表', '/jeecg/j-vxe-table-demo/tczb', 'demo/jeecg/JVxeTableDemo/func-demo/PopupSubTable', 1, NULL, NULL, 1, NULL, '0', 4.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-11-01 11:52:13', 'admin', '2021-11-01 11:52:19', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1455067599277662209', '1450308897429536769', '布局模板', '/jeecg/j-vxe-table-demo/layout', 'demo/jeecg/JVxeTableDemo/layout-demo/index', 1, NULL, NULL, 1, NULL, '0', 5.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-11-01 15:02:04', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1455100420297859074', '', '在线开发', '/online', 'layouts/default/index', 1, NULL, '/online/cgform', 0, NULL, '0', 2.00, 0, 'ant-design:cloud-outlined', 0, 0, 0, 0, NULL, 'admin', '2021-11-01 17:12:29', 'admin', '2022-05-11 16:38:26', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1455101470794850305', '1455100420297859074', 'Online表单开发', '/online/cgform', 'super/online/cgform/index', 1, NULL, NULL, 1, NULL, '0', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-11-01 17:16:40', 'admin', '2022-04-04 18:36:25', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1455735714507472898', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '通讯录', '/address', 'system/address/index', 1, NULL, NULL, 1, NULL, '0', 10.00, 0, 'ant-design:book-outlined', 1, 0, 0, 0, NULL, 'admin', '2021-11-03 11:16:55', 'admin', '2021-11-04 19:40:19', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1456520526287917057', '', '报表设计', '/report', 'layouts/default/index', 1, NULL, NULL, 0, NULL, '0', 4.00, 0, 'ant-design:project-outlined', 0, 0, 0, 0, NULL, 'admin', '2021-11-05 15:15:28', 'admin', '2021-11-05 15:17:33', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1457678003102879745', '1455100420297859074', '系统编码规则', '/system/fillrule', 'system/fillRule/index', 1, NULL, NULL, 1, NULL, '0', 9.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-11-08 19:54:53', 'admin', '2021-11-18 10:49:40', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1458353686530232321', '1455100420297859074', '系统校验规则', '/system/checkrule', 'system/checkRule/index', 1, NULL, NULL, 1, NULL, '0', 15.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-11-10 16:39:48', 'admin', '2021-11-18 10:49:48', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1458389305235984385', '1438108197958311537', '一对多ERP', '/erplist', 'demo/jeecg/erplist/index', 1, NULL, NULL, 1, NULL, '0', 11.00, 0, '', 1, 0, 0, 0, NULL, 'admin', '2021-11-10 19:01:21', 'admin', '2021-11-30 14:06:53', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1460888189937176577', '1455100420297859074', 'Online报表配置', '/online/cgreport', 'super/online/cgreport/index', 1, NULL, NULL, 1, NULL, '0', 2.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2021-11-17 16:31:01', 'admin', '2021-12-08 10:55:32', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1461270075543347202', '1455100420297859074', 'Online表单视图', '/online/copyform/:code', 'super/online/cgform/CgformCopyList', 1, NULL, NULL, 1, NULL, '0', 99.00, 0, NULL, 1, 0, 1, 0, NULL, 'admin', '2021-11-18 17:48:30', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1461291438825558017', '1455100420297859074', 'AUTO在线报表', '/online/cgreport/:id', 'super/online/cgreport/auto/OnlCgReportList', 1, NULL, NULL, 1, NULL, '0', 2.00, 0, NULL, 1, 0, 1, 0, NULL, 'admin', '2021-11-18 19:13:23', 'admin', '2021-11-19 20:16:13', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1463073196350701569', '1455100420297859074', 'AUTO在线图表', '/online/graphreport/chart/:code', 'super/online/graphreport/auto/GraphreportAutoChart', 1, NULL, NULL, 1, NULL, '0', 99.00, 0, NULL, 1, 1, 1, 0, NULL, 'admin', '2021-11-23 17:13:27', 'admin', '2021-11-30 17:30:45', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1465686870713782273', '1455100420297859074', 'AUTO在线表单', '/online/cgformList/:id', 'super/online/cgform/auto/default/OnlineAutoList', 1, NULL, NULL, 1, NULL, '0', 5.00, 0, NULL, 1, 0, 1, 0, NULL, 'admin', '2021-11-30 22:19:16', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1509417558230999041', '1455100420297859074', 'AUTO树表单列表', '/online/cgformTreeList/:id', 'super/online/cgform/auto/tree/OnlineAutoTreeList', 1, NULL, NULL, 1, NULL, '0', 5.00, 0, NULL, 1, 0, 1, 0, NULL, 'admin', '2022-03-31 14:29:24', NULL, NULL, 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('190c2b43bec6a5f7a4194a85db67d96a', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '角色管理', '/system/role', 'system/role/index', 1, NULL, NULL, 1, NULL, NULL, 2.00, 0, 'ant-design:solution', 1, 1, 0, NULL, NULL, NULL, '2018-12-25 20:34:38', 'admin', '2021-09-17 15:58:00', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('1a0811914300741f4e11838ff37a1d3a', '3f915b2769fc80648e92d04e84ca059d', '手机号禁用', '', '', 0, NULL, NULL, 2, 'user:form:phone', '2', 1.00, 0, NULL, 1, NULL, 0, NULL, NULL, 'admin', '2019-05-11 17:19:30', 'admin', '2019-05-11 18:00:22', 0, 0, '1', NULL);
+INSERT INTO `sys_permission_v3` VALUES ('3f915b2769fc80648e92d04e84ca059d', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '用户管理', '/system/user', 'system/user/index', 1, NULL, NULL, 1, NULL, NULL, 1.00, 0, 'ant-design:user', 0, 1, 0, NULL, NULL, NULL, '2018-12-25 20:34:38', 'sunjianlei', '2021-05-08 09:57:31', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('45c966826eeff4c99b8f8ebfe74511fc', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '部门管理', '/system/depart', 'system/depart/index', 1, NULL, NULL, 1, NULL, NULL, 3.00, 0, 'ant-design:team', 1, 0, 0, NULL, NULL, 'admin', '2019-01-29 18:47:40', 'admin', '2021-09-17 15:58:13', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('5c2f42277948043026b7a14692456828', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '我的部门', '/system/depart-user', 'system/departUser/index', 1, NULL, NULL, 1, NULL, NULL, 4.00, 0, 'ant-design:home-outlined', 1, 0, 0, NULL, NULL, 'admin', '2019-04-17 15:12:24', 'admin', '2021-09-17 15:58:41', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('9502685863ab87f0ad1134142788a385', '1438108176273760258', '首页', '/dashboard/analysis', 'dashboard/Analysis', 1, NULL, NULL, 1, NULL, NULL, 1.00, 0, 'ant-design:bank-filled', 1, 1, 0, NULL, NULL, NULL, '2018-12-25 20:34:38', 'admin', '2021-09-17 15:43:16', 0, 0, NULL, 0);
+INSERT INTO `sys_permission_v3` VALUES ('d7d6e2e4e2934f2c9385a623fd98c6f3', '', '系统管理', '/isystem', 'layouts/RouteView', 1, NULL, NULL, 0, NULL, NULL, 2.00, 0, 'ant-design:setting', 0, 0, 0, NULL, NULL, NULL, '2018-12-25 20:34:38', 'admin', '2020-01-07 11:00:45', 0, 0, NULL, 0);
+
+-- ----------------------------
 -- Table structure for sys_position
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_position`;
@@ -7101,7 +7528,7 @@ CREATE TABLE `sys_position`  (
   `tenant_id` int(10) NULL DEFAULT 0 COMMENT '租户ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_code`(`code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_position
@@ -7126,7 +7553,7 @@ CREATE TABLE `sys_quartz_job`  (
   `description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述',
   `status` int(1) NULL DEFAULT NULL COMMENT '状态 0正常 -1停止',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_quartz_job
@@ -7152,7 +7579,7 @@ CREATE TABLE `sys_role`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uniq_sys_role_role_code`(`role_code`) USING BTREE,
   INDEX `idx_sysrole_tenant_id`(`tenant_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role
@@ -7185,7 +7612,7 @@ CREATE TABLE `sys_role_index`  (
   INDEX `idx_sri_role_code`(`role_code`) USING BTREE,
   INDEX `idx_sri_status`(`status`) USING BTREE,
   INDEX `idx_sri_priority`(`priority`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色首页表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '角色首页表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role_index
@@ -7207,7 +7634,7 @@ CREATE TABLE `sys_role_permission`  (
   INDEX `idx_srp_role_per_id`(`role_id`, `permission_id`) USING BTREE,
   INDEX `idx_srp_role_id`(`role_id`) USING BTREE,
   INDEX `idx_srp_permission_id`(`permission_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色权限表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '角色权限表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_role_permission
@@ -7980,6 +8407,8 @@ INSERT INTO `sys_role_permission` VALUES ('1801081424624365584', 'f6817f48af4fb3
 INSERT INTO `sys_role_permission` VALUES ('1801081424624365585', 'f6817f48af4fb3af11b9e8bf182f618b', '1699374801816125442', NULL, '2024-06-13 10:37:29', '127.0.0.1');
 INSERT INTO `sys_role_permission` VALUES ('1801081424624365586', 'f6817f48af4fb3af11b9e8bf182f618b', '1699375086147993601', NULL, '2024-06-13 10:37:29', '127.0.0.1');
 INSERT INTO `sys_role_permission` VALUES ('1801081424624365587', 'f6817f48af4fb3af11b9e8bf182f618b', '1699375193576701953', NULL, '2024-06-13 10:37:29', '127.0.0.1');
+INSERT INTO `sys_role_permission` VALUES ('1802512146434314242', '1501570619841810433', '1801954937339428865', NULL, '2024-06-17 09:22:39', '127.0.0.1');
+INSERT INTO `sys_role_permission` VALUES ('1802512173219139585', 'f6817f48af4fb3af11b9e8bf182f618b', '1801954937339428865', NULL, '2024-06-17 09:22:46', '127.0.0.1');
 INSERT INTO `sys_role_permission` VALUES ('1ac1688ef8456f384091a03d88a89ab1', '52b0cf022ac4187b2a70dfa4f8b2d940', '693ce69af3432bd00be13c3971a57961', NULL, NULL, NULL);
 INSERT INTO `sys_role_permission` VALUES ('1af4babaa4227c3cbb830bc5eb513abb', 'ee8626f80f7c2619917b6236f3a7f02b', 'e08cb190ef230d5d4f03824198773950', NULL, NULL, NULL);
 INSERT INTO `sys_role_permission` VALUES ('1ba162bbc2076c25561f8622f610d5bf', 'ee8626f80f7c2619917b6236f3a7f02b', 'aedbf679b5773c1f25e9f7b10111da73', NULL, NULL, NULL);
@@ -8236,7 +8665,7 @@ CREATE TABLE `sys_sms`  (
   INDEX `idx_ss_es_receiver`(`es_receiver`) USING BTREE,
   INDEX `idx_ss_es_send_time`(`es_send_time`) USING BTREE,
   INDEX `idx_ss_es_send_status`(`es_send_status`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_sms
@@ -8267,7 +8696,7 @@ CREATE TABLE `sys_sms_template`  (
   `use_status` varchar(1) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '是否使用中 1是0否',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `uk_sst_template_code`(`template_code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_sms_template
@@ -8343,7 +8772,7 @@ CREATE TABLE `sys_tenant`  (
   `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
   `apply_status` int(3) NULL DEFAULT NULL COMMENT '允许申请管理员 1允许 0不允许',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '多租户信息表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '多租户信息表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_tenant
@@ -8368,7 +8797,7 @@ CREATE TABLE `sys_tenant_pack`  (
   `pack_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '编码,默认添加的三个管理员需要设置编码',
   `pack_type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'custom' COMMENT '产品包类型(default 默认产品包 custom 自定义产品包)',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户产品包' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户产品包' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_tenant_pack
@@ -8389,7 +8818,7 @@ CREATE TABLE `sys_tenant_pack_perms`  (
   `update_time` date NULL DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `idx_stpp_pack_id`(`pack_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户产品包和菜单关系表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户产品包和菜单关系表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_tenant_pack_perms
@@ -8418,7 +8847,7 @@ CREATE TABLE `sys_tenant_pack_user`  (
   INDEX `idx_tpu_user_id`(`user_id`) USING BTREE,
   INDEX `idx_tpu_tenant_id`(`tenant_id`) USING BTREE,
   INDEX `idx_tpu_status`(`status`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户套餐人员表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '租户套餐人员表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_tenant_pack_user
@@ -8448,7 +8877,7 @@ CREATE TABLE `sys_third_account`  (
   UNIQUE INDEX `uniq_stat_third_type_user_id`(`third_type`, `third_user_id`) USING BTREE,
   UNIQUE INDEX `uniq_sta_third_user_id_third_type`(`third_user_id`, `third_type`, `tenant_id`) USING BTREE,
   UNIQUE INDEX `uniq_sta_third_user_uuid_third_type`(`third_user_uuid`, `third_type`, `tenant_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_third_account
@@ -8519,7 +8948,7 @@ CREATE TABLE `sys_user`  (
   INDEX `idx_su_status`(`status`) USING BTREE,
   INDEX `idx_su_del_flag`(`del_flag`) USING BTREE,
   INDEX `idx_su_del_username`(`username`, `del_flag`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user
@@ -8553,7 +8982,7 @@ CREATE TABLE `sys_user_agent`  (
   INDEX `idx_sug_status`(`status`) USING BTREE,
   INDEX `idx_sug_start_time`(`start_time`) USING BTREE,
   INDEX `idx_sug_end_time`(`end_time`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户代理人设置' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户代理人设置' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_agent
@@ -8572,7 +9001,7 @@ CREATE TABLE `sys_user_depart`  (
   UNIQUE INDEX `idx_sud_user_dep_id`(`user_id`, `dep_id`) USING BTREE,
   INDEX `idx_sud_user_id`(`user_id`) USING BTREE,
   INDEX `idx_sud_dep_id`(`dep_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_depart
@@ -8617,7 +9046,7 @@ CREATE TABLE `sys_user_role`  (
   INDEX `idx_sur_user_id`(`user_id`) USING BTREE,
   INDEX `idx_sur_role_id`(`role_id`) USING BTREE,
   INDEX `idx_sur_user_role_id`(`user_id`, `role_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户角色表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci COMMENT = '用户角色表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_role
@@ -8659,7 +9088,7 @@ CREATE TABLE `sys_user_tenant`  (
   INDEX `idx_sut_user_rel_tenant`(`user_id`, `tenant_id`) USING BTREE,
   INDEX `idx_sut_status`(`status`) USING BTREE,
   INDEX `idx_sut_userid_status`(`user_id`, `status`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户租户关系表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户租户关系表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_user_tenant
@@ -8693,7 +9122,7 @@ CREATE TABLE `test_demo`  (
   `pop` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '弹窗',
   `sel_table` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '下拉字典表',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test_demo
@@ -8716,7 +9145,7 @@ CREATE TABLE `test_enhance_select`  (
   `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
   `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test_enhance_select
@@ -8749,7 +9178,7 @@ CREATE TABLE `test_note`  (
   `sheng` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '地区',
   `month` date NULL DEFAULT NULL COMMENT '月',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test_note
@@ -8759,6 +9188,32 @@ INSERT INTO `test_note` VALUES ('1260208702503366657', 'admin', '2020-05-12 22:0
 INSERT INTO `test_note` VALUES ('1304309860578455553', 'admin', '2020-09-11 14:44:38', NULL, NULL, 'A01', 'zhangsan', 222, '1', '2020-09-11 00:00:00', '222', NULL, NULL, NULL);
 INSERT INTO `test_note` VALUES ('1580543046964621313', 'admin', '2022-10-13 20:56:42', 'admin', '2022-10-28 10:25:54', 'A01', 'zhangsan', 22, '1', '2022-10-05 00:00:00', '1212', NULL, NULL, NULL);
 INSERT INTO `test_note` VALUES ('1800567715372081154', 'admin', '2024-06-12 00:36:11', 'admin', '2024-06-13 10:13:49', 'A01', 'admin', 0, '1', '2024-06-14 00:00:00', '<p>姜汝鑫</p>', '2023-01-01', '110101', '2024-08-01');
+
+-- ----------------------------
+-- Table structure for test_online_link
+-- ----------------------------
+DROP TABLE IF EXISTS `test_online_link`;
+CREATE TABLE `test_online_link`  (
+  `id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `pid` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'pid',
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT 'name',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of test_online_link
+-- ----------------------------
+INSERT INTO `test_online_link` VALUES ('1', NULL, '中国');
+INSERT INTO `test_online_link` VALUES ('10', '8', '庐阳区');
+INSERT INTO `test_online_link` VALUES ('11', '7', '黄山市');
+INSERT INTO `test_online_link` VALUES ('2', '1', '山东省');
+INSERT INTO `test_online_link` VALUES ('3', '2', '济南市');
+INSERT INTO `test_online_link` VALUES ('4', '3', '历城区');
+INSERT INTO `test_online_link` VALUES ('5', '3', '长青区');
+INSERT INTO `test_online_link` VALUES ('6', '2', '青岛市');
+INSERT INTO `test_online_link` VALUES ('7', '1', '安徽省');
+INSERT INTO `test_online_link` VALUES ('8', '7', '合肥市');
+INSERT INTO `test_online_link` VALUES ('9', '8', '包河区');
 
 -- ----------------------------
 -- Table structure for test_order_customer
@@ -8778,7 +9233,7 @@ CREATE TABLE `test_order_customer`  (
   `order_id` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单id',
   `address` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '地址',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test_order_customer
@@ -8808,7 +9263,7 @@ CREATE TABLE `test_order_main`  (
   `descc` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '描述',
   `xiala` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '下拉多选',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test_order_main
@@ -8838,7 +9293,7 @@ CREATE TABLE `test_order_product`  (
   `order_fk_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '订单外键ID',
   `pro_type` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '产品类型',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test_order_product
@@ -8866,6 +9321,29 @@ INSERT INTO `test_order_product` VALUES ('402831816a38e7fd016a38e7fdf10002', 'ad
 INSERT INTO `test_order_product` VALUES ('4028810c6b40244b016b406884080005', 'admin', '2020-02-24 02:05:38', NULL, NULL, '333', NULL, 33, '', '402831816a38e7fd016a38e825c90003', '');
 
 -- ----------------------------
+-- Table structure for test_person
+-- ----------------------------
+DROP TABLE IF EXISTS `test_person`;
+CREATE TABLE `test_person`  (
+  `id` varchar(36) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `create_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sex` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '性别',
+  `name` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '用户名',
+  `content` longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL COMMENT '请假原因',
+  `be_date` datetime NULL DEFAULT NULL COMMENT '请假时间',
+  `qj_days` int(11) NULL DEFAULT NULL COMMENT '请假天数',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of test_person
+-- ----------------------------
+INSERT INTO `test_person` VALUES ('8ca668defdae47df8649a5477ae08b05', 'admin', '2019-04-12 09:51:37', NULL, NULL, '1', 'zhangdaiscott', 'dsdsd', '2019-04-12 00:00:00', 2);
+
+-- ----------------------------
 -- Table structure for test_shoptype_tree
 -- ----------------------------
 DROP TABLE IF EXISTS `test_shoptype_tree`;
@@ -8881,7 +9359,7 @@ CREATE TABLE `test_shoptype_tree`  (
   `pid` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '父级节点',
   `has_child` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '是否有子节点',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of test_shoptype_tree
@@ -8901,7 +9379,7 @@ CREATE TABLE `tmp_report_data_1`  (
   `his_lowest` decimal(10, 2) NULL DEFAULT NULL,
   `his_average` decimal(10, 2) NULL DEFAULT NULL,
   `his_highest` decimal(10, 2) NULL DEFAULT NULL
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tmp_report_data_1
@@ -8932,7 +9410,7 @@ CREATE TABLE `tmp_report_data_income`  (
   `tb_zx_money` decimal(10, 2) NULL DEFAULT NULL,
   `neikong_zx_money` decimal(10, 2) NULL DEFAULT NULL,
   `total` decimal(10, 2) NULL DEFAULT NULL
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tmp_report_data_income
@@ -8942,6 +9420,86 @@ INSERT INTO `tmp_report_data_income` VALUES ('中国石油全资（股份所属�
 INSERT INTO `tmp_report_data_income` VALUES ('中石油控股或有控股权', 310628.11, 369298.64, 0.00, 0.00, 0.00, 0.00, 679926.75);
 INSERT INTO `tmp_report_data_income` VALUES ('中石油参股', 72062.45, 0.00, 0.00, 0.00, 0.00, 0.00, 72062.75);
 INSERT INTO `tmp_report_data_income` VALUES ('非中石油', 1486526.90, 212070.72, 0.00, 0.00, 0.00, 226415.09, 1698597.62);
+
+-- ----------------------------
+-- Table structure for v3_demo1
+-- ----------------------------
+DROP TABLE IF EXISTS `v3_demo1`;
+CREATE TABLE `v3_demo1`  (
+  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '名字',
+  `sex` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '性别',
+  `age` int(32) NULL DEFAULT NULL COMMENT '年龄',
+  `birthday` date NULL DEFAULT NULL COMMENT '生日',
+  `salary` double(10, 2) NULL DEFAULT NULL COMMENT '工资',
+  `cccc` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of v3_demo1
+-- ----------------------------
+INSERT INTO `v3_demo1` VALUES ('1532265688470265858', 'admin', '2022-06-02 15:39:42', NULL, NULL, 'A01', '小王', '1', 22, '2022-06-27', 222.00, NULL);
+
+-- ----------------------------
+-- Table structure for v3_hello
+-- ----------------------------
+DROP TABLE IF EXISTS `v3_hello`;
+CREATE TABLE `v3_hello`  (
+  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '名字',
+  `age` int(11) NULL DEFAULT NULL COMMENT '年龄',
+  `sex` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '性别',
+  `birthday` date NULL DEFAULT NULL COMMENT '生日',
+  `cc` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of v3_hello
+-- ----------------------------
+INSERT INTO `v3_hello` VALUES ('1533099754895597570', 'admin', '2022-06-04 22:53:59', 'admin', '2022-06-04 22:54:03', 'A01', '哈喽2', 22, '1', '2022-06-06', '222');
+INSERT INTO `v3_hello` VALUES ('1534740190491971586', 'admin', '2022-06-09 11:32:30', NULL, NULL, 'A01', '11', NULL, '1', '2022-06-24', '11');
+
+-- ----------------------------
+-- Table structure for v3_hello_copy
+-- ----------------------------
+DROP TABLE IF EXISTS `v3_hello_copy`;
+CREATE TABLE `v3_hello_copy`  (
+  `id` varchar(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '创建人',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建日期',
+  `update_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '更新人',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新日期',
+  `sys_org_code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '所属部门',
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '名字',
+  `age` int(11) NULL DEFAULT NULL COMMENT '年龄',
+  `sex` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '性别',
+  `birthday` date NULL DEFAULT NULL COMMENT '生日',
+  `cc` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'MD文本',
+  `bm` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '选部门',
+  `sel_user` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '选用户',
+  `pop` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'popup',
+  `cc3` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '富文本',
+  `aa` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'aaa',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+
+-- ----------------------------
+-- Records of v3_hello_copy
+-- ----------------------------
+INSERT INTO `v3_hello_copy` VALUES ('1549303680250556417', 'admin', '2022-07-19 16:02:36', NULL, NULL, 'A01', '222', 22, '1', '2022-07-12', '222', '57197590443c44f083d42ae24ef26a2c', 'jeecg', NULL, '<p>222</p>', NULL);
+INSERT INTO `v3_hello_copy` VALUES ('1549304583296790529', 'admin', '2022-07-19 16:06:12', 'admin', '2022-07-19 19:34:48', 'A01', 'dd', 33, '1', NULL, '33ddd\n333', '', '', '', '', '');
 
 -- ----------------------------
 -- Procedure structure for insert_200_records
