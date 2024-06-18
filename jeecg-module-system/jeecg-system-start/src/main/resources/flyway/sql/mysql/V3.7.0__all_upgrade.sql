@@ -1,3 +1,6 @@
+ALTER TABLE `jimu_report_link` 
+ADD COLUMN `expression` varchar(255) NULL COMMENT '表达式';
+
 -- 补充online模块接口权限
 INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `is_route`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_leaf`, `keep_alive`, `hidden`, `hide_tab`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1535225446864011265', '1460888189937176577', '批量删除', NULL, NULL, 0, NULL, NULL, 2, 'online:report:deleteBatch', '1', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2022-06-10 19:40:44', NULL, NULL, 0, 0, '1', 0);
 INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `is_route`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_leaf`, `keep_alive`, `hidden`, `hide_tab`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1699374612388773890', '1460888189937176577', '获取字典列表', NULL, NULL, 0, NULL, NULL, 2, 'online:report:getDictList', '1', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2023-09-06 18:50:55', NULL, NULL, 0, 0, '1', 0);

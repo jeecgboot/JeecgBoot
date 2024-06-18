@@ -1,4 +1,0 @@
-ALTER TABLE `jimu_report_link` 
-ADD COLUMN `expression` varchar(255) NULL COMMENT '表达式';
-
-INSERT INTO `sys_permission` (`id`, `parent_id`, `name`, `url`, `component`, `is_route`, `component_name`, `redirect`, `menu_type`, `perms`, `perms_type`, `sort_no`, `always_show`, `icon`, `is_leaf`, `keep_alive`, `hidden`, `hide_tab`, `description`, `create_by`, `create_time`, `update_by`, `update_time`, `del_flag`, `rule_flag`, `status`, `internal_or_external`) VALUES ('1801954937339428865', '1460888189937176577', '测试数据源连接', NULL, NULL, 0, NULL, NULL, 2, 'online:report:testConnection', '1', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2024-06-15 20:28:30', NULL, NULL, 0, 0, '1', 0);
