@@ -503,6 +503,10 @@ public class SysDictController {
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, request.getParameterMap());
 		//Step.2 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		String selections = request.getParameter("selections");
+		if(!oConvertUtils.isEmpty(selections)){
+			queryWrapper.in("id",selections.split(","));
+		}
 		List<SysDictPage> pageList = new ArrayList<SysDictPage>();
 
 		List<SysDict> sysDictList = sysDictService.list(queryWrapper);
