@@ -14,7 +14,7 @@ USE `jeecg-boot`;
  Target Server Version : 50738
  File Encoding         : 65001
 
- Date: 17/06/2024 09:23:08
+ Date: 18/06/2024 12:02:15
 */
 
 SET NAMES utf8mb4;
@@ -296,7 +296,8 @@ CREATE TABLE `flyway_schema_history`  (
 INSERT INTO `flyway_schema_history` VALUES (1, '1', '<< Flyway Baseline >>', 'BASELINE', '<< Flyway Baseline >>', NULL, 'root', '2024-01-03 21:58:35', 0, 1);
 INSERT INTO `flyway_schema_history` VALUES (2, '3.6.2', 'all upgrade', 'SQL', 'V3.6.2__all_upgrade.sql', 146217576, 'root', '2024-01-03 21:58:35', 168, 1);
 INSERT INTO `flyway_schema_history` VALUES (3, '3.6.3', 'all upgrade', 'SQL', 'V3.6.3__all_upgrade.sql', -98134889, 'root', '2024-03-07 11:28:10', 101, 1);
-INSERT INTO `flyway_schema_history` VALUES (4, '3.7.0', 'all upgrade', 'SQL', 'V3.7.0__all_upgrade.sql', 102457687, 'root', '2024-06-13 11:33:51', 60, 1);
+INSERT INTO `flyway_schema_history` VALUES (4, '3.7.0', 'all upgrade', 'SQL', 'V3.7.0__all_upgrade.sql', -762627866, 'root', '2024-06-18 11:59:34', 73, 1);
+INSERT INTO `flyway_schema_history` VALUES (5, NULL, '370 missingPermission', 'SQL', 'R__370_missingPermission.sql', 933645342, 'root', '2024-06-18 12:00:16', 56, 1);
 
 -- ----------------------------
 -- Table structure for jeecg_monthly_growth_analysis
@@ -4378,7 +4379,7 @@ CREATE TABLE `qrtz_scheduler_state`  (
 -- ----------------------------
 -- Records of qrtz_scheduler_state
 -- ----------------------------
-INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'qin1718587315180', 1718587368600, 15000);
+INSERT INTO `qrtz_scheduler_state` VALUES ('MyScheduler', 'qin1718683258257', 1718683327013, 15000);
 
 -- ----------------------------
 -- Table structure for qrtz_simple_triggers
@@ -6792,6 +6793,22 @@ INSERT INTO `sys_log` VALUES ('1801097090408525825', 2, 'online列表加载,表�
 INSERT INTO `sys_log` VALUES ('1802512096341741569', 1, '用户名: admin,登录成功！', NULL, 'admin', '管理员', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 09:22:27', NULL, NULL, NULL, 'pc');
 INSERT INTO `sys_log` VALUES ('1802512146501423106', 2, '修改角色ID: 1501570619841810433 的权限配置，操作人： admin', 2, 'admin', '管理员', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 09:22:39', NULL, NULL, NULL, 'pc');
 INSERT INTO `sys_log` VALUES ('1802512173349163010', 2, '修改角色ID: f6817f48af4fb3af11b9e8bf182f618b 的权限配置，操作人： admin', 2, 'admin', '管理员', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 09:22:46', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802607550081478658', 1, '用户名: admin,登录成功！', NULL, 'admin', '管理员', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:41:45', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610043876225026', 1, '用户名: 管理员,退出成功！', NULL, 'admin', '管理员', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:51:40', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610071286001665', 1, '用户名: jeecg,登录成功！', NULL, 'jeecg', 'jeecg', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:51:47', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610122766888962', 2, '职务表-分页列表查询', 1, 'jeecg', 'jeecg', '127.0.0.1', 'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, '  sysPosition: SysPosition(id=1185040064792571906, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@7b69acfa', NULL, 66, NULL, '2024-06-17 15:51:59', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1802610165796253697', 1, '用户名: jeecg,退出成功！', NULL, 'jeecg', 'jeecg', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:52:09', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610239741833218', 1, '用户名: jeecg,登录成功！', NULL, 'jeecg', 'jeecg', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:52:27', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610318519250946', 1, '用户名: jeecg,退出成功！', NULL, 'jeecg', 'jeecg', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:52:45', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610334734430210', 1, '用户名: ceshi,登录成功！', NULL, 'ceshi', '测试用户', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:52:49', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610440208592898', 2, '职务表-分页列表查询', 1, 'ceshi', '测试用户', '127.0.0.1', 'org.jeecg.modules.system.controller.SysPositionController.queryPageList()', NULL, '  sysPosition: SysPosition(id=1185040064792571906, code=null, name=null, postRank=null, companyId=null, createBy=null, createTime=null, updateBy=null, updateTime=null, sysOrgCode=null, tenantId=null)  pageNo: 1  pageSize: 10  req: org.apache.shiro.web.servlet.ShiroHttpServletRequest@23de9b0', NULL, 18, NULL, '2024-06-17 15:53:14', NULL, NULL, NULL, NULL);
+INSERT INTO `sys_log` VALUES ('1802610454632804354', 2, '编辑用户，username： ceshi', 2, 'ceshi', '测试用户', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:53:18', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610466418798593', 1, '用户名: 测试用户,退出成功！', NULL, 'ceshi', '测试用户', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:53:21', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802610494734544897', 1, '用户名: ceshi,登录成功！', NULL, 'ceshi', '测试用户', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-17 15:53:27', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802906120173113345', 1, '用户名: jeecg,登录成功！', NULL, 'jeecg', 'jeecg', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-18 11:28:10', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802906584306405378', 2, '修改角色ID: 1501570619841810433 的权限配置，操作人： jeecg', 2, 'jeecg', 'jeecg', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-18 11:30:01', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802911189513748481', 1, '用户名: jeecg,退出成功！', NULL, 'jeecg', 'jeecg', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-18 11:48:19', NULL, NULL, NULL, 'pc');
+INSERT INTO `sys_log` VALUES ('1802911214532771841', 1, '用户名: jeecg,登录成功！', NULL, 'jeecg', 'jeecg', '127.0.0.1', NULL, NULL, NULL, NULL, NULL, NULL, '2024-06-18 11:48:25', NULL, NULL, NULL, 'pc');
 
 -- ----------------------------
 -- Table structure for sys_permission
@@ -7161,9 +7178,9 @@ INSERT INTO `sys_permission` VALUES ('1660568280725127169', '1439533711676973057
 INSERT INTO `sys_permission` VALUES ('1660568368558047234', '1439533711676973057', '日志删除', NULL, NULL, 1, NULL, NULL, 2, 'system:log:delete', '1', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2023-05-22 16:48:46', NULL, NULL, 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('1660568426632380417', '1439533711676973057', '日志批量删除', NULL, NULL, 1, NULL, NULL, 2, 'system:log:deleteBatch', '1', NULL, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2023-05-22 16:48:59', NULL, NULL, 0, 0, '1', 0);
 INSERT INTO `sys_permission` VALUES ('1661572802889007106', '', '租户管理', '/tenant/setting', 'layouts/RouteView', 1, NULL, NULL, 0, NULL, '1', 4.10, 0, 'ant-design:setting-outlined', 0, 0, 0, 0, NULL, 'admin', '2023-05-25 11:20:01', 'admin', '2023-06-30 18:37:04', 0, 0, '1', 0);
-INSERT INTO `sys_permission` VALUES ('1663816667704500225', '1674708136602542082', '我的租户', '/tenant/MyTenantList', 'system/tenant/my/MyTenantList', 1, 'tenant-my-tenant-list', NULL, 1, NULL, '0', 1.00, 0, 'ant-design:user-outlined', 1, 0, 0, 0, NULL, 'admin', '2023-05-31 15:56:20', 'admin', '2023-06-30 18:37:26', 0, 0, NULL, 0);
+INSERT INTO `sys_permission` VALUES ('1663816667704500225', '1674708136602542082', '我的租户', '/tenant/MyTenantList', 'system/tenant/my/MyTenantList', 1, 'tenant-my-tenant-list', NULL, 1, NULL, '0', 1.00, 0, 'ant-design:user-outlined', 1, 0, 0, 0, NULL, 'admin', '2023-05-31 15:56:20', 'admin', '2024-06-17 15:42:08', 0, 0, NULL, 0);
 INSERT INTO `sys_permission` VALUES ('1668174661456171010', '1661572802889007106', '租户默认套餐', '/tenant/TenantDefaultPack', 'system/tenant/pack/TenantDefaultPackList', 1, '', NULL, 1, NULL, '0', 5.00, 0, 'ant-design:deployment-unit-outlined', 1, 0, 0, 0, NULL, 'admin', '2023-06-12 16:33:27', 'admin', '2023-10-17 17:34:37', 0, 0, NULL, 0);
-INSERT INTO `sys_permission` VALUES ('1674708136602542082', '', '我的租户', '/mytenant', 'layouts/RouteView', 1, '', NULL, 0, NULL, '0', 4.20, 0, 'ant-design:user-outlined', 0, 0, 0, 0, NULL, 'admin', '2023-06-30 17:15:09', 'admin', '2023-06-30 18:35:40', 0, 0, NULL, 0);
+INSERT INTO `sys_permission` VALUES ('1674708136602542082', '', '我的租户', '/mytenant', 'layouts/RouteView', 1, '', NULL, 0, NULL, '0', 4.20, 0, 'ant-design:user-outlined', 0, 0, 0, 0, NULL, 'admin', '2023-06-30 17:15:09', 'admin', '2024-06-17 15:42:29', 0, 0, NULL, 0);
 INSERT INTO `sys_permission` VALUES ('1691031996d593131521', '1455100420297859074', 'AUTO在线ERP表单', '/online/cgformErpList/:id', 'super/online/cgform/auto/erp/OnlCgformErpList', 1, '', NULL, 1, NULL, '0', 21.00, 0, NULL, 1, 0, 1, 0, NULL, 'admin', '2023-08-14 18:20:20', 'jeecg', '2024-06-13 11:37:04', 0, 0, NULL, 0);
 INSERT INTO `sys_permission` VALUES ('1691031996d5931315212', '1455100420297859074', 'AUTO在线一对多内嵌', '/online/cgformInnerTableList/:id', 'super/online/cgform/auto/innerTable/OnlCgformInnerTableList', 1, '', NULL, 1, NULL, '0', 21.00, 0, NULL, 1, 0, 1, 0, NULL, 'admin', '2023-08-14 18:20:20', 'jeecg', '2024-06-13 11:37:07', 0, 0, NULL, 0);
 INSERT INTO `sys_permission` VALUES ('1691031996d5931315213', '1455100420297859074', 'AUTO在线Tab风格', '/online/cgformTabList/:id', 'super/online/cgform/auto/tab/OnlCgformTabList', 1, '', NULL, 1, NULL, '0', 21.00, 0, NULL, 1, 0, 1, 0, NULL, 'admin', '2023-08-14 18:20:20', 'jeecg', '2024-06-13 11:37:11', 0, 0, NULL, 0);
@@ -7196,6 +7213,7 @@ INSERT INTO `sys_permission` VALUES ('45c966826eeff4c99b8f8ebfe74511fc', 'd7d6e2
 INSERT INTO `sys_permission` VALUES ('5c2f42277948043026b7a14692456828', 'd7d6e2e4e2934f2c9385a623fd98c6f3', '我的部门', '/system/depart-user', 'system/departUser/index', 1, NULL, NULL, 1, NULL, NULL, 3.00, 0, 'ant-design:home-outlined', 0, 0, 0, 0, NULL, 'admin', '2019-04-17 15:12:24', 'admin', '2023-03-04 15:03:07', 0, 0, NULL, 0);
 INSERT INTO `sys_permission` VALUES ('9502685863ab87f0ad1134142788a385', '1438108176273760258', '首页', '/dashboard/analysis', 'dashboard/Analysis', 1, NULL, NULL, 1, NULL, NULL, 1.00, 0, 'ant-design:bank-filled', 1, 1, 0, NULL, NULL, NULL, '2018-12-25 20:34:38', 'admin', '2021-09-17 15:43:16', 0, 0, NULL, 0);
 INSERT INTO `sys_permission` VALUES ('d7d6e2e4e2934f2c9385a623fd98c6f3', '', '系统管理', '/isystem', 'layouts/RouteView', 1, NULL, NULL, 0, NULL, NULL, 3.00, 0, 'ant-design:setting', 0, 0, 0, 0, NULL, NULL, '2018-12-25 20:34:38', 'admin', '2023-08-25 13:35:21', 0, 0, NULL, 0);
+INSERT INTO `sys_permission` VALUES ('f15543b0263cf6c5fac85afdd3eba3f2', '3f915b2769fc80648e92d04e84ca059d', '用户导入', '', NULL, 0, NULL, NULL, 2, 'system:user:import', '1', 1.00, 0, NULL, 1, 0, 0, 0, NULL, 'admin', '2019-05-13 19:15:27', 'admin', '2022-06-30 15:05:12', 0, 0, '1', 0);
 
 -- ----------------------------
 -- Table structure for sys_permission_data_rule
@@ -8409,6 +8427,7 @@ INSERT INTO `sys_role_permission` VALUES ('1801081424624365586', 'f6817f48af4fb3
 INSERT INTO `sys_role_permission` VALUES ('1801081424624365587', 'f6817f48af4fb3af11b9e8bf182f618b', '1699375193576701953', NULL, '2024-06-13 10:37:29', '127.0.0.1');
 INSERT INTO `sys_role_permission` VALUES ('1802512146434314242', '1501570619841810433', '1801954937339428865', NULL, '2024-06-17 09:22:39', '127.0.0.1');
 INSERT INTO `sys_role_permission` VALUES ('1802512173219139585', 'f6817f48af4fb3af11b9e8bf182f618b', '1801954937339428865', NULL, '2024-06-17 09:22:46', '127.0.0.1');
+INSERT INTO `sys_role_permission` VALUES ('1802906584184770561', '1501570619841810433', 'f15543b0263cf6c5fac85afdd3eba3f2', NULL, '2024-06-18 11:30:01', '127.0.0.1');
 INSERT INTO `sys_role_permission` VALUES ('1ac1688ef8456f384091a03d88a89ab1', '52b0cf022ac4187b2a70dfa4f8b2d940', '693ce69af3432bd00be13c3971a57961', NULL, NULL, NULL);
 INSERT INTO `sys_role_permission` VALUES ('1af4babaa4227c3cbb830bc5eb513abb', 'ee8626f80f7c2619917b6236f3a7f02b', 'e08cb190ef230d5d4f03824198773950', NULL, NULL, NULL);
 INSERT INTO `sys_role_permission` VALUES ('1ba162bbc2076c25561f8622f610d5bf', 'ee8626f80f7c2619917b6236f3a7f02b', 'aedbf679b5773c1f25e9f7b10111da73', NULL, NULL, NULL);
@@ -8953,7 +8972,7 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES ('1714471285016895490', 'ceshi', '测试用户', 'a9932bb12d2cbc5a', 'AF4vhXUz', NULL, '2024-04-11', NULL, 'winter@jeecg.org', '15201111112', NULL, 2, 0, NULL, NULL, 1, '123', NULL, 'admin', '2023-10-18 10:39:42', 'admin', '2024-06-11 19:17:36', 1, '', NULL, 0, NULL);
+INSERT INTO `sys_user` VALUES ('1714471285016895490', 'ceshi', '测试用户', 'a9932bb12d2cbc5a', 'AF4vhXUz', NULL, '2024-04-11', NULL, 'winter@jeecg.org', '15201111112', NULL, 1, 0, NULL, NULL, 1, '123', NULL, 'admin', '2023-10-18 10:39:42', 'ceshi', '2024-06-17 15:53:18', 1, '', NULL, 0, NULL);
 INSERT INTO `sys_user` VALUES ('3d464b4ea0d2491aab8a7bde74c57e95', 'zhangsan', '张三', '02ea098224c7d0d2077c14b9a3a1ed16', 'x5xRdeKB', 'https://static.jeecg.com/temp/jmlogo_1606575041993.png', '2024-04-11', NULL, '111@1.com', '13426411111', '财务部', 1, 0, NULL, NULL, 1, '0005', NULL, 'admin', '2020-05-14 21:26:24', 'admin', '2024-04-26 13:25:37', 1, '', NULL, NULL, NULL);
 INSERT INTO `sys_user` VALUES ('a75d45a015c44384a04449ee80dc3503', 'jeecg', 'jeecg', 'eee378a1258530cb', 'mIgiYJow', 'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', NULL, 1, '418799587@qq.com', '18611788525', 'A02A01', 1, 0, NULL, NULL, 1, '00002', NULL, 'admin', '2019-02-13 16:02:36', 'admin', '2023-10-18 13:51:36', 1, '', NULL, 1001, NULL);
 INSERT INTO `sys_user` VALUES ('e9ca23d68d884d4ebb19d07889727dae', 'admin', '管理员', 'cb362cfeefbf3d8d', 'RCGTeGiH', 'https://static.jeecg.com/temp/国炬软件logo_1606575029126.png', '1986-02-01', 1, 'jeecg@163.com', '18611111111', 'A01', 1, 0, NULL, NULL, 1, '00001', NULL, NULL, '2019-06-21 17:54:10', 'admin', '2024-04-26 13:27:00', 2, '', NULL, 1000, NULL);
@@ -9031,7 +9050,7 @@ CREATE TABLE `sys_user_position`  (
 -- ----------------------------
 -- Records of sys_user_position
 -- ----------------------------
-INSERT INTO `sys_user_position` VALUES ('1800487540877819906', '1714471285016895490', '1185040064792571906', 'admin', '2024-06-11 19:17:36', NULL, NULL);
+INSERT INTO `sys_user_position` VALUES ('1802610454955765762', '1714471285016895490', '1185040064792571906', 'ceshi', '2024-06-17 15:53:18', NULL, NULL);
 
 -- ----------------------------
 -- Table structure for sys_user_role
@@ -9057,7 +9076,7 @@ INSERT INTO `sys_user_role` VALUES ('1714519577000091651', 'a75d45a015c44384a044
 INSERT INTO `sys_user_role` VALUES ('1783729121881956354', '3d464b4ea0d2491aab8a7bde74c57e95', 'ee8626f80f7c2619917b6236f3a7f02b', 0);
 INSERT INTO `sys_user_role` VALUES ('1783729468193075202', 'e9ca23d68d884d4ebb19d07889727dae', '1501570619841810433', 0);
 INSERT INTO `sys_user_role` VALUES ('1783729468201463810', 'e9ca23d68d884d4ebb19d07889727dae', 'f6817f48af4fb3af11b9e8bf182f618b', 0);
-INSERT INTO `sys_user_role` VALUES ('1800487540785545218', '1714471285016895490', '1501570619841810433', 0);
+INSERT INTO `sys_user_role` VALUES ('1802610454825742337', '1714471285016895490', '1501570619841810433', 0);
 INSERT INTO `sys_user_role` VALUES ('31af310584bd5795f76b1fe8c38294a0', '70f5dcf03f36471dabba81381919291f', 'e51758fa916c881624b046d26bd09230', 0);
 INSERT INTO `sys_user_role` VALUES ('79d66ef7aa137cfa9957081a1483009d', '9a668858c4c74cf5a2b25ad9608ba095', 'ee8626f80f7c2619917b6236f3a7f02b', 0);
 INSERT INTO `sys_user_role` VALUES ('8d7846ec783e157174e4ce2949231a65', '7ee6630e89d17afbf6d12150197b578d', 'e51758fa916c881624b046d26bd09230', 0);
@@ -9094,7 +9113,6 @@ CREATE TABLE `sys_user_tenant`  (
 -- Records of sys_user_tenant
 -- ----------------------------
 INSERT INTO `sys_user_tenant` VALUES ('1714517525209489409', 'a75d45a015c44384a04449ee80dc3503', 1001, '1', 'ceshi', '2023-10-18 13:43:27', NULL, NULL);
-INSERT INTO `sys_user_tenant` VALUES ('1714517616091668481', '1714471285016895490', 1000, '1', 'ceshi', '2023-10-18 13:43:49', NULL, NULL);
 INSERT INTO `sys_user_tenant` VALUES ('1721013397267116034', 'e9ca23d68d884d4ebb19d07889727dae', 1000, '1', 'admin', '2023-11-05 11:55:43', NULL, NULL);
 
 -- ----------------------------
