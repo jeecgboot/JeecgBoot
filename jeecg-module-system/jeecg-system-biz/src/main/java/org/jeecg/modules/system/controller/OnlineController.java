@@ -16,6 +16,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,21 +42,10 @@ public class OnlineController {
 	 * @param headId
 	 * @return
 	 */
-	@RequestMapping(value = "/cgformFieldList", method = RequestMethod.GET)
+	@RequestMapping(value = "/tableFieldList", method = RequestMethod.GET)
 	public Result<JSONObject> selectFormField(@RequestParam(name="headId", required=true) String headId) {
 		Result<JSONObject> result = new Result<JSONObject>();
-		String sql = "select db_field_name,db_field_txt,field_show_type,field_length,field_extend_json from onl_cgform_field where cgform_head_id=?";
-		List<Map<String, Object>> fieldList = DynamicDBUtil.findList(dbKey,sql,headId);
-		JSONObject obj = new JSONObject();
-		obj.put("data",fieldList);
-		result.setResult(obj);
-		return result;
-	}
-
-	@RequestMapping(value = "/cgreportFieldList", method = RequestMethod.GET)
-	public Result<JSONObject> selectReportField(@RequestParam(name="headId", required=true) String headId) {
-		Result<JSONObject> result = new Result<JSONObject>();
-		String sql = "select field_name,field_txt,field_width,field_type from onl_cgreport_item where cgrhead_id=?";
+		String sql = "select * from onl_table_field_v where head_id=?";
 		List<Map<String, Object>> fieldList = DynamicDBUtil.findList(dbKey,sql,headId);
 		JSONObject obj = new JSONObject();
 		obj.put("data",fieldList);
@@ -67,7 +57,6 @@ public class OnlineController {
 	public Result addEnhance(@RequestBody JSONObject params) throws JobExecutionException {
 		String tableName = params.getString("tableName");
 		JSONObject data = params.getJSONObject("record");
-		data.remove("jeecg_row_key");
 		addRecord(tableName, data);
 		return Result.OK(params);
 	}
@@ -76,8 +65,20 @@ public class OnlineController {
 	public Result editEnhance(@RequestBody JSONObject params) throws JobExecutionException {
 		String tableName = params.getString("tableName");
 		JSONObject data = params.getJSONObject("record");
-		data.remove("jeecg_row_key");
 		updateRecord(tableName, data);
+		return Result.OK(params);
+	}
+
+	@PostMapping("/table/edit")
+	public Result editTableEnhance(@RequestBody JSONObject params) throws JobExecutionException {
+		LogUtil.startTime("editTableEnhance");
+		String tableName = params.getString("tableName");
+		JSONObject data = params.getJSONObject("record");
+		updateRecord(tableName, data);
+		ThreadUtil.execute(() -> {
+			DynamicDBUtil.execute(dbKey,"call update_onltable_headid()");
+		});
+		LogUtil.endTime("editTableEnhance");
 		return Result.OK(params);
 	}
 
@@ -91,7 +92,6 @@ public class OnlineController {
 		LogUtil.startTime("editAListStoragesEnhance");
 		String tableName = params.getString("tableName");
 		JSONObject data = params.getJSONObject("record");
-		data.remove("jeecg_row_key");
 		// 处理业务数据
 		String name = data.getString("name");
 		String links = data.getString("links");
@@ -127,6 +127,9 @@ public class OnlineController {
 	 */
 	public void updateRecord(String tableName, JSONObject record) {
 		// 查询主键
+		if (record.containsKey("jeecg_row_key")) {
+			record.remove("jeecg_row_key");
+		}
 		String sql = "select f.db_field_name from onl_cgform_field f join onl_cgform_head h on h.id=f.cgform_head_id where h.table_name='"+tableName+"' and f.db_is_key=1";
 		String keyName = DynamicDBUtil.getOne(dbKey,sql);
 		if (StringUtils.isBlank(keyName)) {
@@ -138,9 +141,16 @@ public class OnlineController {
 		HashMap<String,Object> param = new HashMap<>();
 		sb.append("update " + tableName + " set ");
 		record.keySet().forEach(key -> {
-			param.put(key,record.get(key));
-			if (!key.equals(keyName)) {
-				sb.append(key+"=:"+key+",");
+			Object val = record.get(key);
+			if (val instanceof ArrayList) { // 子表更新前处理
+				String query = "select f.db_field_name,f.main_table,f.main_field from onl_cgform_field f join onl_cgform_head h on h.id=f.cgform_head_id where h.table_name='"+key+"' and f.main_field !=''";
+				Map<String,String> keyMap = (Map<String, String>) DynamicDBUtil.findOne(dbKey,query);
+				log.info("table[{}];主键[{}];外键[{}]",key,keyMap.get("main_field"),keyMap.get("db_field_name"));
+			} else {
+				param.put(key,val);
+				if (!key.equals(keyName)) {
+					sb.append(key+"=:"+key+",");
+				}
 			}
 		});
 		sb.setLength(sb.length()-1);

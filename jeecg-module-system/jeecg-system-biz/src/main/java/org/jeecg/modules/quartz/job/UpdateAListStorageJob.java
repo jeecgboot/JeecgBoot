@@ -123,9 +123,11 @@ public class UpdateAListStorageJob implements Job {
             result = DynamicDBUtil.findList(dbKey, query_disabled2_sql);
             removeList.addAll(result);
             if (!removeList.isEmpty()) {
-                ThreadUtil.execute(() -> AListJobUtil.deleteStorage(removeList));
+                ThreadUtil.execute(() -> {
+                    AListJobUtil.deleteStorage(removeList);
+                    DynamicDBUtil.execute(dbKey, delete_disabled2_sql);
+                });
             }
-            DynamicDBUtil.execute(dbKey, delete_disabled2_sql);
         } catch (Exception e) {
             throw new JobExecutionException(e);
         }
