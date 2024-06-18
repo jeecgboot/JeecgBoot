@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
@@ -18,8 +19,12 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.*;
+import org.jeecg.common.util.ImportExcelUtil;
+import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.util.TokenUtils;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.shiro.ShiroRealm;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
@@ -69,6 +74,8 @@ public class SysDictController {
 	public RedisTemplate<String, Object> redisTemplate;
 	@Autowired
 	private RedisUtil redisUtil;
+	@Autowired
+	private ShiroRealm shiroRealm;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysDict>> queryPageList(SysDict sysDict,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -482,6 +489,14 @@ public class SysDictController {
 		redisUtil.removeAll("jmreport:cache:dict");
 		redisUtil.removeAll("jmreport:cache:dictTable");
 		//update-end-author:liusq date:20230404 for:  [issue/4358]springCache中的清除缓存的操作使用了“keys”
+		
+		//update-begin---author:scott ---date:2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
+		// 清除当前用户的授权缓存信息
+		Subject currentUser = SecurityUtils.getSubject();
+		if (currentUser.isAuthenticated()) {
+			shiroRealm.clearCache(currentUser.getPrincipals());
+		}
+		//update-end---author:scott ---date::2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
 		return result;
 	}
 
