@@ -19,9 +19,9 @@ JeecgBoot 低代码开发平台
 
 <h3 align="center">Java Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端分离架构 SpringBoot2.x，SpringCloud，Ant Design&Vue，Mybatis-plus，Shiro，JWT，支持微服务。强大的代码生成器让前后端代码一键生成，实现低代码开发!  JeecgBoot 引领新的低代码开发模式(OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务。既能快速提高效率，节省研发成本，同时又不失灵活性！
+JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端分离架构 SpringBoot2.x和3.x，SpringCloud，Ant Design&Vue，Mybatis-plus，Shiro，JWT，支持微服务。强大的代码生成器让前后端代码一键生成，实现低代码开发!  JeecgBoot 引领新的低代码开发模式(OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务。既能快速提高效率，节省研发成本，同时又不失灵活性！
 
-JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零代码`：Online表单开发、Online报表、报表配置能力、在线图表设计、大屏设计、移动配置能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）等等！
+JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零代码`：Online表单开发、Online报表、报表配置能力、在线图表设计、仪表盘设计、大屏设计、移动配置能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）等等！
 
 
 `JEECG宗旨是:` 简单功能由OnlineCoding配置实现，做到`零代码开发`；复杂功能由代码生成器生成进行手工Merge 实现`低代码开发`，既保证了`智能`又兼顾`灵活`；实现了低代码开发的同时又支持灵活编码，解决了当前低代码产品普遍不灵活的弊端！
@@ -31,13 +31,13 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 
 适用项目
 -----------------------------------
-Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，支持信创国产化（默认适配了达梦和人大金仓国产数据库），其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
+Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，支持信创国产化（默认适配达梦和人大金仓），其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
 
 
 源码下载
 -----------------------------------
-- 前端项目地址：https://github.com/jeecgboot/jeecgboot-vue3
-- APP项目地址：https://github.com/jeecgboot/jeecg-uniapp
+- 前端源码地址：https://github.com/jeecgboot/jeecgboot-vue3
+- APP源码地址：https://github.com/jeecgboot/jeecg-uniapp
 
 
 #### 项目说明
@@ -46,29 +46,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 |--------------------|------------------------|
 | `jeecg-boot`    | 后端源码JAVA（SpringBoot微服务架构）        |
 | `jeecgboot-vue3` | 前端源码VUE3（vue3+vite5+ts最新技术栈）  |
-| `jeecg-uniapp` | [APP开发框架，一份代码多终端适配，同时支持APP、小程序、H5](https://github.com/jeecgboot/jeecg-uniapp) |
-
-
-快速搭建开发环境
------------------------------------
-
-- [通过IDEA导入项目](https://help.jeecg.com/java/setup/idea.html)
-- [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
-- [前端项目快速启动](http://help.jeecg.com/setup/startup.html)
-
-
-Docker快速启动项目
------------------------------------
-
-- [Docker启动前端](http://help.jeecg.com/publish/docker.html)
-- [Docker启动单体后台](https://help.jeecg.com/java/setup/docker/up.html)
-
-
-微服务方式运行
------------------------------------
-
-- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-- [Docker启动微服务后台](https://help.jeecg.com/java/springcloud/docker.html)
+| `jeecg-uniapp` | APP框架,一份代码多终端适配，支持APP、小程序、H5 |
 
 
 
@@ -77,14 +55,33 @@ Docker快速启动项目
 
 关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
 
-官方支持： [http://jeecg.com/doc/help](http://jeecg.com/doc/help)
 
+快速启动项目
+-----------------------------------
+
+- [前端项目快速启动](http://help.jeecg.com/setup/startup.html)
+- [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
+
+
+
+Docker启动项目
+-----------------------------------
+
+- [Docker启动前端](http://help.jeecg.com/publish/docker.html)
+- [Docker启动后台](https://help.jeecg.com/java/setup/docker/up.html)
+
+
+微服务方式启动
+-----------------------------------
+
+- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
+- [Docker启动微服务后台](https://help.jeecg.com/java/springcloud/docker.html)
 
 
 技术文档
 -----------------------------------
 
-- 项目官网：  [http://www.jeecg.com](http://www.jeecg.com)
+- 产品官网：  [http://www.jeecg.com](http://www.jeecg.com)
 - 开发文档：  [https://help.jeecg.com](https://help.jeecg.com)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)  |   [常见问题 ](http://www.jeecg.com/doc/qa) |  [视频教程](https://space.bilibili.com/454617261/channel/series)  |  [1分钟低代码体验](https://my.oschina.net/jeecg/blog/3083313) 
 - AI助手配置: https://help.jeecg.com/java/chatgpt.html
@@ -93,9 +90,6 @@ Docker快速启动项目
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
 >
 - QQ交流群 ： ⑨808791225、⑧825232878、⑦791696430(满)、⑥730954414(满)、683903138(满)、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
-> ` 提醒：【QQ群是自助服务群，建议给帮助您解决问题的同学发送指定红包，表示感谢！】 `
-
-
 
 
 
@@ -218,7 +212,7 @@ Docker快速启动项目
 
 #### 前端
 
-- 技术栈：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等新方案` [详细查看](https://github.com/jeecgboot/jeecgboot-vue3)
+- 技术栈：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等最新技术栈`
 
 #### 支持库
 
@@ -422,20 +416,9 @@ Docker快速启动项目
    
 ```
 
-### 流程引擎推荐
-
-JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在使用本开源项目时，如果想进一步集成流程引擎，推荐结合贺波老师的书 [《深入Activiti流程引擎：核心原理与高阶实战》](https://item.m.jd.com/product/13928958.html?gx=RnAomTM2bmCImZxDqYAkVCoIHuIYVqc)
-
-<img src="https://jeecgos.oss-cn-beijing.aliyuncs.com/files/tuijian20231220161656.png" width="25%" height="auto">
 
 
 ### 系统效果
-
-
-##### ChatGPT AI交互
-> 进入JeecgBoot后台首页，点击首页右侧中间“AI助手”，弹出AI助手对话界面。
-![](https://oscimg.oschina.net/oscnet/up-7c6405641a40f56638999d52da0cb5b4343.png)
-
 
 ##### PC端
 ![](https://oscimg.oschina.net/oscnet/up-000530d95df337b43089ac77e562494f454.png)
@@ -455,23 +438,9 @@ JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在�
 
 ![](https://oscimg.oschina.net/oscnet/up-16c07e000278329b69b228ae3189814b8e9.png)
 
+##### AI助手
+![](https://oscimg.oschina.net/oscnet/up-7c6405641a40f56638999d52da0cb5b4343.png)
 
-##### 流程设计
-![](https://oscimg.oschina.net/oscnet/up-981ce174e4fbb48c8a2ce4ccfd7372e2994.png)
-
-![输入图片说明](https://static.oschina.net/uploads/img/201907/05165142_yyQ7.png "在这里输入图片标题")
-
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160917_9Ftz.png "在这里输入图片标题")
-
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160633_u59G.png "在这里输入图片标题")
-
-##### 简版流程设计
-
-![](https://oscimg.oschina.net/oscnet/up-1dc0d052149ec675f3e4fad632b82b48add.png)
-
-![](https://oscimg.oschina.net/oscnet/up-de31bc2f9d9b8332c554b0954cc73d79593.png)
-
-![](https://oscimg.oschina.net/oscnet/up-7f83b25159663686d67ed080eb16068c3b4.png)
 
 #####  仪表盘设计器
 ![](https://oscimg.oschina.net/oscnet/up-9c9d41288c31398d76b390bdd400f13a582.png)
@@ -487,38 +456,6 @@ JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在�
 
 ![](https://oscimg.oschina.net/oscnet/up-f7e9cb2e3740f2d19ff63b40ec2dd554f96.png)
 
-##### 表单设计器
-![](https://oscimg.oschina.net/oscnet/up-5f8cb657615714b02190b355e59f60c5937.png)
-
-![](https://oscimg.oschina.net/oscnet/up-d9659b2f324e33218476ec98c9b400e6508.png)
-
-![](https://oscimg.oschina.net/oscnet/up-4868615395272d3206dbb960ade02dbc291.png)
-
-##### 大屏设计器
-![](https://oscimg.oschina.net/oscnet/up-402a6034124474bfef8dfc5b4b2bac1ce5c.png)
-
-![](https://oscimg.oschina.net/oscnet/up-6f7ba2e2ebbeea0d203db8d69fd87644c9f.png)
-
-![](https://oscimg.oschina.net/oscnet/up-ee8d34f318da466b8a6070a6e3111d12ce7.png)
-
-![](https://oscimg.oschina.net/oscnet/up-6b81781b43086819049c4421206810667c5.png)
-
-##### UNIAPP效果
-
-![](https://oscimg.oschina.net/oscnet/up-aac943fbd26561879c57a41f7a406edf274.png)
-
-![](https://oscimg.oschina.net/oscnet/up-9a44ba2e82b09c750629d12fafd7f60f553.png)
-
-##### 零代码应用
-![](https://oscimg.oschina.net/oscnet/up-4be29ae761b2615c8c54b3f668cd8432d9b.png)
-
-![](https://oscimg.oschina.net/oscnet/up-787e76bc24b38ecc7ed19f338808d128255.png)
-
-![](https://oscimg.oschina.net/oscnet/up-99d24a236c483362868523ad0d90f611487.png)
-
-![](https://oscimg.oschina.net/oscnet/up-339a0f29d10449abc7724e3bcda802761c1.png)
-
-![](https://oscimg.oschina.net/oscnet/up-b356670cdc14c609958c7619a537397c4b9.png)
 
 ##### 手机端
 ![](https://oscimg.oschina.net/oscnet/da543c5d0d57baab0cecaa4670c8b68c521.jpg)
@@ -541,8 +478,62 @@ JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在�
 ##### 在线接口文档
 ![输入图片说明](https://static.oschina.net/uploads/img/201908/27095258_M2Xq.png "在这里输入图片标题")
 ![输入图片说明](https://static.oschina.net/uploads/img/201904/14160957_hN3X.png "在这里输入图片标题")
+
+
+##### UNIAPP效果
+
+![](https://oscimg.oschina.net/oscnet/up-aac943fbd26561879c57a41f7a406edf274.png)
+
+![](https://oscimg.oschina.net/oscnet/up-9a44ba2e82b09c750629d12fafd7f60f553.png)
+
+
+##### 大屏设计器
+![](https://oscimg.oschina.net/oscnet/up-402a6034124474bfef8dfc5b4b2bac1ce5c.png)
+
+![](https://oscimg.oschina.net/oscnet/up-6f7ba2e2ebbeea0d203db8d69fd87644c9f.png)
+
+![](https://oscimg.oschina.net/oscnet/up-ee8d34f318da466b8a6070a6e3111d12ce7.png)
+
+![](https://oscimg.oschina.net/oscnet/up-6b81781b43086819049c4421206810667c5.png)
+
+
+##### 流程设计
+![](https://oscimg.oschina.net/oscnet/up-981ce174e4fbb48c8a2ce4ccfd7372e2994.png)
+
+![](https://oscimg.oschina.net/oscnet/up-1dc0d052149ec675f3e4fad632b82b48add.png)
+
+![](https://oscimg.oschina.net/oscnet/up-de31bc2f9d9b8332c554b0954cc73d79593.png)
+
+![输入图片说明](https://static.oschina.net/uploads/img/201907/05165142_yyQ7.png "在这里输入图片标题")
+
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160917_9Ftz.png "在这里输入图片标题")
+
+![输入图片说明](https://static.oschina.net/uploads/img/201904/14160633_u59G.png "在这里输入图片标题")
+
+
+
+##### 表单设计器
+![](https://oscimg.oschina.net/oscnet/up-5f8cb657615714b02190b355e59f60c5937.png)
+
+![](https://oscimg.oschina.net/oscnet/up-d9659b2f324e33218476ec98c9b400e6508.png)
+
+![](https://oscimg.oschina.net/oscnet/up-4868615395272d3206dbb960ade02dbc291.png)
+
+
+
+
+
+
+
 ## 捐赠 
 
 如果觉得还不错，请作者喝杯咖啡吧 ☺
 
 ![](https://static.oschina.net/uploads/img/201903/08155608_0EFX.png)
+
+
+### 流程引擎推荐
+
+JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在使用本开源项目时，如果想进一步集成流程引擎，推荐结合贺波老师的书 [《深入Activiti流程引擎：核心原理与高阶实战》](https://item.m.jd.com/product/13928958.html?gx=RnAomTM2bmCImZxDqYAkVCoIHuIYVqc)
+
+<img src="https://jeecgos.oss-cn-beijing.aliyuncs.com/files/tuijian20231220161656.png" width="25%" height="auto">
