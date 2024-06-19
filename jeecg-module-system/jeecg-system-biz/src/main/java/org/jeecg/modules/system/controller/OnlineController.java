@@ -45,7 +45,7 @@ public class OnlineController {
 	@RequestMapping(value = "/tableFieldList", method = RequestMethod.GET)
 	public Result<JSONObject> selectFormField(@RequestParam(name="headId", required=true) String headId) {
 		Result<JSONObject> result = new Result<JSONObject>();
-		String sql = "select * from onl_table_field_v where head_id=?";
+		String sql = "select f.field_name 'key',f.field_length width,f.text_align align,f.* from onl_table_field_v f where head_id=?";
 		List<Map<String, Object>> fieldList = DynamicDBUtil.findList(dbKey,sql,headId);
 		JSONObject obj = new JSONObject();
 		obj.put("data",fieldList);
@@ -66,19 +66,6 @@ public class OnlineController {
 		String tableName = params.getString("tableName");
 		JSONObject data = params.getJSONObject("record");
 		updateRecord(tableName, data);
-		return Result.OK(params);
-	}
-
-	@PostMapping("/table/edit")
-	public Result editTableEnhance(@RequestBody JSONObject params) throws JobExecutionException {
-		LogUtil.startTime("editTableEnhance");
-		String tableName = params.getString("tableName");
-		JSONObject data = params.getJSONObject("record");
-		updateRecord(tableName, data);
-		ThreadUtil.execute(() -> {
-			DynamicDBUtil.execute(dbKey,"call update_onltable_headid()");
-		});
-		LogUtil.endTime("editTableEnhance");
 		return Result.OK(params);
 	}
 

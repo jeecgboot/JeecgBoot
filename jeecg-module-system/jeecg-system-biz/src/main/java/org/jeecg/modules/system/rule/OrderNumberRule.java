@@ -16,21 +16,35 @@ public class OrderNumberRule implements IFillRuleHandler {
 
     @Override
     public Object execute(JSONObject params, JSONObject formData) {
-        String prefix = "CN";
+        String prefix = "";
+        String suffix = "";
+        String dateFormat = "yyMMddHHmmss";
+        String randomStr = "100";
         //订单前缀默认为CN 如果规则参数不为空，则取自定义前缀
         if (params != null) {
-            Object obj = params.get("prefix");
-            if (obj != null) prefix = obj.toString();
+            if (params.containsKey("prefix")) {
+                prefix = params.getString("prefix");
+            }
+            if (params.containsKey("suffix")) {
+                suffix = params.getString("suffix");
+            }
+            if (params.containsKey("dateFormat")) {
+                dateFormat = params.getString("dateFormat");
+            }
+            if (params.containsKey("random")) {
+                randomStr = params.getString("random");
+            }
         }
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
-        int random = RandomUtils.nextInt(90) + 10;
-        String value = prefix + format.format(new Date()) + random;
+        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+        int random = RandomUtils.nextInt(Integer.parseInt(randomStr));
+        String.format("%0"+random+"d", Integer.parseInt(randomStr)/10);
+        String value = format.format(new Date()) + random;
         // 根据formData的值的不同，生成不同的订单号
         String name = formData.getString("name");
         if (!StringUtils.isEmpty(name)) {
             value += name;
         }
-        return value;
+        return prefix + value + suffix;
     }
 
 }
