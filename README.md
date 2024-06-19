@@ -146,8 +146,8 @@ Docker启动项目
 * 17.支持SAAS服务模式，提供SaaS多租户架构方案。
 * 18.分布式文件服务，集成minio、阿里OSS等优秀的第三方，提供便捷的文件上传与管理，同时也支持本地存储。
 * 19.主流数据库兼容，一套代码完全兼容Mysql、Postgresql、Oracle、Sqlserver、MariaDB、达梦等主流数据库。
-* 20.集成工作流flowable、activiti，并实现了只需在页面配置流程转向，可极大的简化bpm工作流的开发；用bpm的流程设计器画出了流程走向，一个工作流基本就完成了，只需写很少量的java代码；
-* 21.低代码能力：在线流程设计，采用开源flowable、activiti流程引擎，实现在线画流程,自定义表单,表单挂靠,业务流转
+* 20.集成工作流flowable，并实现了只需在页面配置流程转向，可极大的简化bpm工作流的开发；用bpm的流程设计器画出了流程走向，一个工作流基本就完成了，只需写很少量的java代码；
+* 21.低代码能力：在线流程设计，采用开源flowable流程引擎，实现在线画流程,自定义表单,表单挂靠,业务流转
 * 22.多数据源：及其简易的使用方式，在线配置数据源配置，便捷的从其他数据抓取数据；
 * 23.提供单点登录CAS集成方案，项目中已经提供完善的对接代码
 * 24.低代码能力：表单设计器，支持用户自定义表单布局，支持单表，一对多表单、支持select、radio、checkbox、textarea、date、popup、列表、宏等控件
@@ -534,6 +534,6 @@ Docker启动项目
 
 ### 流程引擎推荐
 
-JeecgBoot企业版本默认集成了activiti和flowable两套方案，大家在使用本开源项目时，如果想进一步集成流程引擎，推荐结合贺波老师的书 [《深入Activiti流程引擎：核心原理与高阶实战》](https://item.m.jd.com/product/13928958.html?gx=RnAomTM2bmCImZxDqYAkVCoIHuIYVqc)
+大家在使用本开源项目时，如果想进一步集成流程引擎，推荐结合贺波老师的书 [《深入Activiti流程引擎：核心原理与高阶实战》](https://item.m.jd.com/product/13928958.html?gx=RnAomTM2bmCImZxDqYAkVCoIHuIYVqc)
 
 <img src="https://jeecgos.oss-cn-beijing.aliyuncs.com/files/tuijian20231220161656.png" width="25%" height="auto">

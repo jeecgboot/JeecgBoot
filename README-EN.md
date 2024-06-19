@@ -153,7 +153,7 @@ Why JeecgBoot?
 * Support SAAS service model and provide SaaS multi-tenant architecture solution.
 * Distributed file service, integration of minio, Ali OSS and other excellent third parties, to provide convenient file upload and management, but also support local storage.
 * Mainstream database compatibility, a set of code is fully compatible with Mysql, Postgresql, Oracle, Sqlserver, MariaDB, dream and other mainstream databases.
-* Integrate workflow activiti and realize only the configuration of flow direction in the page, which can greatly simplify the development of bpm workflow; Using bpm's process designer to draw the flow direction, a workflow is basically complete with a small amount of java code;
+* Integrate workflow flowable and realize only the configuration of flow direction in the page, which can greatly simplify the development of bpm workflow; Using bpm's process designer to draw the flow direction, a workflow is basically complete with a small amount of java code;
 * Low code ability: online process design, using open source Activiti process engine, to achieve online drawing process, custom form, form attachment, business flow
 * Multi-data source: its simple way of use, online configuration of data source configuration, convenient to grab data from other data;
 * Provide single sign-on CAS integration solution, and complete docking code has been provided in the project
