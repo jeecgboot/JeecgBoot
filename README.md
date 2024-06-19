@@ -53,7 +53,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 技术支持
 -----------------------------------
 
-关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
+关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
 
 
 快速启动项目

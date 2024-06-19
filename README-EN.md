@@ -37,7 +37,7 @@ JEECG Business process: Using workflow to implement and extend the task interfac
 Technical support
 -----------------------------------
 
-Problems or bugs in use can be found in [Making on the Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
+Problems or bugs in use can be found in [Making on the Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
 
 Official Support: http://jeecg.com/doc/help
 
@@ -48,7 +48,7 @@ Download the source code
 -----------------------------------
 | Source |Front-end source | The background source |
 |-|-|-|
-| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
+| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [jeecg-boot](https://github.com/jeecgboot/JeecgBoot) |
 | Gitee | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)    | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
 ##### Project description
