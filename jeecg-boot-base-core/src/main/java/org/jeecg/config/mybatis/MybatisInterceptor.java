@@ -106,7 +106,14 @@ public class MybatisInterceptor implements Interceptor {
 										//e.printStackTrace();
 									}
 								}
-								field.set(parameter, tenantId);
+
+								if (field.getType().equals(String.class)) {
+									// 字段类型为String
+									field.set(parameter, tenantId);
+								} else {
+									// 字段类型不是String
+									field.set(parameter, oConvertUtils.getInt(tenantId, 0));
+								}
 								field.setAccessible(false);
 							}
 						}
