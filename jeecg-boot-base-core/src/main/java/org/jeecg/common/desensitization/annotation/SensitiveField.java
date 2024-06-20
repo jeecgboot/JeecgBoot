@@ -1,9 +1,6 @@
 package org.jeecg.common.desensitization.annotation;
 
 
-import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.jeecg.common.desensitization.SensitiveFieldSerialize;
 import org.jeecg.common.desensitization.enums.SensitiveEnum;
 
 import java.lang.annotation.*;
