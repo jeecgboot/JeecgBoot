@@ -244,7 +244,7 @@ public class SecurityConfig {
      */
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().build();
+        return AuthorizationServerSettings.builder().tokenEndpoint("/sys/login").build();
     }
 
     /**

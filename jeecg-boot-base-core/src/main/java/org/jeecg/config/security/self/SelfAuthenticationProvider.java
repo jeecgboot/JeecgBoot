@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.security.Principal;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,7 +81,9 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
         RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 
         if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
-            throw new JeecgBootException("非法登录");
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", "非法登录");
+            return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
         }
 
         // 通过用户名获取用户信息
@@ -109,9 +112,10 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
         OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();
         OAuth2Token generatedAccessToken = this.tokenGenerator.generate(tokenContext);
         if (generatedAccessToken == null) {
-            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
-                    "无法生成访问token，请联系管理系。", ERROR_URI);
-            throw new OAuth2AuthenticationException(error);
+            Map<String, Object> map = new HashMap<>();
+            map.put("message", "无法生成刷新token，请联系管理员。");
+            return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
+
         }
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
                 generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(),
@@ -133,9 +137,9 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
             tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.REFRESH_TOKEN).build();
             OAuth2Token generatedRefreshToken = this.tokenGenerator.generate(tokenContext);
             if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
-                OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
-                        "无法生成刷新token，请联系管理员。", ERROR_URI);
-                throw new OAuth2AuthenticationException(error);
+                Map<String, Object> map = new HashMap<>();
+                map.put("message", "无法生成刷新token，请联系管理员。");
+                return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
             }
 
             refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
@@ -148,7 +152,7 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
         authorizationService.save(authorization);
 
         JSONObject addition = new JSONObject(new LinkedHashMap<>());
-
+        addition.put("token", accessToken.getTokenValue());
         // 设置租户
         JSONObject jsonObject = commonAPI.setLoginTenant(username);
         addition.putAll(jsonObject.getInnerMap());
@@ -172,8 +176,15 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
             addition.put("multi_depart", 2);
         }
 
+        // 兼容原有shiro登录结果处理
+        Map<String, Object> map = new HashMap<>();
+        map.put("result", addition);
+        map.put("code", 200);
+        map.put("success", true);
+        map.put("timestamp", System.currentTimeMillis());
+
         // 返回access_token、refresh_token以及其它信息给到前端
-        return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, addition);
+        return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, map);
     }
 
     @Override
