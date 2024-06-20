@@ -27,7 +27,7 @@ public class SensitiveDataAspect {
     /**
      * 定义切点Pointcut
      */
-    @Pointcut("@annotation(org.jeecg.common.desensitization.annotation.SensitiveDecode)")
+    @Pointcut("@annotation(org.jeecg.common.desensitization.annotation.SensitiveEncode) || @annotation(org.jeecg.common.desensitization.annotation.SensitiveDecode)")
     public void sensitivePointCut() {
     }
 
