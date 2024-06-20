@@ -16,7 +16,7 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @JacksonAnnotationsInside
 @JsonSerialize(using = SensitiveSerialize.class)
-public @interface SensitiveField {
+public @interface Sensitive {
 
     /**
      * 不同类型处理不同
