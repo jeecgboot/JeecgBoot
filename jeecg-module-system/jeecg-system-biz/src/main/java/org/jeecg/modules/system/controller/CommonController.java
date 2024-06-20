@@ -51,7 +51,7 @@ public class CommonController {
      */
     @GetMapping("/403")
     public Result<?> noauth()  {
-        return Result.error("没有权限，请管理员授权后，刷新用户缓存或退出重新登录!");
+        return Result.error("没有权限，请联系管理员授权，后刷新缓存!");
     }
 
     /**
