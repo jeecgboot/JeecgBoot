@@ -14,8 +14,6 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-@JacksonAnnotationsInside
-@JsonSerialize(using = SensitiveFieldSerialize.class)
 public @interface SensitiveField {
 
     /**
