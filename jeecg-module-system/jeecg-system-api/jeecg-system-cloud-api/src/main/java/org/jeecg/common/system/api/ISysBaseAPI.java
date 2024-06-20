@@ -85,6 +85,14 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/getRolesByUsername")
     List<String> getRolesByUsername(@RequestParam("username") String username);
+    
+    /**
+     * 7通过用户账号查询角色集合
+     * @param userId
+     * @return
+     */
+    @GetMapping("/sys/api/getRolesByUserId")
+    List<String> getRolesByUserId(@RequestParam("userId") String userId);
 
     /**
      * 8通过用户账号查询部门集合
@@ -93,6 +101,14 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/getDepartIdsByUsername")
     List<String> getDepartIdsByUsername(@RequestParam("username") String username);
+    
+    /**
+     * 8通过用户账号查询部门集合
+     * @param userId
+     * @return 部门 id
+     */
+    @GetMapping("/sys/api/getDepartIdsByUserId")
+    List<String> getDepartIdsByUserId(@RequestParam("userId") String userId);
 
     /**
      * 8.2 通过用户账号查询部门父ID集合
@@ -304,6 +320,14 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/getUserRoleSet")
     Set<String> getUserRoleSet(@RequestParam("username")String username);
+    
+    /**
+     * 30获取用户的角色集合
+     * @param userId
+     * @return
+     */
+    @GetMapping("/sys/api/getUserRoleSetById")
+    Set<String> getUserRoleSetById(@RequestParam("userId")String userId);
 
     /**
      * 31获取用户的权限集合
@@ -348,6 +372,15 @@ public interface ISysBaseAPI extends CommonAPI {
     @Override
     @GetMapping("/sys/api/queryUserRoles")
     Set<String> queryUserRoles(@RequestParam("username")String username);
+    
+    /**
+     * 35查询用户角色信息
+     * @param userId
+     * @return
+     */
+    @Override
+    @GetMapping("/sys/api/queryUserRolesById")
+    Set<String> queryUserRolesById(@RequestParam("userId")String userId);
 
     /**
      * 36查询用户权限信息
@@ -387,6 +420,15 @@ public interface ISysBaseAPI extends CommonAPI {
     @SensitiveDecode
     @GetMapping("/sys/api/getUserByName")
     LoginUser getUserByName(@RequestParam("username") String username);
+    
+    /**
+     * 39根据用户账号查询用户ID CommonAPI中定义
+     * @param username
+     * @return 用户ID
+     */
+    @Override
+    @GetMapping("/sys/api/getUserIdByName")
+    String getUserIdByName(@RequestParam("username") String username);
 
     /**
      * 40字典表的 翻译
@@ -609,7 +651,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param dataLogDto
      */
     @PostMapping("/sys/api/saveDataLog")
-    void saveDataLog(DataLogDTO dataLogDto);
+    void saveDataLog(@RequestBody DataLogDTO dataLogDto);
 
     /**
      * 更新头像

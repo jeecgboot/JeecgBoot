@@ -37,7 +37,16 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
      */
     @InterceptorIgnore(tenantLine = "true")
     SysRole getRoleNoTenant(@Param("roleCode") String roleCode);
-    
+
+    /**
+     * 根据用户id查询用户拥有的角色Code
+     *
+     * @param userId
+     * @param tenantId
+     * @return
+     */
+    List<SysRole> getRoleCodeListByUserId(@Param("userId") String userId, @Param("tenantId") Integer tenantId);
+
     /**
      * 删除角色与用户关系
      * @Author scott

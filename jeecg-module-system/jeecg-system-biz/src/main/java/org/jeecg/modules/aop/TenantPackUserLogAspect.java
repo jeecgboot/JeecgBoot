@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jeecg.common.api.dto.LogDTO;
+import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysTenantPack;
@@ -52,7 +53,7 @@ public class TenantPackUserLogAspect {
                 for(Object obj: args){
                     if(obj instanceof SysTenantPack){
                         // logType=3 租户操作日志
-                        logType = 3;
+                        logType = CommonConstant.LOG_TYPE_3;
                         SysTenantPack pack = (SysTenantPack)obj;
                         if(opType==2){
                             content = "创建了角色权限 "+ pack.getPackName();
@@ -60,7 +61,7 @@ public class TenantPackUserLogAspect {
                         tenantId = pack.getTenantId();
                         break;
                     }else if(obj instanceof SysTenantPackUser){
-                        logType = 3;
+                        logType = CommonConstant.LOG_TYPE_3;
                         SysTenantPackUser packUser = (SysTenantPackUser)obj;
                         if(opType==2){
                             content = "将 "+packUser.getRealname()+" 添加到角色 "+ packUser.getPackName();

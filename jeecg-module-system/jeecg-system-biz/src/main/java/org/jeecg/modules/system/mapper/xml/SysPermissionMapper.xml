@@ -136,6 +136,7 @@
 				SELECT distinct a.permission_id
 				FROM sys_tenant_pack_perms a
 				INNER JOIN sys_tenant_pack b ON a.pack_id = b.id AND b.STATUS = '1'
+				INNER JOIN sys_tenant st ON st.id = b.tenant_id and st.del_flag = 0
 				INNER JOIN sys_tenant_pack_user c ON c.pack_id = b.id AND c.STATUS = '1' AND c.user_id = #{userId,jdbcType=VARCHAR}
 			)
 			and p.del_flag = 0

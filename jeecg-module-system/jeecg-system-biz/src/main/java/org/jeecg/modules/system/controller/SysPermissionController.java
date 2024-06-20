@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -15,6 +16,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.Md5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.shiro.ShiroRealm;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.constant.DefIndexConst;
 import org.jeecg.modules.system.entity.*;
@@ -65,6 +67,9 @@ public class SysPermissionController {
 
 	@Autowired
 	private ISysRoleIndexService sysRoleIndexService;
+	
+	@Autowired
+	private ShiroRealm shiroRealm;
 
     /**
      * 子菜单
@@ -597,6 +602,16 @@ public class SysPermissionController {
             //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
 			result.success("保存成功！");
 			log.info("======角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+
+			//update-begin---author:scott ---date:2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
+			// 获取当前用户的Subject对象
+			Subject currentUser = SecurityUtils.getSubject();
+			// 清除当前用户的授权缓存信息
+			if (currentUser.isAuthenticated()) {
+				shiroRealm.clearCache(currentUser.getPrincipals());
+			}
+			//update-end---author:scott ---date::2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
+
 		} catch (Exception e) {
 			result.error500("授权失败！");
 			log.error(e.getMessage(), e);

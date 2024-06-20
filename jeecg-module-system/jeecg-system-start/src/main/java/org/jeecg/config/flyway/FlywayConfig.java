@@ -43,7 +43,7 @@ public class FlywayConfig {
     /**
      * 迁移sql脚本文件存放路径，官方默认db/migration
      */
-    @Value("${spring.flyway.locations:}")
+    @Value("${spring.flyway.locations:classpath:flyway/sql/mysql}")
     private String locations;
 
     /**

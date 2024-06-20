@@ -6,6 +6,11 @@
 	<select id="getUserByName" resultType="org.jeecg.modules.system.entity.SysUser">
 		select * from  sys_user  where username = #{username} and del_flag = 0
 	</select>
+	
+	<!-- 根据用户名查询用户ID -->
+	<select id="getUserIdByName" resultType="String">
+		select id from  sys_user  where username = #{username} and del_flag = 0
+	</select>
 
 	<!-- 根据部门Id查询 -->
 	<select id="getUserByDepId" resultType="org.jeecg.modules.system.entity.SysUser">
@@ -231,7 +236,7 @@
 
 	<!--获取租户下的用户离职列表信息-->
 	<select id="getTenantQuitList" resultType="org.jeecg.modules.system.entity.SysUser">
-		select su.id,su.username,su.realname,su.sex,su.avatar from sys_user su
+		select su.id,su.username,su.realname,su.sex,su.avatar,su.create_time,sut.create_by from sys_user su
 		join sys_user_tenant sut on sut.user_id = su.id and sut.status = '2'
 		where
 		su.status = 1

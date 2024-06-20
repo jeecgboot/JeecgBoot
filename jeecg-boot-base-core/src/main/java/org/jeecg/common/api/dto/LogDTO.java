@@ -1,5 +1,6 @@
 package org.jeecg.common.api.dto;
 import lombok.Data;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecg.common.system.vo.LoginUser;
 import java.io.Serializable;
 import java.util.Date;
@@ -55,6 +56,11 @@ public class LogDTO implements Serializable {
      */
     private Integer tenantId;
 
+    /**
+     * 客户终端类型 pc:电脑端 app:手机端 h5:移动网页端
+     */
+    private String clientType;
+    
     public LogDTO(){
 
     }

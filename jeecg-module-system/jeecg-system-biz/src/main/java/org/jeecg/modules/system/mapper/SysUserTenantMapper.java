@@ -166,4 +166,12 @@ public interface SysUserTenantMapper extends BaseMapper<SysUserTenant> {
      * @return
      */
     List<JwUserDepartVo> getUsersByTenantIdAndName(@Param("tenantId") Integer tenantId);
+
+    /**
+     * 根据多个用户id获取租户id
+     *
+     * @param userIds
+     * @return
+     */
+    List<Integer> getTenantIdsByUserIds(@Param("userIds") List<String> userIds);
 }

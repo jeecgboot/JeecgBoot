@@ -217,4 +217,19 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @param content 
      */
     void sendMsgForAgreeAndRefuseJoin(SysUser user, String content);
+
+    /**
+     * 根据密码删除当前用户
+     * 
+     * @param sysUser
+     * @param tenantId
+     */
+    void deleteUserByPassword(SysUser sysUser, Integer tenantId);
+
+    /**
+     * 根据用户id获取租户信息
+     * @param userId
+     * @return
+     */
+    List<SysTenant> getTenantListByUserId(String userId);
 }

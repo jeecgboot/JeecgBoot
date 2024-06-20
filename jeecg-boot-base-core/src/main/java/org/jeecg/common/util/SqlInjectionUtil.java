@@ -75,7 +75,7 @@ public class SqlInjectionUtil {
 	 * sql注入过滤处理，遇到注入关键字抛异常
 	 * @param values
 	 */
-	public static void filterContent(String... values) {
+	public static void filterContentMulti(String... values) {
 		filterContent(values, null);
 	}
 
@@ -291,7 +291,15 @@ public class SqlInjectionUtil {
 		if(oConvertUtils.isEmpty(table)){
 			return table;
 		}
-		
+
+		//update-begin---author:scott ---date:2024-05-28  for：表单设计器列表翻译存在表名带条件，导致翻译出问题----
+		int index = table.toLowerCase().indexOf(" where ");
+		if (index != -1) {
+			table = table.substring(0, index);
+			log.info("截掉where之后的新表名：" + table);
+		}
+		//update-end---author:scott ---date::2024-05-28  for：表单设计器列表翻译存在表名带条件，导致翻译出问题----
+
 		table = table.trim();
 		/**
 		 * 检验表名是否合法
@@ -308,7 +316,7 @@ public class SqlInjectionUtil {
 		}
 
 		//进一步验证是否存在SQL注入风险
-		filterContent(table);
+		filterContentMulti(table);
 		return table;
 	}
 
@@ -345,7 +353,7 @@ public class SqlInjectionUtil {
 		}
 
 		//进一步验证是否存在SQL注入风险
-		filterContent(field);
+		filterContentMulti(field);
 		return field;
 	}
 

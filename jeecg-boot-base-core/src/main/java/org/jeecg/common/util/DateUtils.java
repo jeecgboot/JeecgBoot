@@ -8,6 +8,11 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -115,6 +120,17 @@ public class DateUtils extends PropertyEditorSupport {
      */
     public static Date getDate() {
         return new Date();
+    }
+    
+    
+    /**
+     * 当前日期
+     *
+     * @return 系统当前日期（不带时分秒）
+     */
+    public static LocalDate getLocalDate() {
+        LocalDate today = LocalDate.now();
+        return today;
     }
 
     /**
@@ -702,6 +718,44 @@ public class DateUtils extends PropertyEditorSupport {
         boolean isSameYear = calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
         boolean isSameMonth = isSameYear && calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH);
         return isSameMonth && calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH);
+    }
+
+    /**
+     * 计算与当前日期的时间差
+     *
+     * @param targetDate
+     * @return
+     */
+    public static long calculateTimeDifference(Date targetDate) {
+        // 获取当前时间
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        // 将java.util.Date转换为java.time.LocalDateTime
+        LocalDateTime convertedTargetDate = targetDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        // 计算时间差
+        Duration duration = Duration.between(currentTime, convertedTargetDate);
+
+        // 获取时间差的毫秒数
+        long timeDifferenceInMillis = duration.toMillis();
+
+        return timeDifferenceInMillis;
+    }
+
+    /**
+     * 计算与当前日期的日期天数差
+     *
+     * @param targetDate
+     * @return
+     */
+    public static long calculateDaysDifference(Date targetDate) {
+        // 获取当前日期
+        LocalDate currentDate = LocalDate.now();
+        // 将java.util.Date转换为java.time.LocalDate
+        LocalDate convertedTargetDate = targetDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        // 计算日期差
+        long daysDifference = ChronoUnit.DAYS.between(currentDate, convertedTargetDate);
+        return daysDifference;
     }
 
     /**

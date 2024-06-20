@@ -29,19 +29,23 @@
   <#assign hasOnlyValidate = false>
 <template>
   <a-spin :spinning="confirmLoading">
-    <a-form class="antd-modal-form" v-bind="formItemLayout" ref="formRef">
-      <a-row>
-        <#list sub.colums as po>
-          <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
-            <#assign hasOnlyValidate = true>
-          </#if>
-          <#if po.fieldDbName=='bpm_status'>
-            <#assign bpm_flag=true>
-          </#if>
-          <#include "/common/form/native/vue3NativeForm.ftl">
-        </#list>
-      </a-row>
-    </a-form>
+    <JFormContainer :disabled="disabled">
+      <template #detail>
+        <a-form class="antd-modal-form" v-bind="formItemLayout" ref="formRef">
+          <a-row>
+            <#list sub.colums as po>
+              <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+                <#assign hasOnlyValidate = true>
+              </#if>
+              <#if po.fieldDbName=='bpm_status'>
+                <#assign bpm_flag=true>
+              </#if>
+              <#include "/common/form/native/vue3NativeForm.ftl">
+            </#list>
+          </a-row>
+        </a-form>
+      </template>
+    </JFormContainer>
   </a-spin>
 </template>
 
@@ -53,6 +57,7 @@
   import { getValueType } from '/@/utils';
   import { ${sub.entityName?uncap_first}SaveOrUpdate } from '../${entityName}.api';
   import { Form } from 'ant-design-vue';
+  import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
   <#if hasOnlyValidate == true>
   import { duplicateValidate } from '/@/utils/helper/validator'
   </#if>
@@ -192,8 +197,6 @@
 
 <style lang="less" scoped>
   .antd-modal-form {
-    height: 500px !important;
-    overflow-y: auto;
     padding: 14px;
   }
 </style>

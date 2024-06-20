@@ -8,6 +8,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.shiro.JwtToken;
+import org.jeecg.config.shiro.ignore.InMemoryIgnoreAuth;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,6 +48,11 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         try {
+            // 判断当前路径是不是注解了@IngoreAuth路径，如果是，则放开验证
+            if (InMemoryIgnoreAuth.contains(((HttpServletRequest) request).getServletPath())) {
+                return true;
+            }
+            
             executeLogin(request, response);
             return true;
         } catch (Exception e) {

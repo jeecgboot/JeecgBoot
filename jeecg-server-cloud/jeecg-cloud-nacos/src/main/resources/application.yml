@@ -7,8 +7,9 @@ server:
       pattern: '%h %l %u %t "%r" %s %b %D %{User-Agent}i %{Request-Source}i'
     basedir: ''
 spring:
-  datasource:
-    platform: mysql
+  sql:
+    init:
+      platform: mysql
 db:
   num: 1
   password:
@@ -27,7 +28,6 @@ management:
 nacos:
   core:
     auth:
-      #是否开启鉴权（JeecgNacosApplication.enabled属性优先级更高）
       enabled: false
       caching:
         enabled: true

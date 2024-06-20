@@ -30,10 +30,7 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
-import org.jeecg.common.util.PasswordUtil;
-import org.jeecg.common.util.RestUtil;
-import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.*;
@@ -233,7 +230,9 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             for (JdtDepartmentTreeVo departmentTree : departmentTreeList) {
                 LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
                 // 根据 source_identifier 字段查询
-                queryWrapper.eq(SysDepart::getId, departmentTree.getSource_identifier());
+                //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
+                queryWrapper.and(item -> item.eq(SysDepart::getId, departmentTree.getSource_identifier()).or().eq(SysDepart::getDingIdentifier,departmentTree.getDept_id()));
+                //update-end---author:wangshuai---date:2024-04-10---for:【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
                 SysDepart sysDepart = sysDepartService.getOne(queryWrapper);
                 if (sysDepart != null) {
                     //  执行更新操作
@@ -270,14 +269,21 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                         newSysDepart.setOrgCategory("1");
                     }
                     try {
+                        if(oConvertUtils.isEmpty(departmentTree.getParent_id())){
+                            newSysDepart.setDingIdentifier(departmentTree.getDept_id().toString());
+                        }
+                        newSysDepart.setTenantId(tenantId);
                         sysDepartService.saveDepartData(newSysDepart, username);
                         // 更新钉钉 source_identifier
                         Department updateDtDepart = new Department();
                         updateDtDepart.setDept_id(departmentTree.getDept_id());
                         updateDtDepart.setSource_identifier(newSysDepart.getId());
-                        Response response = JdtDepartmentAPI.update(updateDtDepart, accessToken);
-                        if (!response.isSuccess()) {
-                            throw new RuntimeException(response.getErrmsg());
+                        //为空说明是最顶级部门，最顶级部门不允许修改操作
+                        if(oConvertUtils.isNotEmpty(newSysDepart.getParentId())){
+                            Response response = JdtDepartmentAPI.update(updateDtDepart, accessToken);
+                            if (!response.isSuccess()) {
+                                throw new RuntimeException(response.getErrmsg());
+                            }
                         }
                         String str = String.format("部门 %s 创建成功！", newSysDepart.getDepartName());
                         syncInfo.addSuccessInfo(str);
@@ -1234,7 +1240,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
             Long count = tenantMapper.tenantIzExist(tenantId);
             if(ObjectUtil.isEmpty(count) || 0 == count){
-                throw new JeecgBootException("租户不存在！");
+                throw new JeecgBootException("租户ID:" + tenantId + "无效，平台中不存在！");
             }
         }
     }

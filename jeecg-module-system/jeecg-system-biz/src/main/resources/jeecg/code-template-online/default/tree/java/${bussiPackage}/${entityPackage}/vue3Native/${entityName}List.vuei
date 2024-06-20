@@ -220,7 +220,7 @@
    */
   function handleSuperQuery(params) {
     Object.keys(params).map((k) => {
-      queryParam[k] = params[k];
+      queryParam.value[k] = params[k];
     });
     reload();
   }
@@ -261,7 +261,7 @@
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    const ids = selectedRowKeys.value.filter((item) => !item.includes('loading'));
+    const ids = selectedRowKeys.value.filter((item) => !item.includes('loadChild'));
     await batchDelete${entityName}({ id: ids }, success);
   }
   
@@ -288,8 +288,13 @@
       if (changeParent) {
         reload();
       } else {
-        // 编辑回调
-        updateTableDataRecord(values.id, values);
+        let data = await list({ id: values.id, pageSize: 1, pageNo: 1, ${pidFieldName}: values['${pidFieldName}'] });
+        if (data && data.records && data.records.length > 0) {
+          // 编辑回调
+          updateTableDataRecord(values.id, data.records[0]);
+        }else{
+          updateTableDataRecord(values.id, values);
+        }
       }
     } else {
       if (!values['id'] || !values['pid']) {
@@ -527,7 +532,9 @@
    * @param value
    */
   function handleFormJoinChange(key, value) {
-    queryParam[key] = value.join(',');
+    if (typeof value != 'string') {
+      queryParam.value[key] = value.join(',');
+    }
   }
   </#if>
 
@@ -565,20 +572,5 @@
 </script>
 
 <style lang="less" scoped>
-  .jeecg-basic-table-form-container {
-    padding: 0;
-    .table-page-search-submitButtons {
-      display: block;
-      margin-bottom: 24px;
-      white-space: nowrap;
-    }
-    .query-group-cust{
-      min-width: 100px !important;
-    }
-    .query-group-split-cust{
-      width: 30px;
-      display: inline-block;
-      text-align: center
-    }
-  }
+<#include "/common/form/native/vueNativeSearchStyle.ftl">
 </style>

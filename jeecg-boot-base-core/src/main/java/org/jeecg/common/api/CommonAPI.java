@@ -18,6 +18,13 @@ public interface CommonAPI {
      * @return
      */
     Set<String> queryUserRoles(String username);
+    
+    /**
+     * 1查询用户角色信息
+     * @param userId
+     * @return
+     */
+    Set<String> queryUserRolesById(String userId);
 
 
     /**
@@ -49,6 +56,13 @@ public interface CommonAPI {
      * @return
      */
     public LoginUser getUserByName(String username);
+    
+    /**
+     * 5根据用户账号查询用户Id
+     * @param username
+     * @return
+     */
+    public String getUserIdByName(String username);
 
 
     /**

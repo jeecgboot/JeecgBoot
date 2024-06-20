@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -351,10 +352,10 @@ public class SysTenantController {
      * @param ids
      * @return
      */
-    @DeleteMapping("/deletePackPermissions")
+    @DeleteMapping("/deleteTenantPack")
     @RequiresPermissions("system:tenant:delete:pack")
-    public Result<String> deletePackPermissions(@RequestParam(value = "ids") String ids) {
-        sysTenantPackService.deletePackPermissions(ids);
+    public Result<String> deleteTenantPack(@RequestParam(value = "ids") String ids) {
+        sysTenantPackService.deleteTenantPack(ids);
         return Result.ok("删除租户产品包成功");
     }
     
@@ -500,7 +501,7 @@ public class SysTenantController {
         Integer tenantId = sysTenantService.joinTenantByHouseNumber(sysTenant, sysUser.getId());
         Result<Integer> result = new Result<>();
         if(tenantId != 0){
-            result.setMessage("申请租户成功");
+            result.setMessage("申请加入组织成功");
             result.setSuccess(true);
             result.setResult(tenantId);
             return result;
@@ -935,4 +936,39 @@ public class SysTenantController {
         return Result.error("类型不匹配，禁止修改数据");
     }
     
+    /**
+     * 目前只给敲敲云租户下删除用户使用
+     * 
+     * 根据密码删除用户
+     */
+    @DeleteMapping("/deleteUserByPassword")
+    public Result<String> deleteUserByPassword(@RequestBody SysUser sysUser,HttpServletRequest request){
+        Integer tenantId = oConvertUtils.getInteger(TokenUtils.getTenantIdByRequest(request), null);
+        sysTenantService.deleteUserByPassword(sysUser, tenantId);
+        return Result.ok("删除用户成功");
+    }
+
+    /**
+     *  查询当前用户的所有有效租户【知识库专用接口】
+     * @return
+     */
+    @RequestMapping(value = "/getCurrentUserTenantForFile", method = RequestMethod.GET)
+    public Result<Map<String,Object>> getCurrentUserTenantForFile() {
+        Result<Map<String,Object>> result = new Result<Map<String,Object>>();
+        try {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            List<SysTenant> tenantList = sysTenantService.getTenantListByUserId(sysUser.getId());
+            Map<String,Object> map = new HashMap<>(5);
+            //在开启saas租户隔离的时候并且租户数据不为空，则返回租户信息
+            if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && CollectionUtil.isNotEmpty(tenantList)) {
+                map.put("list", tenantList);
+            }
+            result.setSuccess(true);
+            result.setResult(map);
+        }catch(Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("查询失败！");
+        }
+        return result;
+    }
 }

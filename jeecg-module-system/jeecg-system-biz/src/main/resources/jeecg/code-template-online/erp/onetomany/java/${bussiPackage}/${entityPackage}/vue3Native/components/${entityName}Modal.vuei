@@ -1,12 +1,13 @@
 <template>
-  <a-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
+  <j-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
     <${entityName}Form ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></${entityName}Form>
-  </a-modal>
+  </j-modal>
 </template>
 
 <script lang="ts" setup>
   import { ref, nextTick, defineExpose } from 'vue';
   import ${entityName}Form from './${entityName}Form.vue'
+  import JModal from '/@/components/Modal/src/JModal/JModal.vue';
   
   const title = ref<string>('');
   const width = ref<number>(800);
@@ -73,3 +74,4 @@
     display: none !important;
   }
 </style>
+<style lang="less" scoped></style>

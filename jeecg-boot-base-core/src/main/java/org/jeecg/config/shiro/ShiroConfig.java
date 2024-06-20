@@ -19,13 +19,13 @@ import org.jeecg.config.shiro.filters.JwtFilter;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -47,8 +47,6 @@ import java.util.*;
 
 @Slf4j
 @Configuration
-// 免认证注解 @IgnoreAuth 注解生效范围配置
-@ComponentScan(basePackages = {"org.jeecg"})
 public class ShiroConfig {
 
     @Resource
@@ -59,6 +57,7 @@ public class ShiroConfig {
     private JeecgBaseConfig jeecgBaseConfig;
     @Autowired(required = false)
     private RedisProperties redisProperties;
+    
     /**
      * Filter Chain定义说明
      *
@@ -88,6 +87,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sys/cas/client/validateLogin", "anon"); //cas验证登录
         filterChainDefinitionMap.put("/sys/randomImage/**", "anon"); //登录验证码接口排除
         filterChainDefinitionMap.put("/sys/checkCaptcha", "anon"); //登录验证码接口排除
+        filterChainDefinitionMap.put("/sys/smsCheckCaptcha", "anon"); //短信次数发送太多验证码排除
         filterChainDefinitionMap.put("/sys/login", "anon"); //登录接口排除
         filterChainDefinitionMap.put("/sys/mLogin", "anon"); //登录接口排除
         filterChainDefinitionMap.put("/sys/logout", "anon"); //登出接口排除
@@ -153,7 +153,7 @@ public class ShiroConfig {
         //大屏模板例子
         filterChainDefinitionMap.put("/test/bigScreen/**", "anon");
         filterChainDefinitionMap.put("/bigscreen/template1/**", "anon");
-        filterChainDefinitionMap.put("/bigscreen/template1/**", "anon");
+        filterChainDefinitionMap.put("/bigscreen/template2/**", "anon");
         //filterChainDefinitionMap.put("/test/jeecgDemo/rabbitMqClientTest/**", "anon"); //MQ测试
         //filterChainDefinitionMap.put("/test/jeecgDemo/html", "anon"); //模板页面
         //filterChainDefinitionMap.put("/test/jeecgDemo/redis/**", "anon"); //redis测试
@@ -172,16 +172,6 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/error", "anon");
         // 企业微信证书排除
         filterChainDefinitionMap.put("/WW_verify*", "anon");
-
-
-        // 通过注解免登录url
-        List<String> ignoreAuthUrlList = collectIgnoreAuthUrl();
-        if (!CollectionUtils.isEmpty(ignoreAuthUrlList)) {
-            for (String url : ignoreAuthUrlList) {
-                filterChainDefinitionMap.put(url, "anon");
-            }
-        }
-
 
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
@@ -281,6 +271,9 @@ public class ShiroConfig {
     }
 
     /**
+     * RedisConfig在项目starter项目中
+     * jeecg-boot-starter-github\jeecg-boot-common\src\main\java\org\jeecg\common\modules\redis\config\RedisConfig.java
+     * 
      * 配置shiro redisManager
      * 使用的是shiro-redis开源插件
      *
@@ -333,62 +326,6 @@ public class ShiroConfig {
             manager = redisManager;
         }
         return manager;
-    }
-
-
-    @SneakyThrows
-    public List<String> collectIgnoreAuthUrl() {
-        List<String> ignoreAuthUrls = new ArrayList<>();
-        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
-        provider.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
-
-        // 获取当前类的扫描注解的配置
-        Set<BeanDefinition> components = new HashSet<>();
-        for (String basePackage : AnnotationUtils.getAnnotation(ShiroConfig.class, ComponentScan.class).basePackages()) {
-            components.addAll(provider.findCandidateComponents(basePackage));
-        }
-
-        // 逐个匹配获取免认证路径
-        for (BeanDefinition component : components) {
-            String beanClassName = component.getBeanClassName();
-            Class<?> clazz = Class.forName(beanClassName);
-            RequestMapping base = clazz.getAnnotation(RequestMapping.class);
-            String[] baseUrl = {};
-            if (Objects.nonNull(base)) {
-                baseUrl = base.value();
-            }
-            Method[] methods = clazz.getDeclaredMethods();
-
-            for (Method method : methods) {
-                if (method.isAnnotationPresent(IgnoreAuth.class) && method.isAnnotationPresent(RequestMapping.class)) {
-                    RequestMapping requestMapping = method.getAnnotation(RequestMapping.class);
-                    String[] uri = requestMapping.value();
-                    ignoreAuthUrls.addAll(rebuildUrl(baseUrl, uri));
-                } else if (method.isAnnotationPresent(IgnoreAuth.class) && method.isAnnotationPresent(GetMapping.class)) {
-                    GetMapping requestMapping = method.getAnnotation(GetMapping.class);
-                    String[] uri = requestMapping.value();
-                    ignoreAuthUrls.addAll(rebuildUrl(baseUrl, uri));
-                } else if (method.isAnnotationPresent(IgnoreAuth.class) && method.isAnnotationPresent(PostMapping.class)) {
-                    PostMapping requestMapping = method.getAnnotation(PostMapping.class);
-                    String[] uri = requestMapping.value();
-                    ignoreAuthUrls.addAll(rebuildUrl(baseUrl, uri));
-                } else if (method.isAnnotationPresent(IgnoreAuth.class) && method.isAnnotationPresent(PutMapping.class)) {
-                    PutMapping requestMapping = method.getAnnotation(PutMapping.class);
-                    String[] uri = requestMapping.value();
-                    ignoreAuthUrls.addAll(rebuildUrl(baseUrl, uri));
-                } else if (method.isAnnotationPresent(IgnoreAuth.class) && method.isAnnotationPresent(DeleteMapping.class)) {
-                    DeleteMapping requestMapping = method.getAnnotation(DeleteMapping.class);
-                    String[] uri = requestMapping.value();
-                    ignoreAuthUrls.addAll(rebuildUrl(baseUrl, uri));
-                } else if (method.isAnnotationPresent(IgnoreAuth.class) && method.isAnnotationPresent(PatchMapping.class)) {
-                    PatchMapping requestMapping = method.getAnnotation(PatchMapping.class);
-                    String[] uri = requestMapping.value();
-                    ignoreAuthUrls.addAll(rebuildUrl(baseUrl, uri));
-                }
-            }
-        }
-
-        return ignoreAuthUrls;
     }
 
     private List<String> rebuildUrl(String[] bases, String[] uris) {

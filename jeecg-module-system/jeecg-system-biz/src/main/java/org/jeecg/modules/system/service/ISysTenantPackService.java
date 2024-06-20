@@ -37,7 +37,7 @@ public interface ISysTenantPackService extends IService<SysTenantPack> {
      * 删除租户产品包
      * @param ids
      */
-    void deletePackPermissions(String ids);
+    void deleteTenantPack(String ids);
 
     /**
      * 退出租户

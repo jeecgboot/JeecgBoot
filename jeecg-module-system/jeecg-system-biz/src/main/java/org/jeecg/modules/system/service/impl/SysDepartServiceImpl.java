@@ -489,6 +489,12 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	public List<SysDepart> queryDepartsByUsername(String username) {
 		return baseMapper.queryDepartsByUsername(username);
 	}
+	
+	@Override
+	public List<String> queryDepartsByUserId(String userId) {
+		List<String> list = baseMapper.queryDepartsByUserId(userId);
+		return list;
+	}
 
 	/**
 	 * 根据用户所负责部门ids获取父级部门编码
@@ -1220,7 +1226,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * @return
 	 */
 	@Override
-	public List<SysDepartExportVo> getExportDepart(int tenantId) {
+	public List<SysDepartExportVo> getExportDepart(Integer tenantId) {
 		//获取父级部门
 		List<SysDepartExportVo> parentDepart = departMapper.getSysDepartList("", tenantId);
 		//子部门

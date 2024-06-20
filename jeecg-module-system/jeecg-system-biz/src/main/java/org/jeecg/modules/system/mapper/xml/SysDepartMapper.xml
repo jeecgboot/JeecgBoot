@@ -20,6 +20,17 @@
             )
         )
     </select>
+    
+    <!-- 根据username查询所拥有的部门 -->
+    <select id="queryDepartsByUserId" parameterType="String" resultType="java.lang.String">
+        SELECT id
+        FROM sys_depart
+        WHERE id IN (
+            SELECT dep_id
+            FROM sys_user_depart
+            WHERE user_id = #{userId}
+        )
+    </select>
 
     <!-- 根据部门Id查询,当前和下级所有部门IDS -->
     <select id="getSubDepIdsByDepId" resultType="java.lang.String">

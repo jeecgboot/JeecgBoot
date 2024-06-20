@@ -7,13 +7,13 @@
 JEECG BOOT Low Code Development Platform
 ===============
 
-当前最新版本： 3.6.3（发布日期：2024-03-11） 
+当前最新版本： 3.7.0（发布日期：2024-06-17） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/Blog-blog-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.6.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.7.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -37,7 +37,7 @@ JEECG Business process: Using workflow to implement and extend the task interfac
 Technical support
 -----------------------------------
 
-Problems or bugs in use can be found in [Making on the Issues](https://github.com/jeecgboot/jeecg-boot/issues/new)
+Problems or bugs in use can be found in [Making on the Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
 
 Official Support: http://jeecg.com/doc/help
 
@@ -46,9 +46,9 @@ Download the source code
 -----------------------------------
 项目源码
 -----------------------------------
-| Source |Front-end source (Vue3 version) | The background source |
+| Source |Front-end source | The background source |
 |-|-|-|
-| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [jeecg-boot](https://github.com/jeecgboot/jeecg-boot) |
+| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [jeecg-boot](https://github.com/jeecgboot/JeecgBoot) |
 | Gitee | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)    | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
 
 ##### Project description
@@ -58,7 +58,6 @@ Download the source code
 | `jeecg-boot`    | SpringBoot background source code (support microservices)      |
 | `jeecgboot-vue3` | Vue3+TS new front-end source code|
 | `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
-| `SpringBoot3+JDK17`    | [BranchSourceCode](https://github.com/jeecgboot/jeecg-boot/tree/springboot3)  [UpgradeBlog](https://blog.csdn.net/zhangdaiscott/article/details/134805602)        |
 | `More` | [Download more source code](http://jeecg.com/download) |
 
 
@@ -74,7 +73,7 @@ Docker starts the project
 -----------------------------------
 
 - [Docker starts the monomer background](https://help.jeecg.com/java/setup/docker/up.html)
-- [Docker starts the Vue3 front-end](http://help.jeecg.com/publish/docker.html)
+- [Docker starts the front-end](http://help.jeecg.com/publish/docker.html)
 - [Docker starts the micro-service background](https://help.jeecg.com/java/springcloud/docker.html)
 - [ChatGPT AI Config](https://help.jeecg.com/java/chatgpt.html)
 
@@ -87,16 +86,9 @@ Technical documentation
 - Doc：  [http://help.jeecg.com](http://help.jeecg.com)
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
 - Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-- QQ group ： ⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
-- Demo ： [Vue3](http://boot3.jeecg.com) | [Vue2](http://boot.jeecg.com)  | [APP](http://jeecg.com/appIndex)
+- QQ group ： ⑨808791225、⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
+- Demo ： [OnlineDemo](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
 > [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
-
-
-
-Thinking
------------------------------------
-> We are pursuing the goal of implementing complex business systems without writing code! That has been done so far
-- https://www.qiaoqiaoyun.com
 
 
 Star charts
@@ -161,7 +153,7 @@ Why JeecgBoot?
 * Support SAAS service model and provide SaaS multi-tenant architecture solution.
 * Distributed file service, integration of minio, Ali OSS and other excellent third parties, to provide convenient file upload and management, but also support local storage.
 * Mainstream database compatibility, a set of code is fully compatible with Mysql, Postgresql, Oracle, Sqlserver, MariaDB, dream and other mainstream databases.
-* Integrate workflow activiti and realize only the configuration of flow direction in the page, which can greatly simplify the development of bpm workflow; Using bpm's process designer to draw the flow direction, a workflow is basically complete with a small amount of java code;
+* Integrate workflow flowable and realize only the configuration of flow direction in the page, which can greatly simplify the development of bpm workflow; Using bpm's process designer to draw the flow direction, a workflow is basically complete with a small amount of java code;
 * Low code ability: online process design, using open source Activiti process engine, to achieve online drawing process, custom form, form attachment, business flow
 * Multi-data source: its simple way of use, online configuration of data source configuration, convenient to grab data from other data;
 * Provide single sign-on CAS integration solution, and complete docking code has been provided in the project
@@ -228,8 +220,7 @@ Technical Architecture:
 
 #### The front end
 
-- Vue2 version：`Vue2.6+@vue/cli+AntDesignVue+Viser-vue+Vuex`  [detail](https://github.com/jeecgboot/ant-design-vue-jeecg)
-- Vue3 version：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts` [detail](https://github.com/jeecgboot/jeecgboot-vue3)
+- TechnologyStack：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts` [detail](https://github.com/jeecgboot/jeecgboot-vue3)
 
 #### Support library
 
