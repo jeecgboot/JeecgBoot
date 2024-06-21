@@ -15,7 +15,7 @@
         <!-- rocketmq消息队列-->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-rocketmq</artifactId>
+            <artifactId>jeecg-boot-starter3-rocketmq</artifactId>
         </dependency>
     </dependencies>
 

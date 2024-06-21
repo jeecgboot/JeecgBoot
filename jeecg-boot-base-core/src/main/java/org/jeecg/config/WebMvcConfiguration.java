@@ -146,19 +146,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
     }
 
     /**
-     * SpringBootAdmin的Httptrace不见了
-     * https://blog.csdn.net/u013810234/article/details/110097201
-     */
-    @Bean
-    public InMemoryHttpExchangeRepository getInMemoryHttpTrace(){
-        InMemoryHttpExchangeRepository repository = new InMemoryHttpExchangeRepository();
-        // 默认保存1000条http请求记录
-        repository.setCapacity(1000);
-        return repository;
-    }
-
-
-    /**
      * 解决metrics端点不显示jvm信息的问题(zyf)
      */
     @Bean

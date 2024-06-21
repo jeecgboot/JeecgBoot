@@ -1,9 +1,9 @@
 package org.jeecg.modules.monitor.actuator;
 
 import org.jeecg.modules.monitor.actuator.httptrace.CustomInMemoryHttpTraceRepository;
-import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceProperties;
-import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesProperties;
+import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,8 +18,8 @@ import org.springframework.context.annotation.Configuration;
  * @Date: 2024/5/13 17:20
  */
 @Configuration
-@EnableConfigurationProperties(HttpTraceProperties.class)
-@AutoConfigureBefore(HttpTraceAutoConfiguration.class)
+@EnableConfigurationProperties(HttpExchangesProperties.class)
+@AutoConfigureBefore(HttpExchangesAutoConfiguration.class)
 public class CustomActuatorConfig {
 
     /**
@@ -30,7 +30,7 @@ public class CustomActuatorConfig {
      */
     @Bean
     @ConditionalOnProperty(prefix = "management.trace.http", name = "enabled", matchIfMissing = true)
-    @ConditionalOnMissingBean(HttpTraceRepository.class)
+    @ConditionalOnMissingBean(HttpExchangeRepository.class)
     public CustomInMemoryHttpTraceRepository traceRepository() {
         return new CustomInMemoryHttpTraceRepository();
     }
