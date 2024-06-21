@@ -42,14 +42,13 @@ Problems or bugs in use can be found in [Making on the Issues](https://github.co
 Official Support: http://jeecg.com/doc/help
 
 
+
+
 Download the source code
 -----------------------------------
-项目源码
------------------------------------
-| Source |Front-end source | The background source |
-|-|-|-|
-| Github | [jeecgboot-vue3](https://github.com/jeecgboot/jeecgboot-vue3)  | [jeecg-boot](https://github.com/jeecgboot/JeecgBoot) |
-| Gitee | [jeecgboot-vue3](https://gitee.com/jeecg/jeecgboot-vue3)    | [jeecg-boot](https://gitee.com/jeecg/jeecg-boot) |
+- UI(Vue3) SourceCode：https://github.com/jeecgboot/jeecgboot-vue3
+- APP SourceCode：https://github.com/jeecgboot/jeecg-uniapp
+
 
 ##### Project description
 
@@ -220,7 +219,7 @@ Technical Architecture:
 
 #### The front end
 
-- TechnologyStack：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts` [detail](https://github.com/jeecgboot/jeecgboot-vue3)
+- TechnologyStack：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts`
 
 #### Support library
 
