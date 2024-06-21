@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.common.desensitization.annotation.SensitiveField;
+import org.jeecg.common.desensitization.annotation.Sensitive;
 import org.jeecg.common.desensitization.enums.SensitiveEnum;
 import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.util.encryption.AesEncryptUtil;
@@ -24,7 +24,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
-public class SensitiveFieldSerialize extends JsonSerializer<String> implements ContextualSerializer {
+public class SensitiveSerialize extends JsonSerializer<String> implements ContextualSerializer {
 
     private SensitiveEnum type;
 
@@ -72,12 +72,12 @@ public class SensitiveFieldSerialize extends JsonSerializer<String> implements C
     public JsonSerializer<?> createContextual(SerializerProvider serializerProvider, BeanProperty beanProperty) throws JsonMappingException {
         if (beanProperty != null) {
             if (Objects.equals(beanProperty.getType().getRawClass(), String.class)) {
-                SensitiveField sensitive = beanProperty.getAnnotation(SensitiveField.class);
+                Sensitive sensitive = beanProperty.getAnnotation(Sensitive.class);
                 if (sensitive == null) {
-                    sensitive = beanProperty.getContextAnnotation(SensitiveField.class);
+                    sensitive = beanProperty.getContextAnnotation(Sensitive.class);
                 }
                 if (sensitive != null) {
-                    return new SensitiveFieldSerialize(sensitive.type());
+                    return new SensitiveSerialize(sensitive.type());
                 }
             }
             return serializerProvider.findValueSerializer(beanProperty.getType(), beanProperty);
