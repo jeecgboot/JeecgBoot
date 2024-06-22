@@ -3,7 +3,9 @@ package org.jeecg.common.system.util;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.annotation.EnumDict;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -114,4 +116,21 @@ public class ResourceUtil {
         return map;
     }
 
+    /**
+     * 获取实现类
+     * 
+     * @param classPath 
+     */
+    public static Object getImplementationClass(String classPath){
+        try {
+            Class<?> aClass = Class.forName(classPath);
+            return SpringContextUtils.getBean(aClass);
+        } catch (ClassNotFoundException e) {
+            log.error("类没有找到",e);
+            return null;
+        } catch (NoSuchBeanDefinitionException e){
+            log.error(classPath + "没有实现",e);
+            return null;
+        }
+    }
 }

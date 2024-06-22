@@ -72,6 +72,7 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         thirdQuery.eq(SysThirdAccount::getSysUserId,sysUser.getId());
         thirdQuery.eq(SysThirdAccount::getThirdType,account.getThirdType());
         thirdQuery.eq(SysThirdAccount::getThirdUserUuid,thirdUserUuid);
+        thirdQuery.eq(SysThirdAccount::getTenantId,CommonConstant.TENANT_ID_DEFAULT_VALUE);
         SysThirdAccount sysThirdAccounts = sysThirdAccountMapper.selectOne(thirdQuery);
         if(sysThirdAccounts!=null){
             sysThirdAccount.setThirdUserId(sysThirdAccounts.getThirdUserId());

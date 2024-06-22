@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-module-system</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.6.3</version>
+        <version>3.7.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,26 +24,8 @@
             <artifactId>jeecg-module-demo</artifactId>
             <version>${jeecgboot.version}</version>
         </dependency>
-        <!--人大金仓
-        <dependency>
-            <groupId>org.jeecgframework</groupId>
-            <artifactId>kingbase8</artifactId>
-            <version>9.0.0</version>
-            <scope>runtime</scope>
-        </dependency>-->
-        <!--达梦数据库 -->
-        <dependency>
-            <groupId>com.dameng</groupId>
-            <artifactId>Dm8JdbcDriver18</artifactId>
-            <version>${dm8.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.dameng</groupId>
-            <artifactId>DmDialect-for-hibernate5.0</artifactId>
-            <version>${dm8.version}</version>
-        </dependency>
-
-        <!-- flyway支持 mysql5.7、mysql8、MariaDB10.3.16
+        
+        <!-- flyway 数据库自动升级 
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>

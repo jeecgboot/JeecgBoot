@@ -59,7 +59,8 @@ public class HttpUtils {
         // 获取URL上的参数
         Map<String, String> urlParams = getUrlParams(request);
         for (Map.Entry entry : urlParams.entrySet()) {
-            result.put((String)entry.getKey(), (String)entry.getValue());
+            //不能直接转成String,否则会有类型转换错误
+            result.put((String)entry.getKey(), String.valueOf(entry.getValue()));
         }
         Map<String, String> allRequestParam = new HashMap<>(16);
         // get请求不需要拿body参数
@@ -69,7 +70,8 @@ public class HttpUtils {
         // 将URL的参数和body参数进行合并
         if (allRequestParam != null) {
             for (Map.Entry entry : allRequestParam.entrySet()) {
-                result.put((String)entry.getKey(), (String)entry.getValue());
+                //不能直接转成String,否则会有类型转换错误
+                result.put((String)entry.getKey(), String.valueOf(entry.getValue()));
             }
         }
         return result;

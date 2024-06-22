@@ -14,13 +14,13 @@
               { validator: (rule, value, callback) => validateDuplicateValue(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}', value, this.model.id, callback)},
         <#-- 6到16位数字 -->
         <#elseif fieldValidType == 'n6-16'>
-              { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
+              { pattern: /^\d{6,16}$|^(?=\d+\.\d+)[\d.]{7,17}$/, message: '请输入6到16位数字!'},
         <#-- 6到16位任意字符 -->
         <#elseif fieldValidType == '*6-16'>
               { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
         <#-- 6到18位字符串 -->
         <#elseif fieldValidType == 's6-18'>
-              { pattern: /^.{6,18}$/, message: '请输入6到18位任意字符!'},
+          { pattern: /^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
         <#-- 网址 -->
         <#elseif fieldValidType == 'url'>
               { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},

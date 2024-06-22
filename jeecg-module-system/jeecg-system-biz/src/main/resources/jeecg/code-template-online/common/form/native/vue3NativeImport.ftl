@@ -31,7 +31,7 @@
   import { TimePicker } from 'ant-design-vue';
 </#if>
 <#if need_pca>
-  import JAreaSelect from '/@/components/Form/src/jeecg/components/JAreaSelect.vue';
+  import JAreaLinkage from '/@/components/Form/src/jeecg/components/JAreaLinkage.vue';
 </#if>
 <#if need_upload>
   import JUpload from '/@/components/Form/src/jeecg/components/JUpload/JUpload.vue';

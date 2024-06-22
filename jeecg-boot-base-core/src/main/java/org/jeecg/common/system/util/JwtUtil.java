@@ -221,6 +221,16 @@ public class JwtUtil {
 				returnValue = user.getSysUserCode();
 			}
 		}
+
+		// 替换为系统登录用户ID
+		else if (key.equals(DataBaseConstant.SYS_USER_ID) || key.equalsIgnoreCase(DataBaseConstant.SYS_USER_ID_TABLE)) {
+			if(user==null) {
+				returnValue = sysUser.getId();
+			}else {
+				returnValue = user.getSysUserId();
+			}
+		}
+
 		//替换为系统登录用户真实名字
 		else if (key.equals(DataBaseConstant.SYS_USER_NAME)|| key.toLowerCase().equals(DataBaseConstant.SYS_USER_NAME_TABLE)) {
 			if(user==null) {
@@ -238,6 +248,16 @@ public class JwtUtil {
 				returnValue = user.getSysOrgCode();
 			}
 		}
+
+		// 替换为系统用户登录所使用的机构ID
+		else if (key.equals(DataBaseConstant.SYS_ORG_ID) || key.equalsIgnoreCase(DataBaseConstant.SYS_ORG_ID_TABLE)) {
+			if (user == null) {
+				returnValue = sysUser.getOrgId();
+			} else {
+				returnValue = user.getSysOrgId();
+			}
+		}
+
 		//替换为系统用户所拥有的所有机构编码
 		else if (key.equals(DataBaseConstant.SYS_MULTI_ORG_CODE)|| key.toLowerCase().equals(DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE)) {
 			if(user==null){
@@ -251,6 +271,16 @@ public class JwtUtil {
 				}
 			}
 		}
+
+		// 替换为当前登录用户的角色code（多个逗号分割）
+		else if (key.equals(DataBaseConstant.SYS_ROLE_CODE) || key.equalsIgnoreCase(DataBaseConstant.SYS_ROLE_CODE_TABLE)) {
+			if (user == null) {
+				returnValue = sysUser.getRoleCode();
+			} else {
+				returnValue = user.getSysRoleCode();
+			}
+		}
+
 		//update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
 		else if (key.equals(TenantConstant.TENANT_ID) || key.toLowerCase().equals(TenantConstant.TENANT_ID_TABLE)){
 			try {

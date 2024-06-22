@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.6.3</version>
+		<version>3.7.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
@@ -159,6 +159,25 @@
 			<version>${postgresql.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!--人大金仓驱动 版本号V008R006C005B0013 -->
+		<dependency>
+			<groupId>org.jeecgframework</groupId>
+			<artifactId>kingbase8</artifactId>
+			<version>${kingbase8.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!--达梦数据库驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->
+		<dependency>
+			<groupId>com.dameng</groupId>
+			<artifactId>Dm8JdbcDriver18</artifactId>
+			<version>${dm8.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dameng</groupId>
+			<artifactId>DmDialect-for-hibernate5.0</artifactId>
+			<version>${dm8.version}</version>
+		</dependency>
+      
 
 		<!-- Quartz定时任务 -->
 		<dependency>
@@ -343,6 +362,11 @@
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-crypto</artifactId>
 		</dependency>
-	</dependencies>
 
+		<!-- chatgpt -->
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
+		</dependency>
+	</dependencies>
 </project>

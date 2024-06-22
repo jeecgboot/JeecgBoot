@@ -173,7 +173,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 			sysBaseApi.sendTemplateMessage(md);
 			return result.success("消息发送成功！");
 		} catch (Exception e) {
-			log.error("发送消息出错", e.getMessage());
+			log.error("发送消息出错：" + e.getMessage(), e);
 			return result.error500("发送消息出错！");
 		}
 	}

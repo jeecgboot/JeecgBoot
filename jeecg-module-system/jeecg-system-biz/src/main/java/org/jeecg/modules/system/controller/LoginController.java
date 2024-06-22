@@ -243,7 +243,7 @@ public class LoginController {
 	 * 获取访问量
 	 * @return
 	 */
-	@GetMapping("visitInfo")
+	@GetMapping("/visitInfo")
 	public Result<List<Map<String,Object>>> visitInfo() {
 		Result<List<Map<String,Object>>> result = new Result<List<Map<String,Object>>>();
 		Calendar calendar = new GregorianCalendar();
@@ -295,12 +295,14 @@ public class LoginController {
 	 * @return
 	 */
 	@PostMapping(value = "/sms")
-	public Result<String> sms(@RequestBody JSONObject jsonObject) {
+	public Result<String> sms(@RequestBody JSONObject jsonObject,HttpServletRequest request) {
 		Result<String> result = new Result<String>();
+		String clientIp = IpUtils.getIpAddr(request);
 		String mobile = jsonObject.get("mobile").toString();
 		//手机号模式 登录模式: "2"  注册模式: "1"
 		String smsmode=jsonObject.get("smsmode").toString();
-		log.info(mobile);
+		log.info("-------- IP:{}, 手机号：{}，获取绑定验证码", clientIp, mobile);
+		
 		if(oConvertUtils.isEmpty(mobile)){
 			result.setMessage("手机号不允许为空！");
 			result.setSuccess(false);
@@ -317,6 +319,17 @@ public class LoginController {
 			result.setSuccess(false);
 			return result;
 		}
+
+		//-------------------------------------------------------------------------------------
+		//增加 check防止恶意刷短信接口
+		if(!DySmsLimit.canSendSms(clientIp)){
+			log.warn("--------[警告] IP地址:{}, 短信接口请求太多-------", clientIp);
+			result.setMessage("短信接口请求太多，请稍后再试！");
+			result.setCode(CommonConstant.PHONE_SMS_FAIL_CODE);
+			result.setSuccess(false);
+			return result;
+		}
+		//-------------------------------------------------------------------------------------
 
 		//随机数
 		String captcha = RandomUtil.randomNumbers(6);
@@ -734,4 +747,82 @@ public class LoginController {
 		redisUtil.set(key, ++val, 600);
 	}
 
+	/**
+	 * 发送短信验证码接口(修改密码)
+	 *
+	 * @param jsonObject
+	 * @return
+	 */
+	@PostMapping(value = "/sendChangePwdSms")
+	public Result<String> sendSms(@RequestBody JSONObject jsonObject) {
+		Result<String> result = new Result<>();
+		String mobile = jsonObject.get("mobile").toString();
+		if (oConvertUtils.isEmpty(mobile)) {
+			result.setMessage("手机号不允许为空！");
+			result.setSuccess(false);
+			return result;
+		}
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		String username = sysUser.getUsername();
+		LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+		query.eq(SysUser::getUsername, username).eq(SysUser::getPhone, mobile);
+		SysUser user = sysUserService.getOne(query);
+		if (null == user) {
+			return Result.error("当前登录用户和绑定的手机号不匹配，无法修改密码！");
+		}
+		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE + mobile;
+		Object object = redisUtil.get(redisKey);
+		if (object != null) {
+			result.setMessage("验证码10分钟内，仍然有效！");
+			result.setSuccess(false);
+			return result;
+		}
+		//随机数
+		String captcha = RandomUtil.randomNumbers(6);
+		JSONObject obj = new JSONObject();
+		obj.put("code", captcha);
+		try {
+			boolean b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.CHANGE_PASSWORD_TEMPLATE_CODE);
+			if (!b) {
+				result.setMessage("短信验证码发送失败,请稍后重试");
+				result.setSuccess(false);
+				return result;
+			}
+			//验证码5分钟内有效
+			redisUtil.set(redisKey, captcha, 300);
+			result.setSuccess(true);
+		} catch (ClientException e) {
+			e.printStackTrace();
+			result.error500(" 短信接口未配置，请联系管理员！");
+			return result;
+		}
+		return result;
+	}
+
+	
+	/**
+	 * 图形验证码
+	 * @param sysLoginModel
+	 * @return
+	 */
+	@RequestMapping(value = "/smsCheckCaptcha", method = RequestMethod.POST)
+	public Result<?> smsCheckCaptcha(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
+		String captcha = sysLoginModel.getCaptcha();
+		String checkKey = sysLoginModel.getCheckKey();
+		if(captcha==null){
+			return Result.error("验证码无效");
+		}
+		String lowerCaseCaptcha = captcha.toLowerCase();
+		String realKey = Md5Util.md5Encode(lowerCaseCaptcha+checkKey+jeecgBaseConfig.getSignatureSecret(), "utf-8");
+		Object checkCode = redisUtil.get(realKey);
+		if(checkCode==null || !checkCode.equals(lowerCaseCaptcha)) {
+			return Result.error("验证码错误");
+		}
+		String clientIp = IpUtils.getIpAddr(request);
+		//清空短信记录数量
+		DySmsLimit.clearSendSmsCount(clientIp);
+		redisUtil.removeAll(realKey);
+		return Result.ok();
+	}
+	
 }

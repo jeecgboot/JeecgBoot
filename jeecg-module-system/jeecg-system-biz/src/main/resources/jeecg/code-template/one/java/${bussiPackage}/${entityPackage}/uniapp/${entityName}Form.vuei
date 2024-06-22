@@ -43,7 +43,7 @@
         props:{
           formData:{
               type:Object,
-              default:()=>{},
+              default:() => ({}),
               required:false
           }
         },

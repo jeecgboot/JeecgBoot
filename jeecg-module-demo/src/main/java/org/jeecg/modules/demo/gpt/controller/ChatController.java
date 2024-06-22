@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  * @Date: 2024/1/9 16:30
  */
 @Controller
-@RequestMapping("/ai/chat")
+@RequestMapping("/test/ai/chat")
 public class ChatController {
 
     @Autowired

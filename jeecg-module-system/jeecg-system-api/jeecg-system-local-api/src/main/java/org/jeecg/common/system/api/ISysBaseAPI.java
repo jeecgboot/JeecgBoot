@@ -81,6 +81,13 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     List<String> getRolesByUsername(String username);
+    
+    /**
+     * 7通过用户账号查询角色集合
+     * @param userId
+     * @return
+     */
+    List<String> getRolesByUserId(String userId);
 
     /**
      * 8通过用户账号查询部门集合
@@ -88,6 +95,12 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return 部门 id
      */
     List<String> getDepartIdsByUsername(String username);
+    /**
+     * 8通过用户账号查询部门集合
+     * @param userId
+     * @return 部门 id
+     */
+    List<String> getDepartIdsByUserId(String userId);
 
     /**
      * 8.2 通过用户账号查询部门父ID集合
@@ -299,7 +312,13 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     Set<String> getUserRoleSet(String username);
-
+    /**
+     * 31获取用户的角色集合
+     * @param useId
+     * @return
+     */
+    Set<String> getUserRoleSetById(String useId);
+    
     /**
      * 32获取用户的权限集合
      * @param userId

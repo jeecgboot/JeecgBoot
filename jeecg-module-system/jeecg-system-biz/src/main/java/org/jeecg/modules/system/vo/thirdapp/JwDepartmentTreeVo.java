@@ -5,6 +5,7 @@ import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 企业微信树结构的部门
@@ -48,8 +49,20 @@ public class JwDepartmentTreeVo extends Department {
     public static List<JwDepartmentTreeVo> listToTree(List<Department> allDepartment) {
         // 先找出所有的父级
         List<JwDepartmentTreeVo> treeList = getByParentId("1", allDepartment);
+        Optional<Department> departmentOptional = allDepartment.stream().filter(item -> "0".equals(item.getParentid())).findAny();
+        Department department = new Department();
+        //判断是否找到数据
+        if(departmentOptional.isPresent()){
+            department = departmentOptional.get();
+        }
         getChildrenRecursion(treeList, allDepartment);
-        return treeList;
+        //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】企业微信同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
+        JwDepartmentTreeVo treeVo = new JwDepartmentTreeVo(department);
+        treeVo.setChildren(treeList);
+        List<JwDepartmentTreeVo> list = new ArrayList<>();
+        list.add(treeVo);
+        return list;
+        //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】企业微信部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
     }
 
     private static List<JwDepartmentTreeVo> getByParentId(String parentId, List<Department> allDepartment) {

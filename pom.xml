@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.6.3</version>
+  <version>3.7.0</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.6.3</jeecgboot.version>
+		<jeecgboot.version>3.7.0</jeecgboot.version>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -36,9 +36,11 @@
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
         <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
+		<seata.version>1.5.2</seata.version>
 
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
         <fastjson.version>2.0.43</fastjson.version>
+        <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
 		<knife4j-spring-boot-starter.version>4.4.0</knife4j-spring-boot-starter.version>
 		<!-- 数据库驱动 -->
@@ -48,16 +50,17 @@
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
         <hutool.version>5.8.25</hutool.version>
 		<!-- 国产数据库驱动 -->
+		<kingbase8.version>9.0.0</kingbase8.version>
 		<dm8.version>8.1.1.49</dm8.version>
 
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+		<mybatis-plus.version>3.5.3.2</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.22</druid.version>
-		<minidao.version>1.9.5</minidao.version>
+		<minidao.version>1.9.6</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.7.3</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.7.32</jimureport-spring-boot-starter.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
@@ -169,6 +172,11 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>io.seata</groupId>
+				<artifactId>seata-spring-boot-starter</artifactId>
+				<version>${seata.version}</version>
+			</dependency>
 
 			<!-- system 模块-->
 			<dependency>
@@ -224,6 +232,12 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter3-rabbitmq</artifactId>
+				<version>${jeecgboot.version}</version>
+			</dependency>
+			<!--rocketmq-->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-starter3-rocketmq</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--分库分表shardingsphere-->
@@ -392,6 +406,16 @@
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>minidao-spring-boot-starter</artifactId>
 				<version>${minidao.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>druid</artifactId>
+						<groupId>com.alibaba</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>jsqlparser</artifactId>
+						<groupId>com.github.jsqlparser</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<!-- 积木报表-->
 			<dependency>
@@ -403,6 +427,14 @@
 						<artifactId>autopoi-web</artifactId>
 						<groupId>org.jeecgframework</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>druid</artifactId>
+						<groupId>com.alibaba</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>jsqlparser</artifactId>
+						<groupId>com.github.jsqlparser</groupId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
@@ -413,7 +445,7 @@
 			<!-- chatgpt -->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
+				<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
                 <version>${jeecgboot.version}</version>
 			</dependency>
 

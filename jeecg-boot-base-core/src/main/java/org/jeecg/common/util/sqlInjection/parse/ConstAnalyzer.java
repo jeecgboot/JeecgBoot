@@ -166,22 +166,22 @@ public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
         expr.getBetweenExpressionEnd().accept(this);
     }
 
-//    /**
-//     * 用于处理 OverlapsCondition 类型的表达式
-//     * @param overlapsCondition
-//     */
-//    @Override
-//    public void visit(OverlapsCondition overlapsCondition) {
-//        constFlag.set(false);
-//    }
-//    /**
-//     * 用于处理 SafeCastExpression 类型的表达式。
-//     * @param safeCastExpression
-//     */
-//    @Override
-//    public void visit(SafeCastExpression safeCastExpression) {
-//        constFlag.set(false);
-//    }
+    /**
+     * 用于处理 OverlapsCondition 类型的表达式
+     * @param overlapsCondition
+     */
+    @Override
+    public void visit(OverlapsCondition overlapsCondition) {
+        constFlag.set(false);
+    }
+    /**
+     * 用于处理 SafeCastExpression 类型的表达式。
+     * @param safeCastExpression
+     */
+    @Override
+    public void visit(SafeCastExpression safeCastExpression) {
+        constFlag.set(false);
+    }
 
     @Override
     public void visit(EqualsTo expr) {

@@ -22,7 +22,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,httpexchanges
+        include: metrics,httpexchanges,httptrace-new
 
 spring:
   # flyway配置
@@ -54,7 +54,7 @@ spring:
       max-request-size: 10MB
   mail:
     host: smtp.163.com
-    username: ??
+    username: jeecgos@163.com
     password: ??
     properties:
       mail:
@@ -157,6 +157,9 @@ spring:
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
         filters: stat,slf4j
+        # 允许SELECT语句的WHERE子句是一个永真条件
+        wall:
+          selectWhereAlwayTrueCheck: false
         # 打开mergeSql功能；慢SQL记录
         stat:
           merge-sql: true
@@ -176,12 +179,12 @@ spring:
   #redis 配置
   redis:
     database: 0
-    host: 192.168.1.199
+    host: 192.168.1.188
     port: 6379
     password: ''
 #mybatis plus 设置
 mybatis-plus:
-  mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
+  mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
   global-config:
     # 关闭MP3.0自带的banner
     banner: false
@@ -208,7 +211,7 @@ jeecg:
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   #签名拦截接口
-  signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
+  signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys,/sys/sendChangePwdSms,/sys/user/sendChangePhoneSms,/sys/sms,/desform/api/sendVerifyCode
   # local\minio\alioss
   uploadType: local
   # 前端访问地址
@@ -245,7 +248,7 @@ jeecg:
   #大屏报表参数设置
   jmreport:
     #多租户模式，默认值为空(created:按照创建人隔离、tenant:按照租户隔离) (v1.6.2+ 新增)
-    saasMode: created
+    saasMode: 
     # 平台上线安全配置(v1.6.2+ 新增)
     firewall:
       # 数据源安全 (开启后，不允许使用平台数据源、SQL解析加签并且不允许查询数据库)

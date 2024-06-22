@@ -15,6 +15,10 @@ import org.springframework.context.annotation.Configuration;
  *  提醒： 达梦数据库需要修改下面的参数${spring.datasource.dynamic.datasource.master.url:}配置
  * @author: scott
  * @date: 2021年02月18日 16:30
+ * 
+ * 重要说明：此类改路径或者名称，需要同步修改
+ *  org/jeecg/interceptor/OnlineRepairCodeGenerateDbConfig.java里面的注解
+ *  @ConditionalOnMissingClass("org.jeecg.config.init.CodeGenerateDbConfig")
  */
 @Slf4j
 @Configuration

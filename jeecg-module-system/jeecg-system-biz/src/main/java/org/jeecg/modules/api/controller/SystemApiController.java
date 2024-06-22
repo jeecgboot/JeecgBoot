@@ -102,6 +102,17 @@ public class SystemApiController {
         }
         return loginUser;
     }
+    
+    /**
+     * 根据用户账号查询用户ID
+     * @param username
+     * @return
+     */
+    @GetMapping("/getUserIdByName")
+    public String getUserIdByName(@RequestParam("username") String username){
+        String userId = sysBaseApi.getUserIdByName(username);
+        return userId;
+    }
 
     /**
      * 根据用户id查询用户信息
@@ -129,6 +140,16 @@ public class SystemApiController {
     List<String> getRolesByUsername(@RequestParam("username") String username){
         return sysBaseApi.getRolesByUsername(username);
     }
+    
+    /**
+     * 通过用户账号查询角色集合
+     * @param userId
+     * @return
+     */
+    @GetMapping("/getRolesByUserId")
+    List<String> getRolesByUserId(@RequestParam("userId") String userId){
+        return sysBaseApi.getRolesByUserId(userId);
+    }
 
     /**
      * 通过用户账号查询部门集合
@@ -138,6 +159,16 @@ public class SystemApiController {
     @GetMapping("/getDepartIdsByUsername")
     List<String> getDepartIdsByUsername(@RequestParam("username") String username){
         return sysBaseApi.getDepartIdsByUsername(username);
+    }
+    
+    /**
+     * 通过用户账号查询部门集合
+     * @param userId
+     * @return 部门 id
+     */
+    @GetMapping("/getDepartIdsByUserId")
+    List<String> getDepartIdsByUserId(@RequestParam("userId") String userId){
+        return sysBaseApi.getDepartIdsByUserId(userId);
     }
 
     /**
@@ -383,6 +414,16 @@ public class SystemApiController {
     public Set<String> getUserRoleSet(@RequestParam("username")String username){
         return sysBaseApi.getUserRoleSet(username);
     }
+    
+    /**
+     * 获取用户的角色集合
+     * @param userId
+     * @return
+     */
+    @GetMapping("/getUserRoleSetById")
+    public Set<String> getUserRoleSetById(@RequestParam("userId")String userId){
+        return sysBaseApi.getUserRoleSetById(userId);
+    }
 
     /**
      * 获取用户的权限集合
@@ -414,6 +455,16 @@ public class SystemApiController {
     @GetMapping("/queryUserRoles")
     public Set<String> queryUserRoles(@RequestParam("username") String username){
         return sysUserService.getUserRolesSet(username);
+    }
+    
+    /**
+     * 查询用户角色信息
+     * @param userId
+     * @return
+     */
+    @GetMapping("/queryUserRolesById")
+    public Set<String> queryUserRolesById(@RequestParam("userId") String userId){
+        return sysUserService.getUserRoleSetById(userId);
     }
 
 
@@ -893,7 +944,7 @@ public class SystemApiController {
      * @return
      */
     @GetMapping("/getUserAccountsByDepCode")
-    public List<String> getUserAccountsByDepCode(String orgCode){
+    public List<String> getUserAccountsByDepCode(@RequestParam("orgCode") String orgCode){
         return sysBaseApi.getUserAccountsByDepCode(orgCode);
     }
 

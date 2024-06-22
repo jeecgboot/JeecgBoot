@@ -37,11 +37,19 @@
 	   where send_status = '1' 
 	   and del_flag = '0' 
 	   and msg_category = #{msgCategory} 
-	   and id IN ( select annt_id from sys_announcement_send where user_id = #{userId} and read_flag = 0)
+	   and create_time &gt;= #{beginDate}
+		<if test="tenantId!=null and tenantId != 0">
+			and tenant_id = #{tenantId}
+		</if>
+	   and id IN ( select annt_id from sys_announcement_send where user_id = #{userId} and read_flag = 0 and create_time &gt;= #{beginDate})
 	   order by create_time DESC
 	</select>
 
-
+	<!-- 获取用户未读消息数量 -->
+	<select id="getUnreadMessageCountByUserId" resultType="java.lang.Integer">
+		select count(1) from sys_announcement_send where user_id = #{userId} and read_flag = 0 and create_time &gt;= #{beginDate}
+	</select>
+	
 	<!-- 查询消息记录 -->
 	<select id="queryAllMessageList" resultMap="SysAnnouncement">
 	   select
@@ -72,6 +80,7 @@
 	
 		<if test="beginDate!=null">
 			and a.create_time &gt;= #{beginDate}
+			and b.create_time &gt;= #{beginDate}
 		</if>
 		<if test="endDate!=null">
 			and a.create_time &lt;= #{endDate}

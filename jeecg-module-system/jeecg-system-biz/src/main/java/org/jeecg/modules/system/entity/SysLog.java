@@ -108,6 +108,12 @@ public class SysLog implements Serializable {
 	 */
 	@Dict(dicCode = "operate_type")
 	private Integer operateType;
+	
+	/**
+	 * 客户终端类型 pc:电脑端 app:手机端 h5:移动网页端
+	 */
+	@Dict(dicCode = "client_type")
+	private String clientType;
 
 	/**
 	 * 租户ID

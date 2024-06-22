@@ -31,19 +31,23 @@
 <#assign hasOnlyValidate = false>
 <template>
   <a-spin :spinning="loading">
-    <a-form v-bind="formItemLayout">
-      <a-row>
-			<#list columns as po>
-        <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
-          <#assign hasOnlyValidate = true>
-        </#if>
-				<#if po.fieldDbName=='bpm_status'>
-				    <#assign bpm_flag=true>
-				</#if>
-<#include "/common/form/native/vue3NativeForm.ftl">
-      </#list>
-      </a-row>
-    </a-form>
+    <JFormContainer :disabled="disabled">
+      <template #detail>
+        <a-form v-bind="formItemLayout">
+          <a-row>
+            <#list columns as po>
+              <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+                <#assign hasOnlyValidate = true>
+              </#if>
+              <#if po.fieldDbName=='bpm_status'>
+                  <#assign bpm_flag=true>
+              </#if>
+      <#include "/common/form/native/vue3NativeForm.ftl">
+            </#list>
+          </a-row>
+        </a-form>
+      </template>
+    </JFormContainer>
 
 		<!-- 子表单区域 -->
     <a-tabs v-model:activeKey="activeKey" animated>
@@ -102,6 +106,7 @@
   <#if hasOnlyValidate == true>
   import { duplicateValidate } from '/@/utils/helper/validator'
   </#if>
+  import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
   import { Form } from 'ant-design-vue';
   const useForm = Form.useForm;
 
@@ -112,6 +117,7 @@
 			<#if hasOne2manyTable == true>
       JVxeTable,
 			</#if>
+			JFormContainer,
 <#list subTables as sub>
 	<#if sub.foreignRelationType =='1'>
       ${sub.entityName}Form,
@@ -331,3 +337,4 @@
     }
   });
 </script>
+<style lang="less" scoped></style>

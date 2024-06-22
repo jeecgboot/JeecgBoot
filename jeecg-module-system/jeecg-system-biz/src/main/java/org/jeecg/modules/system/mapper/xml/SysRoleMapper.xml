@@ -20,5 +20,14 @@
         SELECT * from sys_role
         WHERE role_code = #{roleCode}
     </select>
-    
+
+    <!-- 根据用户id查询用户拥有的角色 -->
+    <select id="getRoleCodeListByUserId" resultType="org.jeecg.modules.system.entity.SysRole">
+        SELECT id, role_code from sys_role
+        WHERE id in (SELECT role_id from sys_user_role WHERE user_id = #{userId})
+        <if test="tenantId != null">
+            AND tenant_id = #{tenantId}
+        </if>
+    </select>
+
 </mapper>

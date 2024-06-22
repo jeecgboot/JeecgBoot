@@ -132,5 +132,12 @@
         and a.tenant_id = #{tenantId}
         and b.user_id = #{userId}
     </select>
+    
+    <!--根据用户id获取租户信息-->
+    <select id="getTenantListByUserId" resultType="org.jeecg.modules.system.entity.SysTenant">
+        SELECT st.id,st.name FROM sys_tenant st 
+        LEFT JOIN sys_user_tenant sut on st.id= sut.tenant_id and st.status = 1 and sut.status='1'
+        WHERE sut.user_id = #{userId}
+    </select>
 
 </mapper>

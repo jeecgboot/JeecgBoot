@@ -1,8 +1,10 @@
 <#include "/common/utils.ftl">
 <template>
   <a-spin :spinning="confirmLoading">
-    <a-form ref="formRef" class="antd-modal-form" :labelCol="labelCol" :wrapperCol="wrapperCol">
-      <a-row>
+    <JFormContainer :disabled="disabled">
+      <template #detail>
+        <a-form ref="formRef" class="antd-modal-form" :labelCol="labelCol" :wrapperCol="wrapperCol">
+          <a-row>
 <#assign need_category = false>
 <#assign bpm_flag=false>
 <#assign need_pca = false>
@@ -38,13 +40,15 @@
 </#if>
   <#include "/common/form/native/vue3NativeForm.ftl">
 </#list>
-        <#if bpm_flag>
-        <a-col v-if="showFlowSubmitButton" :span="24" style="width: 100%;text-align: center;">
-          <a-button preIcon="ant-design:check-outlined" style="width: 126px" type="primary" @click="submitForm">提 交</a-button>
-        </a-col>
-        </#if>
-      </a-row>
-    </a-form>
+            <#if bpm_flag>
+            <a-col v-if="showFlowSubmitButton" :span="24" style="width: 100%;text-align: center;">
+              <a-button preIcon="ant-design:check-outlined" style="width: 126px" type="primary" @click="submitForm">提 交</a-button>
+            </a-col>
+            </#if>
+          </a-row>
+        </a-form>
+      </template>
+    </JFormContainer>
   </a-spin>
 </template>
 
@@ -56,13 +60,14 @@
   import { getValueType } from '/@/utils';
   import { saveOrUpdate } from '../${entityName}.api';
   import { Form } from 'ant-design-vue';
+  import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
   <#if hasOnlyValidate == true>
   import { duplicateValidate } from '/@/utils/helper/validator'
   </#if>
   
   const props = defineProps({
     formDisabled: { type: Boolean, default: false },
-    formData: { type: Object, default: ()=>{} },
+    formData: { type: Object, default: () => ({}) },
     formBpm: { type: Boolean, default: true }
   });
   const useForm = Form.useForm;
@@ -76,9 +81,9 @@
   const wrapperCol = ref<any>({ xs: { span: 24 }, sm: { span: 16 } });
   const confirmLoading = ref<boolean>(false);
   //表单验证
-  const validatorRules = {
+  const validatorRules = reactive({
   <#include "/common/validatorRulesTemplate/native/vue3MainNative.ftl">
-  };
+  });
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
   const formRef = ref();
   // 表单禁用
@@ -217,8 +222,6 @@
 
 <style lang="less" scoped>
   .antd-modal-form {
-    height: 500px !important;
-    overflow-y: auto;
     padding: 14px;
   }
 </style>
