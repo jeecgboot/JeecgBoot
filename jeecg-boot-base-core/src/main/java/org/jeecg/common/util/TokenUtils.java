@@ -112,8 +112,8 @@ public class TokenUtils {
         }
 
         // 查询用户信息
-        LoginUser user = TokenUtils.getLoginUser(username, commonApi, redisUtil);
-        //LoginUser user = commonApi.getUserByName(username);
+        //LoginUser user = TokenUtils.getLoginUser(username, commonApi, redisUtil);
+        LoginUser user = commonApi.getUserByName(username);
         if (user == null) {
             throw new JeecgBoot401Exception("用户不存在!");
         }
@@ -173,10 +173,11 @@ public class TokenUtils {
         //【重要】此处通过redis原生获取缓存用户，是为了解决微服务下system服务挂了，其他服务互调不通问题---
         if (redisUtil.hasKey(loginUserKey)) {
             try {
-                loginUser = (LoginUser) redisUtil.get(loginUserKey);
+                Object obj = redisUtil.get(loginUserKey);
+                loginUser = (LoginUser) obj;
                 //解密用户
                 SensitiveInfoUtil.handlerObject(loginUser, false);
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
