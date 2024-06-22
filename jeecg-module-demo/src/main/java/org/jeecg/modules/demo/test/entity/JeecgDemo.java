@@ -44,11 +44,11 @@ public class JeecgDemo extends JeecgEntity implements Serializable {
 	private java.util.Date punchTime;
 	/** 工资 */
 	@Schema(description = "工资",example = "0")
-	@Excel(name="工资",width=15)
+	@Excel(name="工资",type = 4,width=15)
 	private java.math.BigDecimal salaryMoney;
 	/** 奖金 */
 	@Schema(description = "奖金",example = "0")
-	@Excel(name="奖金",width=15)
+	@Excel(name="奖金",type = 4,width=15)
 	private java.lang.Double bonusMoney;
 	/** 性别 {男:1,女:2} */
 	@Schema(description = "性别")
@@ -56,7 +56,7 @@ public class JeecgDemo extends JeecgEntity implements Serializable {
 	private java.lang.String sex;
 	/** 年龄 */
 	@Schema(description = "年龄",example = "0")
-	@Excel(name="年龄",width=15)
+	@Excel(name="年龄",type = 4,width=15)
 	private java.lang.Integer age;
 	/** 生日 */
 	@Schema(description = "生日")

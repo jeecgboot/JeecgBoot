@@ -14,6 +14,7 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.security.utils.SecureUtil;
@@ -23,6 +24,8 @@ import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.jeecg.modules.system.service.ISysThirdAppConfigService;
 import org.jeecg.modules.system.service.impl.ThirdAppDingtalkServiceImpl;
 import org.jeecg.modules.system.service.impl.ThirdAppWechatEnterpriseServiceImpl;
+import org.jeecg.modules.system.vo.thirdapp.JwSysUserDepartVo;
+import org.jeecg.modules.system.vo.thirdapp.JwUserDepartVo;
 import org.jeecg.modules.system.vo.thirdapp.SyncInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,8 +63,13 @@ public class ThirdAppController {
     @GetMapping("/getEnabledType")
     public Result getEnabledType() {
         Map<String, Boolean> enabledMap = new HashMap(5);
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]通过租户模式隔离 ------------
-        int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        int tenantId;
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            tenantId = oConvertUtils.getInt(TenantContext.getTenant(), -1);
+        } else {
+            tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        }
         //查询当前租户下的第三方配置
         List<SysThirdAppConfig> list = appConfigService.getThirdConfigListByThirdType(tenantId);
         //钉钉是否已配置
@@ -426,10 +434,6 @@ public class ThirdAppController {
     @GetMapping("/getThirdConfigByTenantId")
     public Result<SysThirdAppConfig> getThirdAppByTenantId(@RequestParam(name = "tenantId", required = false) Integer tenantId,
                                                            @RequestParam(name = "thirdType") String thirdType) {
-        Result<SysThirdAppConfig> result = new Result<>();
-        LambdaQueryWrapper<SysThirdAppConfig> query = new LambdaQueryWrapper<>();
-        query.eq(SysThirdAppConfig::getThirdType,thirdType);
-
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
             if (tenantId == null) {
                 return Result.error("开启多租户模式，租户ID参数不允许为空！");
@@ -440,7 +444,9 @@ public class ThirdAppController {
                 tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
             }
         }
-        
+        Result<SysThirdAppConfig> result = new Result<>();
+        LambdaQueryWrapper<SysThirdAppConfig> query = new LambdaQueryWrapper<>();
+        query.eq(SysThirdAppConfig::getThirdType,thirdType);
         query.eq(SysThirdAppConfig::getTenantId,tenantId);
         SysThirdAppConfig sysThirdAppConfig = appConfigService.getOne(query);
         result.setSuccess(true);
@@ -522,4 +528,46 @@ public class ThirdAppController {
         return Result.ok("解绑成功");
     }
     //========================end 应用低代码账号设置第三方账号绑定 ================================
+
+    /**
+     * 获取企业微信绑定的用户信息
+     * @param request
+     * @return
+     */
+    @GetMapping("/getThirdUserByWechat")
+    public Result<JwSysUserDepartVo> getThirdUserByWechat(HttpServletRequest request){
+        //获取企业微信配置
+        Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request),0);
+        SysThirdAppConfig config = appConfigService.getThirdConfigByThirdType(tenantId, MessageTypeEnum.QYWX.getType());
+        if (null != config) {
+            JwSysUserDepartVo list = wechatEnterpriseService.getThirdUserByWechat(tenantId);
+            return Result.ok(list);
+        }
+        return Result.error("企业微信尚未配置,请配置企业微信"); 
+    }
+
+    /**
+     * 同步企业微信部门和用户到本地
+     * @param jwUserDepartJson
+     * @param request
+     * @return
+     */
+    @GetMapping("/sync/wechatEnterprise/departAndUser/toLocal")
+    public Result<SyncInfoVo> syncWechatEnterpriseDepartAndUserToLocal(@RequestParam(name = "jwUserDepartJson") String jwUserDepartJson,HttpServletRequest request){
+        int tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request), 0);
+        SyncInfoVo syncInfoVo = wechatEnterpriseService.syncWechatEnterpriseDepartAndUserToLocal(jwUserDepartJson,tenantId);
+        return Result.ok(syncInfoVo);
+    }
+
+    /**
+     * 查询被绑定的企业微信用户
+     * @param request
+     * @return
+     */
+    @GetMapping("/getThirdUserBindByWechat")
+    public Result<List<JwUserDepartVo>> getThirdUserBindByWechat(HttpServletRequest request){
+        int tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request), 0);
+        List<JwUserDepartVo> jwSysUserDepartVos = wechatEnterpriseService.getThirdUserBindByWechat(tenantId);
+        return Result.ok(jwSysUserDepartVos);
+    }
 }

@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -29,10 +30,7 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
-import org.jeecg.common.util.PasswordUtil;
-import org.jeecg.common.util.RestUtil;
-import org.jeecg.common.util.SpringContextUtils;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.*;
@@ -232,7 +230,9 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             for (JdtDepartmentTreeVo departmentTree : departmentTreeList) {
                 LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
                 // 根据 source_identifier 字段查询
-                queryWrapper.eq(SysDepart::getId, departmentTree.getSource_identifier());
+                //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
+                queryWrapper.and(item -> item.eq(SysDepart::getId, departmentTree.getSource_identifier()).or().eq(SysDepart::getDingIdentifier,departmentTree.getDept_id()));
+                //update-end---author:wangshuai---date:2024-04-10---for:【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
                 SysDepart sysDepart = sysDepartService.getOne(queryWrapper);
                 if (sysDepart != null) {
                     //  执行更新操作
@@ -269,14 +269,21 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                         newSysDepart.setOrgCategory("1");
                     }
                     try {
+                        if(oConvertUtils.isEmpty(departmentTree.getParent_id())){
+                            newSysDepart.setDingIdentifier(departmentTree.getDept_id().toString());
+                        }
+                        newSysDepart.setTenantId(tenantId);
                         sysDepartService.saveDepartData(newSysDepart, username);
                         // 更新钉钉 source_identifier
                         Department updateDtDepart = new Department();
                         updateDtDepart.setDept_id(departmentTree.getDept_id());
                         updateDtDepart.setSource_identifier(newSysDepart.getId());
-                        Response response = JdtDepartmentAPI.update(updateDtDepart, accessToken);
-                        if (!response.isSuccess()) {
-                            throw new RuntimeException(response.getErrmsg());
+                        //为空说明是最顶级部门，最顶级部门不允许修改操作
+                        if(oConvertUtils.isNotEmpty(newSysDepart.getParentId())){
+                            Response response = JdtDepartmentAPI.update(updateDtDepart, accessToken);
+                            if (!response.isSuccess()) {
+                                throw new RuntimeException(response.getErrmsg());
+                            }
                         }
                         String str = String.format("部门 %s 创建成功！", newSysDepart.getDepartName());
                         syncInfo.addSuccessInfo(str);
@@ -983,6 +990,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      * OAuth2登录，成功返回登录的SysUser，失败返回null
      */
     public SysUser oauth2Login(String authCode,Integer tenantId) {
+        this.tenantIzExist(tenantId);
         //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         SysThirdAppConfig dtConfig = configMapper.getThirdConfigByThirdType(tenantId, MessageTypeEnum.DD.getType());
         //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
@@ -1017,7 +1025,9 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
             queryWrapper.eq(SysThirdAccount::getTenantId, tenantId);
-            queryWrapper.eq(SysThirdAccount::getThirdUserUuid, unionId);
+            //update-begin---author:wangshuai---date:2023-12-04---for: auth登录需要联查一下---
+            queryWrapper.and((wrapper)->wrapper.eq(SysThirdAccount::getThirdUserUuid,appUserId).or().eq(SysThirdAccount::getThirdUserId,appUserId));
+            //update-end---author:wangshuai---date:2023-12-04---for: auth登录需要联查一下---
             SysThirdAccount thirdAccount = sysThirdAccountService.getOne(queryWrapper);
             if (thirdAccount != null) {
                 return this.getSysUserByThird(thirdAccount, null, appUserId, accessToken,tenantId);
@@ -1082,6 +1092,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      */
     private SysThirdAppConfig getDingThirdAppConfig(){
         int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        this.tenantIzExist(tenantId);
         return configMapper.getThirdConfigByThirdType(tenantId,MessageTypeEnum.DD.getType());
     }
 
@@ -1164,7 +1175,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             }
             syncedUserIdSet.add(user.getUserid());
             SysUser userByPhone = userMapper.getUserByPhone(user.getMobile());
-            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByUuidAndThirdType(user.getUnionid(), THIRD_TYPE,tenantId);
+            SysThirdAccount sysThirdAccount = sysThirdAccountService.getOneByUuidAndThirdType(user.getUnionid(), THIRD_TYPE,tenantId,user.getUserid());
             if (null != userByPhone) {
                 // 循环到此说明用户匹配成功，进行更新操作
                 SysUser updateSysUser = this.dtUserToSysUser(user, userByPhone);
@@ -1220,4 +1231,17 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
     }
 
     //========================end 应用低代码钉钉同步用户部门专用 ====================
+
+    /**
+     * 验证租户是否存在
+     * @param tenantId
+     */
+    public void tenantIzExist(Integer tenantId){
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+            Long count = tenantMapper.tenantIzExist(tenantId);
+            if(ObjectUtil.isEmpty(count) || 0 == count){
+                throw new JeecgBootException("租户ID:" + tenantId + "无效，平台中不存在！");
+            }
+        }
+    }
 }

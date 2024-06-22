@@ -128,8 +128,32 @@
         </#if>
     </div>
 </div>
-<div>
-    ${data.msgContent!''}
-</div>
+<div id="content"></div>
+<script>
+    //update-begin-author:liusq---date:2023-10-30--for: 【QQYUN-6802】查看公告详情，此段端渲染有问题
+    // 获取富文本内容的容器元素
+    let contentContainer = document.getElementById('content');
+
+    // 富文本内容
+    let richText = `${data.msgContent!""}`;
+    if(richText.includes("&lt;") || richText.includes("&gt;")){
+        richText = richText.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    }
+    // 将富文本内容插入到容器中
+    contentContainer.innerHTML = richText;
+    // 找到所有的iframe元素
+    let iframes = contentContainer.getElementsByTagName('iframe');
+
+    // 动态加载和渲染每个iframe
+    Array.prototype.forEach.call(iframes, function(iframe) {
+        iframe.onload = function() {
+            // iframe加载完成后，调整它的高度以适应内容
+            iframe.style.width = '100%';
+            iframe.style.height = iframe.contentWindow.document.body.scrollHeight +'px';
+        };
+        iframe.src = iframe.getAttribute('src');
+    });
+    //update-end-author:liusq---date:2023-10-30--for: 【QQYUN-6802】查看公告详情，此段端渲染有问题
+</script>
 </body>
 </html>

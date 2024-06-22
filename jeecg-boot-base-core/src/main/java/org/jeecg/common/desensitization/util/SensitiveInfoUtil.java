@@ -198,7 +198,7 @@ public class SensitiveInfoUtil {
      * @param fullName 全名
      * @return <例子：李**>
      */
-    private static String chineseName(String fullName) {
+    public static String chineseName(String fullName) {
         if (oConvertUtils.isEmpty(fullName)) {
             return "";
         }
@@ -211,7 +211,7 @@ public class SensitiveInfoUtil {
      * @param firstName 名
      * @return <例子：李**>
      */
-    private static String chineseName(String familyName, String firstName) {
+    public static String chineseName(String familyName, String firstName) {
         if (oConvertUtils.isEmpty(familyName) || oConvertUtils.isEmpty(firstName)) {
             return "";
         }
@@ -223,7 +223,7 @@ public class SensitiveInfoUtil {
      * @param id 身份证号
      * @return <例子：*************5762>
      */
-    private static String idCardNum(String id) {
+    public static String idCardNum(String id) {
         if (oConvertUtils.isEmpty(id)) {
             return "";
         }
@@ -236,7 +236,7 @@ public class SensitiveInfoUtil {
      * @param num 固定电话
      * @return <例子：****1234>
      */
-    private static String fixedPhone(String num) {
+    public static String fixedPhone(String num) {
         if (oConvertUtils.isEmpty(num)) {
             return "";
         }
@@ -248,7 +248,7 @@ public class SensitiveInfoUtil {
      * @param num 手机号码
      * @return <例子:138******1234>
      */
-    private static String mobilePhone(String num) {
+    public static String mobilePhone(String num) {
         if (oConvertUtils.isEmpty(num)) {
             return "";
         }
@@ -265,7 +265,7 @@ public class SensitiveInfoUtil {
      * @param sensitiveSize 敏感信息长度
      * @return <例子：北京市海淀区****>
      */
-    private static String address(String address, int sensitiveSize) {
+    public static String address(String address, int sensitiveSize) {
         if (oConvertUtils.isEmpty(address)) {
             return "";
         }
@@ -281,7 +281,7 @@ public class SensitiveInfoUtil {
      * @param email 电子邮箱
      * @return <例子:g**@163.com>
      */
-    private static String email(String email) {
+    public static String email(String email) {
         if (oConvertUtils.isEmpty(email)) {
             return "";
         }
@@ -300,7 +300,7 @@ public class SensitiveInfoUtil {
      * @param cardNum 银行卡号
      * @return <例子:6222600**********1234>
      */
-    private static String bankCard(String cardNum) {
+    public static String bankCard(String cardNum) {
         if (oConvertUtils.isEmpty(cardNum)) {
             return "";
         }
@@ -312,7 +312,7 @@ public class SensitiveInfoUtil {
      * @param code 公司开户银行联号
      * @return <例子:12********>
      */
-    private static String cnapsCode(String code) {
+    public static String cnapsCode(String code) {
         if (oConvertUtils.isEmpty(code)) {
             return "";
         }
@@ -326,7 +326,7 @@ public class SensitiveInfoUtil {
      * @param reservedLength 保留长度
      * @return 格式化后的字符串
      */
-    private static String formatRight(String str, int reservedLength){
+    public static String formatRight(String str, int reservedLength){
         String name = str.substring(0, reservedLength);
         String stars = String.join("", Collections.nCopies(str.length()-reservedLength, "*"));
         return name + stars;
@@ -338,7 +338,7 @@ public class SensitiveInfoUtil {
      * @param reservedLength 保留长度
      * @return 格式化后的字符串
      */
-    private static String formatLeft(String str, int reservedLength){
+    public static String formatLeft(String str, int reservedLength){
         int len = str.length();
         String show = str.substring(len-reservedLength);
         String stars = String.join("", Collections.nCopies(len-reservedLength, "*"));
@@ -352,7 +352,7 @@ public class SensitiveInfoUtil {
      * @param endLen 结尾保留长度
      * @return 格式化后的字符串
      */
-    private static String formatBetween(String str, int beginLen, int endLen){
+    public static String formatBetween(String str, int beginLen, int endLen){
         int len = str.length();
         String begin = str.substring(0, beginLen);
         String end = str.substring(len-endLen);

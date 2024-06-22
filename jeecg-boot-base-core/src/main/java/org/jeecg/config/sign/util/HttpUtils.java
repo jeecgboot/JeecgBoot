@@ -59,7 +59,8 @@ public class HttpUtils {
         // 获取URL上的参数
         Map<String, String> urlParams = getUrlParams(request);
         for (Map.Entry entry : urlParams.entrySet()) {
-            result.put((String)entry.getKey(), (String)entry.getValue());
+            //不能直接转成String,否则会有类型转换错误
+            result.put((String)entry.getKey(), String.valueOf(entry.getValue()));
         }
         Map<String, String> allRequestParam = new HashMap<>(16);
         // get请求不需要拿body参数
@@ -69,7 +70,8 @@ public class HttpUtils {
         // 将URL的参数和body参数进行合并
         if (allRequestParam != null) {
             for (Map.Entry entry : allRequestParam.entrySet()) {
-                result.put((String)entry.getKey(), (String)entry.getValue());
+                //不能直接转成String,否则会有类型转换错误
+                result.put((String)entry.getKey(), String.valueOf(entry.getValue()));
             }
         }
         return result;
@@ -172,7 +174,11 @@ public class HttpUtils {
         String[] params = param.split("&");
         for (String s : params) {
             int index = s.indexOf("=");
-            result.put(s.substring(0, index), s.substring(index + 1));
+            //update-begin---author:chenrui ---date:20240222  for：[issues/5879]数据查询传ds=“”造成的异常------------
+            if (index != -1) {
+                result.put(s.substring(0, index), s.substring(index + 1));
+            }
+            //update-end---author:chenrui ---date:20240222  for：[issues/5879]数据查询传ds=“”造成的异常------------
         }
         return result;
     }
@@ -196,7 +202,11 @@ public class HttpUtils {
         String[] params = param.split("&");
         for (String s : params) {
             int index = s.indexOf("=");
-            result.put(s.substring(0, index), s.substring(index + 1));
+            //update-begin---author:chenrui ---date:20240222  for：[issues/5879]数据查询传ds=“”造成的异常------------
+            if (index != -1) {
+                result.put(s.substring(0, index), s.substring(index + 1));
+            }
+            //update-end---author:chenrui ---date:20240222  for：[issues/5879]数据查询传ds=“”造成的异常------------
         }
         return result;
     }

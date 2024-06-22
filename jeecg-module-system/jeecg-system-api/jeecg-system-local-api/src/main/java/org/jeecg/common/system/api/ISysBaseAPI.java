@@ -81,6 +81,13 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     List<String> getRolesByUsername(String username);
+    
+    /**
+     * 7通过用户账号查询角色集合
+     * @param userId
+     * @return
+     */
+    List<String> getRolesByUserId(String userId);
 
     /**
      * 8通过用户账号查询部门集合
@@ -88,6 +95,26 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return 部门 id
      */
     List<String> getDepartIdsByUsername(String username);
+    /**
+     * 8通过用户账号查询部门集合
+     * @param userId
+     * @return 部门 id
+     */
+    List<String> getDepartIdsByUserId(String userId);
+
+    /**
+     * 8.2 通过用户账号查询部门父ID集合
+     * @param username
+     * @return 部门 parentIds
+     */
+    Set<String> getDepartParentIdsByUsername(String username);
+
+    /**
+     * 8.2 查询部门父ID集合
+     * @param depIds
+     * @return 部门 parentIds
+     */
+    Set<String> getDepartParentIdsByDepIds(Set<String> depIds);
 
     /**
      * 9通过用户账号查询部门 name
@@ -285,13 +312,19 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     Set<String> getUserRoleSet(String username);
-
     /**
-     * 32获取用户的权限集合
-     * @param username
+     * 31获取用户的角色集合
+     * @param useId
      * @return
      */
-    Set<String> getUserPermissionSet(String username);
+    Set<String> getUserRoleSetById(String useId);
+    
+    /**
+     * 32获取用户的权限集合
+     * @param userId
+     * @return
+     */
+    Set<String> getUserPermissionSet(String userId);
 
     /**
      * 33判断是否有online访问的权限
@@ -374,6 +407,13 @@ public interface ISysBaseAPI extends CommonAPI {
     List<String> loadCategoryDictItem(String ids);
 
     /**
+     * 反向翻译分类字典，用于导入
+     *
+     * @param names 名称，逗号分割
+     */
+    List<String> loadCategoryDictItemByNames(String names, boolean delNotExist);
+
+    /**
      * 根据字典code加载字典text
      *
      * @param dictCode 顺序：tableName,text,code
@@ -424,19 +464,6 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param dataLogDto
      */
     void saveDataLog(DataLogDTO dataLogDto);
-
-    /**
-     * 添加文件到知识库
-     * @param sysFilesModel
-     */
-    void addSysFiles(SysFilesModel sysFilesModel);
-
-    /**
-     * 通过文件路径获取文件id
-     * @param fileId
-     */
-    String getFileUrl(String fileId);
-
     /**
      * 更新头像
      * @param loginUser

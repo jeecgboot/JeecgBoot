@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.message.BusMessageDTO;
 import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.api.vo.Result;
@@ -14,19 +16,19 @@ import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.exception.JeecgBootBizTipException;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateUtils;
+import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.constant.enums.SysAnnmentTypeEnum;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.aop.TenantLog;
 import org.jeecg.modules.system.entity.*;
-import org.jeecg.modules.system.mapper.SysTenantMapper;
-import org.jeecg.modules.system.mapper.SysTenantPackUserMapper;
-import org.jeecg.modules.system.mapper.SysUserDepartMapper;
-import org.jeecg.modules.system.mapper.SysUserTenantMapper;
+import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.jeecg.modules.system.service.ISysTenantService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -65,6 +67,12 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     
     @Autowired
     private SysUserDepartMapper sysUserDepartMapper;
+
+    @Autowired
+    private SysTenantPackMapper sysTenantPackMapper;
+    
+    @Autowired
+    private SysPackPermissionMapper sysPackPermissionMapper;
 
     @Override
     public List<SysTenant> queryEffectiveTenant(Collection<Integer> idList) {
@@ -142,6 +150,8 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
             userTenantMapper.delete(query);
             //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
         }
+        //租户移除用户，直接删除用户租户产品包
+        sysTenantPackUserMapper.deletePackUserByTenantId(Integer.valueOf(tenantId),Arrays.asList(userIds.split(SymbolConstant.COMMA)));
     }
 
     @Override
@@ -155,7 +165,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         sysTenantPackService.addDefaultTenantPack(tenantId);
         
         //添加租户到关系表
-        return this.saveTenantRelation(sysTenant.getId(), userId);
+        return tenantId;
     }
 
     @Override
@@ -163,6 +173,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         //获取租户id
         sysTenant.setId(this.tenantIdGenerate());
         sysTenant.setHouseNumber(RandomUtil.randomStringUpper(6));
+        sysTenant.setDelFlag(CommonConstant.DEL_FLAG_0);
         this.save(sysTenant);
         //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
         //当前登录人的id
@@ -190,11 +201,11 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                 if(CommonConstant.USER_TENANT_UNDER_REVIEW.equals(relation.getStatus())){
                     msg = ",状态:审核中";
                 }else if(CommonConstant.USER_TENANT_REFUSE.equals(relation.getStatus())){
-                    throw new JeecgBootException("管理员已拒绝您加入租户,请联系租户管理员");
+                    throw new JeecgBootBizTipException("管理员已拒绝您加入租户,请联系租户管理员");
                 }else if(CommonConstant.USER_TENANT_QUIT.equals(relation.getStatus())){
                     msg = ",状态:已离职";
                 }
-                throw new JeecgBootException("您已是该租户成员"+msg);
+                throw new JeecgBootBizTipException("您已是该租户成员"+msg);
             }
             //用户加入门牌号审核中状态
             SysUserTenant tenant = new SysUserTenant();
@@ -233,6 +244,11 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户彻底删除，用户租户关系表也需要删除------------
         //删除租户下的用户
         userTenantMapper.deleteUserByTenantId(list);
+        //update-ennd---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户彻底删除，用户租户关系表也需要删除------------
+
+        //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户彻底删除，用户租户关系表也需要删除------------
+        //删除租户下的产品包
+        this.deleteTenantPackByTenantId(list);
         //update-ennd---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户彻底删除，用户租户关系表也需要删除------------
     }
 
@@ -679,6 +695,9 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         messageDTO.setData(data);
         messageDTO.setContent(title);
         messageDTO.setType("system");
+        //update-begin---author:wangshuai---date:2023-11-24---for:【QQYUN-7168】邀请成员时，会报错，但实际已经邀请成功了---
+        messageDTO.setCategory(CommonConstant.MSG_CATEGORY_1);
+        //update-end---author:wangshuai---date:2023-11-24---for:【QQYUN-7168】邀请成员时，会报错，但实际已经邀请成功了---
         //update-begin---author:wangshuai ---date:20230721  for：【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
         messageDTO.setBusType(SysAnnmentTypeEnum.TENANT_INVITE.getType());
         sysBaseApi.sendBusAnnouncement(messageDTO);
@@ -828,4 +847,67 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         }
         return content;
     }
+
+    /**
+     * 删除租户下的产品包
+     *
+     * @param tenantIdList
+     */
+    private void deleteTenantPackByTenantId(List<Integer> tenantIdList) {
+        //1.删除产品包下的用户
+        sysTenantPackUserMapper.deletePackUserByTenantIds(tenantIdList);
+        //2.删除产品包对应的菜单权限
+        sysPackPermissionMapper.deletePackPermByTenantIds(tenantIdList);
+        //3.删除产品包
+        sysTenantPackMapper.deletePackByTenantIds(tenantIdList);
+    }
+
+    @Override
+    public void deleteUserByPassword(SysUser sysUser, Integer tenantId) {
+        //被删除人的用户id
+        String userId = sysUser.getId();
+        //被删除人的密码
+        String password = sysUser.getPassword();
+        //当前登录用户
+        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //step1 判断当前用户是否为当前租户的管理员(只有超级管理员和账号管理员可以删除)
+        Long isHaveAdmin = sysTenantPackUserMapper.izHaveBuyAuth(user.getId(), tenantId);
+        if(null == isHaveAdmin || 0 == isHaveAdmin){
+            throw new JeecgBootException("您不是当前组织的管理员，无法删除用户！");
+        }
+        //step2 离职状态下，并且无其他组织情况下，可以删除
+        SysUserTenant sysUserTenant = userTenantMapper.getUserTenantByTenantId(userId, tenantId);
+        if(null == sysUserTenant || !CommonConstant.USER_TENANT_QUIT.equals(sysUserTenant.getStatus())){
+            throw new JeecgBootException("用户没有离职，不允许删除！"); 
+        }
+        List<Integer> tenantIdsByUserId = userTenantMapper.getTenantIdsByUserId(userId);
+        if(CollectionUtils.isNotEmpty(tenantIdsByUserId) && tenantIdsByUserId.size()>0){
+            throw new JeecgBootException("用户尚有未退出的组织，无法删除！");
+        }
+        //step3 当天创建的用户和创建人可以删除
+        SysUser sysUserData = userService.getById(userId);
+        if(!sysUserData.getCreateBy().equals(user.getUsername())){
+            throw new JeecgBootException("您不是该用户的创建人，无法删除！");
+        }
+        Date createTime = sysUserData.getCreateTime();
+        boolean sameDay = DateUtils.isSameDay(createTime, new Date());
+        if(!sameDay){
+            throw new JeecgBootException("用户不是今天创建的，无法删除！"); 
+        }
+        //step4 验证密码
+        String passwordEncode = PasswordUtil.encrypt(sysUserData.getUsername(), password, sysUserData.getSalt());
+        if(!passwordEncode.equals(sysUserData.getPassword())){
+            throw new JeecgBootException("您输入的密码不正确，无法删除该用户！");
+        }
+        //step5 逻辑删除用户
+        userService.deleteUser(userId);
+        //step6 真实删除用户
+        userService.removeLogicDeleted(Collections.singletonList(userId));
+    }
+
+    @Override
+    public List<SysTenant> getTenantListByUserId(String userId) {
+        return tenantMapper.getTenantListByUserId(userId);
+    }
+
 }

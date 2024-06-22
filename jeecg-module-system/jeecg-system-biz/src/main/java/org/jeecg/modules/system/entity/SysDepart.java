@@ -74,6 +74,8 @@ public class SysDepart implements Serializable {
 	private String delFlag;
 	/**对接企业微信的ID*/
 	private String qywxIdentifier;
+	/**对接钉钉的部门ID*/
+	private String dingIdentifier;
 	/**创建人*/
 	private String createBy;
 	/**创建日期*/

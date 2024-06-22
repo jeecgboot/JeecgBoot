@@ -1,10 +1,6 @@
 package org.jeecg.modules.monitor.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import jakarta.annotation.Resource;
 
@@ -12,13 +8,13 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Maps;
-import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.monitor.domain.RedisInfo;
 import org.jeecg.modules.monitor.exception.RedisConnectException;
 import org.jeecg.modules.monitor.service.RedisService;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +35,11 @@ public class RedisServiceImpl implements RedisService {
      * redis信息
      */
     private static final String REDIS_MESSAGE = "3";
+
+	/**
+	 * redis性能信息记录
+	 */
+	private static final Map<String,List<Map<String, Object>>> REDIS_METRICS = new HashMap<>(2);
 
 	/**
 	 * Redis详细信息
@@ -126,4 +127,48 @@ public class RedisServiceImpl implements RedisService {
 		mapJson.put("data",json);
 		return mapJson;
 	}
+
+	//update-begin---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
+	/**
+	 * 获取历史性能指标
+	 * @return
+	 * @author chenrui
+	 * @date 2024/5/14 14:57
+	 */
+	@Override
+	public Map<String, List<Map<String, Object>>> getMetricsHistory() {
+		return REDIS_METRICS;
+	}
+
+	/**
+	 * 记录近一小时redis监控数据 <br/>
+	 * 60s一次,,记录存储keysize和内存
+	 * @throws RedisConnectException
+	 * @author chenrui
+	 * @date 2024/5/14 14:09
+	 */
+	@Scheduled(fixedRate = 60000)
+	public void recordCustomMetric() throws RedisConnectException {
+		List<Map<String, Object>> list= new ArrayList<>();
+		if(REDIS_METRICS.containsKey("dbSize")){
+			list = REDIS_METRICS.get("dbSize");
+		}else{
+			REDIS_METRICS.put("dbSize",list);
+		}
+		if(list.size()>60){
+			list.remove(0);
+		}
+		list.add(getKeysSize());
+		list= new ArrayList<>();
+		if(REDIS_METRICS.containsKey("memory")){
+			list = REDIS_METRICS.get("memory");
+		}else{
+			REDIS_METRICS.put("memory",list);
+		}
+		if(list.size()>60){
+			list.remove(0);
+		}
+		list.add(getMemoryInfo());
+	}
+	//update-end---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
 }

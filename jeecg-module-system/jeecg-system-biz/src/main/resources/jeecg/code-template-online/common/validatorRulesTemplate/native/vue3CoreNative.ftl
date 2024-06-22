@@ -10,13 +10,13 @@
  { validator: ${po.fieldName}Duplicatevalidate }<#rt>
 <#-- 6到16位数字 -->
 <#elseif fieldValidType == 'n6-16'>
- { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'}<#rt>,
+ { pattern: /^\d{6,16}$|^(?=\d+\.\d+)[\d.]{7,17}$/, message: '请输入6到16位数字!'}<#rt>,
 <#-- 6到16位任意字符 -->
 <#elseif fieldValidType == '*6-16'>
  { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'}<#rt>,
 <#-- 6到18位字符串 -->
 <#elseif fieldValidType == 's6-18'>
- { pattern: /^.{6,18}$/, message: '请输入6到18位任意字符!'}<#rt>,
+ { pattern: /^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},<#rt>,
 <#-- 网址 -->
 <#elseif fieldValidType == 'url'>
  { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'}<#rt>,

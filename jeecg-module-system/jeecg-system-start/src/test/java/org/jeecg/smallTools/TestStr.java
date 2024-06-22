@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Base64;
 
 /**
  * 字符串处理测试
@@ -43,6 +44,33 @@ public class TestStr {
         valArray.add("123");
         valArray.add("qwe");
         System.out.println("值: " + StringUtils.join(valArray, ","));
+    }
+    
+    @Test
+    public void testSql() {
+        String sql = "select * from sys_user where sex = ${sex}";
+        sql = sql.replaceAll("'?\\$\\{sex}'?","1");
+        System.out.println(sql);
+    }
+
+    @Test
+    public void base64(){
+        String encodedString = "5L+d5a2Y5aSx6LSl77yM5YWN6LS554mI5pyA5aSa5Yib5bu6ezB95p2h6L+e5o6l77yM6K+35Y2H57qn5ZWG5Lia54mI77yB";
+        byte[] decodedBytes = Base64.getDecoder().decode(encodedString);
+        String decodedString = new String(decodedBytes);
+        String tipMsg = MessageFormat.format(decodedString, 10);
+        System.out.println(tipMsg);
+    }
+
+    /**
+     * 正则测试字符串只保存中文和数字和字母
+     */
+    @Test
+    public void testSpecialChar() {
+        String str = "Hello, World! 你好！这是一段特殊符号的测试，This is a test string with special characters: @#$%^&*";
+        // 使用正则表达式替换特殊字符
+        String replacedStr = str.replaceAll("[^a-zA-Z0-9\\u4e00-\\u9fa5]", "");
+        System.out.println("Replaced String: " + replacedStr);
     }
 
 }

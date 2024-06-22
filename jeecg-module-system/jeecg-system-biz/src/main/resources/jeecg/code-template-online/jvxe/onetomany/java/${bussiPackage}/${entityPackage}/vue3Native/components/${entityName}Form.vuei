@@ -31,19 +31,23 @@
 <#assign hasOnlyValidate = false>
 <template>
   <a-spin :spinning="loading">
-    <a-form v-bind="formItemLayout">
-      <a-row>
-			<#list columns as po>
-        <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
-          <#assign hasOnlyValidate = true>
-        </#if>
-				<#if po.fieldDbName=='bpm_status'>
-				    <#assign bpm_flag=true>
-				</#if>
-<#include "/common/form/native/vue3NativeForm.ftl">
-      </#list>
-      </a-row>
-    </a-form>
+    <JFormContainer :disabled="disabled">
+      <template #detail>
+        <a-form v-bind="formItemLayout">
+          <a-row>
+            <#list columns as po>
+              <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+                <#assign hasOnlyValidate = true>
+              </#if>
+              <#if po.fieldDbName=='bpm_status'>
+                  <#assign bpm_flag=true>
+              </#if>
+      <#include "/common/form/native/vue3NativeForm.ftl">
+            </#list>
+          </a-row>
+        </a-form>
+      </template>
+    </JFormContainer>
 
 		<!-- 子表单区域 -->
     <a-tabs v-model:activeKey="activeKey" animated>
@@ -102,6 +106,7 @@
   <#if hasOnlyValidate == true>
   import { duplicateValidate } from '/@/utils/helper/validator'
   </#if>
+  import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
   import { Form } from 'ant-design-vue';
   const useForm = Form.useForm;
 
@@ -112,6 +117,7 @@
 			<#if hasOne2manyTable == true>
       JVxeTable,
 			</#if>
+			JFormContainer,
 <#list subTables as sub>
 	<#if sub.foreignRelationType =='1'>
       ${sub.entityName}Form,
@@ -158,7 +164,7 @@
       </#if>
       </#list>
       });
-      const {resetFields, validate, validateInfos} = useForm(formData, validatorRules, {immediate: true});
+      const {resetFields, validate, validateInfos} = useForm(formData, validatorRules, {immediate: false});
       const dbData = {};
       const formItemLayout = {
         labelCol: {xs: {span: 24}, sm: {span: 5}},
@@ -241,9 +247,14 @@
 
       async function queryMainData(id) {
         const row = await queryDataById(id);
-        Object.keys(row).map(k => {
-          formData[k] = row[k];
-        });
+        const tmpData = {};
+        Object.keys(formData).forEach((key) => {
+          if(row.hasOwnProperty(key)){
+            tmpData[key] = row[key]
+          }
+        })
+        //赋值
+        Object.assign(formData,tmpData);
       }
 
       const {getSubFormAndTableData, transformData} = useValidateAntFormAndTable(activeKey, {
@@ -326,3 +337,4 @@
     }
   });
 </script>
+<style lang="less" scoped></style>

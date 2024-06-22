@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.controller;
 
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -8,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.config.TenantContext;
@@ -353,10 +355,10 @@ public class SysTenantController {
      * @param ids
      * @return
      */
-    @DeleteMapping("/deletePackPermissions")
+    @DeleteMapping("/deleteTenantPack")
     @PreAuthorize("@jps.requiresPermissions('system:tenant:delete:pack')")
-    public Result<String> deletePackPermissions(@RequestParam(value = "ids") String ids) {
-        sysTenantPackService.deletePackPermissions(ids);
+    public Result<String> deleteTenantPack(@RequestParam(value = "ids") String ids) {
+        sysTenantPackService.deleteTenantPack(ids);
         return Result.ok("删除租户产品包成功");
     }
     
@@ -502,7 +504,7 @@ public class SysTenantController {
         Integer tenantId = sysTenantService.joinTenantByHouseNumber(sysTenant, sysUser.getId());
         Result<Integer> result = new Result<>();
         if(tenantId != 0){
-            result.setMessage("申请租户成功");
+            result.setMessage("申请加入组织成功");
             result.setSuccess(true);
             result.setResult(tenantId);
             return result;
@@ -860,16 +862,19 @@ public class SysTenantController {
     @GetMapping("/getTenantCount")
     public Result<Map<String,Long>> getTenantCount(HttpServletRequest request){
         Map<String,Long> map = new HashMap<>();
-        Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request),0);
-        LambdaQueryWrapper<SysUserTenant> userTenantQuery = new LambdaQueryWrapper<>();
-        userTenantQuery.eq(SysUserTenant::getTenantId,tenantId);
-        userTenantQuery.eq(SysUserTenant::getStatus,CommonConstant.USER_TENANT_NORMAL);
-        long userCount = relationService.count(userTenantQuery);
+        //update-begin---author:wangshuai---date:2023-11-24---for:【QQYUN-7177】用户数量显示不正确---
+        if(oConvertUtils.isEmpty(TokenUtils.getTenantIdByRequest(request))){
+            return Result.error("当前租户为空，禁止访问！");
+        }
+        Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request));
+        Long userCount = relationService.getUserCount(tenantId,CommonConstant.USER_TENANT_NORMAL);
+        //update-end---author:wangshuai---date:2023-11-24---for:【QQYUN-7177】用户数量显示不正确---
         map.put("userCount",userCount);
         LambdaQueryWrapper<SysDepart> departQuery = new LambdaQueryWrapper<>();
         departQuery.eq(SysDepart::getDelFlag,String.valueOf(CommonConstant.DEL_FLAG_0));
         departQuery.eq(SysDepart::getTenantId,tenantId);
-        departQuery.eq(SysDepart::getStatus,CommonConstant.STATUS_1);
+        //部门状态暂时没用，先注释掉
+        //departQuery.eq(SysDepart::getStatus,CommonConstant.STATUS_1);
         long departCount = sysDepartService.count(departQuery);
         map.put("departCount",departCount);
         return Result.ok(map);
@@ -934,4 +939,39 @@ public class SysTenantController {
         return Result.error("类型不匹配，禁止修改数据");
     }
     
+    /**
+     * 目前只给敲敲云租户下删除用户使用
+     * 
+     * 根据密码删除用户
+     */
+    @DeleteMapping("/deleteUserByPassword")
+    public Result<String> deleteUserByPassword(@RequestBody SysUser sysUser,HttpServletRequest request){
+        Integer tenantId = oConvertUtils.getInteger(TokenUtils.getTenantIdByRequest(request), null);
+        sysTenantService.deleteUserByPassword(sysUser, tenantId);
+        return Result.ok("删除用户成功");
+    }
+
+    /**
+     *  查询当前用户的所有有效租户【知识库专用接口】
+     * @return
+     */
+    @RequestMapping(value = "/getCurrentUserTenantForFile", method = RequestMethod.GET)
+    public Result<Map<String,Object>> getCurrentUserTenantForFile() {
+        Result<Map<String,Object>> result = new Result<Map<String,Object>>();
+        try {
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            List<SysTenant> tenantList = sysTenantService.getTenantListByUserId(sysUser.getId());
+            Map<String,Object> map = new HashMap<>(5);
+            //在开启saas租户隔离的时候并且租户数据不为空，则返回租户信息
+            if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && CollectionUtil.isNotEmpty(tenantList)) {
+                map.put("list", tenantList);
+            }
+            result.setSuccess(true);
+            result.setResult(map);
+        }catch(Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("查询失败！");
+        }
+        return result;
+    }
 }

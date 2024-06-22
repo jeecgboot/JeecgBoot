@@ -22,7 +22,6 @@ import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.UrlMatchEnum;
-import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.*;
 import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
@@ -34,7 +33,8 @@ import org.jeecg.common.system.query.QueryCondition;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.query.QueryRuleEnum;
 import org.jeecg.common.system.vo.*;
-import org.jeecg.common.util.*;
+import org.jeecg.common.util.HTMLUtils;
+import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.firewall.SqlInjection.IDictTableWhiteListHandler;
@@ -59,6 +59,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.PathMatcher;
 
 import jakarta.annotation.Resource;
@@ -125,8 +126,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Autowired
 	private ISysDataLogService sysDataLogService;
 	@Autowired
-	private ISysFilesService sysFilesService;
-	@Autowired
 	private ISysRoleService sysRoleService;
 	@Autowired
 	private ISysUserTenantService sysUserTenantService;
@@ -159,6 +158,18 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 		return user;
 	}
+
+
+	@Override
+	@Cacheable(cacheNames=CommonConstant.SYS_USER_ID_MAPPING_CACHE, key="#username")
+	public String getUserIdByName(String username) {
+		if (oConvertUtils.isEmpty(username)) {
+			return null;
+		}
+		String userId = userMapper.getUserIdByName(username);
+		return userId;
+	}
+	
 
 	@Override
 	public LoginUser getUserByPhone(String phone) {
@@ -281,9 +292,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 //		}
 
 		if(user!=null) {
+			info.setSysUserId(user.getId());
 			info.setSysUserCode(user.getUsername());
 			info.setSysUserName(user.getRealname());
 			info.setSysOrgCode(user.getOrgCode());
+			info.setSysOrgId(user.getOrgId());
+			info.setSysRoleCode(user.getRoleCode());
 		}else{
 			return null;
 		}
@@ -327,6 +341,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public List<String> getRolesByUsername(String username) {
 		return sysUserRoleMapper.getRoleByUserName(username);
 	}
+	
+	@Override
+	public List<String> getRolesByUserId(String userId) {
+		return sysUserRoleMapper.getRoleCodeByUserId(userId);
+	}
 
 	@Override
 	public List<String> getDepartIdsByUsername(String username) {
@@ -336,6 +355,35 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			result.add(depart.getId());
 		}
 		return result;
+	}
+	
+	@Override
+	public List<String> getDepartIdsByUserId(String userId) {
+		return sysDepartService.queryDepartsByUserId(userId);
+	}
+
+	@Override
+	public Set<String> getDepartParentIdsByUsername(String username) {
+		List<SysDepart> list = sysDepartService.queryDepartsByUsername(username);
+		Set<String> result = new HashSet<>(list.size());
+		for (SysDepart depart : list) {
+			result.add(depart.getParentId());
+		}
+		return result;
+	}
+
+	@Override
+	public Set<String> getDepartParentIdsByDepIds(Set<String> depIds) {
+		LambdaQueryWrapper<SysDepart> departQuery = new LambdaQueryWrapper<SysDepart>().in(SysDepart::getId, depIds);
+		List<SysDepart> departList = departMapper.selectList(departQuery);
+
+		if(CollectionUtils.isEmpty(departList)){
+			return null;
+		}
+		Set<String> parentIds = departList.stream()
+				.map(SysDepart::getParentId)
+				.collect(Collectors.toSet());
+		return parentIds;
 	}
 
 	@Override
@@ -1084,16 +1132,30 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		log.info("-------通过数据库读取用户拥有的角色Rules------username： " + username + ",Roles size: " + (roles == null ? 0 : roles.size()));
 		return new HashSet<>(roles);
 	}
-
+	
+	
 	/**
-	 * 查询用户拥有的权限集合
-	 * @param username
+	 * 查询用户拥有的角色集合
+	 * @param useId
 	 * @return
 	 */
 	@Override
-	public Set<String> getUserPermissionSet(String username) {
+	public Set<String> getUserRoleSetById(String useId) {
+		// 查询用户拥有的角色集合
+		List<String> roles = sysUserRoleMapper.getRoleCodeByUserId(useId);
+		log.info("-------通过数据库读取用户拥有的角色Rules------useId： " + useId + ",Roles size: " + (roles == null ? 0 : roles.size()));
+		return new HashSet<>(roles);
+	}
+
+	/**
+	 * 查询用户拥有的权限集合
+	 * @param userId
+	 * @return
+	 */
+	@Override
+	public Set<String> getUserPermissionSet(String userId) {
 		Set<String> permissionSet = new HashSet<>();
-		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
+		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(userId);
 		//================= begin 开启租户的时候 如果没有test角色，默认加入test角色================
 		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 			if (permissionList == null) {
@@ -1112,7 +1174,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				permissionSet.add(po.getPerms());
 			}
 		}
-		log.info("-------通过数据库读取用户拥有的权限Perms------username： "+ username+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
+		log.info("-------通过数据库读取用户拥有的权限Perms------userId： "+ userId+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
 		return permissionSet;
 	}
 
@@ -1137,7 +1199,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			sysPermission.setUrl(onlineFormUrl);
 			int count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
 			if(count<=0){
-				return false;
+				//update-begin---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
+				sysPermission.setUrl(onlineAuthDTO.getOnlineWorkOrderUrl());
+				count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
+				if(count<=0) {
+					return false;
+				}
+				//update-end---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
 			}
 		} else {
 			//找到菜单了
@@ -1161,14 +1229,19 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return getUserRoleSet(username);
 	}
 
+	@Override
+	public Set<String> queryUserRolesById(String userId) {
+		return getUserRoleSetById(userId);
+	}
+
 	/**
 	 * 查询用户拥有的权限集合 common api 里面的接口实现
-	 * @param username
+	 * @param userId
 	 * @return
 	 */
 	@Override
-	public Set<String> queryUserAuths(String username) {
-		return getUserPermissionSet(username);
+	public Set<String> queryUserAuths(String userId) {
+		return getUserPermissionSet(userId);
 	}
 
 	/**
@@ -1403,6 +1476,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return sysCategoryService.loadDictItem(ids, false);
 	}
 
+	@Override
+	public List<String> loadCategoryDictItemByNames(String names, boolean delNotExist) {
+		return sysCategoryService.loadDictItemByNames(names, delNotExist);
+	}
+
 	/**
 	 * 根据字典code加载字典text
 	 *
@@ -1476,13 +1554,17 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys) {
 		List<String> dictCodeList = Arrays.asList(dictCodes.split(","));
 		List<String> values = Arrays.asList(keys.split(","));
+		//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 		return sysDictService.queryManyDictByKeys(dictCodeList, values);
+		//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 	}
 
+	//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 	@Override
-	public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys) {
-		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")));
+	public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys, String dataSource) {
+		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")), dataSource);
 	}
+	//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
 	@Override
 	public Map<String, List<DictModel>> queryAllDictItems() {
@@ -1586,41 +1668,33 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public void saveDataLog(DataLogDTO dataLogDto) {
-		SysDataLog entity = new SysDataLog();
-		entity.setDataTable(dataLogDto.getTableName());
-		entity.setDataId(dataLogDto.getDataId());
-		entity.setDataContent(dataLogDto.getContent());
-		entity.setType(dataLogDto.getType());
-		entity.setDataVersion("1");
-		entity.autoSetCreateName();
-		sysDataLogService.save(entity);
+		try {
+			SysDataLog entity = new SysDataLog();
+			entity.setDataTable(dataLogDto.getTableName());
+			entity.setDataId(dataLogDto.getDataId());
+			entity.setDataContent(dataLogDto.getContent());
+			entity.setType(dataLogDto.getType());
+			entity.setDataVersion("1");
+			if (oConvertUtils.isNotEmpty(dataLogDto.getCreateName())) {
+				entity.setCreateBy(dataLogDto.getCreateName());
+			} else {
+				entity.autoSetCreateName();
+			}
+			sysDataLogService.save(entity);
+		} catch (Exception e) {
+			log.warn(e.getMessage(), e);
+			//e.printStackTrace();
+		}
 	}
 
     @Override
-    public void addSysFiles(SysFilesModel sysFilesModel) {
-        SysFiles sysFiles = new SysFiles();
-        BeanUtils.copyProperties(sysFilesModel,sysFiles);
-        String defaultValue = "0";
-        sysFiles.setIzStar(defaultValue);
-        sysFiles.setIzFolder(defaultValue);
-        sysFiles.setIzRootFolder(defaultValue);
-        sysFiles.setDelFlag(defaultValue);
-		String tenantId = oConvertUtils.getString(TenantContext.getTenant());
-		sysFiles.setTenantId(tenantId);
-        sysFilesService.save(sysFiles);
-    }
-
-    @Override
-    public String getFileUrl(String fileId) {
-        SysFiles sysFiles = sysFilesService.getById(fileId);
-        return sysFiles.getUrl();
-    }
-
-    @Override
     public void updateAvatar(LoginUser loginUser) {
-        SysUser sysUser = new SysUser();
-        BeanUtils.copyProperties(loginUser, sysUser);
-        sysUserService.updateById(sysUser);
+		SysUser sysUser = new SysUser();
+		// 创建UpdateWrapper对象
+		UpdateWrapper<SysUser> updateWrapper = new UpdateWrapper<>();
+		updateWrapper.eq("id", loginUser.getId()); // 设置更新条件
+		sysUser.setAvatar(loginUser.getAvatar()); // 设置要更新的字段
+		sysUserService.update(sysUser, updateWrapper);
     }
 
 	@Override

@@ -35,7 +35,7 @@ public interface ISysUserTenantService extends IService<SysUserTenant> {
     List<SysUser> setUserTenantIds(List<SysUser> records);
 
     /**
-     * 获取用户id根据用户id
+     * 获取租户id获取用户ids
      * @param tenantId
      * @return
      */
@@ -120,4 +120,12 @@ public interface ISysUserTenantService extends IService<SysUserTenant> {
      * @return
      */
     SysUserTenant getUserTenantByTenantId(String userId, Integer tenantId);
+
+    /**
+     * 获取租户下的成员数量
+     * @param tenantId
+     * @param tenantStatus
+     * @return
+     */
+    Long getUserCount(Integer tenantId, String tenantStatus);
 }

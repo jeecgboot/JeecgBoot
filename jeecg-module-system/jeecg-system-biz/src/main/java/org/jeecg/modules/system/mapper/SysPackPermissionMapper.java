@@ -20,4 +20,12 @@ public interface SysPackPermissionMapper extends BaseMapper<SysPackPermission> {
      * @return
      */
     List<String> getPermissionsByPackId(@Param("packId") String packId);
+
+    /**
+     * 删除产品包对应的菜单权限
+     *
+     * @param tenantIdList
+     */
+    void deletePackPermByTenantIds(@Param("tenantIdList") List<Integer> tenantIdList);
+    
 }

@@ -3,6 +3,8 @@ package org.jeecg.modules.base.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.dto.LogDTO;
+import org.jeecg.common.constant.enums.ClientTerminalTypeEnum;
+import org.jeecg.common.util.BrowserUtils;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.mapper.BaseCommonMapper;
 import org.jeecg.modules.base.service.BaseCommonService;
@@ -55,6 +57,17 @@ public class BaseCommonServiceImpl implements BaseCommonService {
             HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
             //设置IP地址
             sysLog.setIp(IpUtils.getIpAddr(request));
+
+            try {
+                //设置客户端
+                if(BrowserUtils.isDesktop(request)){
+                    sysLog.setClientType(ClientTerminalTypeEnum.PC.getKey());
+                }else{
+                    sysLog.setClientType(ClientTerminalTypeEnum.APP.getKey());
+                }
+            } catch (Exception e) {
+                //e.printStackTrace();
+            }
         } catch (Exception e) {
             sysLog.setIp("127.0.0.1");
         }

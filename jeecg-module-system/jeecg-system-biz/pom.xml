@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-module-system</artifactId>
-		<version>3.6.1</version>
+		<version>3.7.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -36,14 +36,14 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>
-			<artifactId>drag-free</artifactId>
-			<version>1.0.2</version>
+			<artifactId>jimureport-drag</artifactId>
+			<version>2.0.2</version>
 		</dependency>
-		<!-- 积木报表 mongo redis 支持包
+	<!-- 积木报表 mongo redis 支持包 
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>
-		</dependency> -->
+		</dependency>-->
 	</dependencies>
 	
 </project>

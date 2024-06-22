@@ -38,6 +38,11 @@ public class DynamicDBUtil {
 
         String driverClassName = dbSource.getDbDriver();
         String url = dbSource.getDbUrl();
+        // url配置成 “123” 会触发Druid死循环，一直去重复尝试连接
+        if (oConvertUtils.isEmpty(url) || !url.toLowerCase().startsWith("jdbc:")) {
+            throw new JeecgBootException("数据源URL配置格式不正确！");
+        }
+        
         String dbUser = dbSource.getDbUsername();
         String dbPassword = dbSource.getDbPassword();
         dataSource.setDriverClassName(driverClassName);
@@ -47,6 +52,8 @@ public class DynamicDBUtil {
         dataSource.setTestOnBorrow(false);
         dataSource.setTestOnReturn(false);
         dataSource.setBreakAfterAcquireFailure(true);
+        //设置超时时间60秒
+        dataSource.setLoginTimeout(60);
         dataSource.setConnectionErrorRetryAttempts(0);
         dataSource.setUsername(dbUser);
         dataSource.setMaxWait(30000);

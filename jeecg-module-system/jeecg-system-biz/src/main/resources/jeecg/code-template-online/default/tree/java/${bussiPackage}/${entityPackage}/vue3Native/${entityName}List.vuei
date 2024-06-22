@@ -111,6 +111,10 @@
             <Icon icon="ant-design:down-outlined"></Icon>
           </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
       <!--操作栏-->
       <template #action="{ record }">
@@ -148,7 +152,7 @@
   import { ref, reactive, unref } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage';
-  import { columns } from './${entityName}.data';
+  import { columns, superQuerySchema } from './${entityName}.data';
   import {list, delete${entityName}, batchDelete${entityName}, getExportUrl,getImportUrl, getChildList,getChildListBatch} from './${entityName}.api';
   import { downloadFile } from '/@/utils/common/renderUtils';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
@@ -207,6 +211,21 @@
     sm: 20,
   });
 
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+  // 高级查询配置
+  const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam.value[k] = params[k];
+    });
+    reload();
+  }
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+
   /**
    * 新增事件
    */
@@ -242,7 +261,7 @@
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    const ids = selectedRowKeys.value.filter((item) => !item.includes('loading'));
+    const ids = selectedRowKeys.value.filter((item) => !item.includes('loadChild'));
     await batchDelete${entityName}({ id: ids }, success);
   }
   
@@ -269,8 +288,13 @@
       if (changeParent) {
         reload();
       } else {
-        // 编辑回调
-        updateTableDataRecord(values.id, values);
+        let data = await list({ id: values.id, pageSize: 1, pageNo: 1, ${pidFieldName}: values['${pidFieldName}'] });
+        if (data && data.records && data.records.length > 0) {
+          // 编辑回调
+          updateTableDataRecord(values.id, data.records[0]);
+        }else{
+          updateTableDataRecord(values.id, values);
+        }
       }
     } else {
       if (!values['id'] || !values['pid']) {
@@ -508,7 +532,9 @@
    * @param value
    */
   function handleFormJoinChange(key, value) {
-    queryParam[key] = value.join(',');
+    if (typeof value != 'string') {
+      queryParam.value[key] = value.join(',');
+    }
   }
   </#if>
 
@@ -546,20 +572,5 @@
 </script>
 
 <style lang="less" scoped>
-  .jeecg-basic-table-form-container {
-    padding: 0;
-    .table-page-search-submitButtons {
-      display: block;
-      margin-bottom: 24px;
-      white-space: nowrap;
-    }
-    .query-group-cust{
-      min-width: 100px !important;
-    }
-    .query-group-split-cust{
-      width: 30px;
-      display: inline-block;
-      text-align: center
-    }
-  }
+<#include "/common/form/native/vueNativeSearchStyle.ftl">
 </style>

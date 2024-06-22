@@ -115,10 +115,12 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deletePackPermissions(String ids) {
+    public void deleteTenantPack(String ids) {
         String[] idsArray = ids.split(SymbolConstant.COMMA);
         for (String id : idsArray) {
             this.deletePackPermission(id,null);
+            //删除产品包下面的用户
+            this.deletePackUser(id);
             sysTenantPackMapper.deleteById(id);
         }
     }
@@ -130,25 +132,47 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
 
     @Override
     public void addDefaultTenantPack(Integer tenantId) {
-        // 创建超级管理员
-        SysTenantPack superAdminPack = new SysTenantPack(tenantId, "超级管理员", TenantConstant.SUPER_ADMIN);
         ISysTenantPackService currentService = SpringContextUtils.getApplicationContext().getBean(ISysTenantPackService.class);
-        String packId = currentService.saveOne(superAdminPack);
-
+        // 创建租户超级管理员
+        SysTenantPack superAdminPack = new SysTenantPack(tenantId, "超级管理员", TenantConstant.SUPER_ADMIN);
+        
+        //step.1 创建租户套餐包（超级管理员）
+        LambdaQueryWrapper<SysTenantPack> query = new LambdaQueryWrapper<>();
+        query.eq(SysTenantPack::getTenantId,tenantId);
+        query.eq(SysTenantPack::getPackCode, TenantConstant.SUPER_ADMIN);
+        SysTenantPack sysTenantPackSuperAdmin = currentService.getOne(query);
+        String packId = "";
+        if(null == sysTenantPackSuperAdmin){
+            packId = currentService.saveOne(superAdminPack);
+        }else{
+            packId = sysTenantPackSuperAdmin.getId();
+        }
+        //step.1.2 补充人员与套餐包的关系数据
         LoginUser sysUser = SecureUtil.currentUser();
         SysTenantPackUser packUser = new SysTenantPackUser(tenantId, packId, sysUser.getId());
         packUser.setRealname(sysUser.getRealname());
         packUser.setPackName(superAdminPack.getPackName());
-        //添加人员和管理员的关系数据
         currentService.savePackUser(packUser);
+        
+        //step.2 创建租户套餐包(组织账户管理员)和 添加人员关系数据
+        query.eq(SysTenantPack::getTenantId,tenantId);
+        query.eq(SysTenantPack::getPackCode, TenantConstant.ACCOUNT_ADMIN);
+        SysTenantPack sysTenantPackAccountAdmin = currentService.getOne(query);
+        if(null == sysTenantPackAccountAdmin){
+            // 创建超级管理员
+            SysTenantPack accountAdminPack = new SysTenantPack(tenantId, "组织账户管理员", TenantConstant.ACCOUNT_ADMIN);
+            currentService.saveOne(accountAdminPack);
+        }
 
-        // 创建超级管理员
-        SysTenantPack accountAdminPack = new SysTenantPack(tenantId, "组织账户管理员", TenantConstant.ACCOUNT_ADMIN);
-        currentService.saveOne(accountAdminPack);
-
-        // 创建超级管理员
-        SysTenantPack appAdminPack = new SysTenantPack(tenantId, "组织应用管理员", TenantConstant.APP_ADMIN);
-        currentService.saveOne(appAdminPack);
+        //step.3 创建租户套餐包(组织应用管理员)
+        query.eq(SysTenantPack::getTenantId,tenantId);
+        query.eq(SysTenantPack::getPackCode, TenantConstant.APP_ADMIN);
+        SysTenantPack sysTenantPackAppAdmin = currentService.getOne(query);
+        if(null == sysTenantPackAppAdmin){
+            // 创建超级管理员
+            SysTenantPack appAdminPack = new SysTenantPack(tenantId, "组织应用管理员", TenantConstant.APP_ADMIN);
+            currentService.saveOne(appAdminPack);
+        }
         
     }
 
@@ -231,4 +255,13 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         }
     }
 
+    /**
+     * 删除产品包下面的用户
+     * @param packId
+     */
+    private void deletePackUser(String packId) {
+        LambdaQueryWrapper<SysTenantPackUser> query = new LambdaQueryWrapper<>();
+        query.eq(SysTenantPackUser::getPackId, packId);
+        sysTenantPackUserMapper.delete(query);
+    }
 }

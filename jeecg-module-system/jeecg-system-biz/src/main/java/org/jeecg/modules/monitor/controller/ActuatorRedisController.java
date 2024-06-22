@@ -43,6 +43,21 @@ public class ActuatorRedisController {
         return Result.ok(infoList);
     }
 
+	//update-begin---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
+	/**
+	 * Redis历史性能指标查询(过去一小时)
+	 * @return
+	 * @throws Exception
+	 * @author chenrui
+	 * @date 2024/5/14 14:56
+	 */
+	@GetMapping(value = "/metrics/history")
+	public Result<?> getMetricsHistory() throws Exception {
+		Map<String,List<Map<String,Object>>> metricsHistory = this.redisService.getMetricsHistory();
+	    return Result.OK(metricsHistory);
+	}
+	//update-end---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
+
     @GetMapping("/keysSize")
     public Map<String, Object> getKeysSize() throws Exception {
         return redisService.getKeysSize();

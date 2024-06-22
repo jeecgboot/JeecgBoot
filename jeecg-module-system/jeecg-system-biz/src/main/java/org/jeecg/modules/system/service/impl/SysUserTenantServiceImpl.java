@@ -14,6 +14,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserTenant;
+import org.jeecg.modules.system.mapper.SysTenantPackUserMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.jeecg.modules.system.mapper.SysUserPositionMapper;
 import org.jeecg.modules.system.mapper.SysUserTenantMapper;
@@ -51,6 +52,9 @@ public class SysUserTenantServiceImpl extends ServiceImpl<SysUserTenantMapper, S
 
     @Autowired
     private SysUserPositionMapper userPositionMapper;
+
+    @Autowired
+    private SysTenantPackUserMapper packUserMapper;
 
     @Override
     public Page<SysUser> getPageUserList(Page<SysUser> page, Integer userTenantId, SysUser user) {
@@ -161,7 +165,6 @@ public class SysUserTenantServiceImpl extends ServiceImpl<SysUserTenantMapper, S
         return userTenantMapper.userTenantIzExist(userId,tenantId);
     }
 
-
     @Override
     public IPage<SysTenant> getTenantPageListByUserId(Page<SysTenant> page, String userId, List<String> userTenantStatus,SysUserTenantVo sysUserTenantVo) {
         return page.setRecords(userTenantMapper.getTenantPageListByUserId(page,userId,userTenantStatus,sysUserTenantVo));
@@ -181,5 +184,10 @@ public class SysUserTenantServiceImpl extends ServiceImpl<SysUserTenantMapper, S
     @Override
     public SysUserTenant getUserTenantByTenantId(String userId, Integer tenantId) {
         return userTenantMapper.getUserTenantByTenantId(userId,tenantId);
+    }
+
+    @Override
+    public Long getUserCount(Integer tenantId, String tenantStatus) {
+        return userTenantMapper.getUserCount(tenantId,tenantStatus);
     }
 }

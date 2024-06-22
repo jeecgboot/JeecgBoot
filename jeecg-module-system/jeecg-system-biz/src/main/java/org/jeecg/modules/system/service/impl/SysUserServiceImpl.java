@@ -5,6 +5,7 @@ import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -22,8 +23,10 @@ import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.FillRuleConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
+import org.jeecg.common.constant.enums.SysAnnmentTypeEnum;
 import org.jeecg.common.desensitization.annotation.SensitiveEncode;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
@@ -36,6 +39,7 @@ import org.jeecg.modules.message.handle.impl.SystemSendMsgHandle;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
+import org.jeecg.modules.system.service.ISysRoleIndexService;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
@@ -50,6 +54,7 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +111,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Autowired
     ThirdAppDingtalkServiceImpl dingtalkService;
 	@Autowired
-    SysRoleIndexMapper sysRoleIndexMapper;
+    ISysRoleIndexService sysRoleIndexService;
 	@Autowired
     SysTenantMapper sysTenantMapper;
 	@Autowired
@@ -119,8 +124,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private SysPositionMapper sysPositionMapper;
 	@Autowired
 	private SystemSendMsgHandle systemSendMsgHandle;
+	
 	@Autowired
 	private ISysThirdAccountService sysThirdAccountService;
+
+	@Autowired
+	private RedisUtil redisUtil;
 	
 	@Override
 	public Result<IPage<SysUser>> queryPageList(HttpServletRequest req, QueryWrapper<SysUser> queryWrapper, Integer pageSize, Integer pageNo) {
@@ -156,6 +165,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 		//update-end-author:taoyan--date:20220104--for: JTC-372 【用户冻结问题】 online授权、用户组件，选择用户都能看到被冻结的用户
 
+		//update-begin---author:wangshuai---date:2024-03-08---for:【QQYUN-8110】在线通讯录支持设置权限(只能看分配的技术支持)---
+		String tenantId = TokenUtils.getTenantIdByRequest(req);
+		String lowAppId = TokenUtils.getLowAppIdByRequest(req);
+//		Object bean = ResourceUtil.getImplementationClass(DataEnhanceEnum.getClassPath(tenantId,lowAppId));
+//		if(null != bean){
+//			UserFilterEnhance userEnhanceService = (UserFilterEnhance) bean;
+//			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+//			List<String> userIds = userEnhanceService.getUserIds(sysUser.getId());
+//			if(CollectionUtil.isNotEmpty(userIds)){
+//				queryWrapper.in("id", userIds);
+//			}
+//		}
+		//update-end---author:wangshuai---date:2024-03-08---for:【QQYUN-8110】在线通讯录支持设置权限(只能看分配的技术支持)---
+		
 		//TODO 外部模拟登陆临时账号，列表不显示
 		queryWrapper.ne("username", "_reserve_user_external");
 		Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
@@ -167,7 +190,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		List<String> userIds = pageList.getRecords().stream().map(SysUser::getId).collect(Collectors.toList());
 		if (userIds != null && userIds.size() > 0) {
 			Map<String, String> useDepNames = this.getDepNamesByUserIds(userIds);
-			int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 			pageList.getRecords().forEach(item -> {
 				item.setOrgCodeTxt(useDepNames.get(item.getId()));
 				//查询用户的租户ids
@@ -179,14 +201,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 				}
 				Integer posTenantId = null;
 				if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-					posTenantId = tenantId;		
+					posTenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);;		
 				}
 				//查询用户职位关系表(获取租户下面的)
 				//update-begin---author:wangshuai---date:2023-11-15---for:【QQYUN-7028】用户职务保存后未回显---
 				List<String> positionList =  sysUserPositionMapper.getPositionIdByUserTenantId(item.getId(),posTenantId);
 				//update-end---author:wangshuai---date:2023-11-15---for:【QQYUN-7028】用户职务保存后未回显---
 				//update-end---author:wangshuai ---date:20230228  for：[QQYUN-4354]加入更多字段：当前加入时间应该取当前租户的/职位也是当前租户下的------------
-				item.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
+				item.setPost(CommonUtils.getSplitText(positionList, SymbolConstant.COMMA));
 				
 				//update-begin---author:wangshuai---date:2023-10-08---for:【QQYUN-6668】钉钉部门和用户同步，我怎么知道哪些用户是双向绑定成功的---
 				//是否根据租户隔离(敲敲云用户列表专用，用于展示是否同步钉钉)
@@ -249,7 +271,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	@Transactional(rollbackFor = Exception.class)
 	public boolean deleteUser(String userId) {
-		//1.删除用户
+		//update-begin---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】admin用户禁止删除---
+		//1.验证当前用户是管理员账号 admin
+		//验证用户是否为管理员
+		this.checkUserAdminRejectDel(userId);
+		//update-end---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】admin用户禁止删除---
+		
+		//2.删除用户
 		this.removeById(userId);
 		return false;
 	}
@@ -258,7 +286,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	@Transactional(rollbackFor = Exception.class)
 	public boolean deleteBatchUsers(String userIds) {
-		//1.删除用户
+		//1.验证当前用户是管理员账号 admin
+		this.checkUserAdminRejectDel(userIds);
+		//2.删除用户
 		this.removeByIds(Arrays.asList(userIds.split(",")));
 		return false;
 	}
@@ -316,33 +346,40 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	/**
 	 * 获取动态首页路由配置
+	 *
 	 * @param username
 	 * @param version
 	 * @return
 	 */
 	@Override
-	public SysRoleIndex getDynamicIndexByUserRole(String username,String version) {
+	public SysRoleIndex getDynamicIndexByUserRole(String username, String version) {
 		List<String> roles = sysUserRoleMapper.getRoleByUserName(username);
 		String componentUrl = RoleIndexConfigEnum.getIndexByRoles(roles);
 		SysRoleIndex roleIndex = new SysRoleIndex(componentUrl);
+		boolean isV3 = CommonConstant.VERSION_V3.equals(version);
 		//只有 X-Version=v3 的时候，才读取sys_role_index表获取角色首页配置
-		if (oConvertUtils.isNotEmpty(version) && roles!=null && roles.size()>0) {
-			LambdaQueryWrapper<SysRoleIndex> routeIndexQuery = new LambdaQueryWrapper();
+		if (isV3 && CollectionUtils.isNotEmpty(roles)) {
+			LambdaQueryWrapper<SysRoleIndex> routeIndexQuery = new LambdaQueryWrapper<>();
 			//用户所有角色
 			routeIndexQuery.in(SysRoleIndex::getRoleCode, roles);
 			//角色首页状态0：未开启  1：开启
 			routeIndexQuery.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
 			//优先级正序排序
 			routeIndexQuery.orderByAsc(SysRoleIndex::getPriority);
-			List<SysRoleIndex> list = sysRoleIndexMapper.selectList(routeIndexQuery);
-			if (null != list && list.size() > 0) {
+			List<SysRoleIndex> list = sysRoleIndexService.list(routeIndexQuery);
+			if (CollectionUtils.isNotEmpty(list)) {
 				roleIndex = list.get(0);
 			}
 		}
-		
-		//如果componentUrl为空，则返回空
-		if(oConvertUtils.isEmpty(roleIndex.getComponent())){
-			return null;
+
+		if (oConvertUtils.isEmpty(roleIndex.getComponent())) {
+			if (isV3) {
+				// 如果角色没有配置首页，则使用默认首页
+				return sysRoleIndexService.queryDefaultIndex();
+			} else {
+				// 非v3返回null
+				return null;
+			}
 		}
 		return roleIndex;
 	}
@@ -359,17 +396,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		log.info("-------通过数据库读取用户拥有的角色Rules------username： " + username + ",Roles size: " + (roles == null ? 0 : roles.size()));
 		return new HashSet<>(roles);
 	}
+	
+	/**
+	 * 通过用户名获取用户角色集合
+	 * @param userId 用户ID
+     * @return 角色集合
+	 */
+	@Override
+	public Set<String> getUserRoleSetById(String userId) {
+		// 查询用户拥有的角色集合
+		List<String> roles = sysUserRoleMapper.getRoleCodeByUserId(userId);
+		log.info("-------通过数据库读取用户拥有的角色Rules------userId： " + userId + ",Roles size: " + (roles == null ? 0 : roles.size()));
+		return new HashSet<>(roles);
+	}
 
 	/**
 	 * 通过用户名获取用户权限集合
 	 *
-	 * @param username 用户名
+	 * @param userId 用户ID
 	 * @return 权限集合
 	 */
 	@Override
-	public Set<String> getUserPermissionsSet(String username) {
+	public Set<String> getUserPermissionsSet(String userId) {
 		Set<String> permissionSet = new HashSet<>();
-		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(username);
+		List<SysPermission> permissionList = sysPermissionMapper.queryByUser(userId);
 		//================= begin 开启租户的时候 如果没有test角色，默认加入test角色================
 		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
 			if (permissionList == null) {
@@ -388,7 +438,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 				permissionSet.add(po.getPerms());
 			}
 		}
-		log.info("-------通过数据库读取用户拥有的权限Perms------username： "+ username+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
+		log.info("-------通过数据库读取用户拥有的权限Perms------userId： "+ userId+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
 		return permissionSet;
 	}
 
@@ -442,7 +492,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
 	@Override
-	public IPage<SysUser> getUserByDepId(Page<SysUser> page, String departId,String username) {
+	public IPage<SysUser> getUserByDepId(Page<SysUser> page, String departId, String username) {
 		return userMapper.getUserByDepId(page, departId,username);
 	}
 
@@ -485,7 +535,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//根据部门orgCode查询部门，需要将职位id进行传递
 		for (SysUserSysDepartModel model:list) {
 			List<String> positionList = sysUserPositionMapper.getPositionIdByUserId(model.getId());
-			model.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
+			model.setPost(CommonUtils.getSplitText(positionList, SymbolConstant.COMMA));
 		}
 		Integer total = baseMapper.getUserByOrgCodeTotal(orgCode, userParams);
 
@@ -794,7 +844,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	@Override
-	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
+	@Cacheable(cacheNames= CacheConstant.SYS_USERS_CACHE, key="#username")
 	@SensitiveEncode
 	public LoginUser getEncodeUserInfo(String username){
 		if(oConvertUtils.isEmpty(username)) {
@@ -810,6 +860,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			return null;
 		}
 		BeanUtils.copyProperties(sysUser, loginUser);
+		// 查询当前登录用户的部门id
+		loginUser.setOrgId(this.getDepartIdByOrCode(sysUser.getOrgCode()));
+		// 查询当前登录用户的角色code（多个逗号分割）
+		loginUser.setRoleCode(this.getJoinRoleCodeByUserId(sysUser.getId()));
 		return loginUser;
 	}
 
@@ -851,7 +905,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @return
 	 */
 	@Override
-	public Result<JSONObject>  setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result){
+	public Result<JSONObject> setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result){
 		// update-begin--Author:sunjianlei Date:20210802 for：获取用户租户信息
 		//用户有哪些租户
 //		List<SysTenant> tenantList = null;
@@ -1291,7 +1345,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @param orgName
 	 * @param orgId
 	 */
-	private void getParentDepart(SysDepart depart,List<String> orgName,List<String> orgId){
+	private void getParentDepart(SysDepart depart, List<String> orgName, List<String> orgId){
 		String pid = depart.getParentId();
 		orgName.add(0, depart.getDepartName());
 		orgId.add(0, depart.getId());
@@ -1383,7 +1437,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * 保存用户职位
 	 *
 	 * @param userId
-	 * @param postIds
+	 * @param positionIds
 	 */
 	private void saveUserPosition(String userId, String positionIds) {
 		if (oConvertUtils.isNotEmpty(positionIds)) {
@@ -1419,8 +1473,49 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private void userPositionId(SysUser sysUser) {
 		if(null != sysUser){
 			List<String> positionList = sysUserPositionMapper.getPositionIdByUserId(sysUser.getId());
-			sysUser.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
+			sysUser.setPost(CommonUtils.getSplitText(positionList, SymbolConstant.COMMA));
 		}
+	}
+
+	/**
+	 * 查询用户当前登录部门的id
+	 *
+	 * @param orgCode
+	 */
+	private @Nullable String getDepartIdByOrCode(String orgCode) {
+		if (oConvertUtils.isEmpty(orgCode)) {
+			return null;
+		}
+		LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
+		queryWrapper.eq(SysDepart::getOrgCode, orgCode);
+		queryWrapper.select(SysDepart::getId);
+		SysDepart depart = sysDepartMapper.selectOne(queryWrapper);
+		if (depart == null || oConvertUtils.isEmpty(depart.getId())) {
+			return null;
+		}
+		return depart.getId();
+	}
+
+	/**
+	 * 查询用户的角色code（多个逗号分割）
+	 *
+	 * @param userId
+	 */
+	private @Nullable String getJoinRoleCodeByUserId(String userId) {
+		if (oConvertUtils.isEmpty(userId)) {
+			return null;
+		}
+		// 判断是否开启saas模式，根据租户id过滤
+		Integer tenantId = null;
+		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+			// 开启了但是没有租户ID，默认-1，使其查询不到任何数据
+			tenantId = oConvertUtils.getInt(TenantContext.getTenant(), -1);
+		}
+		List<SysRole> roleList = sysRoleMapper.getRoleCodeListByUserId(userId, tenantId);
+		if (CollectionUtils.isEmpty(roleList)) {
+			return null;
+		}
+		return roleList.stream().map(SysRole::getRoleCode).collect(Collectors.joining(SymbolConstant.COMMA));
 	}
 
 	/**
@@ -1429,7 +1524,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @param departChargeUsers
 	 * @param departId
 	 */
-	private void removeDepartmentManager(List<String> departChargeUserIdList,List<SysUser> departChargeUsers,String departId){
+	private void removeDepartmentManager(List<String> departChargeUserIdList, List<SysUser> departChargeUsers, String departId){
 		//移除部门负责人
 		for(String chargeUserId: departChargeUserIdList){
 			for(SysUser chargeUser: departChargeUsers){
@@ -1793,6 +1888,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		String title = sysUser.getRealname() + " 邀请您加入 " + tenantName + "。";
 		messageDTO.setTitle(title);
 		Map<String, Object> data = new HashMap<>();
+		//update-begin---author:wangshuai---date:2024-03-11---for:【QQYUN-8425】用户导入成功后 消息提醒 跳转至同意页面---
+		data.put(CommonConstant.NOTICE_MSG_BUS_TYPE, SysAnnmentTypeEnum.TENANT_INVITE.getType());
+		//update-end---author:wangshuai---date:2024-03-11---for:【QQYUN-8425】用户导入成功后 消息提醒 跳转至同意页面---
 		messageDTO.setData(data);
 		messageDTO.setContent(title);
 		messageDTO.setToUser(invitedUsername);
@@ -1802,4 +1900,129 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 	//======================================= end 用户与部门 用户列表导入 =========================================
 	
+	@Override
+	public void checkUserAdminRejectDel(String userIds) {
+		LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+		query.in(SysUser::getId,Arrays.asList(userIds.split(SymbolConstant.COMMA)));
+		query.eq(SysUser::getUsername,"admin");
+		Long adminRoleCount = this.baseMapper.selectCount(query);
+		//大于0说明存在管理员用户，不允许删除
+		if(adminRoleCount>0){
+			throw new JeecgBootException("admin用户，不允许删除！");
+		}
+	}
+
+	@Override
+	public void changePhone(JSONObject json, String username) {
+		String smscode = json.getString("smscode");
+		String phone = json.getString("phone");
+		String type = json.getString("type");
+		if(oConvertUtils.isEmpty(phone)){
+			throw new JeecgBootException("请填写原手机号！");
+		}
+		if(oConvertUtils.isEmpty(smscode)){
+			throw new JeecgBootException("请填写验证码！");
+		}
+		//step1 验证原手机号是否和当前用户匹配
+		SysUser sysUser = userMapper.getUserByNameAndPhone(phone,username);
+		if (null == sysUser){
+			throw new JeecgBootException("原手机号不匹配，无法修改密码！");
+		}
+		//step2 根据类型判断是验证原手机号的验证码还是新手机号的验证码
+		//验证原手机号
+		if(CommonConstant.VERIFY_ORIGINAL_PHONE.equals(type)){
+			this.verifyPhone(phone, smscode);
+		}else if(CommonConstant.UPDATE_PHONE.equals(type)){
+			//修改手机号
+			String newPhone = json.getString("newPhone");
+			//需要验证新手机号和原手机号是否一致，一致不让修改
+			if(newPhone.equals(phone)){
+				throw new JeecgBootException("新手机号与原手机号一致，无法修改！");
+			}
+			this.verifyPhone(newPhone, smscode);
+			//step3 新手机号验证码验证成功之后即可修改手机号
+			sysUser.setPhone(newPhone);
+			userMapper.updateById(sysUser);
+		}
+	}
+	
+	/**
+	 * 验证手机号
+	 *
+	 * @param phone
+	 * @param smsCode
+	 * @return
+	 */
+	public void verifyPhone(String phone, String smsCode){
+		String phoneKey = CommonConstant.CHANGE_PHONE_REDIS_KEY_PRE + phone;
+		Object phoneCode = redisUtil.get(phoneKey);
+		if(null == phoneCode){
+			throw new JeecgBootException("验证码失效，请重新发送验证码！");
+		}
+		if(!smsCode.equals(phoneCode.toString())) {
+			throw new JeecgBootException("短信验证码不匹配！");
+		}
+		//验证完成之后清空手机验证码
+		redisUtil.removeAll(phoneKey);
+	}
+	
+	@Override
+	public void sendChangePhoneSms(JSONObject jsonObject, String username, String ipAddress) {
+		String type = jsonObject.getString("type");
+		String phone = jsonObject.getString("phone");
+		if(oConvertUtils.isEmpty(phone)){
+			throw new JeecgBootException("请填写手机号！");
+		}
+		//step1 根据类型判断是发送旧手机号验证码还是新的手机号验证码
+		if(CommonConstant.VERIFY_ORIGINAL_PHONE.equals(type)){
+			//step2 旧手机号验证码需要验证手机号是否匹配
+			SysUser sysUser = userMapper.getUserByNameAndPhone(phone, username);
+			if(null == sysUser){
+				throw new JeecgBootException("旧手机号不匹配，无法修改手机号！");
+			}
+		}else if(CommonConstant.UPDATE_PHONE.equals(type)){
+			//step3 新手机号需要验证手机号码是否已注册过
+			SysUser userByPhone = userMapper.getUserByPhone(phone);
+			if(null != userByPhone){
+				throw new JeecgBootException("手机号已被注册，请尝试其他手机号！");
+			}
+		}
+		//step4 发送短信验证码
+		this.sendPhoneSms(phone, ipAddress);
+	}
+
+	/**
+	 * 发送短信验证码
+	 * @param phone
+	 */
+	private void sendPhoneSms(String phone, String clientIp) {
+		String redisKey = CommonConstant.CHANGE_PHONE_REDIS_KEY_PRE+phone;
+		Object object = redisUtil.get(redisKey);
+
+		if (object != null) {
+			throw new JeecgBootException("验证码10分钟内，仍然有效！");
+		}
+
+		//增加 check防止恶意刷短信接口
+		if(!DySmsLimit.canSendSms(clientIp)){
+			log.warn("--------[警告] IP地址:{}, 短信接口请求太多-------", clientIp);
+			throw new JeecgBootException("短信接口请求太多，请稍后再试！", CommonConstant.PHONE_SMS_FAIL_CODE);
+		}
+		
+		//随机数
+		String captcha = RandomUtil.randomNumbers(6);
+		JSONObject obj = new JSONObject();
+		obj.put("code", captcha);
+		try {
+			boolean sendSmsSuccess = DySmsHelper.sendSms(phone, obj, DySmsEnum.LOGIN_TEMPLATE_CODE);
+			if(!sendSmsSuccess){
+				throw new JeecgBootException("短信验证码发送失败,请稍后重试！");
+			}
+			//验证码10分钟内有效
+			redisUtil.set(redisKey, captcha, 600);
+		} catch (ClientException e) {
+			log.error(e.getMessage(),e);
+			throw new JeecgBootException("短信接口未配置，请联系管理员！");
+		}
+	}
 }

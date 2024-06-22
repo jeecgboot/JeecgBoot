@@ -89,7 +89,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param user
 	 * @param roles
 	 */
-	public void addUserWithRole(SysUser user,String roles);
+	public void addUserWithRole(SysUser user, String roles);
 	
 	
 	/**
@@ -97,7 +97,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param user
 	 * @param roles
 	 */
-	public void editUserWithRole(SysUser user,String roles);
+	public void editUserWithRole(SysUser user, String roles);
 
 	/**
 	 * 获取用户的授权角色
@@ -113,7 +113,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param version 前端UI版本
 	 * @return
 	 */
-	public SysRoleIndex getDynamicIndexByUserRole(String username,String version);
+	public SysRoleIndex getDynamicIndexByUserRole(String username, String version);
 	
 	/**
 	  * 查询用户信息包括 部门信息
@@ -177,7 +177,7 @@ public interface ISysUserService extends IService<SysUser> {
      * @param username 用户账户名称
 	 * @return
 	 */
-	public IPage<SysUser> getUserByRoleId(Page<SysUser> page,String roleId, String username);
+	public IPage<SysUser> getUserByRoleId(Page<SysUser> page, String roleId, String username);
 
 	/**
 	 * 通过用户名获取用户角色集合
@@ -186,14 +186,22 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return 角色集合
 	 */
 	Set<String> getUserRolesSet(String username);
+	
+	/**
+	 * 通过用户名获取用户角色集合
+	 *
+	 * @param userId 用户id
+	 * @return 角色集合
+	 */
+	Set<String> getUserRoleSetById(String userId);
 
 	/**
 	 * 通过用户名获取用户权限集合
 	 *
-	 * @param username 用户名
+	 * @param userId 用户id
 	 * @return 权限集合
 	 */
-	Set<String> getUserPermissionsSet(String username);
+	Set<String> getUserPermissionsSet(String userId);
 	
 	/**
 	 * 根据用户名设置部门ID
@@ -347,7 +355,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param sysUser
 	 * @return
 	 */
-	Result<JSONObject>  setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result);
+	Result<JSONObject> setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result);
 
 	//--- author:taoyan date:20221231 for: QQYUN-3515【应用】应用下的组织机构管理功能，细节实现 ---
 	/**
@@ -411,4 +419,27 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return
 	 */
 	Result<?> importAppUser(HttpServletRequest request);
+
+	/**
+	 * 验证用户是否为管理员
+	 * @param ids
+	 */
+	void checkUserAdminRejectDel(String ids);
+
+	/**
+	 * 修改手机号
+	 * 
+	 * @param json
+	 * @param username
+	 */
+    void changePhone(JSONObject json, String username);
+
+	/**
+	 * 发送短信验证码
+	 * 
+	 * @param jsonObject
+	 * @param username 用户名
+	 * @param ipAddress ip地址
+	 */
+	void sendChangePhoneSms(JSONObject jsonObject, String username, String ipAddress);
 }

@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
+import org.jeecg.modules.system.vo.SysDepartExportVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -101,6 +103,14 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
     List<SysDepart> queryDepartsByUsername(String username);
+    
+    /**
+     * 根据用户ID查询部门
+     *
+     * @param userId
+     * @return
+     */
+    List<String> queryDepartsByUserId(String userId);
 
 	 /**
      * 根据部门id批量删除并删除其可能存在的子级部门
@@ -215,5 +225,18 @@ public interface ISysDepartService extends IService<SysDepart>{
     List<ExportDepartVo> getExcelDepart(int tenantId);
 
     void importExcel(List<ExportDepartVo> listSysDeparts, List<String> errorMessageList);
-    
+
+    /**
+     * 根据租户id导出部门
+     * @param tenantId
+     * @return
+     */
+    List<SysDepartExportVo> getExportDepart(Integer tenantId);
+
+    /**
+     * 导出系统部门excel
+     * @param listSysDeparts
+     * @param errorMessageList
+     */
+    void importSysDepart(List<SysDepartExportVo> listSysDeparts, List<String> errorMessageList);
 }

@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.DateRangeUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.security.utils.SecureUtil;
@@ -63,7 +65,12 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 			sysAnnouncementMapper.insert(sysAnnouncement);
 			// 2.插入用户通告阅读标记表记录
 			String userId = sysAnnouncement.getUserIds();
-			String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
+            //update-begin-author:liusq---date:2023-10-31--for:[issues/5503]【公告】通知无法接收
+			if(StringUtils.isNotBlank(userId) && userId.endsWith(",")){
+				userId = userId.substring(0, (userId.length()-1));
+			}
+			String[] userIds = userId.split(",");
+            //update-end-author:liusq---date:2023-10-31--for:[issues/5503]【公告】通知无法接收
 			String anntId = sysAnnouncement.getId();
 			Date refDate = new Date();
 			for(int i=0;i<userIds.length;i++) {
@@ -135,12 +142,17 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	}
 
 	@Override
-	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory) {
+	public Page<SysAnnouncement> querySysCementPageByUserId(Page<SysAnnouncement> page, String userId, String msgCategory, Integer tenantId, Date beginDate) {
 		if (page.getSize() == -1) {
-			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(null, userId, msgCategory));
+			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(null, userId, msgCategory,tenantId,beginDate));
 		} else {
-			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(page, userId, msgCategory));
+			return page.setRecords(sysAnnouncementMapper.querySysCementListByUserId(page, userId, msgCategory,tenantId,beginDate));
 		}
+	}
+
+	@Override
+	public Integer getUnreadMessageCountByUserId(String userId, Date beginDate) {
+		return sysAnnouncementMapper.getUnreadMessageCountByUserId(userId, beginDate);
 	}
 
 	@Override

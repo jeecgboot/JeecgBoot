@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -27,6 +28,13 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @return
 	 */
 	public SysUser getUserByName(@Param("username") String username);
+	
+	/**
+	  * 通过用户账号查询用户Id
+	 * @param username
+	 * @return
+	 */
+	public String getUserIdByName(@Param("username") String username);
 
 	/**
 	 *  根据部门Id查询用户信息
@@ -171,9 +179,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param page
 	 * @param roleId
 	 * @param keyword
+	 * @param userIdList
 	 * @return
 	 */
-	IPage<SysUser> selectUserListByRoleId(Page<SysUser> page,  @Param("roleId") String roleId,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId);
+	IPage<SysUser> selectUserListByRoleId(Page<SysUser> page,  @Param("roleId") String roleId,  @Param("keyword") String keyword,  @Param("tenantId") Integer tenantId, @Param("excludeUserIdList") List<String> excludeUserIdList);
 
     /**
      * 更新刪除状态和离职状态
@@ -204,4 +213,13 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @return
 	 */
 	List<SysUser> getUserByDepartsTenantId(@Param("departIds") List<String> departIds,@Param("tenantId") Integer tenantId);
+
+	/**
+	 * 根据用户名和手机号获取用户
+	 * @param phone
+	 * @param username
+	 * @return
+	 */
+	@Select("select id,phone from sys_user where phone = #{phone} and username = #{username}")
+    SysUser getUserByNameAndPhone(@Param("phone") String phone, @Param("username") String username);
 }

@@ -119,5 +119,19 @@ public interface SysTenantMapper extends BaseMapper<SysTenant> {
      * @return
      */
     Long getApplySuperAdminCount(@Param("userId") String userId, @Param("tenantId") Integer tenantId);
-    
+
+    /**
+     * 租户是否存在
+     * @param tenantId
+     * @return
+     */
+    @Select("select count(1) from sys_tenant where id = #{tenantId} and del_flag = 0")
+    Long tenantIzExist(@Param("tenantId") Integer tenantId);
+
+    /**
+     * 根据用户id获取租户
+     * @param userId
+     * @return
+     */
+    List<SysTenant> getTenantListByUserId(@Param("userId") String userId);
 }

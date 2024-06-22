@@ -172,4 +172,32 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
         SysRoleIndex sysRoleIndex = sysRoleIndexService.getOne(new LambdaQueryWrapper<SysRoleIndex>().eq(SysRoleIndex::getRoleCode, roleCode));
         return Result.OK(sysRoleIndex);
     }
+
+    /**
+     * 查询默认首页配置
+     */
+    @GetMapping("/queryDefIndex")
+    public Result<SysRoleIndex> queryDefIndex() {
+        SysRoleIndex defIndexCfg = sysRoleIndexService.queryDefaultIndex();
+        return Result.OK(defIndexCfg);
+    }
+
+    /**
+     * 更新默认首页配置
+     */
+    @PreAuthorize("@jps.requiresPermissions('system:permission:setDefIndex')")
+    @PutMapping("/updateDefIndex")
+    public Result<?> updateDefIndex(
+            @RequestParam("url") String url,
+            @RequestParam("component") String component,
+            @RequestParam("isRoute") Boolean isRoute
+    ) {
+        boolean success = sysRoleIndexService.updateDefaultIndex(url, component, isRoute);
+        if (success) {
+            return Result.OK("设置成功");
+        } else {
+            return Result.error("设置失败");
+        }
+    }
+
 }

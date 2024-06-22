@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -91,32 +92,24 @@ public class LoginController {
 	@Deprecated
 //	@Operation(summary = "登录接口")
 //	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel){
+	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();
 		String password = sysLoginModel.getPassword();
-		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 		if(isLoginFailOvertimes(username)){
 			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
 		}
-		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
-		//前端密码加密，后端进行密码解密
-		//password = AesEncryptUtil.desEncrypt(sysLoginModel.getPassword().replaceAll("%2B", "\\+")).trim();//密码解密
-		//update-begin--Author:scott  Date:20190805 for：暂时注释掉密码加密逻辑，有点问题
 
-		//update-begin-author:taoyan date:20190828 for:校验验证码
+		// step.1 验证码check
         String captcha = sysLoginModel.getCaptcha();
         if(captcha==null){
             result.error500("验证码无效");
             return result;
         }
         String lowerCaseCaptcha = captcha.toLowerCase();
-        //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
         String origin = lowerCaseCaptcha+sysLoginModel.getCheckKey()+jeecgBaseConfig.getSignatureSecret();
 		String realKey = Md5Util.md5Encode(origin, "utf-8");
-		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		Object checkCode = redisUtil.get(realKey);
 		//当进入登录页时，有一定几率出现验证码错误 #1714
 		if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
@@ -126,40 +119,36 @@ public class LoginController {
 			result.setCode(HttpStatus.PRECONDITION_FAILED.value());
 			return result;
 		}
-		//update-end-author:taoyan date:20190828 for:校验验证码
 		
-		//1. 校验用户是否有效
-		//update-begin-author:wangshuai date:20200601 for: 登录代码验证用户是否注销bug，if条件永远为false
+		// step.2 校验用户是否存在且有效
 		LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(SysUser::getUsername,username);
 		SysUser sysUser = sysUserService.getOne(queryWrapper);
-		//update-end-author:wangshuai date:20200601 for: 登录代码验证用户是否注销bug，if条件永远为false
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
 		}
 
-		//2. 校验用户名或密码是否正确
+		// step.3 校验用户名或密码是否正确
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();
 		if (!syspassword.equals(userpassword)) {
-			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			addLoginFailOvertimes(username);
-			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			result.error500("用户名或密码错误");
 			return result;
 		}
-				
-		//用户登录信息
-		userInfo(sysUser, result);
-		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
+
+		// step.4  登录成功获取用户信息
+		userInfo(sysUser, result, request);
+
+		// step.5  登录成功删除验证码
 		redisUtil.del(realKey);
-		//update-begin--Author:liusq  Date:20210126  for：登录成功，删除redis中的验证码
 		redisUtil.del(CommonConstant.LOGIN_FAIL + username);
+
+		// step.6  记录用户登录日志
 		LoginUser loginUser = new LoginUser();
 		BeanUtils.copyProperties(sysUser, loginUser);
 		baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
-        //update-end--Author:wangshuai  Date:20200714  for：登录日志没有记录人员
 		return result;
 	}
 
@@ -169,18 +158,20 @@ public class LoginController {
 	 */
 	@GetMapping("/user/getUserInfo")
 	public Result<JSONObject> getUserInfo(HttpServletRequest request){
+		long start = System.currentTimeMillis();
 		Result<JSONObject> result = new Result<JSONObject>();
 		String  username = JwtUtil.getUserNameByToken(request);
 		if(oConvertUtils.isNotEmpty(username)) {
 			// 根据用户名查询用户信息
 			SysUser sysUser = sysUserService.getUserByName(username);
 			JSONObject obj=new JSONObject();
+			log.info("1 获取用户信息耗时（用户基础信息）" + (System.currentTimeMillis() - start) + "毫秒");
 
 			//update-begin---author:scott ---date:2022-06-20  for：vue3前端，支持自定义首页-----------
-			String version = request.getHeader(CommonConstant.VERSION);
+			String vue3Version = request.getHeader(CommonConstant.VERSION);
 			//update-begin---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
-			SysRoleIndex roleIndex = sysUserService.getDynamicIndexByUserRole(username, version);
-			if (oConvertUtils.isNotEmpty(version) && roleIndex != null && oConvertUtils.isNotEmpty(roleIndex.getUrl())) {
+			SysRoleIndex roleIndex = sysUserService.getDynamicIndexByUserRole(username, vue3Version);
+			if (oConvertUtils.isNotEmpty(vue3Version) && roleIndex != null && oConvertUtils.isNotEmpty(roleIndex.getUrl())) {
 				String homePath = roleIndex.getUrl();
 				if (!homePath.startsWith(SymbolConstant.SINGLE_SLASH)) {
 					homePath = SymbolConstant.SINGLE_SLASH + homePath;
@@ -189,12 +180,14 @@ public class LoginController {
 			}
 			//update-begin---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
 			//update-end---author:scott ---date::2022-06-20  for：vue3前端，支持自定义首页--------------
+			log.info("2 获取用户信息耗时 (首页面配置)" + (System.currentTimeMillis() - start) + "毫秒");
 			
 			obj.put("userInfo",sysUser);
 			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 			result.setResult(obj);
 			result.success("");
 		}
+		log.info("end 获取用户信息耗时 " + (System.currentTimeMillis() - start) + "毫秒");
 		return result;
 
 	}
@@ -276,7 +269,7 @@ public class LoginController {
 	 * 获取访问量
 	 * @return
 	 */
-	@GetMapping("visitInfo")
+	@GetMapping("/visitInfo")
 	public Result<List<Map<String,Object>>> visitInfo() {
 		Result<List<Map<String,Object>>> result = new Result<List<Map<String,Object>>>();
 		Calendar calendar = new GregorianCalendar();
@@ -328,12 +321,14 @@ public class LoginController {
 	 * @return
 	 */
 	@PostMapping(value = "/sms")
-	public Result<String> sms(@RequestBody JSONObject jsonObject) {
+	public Result<String> sms(@RequestBody JSONObject jsonObject,HttpServletRequest request) {
 		Result<String> result = new Result<String>();
+		String clientIp = IpUtils.getIpAddr(request);
 		String mobile = jsonObject.get("mobile").toString();
 		//手机号模式 登录模式: "2"  注册模式: "1"
 		String smsmode=jsonObject.get("smsmode").toString();
-		log.info(mobile);
+		log.info("-------- IP:{}, 手机号：{}，获取绑定验证码", clientIp, mobile);
+		
 		if(oConvertUtils.isEmpty(mobile)){
 			result.setMessage("手机号不允许为空！");
 			result.setSuccess(false);
@@ -350,6 +345,17 @@ public class LoginController {
 			result.setSuccess(false);
 			return result;
 		}
+
+		//-------------------------------------------------------------------------------------
+		//增加 check防止恶意刷短信接口
+		if(!DySmsLimit.canSendSms(clientIp)){
+			log.warn("--------[警告] IP地址:{}, 短信接口请求太多-------", clientIp);
+			result.setMessage("短信接口请求太多，请稍后再试！");
+			result.setCode(CommonConstant.PHONE_SMS_FAIL_CODE);
+			result.setSuccess(false);
+			return result;
+		}
+		//-------------------------------------------------------------------------------------
 
 		//随机数
 		String captcha = RandomUtil.randomNumbers(6);
@@ -424,7 +430,7 @@ public class LoginController {
 	 */
 	@Operation(summary ="手机号登录接口")
 	@PostMapping("/phoneLogin")
-	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject) {
+	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String phone = jsonObject.getString("mobile");
 		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
@@ -450,11 +456,10 @@ public class LoginController {
 			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			addLoginFailOvertimes(phone);
 			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-			result.setMessage("手机验证码错误");
-			return result;
+			return Result.error("手机验证码错误");
 		}
 		//用户信息
-		userInfo(sysUser, result);
+		userInfo(sysUser, result, request);
 		//添加日志
 		baseCommonService.addLog("用户名: " + sysUser.getUsername() + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
 
@@ -469,7 +474,7 @@ public class LoginController {
 	 * @param result
 	 * @return
 	 */
-	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result) {
+	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result, HttpServletRequest request) {
 		String username = sysUser.getUsername();
 		String syspassword = sysUser.getPassword();
 		// 获取用户部门信息
@@ -509,7 +514,15 @@ public class LoginController {
 			// update-end--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
 			obj.put("multi_depart", 2);
 		}
-		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
+
+		//update-begin---author:scott ---date:2024-01-05  for：【QQYUN-7802】前端在登录时加载了两次数据字典，建议优化下，避免数据字典太多时可能产生的性能问题 #956---
+		// login接口，在vue3前端下不加载字典数据，vue2下加载字典
+		String vue3Version = request.getHeader(CommonConstant.VERSION);
+		if(oConvertUtils.isEmpty(vue3Version)){
+			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
+		}
+		//end-begin---author:scott ---date:2024-01-05  for：【QQYUN-7802】前端在登录时加载了两次数据字典，建议优化下，避免数据字典太多时可能产生的性能问题 #956---
+		
 		result.setResult(obj);
 		result.success("登录成功");
 		return result;
@@ -570,7 +583,7 @@ public class LoginController {
 	@PreAuthorize("@jps.requiresRoles('admin')")
 	@GetMapping(value = "/switchVue3Menu")
 	public Result<String> switchVue3Menu(HttpServletResponse response) {
-		Result<String> res = new Result<String>();
+		Result<String> res = new Result<String>();	
 		sysPermissionService.switchVue3Menu();
 		return res;
 	}
@@ -615,10 +628,12 @@ public class LoginController {
 		String orgCode = sysUser.getOrgCode();
 		if(oConvertUtils.isEmpty(orgCode)) {
 			//如果当前用户无选择部门 查看部门关联信息
+			
 			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
 			//update-begin-author:taoyan date:20220117 for: JTC-1068【app】新建用户，没有设置部门及角色，点击登录提示暂未归属部，一直在登录页面 使用手机号登录 可正常
 			if (departs == null || departs.size() == 0) {
 				/*result.error500("用户暂未归属部门,不可登录!");
+				
 				return result;*/
 			}else{
 				orgCode = departs.get(0).getOrgCode();
@@ -754,8 +769,86 @@ public class LoginController {
 		if(failTime!=null){
 			val = Integer.parseInt(failTime.toString());
 		}
-		// 10分钟
-		redisUtil.set(key, ++val, 10);
+		// 10分钟，一分钟为60s
+		redisUtil.set(key, ++val, 600);
 	}
 
+	/**
+	 * 发送短信验证码接口(修改密码)
+	 *
+	 * @param jsonObject
+	 * @return
+	 */
+	@PostMapping(value = "/sendChangePwdSms")
+	public Result<String> sendSms(@RequestBody JSONObject jsonObject) {
+		Result<String> result = new Result<>();
+		String mobile = jsonObject.get("mobile").toString();
+		if (oConvertUtils.isEmpty(mobile)) {
+			result.setMessage("手机号不允许为空！");
+			result.setSuccess(false);
+			return result;
+		}
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		String username = sysUser.getUsername();
+		LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
+		query.eq(SysUser::getUsername, username).eq(SysUser::getPhone, mobile);
+		SysUser user = sysUserService.getOne(query);
+		if (null == user) {
+			return Result.error("当前登录用户和绑定的手机号不匹配，无法修改密码！");
+		}
+		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE + mobile;
+		Object object = redisUtil.get(redisKey);
+		if (object != null) {
+			result.setMessage("验证码10分钟内，仍然有效！");
+			result.setSuccess(false);
+			return result;
+		}
+		//随机数
+		String captcha = RandomUtil.randomNumbers(6);
+		JSONObject obj = new JSONObject();
+		obj.put("code", captcha);
+		try {
+			boolean b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.CHANGE_PASSWORD_TEMPLATE_CODE);
+			if (!b) {
+				result.setMessage("短信验证码发送失败,请稍后重试");
+				result.setSuccess(false);
+				return result;
+			}
+			//验证码5分钟内有效
+			redisUtil.set(redisKey, captcha, 300);
+			result.setSuccess(true);
+		} catch (ClientException e) {
+			e.printStackTrace();
+			result.error500(" 短信接口未配置，请联系管理员！");
+			return result;
+		}
+		return result;
+	}
+
+	
+	/**
+	 * 图形验证码
+	 * @param sysLoginModel
+	 * @return
+	 */
+	@RequestMapping(value = "/smsCheckCaptcha", method = RequestMethod.POST)
+	public Result<?> smsCheckCaptcha(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
+		String captcha = sysLoginModel.getCaptcha();
+		String checkKey = sysLoginModel.getCheckKey();
+		if(captcha==null){
+			return Result.error("验证码无效");
+		}
+		String lowerCaseCaptcha = captcha.toLowerCase();
+		String realKey = Md5Util.md5Encode(lowerCaseCaptcha+checkKey+jeecgBaseConfig.getSignatureSecret(), "utf-8");
+		Object checkCode = redisUtil.get(realKey);
+		if(checkCode==null || !checkCode.equals(lowerCaseCaptcha)) {
+			return Result.error("验证码错误");
+		}
+		String clientIp = IpUtils.getIpAddr(request);
+		//清空短信记录数量
+		DySmsLimit.clearSendSmsCount(clientIp);
+		redisUtil.removeAll(realKey);
+		return Result.ok();
+	}
+	
 }

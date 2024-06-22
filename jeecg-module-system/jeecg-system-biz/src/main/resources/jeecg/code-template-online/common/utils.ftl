@@ -131,6 +131,65 @@
       </#if>
   </#if>
 </#function>
+<#-- update-begin---author:chenrui ---date:20231228  for:[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+<#-- ** 高级查询生成(Vue3 * -->
+<#function superQueryFieldListForVue3(po,order)>
+<#-- 字段展示/DB类型 -->
+    <#assign baseAttrs="view: '${po.classType}', type: 'string',">
+    <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+        <#assign baseAttrs="view: 'number', type: 'number',">
+    </#if>
+
+<#-- 特殊类型控件扩展字段 -->
+    <#assign extAttrs="">
+    <#assign dictCode="">
+    <#if po.dictTable?default('')?trim?length gt 1 && po.dictText?default('')?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+        <#-- update-begin---author:chenrui ---date:20231228  for:fix 带条件字典存在单引号导致js编译错误---------- -->
+        <#assign dictCode="dictTable: \"${po.dictTable}\", dictCode: '${po.dictField}', dictText: '${po.dictText}'">
+        <#-- update-begin---author:chenrui ---date:20231228  for:fix 带条件字典存在单引号导致js编译错误---------- -->
+    <#elseif po.dictField?default("")?trim?length gt 1>
+        <#assign dictCode="dictCode: '${po.dictField}'">
+    </#if>
+
+    <#if po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='checkbox' || po.classType=='radio'>
+        <#assign extAttrs="${dictCode},">
+    <#elseif po.classType=='cat_tree'>
+    <#-- 分类字典树 -->
+        <#-- update-begin---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+        <#assign extAttrs="pcode: '${po.dictField?default('')}',">
+        <#-- update-end---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+    <#elseif po.classType=='sel_tree'>
+    <#-- 自定义树 -->
+        <#if po.dictText??>
+        <#-- dictText示例:id,pid,name,has_child -->
+            <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+                <#assign extAttrs="dict: '${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}'">
+            <#elseif po.dictText?split(',')[1]??>
+                <#assign extAttrs="pidField: '${po.dictText?split(',')[1]}'">
+            <#elseif po.dictText?split(',')[3]??>
+                <#assign extAttrs="hasChildField: '${po.dictText?split(',')[3]}'">
+            </#if>
+        </#if>
+        <#-- update-begin---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+        <#assign extAttrs="${extAttrs}, pidValue: '${po.dictField?default('')}',">
+        <#-- update-end---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+    <#elseif po.classType=='popup'>
+    <#-- popup -->
+        <#-- update-begin---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+        <#if po.dictText?default("")?trim?length gt 1 && po.dictText?index_of(',') gt 0 && po.dictField?default("")?trim?length gt 1>
+        <#-- update-begin---author:chenrui ---date:20240109  for：[issue/5787]增加非空判断防止代码生成时空指针异常---------- -->
+        <#-- 如果有多个回填字段,找到popup字段对应的来源字段 -->
+            <#assign orgFieldIx=po.dictText?split(',')?seq_index_of(po.fieldDbName)>
+            <#assign orgField=po.dictField?split(',')[orgFieldIx]>
+        <#else>
+            <#assign orgField=po.dictField?default("")>
+        </#if>
+        <#assign extAttrs="code: '${po.dictTable?default('')}', orgFields: '${orgField}', destFields: '${po.fieldName}', popupMulti: false,">
+    </#if>
+
+    <#return "${po.fieldName}: {title: '${po.filedComment}',order: ${order},${baseAttrs}${extAttrs}}" >
+</#function>
+<#-- update-end---author:chenrui ---date:20231228  for:[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
 
 
 <#-- vue3 获取表单modal的宽度-->

@@ -18,6 +18,7 @@ import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.security.JeecgPermissionService;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.modules.system.constant.DefIndexConst;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.SysPermissionTree;
 import org.jeecg.modules.system.model.TreeModel;
@@ -249,38 +250,66 @@ public class SysPermissionController {
 			if (oConvertUtils.isEmpty(loginUser)) {
 				return Result.error("请登录系统！");
 			}
-			List<SysPermission> metaList = sysPermissionService.queryByUser(loginUser.getUsername());
+			List<SysPermission> metaList = sysPermissionService.queryByUser(loginUser.getId());
 			//添加首页路由
 			//update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
-			if(!PermissionDataUtil.hasIndexPage(metaList)){
-				SysPermission indexMenu = sysPermissionService.list(new LambdaQueryWrapper<SysPermission>().eq(SysPermission::getName,"首页")).get(0);
-				metaList.add(0,indexMenu);
-			}
-			//update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 
 			//update-begin--Author:zyf Date:20220425  for:自定义首页地址 LOWCOD-1578
 			String version = request.getHeader(CommonConstant.VERSION);
-			//update-begin---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
-			SysRoleIndex roleIndex= sysUserService.getDynamicIndexByUserRole(loginUser.getUsername(),version);
-			//update-end---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
+			SysRoleIndex defIndexCfg = sysUserService.getDynamicIndexByUserRole(loginUser.getUsername(), version);
+			if (defIndexCfg == null) {
+				defIndexCfg = sysRoleIndexService.initDefaultIndex();
+			}
 			//update-end--Author:zyf  Date:20220425  for：自定义首页地址 LOWCOD-1578
 
-			if(roleIndex!=null){
-				List<SysPermission> menus = metaList.stream().filter(sysPermission -> "首页".equals(sysPermission.getName())).collect(Collectors.toList());
-				//update-begin---author:liusq ---date:2022-06-29  for：设置自定义首页地址和组件----------
-				String component = roleIndex.getComponent();
-				String routeUrl = roleIndex.getUrl();
-				boolean route = roleIndex.isRoute();
-				if(oConvertUtils.isNotEmpty(routeUrl)){
+			// 如果没有授权角色首页，则自动添加首页路由
+			if (!PermissionDataUtil.hasIndexPage(metaList, defIndexCfg)) {
+				LambdaQueryWrapper<SysPermission> indexQueryWrapper = new LambdaQueryWrapper<>();
+				indexQueryWrapper.eq(SysPermission::getUrl, defIndexCfg.getUrl());
+				SysPermission indexMenu = sysPermissionService.getOne(indexQueryWrapper);
+				if (indexMenu == null) {
+					indexMenu = new SysPermission();
+					indexMenu.setUrl(defIndexCfg.getUrl());
+					indexMenu.setComponent(defIndexCfg.getComponent());
+					indexMenu.setRoute(defIndexCfg.isRoute());
+					indexMenu.setName(DefIndexConst.DEF_INDEX_NAME);
+					indexMenu.setMenuType(0);
+				}
+				// 如果没有授权一级菜单，则自身变为一级菜单
+				if (indexMenu.getParentId() != null && !PermissionDataUtil.hasMenuById(metaList, indexMenu.getParentId())) {
+					indexMenu.setMenuType(0);
+					indexMenu.setParentId(null);
+				}
+				if (oConvertUtils.isEmpty(indexMenu.getIcon())) {
+					indexMenu.setIcon("ant-design:home");
+				}
+				metaList.add(0, indexMenu);
+			}
+			//update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
+
+/* TODO 注： 这段代码的主要作用是：把首页菜单的组件替换成角色菜单的组件，由于现在的逻辑如果角色菜单不存在则自动插入一条，所以这段代码暂时不需要
+			List<SysPermission> menus = metaList.stream().filter(sysPermission -> {
+				if (defIndexCfg.getUrl().equals(sysPermission.getUrl())) {
+					return true;
+				}
+				return defIndexCfg.getUrl().equals(sysPermission.getUrl());
+			}).collect(Collectors.toList());
+			//update-begin---author:liusq ---date:2022-06-29  for：设置自定义首页地址和组件----------
+			if (menus.size() == 1) {
+				String component = defIndexCfg.getComponent();
+				String routeUrl = defIndexCfg.getUrl();
+				boolean route = defIndexCfg.isRoute();
+				if (oConvertUtils.isNotEmpty(routeUrl)) {
 					menus.get(0).setComponent(component);
 					menus.get(0).setRoute(route);
 					menus.get(0).setUrl(routeUrl);
-				}else{
+				} else {
 					menus.get(0).setComponent(component);
 				}
-				//update-end---author:liusq ---date:2022-06-29  for：设置自定义首页地址和组件-----------
 			}
-			
+			//update-end---author:liusq ---date:2022-06-29  for：设置自定义首页地址和组件-----------
+*/
+
 			JSONObject json = new JSONObject();
 			JSONArray menujsonArray = new JSONArray();
 			this.getPermissionJsonArray(menujsonArray, metaList, null);
@@ -290,7 +319,7 @@ public class SysPermissionController {
 			JSONArray authjsonArray = new JSONArray();
 			this.getAuthJsonArray(authjsonArray, metaList);
 			//查询所有的权限
-			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>();
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>().select( SysPermission::getName, SysPermission::getPermsType, SysPermission::getPerms, SysPermission::getStatus);
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.eq(SysPermission::getMenuType, CommonConstant.MENU_TYPE_2);
 			//query.eq(SysPermission::getStatus, "1");
@@ -301,6 +330,12 @@ public class SysPermissionController {
 			json.put("menu", menujsonArray);
 			//按钮权限（用户拥有的权限集合）
 			json.put("auth", authjsonArray);
+			// 按钮权限（用户拥有的权限集合）
+			List<String> codeList = metaList.stream()
+					.filter((permission) -> CommonConstant.MENU_TYPE_2.equals(permission.getMenuType()) && CommonConstant.STATUS_1.equals(permission.getStatus()))
+					.collect(ArrayList::new, (list, permission) -> list.add(permission.getPerms()), ArrayList::addAll);
+			// 所拥有的权限编码(vue3专用)
+			json.put("codeList", codeList);
 			//全部权限配置集合（按钮权限，访问权限）
 			json.put("allAuth", allauthjsonArray);
 			//数据源安全模式
@@ -328,7 +363,7 @@ public class SysPermissionController {
 				return Result.error("请登录系统！");
 			}
 			// 获取当前用户的权限集合
-			List<SysPermission> metaList = sysPermissionService.queryByUser(loginUser.getUsername());
+			List<SysPermission> metaList = sysPermissionService.queryByUser(loginUser.getId());
             // 按钮权限（用户拥有的权限集合）
             List<String> codeList = metaList.stream()
                     .filter((permission) -> CommonConstant.MENU_TYPE_2.equals(permission.getMenuType()) && CommonConstant.STATUS_1.equals(permission.getStatus()))
@@ -337,7 +372,7 @@ public class SysPermissionController {
 			JSONArray authArray = new JSONArray();
 			this.getAuthJsonArray(authArray, metaList);
 			// 查询所有的权限
-			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<>();
+			LambdaQueryWrapper<SysPermission> query = new LambdaQueryWrapper<SysPermission>().select( SysPermission::getName, SysPermission::getPermsType, SysPermission::getPerms, SysPermission::getStatus);
 			query.eq(SysPermission::getDelFlag, CommonConstant.DEL_FLAG_0);
 			query.eq(SysPermission::getMenuType, CommonConstant.MENU_TYPE_2);
 			List<SysPermission> allAuthList = sysPermissionService.list(query);

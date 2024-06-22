@@ -9,6 +9,7 @@ import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.model.TreeModel;
+import org.jeecg.modules.system.vo.SysDepartExportVo;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.springframework.data.repository.query.Param;
@@ -39,6 +40,14 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @return
 	 */
 	public List<SysDepart> queryDepartsByUsername(@Param("username") String username);
+	
+	/**
+	 * 根据用户名查询部门
+	 *
+	 * @param userId
+	 * @return
+	 */
+	public List<String> queryDepartsByUserId(@Param("userId") String userId);
 
     /**
      * 通过部门编码获取部门id
@@ -161,4 +170,12 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @return
 	 */
 	List<SysDepart> getDepartPageByName(@Param("page") Page<SysDepart> page, @Param("departName") String departName, @Param("tenantId") Integer tenantId, @Param("parentId") String parentId);
+
+	/**
+	 * 获取租户id和部门父id获取的部门数据
+	 * @param tenantId
+	 * @param parentId
+	 * @return
+	 */
+    List<SysDepartExportVo> getSysDepartList(@Param("parentId") String parentId,@Param("tenantId") Integer tenantId);
 }

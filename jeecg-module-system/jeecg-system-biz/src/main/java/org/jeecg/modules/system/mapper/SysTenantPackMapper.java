@@ -14,4 +14,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface SysTenantPackMapper extends BaseMapper<SysTenantPack> {
 
+    /**
+     * 删除租户产品包
+     *
+     * @param tenantIdList
+     */
+    void deletePackByTenantIds(@Param("tenantIdList") List<Integer> tenantIdList);
 }

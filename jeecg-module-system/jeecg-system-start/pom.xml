@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-module-system</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.6.1</version>
+        <version>3.7.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,6 +24,13 @@
             <artifactId>jeecg-module-demo</artifactId>
             <version>${jeecgboot.version}</version>
         </dependency>
+        
+        <!-- flyway 数据库自动升级 
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>7.15.0</version>
+        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

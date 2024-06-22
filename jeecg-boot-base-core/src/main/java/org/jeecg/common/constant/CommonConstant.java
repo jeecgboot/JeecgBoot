@@ -36,6 +36,16 @@ public interface CommonConstant {
 	 */
 	int LOG_TYPE_2 = 2;
 
+    /**
+     * 系统日志类型： 租户操作日志
+     */
+    int LOG_TYPE_3 = 3;
+
+    /**
+     * 系统日志类型： 异常
+     */
+    int LOG_TYPE_4 = 4;
+
 	/**
 	 * 操作日志类型： 查询
 	 */
@@ -69,6 +79,8 @@ public interface CommonConstant {
 	
 	/** {@code 500 Server Error} (HTTP/1.0 - RFC 1945) */
     Integer SC_INTERNAL_SERVER_ERROR_500 = 500;
+    /** {@code 404 Not Found} (HTTP/1.0 - RFC 1945) */
+    Integer SC_INTERNAL_NOT_FOUND_404 = 404;
     /** {@code 200 OK} (HTTP/1.0 - RFC 1945) */
     Integer SC_OK_200 = 200;
     
@@ -284,6 +296,10 @@ public interface CommonConstant {
      * 在线聊天 用户好友缓存前缀
      */
     String IM_PREFIX_USER_FRIEND_CACHE = "sys:cache:im:im_prefix_user_friend_";
+    /**
+     * 缓存用户id与用户名关系
+     */
+    String SYS_USER_ID_MAPPING_CACHE = "sys:cache:user:id_mapping";
 
     /**
      * 考勤补卡业务状态 （1：同意  2：不同意）
@@ -374,6 +390,8 @@ public interface CommonConstant {
 
     /**前端vue3版本Header参数名*/
     String VERSION="X-Version";
+
+    String VERSION_V3 = "v3";
 
     /**存储在线程变量里的动态表名*/
     String DYNAMIC_TABLE_NAME="DYNAMIC_TABLE_NAME";
@@ -573,4 +591,30 @@ public interface CommonConstant {
    public static final String SAAS_MODE_TENANT = "tenant";
    //update-end---author:scott ---date::2023-09-10  for：积木报表常量----
  
+   //update-begin---author:wangshuai---date:2024-04-07---for:修改手机号常量---
+   /**
+    * 修改手机号短信验证码redis-key的前缀
+    */
+   String CHANGE_PHONE_REDIS_KEY_PRE = "sys:cache:phone:change_phone_msg:";
+
+    /**
+     * 缓存用户最后一次收到消息通知的时间 KEY
+     */
+   String CACHE_KEY_USER_LAST_ANNOUNT_TIME_1HOUR = "sys:cache:userinfo:user_last_annount_time::%s";
+   
+   /**
+    * 验证原手机号
+    */
+   String VERIFY_ORIGINAL_PHONE = "verifyOriginalPhone";
+
+   /**
+    * 修改手机号
+    */
+   String UPDATE_PHONE = "updatePhone";
+   //update-end---author:wangshuai---date:2024-04-07---for:修改手机号常量---
+    
+   /**
+    * 修改手机号验证码请求次数超出
+    */
+   Integer PHONE_SMS_FAIL_CODE = 40002;
 }

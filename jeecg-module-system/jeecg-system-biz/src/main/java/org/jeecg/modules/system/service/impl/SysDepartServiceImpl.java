@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ArrayUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -29,6 +30,7 @@ import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
+import org.jeecg.modules.system.vo.SysDepartExportVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -71,6 +73,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		//根据部门id获取所负责部门
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		String[] codeArr = this.getMyDeptParentOrgCode(departIds);
+		//update-begin---author:wangshuai---date:2023-12-01---for:【QQYUN-7320】查询部门没数据，导致报错空指针---
+		if(ArrayUtil.isEmpty(codeArr)){
+			return null;
+		}
+		//update-end---author:wangshuai---date:2023-12-01---for:【QQYUN-7320】查询部门没数据，导致报错空指针---
 		for(int i=0;i<codeArr.length;i++){
 			query.or().likeRight(SysDepart::getOrgCode,codeArr[i]);
 		}
@@ -199,6 +206,14 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 			//新添加的部门是叶子节点
 			sysDepart.setIzLeaf(CommonConstant.IS_LEAF);
+			// 【QQYUN-7172】数据库默认值兼容
+			if (oConvertUtils.isEmpty(sysDepart.getOrgCategory())) {
+				if (oConvertUtils.isEmpty(sysDepart.getParentId())) {
+					sysDepart.setOrgCategory("1");
+				} else {
+					sysDepart.setOrgCategory("2");
+				}
+			}
 			this.save(sysDepart);
             //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
 			//新增部门的时候新增负责部门
@@ -477,6 +492,12 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	public List<SysDepart> queryDepartsByUsername(String username) {
 		return baseMapper.queryDepartsByUsername(username);
 	}
+	
+	@Override
+	public List<String> queryDepartsByUserId(String userId) {
+		List<String> list = baseMapper.queryDepartsByUserId(userId);
+		return list;
+	}
 
 	/**
 	 * 根据用户所负责部门ids获取父级部门编码
@@ -487,7 +508,10 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		//根据部门id查询所负责部门
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
-		query.in(SysDepart::getId, Arrays.asList(departIds.split(",")));
+		if(oConvertUtils.isNotEmpty(departIds)){
+			query.in(SysDepart::getId, Arrays.asList(departIds.split(",")));
+		}
+		
 		//------------------------------------------------------------------------------------------------
 		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
 		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
@@ -1197,4 +1221,169 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			}
 		}
 	}
+
+	//========================begin 系统下部门与人员导入 ==================================================================
+	/**
+	 * 系统部门导出
+	 * @param tenantId
+	 * @return
+	 */
+	@Override
+	public List<SysDepartExportVo> getExportDepart(Integer tenantId) {
+		//获取父级部门
+		List<SysDepartExportVo> parentDepart = departMapper.getSysDepartList("", tenantId);
+		//子部门
+		List<SysDepartExportVo> childrenDepart = new ArrayList<>();
+		//把一级部门名称放在里面
+		List<SysDepartExportVo> exportDepartVoList = new ArrayList<>();
+		//存放部门一级id避免重复
+		List<String> departIdList = new ArrayList<>();
+		for (SysDepartExportVo sysDepart : parentDepart) {
+			//step 1.添加第一级部门
+			departIdList.add(sysDepart.getId());
+			sysDepart.setDepartNameUrl(sysDepart.getDepartName());
+			exportDepartVoList.add(sysDepart);
+			//step 2.添加自己部门路径，用/分离
+			//创建路径
+			List<String> path = new ArrayList<>();
+			path.add(sysDepart.getDepartName());
+			//创建子部门路径
+			findSysDepartPath(sysDepart, path, tenantId, childrenDepart, departIdList);
+			path.clear();
+		}
+		exportDepartVoList.addAll(childrenDepart);
+		childrenDepart.clear();
+		departIdList.clear();
+		return exportDepartVoList;
+	}
+
+	/**
+	 * 系统部门导入
+	 * @param listSysDeparts
+	 * @param errorMessageList
+	 */
+	@Override
+	public void importSysDepart(List<SysDepartExportVo> listSysDeparts, List<String> errorMessageList) {
+		int num = 0;
+		int tenantId = 0;
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+			tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
+		}
+		//部门路径排序
+		Collections.sort(listSysDeparts, new Comparator<SysDepartExportVo>() {
+			@Override
+			public int compare(SysDepartExportVo o1, SysDepartExportVo o2) {
+				if(oConvertUtils.isNotEmpty(o1.getDepartNameUrl()) && oConvertUtils.isNotEmpty(o2.getDepartNameUrl())){
+					int oldLength = o1.getDepartNameUrl().split(SymbolConstant.SINGLE_SLASH).length;
+					int newLength = o2.getDepartNameUrl().split(SymbolConstant.SINGLE_SLASH).length;
+					return oldLength - newLength;
+				}else{
+					return 0;
+				}
+			}
+		});
+		//存放部门数据的map
+		Map<String,SysDepart> departMap = new HashMap<>();
+		// orgCode编码长度
+		int codeLength = YouBianCodeUtil.ZHANWEI_LENGTH;
+		//循环第二遍导入数据
+		for (SysDepartExportVo departExportVo : listSysDeparts) {
+			SysDepart sysDepart = new SysDepart();
+			boolean izExport = false;
+			try {
+				izExport = this.addDepartByName(departExportVo.getDepartNameUrl(),departExportVo.getDepartName(),sysDepart,errorMessageList,tenantId,departMap,num);
+			} catch (Exception e) {
+				//没有查找到parentDept
+			}
+			//没有错误的时候才会导入数据
+			if(izExport){
+				if(oConvertUtils.isNotEmpty(departExportVo.getOrgCode())){
+					SysDepart depart = this.baseMapper.queryCompByOrgCode(departExportVo.getOrgCode());
+					if(null != depart){
+						if(oConvertUtils.isNotEmpty(sysDepart.getParentId())){
+							//更新上级部门为叶子节点
+							this.updateIzLeaf(sysDepart.getParentId(),CommonConstant.IS_LEAF);
+						}
+						//部门名称已存在
+						errorMessageList.add("第 " + num + " 行：记录部门名称“"+departExportVo.getDepartName()+"”部门编码重复，请检查！");
+						continue;
+					}
+					String departNameUrl = departExportVo.getDepartNameUrl();
+					//包含/说明是多级
+					if(departNameUrl.contains(SymbolConstant.SINGLE_SLASH)){
+						//判断添加部门的规则是否和生成的一致
+						if(!sysDepart.getOrgCode().equals(departExportVo.getOrgCode())){
+							if(oConvertUtils.isNotEmpty(sysDepart.getParentId())){
+								//更新上级部门为叶子节点
+								this.updateIzLeaf(sysDepart.getParentId(),CommonConstant.IS_LEAF);
+							}
+							//部门名称已存在
+							errorMessageList.add("第 " + num + " 行：记录部门名称“"+departExportVo.getDepartName()+"”部门编码规则不匹配，请检查！");
+							continue;
+						}
+					}
+					sysDepart.setOrgCode(departExportVo.getOrgCode());
+					if(oConvertUtils.isNotEmpty(sysDepart.getParentId())){
+					    //上级
+						sysDepart.setOrgType("2");
+					}else{
+						//下级
+						sysDepart.setOrgType("1");
+					}
+				}else{
+					sysDepart.setOrgType(sysDepart.getOrgCode().length()/codeLength+"");
+				}
+				sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
+				sysDepart.setDepartNameEn(departExportVo.getDepartNameEn());
+				sysDepart.setDepartOrder(departExportVo.getDepartOrder());
+				sysDepart.setOrgCategory(oConvertUtils.getString(departExportVo.getOrgCategory(),"1"));
+				sysDepart.setMobile(departExportVo.getMobile());
+				sysDepart.setFax(departExportVo.getFax());
+				sysDepart.setAddress(departExportVo.getAddress());
+				sysDepart.setMemo(departExportVo.getMemo());
+				ImportExcelUtil.importDateSaveOne(sysDepart, ISysDepartService.class, errorMessageList, num, CommonConstant.SQL_INDEX_UNIQ_DEPART_ORG_CODE);
+				departMap.put(departExportVo.getDepartNameUrl(),sysDepart);
+			}
+			num++;
+		}
+	}
+
+	/**
+	 * 寻找部门路径
+	 *
+	 * @param departVo       部门vo
+	 * @param path           部门路径
+	 * @param tenantId       租户id
+	 * @param childrenDepart 子部门
+	 * @param departIdList   部门id集合
+	 */
+	private void findSysDepartPath(SysDepartExportVo departVo, List<String> path, Integer tenantId, List<SysDepartExportVo> childrenDepart, List<String> departIdList) {
+		//step 1.查询子部门的数据
+		//获取租户id和部门父id获取的部门数据
+		List<SysDepartExportVo> departList = departMapper.getSysDepartList(departVo.getId(), tenantId);
+		//部门为空判断
+		if (departList == null || departList.size() <= 0) {
+			//判断最后一个子部门是否已拼接
+			if (!departIdList.contains(departVo.getId())) {
+				departVo.setDepartNameUrl(String.join(SymbolConstant.SINGLE_SLASH, path));
+				childrenDepart.add(departVo);
+			}
+			return;
+		}
+
+		for (SysDepartExportVo exportDepartVo : departList) {
+			//存放子级路径
+			List<String> cPath = new ArrayList<>(path);
+			cPath.add(exportDepartVo.getDepartName());
+			//step 2.拼接子部门路径
+			if (!departIdList.contains(departVo.getId())) {
+				departIdList.add(departVo.getId());
+				departVo.setDepartNameUrl(String.join(SymbolConstant.SINGLE_SLASH, path));
+				childrenDepart.add(departVo);
+			}
+			//step 3.递归查询子路径，直到找不到为止
+			findSysDepartPath(exportDepartVo, cPath, tenantId, childrenDepart, departIdList);
+		}
+	}
+	//========================end 系统下部门与人员导入 ==================================================================
 }

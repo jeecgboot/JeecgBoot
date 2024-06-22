@@ -1,6 +1,6 @@
 <#include "/common/utils.ftl">
 <template>
-  <div class="p-2">
+  <div class="p-2 erpNativeList">
     <#assign query_field_no=0>
     <#assign need_category = false>
     <#assign need_pca = false>
@@ -85,6 +85,7 @@
       </a-form>
     </div>
 <#-- 结束循环 -->
+  <div class="content">
     <!--引用表格-->
     <BasicTable @register="registerTable" :rowSelection="rowSelection">
       <!--插槽:table标题-->
@@ -106,6 +107,10 @@
             <Icon icon="mdi:chevron-down"></Icon>
           </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
       <!--操作栏-->
       <template #action="{ record }">
@@ -135,7 +140,7 @@
       </template>
     </BasicTable>
     <!--子表表格tab-->
-    <a-tabs defaultActiveKey="1">
+    <a-tabs defaultActiveKey="1" style="margin: 10px">
       <#assign sub_seq=1>
       <#list subTables as sub>
       <a-tab-pane tab="${sub.ftlDescription}" key="${sub_seq}" <#if sub_seq gt 1>forceRender</#if>>
@@ -144,6 +149,7 @@
       <#assign sub_seq=sub_seq+1>
       </#list>
      </a-tabs>
+  </div>
     <!-- 表单区域 -->
     <${entityName}Modal ref="registerModal" @success="handleSuccess" />
   </div>
@@ -154,7 +160,7 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
   import ${entityName}Modal from './components/${entityName}Modal.vue'
-  import { columns, searchFormSchema } from './${entityName}.data';
+  import { columns, searchFormSchema, superQuerySchema } from './${entityName}.data';
   import { list, deleteOne, batchDelete, getImportUrl,getExportUrl } from './${entityName}.api';
   import { downloadFile } from '/@/utils/common/renderUtils';
   <#include "/common/form/native/vue3NativeImport.ftl">
@@ -173,7 +179,7 @@
   import ${sub.entityName}List from './${sub.entityName}List.vue'
   </#list>
   import { useUserStore } from '/@/store/modules/user';
-  
+
   const formRef = ref();
   const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
@@ -187,6 +193,7 @@
       columns,
       canResize:false,
       useSearchForm: false,
+      clickToRowSelect: true,
       rowSelection: {type: 'radio'},
       actionColumn: {
         width: 120,
@@ -194,6 +201,11 @@
       },
       beforeFetch: (params) => {
         return Object.assign(params, queryParam);
+      },
+      pagination: {
+        current: 1,
+        pageSize: 5,
+        pageSizeOptions: ['5', '10', '20'],
       },
     },
     exportConfig: {
@@ -205,13 +217,28 @@
       url: getImportUrl,
       success: handleSuccess,
     },
-    })
+  })
 
   const [registerTable, { reload },{ rowSelection, selectedRowKeys }] = tableContext
   const mainId = computed(() => (unref(selectedRowKeys).length > 0 ? unref(selectedRowKeys)[0] : ''));
   //下发 mainId,子组件接收
   provide('mainId', mainId);
-  
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+  // 高级查询配置
+  const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    reload();
+  }
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+
   /**
    * 新增事件
    */
@@ -404,25 +431,19 @@
    * @param value
    */
   function handleFormJoinChange(key, value) {
-    queryParam[key] = value.join(',');
+    if (typeof value != 'string') {
+      queryParam[key] = value.join(',');
+    }
   }
   </#if>
 </script>
 <style lang="less" scoped>
-  .jeecg-basic-table-form-container {
-    padding: 0;
-    .table-page-search-submitButtons {
-      display: block;
-      margin-bottom: 24px;
-      white-space: nowrap;
-    }
-    .query-group-cust{
-      min-width: 100px !important;
-    }
-    .query-group-split-cust{
-      width: 30px;
-      display: inline-block;
-      text-align: center
-    }
+<#include "/common/form/native/vueNativeSearchStyle.ftl">
+  .erpNativeList {
+      height: 100%;
+      .content {
+        background-color: #fff;
+        height: 100%;
+      }
   }
 </style>

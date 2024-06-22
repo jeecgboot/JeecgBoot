@@ -44,4 +44,12 @@ public interface RedisService {
      * @throws RedisConnectException
 	 */
 	Map<String, JSONArray> getMapForReport(String type) throws RedisConnectException ;
+
+	/**
+	 * 获取历史性能指标
+	 * @return
+	 * @author chenrui
+	 * @date 2024/5/14 14:57
+	 */
+	Map<String, List<Map<String, Object>>> getMetricsHistory();
 }

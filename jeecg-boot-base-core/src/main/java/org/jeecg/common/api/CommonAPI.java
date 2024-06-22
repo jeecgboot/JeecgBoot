@@ -19,14 +19,21 @@ public interface CommonAPI {
      * @return
      */
     Set<String> queryUserRoles(String username);
+    
+    /**
+     * 1查询用户角色信息
+     * @param userId
+     * @return
+     */
+    Set<String> queryUserRolesById(String userId);
 
 
     /**
      * 2查询用户权限信息
-     * @param username
+     * @param userId
      * @return
      */
-    Set<String> queryUserAuths(String username);
+    Set<String> queryUserAuths(String userId);
 
     /**
      * 3根据 id 查询数据库中存储的 DynamicDataSourceModel
@@ -50,6 +57,13 @@ public interface CommonAPI {
      * @return
      */
     public LoginUser getUserByName(String username);
+    
+    /**
+     * 5根据用户账号查询用户Id
+     * @param username
+     * @return
+     */
+    public String getUserIdByName(String username);
 
     /**
      * 5根据用户手机号查询用户信息
@@ -125,15 +139,18 @@ public interface CommonAPI {
      */
     Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys);
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 15 字典表的 翻译，可批量
      * @param table
      * @param text
      * @param code
      * @param keys 多个用逗号分割
+     * @param dataSource 数据源
      * @return
      */
-    List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys);
+    List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys, String dataSource);
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 登录加载系统字典

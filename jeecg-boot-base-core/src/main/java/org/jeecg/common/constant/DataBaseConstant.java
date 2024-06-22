@@ -17,6 +17,9 @@ public interface DataBaseConstant {
 
     /**postgreSQL达梦数据库*/
 	public static final String DB_TYPE_POSTGRESQL = "POSTGRESQL";
+	
+    /**人大金仓数据库*/
+	public static final String DB_TYPE_KINGBASEES = "KINGBASEES";
 
     /**sqlserver数据库*/
 	public static final String DB_TYPE_SQLSERVER = "SQLSERVER";
@@ -56,6 +59,22 @@ public interface DataBaseConstant {
 	 */
 	public static final String SYS_MULTI_ORG_CODE_TABLE = "sys_multi_org_code";
 	/**
+	 * 数据-所属机构ID
+	 */
+	public static final String SYS_ORG_ID = "sysOrgId";
+	/**
+	 * 数据-所属机构ID
+	 */
+	public static final String SYS_ORG_ID_TABLE = "sys_org_id";
+	/**
+	 * 数据-所属角色code（多个逗号分割）
+	 */
+	public static final String SYS_ROLE_CODE = "sysRoleCode";
+	/**
+	 * 数据-所属角色code（多个逗号分割）
+	 */
+	public static final String SYS_ROLE_CODE_TABLE = "sys_role_code";
+	/**
 	 * 数据-系统用户编码（对应登录用户账号）
 	 */
 	public static final String SYS_USER_CODE = "sysUserCode";
@@ -63,7 +82,14 @@ public interface DataBaseConstant {
 	 * 数据-系统用户编码（对应登录用户账号）
 	 */
 	public static final String SYS_USER_CODE_TABLE = "sys_user_code";
-	
+	/**
+	 * 登录用户ID
+	 */
+	public static final String SYS_USER_ID = "sysUserId";
+	/**
+	 * 登录用户ID
+	 */
+	public static final String SYS_USER_ID_TABLE = "sys_user_id";
 	/**
 	 * 登录用户真实姓名
 	 */

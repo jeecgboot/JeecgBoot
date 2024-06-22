@@ -13,16 +13,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
+import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.common.modules.redis.client.JeecgRedisClient;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -99,6 +103,9 @@ public class SysUserController {
     @Autowired
     private ISysUserTenantService userTenantService;
 
+    @Autowired
+    private JeecgRedisClient jeecgRedisClient;
+    
     /**
      * 获取租户下用户数据（支持租户隔离）
      * @param user
@@ -242,6 +249,7 @@ public class SysUserController {
 		Result<SysUser> result = new Result<SysUser>();
 		try {
 			String ids = jsonObject.getString("ids");
+			sysUserService.checkUserAdminRejectDel(ids);
 			String status = jsonObject.getString("status");
 			String[] arr = ids.split(",");
             for (String id : arr) {
@@ -435,12 +443,13 @@ public class SysUserController {
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name="realname",required=false) String realname,
             @RequestParam(name="username",required=false) String username,
+            @RequestParam(name="isMultiTranslate",required=false) String isMultiTranslate,
             @RequestParam(name="id",required = false) String id) {
         //update-begin-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
         String[] arr = new String[]{departId, realname, username, id};
         SqlInjectionUtil.filterContent(arr, SymbolConstant.SINGLE_QUOTATION_MARK);
         //update-end-author:taoyan date:2022-7-14 for: VUEN-1702【禁止问题】sql注入漏洞
-        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id);
+        IPage<SysUser> pageList = sysUserDepartService.queryDepartUserPageList(departId, username, realname, pageSize, pageNo,id,isMultiTranslate);
         return Result.OK(pageList);
     }
 
@@ -566,7 +575,7 @@ public class SysUserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryByIds", method = RequestMethod.GET)
-	public Result<Collection<SysUser>> queryByIds(@RequestParam String userIds) {
+	public Result<Collection<SysUser>> queryByIds(@RequestParam(name = "userIds") String userIds) {
 		Result<Collection<SysUser>> result = new Result<>();
 		String[] userId = userIds.split(",");
 		Collection<String> idList = Arrays.asList(userId);
@@ -583,7 +592,7 @@ public class SysUserController {
      * @return
      */
     @RequestMapping(value = "/queryByNames", method = RequestMethod.GET)
-    public Result<Collection<SysUser>> queryByNames(@RequestParam String userNames) {
+    public Result<Collection<SysUser>> queryByNames(@RequestParam(name = "userNames") String userNames) {
         Result<Collection<SysUser>> result = new Result<>();
         String[] names = userNames.split(",");
         QueryWrapper<SysUser> queryWrapper=new QueryWrapper();
@@ -1125,7 +1134,7 @@ public class SysUserController {
         }
         sysUser = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username).eq(SysUser::getPhone,phone));
         if (sysUser == null) {
-            result.setMessage("未找到用户！");
+            result.setMessage("当前登录用户和绑定的手机号不匹配，无法修改密码！");
             result.setSuccess(false);
             return result;
         } else {
@@ -1139,6 +1148,8 @@ public class SysUserController {
             //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]密码重置添加敏感日志------------
             result.setSuccess(true);
             result.setMessage("密码重置完成！");
+            //修改完密码后清空redis
+            redisUtil.removeAll(redisKey);
             return result;
         }
     }
@@ -1425,7 +1436,7 @@ public class SysUserController {
         //------------------------------------------------------------------------------------------------
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
-            String tenantId = TokenUtils.getTenantIdByRequest(request);
+            String tenantId = oConvertUtils.getString(TokenUtils.getTenantIdByRequest(request),"-1");
             //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
             List<String> userIds = userTenantService.getUserIdsByTenantId(Integer.valueOf(tenantId));
             if (oConvertUtils.listIsNotEmpty(userIds)) {
@@ -1546,18 +1557,19 @@ public class SysUserController {
             @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
             @RequestParam(name = "departId", required = false) String departId,
             @RequestParam(name = "roleId", required = false) String roleId,
-            @RequestParam(name="keyword",required=false) String keyword) {
+            @RequestParam(name="keyword",required=false) String keyword,
+            @RequestParam(name="excludeUserIdList",required = false) String excludeUserIdList,
+            HttpServletRequest req) {
         //------------------------------------------------------------------------------------------------
         Integer tenantId = null;
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
         if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
             String tenantStr = TenantContext.getTenant();
-            if(oConvertUtils.isNotEmpty(tenantStr)){
-                tenantId = Integer.parseInt(tenantStr);
-            }
+            tenantId = oConvertUtils.getInteger(tenantStr, oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(req), -1));
+            log.info("---------简流中选择用户接口，通过租户筛选，租户ID={}", tenantId);
         }
         //------------------------------------------------------------------------------------------------
-        IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo);
+        IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo,excludeUserIdList);
         return Result.OK(pageList);
     }
 

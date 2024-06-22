@@ -67,7 +67,7 @@ public class SysTenantPackUser implements Serializable {
     private transient String packCode;
 
     /**
-     * 状态(1 正常 2 离职 3 待审核 4 拒绝 5 邀请加入)
+     * 状态(申请状态0 正常状态1)
      */
     private Integer status;
 

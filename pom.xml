@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.6.1</version>
+  <version>3.7.0</version>
   <packaging>pom</packaging>
-  <name>JEECG BOOT ${project.version} </name>
+  <name>JEECG BOOT ${project.version}</name>
 
 	<developers>
 		<developer>
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.6.1</jeecgboot.version>
+		<jeecgboot.version>3.7.0</jeecgboot.version>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -36,38 +36,44 @@
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
         <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
+		<seata.version>1.5.2</seata.version>
 
 		<xxl-job-core.version>2.2.0</xxl-job-core.version>
         <fastjson.version>2.0.43</fastjson.version>
+        <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
-		<knife4j-spring-boot-starter.version>4.3.0</knife4j-spring-boot-starter.version>
-		<knife4j-spring-ui.version>2.0.9</knife4j-spring-ui.version>
+		<knife4j-spring-boot-starter.version>4.4.0</knife4j-spring-boot-starter.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
-		<hutool.version>5.8.23</hutool.version>
+        <hutool.version>5.8.25</hutool.version>
+		<!-- 国产数据库驱动 -->
+		<kingbase8.version>9.0.0</kingbase8.version>
+		<dm8.version>8.1.1.49</dm8.version>
 
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+		<mybatis-plus.version>3.5.3.2</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.22</druid.version>
-		<minidao.version>1.9.5</minidao.version>
+		<minidao.version>1.9.6</minidao.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.6.6</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.7.32</jimureport-spring-boot-starter.version>
+		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.17.3</aliyun.oss.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
-		<codegenerate.version>1.4.4</codegenerate.version>
+		<codegenerate.version>1.4.7</codegenerate.version>
 		<autopoi-web.version>1.4.7</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<justauth.version>1.16.6</justauth.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
+		<jedis.version>3.8.0</jedis.version>
 		<!-- Log4j2爆雷漏洞 -->
 		<!-- spring boot 3 不支持下列两个版本-->
 		<!--<log4j2.version>2.17.0</log4j2.version>
@@ -164,6 +170,11 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>io.seata</groupId>
+				<artifactId>seata-spring-boot-starter</artifactId>
+				<version>${seata.version}</version>
+			</dependency>
 
 			<!-- system 模块-->
 			<dependency>
@@ -219,6 +230,12 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter3-rabbitmq</artifactId>
+				<version>${jeecgboot.version}</version>
+			</dependency>
+			<!--rocketmq-->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-starter3-rocketmq</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--分库分表shardingsphere-->
@@ -372,6 +389,18 @@
 						<artifactId>commons-lang</artifactId>
 						<groupId>commons-lang</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>commons-collections</artifactId>
+						<groupId>commons-collections</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>commons-logging</artifactId>
+						<groupId>commons-logging</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>commons-io</artifactId>
+						<groupId>commons-io</groupId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- minidao -->
@@ -379,6 +408,16 @@
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>minidao-spring-boot-starter</artifactId>
 				<version>${minidao.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>druid</artifactId>
+						<groupId>com.alibaba</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>jsqlparser</artifactId>
+						<groupId>com.github.jsqlparser</groupId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<!-- 积木报表-->
 			<dependency>
@@ -390,12 +429,34 @@
 						<artifactId>autopoi-web</artifactId>
 						<groupId>org.jeecgframework</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>druid</artifactId>
+						<groupId>com.alibaba</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>jsqlparser</artifactId>
+						<groupId>com.github.jsqlparser</groupId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
 				<version>1.6.0</version>
+			</dependency>
+			<!-- chatgpt -->
+			<dependency>
+				<groupId>org.jeecgframework.boot</groupId>
+				<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
+                <version>${jeecgboot.version}</version>
+			</dependency>
+
+			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
+			<!--mysql5.6，需要把版本号改成5.2.1-->
+			<dependency>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-core</artifactId>
+				<version>7.15.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -407,8 +468,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>17</source>
-                    <target>17</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

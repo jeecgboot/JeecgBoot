@@ -15,9 +15,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.modules.redis.client.JeecgRedisClient;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
@@ -83,6 +85,8 @@ public class SysRoleController {
     private ISysUserRoleService sysUserRoleService;
 	@Autowired
 	private BaseCommonService baseCommonService;
+	@Autowired
+	private JeecgRedisClient jeecgRedisClient;
 	
 	/**
 	  * 分页列表查询 【系统角色，不做租户隔离】
@@ -123,9 +127,10 @@ public class SysRoleController {
 												@RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 												HttpServletRequest req) {
 		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
-		//------------------------------------------------------------------------------------------------
 		//此接口必须通过租户来隔离查询
-		role.setTenantId(oConvertUtils.getInt(!"0".equals(TenantContext.getTenant()) ? TenantContext.getTenant() : "", -1));
+		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+			role.setTenantId(oConvertUtils.getInt(!"0".equals(TenantContext.getTenant()) ? TenantContext.getTenant() : "", -1));
+		}
 		
 		QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
 		Page<SysRole> page = new Page<SysRole>(pageNo, pageSize);
@@ -146,7 +151,9 @@ public class SysRoleController {
 		Result<SysRole> result = new Result<SysRole>();
 		try {
 			//开启多租户隔离,角色id自动生成10位
-			if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+			//update-begin---author:wangshuai---date:2024-05-23---for:【TV360X-42】角色新增时设置的编码，保存后不一致---
+			if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && oConvertUtils.isEmpty(role.getRoleCode())){
+			//update-end---author:wangshuai---date:2024-05-23---for:【TV360X-42】角色新增时设置的编码，保存后不一致---
 				role.setRoleCode(RandomUtil.randomString(10));
 			}
 			role.setCreateTime(new Date());
@@ -213,10 +220,17 @@ public class SysRoleController {
 			String username = "admin";
 			if(getRoleCount == 0 && !username.equals(sysUser.getUsername())){
 				baseCommonService.addLog("未经授权，删除非本租户下的角色ID：" + id + "，操作人：" + sysUser.getUsername(), CommonConstant.LOG_TYPE_2, CommonConstant.OPERATE_TYPE_4);
-				return Result.error("删除角色失败,当前角色不在此租户中。");
+				return Result.error("删除角色失败，删除角色不属于登录租户！");
 			}
 		}
+    	
+		//update-begin---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】禁止删除 admin 角色---
+		//是否存在admin角色
+		sysRoleService.checkAdminRoleRejectDel(id);
+		//update-end---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】禁止删除 admin 角色---
+    	
 		sysRoleService.deleteRole(id);
+
 		return Result.ok("删除角色成功");
 	}
 	
@@ -248,6 +262,8 @@ public class SysRoleController {
 					}
 				}
 			}
+			//验证是否为admin角色
+			sysRoleService.checkAdminRoleRejectDel(ids);
 			sysRoleService.deleteBatchRole(ids.split(","));
 			result.success("删除角色成功!");
 		}
@@ -527,7 +543,6 @@ public class SysRoleController {
 	}
 
     /**
-     * TODO 权限未完成（敲敲云接口，租户应用）
      * 分页获取全部角色列表（包含每个角色的数量）
      * @return
      */
@@ -564,4 +579,5 @@ public class SysRoleController {
         result.setResult(sysRoleCountPage);
         return result;
     }
+
 }

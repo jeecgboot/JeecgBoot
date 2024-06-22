@@ -2,7 +2,6 @@ package org.jeecg.common.system.query;
 
 import java.beans.PropertyDescriptor;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.text.ParseException;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
-import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JeecgDataAutorUtils;
 import org.jeecg.common.system.util.JwtUtil;
@@ -25,7 +23,6 @@ import org.jeecg.common.util.*;
 import org.springframework.util.NumberUtils;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -94,10 +91,27 @@ public class QueryGenerator {
 	public static <T> QueryWrapper<T> initQueryWrapper(T searchObj,Map<String, String[]> parameterMap){
 		long start = System.currentTimeMillis();
 		QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
-		installMplus(queryWrapper, searchObj, parameterMap);
+		installMplus(queryWrapper, searchObj, parameterMap, null);
 		log.debug("---查询条件构造器初始化完成,耗时:"+(System.currentTimeMillis()-start)+"毫秒----");
 		return queryWrapper;
 	}
+	
+	//update-begin---author:chenrui ---date:20240527  for：[TV360X-378]增加自定义字段查询规则功能------------
+	/**
+	 * 获取查询条件构造器QueryWrapper实例 通用查询条件已被封装完成
+	 * @param searchObj 查询实体
+	 * @param parameterMap request.getParameterMap()
+	 * @param customRuleMap 自定义字段查询规则 {field:QueryRuleEnum}
+	 * @return QueryWrapper实例
+	 */
+	public static <T> QueryWrapper<T> initQueryWrapper(T searchObj,Map<String, String[]> parameterMap, Map<String, QueryRuleEnum> customRuleMap){
+		long start = System.currentTimeMillis();
+		QueryWrapper<T> queryWrapper = new QueryWrapper<T>();
+		installMplus(queryWrapper, searchObj, parameterMap, customRuleMap);
+		log.debug("---查询条件构造器初始化完成,耗时:"+(System.currentTimeMillis()-start)+"毫秒----");
+		return queryWrapper;
+	}
+	//update-end---author:chenrui ---date:20240527  for：[TV360X-378]增加自定义字段查询规则功能------------
 
 	/**
 	 * 组装Mybatis Plus 查询条件
@@ -108,8 +122,7 @@ public class QueryGenerator {
 	 * <br>正确示例:QueryWrapper<JeecgDemo> queryWrapper = new QueryWrapper<JeecgDemo>();
 	 * <br>3.也可以不使用这个方法直接调用 {@link #initQueryWrapper}直接获取实例
 	 */
-	private static void installMplus(QueryWrapper<?> queryWrapper,Object searchObj,Map<String, String[]> parameterMap) {
-		
+	private static void installMplus(QueryWrapper<?> queryWrapper, Object searchObj, Map<String, String[]> parameterMap, Map<String, QueryRuleEnum> customRuleMap) {
 		/*
 		 * 注意:权限查询由前端配置数据规则 当一个人有多个所属部门时候 可以在规则配置包含条件 orgCode 包含 #{sys_org_code}
 		但是不支持在自定义SQL中写orgCode in #{sys_org_code} 
@@ -174,8 +187,16 @@ public class QueryGenerator {
 						queryWrapper.and(j -> j.like(field,vals[0]));
 					}
 				}else {
-					//根据参数值带什么关键字符串判断走什么类型的查询
-					QueryRuleEnum rule = convert2Rule(value);
+					//update-begin---author:chenrui ---date:20240527  for：[TV360X-378]增加自定义字段查询规则功能------------
+					QueryRuleEnum rule;
+					if(null != customRuleMap && customRuleMap.containsKey(name)) {
+						// 有自定义规则,使用自定义规则.
+						rule = customRuleMap.get(name);
+					}else {
+						//根据参数值带什么关键字符串判断走什么类型的查询
+						 rule = convert2Rule(value);
+					}
+					//update-end---author:chenrui ---date:20240527  for：[TV360X-378]增加自定义字段查询规则功能------------
 					value = replaceValue(rule,value);
 					// add -begin 添加判断为字符串时设为全模糊查询
 					//if( (rule==null || QueryRuleEnum.EQ.equals(rule)) && "class java.lang.String".equals(type)) {
@@ -274,7 +295,7 @@ public class QueryGenerator {
 			//update-end-author:scott date:2022-10-10 for:【jeecg-boot/issues/I5FJU6】doMultiFieldsOrder() 多字段排序方法存在问题
 
 			//SQL注入check
-			SqlInjectionUtil.filterContent(column);
+			SqlInjectionUtil.filterContentMulti(column);
 
 			//update-begin--Author:scott  Date:20210531 for：36 多条件排序无效问题修正-------
 			// 排序规则修改
@@ -678,9 +699,40 @@ public class QueryGenerator {
 		case LEFT_LIKE:
 			queryWrapper.likeLeft(name, value);
 			break;
+		case NOT_LEFT_LIKE:
+			queryWrapper.notLikeLeft(name, value);
+			break;
 		case RIGHT_LIKE:
 			queryWrapper.likeRight(name, value);
 			break;
+		case NOT_RIGHT_LIKE:
+			queryWrapper.notLikeRight(name, value);
+			break;
+		//update-begin---author:chenrui ---date:20240527  for：[TV360X-378]下拉多框根据条件查询不出来:增加自定义字段查询规则功能------------
+		case LIKE_WITH_OR:
+			final String nameFinal = name;
+			Object[] vals;
+			if (value instanceof String) {
+				vals = value.toString().split(COMMA);
+			} else if (value instanceof String[]) {
+				vals = (Object[]) value;
+			}
+			//update-begin-author:taoyan date:20200909 for:【bug】in 类型多值查询 不适配postgresql #1671
+			else if (value.getClass().isArray()) {
+				vals = (Object[]) value;
+			} else {
+				vals = new Object[]{value};
+			}
+			queryWrapper.and(j -> {
+				log.info("---查询过滤器，Query规则---field:{}, rule:{}, value:{}", nameFinal, "like", vals[0]);
+				j = j.like(nameFinal, vals[0]);
+				for (int k = 1; k < vals.length; k++) {
+					j = j.or().like(nameFinal, vals[k]);
+					log.info("---查询过滤器，Query规则 .or()---field:{}, rule:{}, value:{}", nameFinal, "like", vals[k]);
+				}
+			});
+			break;
+		//update-end---author:chenrui ---date:20240527  for：[TV360X-378]下拉多框根据条件查询不出来:增加自定义字段查询规则功能------------
 		default:
 			log.info("--查询规则未匹配到---");
 			break;
@@ -856,7 +908,9 @@ public class QueryGenerator {
 				Class propType = origDescriptors[i].getPropertyType();
 				boolean isString = propType.equals(String.class);
 				Object value;
-				if(isString) {
+				//update-begin---author:chenrui ---date:20240527  for：[TV360X-539]数据权限，配置日期等于条件时后端报转换错误------------
+				if(isString || Date.class.equals(propType)) {
+				//update-end---author:chenrui ---date:20240527  for：[TV360X-539]数据权限，配置日期等于条件时后端报转换错误------------
 					value = converRuleValue(dataRule.getRuleValue());
 				}else {
 					value = NumberUtils.parseNumber(dataRule.getRuleValue(),propType);

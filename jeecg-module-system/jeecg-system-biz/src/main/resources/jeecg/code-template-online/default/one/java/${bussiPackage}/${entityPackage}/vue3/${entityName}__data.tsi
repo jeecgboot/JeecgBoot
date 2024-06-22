@@ -3,10 +3,13 @@ import {BasicColumn} from '/@/components/Table';
 import {FormSchema} from '/@/components/Table';
 import { rules} from '/@/utils/helper/validator';
 import { render } from '/@/utils/common/renderUtils';
+import { getWeekMonthQuarterYear } from '/@/utils';
 //列表数据
 export const columns: BasicColumn[] = [
  <#list columns as po>
-   <#if po.isShowList =='Y' && po.fieldName !='id'>
+   <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+   <#if po.isShowList =='Y' && po.fieldName !='id' && po.fieldName !='delFlag'>
+   <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
    {
     title: '${po.filedComment}',
     align:"center",
@@ -16,7 +19,16 @@ export const columns: BasicColumn[] = [
     <#if po.classType=='date'>
     dataIndex: '${po.fieldName}',
     customRender:({text}) =>{
-      return !text?"":(text.length>10?text.substr(0,10):text)
+      text = !text ? "" : (text.length > 10 ? text.substr(0,10) : text);
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      if(text) {
+        return getWeekMonthQuarterYear(text)['${po.extendParams.picker}'];
+      } else {
+        return text;
+      }
+      <#else>
+      return text;
+      </#if>
     },
     <#elseif po.fieldDbType=='Blob'>
     dataIndex: '${po.fieldName}String'
@@ -70,7 +82,9 @@ export const searchFormSchema: FormSchema[] = [
 <#if po.fieldDbName=='bpm_status'>
   <#assign bpm_flag=true>
 </#if>
-<#if po.isQuery=='Y'>
+<#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+<#if po.isQuery=='Y' && po.fieldName !='delFlag'>
+<#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
 <#assign query_flag=true>
 	<#assign query_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1>
@@ -88,7 +102,9 @@ export const searchFormSchema: FormSchema[] = [
          dict:"${po.dictTable},${po.dictText},${po.dictField}"
       },
 <#elseif po.classType=='sel_user'>
-      component: 'JSelectUserByDept',
+<#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
+      component: 'JSelectUser',
+<#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
 <#elseif po.classType=='switch'>
       component: 'JSwitch',
       componentProps:{
@@ -116,6 +132,12 @@ export const searchFormSchema: FormSchema[] = [
       },
 <#elseif po.classType=='date'>
       component: 'DatePicker',
+      componentProps: {
+        <#if po.extendParams?exists && po.extendParams.picker?exists>
+        picker: '${po.extendParams.picker}',
+        </#if>
+        valueFormat: 'YYYY-MM-DD'
+      },
 <#elseif po.classType=='datetime'>
       component: 'DatePicker',
       componentProps: {
@@ -129,6 +151,9 @@ export const searchFormSchema: FormSchema[] = [
      },
 <#elseif po.classType=='pca'>
       component: 'JAreaLinkage',
+      componentProps: {
+        saveCode: 'region',
+      },
 <#elseif po.classType=='popup'>
     <#include "/common/form/vue3popup.ftl">
 <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
@@ -141,6 +166,22 @@ export const searchFormSchema: FormSchema[] = [
           dictCode:"${po.dictField}"
         </#if>
       },
+<#elseif po.classType == 'sel_tree'>
+      component: 'JTreeSelect',
+      componentProps:{
+          <#if po.dictText??>
+          <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+          dict:"${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}",
+          <#elseif po.dictText?split(',')[1]??>
+          pidField:"${po.dictText?split(',')[1]}",
+          <#elseif po.dictText?split(',')[3]??>
+          hasChildField:"${po.dictText?split(',')[3]}",
+          </#if>
+          </#if>
+          pidValue:"${po.dictField}",
+      },
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+      component: 'InputNumber',
 <#else>
       component: 'Input',
 </#if>
@@ -153,7 +194,10 @@ export const searchFormSchema: FormSchema[] = [
 <#if po.classType=='date'>
       component: 'RangePicker',
       componentProps: {
-          valueType: 'Date',
+        <#if po.extendParams?exists && po.extendParams.picker?exists>
+        picker: '${po.extendParams.picker}',
+        </#if>
+        valueType: 'Date',
       },
 <#elseif po.classType=='datetime'>
       component: 'RangePicker',
@@ -163,6 +207,10 @@ export const searchFormSchema: FormSchema[] = [
       },
 <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
       component: 'JRangeNumber',
+<#-- update-begin---author:chenrui ---date:20240527  for：[TV360X-388]时间范围查询控件---------- -->
+<#elseif po.classType=='time'>
+      component: 'RangeTime',
+<#-- update-end---author:chenrui ---date:20240527  for：[TV360X-388]时间范围查询控件---------- -->
 <#else>
       component: 'Input', //TODO 范围查询
 </#if>
@@ -186,7 +234,9 @@ export const formSchema: FormSchema[] = [
 <#if po.fieldDbName == 'id'>
 	<#assign id_exists = true>
 </#if>
-<#if po.isShow =='Y'>
+<#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+<#if po.isShow =='Y' && po.fieldName !='delFlag'>
+<#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
 <#assign form_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
 		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
@@ -207,6 +257,12 @@ export const formSchema: FormSchema[] = [
     <#-- update-end-author:taoyan date:2022-6-24 for: VUEN-1190【代码生成】默认值未生成 -->
     <#if po.classType =='date'>
     component: 'DatePicker',
+    componentProps: {
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      picker: '${po.extendParams.picker}',
+      </#if>
+      valueFormat: 'YYYY-MM-DD'
+    },
      <#elseif po.classType =='datetime'>
     component: 'DatePicker',
     componentProps: {
@@ -231,27 +287,45 @@ export const formSchema: FormSchema[] = [
      },
      <#elseif po.classType =='pca'>
     component: 'JAreaLinkage',
+    componentProps: {
+      saveCode: 'region',
+    },
     <#elseif po.classType =='markdown'>
     component: 'JMarkdownEditor',//注意string转换问题
      <#elseif po.classType =='password'>
     component: 'InputPassword',
      <#elseif po.classType =='sel_user'>
-    component: 'JSelectUserByDept',
+    <#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
+    component: 'JSelectUser',
+    <#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
     componentProps:{
         labelKey:'realname',
      },
     <#elseif po.classType =='textarea'>
     component: 'InputTextArea',
-    <#elseif po.classType=='list' || po.classType=='radio'>
+    <#elseif po.classType=='list'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
-    <#elseif po.classType=='list_multi' || po.classType=='checkbox'>
+    <#elseif po.classType=='radio'>
+    component: 'JDictSelectTag',
+    componentProps:{
+        dictCode:"${form_field_dictCode}",
+        type: "radio"
+     },
+    <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
+    <#elseif po.classType=='list_multi'>
     component: 'JSelectMultiple',
     componentProps:{
         dictCode:"${form_field_dictCode}"
      },
+    <#elseif po.classType=='checkbox'>
+    component: 'JCheckbox',
+    componentProps:{
+        dictCode:"${form_field_dictCode}"
+     },
+     <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='sel_search'>
     component: 'JSearchSelect',
     componentProps:{
@@ -280,7 +354,9 @@ export const formSchema: FormSchema[] = [
      componentProps:{
      <#if po.uploadnum??>
         fileMax:${po.uploadnum}
-    </#if>
+     <#else>
+        fileMax: 0
+     </#if>
       },
   <#elseif po.classType=='umeditor'>
     component: 'JEditor',
@@ -317,7 +393,7 @@ export const formSchema: FormSchema[] = [
                  {...rules.duplicateCheckRule(<#if sub?default("")?trim?length gt 1>'${sub.tableName}'<#else>'${tableName}'</#if>, '${po.fieldDbName}',model,schema)[0]},
            <#-- 6到16位数字 -->
            <#elseif fieldValidType == 'n6-16'>
-                 { pattern: /^\d{6,16}$/, message: '请输入6到16位数字!'},
+                 { pattern: /^\d{6,16}$|^(?=\d+\.\d+)[\d.]{7,17}$/, message: '请输入6到16位数字!'},
            <#-- 6到16位任意字符 -->
            <#elseif fieldValidType == '*6-16'>
                  { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
@@ -376,7 +452,18 @@ export const formSchema: FormSchema[] = [
 </#if>
 ];
 
-
+<#-- update-begin-author:chenrui date:2023-12-28 for:[QQYUN-7527]vue3代码生成默认带上高级查询 -->
+// 高级查询数据
+export const superQuerySchema = {
+  <#list columns as po>
+  <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  <#if po.isShowList =='Y' && po.fieldName !='id' && po.fieldName !='delFlag'>
+  <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  ${superQueryFieldListForVue3(po,po_index)},
+  </#if>
+  </#list>
+};
+<#-- update-end-author:chenrui date:2023-12-28 for:[QQYUN-7527]vue3代码生成默认带上高级查询 -->
 
 /**
 * 流程表单调用这个方法获取formSchema

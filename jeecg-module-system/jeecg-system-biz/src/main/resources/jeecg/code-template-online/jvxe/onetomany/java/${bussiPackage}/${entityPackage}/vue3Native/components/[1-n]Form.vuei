@@ -31,19 +31,23 @@
   <#assign hasOnlyValidate = false>
 <template>
   <a-spin :spinning="loading">
-    <a-form v-bind="formItemLayout">
-      <a-row>
-        <#list sub.colums as po>
-          <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
-            <#assign hasOnlyValidate = true>
-          </#if>
-          <#if po.fieldDbName=='bpm_status'>
-            <#assign bpm_flag=true>
-          </#if>
-          <#include "/common/form/native/vue3NativeForm.ftl">
-        </#list>
-      </a-row>
-    </a-form>
+    <JFormContainer :disabled="disabled">
+      <template #detail>
+        <a-form v-bind="formItemLayout">
+          <a-row>
+            <#list sub.colums as po>
+              <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
+                <#assign hasOnlyValidate = true>
+              </#if>
+              <#if po.fieldDbName=='bpm_status'>
+                <#assign bpm_flag=true>
+              </#if>
+              <#include "/common/form/native/vue3NativeForm.ftl">
+            </#list>
+          </a-row>
+        </a-form>
+      </template>
+    </JFormContainer>
   </a-spin>
 </template>
 
@@ -55,6 +59,7 @@
   import { duplicateValidate } from '/@/utils/helper/validator'
 </#if>
   import { useMessage } from '/@/hooks/web/useMessage';
+  import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';  
   import { Form } from 'ant-design-vue';
   const useForm = Form.useForm;
 
@@ -62,6 +67,7 @@
     name: '${sub.entityName}Form',
     components:{
     <#include "/common/form/native/vue3NativeComponents.ftl">
+    JFormContainer,
     },
     props:{
       disabled:{
@@ -85,7 +91,7 @@
     </#if>
     </#list>
       })
-      const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, {immediate: true});
+      const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, {immediate: false});
       const formItemLayout = {
         labelCol: { xs: { span: 24 }, sm: { span: 5 } },
         wrapperCol: { xs: { span: 24 }, sm: { span: 16 } },
@@ -93,15 +99,20 @@
 
       async function initFormData(mainId) {
         resetFields();
+        let tmpData = {}
         if(mainId){
           let list = await query${sub.entityName}ListByMainId(mainId);
           if(list && list.length>0){
             let temp = list[0];
-            Object.keys(temp).map(k=>{
-              formData[k] = temp[k];
+            Object.keys(formData).forEach((key) => {
+              if(temp.hasOwnProperty(key)){
+                tmpData[key] = temp[key]
+              }
             })
           }
         }
+        //赋值
+        Object.assign(formData,tmpData);
       }
 
       async function getFormData() {

@@ -22,9 +22,32 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,httptrace
+        include: metrics,httpexchanges,httptrace-new
 
 spring:
+  # flyway配置
+  flyway:
+    # 是否启用flyway
+    enabled: true
+    # 编码格式，默认UTF-8
+    encoding: UTF-8
+    # 迁移sql脚本文件存放路径，官方默认db/migration
+    locations: classpath:flyway/sql/mysql
+    # 迁移sql脚本文件名称的前缀，默认V
+    sql-migration-prefix: V
+    # 迁移sql脚本文件名称的分隔符，默认2个下划线__
+    sql-migration-separator: __
+    # 避免带${}sql执行失败
+    placeholder-prefix: '#('
+    placeholder-suffix: )
+    # 迁移sql脚本文件名称的后缀
+    sql-migration-suffixes: .sql
+    # 迁移时是否进行校验，默认true
+    validate-on-migrate: true
+    # 当迁移发现数据库非空且存在没有元数据的表时，自动执行基准迁移，新建schema_version表
+    baseline-on-migrate: true
+    # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
+    clean-disabled: true
   servlet:
     multipart:
       max-file-size: 10MB
@@ -100,7 +123,9 @@ spring:
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
+    exclude:
+      - com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
       stat-view-servlet:
@@ -116,7 +141,7 @@ spring:
         # 初始化大小，最小，最大
         initial-size: 5
         min-idle: 5
-        maxActive: 20
+        maxActive: 1000
         # 配置获取连接等待超时的时间
         maxWait: 60000
         # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
@@ -131,7 +156,10 @@ spring:
         poolPreparedStatements: true
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
-        filters: stat,wall,slf4j
+        filters: stat,slf4j
+        # 允许SELECT语句的WHERE子句是一个永真条件
+        wall:
+          selectWhereAlwayTrueCheck: false
         # 打开mergeSql功能；慢SQL记录
         stat:
           merge-sql: true
@@ -154,10 +182,10 @@ spring:
       database: 0
       host: 127.0.0.1
       port: 6379
-      password: 
+      password:
 #mybatis plus 设置
 mybatis-plus:
-  mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
+  mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
   global-config:
     # 关闭MP3.0自带的banner
     banner: false
@@ -184,7 +212,7 @@ jeecg:
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   #签名拦截接口
-  signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
+  signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys,/sys/sendChangePwdSms,/sys/user/sendChangePhoneSms,/sys/sms,/desform/api/sendVerifyCode
   # 本地：local、Minio：minio、阿里云：alioss
   uploadType: local
   # 前端访问地址
@@ -239,15 +267,30 @@ jeecg:
   #分布式锁配置
   redisson:
     address: 127.0.0.1:6379
-    password: 
+    password:
     type: STANDALONE
     enabled: true
+  # ai-chat
+  ai-chat:
+    # 是否开启；必须。
+    enabled: false
+    # openAi接口秘钥，填写自己的apiKey；必须。
+    apiKey: "？？？？"
+    # openAi域名，有代理就填代理的域名。默认：openAI官方apiHost
+    apiHost: "https://api.openai.com"
+    # 超时时间单位:s。默认 60s
+    timeout: 60
+    # 本地代理地址
+#    proxy:
+#      host: "http://127.0.0.1"
+#      port: "7890"
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas
 #Mybatis输出sql日志
 logging:
   level:
+    org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
 #swagger
 knife4j:

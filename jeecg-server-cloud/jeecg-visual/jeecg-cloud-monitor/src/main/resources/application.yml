@@ -20,13 +20,14 @@ spring:
     nacos:
       discovery:
         server-addr: @config.server-addr@
+        namespace: @config.namespace@
         metadata:
           user.name: ${spring.security.user.name}
           user.password: ${spring.security.user.password}
 # 服务端点检查
 management:
-  trace:
-    http:
+  httpexchanges:
+    recording:
       enabled: true
   endpoints:
     web:

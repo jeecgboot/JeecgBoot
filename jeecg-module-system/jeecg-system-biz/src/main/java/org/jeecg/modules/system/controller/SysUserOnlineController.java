@@ -68,7 +68,7 @@ public class SysUserOnlineController {
                 online.setToken(token);
                 //TODO 改成一次性查询
                 LoginUser loginUser = sysBaseApi.getUserByName(JwtUtil.getUsername(token));
-                if (loginUser != null) {
+                if (loginUser != null && !"_reserve_user_external".equals(loginUser.getUsername())) {
                     //update-begin---author:wangshuai ---date:20220104  for：[JTC-382]在线用户查询无效------------
                     //验证用户名是否与传过来的用户名相同
                     boolean isMatchUsername=true;

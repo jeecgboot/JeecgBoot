@@ -26,7 +26,16 @@ public interface SysAnnouncementMapper extends BaseMapper<SysAnnouncement> {
      * @param msgCategory 消息类型
      * @return
      */
-	List<SysAnnouncement> querySysCementListByUserId(Page<SysAnnouncement> page, @Param("userId")String userId,@Param("msgCategory")String msgCategory);
+	List<SysAnnouncement> querySysCementListByUserId(Page<SysAnnouncement> page, @Param("userId")String userId,@Param("msgCategory")String msgCategory,
+                                                     @Param("tenantId")Integer tenantId, @Param("beginDate")Date beginDate);
+
+    /**
+     * 获取用户未读消息数量
+     *
+     * @param userId 用户id
+     * @return
+     */
+    Integer getUnreadMessageCountByUserId(@Param("userId") String userId, @Param("beginDate") Date beginDate);
 
     /**
      * 分页查询全部消息列表

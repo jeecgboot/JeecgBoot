@@ -41,13 +41,13 @@ public class JeecgPermissionService {
         }
         LoginUser loginUser = SecureUtil.currentUser();
 
-        Object cache = redisUtil.get(buildKey("permission", loginUser.getUsername()));
+        Object cache = redisUtil.get(buildKey("permission", loginUser.getId()));
         Set<String> permissionList;
         if (Objects.nonNull(cache)) {
             permissionList = (Set<String>) cache;
         } else {
-            permissionList = commonAPI.queryUserAuths(loginUser.getUsername());
-            redisUtil.set(buildKey("permission", loginUser.getUsername()), permissionList);
+            permissionList = commonAPI.queryUserAuths(loginUser.getId());
+            redisUtil.set(buildKey("permission", loginUser.getId()), permissionList);
         }
 
         boolean pass = permissionList.stream().filter(StringUtils::hasText)

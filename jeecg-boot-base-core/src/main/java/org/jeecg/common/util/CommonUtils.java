@@ -28,7 +28,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -302,7 +304,7 @@ public class CommonUtils {
                     DB_TYPE = DataBaseConstant.DB_TYPE_ORACLE;
                 }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_SQLSERVER)>=0||dbType.indexOf(sqlserver)>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_SQLSERVER;
-                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_POSTGRESQL)>=0) {
+                }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_POSTGRESQL)>=0 || dbType.indexOf(DataBaseConstant.DB_TYPE_KINGBASEES)>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_POSTGRESQL;
                 }else if(dbType.indexOf(DataBaseConstant.DB_TYPE_MARIADB)>=0) {
                     DB_TYPE = DataBaseConstant.DB_TYPE_MARIADB;
@@ -346,8 +348,11 @@ public class CommonUtils {
 
         //返回 host domain
         String baseDomainPath = null;
-        int length = 80;
-        if(length == serverPort){
+        //update-begin---author:wangshuai---date:2024-03-15---for:【QQYUN-8561】企业微信登陆请求接口设置上下文不一致，导致接口404---
+        int httpPort = 80;
+        int httpsPort = 443;
+        if(httpPort == serverPort || httpsPort == serverPort){
+        //update-end---author:wangshuai---date:2024-03-15---for:【QQYUN-8561】企业微信登陆请求接口设置上下文不一致，导致接口404---~
             baseDomainPath = scheme + "://" + serverName  + contextPath ;
         }else{
             baseDomainPath = scheme + "://" + serverName + ":" + serverPort + contextPath ;
@@ -467,4 +472,19 @@ public class CommonUtils {
         }
         return false;
     }
+
+    /**
+     * 输出info日志，会捕获异常，防止因为日志问题导致程序异常
+     *
+     * @param msg
+     * @param objects
+     */
+    public static void logInfo(String msg, Object... objects) {
+        try {
+            log.info(msg, objects);
+        } catch (Exception e) {
+            log.warn("{} —— {}", msg, e.getMessage());
+        }
+    }
+
 }

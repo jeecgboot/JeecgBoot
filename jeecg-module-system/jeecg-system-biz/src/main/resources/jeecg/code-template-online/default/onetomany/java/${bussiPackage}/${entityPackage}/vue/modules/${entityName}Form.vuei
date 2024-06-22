@@ -405,7 +405,7 @@
       //流程表单data
       formData: {
         type: Object,
-        default: ()=>{},
+        default: () => ({}),
         required: false
       },
       //表单模式：false流程表单 true普通表单
