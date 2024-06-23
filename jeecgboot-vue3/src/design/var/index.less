@@ -1,0 +1,46 @@
+@import (reference) '../color.less';
+@import 'easing';
+@import 'breakpoint';
+
+@namespace: jeecg;
+
+// tabs
+// updateBy:sunjianlei---updateDate:2021-09-03---修改tab切换栏样式：更改高度
+@multiple-height: 30px;
+@multiple-card-height: 50px;
+// update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8762】标签页圆滑高度
+@multiple-smooth-height: 48px;
+// update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8762】标签页圆滑高度
+
+// headers
+// update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8762】顶栏高度
+@header-height: 60px;
+// update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8762】顶栏高度
+
+// logo width
+@logo-width: 32px;
+
+//
+@side-drag-z-index: 200;
+
+@page-loading-z-index: 10000;
+
+@lock-page-z-index: 3000;
+
+@layout-header-fixed-z-index: 500;
+
+@multiple-tab-fixed-z-index: 505;
+
+@layout-sider-fixed-z-index: 510;
+
+@layout-mix-sider-fixed-z-index: 550;
+
+@preview-comp-z-index: 1000;
+
+@page-footer-z-index: 99;
+
+.bem(@n; @content) {
+  @{namespace}-@{n} {
+    @content();
+  }
+}

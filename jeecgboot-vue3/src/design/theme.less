@@ -1,0 +1,84 @@
+.bg-white {
+  background-color: @component-background !important;
+}
+
+html[data-theme='light'] {
+  // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8774】给body加上打底的字体颜色
+  body{
+    color: rgba(0, 0, 0, 0.65);
+  }
+  // update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8774】给body加上打底的字体颜色
+  .text-secondary {
+    color: rgba(0, 0, 0, 0.45);
+  }
+  /*【美化】自定义table字体颜色*/
+  .ant-table {
+    color: rgba(0, 0, 0, 0.65);
+  }
+  /*【美化】自定义table字体颜色*/
+  /*【美化】自定义form字体颜色*/
+  .ant-select-multiple .ant-select-selection-item-content {
+    color: rgba(0, 0, 0, 0.65);
+  }
+  .ant-input-affix-wrapper > input.ant-input {
+    // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-189】统一只读样式
+    &:not([disabled]) {
+      color: rgba(0, 0, 0, 0.65);
+    }
+    // update-end--author:liaozhiyang---date:20240605---for：【TV360X-189】统一只读样式
+  }
+  .ant-select-single.ant-select-show-arrow .ant-select-selection-item, .ant-select-single.ant-select-show-arrow {
+    color: rgba(0, 0, 0, 0.65);
+  }
+  /*【美化】自定义form字体颜色*/
+  
+  .ant-alert-success {
+    background-color: #f6ffed;
+    border: 1px solid #b7eb8f;
+  }
+
+  .ant-alert-error {
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+  }
+
+  .ant-alert-warning {
+    background-color: #fffbe6;
+    border: 1px solid #ffe58f;
+  }
+  :not(:root):fullscreen::backdrop {
+    background-color: @layout-body-background !important;
+  }
+}
+
+[data-theme='dark'] {
+  // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8774】给body加上打底的字体颜色
+  body{
+    color: rgba(255, 255, 255, 0.85);
+  }
+  // update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8774】给body加上打底的字体颜色
+  // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8641】黑色主题-流程办理
+  .ant-list .ant-list-item {
+    color: rgba(255, 255, 255, 0.85);
+  }
+  // update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8641】黑色主题-流程办理
+  .text-secondary {
+    color: #8b949e;
+  }
+
+  .ant-card-grid-hoverable:hover {
+    box-shadow: 0 3px 6px -4px rgb(0 0 0 / 48%), 0 6px 16px 0 rgb(0 0 0 / 32%), 0 9px 28px 8px rgb(0 0 0 / 20%);
+  }
+
+  .ant-card-grid {
+    box-shadow: 1px 0 0 0 #434343, 0 1px 0 0 #434343, 1px 1px 0 0 #434343, 1px 0 0 0 #434343 inset, 0 1px 0 0 #434343 inset;
+  }
+
+  .ant-calendar-selected-day .ant-calendar-date {
+    color: rgba(0, 0, 0, 0.8);
+  }
+
+  .ant-select-tree li .ant-select-tree-node-content-wrapper.ant-select-tree-node-selected {
+    color: rgba(0, 0, 0, 0.9);
+  }
+}

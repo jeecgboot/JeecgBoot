@@ -1,0 +1,612 @@
+.aui-content {
+  padding: 40px 60px;
+  min-height: 100vh;
+}
+
+.aui-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  box-shadow: 0 4px 8px 1px rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 92%;
+  height: auto;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+  -ms-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translateX(-50%) translateY(-50%);
+}
+
+.aui-form {
+  width: 100%;
+  background: #eee;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.aui-image {
+  padding: 180px 80px;
+  flex-basis: 60%;
+  -webkit-flex-basis: 60%;
+  background-color: #0198cd;
+  background-image: url(../icon/jeecg_ad.png);
+  background-size: cover;
+}
+
+.aui-image-text {
+  top: 50%;
+  left: 50%;
+  width: 100%;
+}
+
+.aui-formBox {
+  flex-basis: 40%;
+  -webkit-flex-basis: 40%;
+  box-sizing: border-box;
+  padding: 30px 20px;
+  background: #fff;
+  box-shadow: 2px 9px 49px -17px rgba(0, 0, 0, 0.1);
+}
+
+.aui-logo {
+  width: 180px;
+  height: 80px;
+  position: absolute;
+  top: 2%;
+  left: 8%;
+  z-index: 4;
+}
+
+.aui-account-line {
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+.aui-code-line {
+  position: absolute;
+  right: 0;
+  top: 0;
+  border-left: 3px solid #fff;
+  height: 42px;
+  padding: 0 15px;
+  line-height: 40px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.aui-eye {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  width: 20px;
+  cursor: pointer;
+}
+
+.aui-input-line {
+  background: #f5f5f9;
+  border-radius: 2px;
+  position: relative;
+  margin: 12px 0;
+}
+
+.aui-input-line input {
+  width: 100%;
+  padding: 12px 10px;
+  border: none;
+  color: #333333;
+  font-size: 14px;
+  background: unset;
+  padding-left: 40px;
+}
+
+.aui-input-line .icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+}
+
+.icon-line-user {
+  background-image: url(../icon/icon-line-user.png);
+}
+
+.icon-line-tel {
+  background-image: url(../icon/icon-line-tel.png);
+}
+
+.icon-line-msg {
+  background-image: url(../icon/icon-line-msg.png);
+}
+
+.icon-line-pad {
+  background-image: url(../icon/icon-line-pad.png);
+}
+
+.aui-forgot .aui-input-line input {
+  padding-left: 20px;
+}
+
+.aui-forgot .aui-input-line {
+  background: none;
+  border: 1px solid #dbdbdb;
+  border-radius: 2px;
+}
+
+.aui-forgot .aui-input-line:focus {
+  border-color: #1b90ff;
+}
+
+.aui-forgot .aui-input-line:hover {
+  border-color: #1b90ff;
+}
+
+.aui-forgot .aui-input-line .aui-code-line {
+  border-left: 1px solid #dbdbdb;
+  height: 40px;
+  color: #1b90ff;
+}
+
+.aui-step-box {
+  width: 100%;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+
+.aui-step-box::after {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  width: 76%;
+  margin-left: -38%;
+  height: 1px;
+  background: #bcbcbc;
+  content: '';
+}
+
+.aui-step-item {
+  width: 33.333%;
+  float: left;
+  text-align: center;
+  position: relative;
+  z-index: 2;
+}
+
+.aui-step-tags em {
+  width: 40px;
+  height: 40px;
+  border: 8px solid #fff;
+  line-height: 1.3;
+  border-radius: 100px;
+  background: #bcbcbc;
+  display: block;
+  margin: 0 auto;
+  font-style: normal;
+  color: #fff;
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.aui-step-tags p {
+  font-size: 14px;
+  color: #bcbcbc;
+}
+
+.activeStep .aui-step-tags em {
+  background: #1b90ff;
+}
+
+.activeStep .aui-step-tags p {
+  color: #1b90ff;
+}
+
+.aui-success {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 80px;
+  width: 100%;
+  margin-top: -40px;
+  margin-left: -50%;
+}
+
+.aui-success-icon {
+  width: 40px;
+  margin: 0 auto;
+}
+
+.aui-success h3 {
+  width: 100%;
+  text-align: center;
+  color: #515151;
+  font-size: 18px;
+  padding-top: 20px;
+}
+
+.aui-form-nav {
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.aui-form-nav .aui-flex-box {
+  color: #040404;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.aui-clear-left {
+  text-align: left;
+}
+
+.aui-clear-left .activeNav::after {
+  left: 18px;
+}
+
+.activeNav {
+  position: relative;
+}
+
+.activeNav::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  bottom: -10px;
+  left: 50%;
+  margin-left: -15px;
+  width: 30px;
+  height: 4px;
+  background: #1b90ff;
+  border-radius: 100px;
+}
+
+.phone .aui-inputClear {
+  padding-left: 0;
+}
+
+.phone .aui-inputClear input {
+  //padding-left: 1px;
+}
+
+.phone .aui-inputClear .aui-code {
+  text-align: right;
+  width: auto;
+  bottom: 10px;
+}
+
+.phone .aui-inputClear .aui-code a {
+  color: #1b90ff;
+  font-size: 14px;
+}
+
+.phoneChina {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  font-size: 14px;
+  color: #040404;
+}
+
+.phoneChina::after {
+  position: absolute;
+  right: -25px;
+  bottom: 0;
+  content: '';
+  background-image: url(../icon/icon_dow.png);
+  background-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+.phoneChina:before {
+  position: absolute;
+  right: -42px;
+  bottom: -15px;
+  content: ' ';
+  background: #fff;
+  width: 18px;
+  height: 18px;
+}
+
+.aui-ewm {
+  width: 280px;
+  margin: 0 auto;
+}
+
+.aui-formEwm {
+  padding: 50px 40px 55px 40px;
+}
+
+.aui-inputClear {
+  width: 100%;
+  border-bottom: 1px solid #cccccc;
+  position: relative;
+  padding-left: 20px;
+  background: #fff;
+  margin-bottom: 8px;
+  margin-top: 20px;
+}
+
+.aui-inputClear .icon {
+  position: absolute;
+  top: 10px;
+  left: 0;
+}
+
+.aui-inputClear input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  color: #333333;
+  font-size: 14px;
+  background: none;
+}
+
+.aui-code {
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  width: 115px;
+  cursor: pointer;
+}
+
+.icon-code {
+  background-image: url(../icon/icon-user.png);
+}
+
+.icon-password {
+  background-image: url(../icon/icon-password.png);
+}
+
+.icon-code {
+  background-image: url(../icon/icon-code.png);
+}
+
+.aui-inputClear:focus {
+  border-bottom: 1px solid #1b90ff;
+}
+
+.aui-inputClear:hover {
+  border-bottom: 1px solid #1b90ff;
+}
+
+.aui-choice {
+  position: relative;
+  font-size: 12px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  position: relative;
+  color: #040404;
+}
+
+.aui-choice input {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+.aui-forget a {
+  color: #1b90ff;
+  font-size: 12px;
+}
+
+.aui-forget a:hover {
+  text-decoration: underline;
+}
+
+.aui-formButton {
+  padding-top: 10px;
+}
+
+.aui-formButton a {
+  height: 42px;
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 8px;
+  border-color: #67b5ff;
+  background: #1b90ff;
+  width: 100%;
+  cursor: pointer;
+  border: none;
+  color: #fff;
+  margin: 8px 0;
+  display: block;
+  text-align: center;
+}
+
+.aui-formButton a:focus {
+  opacity: 0.9;
+}
+
+.aui-formButton a:hover {
+  opacity: 0.9;
+}
+
+.aui-formButton .aui-linek-code {
+  background: #fff;
+  color: #3c3c3c;
+  border: 1px solid #dbdbdb;
+}
+
+.aui-formButton .aui-linek-code:hover {
+  color: #1b90ff;
+  border: 1px solid #1b90ff;
+}
+
+.aui-third-text {
+  font-size: 12px;
+  color: #3c3c3c;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+.aui-third-text span {
+  color: #afafaf;
+  display: block;
+  width: 38%;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  background: #fff;
+  z-index: 100;
+  font-size: 12px;
+}
+
+.aui-third-border {
+  position: relative;
+}
+
+.aui-third-border::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 8px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  border-top: 1px solid #d9d9d9;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+  -webkit-transform-origin: 0 100%;
+  transform-origin: 0 100%;
+}
+
+.aui-third-login {
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  border-radius: 100px;
+}
+
+.aui-third-login a {
+  font-size: 22px;
+  margin: 0 auto;
+  border-radius: 100px;
+  display: inline-block;
+  color: #888;
+}
+
+.aui-third-login a:hover {
+  color: #1b90ff;
+  cursor: pointer;
+}
+
+.aui-third-login:hover {
+  cursor: pointer;
+}
+
+@media (max-width: 320px) {
+  .aui-form {
+    flex-direction: column;
+  }
+
+  .aui-image {
+    order: 2;
+    display: none;
+  }
+
+  .aui-container {
+    width: 100%;
+    max-width: 550px;
+    margin-top: 10px;
+  }
+
+  .aui-content {
+    justify-content: initial;
+    width: 100%;
+    padding: 20px;
+  }
+}
+
+@media (min-width: 321px) and (max-width: 375px) {
+  .aui-form {
+    flex-direction: column;
+  }
+
+  .aui-image {
+    order: 2;
+    display: none;
+  }
+
+  .aui-container {
+    width: 90%;
+    max-width: 550px;
+  }
+
+  .aui-content {
+    justify-content: initial;
+    width: 100%;
+    padding: 20px;
+  }
+}
+
+@media (min-width: 375px) and (max-width: 425px) {
+  .aui-form {
+    flex-direction: column;
+  }
+
+  .aui-image {
+    order: 2;
+    display: none;
+  }
+
+  .aui-container {
+    width: 90%;
+    max-width: 550px;
+  }
+
+  .aui-content {
+    justify-content: initial;
+    width: 100%;
+    padding: 40px;
+  }
+}
+
+@media (min-width: 425px) and (max-width: 768px) {
+  .aui-form {
+    flex-direction: column;
+  }
+
+  .aui-image {
+    order: 2;
+    display: none;
+  }
+
+  .aui-container {
+    width: 90%;
+    max-width: 550px;
+  }
+
+  .aui-content {
+    justify-content: initial;
+    width: 100%;
+    padding: 40px;
+  }
+
+  .aui-step-box::after {
+    width: 70%;
+    margin-left: -35%;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .aui-logo {
+    top: 3%;
+  }
+}
+
+@media screen and (max-width: 300px) {
+  .aui-logo {
+    top: 3%;
+  }
+}

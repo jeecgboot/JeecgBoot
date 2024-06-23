@@ -1,0 +1,181 @@
+* > .enter-x:nth-child(1) {
+  transform: translateX(50px);
+}
+* > .-enter-x:nth-child(1) {
+  transform: translateX(-50px);
+}
+
+* > .enter-x:nth-child(1),
+* > .-enter-x:nth-child(1) {
+  z-index: 9;
+  opacity: 0;
+  animation: enter-x-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.1s;
+}
+* > .enter-x:nth-child(2) {
+  transform: translateX(50px);
+}
+* > .-enter-x:nth-child(2) {
+  transform: translateX(-50px);
+}
+
+* > .enter-x:nth-child(2),
+* > .-enter-x:nth-child(2) {
+  z-index: 8;
+  opacity: 0;
+  animation: enter-x-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.2s;
+}
+* > .enter-x:nth-child(3) {
+  transform: translateX(50px);
+}
+* > .-enter-x:nth-child(3) {
+  transform: translateX(-50px);
+}
+
+* > .enter-x:nth-child(3),
+* > .-enter-x:nth-child(3) {
+  z-index: 7;
+  opacity: 0;
+  animation: enter-x-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.3s;
+}
+
+* > .enter-x:nth-child(4) {
+  transform: translateX(50px);
+}
+* > .-enter-x:nth-child(4) {
+  transform: translateX(-50px);
+}
+
+* > .enter-x:nth-child(4),
+* > .-enter-x:nth-child(4) {
+  z-index: 6;
+  opacity: 0;
+  animation: enter-x-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.4s;
+}
+
+* > .enter-x:nth-child(5) {
+  transform: translateX(50px);
+}
+* > .-enter-x:nth-child(5) {
+  transform: translateX(-50px);
+}
+
+* > .enter-x:nth-child(5),
+* > .-enter-x:nth-child(5) {
+  z-index: 5;
+  opacity: 0;
+  animation: enter-x-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.5s;
+}
+
+* > .enter-y:nth-child(1) {
+  transform: translateX(50px);
+}
+* > .-enter-y:nth-child(1) {
+  transform: translateX(-50px);
+}
+
+* > .enter-y:nth-child(1),
+* > .-enter-y:nth-child(1) {
+  z-index: 9;
+  opacity: 0;
+  animation: enter-y-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.1s;
+}
+* > .enter-y:nth-child(2) {
+  transform: translateX(50px);
+}
+* > .-enter-y:nth-child(2) {
+  transform: translateX(-50px);
+}
+
+* > .enter-y:nth-child(2),
+* > .-enter-y:nth-child(2) {
+  z-index: 8;
+  opacity: 0;
+  animation: enter-y-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.2s;
+}
+* > .enter-y:nth-child(3) {
+  transform: translateX(50px);
+}
+* > .-enter-y:nth-child(3) {
+  transform: translateX(-50px);
+}
+
+* > .enter-y:nth-child(3),
+* > .-enter-y:nth-child(3) {
+  z-index: 7;
+  opacity: 0;
+  animation: enter-y-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.3s;
+}
+
+* > .enter-y:nth-child(4) {
+  transform: translateX(50px);
+}
+* > .-enter-y:nth-child(4) {
+  transform: translateX(-50px);
+}
+
+* > .enter-y:nth-child(4),
+* > .-enter-y:nth-child(4) {
+  z-index: 6;
+  opacity: 0;
+  animation: enter-y-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.4s;
+}
+
+* > .enter-y:nth-child(5) {
+  transform: translateX(50px);
+}
+* > .-enter-y:nth-child(5) {
+  transform: translateX(-50px);
+}
+
+* > .enter-y:nth-child(5),
+* > .-enter-y:nth-child(5) {
+  z-index: 5;
+  opacity: 0;
+  animation: enter-y-animation 0.4s ease-in-out 0.3s;
+  animation-fill-mode: forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes enter-x-animation {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes enter-y-animation {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*update-begin---author:wangshuai ---date:20230829  for：UnoCSS替代windicss 导致全局默认边框样丢失------------*/
+*, :before, :after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: #e5e7eb;
+}
+.border-primary,.hover\:border-primary:hover {
+  --tw-border-opacity: 1;
+  border-color: rgba(24,144,255,var(--tw-border-opacity))
+}
+/*update-end---author:wangshuai ---date:20230829  for：UnoCSS替代windicss 导致全局默认边框样丢失------------*/

@@ -1,0 +1,252 @@
+/*文件上传列表-begin*/
+.selected-file-warp,
+.comment-file-his-list {
+  margin: 10px 20px;
+  &.in-comment{
+    margin: 10px 6px;
+  }
+}
+.selected-file-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-right: -6px;
+  .item {
+    box-sizing: border-box;
+    display: inline-block;
+    flex: 1 1 0%;
+    height: 118px;
+    margin: 0 6px 6px 0;
+    min-width: 140px;
+    max-width: 200px;
+    width: 150px;
+    &.empty {
+      height: 0;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+    .complex {
+      border: 1px solid #e0e0e0;
+      box-sizing: border-box;
+      height: 100%;
+      position: relative;
+      .content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        box-sizing: border-box;
+        .content-top {
+          align-items: center;
+          background-color: #f5f5f5;
+          display: flex;
+          flex: 1 1 0%;
+          justify-content: center;
+          .content-icon {
+            background-position: 50%;
+            background-size: contain !important;
+            height: 55px;
+            width: 40px;
+            display: inline-block;
+            overflow: hidden;
+            text-align: left;
+            text-indent: -9999px;
+          }
+          .content-image{
+            background-position: 50%;
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 100%;
+            width: 100%;
+          }
+        }
+        .content-bottom {
+          align-items: center;
+          background-color: #fff;
+          display: flex;
+          flex-basis: 30px;
+          font-size: 13px;
+          justify-content: flex-start;
+          padding: 0 10px;
+          span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+      .layer {
+        opacity: 0;
+        background-color: #f5f5f5;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        transition: opacity 0.2s;
+        width: 100%;
+        &:hover {
+          opacity: 1;
+        }
+        .next {
+          height: 75px;
+          padding: 5px;
+          .text {
+            color: rgba(51, 51, 51, 0.6) !important;
+            align-items: center;
+            display: flex;
+            flex-basis: 30px;
+            font-size: 12px;
+            justify-content: flex-start;
+            padding: 3px 7px 4px;
+            word-break: break-all;
+            display: -webkit-box;
+            line-height: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+        .buttons {
+          flex-basis: 32px;
+          text-align: right;
+          display: flex;
+          align-items: flex-end;
+          padding-right: 5px;
+          justify-content: flex-end;
+          .opt-icon {
+            background-color: #fff;
+            border-radius: 2px;
+            cursor: pointer;
+            height: 24px;
+            width: 32px;
+            margin: 5px;
+            text-align: center;
+            .anticon-delete:hover {
+              color: red;
+            }
+            .anticon-download:hover{
+              color: #1e88e5 !important
+            }
+          }
+        }
+      }
+      .layer-image{
+        background: #000;
+        &:hover {
+          opacity: 0.6;
+        }
+        .next{
+          .text{
+            color: #fff !important;
+          }
+        }
+        .opt-icon{
+          color: #000 !important;
+          .anticon-delete:hover {
+            color: red;
+          }
+        }
+      }
+      
+    }
+  }
+}
+
+.jeecg-comment-files {
+  margin: 0 20px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  &.ant-alert-info{
+    background-color: #f5f5f5;
+    border: 1px solid #f5f5f5;
+  }
+  .j-icon {
+    cursor: pointer;
+    display: inline-block;
+    border: 1px solid #e6f7ff;
+    padding: 2px 7px;
+    margin: 0 10px;
+    &:hover,
+    &:focus,
+    &:active {
+      border-color: #fff;
+      color: #096dd9;
+    }
+    .inner-button {
+      display: inline-block;
+      color:#9e9e9e;
+      &:hover,
+      &:focus,
+      &:active {
+        /*border-color: #fff;*/
+       /* color: #096dd9;*/
+        color: #000;
+      }
+      span{
+        margin-right: 3px;
+      }
+    }
+  }
+}
+
+.comment-file-list {
+  .detail-item {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    line-height: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    height: 100%;
+
+    .item-title {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-shrink: 0;
+      flex-grow: 0;
+      min-width: 100px;
+      width: 20%;
+      max-width: 220px;
+      background-color: #fafafa;
+      border-right: 1px solid #f0f0f0;
+      /* border-left: 1px solid #f0f0f0;*/
+      padding: 10px 0;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .item-content {
+      border-right: 1px solid #f0f0f0;
+      flex-grow: 1;
+      padding-left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      .anticon {
+        &:hover {
+          color: #40a9ff;
+        }
+      }
+    }
+  }
+}
+
+// update-begin--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
+html[data-theme='dark'] {
+  .jeecg-comment-files {
+    &.ant-alert-info {
+      background-color: #141414;
+      border: 1px solid #3a3a3a;
+    }
+    .j-icon,
+    .j-icon:hover {
+      border-color: #3a3a3a;
+      .inner-button:hover {
+        color: #bebebe;
+      }
+    }
+  }
+}
+// update-end--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配

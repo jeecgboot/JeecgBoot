@@ -1,0 +1,296 @@
+@import 'transition/index.less';
+@import 'var/index.less';
+@import 'public.less';
+@import 'ant/index.less';
+@import './theme.less';
+@import './entry.css';
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+}
+
+:-webkit-autofill {
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+html {
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  // body添加行高保持跟3.x一致
+  line-height: 1.5715;
+  
+  &.color-weak {
+    filter: invert(80%);
+  }
+
+  &.gray-mode {
+    filter: grayscale(100%);
+    filter: progid:dximagetransform.microsoft.basicimage(grayscale=1);
+  }
+}
+
+/* 【LOWCOD-2300】【vue3】online--online表单开发，下拉框位置靠下时，点开下拉框，整屏跳 */
+body {
+  overflow: visible;
+  overflow-x: hidden;
+}
+
+a:focus,
+a:active,
+button,
+div,
+svg,
+span {
+  outline: none !important;
+}
+
+// 保持 和 windi 一样的全局样式，减少升级带来的影响
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+// 保持 和 windi 一样的全局样式，减少升级带来的影响
+
+// update-begin--author:liaozhiyang---date:20230925---for：【issues/5407】字段信息校验是多行提示会被遮挡
+.vxe-cell--valid-error-msg {
+  white-space: nowrap;
+}
+// update-end--author:liaozhiyang---date:20230925---for：【issues/5407】字段信息校验是多行提示会被遮挡
+
+// update-begin--author:liaozhiyang---date:20231013---for：【QQYUN-5133】升级之后提示样式跟之前一致
+.vxe-table .vxe-body--row:last-child .vxe-cell--valid-error-hint {
+  margin-top: auto;
+}
+.vxe-cell--valid-error-hint {
+  margin-top: 6px;
+}
+.vxe-cell--valid-error-msg {
+  display: inline-block;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  color: #fff !important;
+  background-color: #f56c6c !important;
+  
+}
+// update-end--author:liaozhiyang---date:20231013---for：【QQYUN-5133】升级之后提示样式跟之前一致
+// update-begin--author:liaozhiyang---date:20231116---for：【QQYUN-7011】online表单多了一个蓝色的边框
+// .vxe-table.vxe-table--render-default .vxe-body--column.col--selected {
+//   box-shadow: none;
+// }
+// update-end--author:liaozhiyang---date:20231116---for：【QQYUN-7011】online表单多了一个蓝色的边框
+
+// update-begin--author:liaozhiyang---date:20240424---for：【issues/1175】解决vxetable鼠标hover之后title显示不对的问题
+.vxe-cell {
+  pointer-events: none;
+  > * {
+    pointer-events: auto;
+  }
+}
+// update-end--author:liaozhiyang---date:20240424---for：【issues/1175】解决vxetable鼠标hover之后title显示不对的问题
+
+// update-begin--author:liaozhiyang---date:20240429---for：【QQYUN-9023】引导样式调整
+.introjs-tooltipReferenceLayer {
+  .introjs-tooltip-title {
+    font-size: 15px;
+  }
+  .introjs-skipbutton {
+    font-size: 20px;
+    line-height: 35px;
+    height: 35px;
+    width: 35px;
+    font-weight: 500;
+  }
+  .introjs-tooltiptext {
+    padding: 16px;
+    font-size: 14px;
+  }
+  .introjs-bullets {
+    padding-top: 0;
+    padding-bottom: 8px;
+  }
+  .introjs-bullets ul li a {
+    width: 4px;
+    height: 4px;
+  }
+  .introjs-button {
+    padding: .2rem 0.5rem;
+    font-size: 13px;
+  }
+}
+// update-end--author:liaozhiyang---date:20240429---for：【QQYUN-9023】引导样式调整
+
+// update-begin--author:liaozhiyang---date:20240605---for：【TV360X-857】online代码生成详情样式调整
+
+html[data-theme='light'] {
+  .jeecg-form-detail-effect {
+    *:not(.ant-select-selection-placeholder){
+      color: #606266!important;
+    }
+    .ant-row label {
+      color: #797c81 !important;
+    }
+    .ant-select-selector,
+    .ant-btn,
+    .ant-input,
+    .ant-input-affix-wrapper,
+    .ant-picker,
+    .ant-input-number {
+      // border: none !important;
+      // color: rgba(51, 51, 51, 0.25) !important;
+      color: #606266!important;
+      background-color: #f9f9fa !important;
+    }
+
+    a,
+    .anticon {
+      pointer-events: none;
+      cursor: text;
+      color: #606266!important;
+      &:hover {
+        background: transparent;
+      }
+    }
+
+    .ant-select.ant-select-disabled .ant-select-selection-item .ant-select-selection-item-content {
+      color: #606266!important;
+    }
+    .ant-select-selection-item {
+      color: #606266!important;
+    }
+
+    :where(.css-dev-only-do-not-override-dvamda).ant-picker .ant-picker-input >input-disabled, :where(.css-dev-only-do-not-override-dvamda).ant-picker .ant-picker-input >input[disabled] {
+      color: #606266!important;
+    }
+    .ant-select-selection-item {
+      border-color: #eee !important;
+      background-color: transparent !important;
+    }
+  }
+}
+html[data-theme='dark'] {
+  .jeecg-form-detail-effect {
+    * {
+      color: #606266;
+    }
+    .ant-upload-text-icon, a {
+      color:rgba(255, 255, 255, 0.25) ;
+    }
+  }
+
+  .ant-select-selector,
+  .ant-btn,
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-picker,
+  .ant-input-number {
+    background-color: transparent !important;
+  }
+
+  .ant-select-selection-item {
+    background-color: transparent !important;
+  }
+  // 暗黑模式下输入框等icon隐藏
+  .ant-picker-suffix,.ant-select-arrow {
+    content:" ";
+    display: none;
+  }
+}
+.jeecg-form-detail-effect {
+  .ant-select-selector,
+  .ant-btn,
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-picker,
+  .ant-input-number {
+    border: none !important;
+  }
+  a,
+  .anticon {
+    pointer-events: none;
+    cursor: text;
+    &:hover {
+      background: transparent;
+    }
+  }
+  .ant-picker {
+    width: 100%;
+  }
+  textarea {
+    resize: none !important;
+  }
+  input {
+    border: none !important;
+  }
+  input, textarea {
+    user-select: auto;
+    cursor: text !important;
+  }
+  .JSelectDept,
+  .JselectUser,
+  .JSelectPosition {
+    > div {
+      > .ant-row {
+        .left {
+          width: 100%;
+        }
+        .right {
+          display: none;
+        }
+      }
+    }
+  }
+  .ant-select-selection-item-remove {
+    display: none;
+  }
+  .jeecg-j-upload-container {
+    .ant-upload {
+      display: none;
+    }
+    .ant-upload-list-item-done {
+      a {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+      }
+      .ant-upload-list-item-actions {
+        display: none;
+      }
+    }
+  }
+  .ant-upload-picture-card-wrapper {
+    .ant-upload {
+      pointer-events: none;
+      cursor: not-allowed;
+      .ant-upload-text,.anticon {
+       display: none;
+      }
+    }
+    .ant-upload-list-item-done {
+      a {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+      }
+      .ant-btn {
+        display: none;
+      }
+    }
+  }
+}
+// update-end--author:liaozhiyang---date:20240605---for：【TV360X-857】online代码生成详情样式调整
+
+// update-begin--author:wangshuai---date:20240611---for：【TV360X-1070】一对多内嵌，为什么多这一块，不从头对齐
+.ant-table-wrapper .ant-table.ant-table-middle .ant-table-tbody .ant-table-wrapper:only-child .ant-table{
+  margin-block: 0;
+  margin-inline: 0;
+}
+// update-end--author:wangshuai---date:20240611---for：【TV360X-1070】一对多内嵌，为什么多这一块，不从头对齐

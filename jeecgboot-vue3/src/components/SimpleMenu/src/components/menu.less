@@ -1,0 +1,340 @@
+@menu-prefix-cls: ~'@{namespace}-menu';
+@menu-popup-prefix-cls: ~'@{namespace}-menu-popup';
+@submenu-popup-prefix-cls: ~'@{namespace}-menu-submenu-popup';
+
+@transition-time: 0.2s;
+@menu-dark-subsidiary-color: rgba(255, 255, 255, 0.7);
+
+.light-border {
+  &::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    width: 2px;
+    background-color: @primary-color;
+    content: '';
+  }
+}
+
+.@{menu-prefix-cls}-menu-popover {
+  .ant-popover-arrow {
+    display: none;
+  }
+
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+
+  .@{menu-prefix-cls} {
+    &-opened > * > &-submenu-title-icon {
+      transform: translateY(-50%) rotate(90deg) !important;
+    }
+
+    &-item,
+    &-submenu-title {
+      position: relative;
+      z-index: 1;
+      padding: 10px 14px;
+      color: @menu-dark-subsidiary-color;
+      cursor: pointer;
+      transition: all @transition-time @ease-in-out;
+
+      &-icon {
+        position: absolute;
+        top: 50%;
+        right: 18px;
+        transform: translateY(-50%) rotate(-90deg);
+        transition: transform @transition-time @ease-in-out;
+      }
+    }
+
+    &-dark {
+      .@{menu-prefix-cls}-item,
+      .@{menu-prefix-cls}-submenu-title {
+        color: @menu-dark-subsidiary-color;
+        // background: @menu-dark-active-bg;
+
+        &:hover {
+          color: #fff;
+        }
+
+        &-selected {
+          color: #fff;
+          background-color: @primary-color !important;
+        }
+      }
+      // 彩色模式(绿色，橘红等)
+      &.bright {
+        .@{menu-prefix-cls}-item,
+        .@{menu-prefix-cls}-submenu-title {
+          color: #fff;
+          &:hover {
+            color: rgba(255, 255, 255, 0.8);
+          }
+        }
+      }
+    }
+
+    &-light {
+      .@{menu-prefix-cls}-item,
+      .@{menu-prefix-cls}-submenu-title {
+        color: @text-color-base;
+
+        &:hover {
+          color: @primary-color;
+        }
+
+        &-selected {
+          z-index: 2;
+          color: @primary-color;
+          background-color: fade(@primary-color, 10);
+
+          .light-border();
+        }
+      }
+    }
+  }
+}
+
+.content();
+.content() {
+  .@{menu-prefix-cls} {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    font-size: @font-size-base;
+    color: @text-color-base;
+    list-style: none;
+    outline: none;
+
+    // .collapse-transition {
+    //   transition: @transition-time height ease-in-out, @transition-time padding-top ease-in-out,
+    //     @transition-time padding-bottom ease-in-out;
+    // }
+
+    &-light {
+      background-color: #fff;
+      color: rgba(0, 0, 0, 0.65);
+      .@{menu-prefix-cls} {
+        color: rgba(0, 0, 0, 0.65);
+      }
+      .@{namespace}-menu-submenu:not(.@{namespace}-menu-item-active)  .@{namespace}-menu-submenu-title {
+        .anticon {
+           color: rgba(0, 0, 0, 0.9);
+        }
+      }
+      .@{menu-prefix-cls}-submenu-active {
+        color: @primary-color !important;
+
+        &-border {
+          .light-border();
+        }
+      }
+    }
+
+    &-dark {
+      .@{menu-prefix-cls}-submenu-active {
+        color: #fff !important;
+      }
+    }
+
+    &-item {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      font-size: @font-size-base;
+      list-style: none;
+      cursor: pointer;
+      outline: none;
+      align-items: center;
+
+      &:hover,
+      &:active {
+        color: inherit;
+      }
+    }
+
+    &-item > i {
+      margin-right: 6px;
+    }
+
+    &-submenu-title > i,
+    &-submenu-title span > i {
+      margin-right: 8px;
+    }
+
+    // vertical
+    &-vertical &-item,
+    &-vertical &-submenu-title {
+      position: relative;
+      z-index: 1;
+      padding: 14px 24px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+
+      &:hover {
+        color: @primary-color;
+      }
+
+      .@{menu-prefix-cls}-tooltip {
+        width: calc(100% - 0px);
+        padding: 12px 0;
+        text-align: center;
+      }
+      .@{menu-prefix-cls}-submenu-popup {
+        padding: 12px 0;
+      }
+    }
+
+    &-vertical &-submenu-collapse {
+      .@{submenu-popup-prefix-cls} {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .@{menu-prefix-cls}-submenu-collapsed-show-tit {
+        flex-direction: column;
+      }
+    }
+
+    &-vertical&-collapse &-item,
+    &-vertical&-collapse &-submenu-title {
+      padding: 0 0;
+    }
+
+    &-vertical &-submenu-title-icon {
+      position: absolute;
+      top: 50%;
+      right: 18px;
+      transform: translateY(-50%);
+    }
+
+    &-submenu-title-icon {
+      transition: transform @transition-time @ease-in-out;
+    }
+
+    &-vertical &-opened > * > &-submenu-title-icon {
+      transform: translateY(-50%) rotate(180deg);
+    }
+
+    &-vertical &-submenu {
+      &-nested {
+        padding-left: 20px;
+      }
+      .@{menu-prefix-cls}-item {
+        padding-left: 43px;
+      }
+    }
+
+    &-light&-vertical &-item {
+      &-active:not(.@{menu-prefix-cls}-submenu) {
+        z-index: 2;
+        color: @primary-color;
+        background-color: fade(@primary-color, 10);
+
+        .light-border();
+      }
+      &-active.@{menu-prefix-cls}-submenu {
+        color: @primary-color;
+      }
+    }
+
+    &-light&-vertical&-collapse {
+      > li.@{menu-prefix-cls}-item-active,
+      .@{menu-prefix-cls}-submenu-active {
+        position: relative;
+        background-color: fade(@primary-color, 5);
+
+        &::after {
+          display: none;
+        }
+
+        &::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 3px;
+          height: 100%;
+          background-color: @primary-color;
+          content: '';
+        }
+      }
+    }
+
+    &-dark&-vertical &-item,
+    &-dark&-vertical &-submenu-title {
+      color: @menu-dark-subsidiary-color;
+      &-active:not(.@{menu-prefix-cls}-submenu) {
+        color: #fff !important;
+        background-color: @primary-color !important;
+      }
+
+      &:hover {
+        color: #fff;
+      }
+    }
+    // update-begin--author:liaozhiyang---date:20240408---for：【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
+    &-dark&-vertical&.bright &-item,
+    &-dark&-vertical.bright &-submenu-title {
+      color: rgba(255, 255, 255, 1);
+      &-active:not(.@{menu-prefix-cls}-submenu) {
+        color: #fff !important;
+        background-color: @primary-color !important;
+      }
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.8);
+      }
+    }
+    // update-end--author:liaozhiyang---date:20240408---for：【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
+
+    &-dark&-vertical&-collapse {
+      > li.@{menu-prefix-cls}-item-active,
+      .@{menu-prefix-cls}-submenu-active {
+        position: relative;
+        color: #fff !important;
+        background-color: @primary-color !important;
+
+        &::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 3px;
+          height: 100%;
+          background-color: @primary-color;
+          content: '';
+        }
+
+        .@{menu-prefix-cls}-submenu-collapse {
+          background-color: transparent;
+        }
+      }
+    }
+
+    &-dark&-vertical &-submenu &-item {
+      &-active,
+      &-active:hover {
+        color: #fff;
+        border-right: none;
+      }
+    }
+
+    &-dark&-vertical &-child-item-active > &-submenu-title {
+      color: #fff;
+    }
+
+    &-dark&-vertical &-opened {
+      .@{menu-prefix-cls}-submenu-has-parent-submenu {
+        .@{menu-prefix-cls}-submenu-title {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+}

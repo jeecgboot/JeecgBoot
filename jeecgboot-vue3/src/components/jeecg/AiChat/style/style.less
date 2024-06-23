@@ -1,0 +1,135 @@
+.markdown-body {
+	background-color: transparent;
+	font-size: 14px;
+
+	p {
+		white-space: pre-wrap;
+	}
+
+	ol {
+		list-style-type: decimal;
+	}
+
+	ul {
+		list-style-type: disc;
+	}
+
+	pre code,
+	pre tt {
+		line-height: 1.65;
+	}
+
+	.highlight pre,
+	pre {
+		background-color: #fff;
+	}
+
+	code.hljs {
+		padding: 0;
+	}
+
+	.code-block {
+		&-wrapper {
+			position: relative;
+			padding-top: 24px;
+		}
+
+		&-header {
+			position: absolute;
+			top: 5px;
+			right: 0;
+			width: 100%;
+			padding: 0 1rem;
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			color: #b3b3b3;
+
+			&__copy {
+				cursor: pointer;
+				margin-left: 0.5rem;
+				user-select: none;
+
+				&:hover {
+					color: #65a665;
+				}
+			}
+		}
+	}
+
+
+	&.markdown-body-generate>dd:last-child:after,
+	&.markdown-body-generate>dl:last-child:after,
+	&.markdown-body-generate>dt:last-child:after,
+	&.markdown-body-generate>h1:last-child:after,
+	&.markdown-body-generate>h2:last-child:after,
+	&.markdown-body-generate>h3:last-child:after,
+	&.markdown-body-generate>h4:last-child:after,
+	&.markdown-body-generate>h5:last-child:after,
+	&.markdown-body-generate>h6:last-child:after,
+	&.markdown-body-generate>li:last-child:after,
+	&.markdown-body-generate>ol:last-child li:last-child:after,
+	&.markdown-body-generate>p:last-child:after,
+	&.markdown-body-generate>pre:last-child code:after,
+	&.markdown-body-generate>td:last-child:after,
+	&.markdown-body-generate>ul:last-child li:last-child:after {
+		animation: blink 1s steps(5, start) infinite;
+		color: #000;
+		content: '_';
+		font-weight: 700;
+		margin-left: 3px;
+		vertical-align: baseline;
+	}
+
+	@keyframes blink {
+		to {
+			visibility: hidden;
+		}
+	}
+}
+
+html.dark {
+
+	.markdown-body {
+
+		&.markdown-body-generate>dd:last-child:after,
+		&.markdown-body-generate>dl:last-child:after,
+		&.markdown-body-generate>dt:last-child:after,
+		&.markdown-body-generate>h1:last-child:after,
+		&.markdown-body-generate>h2:last-child:after,
+		&.markdown-body-generate>h3:last-child:after,
+		&.markdown-body-generate>h4:last-child:after,
+		&.markdown-body-generate>h5:last-child:after,
+		&.markdown-body-generate>h6:last-child:after,
+		&.markdown-body-generate>li:last-child:after,
+		&.markdown-body-generate>ol:last-child li:last-child:after,
+		&.markdown-body-generate>p:last-child:after,
+		&.markdown-body-generate>pre:last-child code:after,
+		&.markdown-body-generate>td:last-child:after,
+		&.markdown-body-generate>ul:last-child li:last-child:after {
+			color: #65a665;
+		}
+	}
+
+	.message-reply {
+		.whitespace-pre-wrap {
+			white-space: pre-wrap;
+			color: var(--n-text-color);
+		}
+	}
+
+	.highlight pre,
+	pre {
+		background-color: #282c34;
+	}
+}
+
+@media screen and (max-width: 533px) {
+	.markdown-body .code-block-wrapper {
+		padding: unset;
+
+		code {
+			padding: 24px 16px 16px 16px;
+		}
+	}
+}
