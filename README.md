@@ -211,7 +211,7 @@ Docker启动项目
 
 #### 前端
 
-- 技术栈：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等最新技术栈`
+- 技术栈：`Vue3.0 + TypeScript + Vite5 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6` 等最新技术栈
 
 #### 支持库
 
