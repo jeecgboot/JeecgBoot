@@ -4,11 +4,13 @@
 export interface LoginParams {
   username: string;
   password: string;
+  grant_type: string;
 }
 
 export interface ThirdLoginParams {
   token: string;
   thirdType: string;
+  grant_type: string;
 }
 
 export interface RoleInfo {

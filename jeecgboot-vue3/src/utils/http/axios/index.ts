@@ -165,7 +165,7 @@ const transform: AxiosTransform = {
     // update-end--author:liaozhiyang---date:20240509---for：【issues/1220】登录时，vue3版本不加载字典数据设置无效
     if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
       // jwt token
-      config.headers.Authorization = options.authenticationScheme ? `${options.authenticationScheme} ${token}` : token;
+      config.headers.Authorization = options.authenticationScheme ? `${options.authenticationScheme} ${token}` : 'Bearer ' + token;
       config.headers[ConfigEnum.TOKEN] = token;
       
       // 将签名和时间戳，添加在请求接口 Header

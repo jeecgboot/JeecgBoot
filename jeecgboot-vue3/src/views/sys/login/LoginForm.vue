@@ -149,6 +149,7 @@
           username: data.account,
           captcha: data.inputCode,
           checkKey: randCodeData.checkKey,
+          grant_type: 'password',
           mode: 'none', //不要默认的错误提示
         })
       );
