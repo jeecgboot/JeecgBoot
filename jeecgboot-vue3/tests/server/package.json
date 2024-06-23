@@ -1,0 +1,36 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon",
+    "build": "rimraf ./dist && tsup ./index.ts --dts --format cjs,esm  ",
+    "prod": "npx pm2 start ecosystem.config.js --env production",
+    "restart": "pm2 restart ecosystem.config.js --env production",
+    "stop": "npx pm2 stop ecosystem.config.js"
+  },
+  "dependencies": {
+    "fs-extra": "^10.0.0",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-route": "^3.2.0",
+    "koa-router": "^10.1.1",
+    "koa-static": "^5.0.0",
+    "koa-websocket": "^6.0.0",
+    "koa2-cors": "^2.0.6"
+  },
+  "devDependencies": {
+    "@types/koa": "^2.13.4",
+    "@types/koa-bodyparser": "^5.0.2",
+    "@types/koa-router": "^7.4.4",
+    "@types/node": "^16.7.1",
+    "nodemon": "^2.0.12",
+    "pm2": "^5.1.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.2.1",
+    "tsconfig-paths": "^3.11.0",
+    "tsup": "^4.14.0",
+    "typescript": "^4.3.5"
+  }
+}

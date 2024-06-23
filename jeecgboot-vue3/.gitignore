@@ -1,0 +1,36 @@
+node_modules
+.DS_Store
+.github
+dist
+.npmrc
+.cache
+
+tests/server/static
+tests/server/static/upload
+
+.local
+# local env files
+.env.local
+.env.*.local
+.eslintcache
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor directories and files
+.idea
+.svn
+# .vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+/os_del.cmd
+os_del.cmd
+/.vscode/
+/.history/
+/svn clear.bat

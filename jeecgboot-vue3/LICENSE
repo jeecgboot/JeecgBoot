@@ -1,0 +1,37 @@
+MIT License
+
+Copyright (c) 2020-present, Jeecg
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+
+  开源协议补充
+    JeecgBoot 是由 北京国炬信息技术有限公司 发行的软件。 总部位于北京，地址：中国·北京·朝阳区科荟前街1号院奥林佳泰大厦。邮箱：jeecgos@163.com
+    本软件受适用的国家软件著作权法（包括国际条约）和双重保护许可。
+  
+   1.允许基于本平台软件开展业务系统开发。
+   2.JeecgBoot底层依赖的非开源功能：online lib依赖、仪表盘lib依赖等，统一采用LGPL开源协议（不二次改造、不拆分出jeecgboot之外使用，就不产生侵权）
+   3.不得基于该平台软件的基础，修改包装成一个与JeecgBoot平台软件功能类似的产品进行发布、销售，或与JeecgBoot参与同类软件产品市场的竞争。
+	 违反此条款属于侵权行为，须赔偿侵权经济损失，同时立即停止著作权侵权行为。
+	 
+   总结：在遵循Apache开源协议和开源协议补充条款下，允许商用使用，不会造成侵权行为！
+	 解释权归：
+   http://www.jeecg.com
+   http://guojusoft.com

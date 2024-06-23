@@ -1,0 +1,236 @@
+// tabs卡片样式
+@prefix-cls-theme-card: ~'@{prefix-cls}.@{prefix-cls}--theme-card';
+
+html[data-theme='dark'] {
+  .@{prefix-cls-theme-card} {
+    .ant-tabs-tab {
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+  }
+}
+
+html[data-theme='light'] {
+  .@{prefix-cls-theme-card} {
+    .ant-tabs-tab:not(.ant-tabs-tab-active) {
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+  }
+}
+
+.@{prefix-cls-theme-card} {
+  @tabHeight: calc(@multiple-card-height - 10px);
+
+  z-index: 10;
+  height: @multiple-card-height;
+  line-height: @multiple-card-height;
+  background-color: @component-background;
+  box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+
+  .ant-tabs-small {
+    height: @multiple-card-height;
+  }
+
+  .ant-tabs.ant-tabs-card {
+    .ant-tabs-nav {
+      height: @multiple-card-height;
+      margin: 0;
+      background-color: @component-background;
+      border: 0;
+      box-shadow: none;
+      padding-left: 10px;
+
+      .ant-tabs-nav-wrap {
+        height: @tabHeight;
+        margin-top: 4px;
+        padding-top: 0;
+      }
+
+      .ant-tabs-tab {
+        height: @tabHeight;
+        line-height: @tabHeight;
+        color: @text-color-base;
+        background-color: @component-background;
+        padding: 0 20px 0 30px;
+        margin: 0 10px 0 0 !important;
+
+        .ant-tabs-tab-btn {
+          color: @text-color-call-out;
+        }
+
+        &:hover {
+          //padding: 0 36px 0 30px;
+
+          .ant-tabs-tab-remove .anticon-close {
+            opacity: 1;
+
+            &:hover {
+              color: #fff;
+              background-color: #c0c4cc;
+            }
+          }
+        }
+
+        .ant-tabs-tab-remove {
+          //update-begin---author:scott ---date:2023-08-28  for：【QQYUN-6374】UnoCSS替代windicss导致应用样式问题--
+          /*   top: 5px;*/
+          //update-end---author:scott ---date::2023-08-28  for：【QQYUN-6374】UnoCSS替代windicss导致应用样式问题--
+          left: 4px;
+
+          .anticon-close {
+            position: relative;
+            width: 14px;
+            height: 14px;
+            font-size: 13px;
+            color: inherit;
+            opacity: 0;
+            transition: opacity 0.15s;
+            top: 0;
+            left: 6px;
+            vertical-align: middle;
+            line-height: 10px;
+            overflow: hidden;
+            transform-origin: 100% 50%;
+            border-radius: 100%;
+
+            &:hover {
+              svg {
+                fill: #fff;
+              }
+            }
+          }
+        }
+
+        > div {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        svg {
+          fill: @text-color-base;
+        }
+
+        &:first-child {
+        }
+      }
+
+      .ant-tabs-tab:not(.ant-tabs-tab-active) {
+        border: none !important;
+
+        &:hover {
+          color: @primary-color !important;
+          background-color: inherit;
+        }
+      }
+
+      .ant-tabs-tab-active {
+        position: relative;
+        color: @primary-color !important;
+        border: 1px solid transparent;
+        border-bottom: 1px solid @primary-color !important;
+        font-weight: inherit;
+
+        .ant-tabs-tab-btn {
+          color: @primary-color;
+        }
+
+        .ant-tabs-tab-remove .anticon-close {
+          opacity: 0;
+
+          svg {
+            width: 0.6em;
+          }
+        }
+
+        svg {
+          width: inherit;
+          fill: @primary-color;
+        }
+      }
+    }
+
+    .ant-tabs-nav > div:nth-child(1) {
+      padding: 0 6px;
+
+      .ant-tabs-tab {
+        margin-right: 10px !important;
+      }
+    }
+  }
+
+  .ant-tabs-tab:not(.ant-tabs-tab-active) {
+    .ant-tabs-tab-remove .anticon-close {
+      font-size: 12px;
+
+      svg {
+        width: 0.6em;
+      }
+    }
+  }
+
+  .ant-tabs-extra-content {
+    position: relative;
+    top: 0;
+    line-height: @multiple-card-height !important;
+  }
+
+  .ant-dropdown-trigger {
+    display: inline-flex;
+  }
+
+  .@{prefix-cls}--hide-close {
+    .ant-tabs-tab-remove .anticon-close {
+      opacity: 0 !important;
+    }
+  }
+
+  .@{prefix-cls}-content {
+    &__extra-quick,
+    &__extra-redo,
+    &__extra-fold {
+      display: inline-block;
+      width: 36px;
+      height: @multiple-card-height;
+      line-height: @multiple-card-height;
+      color: @text-color-secondary;
+      text-align: center;
+      cursor: pointer;
+      border-left: 1px solid @border-color-base;
+
+      &:hover {
+        color: @text-color-base;
+      }
+
+      span[role='img'] {
+        transform: rotate(90deg);
+      }
+    }
+
+    &__extra-redo {
+      span[role='img'] {
+        transform: rotate(0deg);
+      }
+    }
+
+    &__info {
+      display: inline-block;
+      width: 100%;
+      height: @tabHeight;
+      padding-left: 0;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    // tab 前缀图标样式
+    &__prefix-icon {
+      & .app-iconify.anticon {
+        margin-right: 4px;
+      }
+    }
+  }
+}
