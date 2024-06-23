@@ -1,0 +1,102 @@
+@import 'vxe.const';
+@import 'vxe.dark';
+
+.@{prefix-cls} {
+  // 编辑按钮样式
+  .vxe-cell--edit-icon {
+    border-color: #606266;
+  }
+
+  .sort--active {
+    border-color: @primary-color;
+  }
+
+  // toolbar 样式
+  &-toolbar {
+    &-collapsed {
+      [data-collapse] {
+        display: none;
+      }
+    }
+
+    &-button.div .ant-btn {
+      margin-right: 8px;
+    }
+  }
+
+  // 分页器
+  .j-vxe-pagination {
+    margin-top: 8px;
+    text-align: right;
+
+    .ant-pagination-options-size-changer.ant-select {
+      margin-right: 0;
+    }
+
+    &.show-quick-jumper {
+      .ant-pagination-options-size-changer.ant-select {
+        margin-right: 8px;
+      }
+    }
+  }
+
+  // 更改 header 底色
+  .vxe-table.border--default .vxe-table--header-wrapper,
+  .vxe-table.border--full .vxe-table--header-wrapper,
+  .vxe-table.border--outer .vxe-table--header-wrapper {
+    //background-color: #FFFFFF;
+  }
+
+  // 更改 tooltip 校验失败的颜色
+  .vxe-table--tooltip-wrapper.vxe-table--valid-error {
+    background-color: #f5222d !important;
+  }
+
+  // 更改 输入框 校验失败的颜色
+  .col--valid-error > .vxe-cell > .ant-input,
+  .col--valid-error > .vxe-cell > .ant-select .ant-input,
+  .col--valid-error > .vxe-cell > .ant-select .ant-select-selection,
+  .col--valid-error > .vxe-cell > .ant-input-number,
+  .col--valid-error > .vxe-cell > .ant-cascader-picker .ant-cascader-input,
+  .col--valid-error > .vxe-cell > .ant-calendar-picker .ant-calendar-picker-input,
+  .col--valid-error > .vxe-tree-cell > .ant-input,
+  .col--valid-error > .vxe-tree-cell > .ant-select .ant-input,
+  .col--valid-error > .vxe-tree-cell > .ant-select .ant-select-selection,
+  .col--valid-error > .vxe-tree-cell > .ant-input-number,
+  .col--valid-error > .vxe-tree-cell > .ant-cascader-picker .ant-cascader-input,
+  .col--valid-error > .vxe-tree-cell > .ant-calendar-picker .ant-calendar-picker-input {
+    border-color: #f5222d !important;
+  }
+
+  .vxe-body--row.sortable-ghost,
+  .vxe-body--row.sortable-chosen {
+    background-color: #dfecfb;
+  }
+
+  // ----------- 【VUEN-1691】默认隐藏滚动条，鼠标放上去才显示 -------------------------------------------
+  .vxe-table {
+    //.vxe-table--footer-wrapper.body--wrapper,
+    .vxe-table--body-wrapper.body--wrapper {
+      overflow-x: hidden;
+    }
+    
+    &:hover {
+      //.vxe-table--footer-wrapper.body--wrapper,
+      .vxe-table--body-wrapper.body--wrapper {
+        overflow-x: auto;
+      }
+    }
+  }
+  // ----------- 【VUEN-1691】默认隐藏滚动条，鼠标放上去才显示 -------------------------------------------
+
+  // 调整展开/收起图标样式
+  .vxe-table--render-default .vxe-table--expanded .vxe-table--expand-btn {
+    width: 17px;
+    height: 17px;
+  }
+  /*【美化表单】行编辑table的title字体改小一号*/
+  .vxe-header--column.col--ellipsis>.vxe-cell .vxe-cell--title{
+    font-size: 13px;
+  }
+
+}

@@ -1,0 +1,98 @@
+html[data-theme='dark'] {
+  .ant-pagination {
+    &.mini {
+      .ant-pagination-prev,
+      .ant-pagination-next,
+      .ant-pagination-item {
+        background-color: rgb(255 255 255 / 4%) !important;
+
+        a {
+          color: #8b949e !important;
+        }
+      }
+
+      .ant-select-arrow {
+        color: @text-color-secondary !important;
+      }
+
+      .ant-pagination-item-active {
+        background-color: @primary-color !important;
+        border: none;
+        border-radius: none !important;
+
+        a {
+          color: @white !important;
+        }
+      }
+    }
+  }
+}
+
+.ant-pagination {
+  &.mini {
+    .ant-pagination-prev,
+    .ant-pagination-next {
+      font-size: 12px;
+      color: @text-color-base;
+      border: 1px solid;
+    }
+
+    .ant-pagination-prev:hover,
+    .ant-pagination-next:hover,
+    .ant-pagination-item:focus,
+    .ant-pagination-item:hover {
+      a {
+        color: @primary-color;
+      }
+    }
+
+    .ant-pagination-prev,
+    .ant-pagination-next,
+    .ant-pagination-item {
+      margin: 0 4px !important;
+      //update-begin---author:scott ---date:2022-09-30  for：【美化】Table分页页面默认背景色丑，去掉-----------
+      //background-color: #f4f4f5 !important;
+      //update-end---author:scott ---date::2022-09-30  for：【美化】Table分页页面默认背景色丑，去掉------------
+      border: none;
+      border-radius: none !important;
+
+      a {
+        margin-top: 1px;
+        color: #606266;
+      }
+
+      &:last-child {
+        margin-right: 0 !important;
+      }
+    }
+
+    .ant-pagination-item-active {
+      background-color: @primary-color !important;
+      border: none;
+      border-radius: none !important;
+
+      a {
+        color: @white !important;
+      }
+    }
+
+    .ant-pagination-options {
+      margin-left: 12px;
+    }
+
+    .ant-pagination-options-quick-jumper input {
+      height: 22px;
+      margin: 0 6px;
+      line-height: 22px;
+      text-align: center;
+    }
+
+    .ant-select-arrow {
+      color: @border-color-shallow-dark;
+    }
+  }
+
+  &-disabled {
+    display: none !important;
+  }
+}

@@ -1,0 +1,102 @@
+/** [表格主题样式一] 表格强制列不换行 */
+.j-table-force-nowrap {
+  td,
+  th {
+    white-space: nowrap;
+  }
+
+  .ant-table-selection-column {
+    padding: 12px 22px !important;
+  }
+
+  /** 列自适应，弊端会导致列宽失效 */
+
+  &.ant-table-wrapper .ant-table-content {
+    overflow-x: auto;
+  }
+}
+
+/** 查询区域通用样式*/
+.table-page-search-wrapper {
+  .ant-form-inline {
+    .ant-form-item {
+      display: flex;
+      margin-bottom: 24px;
+      margin-right: 0;
+
+      .ant-form-item-control-wrapper {
+        flex: 1 1;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      > .ant-form-item-label {
+        line-height: 32px;
+        padding-right: 8px;
+        width: auto;
+      }
+
+      .ant-form-item-control {
+        height: 32px;
+        line-height: 32px;
+      }
+    }
+  }
+
+  .table-page-search-submitButtons {
+    display: block;
+    margin-bottom: 24px;
+    white-space: nowrap;
+  }
+}
+
+/*列表上方操作按钮区域*/
+.ant-card-body .table-operator {
+  margin-bottom: 8px;
+}
+
+/** Button按钮间距 */
+.table-operator .ant-btn {
+  margin: 0 8px 8px 0;
+}
+
+.table-operator .ant-btn-group .ant-btn {
+  margin: 0;
+}
+
+.table-operator .ant-btn-group .ant-btn:last-child {
+  margin: 0 8px 8px 0;
+}
+
+/*列表td的padding设置 可以控制列表大小*/
+.ant-table-tbody .ant-table-row td {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+/*列表页面弹出modal*/
+.ant-modal-cust-warp {
+  height: 100%;
+}
+
+/*弹出modal Y轴滚动条*/
+.ant-modal-cust-warp .ant-modal-body {
+  height: calc(100% - 110px) !important;
+  overflow-y: auto;
+}
+
+/*弹出modal 先有content后有body 故滚动条控制在body上*/
+.ant-modal-cust-warp .ant-modal-content {
+  height: 90% !important;
+  overflow-y: hidden;
+}
+
+/*列表中有图片的加这个样式 参考用户管理*/
+.anty-img-wrap {
+  height: 25px;
+  position: relative;
+}
+
+.antd-more a {
+  color: #000000;
+}

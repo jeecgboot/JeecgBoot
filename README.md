@@ -34,11 +34,6 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，支持信创国产化（默认适配达梦和人大金仓）。尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
 
 
-源码下载
------------------------------------
-- 前端源码地址：https://github.com/jeecgboot/jeecgboot-vue3
-- APP源码地址：https://github.com/jeecgboot/jeecg-uniapp
-
 
 #### 项目说明
 
@@ -48,6 +43,10 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 | `jeecgboot-vue3` | 前端源码VUE3（vue3+vite5+ts最新技术栈）  |
 | `jeecg-uniapp` | APP框架,一份代码多终端适配，支持APP、小程序、H5 |
 
+
+其他源码
+-----------------------------------
+- APP源码地址：https://github.com/jeecgboot/jeecg-uniapp
 
 
 技术支持
@@ -90,39 +89,6 @@ Docker启动项目
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
 >
 - QQ交流群 ： ⑨808791225、⑧825232878、⑦791696430(满)、⑥730954414(满)、683903138(满)、⑤860162132(满)、④774126647(满)、③816531124(满)、②769925425(满)、①284271917(满)
-
-
-
-后台目录结构
------------------------------------
-```
-项目结构
-├─jeecg-boot-parent（父POM： 项目依赖、modules组织）
-│  ├─jeecg-boot-base-core（共通模块： 工具类、config、权限、查询过滤器、注解等）
-│  ├─jeecg-module-demo    示例代码
-│  ├─jeecg-module-system  System系统管理目录
-│  │  ├─jeecg-system-biz    System系统管理权限等功能
-│  │  ├─jeecg-system-start  System单体启动项目(8080）
-│  │  ├─jeecg-system-api    System系统管理模块对外api
-│  │  │  ├─jeecg-system-cloud-api   System模块对外提供的微服务接口
-│  │  │  ├─jeecg-system-local-api   System模块对外提供的单体接口
-│  ├─jeecg-server-cloud           --微服务模块
-     ├─jeecg-cloud-gateway       --微服务网关模块(9999)
-     ├─jeecg-cloud-nacos       --Nacos服务模块(8848)
-     ├─jeecg-system-cloud-start  --System微服务启动项目(7001)
-     ├─jeecg-demo-cloud-start    --Demo微服务启动项目(7002)
-     ├─jeecg-visual
-        ├─jeecg-cloud-monitor       --微服务监控模块 (9111)
-        ├─jeecg-cloud-xxljob        --微服务xxljob定时任务服务端 (9080)
-        ├─jeecg-cloud-sentinel     --sentinel服务端 (9000)
-        ├─jeecg-cloud-test           -- 微服务测试示例（各种例子）
-           ├─jeecg-cloud-test-more         -- 微服务测试示例（feign、熔断降级、xxljob、分布式锁）
-           ├─jeecg-cloud-test-rabbitmq     -- 微服务测试示例（rabbitmq）
-           ├─jeecg-cloud-test-seata          -- 微服务测试示例（seata分布式事务）
-           ├─jeecg-cloud-test-shardingsphere    -- 微服务测试示例（分库分表）
-```
-
-
 
 
 为什么选择JeecgBoot?
@@ -212,7 +178,7 @@ Docker启动项目
 
 #### 前端
 
-- 技术栈：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts等最新技术栈`
+- 技术栈：`Vue3.0 + TypeScript + Vite5 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6` 等最新技术栈
 
 #### 支持库
 
@@ -274,6 +240,18 @@ Docker启动项目
 
 ### 功能模块
 ```
+├─Online在线开发(低代码)
+│  ├─Online在线表单
+│  ├─Online代码生成器
+│  ├─Online在线报表
+│  ├─仪表盘设计器
+│  ├─AI助手
+│  ├─系统编码规则
+│  ├─系统校验规则
+├─积木报表设计器
+│  ├─打印设计器
+│  ├─数据报表设计
+│  ├─图形报表设计（支持echart）
 ├─系统管理
 │  ├─用户管理
 │  ├─角色管理
@@ -287,7 +265,8 @@ Docker启动项目
 │  └─系统公告
 │  └─职务管理
 │  └─通讯录
-│  └─多租户管理
+│  ├─多数据源管理
+│  └─多租户管理（租户管理、租户角色、我的租户）
 ├─消息中心
 │  ├─消息管理
 │  ├─模板管理
@@ -376,28 +355,13 @@ Docker启动项目
 │  └─异常页面
 │  └─个人页面
 ├─高级功能
-│  ├─系统编码规则
 │  ├─提供单点登录CAS集成方案
 │  ├─提供APP发布方案
 │  ├─集成Websocket消息通知机制
-├─Online在线开发(低代码)
-│  ├─Online在线表单 - 功能已开放
-│  ├─Online代码生成器 - 功能已开放
-│  ├─Online在线报表 - 功能已开放
-│  ├─Online在线图表(未开源)
-│  ├─Online图表模板配置(未开源)
-│  ├─Online布局设计(未开源)
-│  ├─多数据源管理 - 功能已开放
-├─积木报表设计器(低代码)
-│  ├─打印设计器
-│  ├─数据报表设计
-│  ├─图形报表设计（支持echart）
-│  ├─大屏设计器(未开源)
-│─更多商业功能 (未开源)
+│─更多商业功能
 │  ├─流程设计器
 │  ├─表单设计器
-   ├─大屏设计器
-   ├─门户设计/仪表盘设计器
+│  ├─大屏设计器
 │  └─我的任务
 │  └─历史流程
 │  └─历史流程
@@ -407,14 +371,42 @@ Docker启动项目
 │  └─我发起的流程
 │  └─我的抄送
 │  └─流程委派、抄送、跳转
+│  └─OA办公组件
 │  └─。。。
-│─OA办公组件 (未开源)
-│  ├─更多功能
-│  └─。。。
-└─其他模块
-   └─更多功能开发中。。
    
 ```
+
+
+
+后台目录结构
+-----------------------------------
+```
+项目结构
+├─jeecg-boot-parent（父POM： 项目依赖、modules组织）
+│  ├─jeecg-boot-base-core（共通模块： 工具类、config、权限、查询过滤器、注解等）
+│  ├─jeecg-module-demo    示例代码
+│  ├─jeecg-module-system  System系统管理目录
+│  │  ├─jeecg-system-biz    System系统管理权限等功能
+│  │  ├─jeecg-system-start  System单体启动项目(8080）
+│  │  ├─jeecg-system-api    System系统管理模块对外api
+│  │  │  ├─jeecg-system-cloud-api   System模块对外提供的微服务接口
+│  │  │  ├─jeecg-system-local-api   System模块对外提供的单体接口
+│  ├─jeecg-server-cloud           --微服务模块
+     ├─jeecg-cloud-gateway       --微服务网关模块(9999)
+     ├─jeecg-cloud-nacos       --Nacos服务模块(8848)
+     ├─jeecg-system-cloud-start  --System微服务启动项目(7001)
+     ├─jeecg-demo-cloud-start    --Demo微服务启动项目(7002)
+     ├─jeecg-visual
+        ├─jeecg-cloud-monitor       --微服务监控模块 (9111)
+        ├─jeecg-cloud-xxljob        --微服务xxljob定时任务服务端 (9080)
+        ├─jeecg-cloud-sentinel     --sentinel服务端 (9000)
+        ├─jeecg-cloud-test           -- 微服务测试示例（各种例子）
+           ├─jeecg-cloud-test-more         -- 微服务测试示例（feign、熔断降级、xxljob、分布式锁）
+           ├─jeecg-cloud-test-rabbitmq     -- 微服务测试示例（rabbitmq）
+           ├─jeecg-cloud-test-seata          -- 微服务测试示例（seata分布式事务）
+           ├─jeecg-cloud-test-shardingsphere    -- 微服务测试示例（分库分表）
+```
+
 
 
 

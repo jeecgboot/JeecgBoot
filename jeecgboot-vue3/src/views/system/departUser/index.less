@@ -1,0 +1,48 @@
+@prefix-cls: ~'@{namespace}-depart-user';
+
+.@{prefix-cls} {
+  &--tree-search {
+    width: 100%;
+    margin: 10px 0 20px;
+  }
+
+  &--base-info-form {
+    @media (min-width: 576px) {
+      .no-border {
+        border: 0;
+        box-shadow: none;
+      }
+
+      .ant-select.ant-select-disabled {
+        .ant-select-selector {
+          border: 0;
+          color: black;
+          background-color: transparent;
+        }
+
+        .ant-select-selector,
+        .ant-select-selection-item {
+          cursor: text !important;
+          user-select: initial !important;
+        }
+
+        .ant-select-selection-search,
+        .ant-select-arrow {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+// 夜间模式样式兼容
+[data-theme='dark'] .@{prefix-cls} {
+  &--base-info-form {
+    .ant-select.ant-select-disabled {
+      .ant-select-selector {
+        color: #c9d1d9;
+        background-color: transparent;
+      }
+    }
+  }
+}

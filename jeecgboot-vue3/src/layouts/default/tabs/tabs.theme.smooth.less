@@ -1,0 +1,233 @@
+// tabs圆滑样式
+@prefix-cls-theme-smooth: ~'@{prefix-cls}.@{prefix-cls}--theme-smooth';
+
+html[data-theme='dark'] {
+  .@{prefix-cls-theme-smooth} {
+    .ant-tabs-tab {
+      border: none !important;
+    }
+  }
+}
+
+html[data-theme='light'] {
+  .@{prefix-cls-theme-smooth} {
+    .ant-tabs-tab:not(.ant-tabs-tab-active) {
+      border: none !important;
+    }
+  }
+}
+
+.@{prefix-cls-theme-smooth} {
+  @tabHeight: calc(@multiple-smooth-height - 12px);
+  z-index: 10;
+  height: @multiple-smooth-height;
+  line-height: @multiple-smooth-height;
+  background-color: @component-background;
+  box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+
+  .ant-tabs-small {
+    height: @multiple-smooth-height;
+  }
+
+  .ant-tabs.ant-tabs-card {
+    .ant-tabs-nav {
+      height: @multiple-smooth-height;
+      margin: 0;
+      background-color: @component-background;
+      border: 0;
+      box-shadow: none;
+      padding-left: 10px;
+
+      .ant-tabs-nav-wrap {
+        height: @tabHeight;
+        margin-top: 12px;
+      }
+
+      .ant-tabs-tab {
+        height: @tabHeight;
+        line-height: @tabHeight;
+        color: @text-color-base;
+        background-color: @component-background;
+        transition: padding 0.3s;
+        padding: 0 20px 0 26px;
+        margin: 0 -14px 0 0 !important;
+        mask: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANoAAAAkBAMAAAAdqzmBAAAAMFBMVEVHcEwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlTPQ5AAAAD3RSTlMAr3DvEM8wgCBA379gj5//tJBPAAAAnUlEQVRIx2NgAAM27fj/tAO/xBsYkIHyf9qCT8iWMf6nNQhAsk2f5rYheY7Dnua2/U+A28ZEe8v+F9Ax2v7/F4DbxkUH2wzgtvHTwbYPo7aN2jZq26hto7aN2jZq25Cy7Qvctnw62PYNbls9HWz7S8/G6//PsI6H4396gAUQy1je08W2jxDbpv6nD4gB2uWp+J9eYPsEhv/0BPS1DQBvoBLVZ3BppgAAAABJRU5ErkJggg==);
+        mask-size: 100% 100%;
+        position: relative;
+        z-index: 1;
+
+        .ant-tabs-tab-btn {
+          color: @text-color-base;
+        }
+
+        &:hover {
+          z-index: 2;
+          padding: 0 20px 0 26px;
+
+          .ant-tabs-tab-remove .anticon-close {
+            opacity: 1;
+
+            &:hover {
+              color: #fff;
+              background-color: #c0c4cc;
+            }
+          }
+        }
+
+        .ant-tabs-tab-remove {
+          top: -1px;
+          left: 8px;
+
+          .anticon-close {
+            position: relative;
+            width: 14px;
+            height: 14px;
+            font-size: 13px;
+            color: inherit;
+            opacity: 0;
+            transition: opacity 0.15s;
+            vertical-align: middle;
+            line-height: 10px;
+            overflow: hidden;
+            transform-origin: 100% 50%;
+            border-radius: 100%;
+
+            &:hover {
+              svg {
+                fill: #fff;
+              }
+            }
+          }
+        }
+        > div {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        svg {
+          fill: @text-color-base;
+        }
+
+        &:first-child {
+          padding: 0 30px 0 30px !important;
+        }
+        span{font-weight: 200;}
+      }
+
+      .ant-tabs-tab:not(.ant-tabs-tab-active) {
+        &:hover {
+          color: inherit;
+          background-color: #f5f5f5;
+        }
+      }
+
+      .ant-tabs-tab.ant-tabs-tab-active {
+        position: relative;
+        padding: 0 20px 0 26px;
+        color: @primary-color !important;
+        background: #f5f5f5;
+        border: 0;
+        z-index: 3;
+
+        .ant-tabs-tab-btn {
+          color: @primary-color;
+        }
+
+        .ant-tabs-tab-remove .anticon-close {
+          opacity: 1;
+
+          svg {
+            width: 0.6em;
+          }
+        }
+
+        svg {
+          width: inherit;
+          fill: @primary-color;
+        }
+      }
+    }
+
+    .ant-tabs-nav > div:nth-child(1) {
+      padding: 0 6px;
+
+      .ant-tabs-tab {
+        margin-right: -15px !important;
+      }
+    }
+  }
+
+  .ant-tabs-tab:not(.ant-tabs-tab-active) {
+    .anticon-close {
+      font-size: 12px;
+
+      svg {
+        width: 0.6em;
+      }
+    }
+  }
+
+  .ant-tabs-extra-content {
+    position: relative;
+    top: 0;
+    line-height: @multiple-smooth-height !important;
+  }
+
+  .ant-dropdown-trigger {
+    display: inline-flex;
+  }
+
+  .@{prefix-cls}--hide-close {
+    .ant-tabs-tab-remove .anticon-close {
+      opacity: 0 !important;
+    }
+  }
+
+  .@{prefix-cls}-content {
+    &__extra-quick,
+    &__extra-redo,
+    &__extra-fold {
+      display: inline-block;
+      width: 36px;
+      height: @multiple-smooth-height;
+      line-height: @multiple-smooth-height;
+      color: @text-color-secondary;
+      text-align: center;
+      cursor: pointer;
+      border-left: 1px solid @border-color-base;
+
+      &:hover {
+        color: @text-color-base;
+      }
+
+      span[role='img'] {
+        transform: rotate(90deg);
+      }
+    }
+
+    &__extra-redo {
+      span[role='img'] {
+        transform: rotate(0deg);
+      }
+    }
+
+    &__info {
+      display: inline-block;
+      width: 100%;
+      height: @tabHeight;
+      line-height: 32px;
+      padding-left: 0;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    // tab 前缀图标样式
+    &__prefix-icon {
+      & .app-iconify.anticon {
+        margin-right: 4px;
+      }
+    }
+  }
+}

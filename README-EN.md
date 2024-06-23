@@ -43,13 +43,6 @@ Official Support: http://jeecg.com/doc/help
 
 
 
-
-Download the source code
------------------------------------
-- UI(Vue3) SourceCode：https://github.com/jeecgboot/jeecgboot-vue3
-- APP SourceCode：https://github.com/jeecgboot/jeecg-uniapp
-
-
 ##### Project description
 
 | Project                | description                     | 
@@ -57,8 +50,12 @@ Download the source code
 | `jeecg-boot`    | SpringBoot background source code (support microservices)      |
 | `jeecgboot-vue3` | Vue3+TS new front-end source code|
 | `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
-| `More` | [Download more source code](http://jeecg.com/download) |
 
+
+
+Download other source code
+-----------------------------------
+- APP SourceCode：https://github.com/jeecgboot/jeecg-uniapp
 
 
 
