@@ -12,7 +12,6 @@ Current version: 3.7.0_all (Release date: 2024-06-23)
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/Blog-blog-blue.svg)](https://jeecg.blog.csdn.net)
 [![](https://img.shields.io/badge/version-3.7.0_all-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
@@ -38,9 +37,6 @@ Technical support
 -----------------------------------
 
 Problems or bugs in use can be found in [Making on the Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
-
-Official Support: http://jeecg.com/doc/help
-
 
 
 ##### Project description
@@ -180,7 +176,7 @@ Technical Architecture:
 
 #### Development Environment
 
-- Language: Java 8+ (less than 17)
+- Language: Java 8+ (17)
 
 - IDE(JAVA) : IDEA (lombok plug-in must be installed)
 
@@ -190,20 +186,20 @@ Technical Architecture:
 
 - Cache: Redis
 
-- Database: MySQL5.7 + & Oracle 11 g & Sqlserver2017  [More Databases](https://my.oschina.net/jeecg/blog/4905722)
+- Database: MySQL5.7 + [More Databases](https://my.oschina.net/jeecg/blog/4905722)
 
 
 #### backend
 
-- Basic framework: Spring Boot 2.6.14
+- Basic framework: Spring Boot 2.7.18
 
 - Microservice framework: Spring Cloud Alibaba 2021.0.1.0
 
-- Persistence layer framework: MybatisPlus 3.5.1
+- Persistence layer framework: MybatisPlus 3.5.3.2
 
-- Report tool: JimuReport 1.5.8
+- Report tool: JimuReport 1.7.6
 
-- Security framework: Apache Shiro 1.10.0, Jwt 3.11.0
+- Security framework: Apache Shiro 1.12.0, Jwt 3.11.0
 
 - Microservice technology stack: Spring Cloud Alibaba, Nacos, Gateway, Sentinel, Skywalking
 
@@ -227,8 +223,8 @@ Technical Architecture:
 |  Sqlserver2017   |  √   |
 |   PostgreSQL   |  √   |
 |   MariaDB   |  √   |
-|   达梦、人大金仓   |  √   |
-
+|   达梦   |  √   |
+|   人大金仓   |  √   |
 
 
 ## Microservice solutions
@@ -272,156 +268,6 @@ Technical Architecture:
 
 ### Jeecg Boot product functionality blueprint
 ![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
-
-
-
-
-### Function module
-```
-├─系统管理
-│  ├─用户管理
-│  ├─角色管理
-│  ├─菜单管理
-│  ├─权限设置（支持按钮权限、数据权限）
-│  ├─表单权限（控制字段禁用、隐藏）
-│  ├─部门管理
-│  ├─我的部门（二级管理员）
-│  └─字典管理
-│  └─分类字典
-│  └─系统公告
-│  └─职务管理
-│  └─通讯录
-│  └─多租户管理
-├─消息中心
-│  ├─消息管理
-│  ├─模板管理
-├─代码生成器(低代码)
-│  ├─代码生成器功能（一键生成前后端代码，生成后无需修改直接用，绝对是后端开发福音）
-│  ├─代码生成器模板（提供4套模板，分别支持单表和一对多模型，不同风格选择）
-│  ├─代码生成器模板（生成代码，自带excel导入导出）
-│  ├─查询过滤器（查询逻辑无需编码，系统根据页面配置自动生成）
-│  ├─高级查询器（弹窗自动组合查询条件）
-│  ├─Excel导入导出工具集成（支持单表，一对多 导入导出）
-│  ├─平台移动自适应支持
-├─系统监控
-│  ├─Gateway路由网关
-│  ├─性能扫描监控
-│  │  ├─监控 Redis
-│  │  ├─Tomcat
-│  │  ├─jvm
-│  │  ├─服务器信息
-│  │  ├─请求追踪
-│  │  ├─磁盘监控
-│  ├─定时任务
-│  ├─系统日志
-│  ├─消息中心（支持短信、邮件、微信推送等等）
-│  ├─数据日志（记录数据快照，可对比快照，查看数据变更情况）
-│  ├─系统通知
-│  ├─SQL监控
-│  ├─swagger-ui(在线接口文档)
-│─报表示例
-│  ├─曲线图
-│  └─饼状图
-│  └─柱状图
-│  └─折线图
-│  └─面积图
-│  └─雷达图
-│  └─仪表图
-│  └─进度条
-│  └─排名列表
-│  └─等等
-│─大屏模板
-│  ├─作战指挥中心大屏
-│  └─物流服务中心大屏
-│─常用示例
-│  ├─自定义组件
-│  ├─对象存储(对接阿里云)
-│  ├─JVXETable示例（各种复杂ERP布局示例）
-│  ├─单表模型例子
-│  └─一对多模型例子
-│  └─打印例子
-│  └─一对多TAB例子
-│  └─内嵌table例子
-│  └─常用选择组件
-│  └─异步树table
-│  └─接口模拟测试
-│  └─表格合计示例
-│  └─异步树列表示例
-│  └─一对多JEditable
-│  └─JEditable组件示例
-│  └─图片拖拽排序
-│  └─图片翻页
-│  └─图片预览
-│  └─PDF预览
-│  └─分屏功能
-│─封装通用组件	
-│  ├─行编辑表格JEditableTable
-│  └─省略显示组件
-│  └─时间控件
-│  └─高级查询
-│  └─用户选择组件
-│  └─报表组件封装
-│  └─字典组件
-│  └─下拉多选组件
-│  └─选人组件
-│  └─选部门组件
-│  └─通过部门选人组件
-│  └─封装曲线、柱状图、饼状图、折线图等等报表的组件（经过封装，使用简单）
-│  └─在线code编辑器
-│  └─上传文件组件
-│  └─验证码组件
-│  └─树列表组件
-│  └─表单禁用组件
-│  └─等等
-│─更多页面模板
-│  ├─各种高级表单
-│  ├─各种列表效果
-│  └─结果页面
-│  └─异常页面
-│  └─个人页面
-├─高级功能
-│  ├─系统编码规则
-│  ├─提供单点登录CAS集成方案
-│  ├─提供APP发布方案
-│  ├─集成Websocket消息通知机制
-├─Online在线开发(低代码)
-│  ├─Online在线表单 - 功能已开放
-│  ├─Online代码生成器 - 功能已开放
-│  ├─Online在线报表 - 功能已开放
-│  ├─Online在线图表(未开源)
-│  ├─Online图表模板配置(未开源)
-│  ├─Online布局设计(未开源)
-│  ├─多数据源管理 - 功能已开放
-├─积木报表设计器(低代码)
-│  ├─打印设计器
-│  ├─数据报表设计
-│  ├─图形报表设计（支持echart）
-│  ├─大屏设计器(未开源)
-│─流程模块功能 (未开源)
-│  ├─流程设计器
-│  ├─表单设计器
-   ├─大屏设计器
-   ├─门户设计/仪表盘设计器
-│  └─我的任务
-│  └─历史流程
-│  └─历史流程
-│  └─流程实例管理
-│  └─流程监听管理
-│  └─流程表达式
-│  └─我发起的流程
-│  └─我的抄送
-│  └─流程委派、抄送、跳转
-│  └─。。。
-│─OA办公组件 (未开源)
-│  ├─更多功能
-│  └─。。。
-└─其他模块
-   └─更多功能开发中。。
-   
-```
-
-
-
 
 
 
