@@ -7,7 +7,6 @@ JeecgBoot 低代码开发平台
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://jeecg.com/aboutusIndex)
-[![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
 [![](https://img.shields.io/badge/version-3.7.0_all-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
@@ -19,7 +18,7 @@ JeecgBoot 低代码开发平台
 
 <h3 align="center">Java Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端分离架构 SpringBoot2.x和3.x，SpringCloud，Ant Design&Vue，Mybatis-plus，Shiro，JWT，支持微服务。强大的代码生成器让前后端代码一键生成，实现低代码开发!  JeecgBoot 引领新的低代码开发模式(OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务。既能快速提高效率，节省研发成本，同时又不失灵活性！
+JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端分离架构 SpringBoot2.x和3.x，SpringCloud，Ant Design Vue3，Mybatis-plus，Shiro，JWT，支持微服务。强大的代码生成器让前后端代码一键生成，实现低代码开发!  JeecgBoot 引领新的低代码开发模式(OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务。既能快速提高效率，节省研发成本，同时又不失灵活性！
 
 JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零代码`：Online表单开发、Online报表、报表配置能力、在线图表设计、仪表盘设计、大屏设计、移动配置能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）等等！
 
@@ -52,44 +51,44 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 技术支持
 -----------------------------------
 
-关闭gitee的issue通道，使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
-
-
-快速启动项目
------------------------------------
-
-- [前端项目快速启动](http://help.jeecg.com/setup/startup.html)
-- [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
-
-
-
-Docker启动项目
------------------------------------
-
-- [Docker启动前端](https://help.jeecg.com/java/docker/vue3.html)
-- [Docker启动后台](https://help.jeecg.com/java/docker/up.html)
-
-
-微服务方式启动
------------------------------------
-
-- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-- [Docker启动微服务后台](https://help.jeecg.com/java/docker/springcloud.html)
+使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
 
 
 技术文档
 -----------------------------------
 
-- 产品官网：  [http://www.jeecg.com](http://www.jeecg.com)
+- 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 开发文档：  [https://help.jeecg.com](https://help.jeecg.com)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)
 - QQ交流群 ： ⑨808791225、其他(满)
 - 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
 
+
+
+启动项目
+-----------------------------------
+
+##### 命令和IDE启动
+
+- [前端项目快速启动](http://help.jeecg.com/setup/startup.html)
+- [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
+
+##### Docker启动
+
+- [Docker启动前端](https://help.jeecg.com/java/docker/vue3.html)
+- [Docker启动后台](https://help.jeecg.com/java/docker/up.html)
+
+
+##### 微服务启动
+
+- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
+- [Docker启动微服务后台](https://help.jeecg.com/java/docker/springcloud.html)
+
+
 为什么选择JeecgBoot?
 -----------------------------------
-* 1.采用最新主流前后分离框架（Springboot+Mybatis+antd），容易上手; 代码生成器依赖性低,灵活的扩展能力，可快速实现二次开发;
+* 1.采用最新主流前后分离框架（Springboot+Mybatis+antd+vue3），容易上手; 代码生成器依赖性低,灵活的扩展能力，可快速实现二次开发;
 * 2.支持微服务SpringCloud Alibaba(Nacos、Gateway、Sentinel、Skywalking)，提供切换机制支持单体和微服务自由切换
 * 3.开发效率高,采用代码生成器，单表、树列表、一对多、一对一等数据模型，增删改查功能一键生成，菜单配置直接使用；
 * 4.代码生成器提供强大模板机制，支持自定义模板，目前提供四套风格模板（单表两套、树模型一套、一对多三套）
@@ -107,7 +106,7 @@ Docker启动项目
 * 16.页面校验自动生成(必须输入、数字校验、金额校验、时间空间等);
 * 17.支持SAAS服务模式，提供SaaS多租户架构方案。
 * 18.分布式文件服务，集成minio、阿里OSS等优秀的第三方，提供便捷的文件上传与管理，同时也支持本地存储。
-* 19.主流数据库兼容，一套代码完全兼容Mysql、Postgresql、Oracle、Sqlserver、MariaDB、达梦等主流数据库。
+* 19.主流数据库兼容，一套代码完全兼容Mysql、Postgresql、Oracle、Sqlserver、MariaDB、达梦、人大金仓等主流数据库。
 * 20.集成工作流flowable，并实现了只需在页面配置流程转向，可极大的简化bpm工作流的开发；用bpm的流程设计器画出了流程走向，一个工作流基本就完成了，只需写很少量的java代码；
 * 21.低代码能力：在线流程设计，采用开源flowable流程引擎，实现在线画流程,自定义表单,表单挂靠,业务流转
 * 22.多数据源：及其简易的使用方式，在线配置数据源配置，便捷的从其他数据抓取数据；
@@ -136,45 +135,34 @@ Docker启动项目
  
 技术架构：
 -----------------------------------
-#### 开发环境
-
-- 语言：Java 8+ (小于17)
-
-- IDE(JAVA)： IDEA (必须安装lombok插件 )
-
-- IDE(前端)： Vscode、WebStorm、IDEA
-
-- 依赖管理：Maven
-
-- 缓存：Redis
-
-- 数据库脚本：MySQL5.7+  （其他数据库，[需要自己转](https://my.oschina.net/jeecg/blog/4905722)）
-
 
 #### 后端
 
+- IDE建议： IDEA (必须安装lombok插件 )
+- 语言：Java 8+ (支持17)
+- 依赖管理：Maven
 - 基础框架：Spring Boot 2.6.14
-
 - 微服务框架： Spring Cloud Alibaba 2021.0.1.0
-
 - 持久层框架：MybatisPlus 3.5.1
-
 - 报表工具： JimuReport 1.5.8
-
 - 安全框架：Apache Shiro 1.10.0，Jwt 3.11.0
-
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
-
 - 数据库连接池：阿里巴巴Druid 1.1.22
-
 - 日志打印：logback
-
+- 缓存：Redis
 - 其他：autopoi, fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。
+- 默认数据库脚本：MySQL5.7+
+- [其他数据库，需要自己转](https://my.oschina.net/jeecg/blog/4905722)
 
 
 #### 前端
 
-- 技术栈：`Vue3.0 + TypeScript + Vite5 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6` 等最新技术栈
+- 前端IDE建议：WebStorm、Vscode
+- 采用 Vue3.0+TypeScript+Vite+Ant-Design-Vue等新技术方案，包括二次封装组件、utils、hooks、动态菜单、权限校验、按钮级别权限控制等功能
+- 最新技术栈：Vue3.0 + TypeScript + Vite5 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6
+- 依赖管理：node、npm、pnpm
+
+
 
 #### 支持库
 
@@ -185,44 +173,30 @@ Docker启动项目
 |  Sqlserver2017   |  √   |
 |   PostgreSQL   |  √   |
 |   MariaDB   |  √   |
-|   达梦、人大金仓   |  √   |
+|   达梦   |  √   |
+|   人大金仓   |  √   |
 
 
 
 ## 微服务解决方案
 
 
-1、服务注册和发现 Nacos √
-
-2、统一配置中心 Nacos  √
-
-3、路由网关 gateway(三种加载方式) √
-
-4、分布式 http feign √
-
-5、熔断降级限流 Sentinel √
-
-6、分布式文件 Minio、阿里OSS √ 
-
-7、统一权限控制 JWT + Shiro √
-
-8、服务监控 SpringBootAdmin√
-
-9、链路跟踪 Skywalking   [参考文档](https://help.jeecg.com/java/springcloud/super/skywarking.html)
-
-10、消息中间件 RabbitMQ  √
-
-11、分布式任务 xxl-job  √ 
-
-12、分布式事务 Seata
-
-13、分布式日志 elk + kafka
-
-14、支持 docker-compose、k8s、jenkins
-
-15、CAS 单点登录   √
-
-16、路由限流   √
+- 1、服务注册和发现 Nacos √
+- 2、统一配置中心 Nacos  √
+- 3、路由网关 gateway(三种加载方式) √
+- 4、分布式 http feign √
+- 5、熔断降级限流 Sentinel √
+- 6、分布式文件 Minio、阿里OSS √ 
+- 7、统一权限控制 JWT + Shiro √
+- 8、服务监控 SpringBootAdmin√
+- 9、链路跟踪 Skywalking   [参考文档](https://help.jeecg.com/java/springcloud/super/skywarking.html)
+- 10、消息中间件 RabbitMQ  √
+- 11、分布式任务 xxl-job  √ 
+- 12、分布式事务 Seata
+- 13、分布式日志 elk + kafka
+- 14、支持 docker-compose、k8s、jenkins
+- 15、CAS 单点登录   √
+- 16、路由限流   √
 
    
 #### 微服务架构图
