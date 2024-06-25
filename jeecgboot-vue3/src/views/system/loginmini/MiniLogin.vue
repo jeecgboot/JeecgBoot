@@ -105,7 +105,7 @@
                     <span>{{ t('sys.login.otherSignIn') }}</span>
                   </div>
                 </div>
-                <div class="aui-flex" :class="`${prefixCls}-sign-in-way`">
+                <div class="aui-flex" :class="`${prefixCls}-sign-in-way`" style="display: none">
                   <div class="aui-flex-box">
                     <div class="aui-third-login">
                       <a title="github" @click="onThirdLogin('github')"><GithubFilled /></a>
@@ -194,8 +194,8 @@
   //账号登录表单字段
   const formData = reactive<any>({
     inputCode: '',
-    username: 'admin',
-    password: '123456',
+    username: 'guest',
+    password: 'guest#123',
   });
   //手机登录表单字段
   const phoneFormData = reactive<any>({

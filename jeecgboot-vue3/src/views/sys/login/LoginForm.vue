@@ -75,7 +75,7 @@
 
     <Divider class="enter-x">{{ t('sys.login.otherSignIn') }}</Divider>
 
-    <div class="flex justify-evenly enter-x" :class="`${prefixCls}-sign-in-way`">
+    <div class="flex justify-evenly enter-x" :class="`${prefixCls}-sign-in-way`" style="display: none">
       <a @click="onThirdLogin('github')" title="github"><GithubFilled /></a>
       <a @click="onThirdLogin('wechat_enterprise')" title="企业微信"> <icon-font class="item-icon" type="icon-qiyeweixin3" /></a>
       <a @click="onThirdLogin('dingtalk')" title="钉钉"><DingtalkCircleFilled /></a>
@@ -122,8 +122,8 @@
   const rememberMe = ref(false);
 
   const formData = reactive({
-    account: 'admin',
-    password: '123456',
+    account: 'guest',
+    password: 'guest#123',
     inputCode: '',
   });
   const randCodeData = reactive({

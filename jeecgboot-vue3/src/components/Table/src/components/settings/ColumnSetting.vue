@@ -16,18 +16,12 @@
           <Checkbox :indeterminate="indeterminate" v-model:checked="checkAll" @change="onCheckAllChange">
             {{ t('component.table.settingColumnShow') }}
           </Checkbox>
-
+          <label>
+            {{ t('component.table.settingColumnWidth') }}
+          </label>
           <Checkbox v-model:checked="checkIndex" @change="handleIndexCheckChange">
             {{ t('component.table.settingIndexColumnShow') }}
           </Checkbox>
-
-          <!--                    <Checkbox-->
-          <!--                            v-model:checked="checkSelect"-->
-          <!--                            @change="handleSelectCheckChange"-->
-          <!--                            :disabled="!defaultRowSelection"-->
-          <!--                    >-->
-          <!--                        {{ t('component.table.settingSelectColumnShow') }}-->
-          <!--                    </Checkbox>-->
         </div>
       </template>
 
@@ -37,10 +31,10 @@
             <template v-for="item in plainOptions" :key="item.value">
               <div :class="`${prefixCls}__check-item`" v-if="!('ifShow' in item && !item.ifShow)">
                 <DragOutlined class="table-column-drag-icon" />
-                <Checkbox :value="item.value">
+                <Checkbox :value="item.value" style="width: 120px">
                   {{ item.label }}
                 </Checkbox>
-
+                <a-input-number v-bind="item.width" v-model:value="item.width" style="margin-right: 30px" min="50" max="400" step="10" placeholder="width" :title="item.label" />
                 <Tooltip placement="bottomLeft" :mouseLeaveDelay="0.4" :getPopupContainer="getPopupContainer">
                   <template #title>
                     {{ t('component.table.settingFixedLeft') }}
@@ -107,6 +101,7 @@
   import { cloneDeep, omit } from 'lodash-es';
   import Sortablejs from 'sortablejs';
   import type Sortable from 'sortablejs';
+  import { defHttp } from '@/utils/http/axios';
 
   interface State {
     checkAll: boolean;
@@ -116,6 +111,7 @@
   }
 
   interface Options {
+    width?: number | string;
     label: string;
     value: string;
     fixed?: boolean | 'left' | 'right';
@@ -140,6 +136,7 @@
     emits: ['columns-change'],
 
     setup(props, { emit, attrs }) {
+      let tableFieldsCache = [];
       const { t } = useI18n();
       const table = useTableContext();
       const popoverVisible = ref(false);
@@ -168,6 +165,12 @@
       const { prefixCls } = useDesign('basic-column-setting');
 
       const getValues = computed(() => {
+        if (tableFieldsCache.length > 0) {
+          // 暂不清楚columns何时初始化，所有每次都重新更新属性
+          console.debug('getValues');
+          updateStyle(table?.getBindValues.value.columns, tableFieldsCache);
+          updateStyle(table?.getBindValues.value.columns, plainOptions.value);
+        }
         return unref(table?.getBindValues) || {};
       });
 
@@ -224,8 +227,8 @@
       }
 
       function init() {
+        console.debug('init()');
         const columns = getColumns();
-
         const checkList = table
           .getColumns({ ignoreAction: true })
           .map((item) => {
@@ -253,10 +256,38 @@
             }
           });
         }
+        loadCgformFieldList(plainOptions.value);
         state.isInit = true;
         state.checkedList = checkList;
       }
 
+      async function loadCgformFieldList(plainOptions: any) {
+        console.debug('loadCgformFieldList');
+        const path = window.location.pathname;
+        const params = {
+          headId: path.slice(path.lastIndexOf('/') + 1),
+        };
+        const res = await defHttp.get({ url: `/onilne/tableFieldList`, params });
+        if (res.data) {
+          tableFieldsCache = res.data;
+          updateStyle(plainOptions, res.data);
+        }
+      }
+
+      function updateStyle(plainOptions: any, tableFields: any) {
+        for (const c1 of plainOptions) {
+          for (const c2 of tableFields) {
+            if (c1.key == c2.key) {
+              if (c2.width) Reflect.set(c1, 'width', c2.width);
+              if (c2.align) Reflect.set(c1, 'align', c2.align);
+              if (c2.attribute1) Reflect.set(c1, c2.attribute1.split(':')[0], c2.attribute1.split(':')[1]);
+              if (c2.attribute2) Reflect.set(c1, c2.attribute2.split(':')[0], c2.attribute2.split(':')[1]);
+              if (c2.attribute3) Reflect.set(c1, c2.attribute3.split(':')[0], c2.attribute3.split(':')[1]);
+            }
+          }
+        }
+        console.debug('updateStyle', plainOptions, tableFields);
+      }
       // checkAll change
       function onCheckAllChange(e: CheckboxChangeEvent) {
         const checkList = plainOptions.value.map((item) => item.value);
@@ -289,6 +320,7 @@
 
       // reset columns
       function reset() {
+        console.debug('reset()');
         // state.checkedList = [...state.defaultCheckList];
         // update-begin--author:liaozhiyang---date:20231103---for：【issues/825】tabel的列设置隐藏列保存后切换路由问题[重置没勾选]
         state.checkedList = table
@@ -305,6 +337,7 @@
         if (sortableOrder.value) {
           sortable.sort(sortableOrder.value);
         }
+        loadCgformFieldList(plainOptions.value);
         resetSetting();
       }
 

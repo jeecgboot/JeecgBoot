@@ -51,6 +51,7 @@ export function useColumnsCache(opt, setColumns, handleColumnFixed) {
       opt.plainSortOptions.value.sort((prev, next) => {
         return sortedList.indexOf(prev.value) - sortedList.indexOf(next.value);
       });
+      opt.plainOptions.value = columnCache.plainOptions._value;
       // 重新排序tableColumn
       checkedList.sort((prev, next) => sortedList.indexOf(prev) - sortedList.indexOf(next));
       // 是否显示行号列
@@ -61,6 +62,7 @@ export function useColumnsCache(opt, setColumns, handleColumnFixed) {
       // 设置固定列
       setColumnFixed(columnCache);
     }
+    console.debug('columnCache', table?.getBindValues.value.columns);
   }
 
   /** 设置被固定的列 */
@@ -96,13 +98,23 @@ export function useColumnsCache(opt, setColumns, handleColumnFixed) {
 
   /** 保存列配置 */
   function saveSetting() {
+    console.debug('saveSetting');
     const { checkedList } = opt.state;
     const sortedList = unref(opt.plainSortOptions).map((item) => item.value);
+    const plainOptions = opt.plainOptions;
+    const columns1 = opt.plainOptions.value;
+    const columns2 = table?.getBindValues.value.columns;
+    for (const c1 of columns1) {
+      for (const c2 of columns2) {
+        if (c1.key == c2.key && c1.width) c2.width = c1.width;
+      }
+    }
     $ls.set(cacheKey.value, {
       // 保存的列
       checkedList,
       // 排序后的列
       sortedList,
+      plainOptions,
       // 是否显示行号列
       checkIndex: unref(opt.checkIndex),
       // checkbox原始排序

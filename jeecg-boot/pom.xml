@@ -6,14 +6,6 @@
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
-	<developers>
-		<developer>
-			<name>北京国炬信息技术有限公司</name>
-			<email>jeecgos@163.com</email>
-			<url>http://www.guojusoft.com</url>
-		</developer>
-	</developers>
-
 	<scm>
 		<connection>http://www.jeecg.com</connection>
 		<developerConnection>http://guojusoft.com</developerConnection>
