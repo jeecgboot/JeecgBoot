@@ -1,0 +1,372 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<groupId>org.jeecgframework.boot</groupId>
+		<artifactId>jeecg-boot-parent</artifactId>
+		<version>3.7.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>jeecg-boot-base-core</artifactId>
+
+	<properties>
+		<spring-boot.version>3.1.5</spring-boot.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>aliyun</id>
+			<name>aliyun Repository</name>
+			<url>https://maven.aliyun.com/repository/public</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jeecg</id>
+			<name>jeecg Repository</name>
+			<url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>jeecg-snapshots</id>
+			<name>jeecg-snapshots Repository</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	
+	<dependencies>
+		<!--jeecg-tools-->
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>jeecg-boot-common3</artifactId>
+		</dependency>
+		<!--集成springmvc框架并实现自动配置 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-undertow</artifactId>
+		</dependency>
+		<!-- websocket -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!--springboot2.3+ 需引入validation对应的包-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<!--springboot2.6+解决metrics端点不显示jvm信息的问题-->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+
+		<!-- commons -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>${commons.version}</version>
+		</dependency>
+		<!-- freemarker -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-freemarker</artifactId>
+		</dependency>
+
+		<!-- mybatis-plus -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<version>${mybatis-plus.version}</version>
+		</dependency>
+
+		<!-- druid -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>druid-spring-boot-3-starter</artifactId>
+			<version>${druid.version}</version>
+		</dependency>
+
+		<!-- 动态数据源 -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+			<version>${dynamic-datasource-spring-boot-starter.version}</version>
+		</dependency>
+
+		<!-- 数据库驱动 -->
+		<!--mysql-->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql-connector-java.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!--  sqlserver-->
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>sqljdbc4</artifactId>
+			<version>${sqljdbc4.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- oracle驱动 -->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+			<version>${ojdbc6.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- postgresql驱动 -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!--人大金仓驱动 版本号V008R006C005B0013 -->
+		<dependency>
+			<groupId>org.jeecgframework</groupId>
+			<artifactId>kingbase8</artifactId>
+			<version>${kingbase8.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!--达梦数据库驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->
+		<dependency>
+			<groupId>com.dameng</groupId>
+			<artifactId>Dm8JdbcDriver18</artifactId>
+			<version>${dm8.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dameng</groupId>
+			<artifactId>DmDialect-for-hibernate5.0</artifactId>
+			<version>${dm8.version}</version>
+		</dependency>
+      
+
+		<!-- Quartz定时任务 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-quartz</artifactId>
+		</dependency>
+
+		<!--JWT-->
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>${java-jwt.version}</version>
+		</dependency>
+
+		<!--shiro-->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring-boot-starter</artifactId>
+			<version>${shiro.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-spring</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- shiro-redis -->
+		<dependency>
+			<groupId>org.crazycake</groupId>
+			<artifactId>shiro-redis</artifactId>
+			<version>${shiro-redis.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>checkstyle</artifactId>
+					<groupId>com.puppycrawl.tools</groupId>
+				</exclusion>
+				<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+				<exclusion>
+					<artifactId>jedis</artifactId>
+					<groupId>redis.clients</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${jedis.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<classifier>jakarta</classifier>
+			<version>${shiro.version}</version>
+			<!-- 排除仍使用了javax.servlet的依赖 -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-web</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- 引入适配jakarta的依赖包 -->
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-core</artifactId>
+			<classifier>jakarta</classifier>
+			<version>${shiro.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-web</artifactId>
+			<classifier>jakarta</classifier>
+			<version>${shiro.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- knife4j -->
+		<dependency>
+			<groupId>com.github.xiaoymin</groupId>
+			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+			<version>${knife4j-spring-boot-starter.version}</version>
+		</dependency>
+
+		<!-- 代码生成器 -->
+		<!-- 如下载失败，请参考此文档  https://help.jeecg.com/java/setup/maven.html -->
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>codegenerate</artifactId>
+			<version>${codegenerate.version}</version>
+		</dependency>
+
+		<!-- AutoPoi Excel工具类-->
+		<dependency>
+			<groupId>org.jeecgframework.boot3</groupId>
+			<artifactId>autopoi-web</artifactId>
+			<version>${autopoi-web.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>xercesImpl</artifactId>
+					<groupId>xerces</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.12.2</version>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- mini文件存储服务 -->
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+		</dependency>
+
+		<!-- 阿里云短信 -->
+		<dependency>
+			<groupId>com.aliyun</groupId>
+			<artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+			<version>${aliyun-java-sdk-dysmsapi.version}</version>
+		</dependency>
+		<!-- aliyun oss -->
+		<dependency>
+			<groupId>com.aliyun.oss</groupId>
+			<artifactId>aliyun-sdk-oss</artifactId>
+			<version>${aliyun.oss.version}</version>
+		</dependency>
+		<!-- 第三方登录  -->
+		<dependency>
+			<groupId>com.xkcoding.justauth</groupId>
+			<artifactId>justauth-spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-autoconfigure</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-configuration-processor</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>okhttp</artifactId>
+		</dependency>
+		<!-- 解决okhttp引用了kotlin,应用启动有警告日志问题 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-kotlin</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</dependency>
+		<!--加载hutool-->
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>cn.hutool</groupId>
+			<artifactId>hutool-crypto</artifactId>
+		</dependency>
+
+		<!-- chatgpt -->
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
+		</dependency>
+	</dependencies>
+</project>

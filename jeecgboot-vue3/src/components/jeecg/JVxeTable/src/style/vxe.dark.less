@@ -1,0 +1,124 @@
+@import 'vxe.const';
+// update-begin--author:liaozhiyang---date:20240313---for：【QQYUN-8493】修正暗黑模式online表单Erp和编辑页面显示不正确
+html[data-theme='dark'] { 
+  --vxe-table-body-background-color: #151515;
+  --vxe-table-footer-background-color: #151515;
+  --vxe-table-border-color: #606060;
+  --vxe-table-popup-border-color:#606060;
+  --vxe-table-row-hover-background-color:#1e1e1e;
+  --vxe-input-border-color: #606266;
+}
+// update-end--author:liaozhiyang---date:20240313---for：【QQYUN-8493】修正暗黑模式online表单Erp和编辑页面显示不正确
+[data-theme='dark'] .@{prefix-cls} {
+  @fontColor: #c9d1d9;
+  @bgColor: #151515;
+  @borderColor: #606060;
+
+  .vxe-cell--item,
+  .vxe-cell--title,
+  .vxe-cell,
+  .vxe-body--expanded-cell {
+    color: @fontColor;
+  }
+
+  .vxe-toolbar {
+    // update-begin--author:liaozhiyang---date:20240313---for：【QQYUN-8493】修正暗黑模式online表单Erp和编辑页面显示不正确
+    background-color: #1f1f1f;
+    // update-end--author:liaozhiyang---date:20240313---for：【QQYUN-8493】修正暗黑模式online表单Erp和编辑页面显示不正确
+  }
+
+  .vxe-table--render-default .vxe-table--body-wrapper,
+  .vxe-table--render-default .vxe-table--footer-wrapper {
+    background-color: @bgColor;
+  }
+
+  // 外边框
+  .vxe-table--render-default .vxe-table--border-line {
+    border-color: @borderColor;
+  }
+
+  // header 下边框
+  .vxe-table .vxe-table--header-wrapper .vxe-table--header-border-line {
+    border-bottom-color: @borderColor;
+  }
+
+  // footer 上边框
+  .vxe-table--render-default .vxe-table--footer-wrapper {
+    border-top-color: @borderColor;
+  }
+
+  // 展开行 边框
+  .vxe-table--render-default .vxe-body--expanded-column {
+    border-bottom-color: @borderColor;
+  }
+
+  // 行斑马纹
+  .vxe-table--render-default .vxe-body--row.row--stripe {
+    background-color: #1e1e1e;
+  }
+
+  // 行hover
+  .vxe-table--render-default .vxe-body--row.row--hover {
+    background-color: #262626;
+  }
+
+  // 选中行
+  .vxe-table--render-default .vxe-body--row.row--checked {
+    background-color: #44403a;
+
+    &.row--hover {
+      background-color: #59524b;
+    }
+  }
+
+  .vxe-table--render-default.border--default .vxe-table--header-wrapper,
+  .vxe-table--render-default.border--full .vxe-table--header-wrapper,
+  .vxe-table--render-default.border--outer .vxe-table--header-wrapper {
+    background-color: #1d1d1d;
+  }
+
+  .vxe-table--render-default.border--default .vxe-body--column,
+  .vxe-table--render-default.border--default .vxe-footer--column,
+  .vxe-table--render-default.border--default .vxe-header--column,
+  .vxe-table--render-default.border--inner .vxe-body--column,
+  .vxe-table--render-default.border--inner .vxe-footer--column,
+  .vxe-table--render-default.border--inner .vxe-header--column {
+    background-image: linear-gradient(#1d1d1d, #1d1d1d);
+  }
+
+  // 列宽拖动
+  .vxe-header--column .vxe-resizable.is--line:before {
+    background-color: #505050;
+  }
+
+  // checkbox
+  .vxe-custom--option .vxe-checkbox--icon:before,
+  .vxe-export--panel-column-option .vxe-checkbox--icon:before,
+  .vxe-table--filter-option .vxe-checkbox--icon:before,
+  .vxe-table--render-default .vxe-cell--checkbox .vxe-checkbox--icon:before {
+    background-color: @bgColor;
+    border-color: @borderColor;
+  }
+
+  .vxe-toolbar .vxe-custom--option-wrapper {
+    background-color: @bgColor;
+  }
+
+  .vxe-button {
+    background-color: @bgColor;
+    border-color: @borderColor;
+  }
+
+  .vxe-button.type--button:not(.is--disabled):active {
+    background-color: @bgColor;
+  }
+
+  .vxe-toolbar .vxe-custom--wrapper.is--active > .vxe-button {
+    background-color: @bgColor;
+  }
+
+  .vxe-toolbar .vxe-custom--option-wrapper .vxe-custom--footer button {
+    color: @fontColor;
+  }
+}
+

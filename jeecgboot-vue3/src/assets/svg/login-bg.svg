@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="6395" height="1079" viewBox="0 0 6395 1079">
+  <defs>
+    <clipPath id="clip-path">
+      <rect  width="6395" height="1079" transform="translate(-5391)" fill="#fff"/>
+    </clipPath>
+    <linearGradient id="linear-gradient" x1="0.747" y1="0.222" x2="0.973" y2="0.807" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#2c41b4"/>
+      <stop offset="1" stop-color="#1b4fab"/>
+    </linearGradient>
+  </defs>
+  <g id="Mask_Group_1" data-name="Mask Group 1" transform="translate(5391)" clip-path="url(#clip-path)">
+    <g id="Group_118" data-name="Group 118" transform="translate(-419.333 -1.126)">
+      <path id="Path_142" data-name="Path 142" d="M6271.734-6.176s-222.478,187.809-55.349,583.254c44.957,106.375,81.514,205.964,84.521,277,8.164,192.764-156.046,268.564-156.046,268.564l-653.53-26.8L5475.065-21.625Z" transform="translate(-4876.383 0)" fill="#f1f5f8"/>
+      <path id="Union_6" data-name="Union 6" d="M-2631.1,1081.8v-1.6H-8230.9V.022H-2631.1V0H-1871.4s-187.845,197.448-91.626,488.844c49.167,148.9,96.309,256.289,104.683,362.118,7.979,100.852-57.98,201.711-168.644,254.286-65.858,31.29-144.552,42.382-223.028,42.383C-2441.2,1147.632-2631.1,1081.8-2631.1,1081.8Z" transform="translate(3259.524 0.803)" fill="url(#linear-gradient)"/>
+    </g>
+  </g>
+</svg>

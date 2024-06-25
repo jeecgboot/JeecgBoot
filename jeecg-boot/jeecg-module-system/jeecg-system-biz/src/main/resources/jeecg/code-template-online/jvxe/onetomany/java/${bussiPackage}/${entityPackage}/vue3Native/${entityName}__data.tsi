@@ -1,0 +1,268 @@
+<#include "/common/utils.ftl">
+import {BasicColumn} from '/@/components/Table';
+import {FormSchema} from '/@/components/Table';
+import { rules} from '/@/utils/helper/validator';
+import { render } from '/@/utils/common/renderUtils';
+import {JVxeTypes,JVxeColumn} from '/@/components/jeecg/JVxeTable/types'
+import { getWeekMonthQuarterYear } from '/@/utils';
+//列表数据
+export const columns: BasicColumn[] = [
+ <#list columns as po>
+   <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+   <#if po.isShowList =='Y' && po.fieldName !='id' && po.fieldName !='delFlag'>
+   <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+   {
+    title: '${po.filedComment}',
+    align:"center",
+    <#if po.sort=='Y'>
+    sorter: true,
+   </#if>
+    <#if po.classType=='date'>
+    dataIndex: '${po.fieldName}',
+    customRender:({text}) =>{
+      text = !text ? "" : (text.length > 10 ? text.substr(0,10) : text);
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      if(text) {
+        return getWeekMonthQuarterYear(text)['${po.extendParams.picker}'];
+      } else {
+        return text;
+      }
+      <#else>
+      return text;
+      </#if>
+    },
+    <#elseif po.fieldDbType=='Blob'>
+    dataIndex: '${po.fieldName}String'
+    <#elseif po.classType=='umeditor'>
+    dataIndex: '${po.fieldName}',
+    <#elseif po.classType=='pca'>
+    dataIndex: '${po.fieldName}',
+   <#elseif po.classType=='file'>
+    dataIndex: '${po.fieldName}',
+   <#elseif po.classType=='image'>
+    dataIndex: '${po.fieldName}',
+    customRender:render.renderImage,
+   <#elseif po.classType=='switch'>
+    dataIndex: '${po.fieldName}',
+<#assign switch_extend_arr=['Y','N']>
+<#if po.dictField?default("")?contains("[")>
+<#assign switch_extend_arr=po.dictField?eval>
+</#if>
+<#list switch_extend_arr as a>
+<#if a_index == 0>
+<#assign switch_extend_arr1=a>
+<#else>
+<#assign switch_extend_arr2=a>
+</#if>
+</#list>
+    customRender:({text}) => {
+       return  render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
+     },
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+    dataIndex: '${po.fieldName}_dictText'
+   <#elseif po.classType=='cat_tree'>
+    dataIndex: '${po.fieldName}',
+    <#if po.dictText?default("")?trim?length == 0>
+    customRender:({text}) => {
+       return  render.renderCategoryTree(text,'${po.dictField?default("")}')
+   },
+   <#else>
+    customRender: ({text, record}) => (text ? record['${po.dictText}'] : '')
+   </#if>
+   <#else>
+    dataIndex: '${po.fieldName}'
+   </#if>
+   },
+   </#if>
+ </#list>
+];
+
+//子表表格配置
+<#list subTables as sub>
+<#if sub.foreignRelationType =='0'>
+export const ${sub.entityName?uncap_first}Columns: JVxeColumn[] = [
+<#assign popupBackFields = "">
+
+<#-- 循环子表的列 开始 -->
+<#list sub.colums as col><#rt/>
+<#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+<#if col.isShow =='Y' && col.fieldName !='delFlag'>
+<#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+<#if col.filedComment !='外键' >
+    {
+      title: '${col.filedComment}',
+      key: '${autoStringSuffixForModel(col)}',
+<#if col.classType =='date'>
+      type: JVxeTypes.date,
+      <#if col.extendParams?exists && col.extendParams.picker?exists>
+      picker: '${col.extendParams.picker}',
+      </#if>
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='datetime'>
+      type: JVxeTypes.datetime,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='time'>
+      type: JVxeTypes.time,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='textarea'>
+      type: JVxeTypes.textarea,
+       <#if col.readonly=='Y'>
+      disabled:true,
+       </#if>
+<#-- update-begin-author:taoyan date:20220523 for: VUEN-1084 【vue3】online表单测试发现的新问题 20、一对多列字段类型生成的不对，数字或者金额类型 -->
+<#-- elseif "int,decimal,double,"?contains(col.classType) -->
+<#elseif col.fieldDbType=='int' || col.fieldDbType=='double' || col.fieldDbType=='BigDecimal'>
+<#-- update-end-author:taoyan date:20220523 for: VUEN-1084 【vue3】online表单测试发现的新问题 20、一对多列字段类型生成的不对，数字或者金额类型 -->
+      type: JVxeTypes.inputNumber,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='list' || col.classType =='radio'>
+      type: JVxeTypes.select,
+      options:[],
+      <#if col.dictTable?default("")?trim?length gt 1>
+      dictCode:"${col.dictTable},${col.dictText},${col.dictField}",
+      <#else>
+      dictCode:"${col.dictField}",
+      </#if>
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='list_multi' || col.classType =='checkbox'>
+      type: JVxeTypes.selectMultiple,
+      options:[],
+      <#if col.dictTable?default("")?trim?length gt 1>
+      dictCode:"${col.dictTable},${col.dictText},${col.dictField}",
+      <#else>
+      dictCode:"${col.dictField}",
+      </#if>
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='sel_search'>
+      type: JVxeTypes.selectSearch,
+      <#if col.dictTable?default("")?trim?length gt 1>
+      dictCode:"${col.dictTable},${col.dictText},${col.dictField}",
+      <#else>
+      dictCode:"${col.dictField}",
+      </#if>
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='sel_depart'>
+      type: JVxeTypes.departSelect,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='sel_user'>
+      type: JVxeTypes.userSelect,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='image'>
+      type: JVxeTypes.image,
+      token:true,
+      responseName:"message",
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+      <#if col.uploadnum??>
+      number: ${col.uploadnum},
+      </#if>
+<#elseif col.classType =='file'>
+      type: JVxeTypes.file,
+      token:true,
+      responseName:"message",
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+      <#if col.uploadnum??>
+      number: ${col.uploadnum},
+      </#if>
+<#elseif col.classType =='switch'>
+      type: JVxeTypes.checkbox,
+       <#if col.dictField == 'is_open'>
+      customValue: ['Y', 'N'],
+        <#else>
+      customValue: ${col.dictField},
+        </#if>
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType =='popup'>
+<#if popupBackFields?length gt 0>
+    <#assign popupBackFields = "${popupBackFields}"+","+"${col.dictText}">
+<#else>
+    <#assign popupBackFields = "${col.dictText}">
+</#if>
+    <#include "/common/form/vue3Jvxepopup.ftl">
+<#else>
+      type: JVxeTypes.input,
+       <#if col.readonly=='Y'>
+      disabled:true,
+       </#if>
+</#if>
+<#if col.classType =='list_multi' || col.classType =='checkbox'>
+      width:"250px",
+<#else>
+      width:"200px",
+</#if>
+<#if col.classType =='file'>
+      placeholder: '请选择文件',
+<#else>
+      placeholder: '请输入${'$'}{title}',
+</#if>
+<#if col.defaultVal??>
+<#if col.fieldDbType=="BigDecimal" || col.fieldDbType=="double" || col.fieldDbType=="int">
+      defaultValue:${col.defaultVal},
+      <#else>
+      defaultValue:"${col.defaultVal}",
+</#if>
+<#else>
+      defaultValue:'',
+</#if>
+<#-- 子表的校验 -->
+ <#include "/common/validatorRulesTemplate/sub-vue3.ftl">
+    },
+</#if>
+</#if>
+</#list>
+<#-- 循环子表的列 结束 -->
+  ]
+</#if>
+</#list>
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+// 高级查询数据
+export const superQuerySchema = {
+  <#list columns as po>
+  <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  <#if po.isShowList =='Y' && po.fieldName !='id' && po.fieldName !='delFlag'>
+  <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  ${superQueryFieldListForVue3(po,po_index)},
+  </#if>
+  </#list>
+  //子表高级查询
+  <#list subTables as sub>
+  ${sub.entityName?uncap_first}: {
+    title: '${sub.ftlDescription}',
+    view: 'table',
+    fields: {
+      <#list sub.colums as subCol>
+        <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+        <#if subCol.isShowList =='Y' && subCol.fieldName !='id' && subCol.fieldName !='delFlag'>
+        <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+        ${superQueryFieldListForVue3(subCol,subCol_index)},
+        </#if>
+      </#list>
+    }
+  },
+  </#list>
+};
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->

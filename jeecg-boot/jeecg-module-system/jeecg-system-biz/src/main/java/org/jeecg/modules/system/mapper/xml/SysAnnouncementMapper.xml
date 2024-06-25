@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysAnnouncementMapper">
+
+	<resultMap id="SysAnnouncement" type="org.jeecg.modules.system.entity.SysAnnouncement" >
+		<result column="id" property="id" jdbcType="VARCHAR"/>
+		<result column="titile" property="titile" jdbcType="VARCHAR"/>
+		<result column="msg_content" property="msgContent" jdbcType="VARCHAR"/>
+		<result column="start_time" property="startTime" jdbcType="TIMESTAMP"/>
+		<result column="end_time" property="endTime" jdbcType="TIMESTAMP"/>
+		<result column="sender" property="sender" jdbcType="VARCHAR"/>
+		<result column="priority" property="priority" jdbcType="VARCHAR"/>
+		<result column="msg_category" property="msgCategory" jdbcType="VARCHAR"/>
+		<result column="msg_type" property="msgType" jdbcType="VARCHAR"/>
+		<result column="send_status" property="sendStatus" jdbcType="VARCHAR"/>
+		<result column="send_time" property="sendTime" jdbcType="VARCHAR"/>
+		<result column="cancel_time" property="cancelTime" jdbcType="VARCHAR"/>
+		<result column="del_flag" property="delFlag" jdbcType="VARCHAR"/>
+		<result column="create_by" property="createBy" jdbcType="VARCHAR"/>
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+		<result column="update_by" property="updateBy" jdbcType="VARCHAR"/>
+		<result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+		<result column="user_ids" property="userIds" jdbcType="VARCHAR"/>
+		<result column="bus_type" property="busType" jdbcType="VARCHAR"/>
+		<result column="bus_id" property="busId" jdbcType="VARCHAR"/>
+		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
+		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
+
+		<result column="read_flag" property="readFlag" jdbcType="INTEGER"/>
+		<result column="star_flag" property="starFlag" jdbcType="VARCHAR"/>
+		<result column="send_id" property="sendId" jdbcType="VARCHAR"/>
+	</resultMap>
+	
+	
+	<select id="querySysCementListByUserId" parameterType="String"  resultMap="SysAnnouncement">
+	   select id,titile,create_time,priority,bus_id,open_type,open_page,sender,send_time,msg_content from sys_announcement 
+	   where send_status = '1' 
+	   and del_flag = '0' 
+	   and msg_category = #{msgCategory} 
+	   and create_time &gt;= #{beginDate}
+		<if test="tenantId!=null and tenantId != 0">
+			and tenant_id = #{tenantId}
+		</if>
+	   and id IN ( select annt_id from sys_announcement_send where user_id = #{userId} and read_flag = 0 and create_time &gt;= #{beginDate})
+	   order by create_time DESC
+	</select>
+
+	<!-- 获取用户未读消息数量 -->
+	<select id="getUnreadMessageCountByUserId" resultType="java.lang.Integer">
+		select count(1) from sys_announcement_send where user_id = #{userId} and read_flag = 0 and create_time &gt;= #{beginDate}
+	</select>
+	
+	<!-- 查询消息记录 -->
+	<select id="queryAllMessageList" resultMap="SysAnnouncement">
+	   select
+			a.id,
+			a.titile,
+			a.msg_content,
+			a.sender,
+			a.priority,
+			a.msg_category,
+			a.msg_type,
+			a.send_status,
+			a.send_time,
+			a.bus_type,
+			a.bus_id,
+			a.open_type,
+			a.open_page,
+			a.msg_abstract,
+			a.dt_task_id,
+	   		b.read_flag, 
+	   		b.star_flag,
+	   		b.id as send_id
+	   from sys_announcement a
+	   join sys_announcement_send b on b.annt_id = a.id
+	   where a.send_status = '1' and a.del_flag = '0' and b.user_id = #{userId}
+		<if test="fromUser!=null and fromUser!=''">
+			and a.sender = #{fromUser}
+		</if>
+	
+		<if test="beginDate!=null">
+			and a.create_time &gt;= #{beginDate}
+			and b.create_time &gt;= #{beginDate}
+		</if>
+		<if test="endDate!=null">
+			and a.create_time &lt;= #{endDate}
+		</if>
+
+		<if test="starFlag!=null and starFlag!=''">
+			and b.star_flag = #{starFlag}
+		</if>
+		order by b.read_flag ASC, a.create_time DESC
+	</select>
+
+	<!-- 查询用户未阅读的通知公告 -->
+	<select id="getNotSendedAnnouncementlist" resultType="java.lang.String" parameterType="object">
+		SELECT
+			a.id
+		FROM
+			sys_announcement a 
+		WHERE
+			a.del_flag = '0' 
+			AND a.send_status = '1' 
+			AND a.msg_type = 'ALL' 
+			AND a.end_time >= #{currDate}
+			AND a.id NOT IN (
+			SELECT
+				annt_id 
+			FROM
+				sys_announcement_send 
+			WHERE
+				user_id = #{userId}
+			)
+	</select>
+</mapper>

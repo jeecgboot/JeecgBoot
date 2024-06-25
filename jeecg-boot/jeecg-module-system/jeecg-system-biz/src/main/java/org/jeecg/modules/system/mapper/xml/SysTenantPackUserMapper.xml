@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysTenantPackUserMapper">
+
+    <!-- 查询租户下 特定套餐角色的人员列表 -->
+    <select id="queryTenantPackUserNameList" resultType="java.lang.String">
+        select a.username from sys_user a 
+        join sys_tenant_pack_user b on b.user_id = a.id 
+        join sys_tenant_pack c on c.id = b.pack_id
+        where b.status = 1 and c.tenant_id = #{tenantId}
+        and c.pack_code IN (
+        <foreach item="packCode" collection="packCodeList" separator=",">
+            #{packCode}
+        </foreach>
+        )
+    </select>
+    
+    <!-- 判断当前用户在该租户下是否拥有管理员的权限 -->
+    <select id="izHaveBuyAuth" resultType="java.lang.Long">
+        SELECT count(1) from sys_tenant_pack_user stpu
+        left join sys_tenant_pack stp on stpu.pack_id = stp.id
+        WHERE stpu.tenant_id = #{tenantId}
+        and stpu.user_id = #{userId}
+        and stp.pack_code in('superAdmin','accountAdmin')
+    </select>
+
+    <!--根据租户id 删除租户产品包下的 用户-->
+    <delete id="deletePackUserByTenantId">
+        delete from sys_tenant_pack_user where tenant_id = #{tenantId}
+        and user_id in
+        <foreach collection="userIds" index="index" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+    
+    <!--根据多个租户id 删除租户产品包下的 用户-->
+    <delete id="deletePackUserByTenantIds">
+        delete from sys_tenant_pack_user
+        where tenant_id in
+        <foreach collection="tenantIds" index="index" item="tenantId" open="(" separator="," close=")">
+            #{tenantId}
+        </foreach>
+    </delete>
+</mapper>

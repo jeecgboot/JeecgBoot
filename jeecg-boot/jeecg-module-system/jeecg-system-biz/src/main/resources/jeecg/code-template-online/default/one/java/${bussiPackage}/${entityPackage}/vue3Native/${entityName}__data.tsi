@@ -1,0 +1,90 @@
+<#include "/common/utils.ftl">
+import {BasicColumn} from '/@/components/Table';
+import {FormSchema} from '/@/components/Table';
+import { rules} from '/@/utils/helper/validator';
+import { render } from '/@/utils/common/renderUtils';
+import { getWeekMonthQuarterYear } from '/@/utils';
+//列表数据
+export const columns: BasicColumn[] = [
+ <#list columns as po>
+   <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+   <#if po.isShowList =='Y' && po.fieldName !='id' && po.fieldName !='delFlag'>
+   <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  {
+    title: '${po.filedComment}',
+    align: "center",
+    <#if po.sort=='Y'>
+    sorter: true,
+   </#if>
+    <#if po.classType=='date'>
+    dataIndex: '${po.fieldName}',
+    customRender:({text}) =>{
+      text = !text ? "" : (text.length > 10 ? text.substr(0,10) : text);
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      if(text) {
+        return getWeekMonthQuarterYear(text)['${po.extendParams.picker}'];
+      } else {
+        return text;
+      }
+      <#else>
+      return text;
+      </#if>
+    },
+    <#elseif po.fieldDbType=='Blob'>
+    dataIndex: '${po.fieldName}String'
+    <#elseif po.classType=='umeditor'>
+    dataIndex: '${po.fieldName}',
+    <#elseif po.classType=='pca'>
+    dataIndex: '${po.fieldName}',
+   <#elseif po.classType=='file'>
+    dataIndex: '${po.fieldName}',
+   <#elseif po.classType=='image'>
+    dataIndex: '${po.fieldName}',
+    customRender: render.renderImage,
+   <#elseif po.classType=='switch'>
+    dataIndex: '${po.fieldName}',
+<#assign switch_extend_arr=['Y','N']>
+<#if po.dictField?default("")?contains("[")>
+<#assign switch_extend_arr=po.dictField?eval>
+</#if>
+<#list switch_extend_arr as a>
+<#if a_index == 0>
+<#assign switch_extend_arr1=a>
+<#else>
+<#assign switch_extend_arr2=a>
+</#if>
+</#list>
+    customRender:({text}) => {
+       return  render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}]);
+     },
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+    dataIndex: '${po.fieldName}_dictText'
+   <#elseif po.classType=='cat_tree'>
+    dataIndex: '${po.fieldName}',
+    <#if po.dictText?default("")?trim?length == 0>
+    customRender:({text}) => {
+       return render.renderCategoryTree(text,'${po.dictField?default("")}');
+   },
+   <#else>
+    customRender: ({text, record}) => (text ? record['${po.dictText}'] : '');
+   </#if>
+   <#else>
+    dataIndex: '${po.fieldName}'
+   </#if>
+  },
+   </#if>
+ </#list>
+];
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+// 高级查询数据
+export const superQuerySchema = {
+  <#list columns as po>
+  <#-- update-begin---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  <#if po.isShowList =='Y' && po.fieldName !='id' && po.fieldName !='delFlag'>
+  <#-- update-end---author:chenrui ---date:20240108  for：[issues/5755]vue代码不加入逻辑删除字段---------- -->
+  ${superQueryFieldListForVue3(po,po_index)},
+  </#if>
+  </#list>
+};
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->

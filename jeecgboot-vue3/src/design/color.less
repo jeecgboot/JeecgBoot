@@ -1,0 +1,140 @@
+html {
+  // header
+  --header-bg-color: #394664;
+  --header-bg-hover-color: #273352;
+  --header-active-menu-bg-color: #273352;
+
+  // sider
+  --sider-dark-bg-color: #273352;
+  --sider-dark-darken-bg-color: #273352;
+  --sider-dark-lighten-bg-color: #273352;
+  --sider-logo-bg-color:linear-gradient(180deg, #000000, #021d37);
+}
+
+@white: #fff;
+
+@content-bg: #f4f7f9;
+
+// :export {
+//   name: "less";
+//   mainColor: @mainColor;
+//   fontSize: @fontSize;
+// }
+@iconify-bg-color: #5551;
+
+// =================================
+// ==============border-color=======
+// =================================
+
+// Dark-dark
+@border-color-dark: #b6b7b9;
+
+// Dark-light
+@border-color-shallow-dark: #cececd;
+
+// Light-dark
+@border-color-light: @border-color-base;
+
+// =================================
+// ==============message==============
+// =================================
+
+// success-bg-color
+@success-background-color: #f1f9ec;
+// info-bg-color
+@info-background-color: #e8eff8;
+// warn-bg-color
+@warning-background-color: #fdf6ed;
+// danger-bg-color
+@danger-background-color: #fef0f0;
+
+// =================================
+// ==============Header=============
+// =================================
+
+@header-dark-bg-color: var(--header-bg-color);
+@header-dark-bg-hover-color: var(--header-bg-hover-color);
+@header-light-bg-hover-color: #f6f6f6;
+@header-light-desc-color: #7c8087;
+@header-light-bottom-border-color: #eee;
+// top-menu
+@top-menu-active-bg-color: var(--header-active-menu-bg-color);
+
+// =================================
+// ==============Menu============
+// =================================
+
+// let -menu
+@sider-logo-bg-color: var(--sider-logo-bg-color);
+@sider-dark-bg-color: var(--sider-dark-bg-color);
+@sider-dark-darken-bg-color: var(--sider-dark-darken-bg-color);
+@sider-dark-lighten-bg-color: var(--sider-dark-lighten-bg-color);
+
+// trigger
+@trigger-dark-hover-bg-color: rgba(255, 255, 255, 0.2);
+@trigger-dark-bg-color: rgba(255, 255, 255, 0.1);
+
+// =================================
+// ==============tree============
+// =================================
+// tree item hover background
+@tree-hover-background-color: #f5f7fa;
+// tree item hover font color
+@tree-hover-font-color: #f5f7fa;
+
+// =================================
+// ==============link============
+// =================================
+@link-hover-color: @primary-color;
+@link-active-color: darken(@primary-color, 10%);
+
+// =================================
+// ==============Text color-=============
+// =================================
+
+// Main text color
+@text-color-base: @text-color;
+
+// Label color
+@text-color-call-out: #606266;
+
+// Auxiliary information color-dark
+@text-color-help-dark: #909399;
+
+// =================================
+// ==============breadcrumb=========
+// =================================
+@breadcrumb-item-normal-color: #999;
+// =================================
+// ==============button=============
+// =================================
+
+@button-primary-color: @primary-color;
+@button-primary-hover-color: lighten(@primary-color, 5%);
+@button-primary-active-color: darken(@primary-color, 5%);
+
+@button-ghost-color: @white;
+@button-ghost-hover-color: lighten(@white, 10%);
+@button-ghost-hover-bg-color: #e1ebf6;
+@button-ghost-active-color: darken(@white, 10%);
+
+@button-success-color: @success-color;
+@button-success-hover-color: lighten(@success-color, 10%);
+@button-success-active-color: darken(@success-color, 10%);
+
+@button-warn-color: @warning-color;
+@button-warn-hover-color: lighten(@warning-color, 10%);
+@button-warn-active-color: darken(@warning-color, 10%);
+
+@button-error-color: @error-color;
+@button-error-hover-color: lighten(@error-color, 10%);
+@button-error-active-color: darken(@error-color, 10%);
+
+@button-cancel-color: @text-color-call-out;
+@button-cancel-bg-color: @white;
+@button-cancel-border-color: @border-color-shallow-dark;
+
+// Mouse over
+@button-cancel-hover-color: @primary-color;
+@button-cancel-hover-bg-color: @white;
+@button-cancel-hover-border-color: @primary-color;

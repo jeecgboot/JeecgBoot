@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysDepartMapper">
+
+	<select id="queryUserDeparts" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
+	   select * from sys_depart where id IN ( select dep_id from sys_user_depart where user_id = #{userId} )
+	</select>
+
+    <!-- 根据username查询所拥有的部门 -->
+    <select id="queryDepartsByUsername" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT *
+        FROM sys_depart
+        WHERE id IN (
+            SELECT dep_id
+            FROM sys_user_depart
+            WHERE user_id = (
+                SELECT id
+                FROM sys_user
+                WHERE username = #{username}
+            )
+        )
+    </select>
+    
+    <!-- 根据username查询所拥有的部门 -->
+    <select id="queryDepartsByUserId" parameterType="String" resultType="java.lang.String">
+        SELECT id
+        FROM sys_depart
+        WHERE id IN (
+            SELECT dep_id
+            FROM sys_user_depart
+            WHERE user_id = #{userId}
+        )
+    </select>
+
+    <!-- 根据部门Id查询,当前和下级所有部门IDS -->
+    <select id="getSubDepIdsByDepId" resultType="java.lang.String">
+		select id from sys_depart where del_flag = '0' and org_code like concat((select org_code from sys_depart where id=#{departId}),'%')
+	</select>
+
+    <!--根据部门编码获取我的部门下所有部门ids -->
+    <select id="getSubDepIdsByOrgCodes" resultType="java.lang.String">
+		select id from sys_depart where del_flag = '0' and
+        <foreach collection="orgCodes" item="item" index="index"  open="(" separator="or" close=")">
+            org_code LIKE CONCAT(#{item},'%')
+        </foreach>
+	</select>
+     <!--根据parent_id查询下级部门-->
+    <select id="queryTreeListByPid" parameterType="Object"  resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT * FROM  sys_depart where del_flag = '0'
+        <choose>
+            <when test="parentId != null and parentId != ''">
+                AND parent_id =  #{parentId,jdbcType=VARCHAR}
+            </when>
+            <otherwise>
+                AND parent_id is null or parent_id=''
+            </otherwise>
+        </choose>
+        order by depart_order
+    </select>
+
+    <!-- 根据OrgCod查询公司信息 -->
+    <select id="queryCompByOrgCode" resultType="org.jeecg.modules.system.entity.SysDepart">
+		select * from sys_depart where del_flag = '0' and org_category='1' and org_code= #{orgCode,jdbcType=VARCHAR}
+	</select>
+    
+    <!--通过父级id和租户id查询部门-->
+    <select id="queryBookDepTreeSync" resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT * FROM sys_depart
+        WHERE
+        del_flag = '0'
+        <if test="tenantId != null">
+            AND tenant_id = #{tenantId}
+        </if>
+        <choose>
+            <when test="parentId != null and parentId != ''">
+                AND parent_id = #{parentId}
+            </when>
+            <otherwise>
+                <if test="departName == null or departName == ''">
+                    AND (parent_id is null or parent_id='')
+                </if>
+            </otherwise>
+        </choose>
+        <if test="departName != null and departName != ''">
+            <bind name="bindName" value="'%'+departName+'%'"/>
+            AND depart_name LIKE #{bindName}
+        </if>
+        ORDER BY depart_order DESC
+    </select>
+
+    <!--获取部门orgCode最大值的部门信息-->
+    <select id="getMaxCodeDepart" resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT * FROM sys_depart
+        WHERE
+        <choose>
+            <when test="parentId != null and parentId != ''">
+                parent_id = #{parentId}
+            </when>
+            <otherwise>
+                parent_id IS NULL OR parent_id=''
+            </otherwise>
+        </choose>
+        ORDER BY org_code DESC
+    </select>
+    
+    <!--获取父级部门的数据-->
+    <select id="getDepartList" resultType="org.jeecg.modules.system.vo.lowapp.ExportDepartVo">
+        SELECT id,depart_name,parent_id FROM sys_depart
+        WHERE
+        tenant_id = #{tenantId}
+        AND
+        <choose>
+            <when test="parentId != null and parentId != ''">
+                parent_id = #{parentId}
+            </when>
+            <otherwise>
+                parent_id IS NULL OR parent_id=''
+            </otherwise>
+        </choose>
+        ORDER BY depart_order DESC
+    </select>
+    
+    <!--根据部门名称和租户id获取部门数据-->
+    <select id="getDepartByName" resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT id,depart_name,org_code,parent_id FROM sys_depart 
+        where
+        depart_name = #{departName}
+        <if test="null != tenantId and 0 != tenantId">
+            and tenant_id = #{tenantId}
+        </if>
+        <if test="parentId != null and parentId != ''">
+            and parent_id = #{parentId}
+        </if>
+        order by create_time desc
+    </select>
+    
+    <!--根据用户id获取用户id和部门名称-->
+    <select id="getUserDepartByTenantUserId" resultType="org.jeecg.modules.system.vo.SysUserDepVo">
+        SELECT sd.depart_name, sud.user_id
+        FROM sys_depart sd
+        RIGHT JOIN sys_user_depart sud on sd.id = sud.dep_id and sd.del_flag = 0
+        WHERE sud.user_id IN
+        <foreach collection="userList" index="index" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+        AND sd.tenant_id = #{tenantId}
+        order by sd.org_code;
+    </select>
+    
+    <!--根据部门名称和租户id获取分页部门数据-->
+    <select id="getDepartPageByName" resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT id,depart_name,org_code,parent_id FROM sys_depart
+        where
+        depart_name = #{departName}
+        and tenant_id = #{tenantId}
+        <if test="parentId != null and parentId != ''">
+            and parent_id = #{parentId}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+    
+    <!--通过部门id，查询部门下的用户的账号 -->
+    <select id="queryUserAccountByDepartIds" resultType="java.lang.String">
+        select username from sys_user where id in (select user_id from sys_user_depart where dep_id in
+        <foreach  item="item" index="index" collection="departIds" open="(" separator="," close=" )">
+            #{item}
+        </foreach>
+        )
+    </select>
+    
+    <!--系统后台导出，根据父级id和租户id查询部门数据-->
+    <select id="getSysDepartList" resultType="org.jeecg.modules.system.vo.SysDepartExportVo">
+        SELECT id,depart_name,parent_id,depart_name_en,depart_order,description,org_category,org_code,mobile,fax,address,memo FROM sys_depart
+        WHERE
+        1=1
+        <if test="null != tenantId and 0 != tenantId">
+            AND tenant_id = #{tenantId}
+        </if>  
+        AND
+        <choose>
+            <when test="parentId != null and parentId != ''">
+                parent_id = #{parentId}
+            </when>
+            <otherwise>
+                parent_id IS NULL OR parent_id=''
+            </otherwise>
+        </choose>
+        ORDER BY depart_order DESC
+    </select>
+</mapper>

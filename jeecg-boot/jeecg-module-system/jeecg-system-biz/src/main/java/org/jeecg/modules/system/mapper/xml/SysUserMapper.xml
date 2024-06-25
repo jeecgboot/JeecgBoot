@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysUserMapper">
+
+	<!-- 根据用户名查询 -->
+	<select id="getUserByName" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from  sys_user  where username = #{username} and del_flag = 0
+	</select>
+	
+	<!-- 根据用户名查询用户ID -->
+	<select id="getUserIdByName" resultType="String">
+		select id from  sys_user  where username = #{username} and del_flag = 0
+	</select>
+
+	<!-- 根据部门Id查询 -->
+	<select id="getUserByDepId" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user where del_flag = 0 and id in (select user_id from sys_user_depart where dep_id=#{departId})
+		<if test="username!=null and username!=''">
+			and username = #{username}
+		</if>
+	</select>
+
+	<!-- 查询部门和子部门下的所有用户账号 -->
+	<select id="getUserAccountsByDepCode" resultType="String">
+		<if test="orgCode != null">
+			<bind name="bindOrgCode" value="orgCode+'%'"/>
+		</if>
+		select username from sys_user where del_flag = 0 and id in (select user_id from sys_user_depart where dep_id in (select id from sys_depart where org_code LIKE #{bindOrgCode}))
+	</select>
+
+	<!-- 查询用户的所属部门名称信息 -->
+	<select id="getDepNamesByUserIds" resultType="org.jeecg.modules.system.vo.SysUserDepVo">
+		select d.depart_name,ud.user_id from sys_user_depart ud,sys_depart d where d.id = ud.dep_id and ud.user_id in
+		<foreach collection="userIds" index="index" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+
+	<!-- 通过多个部门IDS，查询部门下的用户信息 -->
+	<select id="getUserByDepIds" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user where del_flag = 0
+		<if test="departIds!=null  and departIds.size()>0">
+			and id in (select user_id from sys_user_depart where dep_id in
+			<foreach collection="departIds" index="index" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			)
+		</if>
+		<if test="username!=null and username!=''">
+			and username = #{username}
+		</if>
+	</select>
+
+	<!-- 根据角色Id查询 -->
+	<select id="getUserByRoleId" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user where del_flag = 0 and id in (select user_id from sys_user_role where role_id=#{roleId})
+		<if test="username!=null and username!=''">
+			and username = #{username}
+		</if>
+	</select>
+	
+	<!--  修改用户部门code -->
+	<update id="updateUserDepart">
+		UPDATE sys_user SET
+		<if test="orgCode!=null and loginTenantId!=null">
+			 org_code = #{orgCode}
+			,login_tenant_id = #{loginTenantId}
+		</if>
+		<if test="orgCode==null and loginTenantId!=null">
+			login_tenant_id = #{loginTenantId}
+		</if>
+		<if test="orgCode!=null and loginTenantId==null">
+			org_code = #{orgCode}
+		</if>
+		where username = #{username}
+	</update>
+
+	<!-- 根据手机号查询 -->
+	<select id="getUserByPhone"  resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from  sys_user  where phone = #{phone} and del_flag = 0
+	</select>
+	
+	<!-- 根据邮箱查询用户信息 -->
+	<select id="getUserByEmail" resultType="org.jeecg.modules.system.entity.SysUser">
+	select * from  sys_user  where email = #{email} and del_flag = 0
+	</select>
+
+	<!-- SQL片段：getUserByOrgCode 的 FROM 和 WHERE 部分 -->
+	<sql id="getUserByOrgCodeFromSql">
+		FROM
+		sys_depart
+		INNER JOIN sys_user_depart ON sys_user_depart.dep_id = sys_depart.id
+		INNER JOIN sys_user ON sys_user.id = sys_user_depart.user_id
+		WHERE
+		<if test="orgCode == null">
+			<bind name="bindOrgCode" value="'%'"/>
+		</if>
+		<if test="orgCode != null">
+			<bind name="bindOrgCode" value="orgCode+'%'"/>
+		</if>
+		sys_user.del_flag = 0 AND sys_depart.org_code LIKE #{bindOrgCode}
+
+		<if test="userParams != null">
+			<if test="userParams.realname != null and userParams.realname != ''">
+				AND sys_user.realname LIKE concat(concat('%',#{userParams.realname}),'%')
+			</if>
+			<if test="userParams.workNo != null and userParams.workNo != ''">
+				AND sys_user.work_no LIKE concat(concat('%',#{userParams.workNo}),'%')
+			</if>
+		</if>
+	</sql>
+
+	<!-- 根据 orgCode 查询用户，包括子部门下的用户 -->
+	<select id="getUserByOrgCode" resultType="org.jeecg.modules.system.model.SysUserSysDepartModel">
+		SELECT
+			sys_user.id AS id,
+			sys_user.realname AS realname,
+			sys_user.avatar AS avatar,
+			sys_user.sex AS sex,
+			sys_user.birthday AS birthday,
+			sys_user.work_no AS workNo,
+			sys_user.telephone AS telephone,
+			sys_user.email AS email,
+			sys_user.phone AS phone,
+			sys_depart.id AS departId,
+			sys_depart.depart_name AS departName
+		<include refid="getUserByOrgCodeFromSql"/>
+		ORDER BY
+			sys_depart.org_code ASC
+	</select>
+
+	<!-- 查询 getUserByOrgCode 的总数-->
+	<select id="getUserByOrgCodeTotal" resultType="java.lang.Integer">
+		SELECT COUNT(1) <include refid="getUserByOrgCodeFromSql"/>
+	</select>
+
+	<!-- 批量删除角色的与用户关系-->
+	<update id="deleteBathRoleUserRelation">
+		delete from sys_user_role
+		where role_id in
+		<foreach item="id" collection="roleIdArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	<!-- 批量删除角色的与权限关系-->
+	<update id="deleteBathRolePermissionRelation">
+		delete from sys_role_permission
+		where role_id in
+		<foreach item="id" collection="roleIdArray" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+
+	<!-- 查询被逻辑删除的用户 -->
+	<select id="selectLogicDeleted" resultType="org.jeecg.modules.system.entity.SysUser">
+		SELECT * FROM sys_user ${ew.customSqlSegment}
+	</select>
+
+	<!-- 更新被逻辑删除的用户 -->
+	<update id="revertLogicDeleted">
+		UPDATE
+			sys_user
+		SET
+			del_flag = 0,
+			update_by = #{entity.updateBy},
+			update_time = #{entity.updateTime}
+		WHERE
+			del_flag = 1
+			AND id IN
+			<foreach collection="userIds" item="userId" open="(" close=")" separator="," >
+				#{userId}
+			</foreach>
+	</update>
+
+	<!-- 彻底删除被逻辑删除的用户 -->
+	<delete id="deleteLogicDeleted">
+		DELETE FROM sys_user WHERE del_flag = 1 AND id IN
+		<foreach collection="userIds" item="userId" open="(" close=")" separator="," >
+			#{userId}
+		</foreach>
+	</delete>
+
+	<!-- 更新空字符串为null -->
+	<update id="updateNullByEmptyString">
+		UPDATE sys_user
+		<if test="fieldName == 'email'">
+			SET email = NULL WHERE email = ''
+		</if>
+		<if test="fieldName == 'phone'">
+			SET phone = NULL WHERE phone = ''
+		</if>
+	</update>
+
+	<!-- 通过多个部门IDS，查询部门下的用户信息 -->
+	<select id="queryByDepIds" resultType="org.jeecg.modules.system.entity.SysUser">
+		select * from sys_user where del_flag = 0
+		<if test="departIds!=null  and departIds.size()>0">
+			and id in (select user_id from sys_user_depart where dep_id in
+			<foreach collection="departIds" index="index" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			)
+		</if>
+		<if test="username!=null and username!=''">
+			and username != #{username}
+		</if>
+	</select>
+
+	<!--根据角色查询用户-->
+	<select id="selectUserListByRoleId" resultType="org.jeecg.modules.system.entity.SysUser">
+		select DISTINCT a.* from sys_user a
+		left join sys_user_role sur on sur.user_id = a.id
+		where
+		a.del_flag = 0 and a.status = 1
+		and a.username!='_reserve_user_external'
+		and sur.role_id=#{roleId}
+		<if test="keyword!=null and keyword!=''">
+			<bind name="bindKeyword" value="'%'+keyword+'%'"/>
+			and (a.username like #{bindKeyword} or a.realname like #{bindKeyword})
+		</if>
+
+		<if test="tenantId!=null">
+			and a.id in (
+				select user_id from sys_user_tenant where tenant_id = #{tenantId} and status = '1'
+			)
+		</if>
+		  
+		<!--【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页 需要将不符合的用户id排除-->
+		<if test="excludeUserIdList!=null and excludeUserIdList.size()>0">
+			and a.id not in
+			<foreach collection="excludeUserIdList" item="userId" open="(" close=")" separator=",">
+				#{userId}
+			</foreach>
+		</if>
+	</select>
+
+	<!--获取租户下的用户离职列表信息-->
+	<select id="getTenantQuitList" resultType="org.jeecg.modules.system.entity.SysUser">
+		select su.id,su.username,su.realname,su.sex,su.avatar,su.create_time,sut.create_by from sys_user su
+		join sys_user_tenant sut on sut.user_id = su.id and sut.status = '2'
+		where
+		su.status = 1
+		and su.del_flag = 0
+		<if test="tenantId != 0">
+			and sut.tenant_id = #{tenantId}
+		</if>
+	</select>
+
+	<!--获取租户下的有效用户ids信息-->
+	<select id="getTenantUserIdList" resultType="java.lang.String" parameterType="java.lang.Integer">
+		SELECT DISTINCT( su.id ) id
+		FROM sys_user su
+		<choose>
+			<when test="tenantId!=null and tenantId != 0">
+				JOIN sys_user_tenant sut ON sut.user_id = su.id
+				AND sut.STATUS = '1'
+				AND sut.tenant_id = #{tenantId}
+				AND su.STATUS = 1
+				AND su.del_flag = 0
+			</when>
+			<otherwise>
+				WHERE su.STATUS = 1
+				AND su.del_flag = 0
+			</otherwise>
+		</choose>
+	</select>
+	
+  <!--更新刪除状态和离职状态-->
+  <update id="updateStatusAndFlag">
+    UPDATE
+    sys_user
+    SET
+    del_flag = 0,
+    update_by = #{sysUser.updateBy},
+    update_time = #{sysUser.updateTime},
+    status = 1
+    WHERE
+    del_flag = 1
+    AND id IN
+    <foreach collection="userIds" item="userId" open="(" close=")" separator="," >
+      #{userId}
+    </foreach>
+  </update>
+
+	<!--根据部门id获取用户数据-->
+	<select id="getUserByDepartsTenantId" resultType="org.jeecg.modules.system.entity.SysUser">
+		select su.* from sys_user su
+		join sys_user_tenant sut on su.id = sut.user_id
+		where su.del_flag = 0
+		<if test="departIds!=null  and departIds.size()>0">
+			and su.id in (select user_id from sys_user_depart
+			where dep_id in
+			<foreach collection="departIds" index="index" item="id" open="(" separator="," close=")">
+				#{id}
+			</foreach>
+			)
+		</if>
+		and sut.tenant_id=#{tenantId}
+        and sut.status = '1'
+	</select>
+</mapper>

@@ -1,0 +1,21 @@
+.ripple-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ripple-effect {
+  position: relative;
+  z-index: 9999;
+  width: 1px;
+  height: 1px;
+  margin-top: 0;
+  margin-left: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}

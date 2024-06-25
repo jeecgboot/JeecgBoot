@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysTenantMapper">
+
+    <!--获取租户回收站的数据假删除-->
+    <select id="getRecycleBinPageList" resultType="org.jeecg.modules.system.entity.SysTenant">
+        SELECT id,name,company_logo,house_number,status FROM sys_tenant
+        WHERE
+        del_flag = 1
+        <if test="sysTenant.name!='' and sysTenant.name!=null">
+            <bind name="name" value="'%'+sysTenant.name+'%'"/>
+            AND name like #{name}
+        </if>
+        <if test="sysTenant.houseNumber!='' and sysTenant.houseNumber!=null">
+            <bind name="houseNumber" value="'%'+sysTenant.houseNumber+'%'"/>
+            AND house_number like #{houseNumber}
+        </if>
+    </select>
+
+    <!--彻底删除租户信息-->
+    <delete id="deleteByTenantId">
+        DELETE FROM sys_tenant
+        WHERE
+        del_flag = 1
+        AND id in
+        <foreach collection="tenantIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+    <!--租户还原-->
+    <update id="revertTenantLogic">
+        UPDATE sys_tenant set del_flag = 0
+        WHERE
+        del_flag = 1
+        AND id in
+        <foreach collection="tenantIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!-- 用于统计 租户产品包的人员数量 -->
+    <select id="queryTenantPackUserCount" resultType="org.jeecg.modules.system.vo.tenant.TenantPackUserCount">
+        SELECT pack_code, count(*) as user_count FROM sys_tenant_pack a 
+        join sys_tenant_pack_user b on a.id = b.pack_id
+        join sys_user_tenant sut on a.tenant_id = sut.tenant_id and b.user_id = sut.user_id and sut.status = 1
+        where a.tenant_id = #{tenantId} 
+        and a.pack_code in ('superAdmin', 'accountAdmin', 'appAdmin')
+        and b.status = 1
+        group by a.pack_code
+    </select>
+
+    
+    <!-- 查询人员的产品包编码 -->
+    <select id="queryUserPackCode" resultType="java.lang.String">
+        SELECT a.pack_code FROM sys_tenant_pack a 
+        join sys_tenant_pack_user b on a.id = b.pack_id
+        where a.tenant_id = #{tenantId} 
+        and b.user_id = #{userId}
+        and b.status = 1
+    </select>
+
+    <!-- 查询人员是不是租户产品包的 超级管理员 -->
+    <select id="querySuperAdminCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM sys_tenant_pack a 
+        join sys_tenant_pack_user b on a.id = b.pack_id
+        where a.pack_code = 'superAdmin'
+        and a.tenant_id = #{tenantId} 
+        and b.user_id = #{userId}
+        and b.status = 1
+    </select>
+
+    <!-- 查询产品包关联的用户列表 -->
+    <select id="queryPackUserList" resultType="org.jeecg.modules.system.vo.tenant.TenantPackUser">
+        SELECT c.id, c.username, c.realname, c.phone, c.avatar, a.pack_name, a.id as pack_id  FROM sys_user c
+        join sys_tenant_pack_user b on c.id = b.user_id
+        join sys_tenant_pack a on a.id = b.pack_id
+        join sys_user_tenant sut on a.tenant_id = sut.tenant_id and b.user_id = sut.user_id and sut.status = 1
+        where c.status = 1 
+        and c.del_flag = 0
+        and b.status = #{packUserStatus}
+        and a.tenant_id = #{tenantId}
+        <if test="packId!='' and packId!=null">
+            and a.id = #{packId}
+        </if>
+    </select>
+
+
+    <!-- 根据用户ID 查询部门 -->
+    <select id="queryUserDepartList" resultType="org.jeecg.modules.system.vo.tenant.UserDepart">
+        SELECT c.id as user_id,a.depart_name  FROM sys_user c
+        join sys_user_depart b on c.id = b.user_id
+        join sys_depart a on a.id = b.dep_id
+        where c.status = 1 and c.del_flag = 0
+        and c.id in
+        <foreach collection="userIdList" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 根据用户ID 查询职位 -->
+    <select id="queryUserPositionList" resultType="org.jeecg.modules.system.vo.tenant.UserPosition">
+        SELECT c.id as user_id, name as position_name FROM sys_user c
+        join sys_user_position b on c.id = b.user_id
+        join sys_position a on a.id = b.position_id
+        where c.status = 1 and c.del_flag = 0
+        and c.id in
+        <foreach collection="userIdList" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!--获取租户产品包用户列表-->
+    <select id="queryTenantPackUserList" resultType="org.jeecg.modules.system.vo.tenant.TenantPackUser">
+        SELECT c.id, c.username, c.realname, c.phone, c.avatar, a.pack_name, a.id as pack_id  FROM sys_user c
+        join sys_tenant_pack_user b on c.id = b.user_id
+        join sys_tenant_pack a on a.id = b.pack_id
+        where c.status = 1
+        and c.del_flag = 0
+        and b.status = #{status}
+        and a.tenant_id = #{tenantId}
+        <if test="packId!='' and packId!=null">
+            and a.id = #{packId}
+        </if>
+    </select>
+    
+    <!--查看是否已经申请过了超级管理员-->
+    <select id="getApplySuperAdminCount" resultType="java.lang.Long">
+        SELECT count(*) FROM sys_tenant_pack a
+        join sys_tenant_pack_user b on a.id = b.pack_id
+        where a.pack_code = 'superAdmin'
+        and a.tenant_id = #{tenantId}
+        and b.user_id = #{userId}
+    </select>
+    
+    <!--根据用户id获取租户信息-->
+    <select id="getTenantListByUserId" resultType="org.jeecg.modules.system.entity.SysTenant">
+        SELECT st.id,st.name FROM sys_tenant st 
+        LEFT JOIN sys_user_tenant sut on st.id= sut.tenant_id and st.status = 1 and sut.status='1'
+        WHERE sut.user_id = #{userId}
+    </select>
+
+</mapper>

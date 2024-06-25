@@ -1,0 +1,6 @@
+ports:
+  - port: 3344
+    onOpen: open-preview
+tasks:
+  - init: yarn
+    command: yarn dev
