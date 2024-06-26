@@ -59,10 +59,9 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 开发文档：  [https://help.jeecg.com](https://help.jeecg.com)
-- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)
+- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](https://www.bilibili.com/video/BV1wE421N7Xb)
 - QQ交流群 ： ⑨808791225、其他(满)
 - 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
-> 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
 
 
 
@@ -77,12 +76,6 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - [Docker启动前端](https://help.jeecg.com/java/docker/vue3.html)
 - [Docker启动后台](https://help.jeecg.com/java/docker/up.html)
-
-
-##### 微服务启动
-
-- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-- [Docker启动微服务后台](https://help.jeecg.com/java/docker/springcloud.html)
 
 
 技术架构：
@@ -167,6 +160,10 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - 16、路由限流   √
 
 
+#### 微服务方式启动
+
+- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
+- [Docker启动微服务后台](https://help.jeecg.com/java/docker/springcloud.html)
 
 
 #### 微服务架构图

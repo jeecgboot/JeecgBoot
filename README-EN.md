@@ -64,10 +64,9 @@ Jeecg-Boot low code development platform can be applied in the development of an
 Docker starts the project
 -----------------------------------
 
-- [Docker starts the monomer background](https://help.jeecg.com/java/setup/docker/up.html)
-- [Docker starts the front-end](http://help.jeecg.com/publish/docker.html)
-- [Docker starts the micro-service background](https://help.jeecg.com/java/springcloud/docker.html)
-- [ChatGPT AI Config](https://help.jeecg.com/java/chatgpt.html)
+- [Docker starts the vue3 ui](https://help.jeecg.com/java/docker/vue3.html)
+- [Docker starts the java background](https://help.jeecg.com/java/docker/up.html)
+
 
 
 
@@ -76,11 +75,12 @@ Technical documentation
 
 - Website：  [http://www.jeecg.com](http://www.jeecg.com)
 - Doc：  [http://help.jeecg.com](http://help.jeecg.com)
-- Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart)  |  [video](https://space.bilibili.com/454617261/channel/series) |   [Q&A ](http://www.jeecg.com/doc/qa)  |   [help](http://jeecg.com/doc/help) |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
-- Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
+- Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart) |   [Q&A ](http://www.jeecg.com/doc/qa)  |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
 - QQ group ： ⑨808791225、⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 - Demo ： [OnlineDemo](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
-> [please click obtain account password to obtain](http://jeecg.com/doc/demo) 
+
+
+
 
 
 Star charts
@@ -229,38 +229,22 @@ Technical Architecture:
 
 ## Microservice solutions
 
-
-1. Service registration and discovery Nacos √
-
-2. Nacos √
-
-3. Route gateway gateway(Three loading modes) √
-
-4. Distributed http feign √
-
-5. fuse degrade current limiting Sentinel √
-
-6. Distributed files Minio and Alioss √
-
-7. Unified permission control
-
-8. Service monitoring SpringBootAdmin√
-
-9. link tracking Skywalking  [reference document](https://help.jeecg.com/java/springcloud/super/skywarking.html)
-
-10. Messaging middleware RabbitMQ √
-
-11. Distributed task xxl-job √
-
-12. Distributed Transaction Seata
-
-13. Distributed log elk + kafka
-
-14. Support docker-compose, k8s, jenkins
-
-15. CAS SSO √
-
-16. Route traffic limiting √
+- 1. Service registration and discovery Nacos √
+- 2. Nacos √
+- 3. Route gateway gateway(Three loading modes) √
+- 4. Distributed http feign √
+- 5. fuse degrade current limiting Sentinel √
+- 6. Distributed files Minio and Alioss √
+- 7. Unified permission control
+- 8. Service monitoring SpringBootAdmin√
+- 9. link tracking Skywalking  [reference document](https://help.jeecg.com/java/springcloud/super/skywarking.html)
+- 10. Messaging middleware RabbitMQ √
+- 11. Distributed task xxl-job √
+- 12. Distributed Transaction Seata
+- 13. Distributed log elk + kafka
+- 14. Support docker-compose, k8s, jenkins
+- 15. CAS SSO √
+- 16. Route traffic limiting √
 
    
 #### Microservice architecture diagram
@@ -269,7 +253,9 @@ Technical Architecture:
 ### Jeecg Boot product functionality blueprint
 ![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
 
-
+### quick start
+- Microservice Development：  [Monomer upgrade to microservice](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
+- [Docker starts the micro-service background](https://help.jeecg.com/java/docker/springcloud.html)
 
 
 ### Effect of system
