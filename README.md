@@ -40,18 +40,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 |--------------------|------------------------|
 | `jeecg-boot`    | 后端源码JAVA（SpringBoot微服务架构）        |
 | `jeecgboot-vue3` | 前端源码VUE3（vue3+vite5+ts最新技术栈）  |
-| `jeecg-uniapp` | APP框架,一份代码多终端适配，支持APP、小程序、H5 |
-
-
-其他源码
------------------------------------
-- APP源码地址：https://github.com/jeecgboot/jeecg-uniapp
-
-
-技术支持
------------------------------------
-
-使用中遇到问题或者BUG可以在 [Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
+| `jeecg-uniapp` | [配套APP框架](https://github.com/jeecgboot/jeecg-uniapp) 适配多个终端，支持APP、小程序、H5 |
 
 
 技术文档
@@ -59,6 +48,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 - 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 开发文档：  [https://help.jeecg.com](https://help.jeecg.com)
+- 反馈问题：  [在Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](https://www.bilibili.com/video/BV1wE421N7Xb)
 - QQ交流群 ： ⑨808791225、其他(满)
 - 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
