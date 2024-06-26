@@ -117,15 +117,13 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 > 主干master更稳定，如果你对最新技术栈无要求，建议采用主干
 
-###### springboot3分支
+##### springboot3分支
  - 源码地址：https://github.com/jeecgboot/JeecgBoot/tree/springboot3
  - 架构说明：升级Spring Boot3 & JDK 17 + Undertow + springdoc + fastjson2
- - [参考文档](https://help.jeecg.com/java/upgrade/springboot3.html)
  
-###### springboot3_sas分支
+##### springboot3_sas分支
  - 源码地址：https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas
  - 架构说明：在springboot3分支基础上，采用SpringAuthorizationServer替换Shiro
- - [参考文档](https://help.jeecg.com/java/shengjiSpringSecurity.html)
  
  
  
