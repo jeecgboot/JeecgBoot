@@ -241,7 +241,7 @@ Technical Architecture:
 - 10. Messaging middleware RabbitMQ √
 - 11. Distributed task xxl-job √
 - 12. Distributed Transaction Seata
-- 13. Distributed log elk + kafka
+- 13. Distributed log Loki+grafana
 - 14. Support docker-compose, k8s, jenkins
 - 15. CAS SSO √
 - 16. Route traffic limiting √

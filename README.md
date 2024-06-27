@@ -142,7 +142,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - 10、消息中间件 RabbitMQ  √
 - 11、分布式任务 xxl-job  √ 
 - 12、分布式事务 Seata
-- 13、分布式日志 elk + kafka
+- 13、轻量分布式日志 Loki+grafana套件
 - 14、支持 docker-compose、k8s、jenkins
 - 15、CAS 单点登录   √
 - 16、路由限流   √
