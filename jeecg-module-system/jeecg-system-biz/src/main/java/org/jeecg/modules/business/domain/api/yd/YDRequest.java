@@ -1,7 +1,6 @@
 package org.jeecg.modules.business.domain.api.yd;
 
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -23,18 +22,16 @@ import java.util.List;
 @Slf4j
 public class YDRequest {
     private final static String URL = "http://oms.ydhex.com/webservice/PublicService.asmx/ServiceInterfaceUTF8";
-    private String appToken;
-    private String appKey;
+    private final String appToken;
+    private final String appKey;
+    private final YDRequestBody ydRequestBody;
 
-    private static final String SERVICE_METHOD = "gettrack";
     private static final RequestConfig REQUEST_CONFIG = RequestConfig.custom().build();
 
-    private final List<String> billCodes;
-
-    public YDRequest(String appToken, String appKey, List<String> billCodes) {
+    public YDRequest(String appToken, String appKey, YDRequestBody ydRequestBody) {
         this.appToken = appToken;
         this.appKey = appKey;
-        this.billCodes = billCodes;
+        this.ydRequestBody = ydRequestBody;
     }
 
     /**
@@ -53,7 +50,7 @@ public class YDRequest {
                 request.setEntity(new UrlEncodedFormEntity(generateFormData(), "UTF-8"));
                 return httpClient.execute(request);
             } catch (Exception e) {
-                log.error("Request failed on attempt n°" + attempts);
+                log.error("Request failed on attempt n°{}", attempts);
             }
         }
         return null;
@@ -67,18 +64,11 @@ public class YDRequest {
      */
     private List<NameValuePair> generateFormData() {
         List<NameValuePair> pairs = new ArrayList<>();
-        String paramsJson = generateJsonString(billCodes);
         pairs.add(new BasicNameValuePair("appToken", appToken));
         pairs.add(new BasicNameValuePair("appKey", appKey));
-        pairs.add(new BasicNameValuePair("serviceMethod", SERVICE_METHOD));
-        pairs.add(new BasicNameValuePair("paramsJson", paramsJson));
+        pairs.add(new BasicNameValuePair("serviceMethod", ydRequestBody.getServiceMethod()));
+        pairs.add(new BasicNameValuePair("paramsJson", ydRequestBody.getParamsJson()));
         return pairs;
     }
 
-    private static String generateJsonString(List<String> billCodes) {
-        JSONObject param = new JSONObject();
-        String billCodesWithComas = String.join(",", billCodes);
-        param.put("tracking_number", billCodesWithComas);
-        return param.toJSONString();
-    }
 }

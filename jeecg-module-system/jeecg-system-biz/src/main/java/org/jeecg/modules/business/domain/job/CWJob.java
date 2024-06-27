@@ -9,8 +9,9 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.jeecg.modules.business.domain.api.yd.YDParcelTraceRequestBody;
+import org.jeecg.modules.business.domain.api.yd.YDParcelTraceResponse;
 import org.jeecg.modules.business.domain.api.yd.YDRequest;
-import org.jeecg.modules.business.domain.api.yd.YDResponse;
 import org.jeecg.modules.business.domain.api.yd.YDTraceData;
 import org.jeecg.modules.business.service.IParcelService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
@@ -42,7 +43,7 @@ public class CWJob implements Job {
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 15;
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
     private static final Integer DEFAULT_MAXIMUM_NUMBER_OF_PARCELS_PER_TRANSACTION = 800;
-    private static final List<String> DEFAULT_TRANSPORTERS = Arrays.asList("诚稳法邮普货" , "诚稳法邮膏体");
+    private static final List<String> DEFAULT_TRANSPORTERS = Arrays.asList("诚稳法邮普货", "诚稳法邮膏体");
 
     private final static String APP_TOKEN = "y7j1p5o4obncsdhbk1zgasunb2erpyzvh";
     private final static String APP_KEY = "ym27kj0wy5wgx69f58pgd7crm60w07p0l15flj1bacrf5n0e38vqjtrjkkvosd61p";
@@ -99,7 +100,8 @@ public class CWJob implements Job {
         List<YDTraceData> parcelTraces = new ArrayList<>();
         List<YDRequest> ydRequests = new ArrayList<>();
         billCodeLists.forEach(billcodeList -> {
-            YDRequest ydRequest = new YDRequest(APP_TOKEN, APP_KEY, billcodeList);
+            YDParcelTraceRequestBody ydParcelTraceRequestBody = new YDParcelTraceRequestBody(billcodeList);
+            YDRequest ydRequest = new YDRequest(APP_TOKEN, APP_KEY, ydParcelTraceRequestBody);
             ydRequests.add(ydRequest);
         });
         ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
@@ -110,7 +112,7 @@ public class CWJob implements Job {
                     try {
                         // String of the response
                         String responseString = EntityUtils.toString(entity, "UTF-8");
-                        YDResponse ydResponse = mapper.readValue(responseString, YDResponse.class);
+                        YDParcelTraceResponse ydResponse = mapper.readValue(responseString, YDParcelTraceResponse.class);
                         parcelTraces.addAll(ydResponse.getTraceDataList());
                         success = true;
                     } catch (IOException e) {
