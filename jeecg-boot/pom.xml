@@ -220,11 +220,12 @@
 				<artifactId>jeecg-boot-starter-lock</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
-			<!--rabbitmq消息队列-->
+			<!--rabbitmq消息队列 -->
+			<!-- 【.20240627 版本后缀表示是临时版本，修复了MQ的问题】Shutdown Signal: channel error; protocol method: #method<channel.close>(reply-code=406, reply-text=PRECONDITION_FAILED - unknown delivery tag 1, class-id=60, method-id=80) -->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-rabbitmq</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>3.7.0.20240627</version>
 			</dependency>
 			<!--rocketmq-->
 			<dependency>
