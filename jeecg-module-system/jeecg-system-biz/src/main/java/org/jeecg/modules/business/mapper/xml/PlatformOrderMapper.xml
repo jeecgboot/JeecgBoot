@@ -1074,4 +1074,38 @@
             #{platformOrderId}
         </foreach>
     </update>
+
+    <select id="fetchShippedOrdersFromShopAndTransporters" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code = #{shopCode}
+        AND erp_status = 3
+        AND shopify_synced = 0
+        AND logistic_channel_name IN
+        <foreach
+                collection="transporters"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="transporter">
+            #{transporter}
+        </foreach>
+        ;
+    </select>
+
+    <update id="updateLocalTrackingNumber">
+        UPDATE platform_order
+        SET ready_for_shopify_sync = 1,
+            local_tracking_number =
+        case platform_order_id
+        <foreach collection="data" separator=" " open="" close="" index="index" item="item">
+            when #{item.platformOrderId} then #{item.localTrackingNumber}
+        </foreach>
+        end
+        where platform_order_id in
+        <foreach collection="data" separator="," open="(" close=")" index="index" item="item">
+            #{item.platformOrderId}
+        </foreach>
+    </update>
 </mapper>

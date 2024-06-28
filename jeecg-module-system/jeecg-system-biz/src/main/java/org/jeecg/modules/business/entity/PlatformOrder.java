@@ -12,14 +12,13 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 
 /**
  * @Description: 平台订单表
  * @Author: jeecg-boot
- * @Date: 2024-05-30
- * @Version: V1.9
+ * @Date: 2024-06-25
+ * @Version: V1.10
  */
 @ApiModel(value = "platform_order对象", description = "平台订单表")
 @Data
@@ -258,5 +257,11 @@ public class PlatformOrder implements Serializable {
     @Excel(name = "Shopify平台已同步(1=已同步，0=未同步)", width = 15, dicCode = "yn")
     @Dict(dicCode = "yn")
     @ApiModelProperty(value = "Shopify平台已同步(1=已同步，0=未同步)")
-    private java.lang.String shopifySynced;
+    private String shopifySynced;
+    /**
+     * 目的地转单号
+     */
+    @Excel(name = "目的地转单号", width = 15)
+    @ApiModelProperty(value = "目的地转单号")
+    private String localTrackingNumber;
 }

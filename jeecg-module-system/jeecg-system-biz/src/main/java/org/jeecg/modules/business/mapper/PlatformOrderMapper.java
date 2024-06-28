@@ -3,6 +3,7 @@ package org.jeecg.modules.business.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
+import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
 import org.jeecg.modules.business.vo.OrderKpi;
@@ -233,4 +234,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     List<String> findReadyAbnormalOrdersWithSkus(@Param("skus") List<String> skus);
     void updateShopifySynced(@Param("platformOrderIds") Collection<String> platformOrderIds);
+
+    List<String> fetchShippedOrdersFromShopAndTransporters(@Param("shopCode")String shopCode, @Param("transporters") List<String> transporters);
+
+    void updateLocalTrackingNumber(@Param("data") List<YDTrackingNumberData> data);
 }

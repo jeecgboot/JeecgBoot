@@ -9,8 +9,9 @@ import org.apache.http.util.EntityUtils;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.jeecg.modules.business.domain.api.yd.YDParcelTraceRequestBody;
+import org.jeecg.modules.business.domain.api.yd.YDParcelTraceResponse;
 import org.jeecg.modules.business.domain.api.yd.YDRequest;
-import org.jeecg.modules.business.domain.api.yd.YDResponse;
 import org.jeecg.modules.business.domain.api.yd.YDTraceData;
 import org.jeecg.modules.business.service.IParcelService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
@@ -99,7 +100,8 @@ public class YDJob implements Job {
         List<YDTraceData> parcelTraces = new ArrayList<>();
         List<YDRequest> ydRequests = new ArrayList<>();
         billCodeLists.forEach(billcodeList -> {
-            YDRequest ydRequest = new YDRequest(APP_TOKEN, APP_KEY, billcodeList);
+            YDParcelTraceRequestBody ydParcelTraceRequestBody = new YDParcelTraceRequestBody(billcodeList);
+            YDRequest ydRequest = new YDRequest(APP_TOKEN, APP_KEY, ydParcelTraceRequestBody);
             ydRequests.add(ydRequest);
         });
         ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
@@ -110,7 +112,7 @@ public class YDJob implements Job {
                     try {
                         // String of the response
                         String responseString = EntityUtils.toString(entity, "UTF-8");
-                        YDResponse ydResponse = mapper.readValue(responseString, YDResponse.class);
+                        YDParcelTraceResponse ydResponse = mapper.readValue(responseString, YDParcelTraceResponse.class);
                         parcelTraces.addAll(ydResponse.getTraceDataList());
                         success = true;
                     } catch (IOException e) {
