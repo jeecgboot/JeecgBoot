@@ -44,21 +44,15 @@ JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端�
 启动项目
 -----------------------------------
 
-##### 命令和IDE启动
-
-- [前端项目快速启动](http://help.jeecg.com/setup/startup.html)
-- [通过IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
-
-##### Docker启动
-
-- [Docker启动前端](https://help.jeecg.com/java/docker/vue3.html)
-- [Docker启动后台](https://help.jeecg.com/java/docker/up.html)
+- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
+- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick.html)
 
 
-##### 微服务启动
-
+微服务启动
+-----------------------------------
 - [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
 - [Docker启动微服务后台](https://help.jeecg.com/java/docker/springcloud.html)
+
 
 
 技术架构：
