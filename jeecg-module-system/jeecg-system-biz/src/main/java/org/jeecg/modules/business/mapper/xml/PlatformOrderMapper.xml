@@ -648,7 +648,7 @@
             </foreach>;
     </select>
     <select id="findUninvoicedOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
-        SELECT *
+        SELECT id, order_time, platform_order_number
         FROM platform_order
         WHERE erp_status IN
         <foreach
@@ -674,7 +674,12 @@
                 item="shopId"
         >
             #{shopId}
-        </foreach>;
+        </foreach>
+        ORDER BY ${column} ${order}
+        <if test="size != -1">
+            LIMIT #{offset}, #{size}
+        </if>
+        ;
     </select>
     <insert id="insertPlatformOrdersArchives" parameterType="list">
         INSERT INTO platform_order_delete(id, create_by,

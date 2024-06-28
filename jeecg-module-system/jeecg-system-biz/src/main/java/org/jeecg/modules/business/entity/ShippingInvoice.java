@@ -102,39 +102,6 @@ public class ShippingInvoice implements Serializable {
     @ApiModelProperty(value = "currency ID")
     private java.lang.String currencyId;
 
-    public void setID(String id) {
-        this.id = id;
-    }
-    public void setCreateBy(String user) {
-        this.createBy = user;
-    }
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-    public void setUpdateBy(String updateBy) {
-        this.updateBy = updateBy;
-    }
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-    public void setClientI(String clientId) {
-        this.clientId = clientId;
-    }
-    public void setInvoiceNumber(String invoiceNumber) {
-        this.invoiceNumber = invoiceNumber;
-    }
-    public void setTotalAmount(java.math.BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-    public void setDiscountAmount(java.math.BigDecimal discountAmount) {
-        this.discountAmount = discountAmount;
-    }
-    public void setFinalAmount(java.math.BigDecimal finalAmount) {
-        this.finalAmount = finalAmount;
-    }
-    public void setPaidAmount(java.math.BigDecimal paidAmount) {
-        this.paidAmount = paidAmount;
-    }
     public ShippingInvoice() {
 //        this.id = null;
 //        this.createBy = null;
