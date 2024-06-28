@@ -39,6 +39,8 @@ services:
     ports:
       - 8848:8848
     container_name: jeecg-boot-nacos
+    depends_on:
+      - jeecg-boot-mysql
     hostname: jeecg-boot-nacos
     networks:
       - jeecg-boot
