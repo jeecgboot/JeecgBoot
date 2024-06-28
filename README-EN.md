@@ -60,13 +60,11 @@ For the project
 Jeecg-Boot low code development platform can be applied in the development of any J2EE project, especially for SAAS projects, enterprise information management system (MIS), internal office system (OA), enterprise resource planning system (ERP), customer relationship management system (CRM), etc. Its semi-intelligent manual Merge development method, Can significantly improve the development efficiency of more than 70%, greatly reduce the development cost.
 
 
-
-Docker starts the project
+Starts the project
 -----------------------------------
 
-- [Docker starts the vue3 ui](https://help.jeecg.com/java/docker/vue3.html)
-- [Docker starts the java background](https://help.jeecg.com/java/docker/up.html)
-
+- [IDEA Quick start](https://help.jeecg.com/java/setup/idea/startup.html)
+- [Docker Quick start](https://help.jeecg.com/java/docker/quick.html)
 
 
 
