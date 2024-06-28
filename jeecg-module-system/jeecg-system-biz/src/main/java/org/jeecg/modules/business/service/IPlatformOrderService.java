@@ -208,7 +208,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param pageSize
      * @return
      */
-    LinkedList<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses, String column, String order, Integer pageNo, Integer pageSize);
+    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses, String column, String order, Integer pageNo, Integer pageSize);
     /**
      * Get ids of all order that can be invoiced by small clients (type 2) themselves.
      * @param shopIds list of shop id

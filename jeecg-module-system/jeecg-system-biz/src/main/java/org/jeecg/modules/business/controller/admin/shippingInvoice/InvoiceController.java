@@ -57,6 +57,7 @@ import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDict
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 import static org.jeecg.modules.business.entity.Task.TaskCode.SI_G;
 import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
+import static org.jeecg.modules.business.vo.PlatformOrderFront.invoiceStatus.*;
 
 /**
  * Controller for request related to shipping invoice
@@ -530,9 +531,9 @@ public class InvoiceController {
         // checking shipping data availability
         List<String> shopIdList = Arrays.asList(shopIds.split(","));
         // fetch order that can be invoiced either by shipping or purchase or both
-        LinkedList<PlatformOrder> allOrders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, 1, -1);
+        List<PlatformOrder> allOrders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, 1, -1);
         int total = allOrders.size();
-        LinkedList<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize);
+        List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize);
 //        LinkedList<PlatformOrder> sortedOrders = orders.stream().sorted(Comparator.comparing(PlatformOrder::getOrderTime)).collect(Collectors.toCollection(LinkedList::new));
         if(orders.isEmpty())
             return Result.OK("No order to invoice.");
@@ -554,7 +555,6 @@ public class InvoiceController {
         Map<String, String> errorMapToOrderId = new HashMap<>();
         List<PlatformOrderFront> orderFronts = new ArrayList<>();
 
-        int tmpCpt = 0;
         for(Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry : orderContentMap.entrySet()) {
             PlatformOrderFront orderFront = new PlatformOrderFront();
             BeanUtils.copyProperties(entry.getKey(), orderFront);
@@ -562,16 +562,16 @@ public class InvoiceController {
             //rename shop id by shop name to prevent it to leak in front
             orderFront.setShopId(shops.get(orderFront.getShopId()));
             // set default value of shipping and purchase availability
-            orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Available.code);
-            orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Available.code);
+            orderFront.setShippingAvailable(Available.code);
+            orderFront.setPurchaseAvailable(Available.code);
 
             if(entry.getValue().isEmpty()) {
                 if(!errorMapToOrderId.containsKey(entry.getKey().getPlatformOrderId()))
                     errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : order has no content : " + entry.getKey().getPlatformOrderId());
                 else
                     errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and has no content");
-                orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
-                orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                orderFront.setShippingAvailable(Unavailable.code);
+                orderFront.setPurchaseAvailable(Unavailable.code);
                 orderFronts.add(orderFront);
                 continue;
             }
@@ -585,8 +585,8 @@ public class InvoiceController {
                 else
                     errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing one or more sku in db");
 
-                orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
-                orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                orderFront.setShippingAvailable(Unavailable.code);
+                orderFront.setPurchaseAvailable(Unavailable.code);
                 continue;
             }
 
@@ -597,7 +597,7 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing logistic channel for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing logistic channel");
-                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                    orderFront.setShippingAvailable(Unavailable.code);
                 }
                 // finds the first product with missing weight
                 String missingWeightProductId = productService.searchFirstEmptyWeightProduct(skuIds);
@@ -606,7 +606,7 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more weight for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing weight");
-                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                    orderFront.setShippingAvailable(Unavailable.code);
                 }
             }
             if(entry.getKey().getPurchaseInvoiceNumber() == null) {
@@ -617,7 +617,7 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more sku price for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing one or more sku price");
-                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                    orderFront.setPurchaseAvailable(Unavailable.code);
                 }
             }
 
@@ -634,18 +634,18 @@ public class InvoiceController {
             if(entry.getKey().getPurchaseInvoiceNumber() != null) {
                 PurchaseOrder purchase =  purchaseOrderService.getPurchaseByInvoiceNumber(entry.getKey().getPurchaseInvoiceNumber());
                 if(purchase.getPaidAmount().compareTo(BigDecimal.ZERO) == 0)
-                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Invoiced.code);// invoiced
+                    orderFront.setPurchaseAvailable(Invoiced.code);// invoiced
                 else
-                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Paid.code);// paid
+                    orderFront.setPurchaseAvailable(Paid.code);// paid
             }
             // set shipping order status (-1 = unavailable, 0 = available, 1 = invoiced, 2 = paid)
             if(entry.getKey().getShippingInvoiceNumber() != null) {
                 ShippingInvoice shippingInvoice = iShippingInvoiceService.getShippingInvoice(entry.getKey().getShippingInvoiceNumber());
                 if(shippingInvoice.getPaidAmount().compareTo(BigDecimal.ZERO) == 0) {
-                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Invoiced.code); // invoiced
+                    orderFront.setShippingAvailable(Invoiced.code); // invoiced
                 }
                 else {
-                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Paid.code); // paid
+                    orderFront.setShippingAvailable(Paid.code); // paid
                 }
             }
             orderFronts.add(orderFront);
