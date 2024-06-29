@@ -106,20 +106,6 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 |   人大金仓   |  √   |
 
 
-
-#### 分支说明
-
-> 主干master更稳定，如果你对最新技术栈无要求，建议采用主干
-
-##### springboot3分支
- - 源码地址：https://github.com/jeecgboot/JeecgBoot/tree/springboot3
- - 架构说明：升级Spring Boot3 & JDK 17 + Undertow + springdoc + fastjson2
- 
-##### springboot3_sas分支
- - 源码地址：https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas
- - 架构说明：在springboot3分支基础上，采用SpringAuthorizationServer替换Shiro
- 
- 
  
 ## 微服务解决方案
 
@@ -145,7 +131,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 #### 微服务方式启动
 
 - [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-- [Docker启动微服务后台](https://help.jeecg.com/java/docker/springcloud.html)
+- [Docker一键启动微服务前后端](https://help.jeecg.com/java/docker/quickcloud.html)
 
 
 #### 微服务架构图
@@ -203,6 +189,20 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 
 
+
+### 分支说明
+
+> 主干master更稳定，如果你对最新技术栈无要求，建议采用主干
+
+#### springboot3分支
+ - 源码地址：https://github.com/jeecgboot/JeecgBoot/tree/springboot3
+ - 架构说明：升级Spring Boot3 & JDK 17 + Undertow + springdoc + fastjson2
+ 
+#### springboot3_sas分支
+ - 源码地址：https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas
+ - 架构说明：在springboot3分支基础上，采用SpringAuthorizationServer替换Shiro
+ 
+ 
 
 ### 功能模块
 ```
