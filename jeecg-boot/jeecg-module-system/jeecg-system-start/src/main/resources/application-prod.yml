@@ -231,7 +231,7 @@ jeecg:
   elasticsearch:
     cluster-name: jeecg-ES
     cluster-nodes: 127.0.0.1:9200
-    check-enabled: true
+    check-enabled: false
   # 在线预览文件服务器地址配置
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传
