@@ -113,6 +113,10 @@ public class YDTrackingNumberJob implements Job {
         long nbSuccesses = results.stream().filter(b -> b).count();
         log.info("{}/{} local tracking numbers have been retrieved.", nbSuccesses, ydRequests.size());
 
+        if (localTrackingNumbers.isEmpty()) {
+            log.info("No local tracking numbers to be updated, quitting.");
+            return;
+        }
         log.info("Started updating {} local tracking numbers", localTrackingNumbers.size());
         platformOrderService.updateLocalTrackingNumber(localTrackingNumbers);
         log.info("Ended updating local tracking numbers for the following orders : {}", localTrackingNumbers.stream()
