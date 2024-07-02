@@ -37,6 +37,22 @@
             </tr>
         </#if>
     </#if>
+    <#if editSuccessCount??>
+        <tr>
+            <td style="padding:0 0 35px 0;">Demandes de modification d'informations de commande : <b>${editSuccessCount}</b> réussie(s)</td>
+        </tr>
+        <#if editFailures?size gt 0 >
+            <tr>
+                <td style="padding:0 0 35px 0;">Demandes de modification de commande échouées :<br/>
+                    <ul>
+                        <#list editFailures as failure>
+                            <li>${failure}</li>
+                        </#list>
+                    </ul>
+                </td>
+            </tr>
+        </#if>
+    </#if>
     <tr>
         <td style="padding:0 0 35px 0;">Pour toute information complémentaire nous vous invitons à vous rapprocher de votre conseiller.</td>
     </tr>

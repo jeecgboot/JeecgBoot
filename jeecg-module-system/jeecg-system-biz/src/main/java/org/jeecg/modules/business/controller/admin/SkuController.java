@@ -3,6 +3,7 @@ package org.jeecg.modules.business.controller.admin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.CaseFormat;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDictSql;
 
 /**
  * @Description: SKU表
@@ -343,13 +346,53 @@ public class SkuController {
                         .collect(Collectors.toList())
         );
     }
+    @GetMapping("/skuListByClient")
+    public Result<?> skusListByClient(@RequestParam("clientId") String clientId) {
+        List<Sku> skus = skuService.listByClientId(clientId);
+        return Result.OK(skus);
+    }
 
     @GetMapping("/skusByClient")
-    public Result<?> skusByClient(@RequestParam String clientId) {
-        List<SkuOrderPage> skuOrdersPage = skuService.fetchSkusByClient(clientId);
+    public Result<?> skusByClient(@RequestParam(name = "clientId") String clientId,
+                                  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                  @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
+                                  @RequestParam(name = "column", defaultValue = "erp_code") String column,
+                                  @RequestParam(name = "order", defaultValue = "ASC") String order,
+                                  @RequestParam(name = "erpCodes", required = false) String erpCodes,
+                                  @RequestParam(name = "zhNames", required = false) String zhNames,
+                                  @RequestParam(name = "enNames", required = false) String enNames
+    ) {
+        String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
+        String parsedOrder = order.toUpperCase();
+        if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
+            return Result.error("Error 400 Bad Request");
+        }
+        try {
+            specialFilterContentForDictSql(parsedColumn);
+        } catch (RuntimeException e) {
+            return Result.error("Error 400 Bad Request");
+        }
+        List<SkuOrderPage> allSkuOrdersPage = new ArrayList<>();
+        List<SkuOrderPage> skuOrdersPage = new ArrayList<>();
+        int total = 0;
+        if(erpCodes != null || zhNames != null || enNames != null) {
+            List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
+            List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
+            List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
+            allSkuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, 1, -1, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+            skuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+
+        }
+        else {
+            allSkuOrdersPage = skuService.fetchSkusByClient(clientId, 1, -1, parsedColumn, parsedOrder);
+            skuOrdersPage = skuService.fetchSkusByClient(clientId, pageNo, pageSize, parsedColumn, parsedOrder);
+        }
+        total = allSkuOrdersPage.size();
         IPage<SkuOrderPage> page = new Page<>();
         page.setRecords(skuOrdersPage);
-        page.setTotal(skuOrdersPage.size());
+        page.setCurrent(pageNo);
+        page.setSize(pageSize);
+        page.setTotal(total);
         return Result.OK(page);
     }
 }

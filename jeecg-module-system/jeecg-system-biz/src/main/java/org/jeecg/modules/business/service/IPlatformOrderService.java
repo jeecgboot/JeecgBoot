@@ -17,10 +17,7 @@ import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatistic
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 平台订单表
@@ -206,9 +203,13 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * Find all order that can be invoiced (shipping and purchase).
      * @param shopIds
      * @param erpStatuses
+     * @param column
+     * @param order
+     * @param pageNo
+     * @param pageSize
      * @return
      */
-    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses, String column, String order, Integer pageNo, Integer pageSize);
     /**
      * Get ids of all order that can be invoiced by small clients (type 2) themselves.
      * @param shopIds list of shop id

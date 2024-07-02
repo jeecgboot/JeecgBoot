@@ -417,8 +417,37 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
-    public List<SkuOrderPage> fetchSkusByClient(String clientId) {
-        return skuMapper.fetchSkusByClient(clientId);
+    public List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order) {
+        int offset = (pageNo - 1) * pageSize;
+        return skuMapper.fetchSkusByClient(clientId, offset, pageSize, column, order);
+    }
+
+    @Override
+    public List<SkuOrderPage> fetchSkusByClientWithFilters(String clientId, Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames) {
+        int offset = (pageNo - 1) * pageSize;
+        StringBuilder erpCodesRegex= new StringBuilder(), zhNamesRegex = new StringBuilder(), enNamesRegex = new StringBuilder();
+        if(erpCodes != null){
+            erpCodesRegex.append("^");
+            for(String name : erpCodes){
+                erpCodesRegex.append("(?=.*").append(name).append(")");
+            }
+            erpCodesRegex.append(".*");
+        }
+        if(enNames != null){
+            enNamesRegex.append("^");
+            for(String name : enNames){
+                enNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            enNamesRegex.append(".*");
+        }
+        if(zhNames != null){
+            zhNamesRegex.append("^");
+            for(String name : zhNames){
+                zhNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            zhNamesRegex.append(".*$");
+        }
+        return skuMapper.fetchSkusByClientWithFilters(clientId, offset, pageSize, column, order, erpCodesRegex.toString(), zhNamesRegex.toString(), enNamesRegex.toString());
     }
 
     @Override
@@ -444,6 +473,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Override
     public List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber) {
         return skuMapper.getInventoryByInvoiceNumber(invoiceNumber);
+    }
+
+    @Override
+    public List<Sku> listByClientId(String clientId) {
+        return skuMapper.listByClientId(clientId);
     }
 
 }
