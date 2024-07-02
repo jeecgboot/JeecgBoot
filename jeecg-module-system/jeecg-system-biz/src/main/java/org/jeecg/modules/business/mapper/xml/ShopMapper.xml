@@ -35,4 +35,14 @@
               </foreach>
           AND cc.name = #{type}
     </select>
+    <select id="getNameById" resultType="java.lang.String">
+        SELECT name
+        FROM shop
+        WHERE id = #{shopId};
+    </select>
+    <select id="getCodeById" resultType="java.lang.String">
+        SELECT erp_code
+        FROM shop
+        WHERE id = #{shopId};
+    </select>
 </mapper>

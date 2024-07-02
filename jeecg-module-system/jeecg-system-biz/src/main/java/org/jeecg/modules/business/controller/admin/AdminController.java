@@ -1,13 +1,12 @@
 package org.jeecg.modules.business.controller.admin;
 
-import cn.hutool.core.date.DateTime;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.service.DashboardService;
-import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.business.service.ISecurityService;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -28,7 +27,7 @@ import java.util.Map;
 public class AdminController {
     @Autowired private DashboardService dashboardService;
     @Autowired private SysBaseApiImpl sysBaseApi;
-    @Autowired private ISysDepartService sysDepartService;
+    @Autowired private ISecurityService securityService;
     @Autowired private Environment env;
 
     private final Integer PERIOD = 5;
@@ -52,10 +51,9 @@ public class AdminController {
 
     @GetMapping(value = "/packageStatuses")
     public Result<?> packageStatuses() {
-        String companyOrgCode = sysDepartService.queryCodeByDepartName(env.getProperty("company.orgName"));
+        boolean isEmployee = securityService.checkIsEmployee();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        String orgCode = sysUser.getOrgCode();
-        if(!companyOrgCode.equals(orgCode)){
+        if(!isEmployee){
             log.info("User {}, tried to access /admin/packageStatuses but is not authorized.", sysUser.getUsername());
             return Result.error(403,"Not authorized to view this page.");
         }

@@ -4,12 +4,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderRequest;
-import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderRequestBody;
-import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderResponse;
-import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
-import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderItem;
-import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
+import org.jeecg.modules.business.domain.api.mabang.dochangeorder.*;
+import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequest;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendResponse;
@@ -23,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -267,7 +264,64 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         return responses;
     }
 
-    private void updateExistedOrders(List<Order> orders) {
+    /**
+     *
+     * @param requests List<OrderListRequestBody>
+     * @param executor ExecutorService
+     * @return orders retrieved from mabang
+     */
+    @Override
+    public List<Order> getOrdersFromMabang(List<OrderListRequestBody> requests, ExecutorService executor) {
+        List<Order> mabangOrders = new ArrayList<>();
 
+        List<CompletableFuture<Boolean>> futures = requests.stream()
+                .map(request -> CompletableFuture.supplyAsync(() -> {
+                    boolean success = false;
+                    try {
+                        OrderListRawStream rawStream = new OrderListRawStream(request);
+                        OrderListStream stream = new OrderListStream(rawStream);
+                        List<Order> orders = stream.all();
+                        mabangOrders.addAll(orders);
+                        success = !orders.isEmpty();
+                    } catch (RuntimeException e) {
+                        log.error("Error communicating with MabangAPI", e);
+                    }
+                    return success;
+                }, executor))
+                .collect(Collectors.toList());
+        List<Boolean> results = futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} requests have succeeded.", nbSuccesses, requests.size());
+        log.info("{}/{} mabang orders have been retrieved.", mabangOrders.size(), requests.size());
+        return mabangOrders;
+
+    }
+
+    /**
+     * Sends a request to clear orders Logistic Channel to Mabang
+     * (usually it is called upon modifying an order)
+     * @param orders List<Order>
+     * @param executor Executor Service
+     */
+    @Override
+    public void clearLogisticChannel(List<Order> orders, ExecutorService executor) {
+        // First we delete the logistic channel names, otherwise we can't delete virtual skus
+        List<CompletableFuture<Boolean>> clearLogisticFutures = orders.stream()
+                .map(order -> CompletableFuture.supplyAsync(() -> {
+                    ClearLogisticRequestBody body = new ClearLogisticRequestBody(order.getPlatformOrderId());
+                    ClearLogisticRequest request = new ClearLogisticRequest(body);
+                    ClearLogisticResponse response = request.send();
+                    return response.success();
+                }, executor))
+                .collect(Collectors.toList());
+        List<Boolean> logisticResults = clearLogisticFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long logisticClearSuccessCount = logisticResults.stream().filter(b -> b).count();
+        log.info("{}/{} logistic channel names cleared successfully.", logisticClearSuccessCount, orders.size());
+    }
+    @Override
+    public String stripAccents(String input) {
+        input = Normalizer.normalize(input, Normalizer.Form.NFD);
+        input = input.replaceAll("[^\\p{ASCII}]", "");
+        return input;
     }
 }
