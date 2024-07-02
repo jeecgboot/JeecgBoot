@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.controller.UserException;
+import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
@@ -521,8 +522,19 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public List<String> findReadyAbnormalOrdersWithSkus(List<String> skus) {
         return platformOrderMap.findReadyAbnormalOrdersWithSkus(skus);
     }
+
     @Override
     public void updateShopifySynced(Collection<String> platformOrderIds) {
         platformOrderMap.updateShopifySynced(platformOrderIds);
+    }
+
+    @Override
+    public List<String> fetchShippedOrdersFromShopAndTransporters(String shopCode, List<String> transporters) {
+        return platformOrderMap.fetchShippedOrdersFromShopAndTransporters(shopCode, transporters);
+    }
+
+    @Override
+    public void updateLocalTrackingNumber(List<YDTrackingNumberData> data) {
+        platformOrderMap.updateLocalTrackingNumber(data);
     }
 }

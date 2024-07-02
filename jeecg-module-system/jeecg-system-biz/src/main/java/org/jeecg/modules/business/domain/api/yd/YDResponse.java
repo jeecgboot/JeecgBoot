@@ -4,38 +4,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 @Slf4j
 @Data
-public class YDResponse {
+public abstract class YDResponse {
 
     /**
      * 返回值
      */
     @JsonProperty("success")
-    private Integer returnValue;
+    protected Integer returnValue;
 
     /**
      * 返回中文信息
      */
     @JsonProperty("cnmessage")
-    private String cnMessage;
+    protected String cnMessage;
 
     /**
      * 返回英文信息
      */
     @JsonProperty("enmessage")
-    private String enMessage;
+    protected String enMessage;
 
-    @JsonProperty("data")
-    private List<YDTraceData> traceDataList;
-
-    public YDResponse(Integer returnValue, String cnMessage, String enMessage, List<YDTraceData> traceDataList) {
+    public YDResponse(Integer returnValue, String cnMessage, String enMessage) {
         this.returnValue = returnValue;
         this.cnMessage = cnMessage;
         this.enMessage = enMessage;
-        this.traceDataList = traceDataList;
     }
 
     public YDResponse() {

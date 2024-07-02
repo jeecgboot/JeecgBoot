@@ -3,6 +3,7 @@ package org.jeecg.modules.business.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.controller.UserException;
+import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.PlatformOrderOption;
 import org.jeecg.modules.business.vo.PlatformOrderQuantity;
@@ -257,4 +258,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<String> findReadyAbnormalOrdersWithSkus(List<String> skus);
     void updateShopifySynced(Collection<String> platformOrderIds);
+
+    List<String> fetchShippedOrdersFromShopAndTransporters(String shopCode, List<String> transporters);
+
+    void updateLocalTrackingNumber(List<YDTrackingNumberData> data);
 }
