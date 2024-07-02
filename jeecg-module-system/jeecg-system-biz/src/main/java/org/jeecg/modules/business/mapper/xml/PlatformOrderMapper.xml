@@ -449,7 +449,8 @@
     </select>
 
     <select id="fetchOrderInShopsReadyForShopifySync" resultType="org.jeecg.modules.business.entity.PlatformOrderShopSync">
-        SELECT po.platform_order_id, po.tracking_number, s.shopify_prefix, s.shopify_token, po.postcode
+        SELECT po.platform_order_id, COALESCE(po.local_tracking_number, po.tracking_number) as tracking_number,
+        s.shopify_prefix, s.shopify_token, po.postcode
         FROM platform_order po join shop s ON po.shop_id = s.id
         WHERE erp_code IN
         <foreach
