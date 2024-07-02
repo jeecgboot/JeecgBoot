@@ -2,11 +2,13 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
+import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderListRequestBody;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
 import org.jeecg.modules.business.vo.Responses;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Services related to operations on {@code Order} entity
@@ -32,4 +34,10 @@ public interface IPlatformOrderMabangService extends IService<Order> {
     Responses suspendOrder(PlatformOrderOperation orderOperation);
 
     Responses cancelOrders(PlatformOrderOperation orderOperation);
+
+    List<Order> getOrdersFromMabang(List<OrderListRequestBody> requests, ExecutorService executor);
+
+    void clearLogisticChannel(List<Order> orders, ExecutorService executor);
+
+    String stripAccents(String input);
 }

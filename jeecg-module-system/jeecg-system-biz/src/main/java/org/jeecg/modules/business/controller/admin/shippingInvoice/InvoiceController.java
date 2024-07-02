@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.CaseFormat;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.MutableTriple;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.message.TemplateMessageDTO;
 import org.jeecg.common.api.vo.Result;
@@ -25,11 +25,9 @@ import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.mapper.PurchaseOrderContentMapper;
 import org.jeecg.modules.business.service.*;
-import org.jeecg.modules.business.service.impl.ProviderMabangServiceImpl;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
-import org.jeecg.modules.system.service.ISysDepartService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.StandardSocketOptions;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -56,9 +53,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDictSql;
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 import static org.jeecg.modules.business.entity.Task.TaskCode.SI_G;
 import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
+import static org.jeecg.modules.business.vo.PlatformOrderFront.invoiceStatus.*;
 
 /**
  * Controller for request related to shipping invoice
@@ -75,13 +74,9 @@ public class InvoiceController {
     @Autowired
     private IClientService clientService;
     @Autowired
-    private ICurrencyService currencyService;
-    @Autowired
     private ExchangeRatesMapper exchangeRatesMapper;
     @Autowired
     private IShopService shopService;
-    @Autowired
-    private ILogisticChannelService logisticChannelService;
     @Autowired
     private PlatformOrderShippingInvoiceService shippingInvoiceService;
     @Autowired
@@ -92,8 +87,6 @@ public class InvoiceController {
     private PlatformOrderContentMapper platformOrderContentMap;
     @Autowired
     private IProductService productService;
-    @Autowired
-    private ProviderMabangServiceImpl providerMabangService;
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
@@ -119,7 +112,7 @@ public class InvoiceController {
     @Autowired
     private ISysBaseAPI ISysBaseApi;
     @Autowired
-    private ISysDepartService sysDepartService;
+    private ISecurityService securityService;
     @Autowired
     private IUserClientService userClientService;
     @Autowired
@@ -228,7 +221,7 @@ public class InvoiceController {
     }
     @PostMapping(value = "/period")
     public Result<?> getValidPeriod(@RequestBody List<String> shopIDs) {
-        log.info("Request for valid period for shops: " + shopIDs.toString());
+        log.info("Request for valid period for shops: {}", shopIDs.toString());
         Period period = shippingInvoiceService.getValidPeriod(shopIDs);
         if (period.isValid())
             return Result.OK(period);
@@ -455,8 +448,7 @@ public class InvoiceController {
     }
     @GetMapping(value = "/preShipping/orderTime")
     public Result<?> getValidOrderTimePeriod(@RequestParam("shopIds[]") List<String> shopIDs, @RequestParam("erpStatuses[]") List<Integer> erpStatuses) {
-        log.info("Request for valid order time period for shops: " + shopIDs.toString() +
-                " and erpStatuses : " + erpStatuses.toString());
+        log.info("Request for valid order time period for shops: {} and erpStatuses : {}", shopIDs.toString(), erpStatuses.toString());
         Period period = shippingInvoiceService.getValidOrderTimePeriod(shopIDs, erpStatuses);
         if (period.isValid()) {
             return Result.OK(period);
@@ -475,15 +467,15 @@ public class InvoiceController {
     public Result<?> getOrdersBetweenOrderDates(PlatformOrder platformOrder, @RequestBody ShippingInvoiceParam param, HttpServletRequest req) {
         QueryWrapper<PlatformOrder> queryWrapper = QueryGenerator.initQueryWrapper(platformOrder, req.getParameterMap());
         LambdaQueryWrapper<PlatformOrder> lambdaQueryWrapper = queryWrapper.lambda();
-        log.info("Requesting orders for : " + param.toString());
+        log.info("Requesting orders for : {}", param.toString());
         if (param.shopIDs() == null || param.shopIDs().isEmpty()) {
             return Result.error("Missing shop IDs");
         }
-        log.info("Specified shop IDs : " + param.shopIDs());
+        log.info("Specified shop IDs : {}", param.shopIDs());
         lambdaQueryWrapper.in(PlatformOrder::getShopId, param.shopIDs());
         lambdaQueryWrapper.isNull(PlatformOrder::getShippingInvoiceNumber);
         if(param.getErpStatuses() != null) {
-            log.info("Specified erpStatuses : " + param.getErpStatuses());
+            log.info("Specified erpStatuses : {}", param.getErpStatuses());
             lambdaQueryWrapper.in(PlatformOrder::getErpStatus, param.getErpStatuses());
         }
         lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT id FROM platform_order po WHERE po.order_time between '" + param.getStart() + "' AND '" + param.getEnd() + "'" );
@@ -516,20 +508,49 @@ public class InvoiceController {
      * @return A triplet of order, shipping invoice availability and purchase invoice availability
      */
     @GetMapping(value = "/preShipping/ordersStatusByShops")
-    public Result<?> getOrdersStatusByShops(@RequestParam("shopIds") String shopIds) {
+    public Result<?> getOrdersStatusByShops(@RequestParam(name = "shopIds") String shopIds,
+                                            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                            @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
+                                            @RequestParam(name = "column", defaultValue = "order_time") String column,
+                                            @RequestParam(name = "order", defaultValue = "ASC") String order) {
         log.info("User : {} is requesting uninvoiced orders for shops : [{}]",
                 ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername(),
                 shopIds);
-
+        String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText",""));
+        String parsedOrder = order.toUpperCase();
+        if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
+            return Result.error("Error 400 Bad Request");
+        }
+        try {
+            specialFilterContentForDictSql(parsedColumn);
+        }
+        catch (RuntimeException e) {
+            e.printStackTrace();
+            return Result.error("Error 400 : Bad Request");
+        }
         // checking shipping data availability
         List<String> shopIdList = Arrays.asList(shopIds.split(","));
-        // fetch order that can be invoice either by shipping or purchase or both
-        List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1));
+        // fetch order that can be invoiced either by shipping or purchase or both
+        List<PlatformOrder> allOrders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, 1, -1);
+        int total = allOrders.size();
+        List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize);
+//        LinkedList<PlatformOrder> sortedOrders = orders.stream().sorted(Comparator.comparing(PlatformOrder::getOrderTime)).collect(Collectors.toCollection(LinkedList::new));
         if(orders.isEmpty())
             return Result.OK("No order to invoice.");
         Map<String, String> shops = shopService.listByIds(shopIdList).stream().collect(Collectors.toMap(Shop::getId, Shop::getName));
         List<String> orderIds = orders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         Map<PlatformOrder, List<PlatformOrderContent>> orderContentMap = platformOrderService.fetchOrderData(orderIds);
+        // some orders may not have content, so we have to re-add them
+        if(orderIds.size() != orderContentMap.size()) {
+            List<String> orderIdsInMap = orderContentMap.keySet().stream().map(PlatformOrder::getId).collect(Collectors.toList());
+            List<String> orderIdsWithoutContent = orderIds.stream().filter(id -> !orderIdsInMap.contains(id)).collect(Collectors.toList());
+            List<PlatformOrder> ordersWithoutContent = platformOrderService.listByIds(orderIdsWithoutContent);
+            Map<PlatformOrder, List<PlatformOrderContent>> orderContentMapWithoutContent = new HashMap<>();
+            for(PlatformOrder po : ordersWithoutContent) {
+                orderContentMapWithoutContent.put(po, new ArrayList<>());
+            }
+            orderContentMap.putAll(orderContentMapWithoutContent);
+        }
 
         Map<String, String> errorMapToOrderId = new HashMap<>();
         List<PlatformOrderFront> orderFronts = new ArrayList<>();
@@ -541,8 +562,20 @@ public class InvoiceController {
             //rename shop id by shop name to prevent it to leak in front
             orderFront.setShopId(shops.get(orderFront.getShopId()));
             // set default value of shipping and purchase availability
-            orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Available.code);
-            orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Available.code);
+            orderFront.setShippingAvailable(Available.code);
+            orderFront.setPurchaseAvailable(Available.code);
+
+            if(entry.getValue().isEmpty()) {
+                if(!errorMapToOrderId.containsKey(entry.getKey().getPlatformOrderId()))
+                    errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : order has no content : " + entry.getKey().getPlatformOrderId());
+                else
+                    errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and has no content");
+                orderFront.setShippingAvailable(Unavailable.code);
+                orderFront.setPurchaseAvailable(Unavailable.code);
+                orderFronts.add(orderFront);
+                continue;
+            }
+
             List<String> skuIds = entry.getValue().stream().map(PlatformOrderContent::getSkuId).distinct().collect(Collectors.toList());
             // finds the first sku that isn't in db
             List<Sku> skuIdsFound = skuService.listByIds(skuIds);
@@ -552,8 +585,9 @@ public class InvoiceController {
                 else
                     errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing one or more sku in db");
 
-                orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
-                orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                orderFront.setShippingAvailable(Unavailable.code);
+                orderFront.setPurchaseAvailable(Unavailable.code);
+                continue;
             }
 
             if(entry.getKey().getShippingInvoiceNumber() == null) {
@@ -563,7 +597,7 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing logistic channel for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing logistic channel");
-                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                    orderFront.setShippingAvailable(Unavailable.code);
                 }
                 // finds the first product with missing weight
                 String missingWeightProductId = productService.searchFirstEmptyWeightProduct(skuIds);
@@ -572,7 +606,7 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more weight for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing weight");
-                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                    orderFront.setShippingAvailable(Unavailable.code);
                 }
             }
             if(entry.getKey().getPurchaseInvoiceNumber() == null) {
@@ -583,7 +617,7 @@ public class InvoiceController {
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more sku price for order : " + entry.getKey().getPlatformOrderId());
                     else
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing one or more sku price");
-                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Unavailable.code);
+                    orderFront.setPurchaseAvailable(Unavailable.code);
                 }
             }
 
@@ -600,18 +634,18 @@ public class InvoiceController {
             if(entry.getKey().getPurchaseInvoiceNumber() != null) {
                 PurchaseOrder purchase =  purchaseOrderService.getPurchaseByInvoiceNumber(entry.getKey().getPurchaseInvoiceNumber());
                 if(purchase.getPaidAmount().compareTo(BigDecimal.ZERO) == 0)
-                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Invoiced.code);// invoiced
+                    orderFront.setPurchaseAvailable(Invoiced.code);// invoiced
                 else
-                    orderFront.setPurchaseAvailable(PlatformOrderFront.invoiceStatus.Paid.code);// paid
+                    orderFront.setPurchaseAvailable(Paid.code);// paid
             }
             // set shipping order status (-1 = unavailable, 0 = available, 1 = invoiced, 2 = paid)
             if(entry.getKey().getShippingInvoiceNumber() != null) {
                 ShippingInvoice shippingInvoice = iShippingInvoiceService.getShippingInvoice(entry.getKey().getShippingInvoiceNumber());
                 if(shippingInvoice.getPaidAmount().compareTo(BigDecimal.ZERO) == 0) {
-                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Invoiced.code); // invoiced
+                    orderFront.setShippingAvailable(Invoiced.code); // invoiced
                 }
                 else {
-                    orderFront.setShippingAvailable(PlatformOrderFront.invoiceStatus.Paid.code); // paid
+                    orderFront.setShippingAvailable(Paid.code); // paid
                 }
             }
             orderFronts.add(orderFront);
@@ -646,7 +680,9 @@ public class InvoiceController {
 
         IPage<PlatformOrderFront> page = new Page<>();
         page.setRecords(orderFronts);
-        page.setTotal(orderFronts.size());
+        page.setSize(pageSize);
+        page.setCurrent(pageNo);
+        page.setTotal(total);
         return Result.OK(page);
     }
 
@@ -661,11 +697,11 @@ public class InvoiceController {
     public Result<?> getOrdersBetweenDates(PlatformOrder platformOrder, @RequestBody ShippingInvoiceParam param, HttpServletRequest req) {
         QueryWrapper<PlatformOrder> queryWrapper = QueryGenerator.initQueryWrapper(platformOrder, req.getParameterMap());
         LambdaQueryWrapper<PlatformOrder> lambdaQueryWrapper = queryWrapper.lambda();
-        log.info("Requesting orders for : " + param.toString());
+        log.info("Requesting orders for : {}", param.toString());
         if (param.shopIDs() == null || param.shopIDs().isEmpty()) {
             return Result.error("Missing shop IDs");
         }
-        log.info("Specified shop IDs : " + param.shopIDs());
+        log.info("Specified shop IDs : {}", param.shopIDs());
         lambdaQueryWrapper.in(PlatformOrder::getShopId, param.shopIDs());
         lambdaQueryWrapper.isNull(PlatformOrder::getShippingInvoiceNumber);
         lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT id FROM platform_order po WHERE po.erp_status = '3' AND po.shipping_time between '" + param.getStart() + "' AND '" + param.getEnd() + "'" );
@@ -897,14 +933,20 @@ public class InvoiceController {
      * @param param Parameters for creating a pre-shipping invoice
      * @return One ShippingFeesEstimation
      */
-    @PostMapping(value = "/selfEstimateFees")
-    public Result<?> getPurchaseFeesEstimateByOrders(@RequestBody ShippingInvoiceOrderParam param) {
+    @PostMapping(value = "/completeFeesEstimation")
+    public Result<?> getCompleteFeesEstimation(@RequestBody ShippingInvoiceOrderParam param) {
+        boolean isEmployee = securityService.checkIsEmployee();
         String currency = clientService.getById(param.clientID()).getCurrency();
         List<PlatformOrder> orders = platformOrderMapper.fetchByIds(param.orderIds());
         Map<String, List<PlatformOrder>> ordersMapByShop = orders.stream().collect(Collectors.groupingBy(PlatformOrder::getShopId));
         Map<String, Estimation> estimationsByShop = new HashMap<>();
         for(Map.Entry<String, List<PlatformOrder>> entry : ordersMapByShop.entrySet()) {
             String shopId = entry.getKey();
+            String shop;
+            if(!isEmployee)
+                shop = shopService.getNameById(shopId);
+            else
+                shop = shopService.getCodeById(shopId);
             List<String> orderIds = entry.getValue().stream().map(PlatformOrder::getId).collect(Collectors.toList());
             ShippingInvoiceOrderParam finalParam = new ShippingInvoiceOrderParam(param.clientID(), orderIds, param.getType());
             List<String> errorMessages = new ArrayList<>();
@@ -912,6 +954,7 @@ public class InvoiceController {
                     finalParam.orderIds(), errorMessages);
             if(shippingFeesEstimations.isEmpty())
                 return Result.OK("No estimation found.");
+            String internalCode = shippingFeesEstimations.get(0).getCode();
 
             // purchase estimation
             // only calculate purchase estimation if products are not available and purchaseInvoiceNumber is null, else it's already been paid
@@ -921,25 +964,37 @@ public class InvoiceController {
                                 && order.getPurchaseInvoiceNumber() == null
                                 && order.getVirtualProductAvailable().equals("0"))
                     .map(PlatformOrder::getId).collect(Collectors.toList());
+
             BigDecimal shippingFeesEstimation = BigDecimal.ZERO;
             BigDecimal purchaseEstimation = BigDecimal.ZERO;
+            int ordersToProccess = 0;
+            int processedOrders = 0;
             boolean isCompleteInvoiceReady = true;
+
             for(ShippingFeesEstimation estimation: shippingFeesEstimations) {
                 shippingFeesEstimation = shippingFeesEstimation.add(estimation.getDueForProcessedOrders());
+                ordersToProccess += estimation.getOrdersToProcess();
+                processedOrders += estimation.getProcessedOrders();
             }
             if(!orderIdsWithProductUnavailable.isEmpty()) {
                 List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(orderIdsWithProductUnavailable);
                 List<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toList());
                 List<SkuPrice> skuPrices = platformOrderContentMap.searchSkuPrice(skuIds);
                 BigDecimal exchangeRateEurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
-                if(skuPrices.size() != skuIds.size()) {
-                    isCompleteInvoiceReady = false;
-                    errorMessages.add("Some sku prices are missing.");
+                for(SkuPrice skuPrice : skuPrices) {
+                    if(skuPrice.getPrice() == null) {
+                        isCompleteInvoiceReady = false;
+                        errorMessages.add("Some sku prices are missing.");
+                        break;
+                    }
                 }
                 for(PlatformOrderContent content : orderContents){
                     for (SkuPrice skuPrice : skuPrices) {
                         if(content.getSkuId().equals(skuPrice.getSkuId())) {
-                            purchaseEstimation = purchaseEstimation.add(skuPrice.getPrice(content.getQuantity(), exchangeRateEurToRmb));
+                            BigDecimal price = skuPrice.getPrice(content.getQuantity(), exchangeRateEurToRmb);
+                            price = price.multiply(new BigDecimal(content.getQuantity()));
+                            purchaseEstimation = purchaseEstimation.add(price);
+                            break;
                         }
                     }
                 }
@@ -952,9 +1007,9 @@ public class InvoiceController {
                 purchaseEstimation = purchaseEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
                 shippingFeesEstimation = shippingFeesEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
             }
-            log.info("Purchase Fee " + currency + " : " + purchaseEstimation);
-            log.info("Shipping Fee " + currency + " : " + shippingFeesEstimation);
-            estimationsByShop.put(shopId, new Estimation(shippingFeesEstimation, purchaseEstimation, currency, errorMessages, Collections.singletonList(shopId), "", "", isCompleteInvoiceReady));
+            log.info("Purchase Fee {} : {}", currency, purchaseEstimation);
+            log.info("Shipping Fee {} : {}", currency, shippingFeesEstimation);
+            estimationsByShop.put(shopId, new Estimation(internalCode, ordersToProccess, processedOrders, shippingFeesEstimation, purchaseEstimation, currency, errorMessages, shop, Collections.singletonList(shopId), "", "", isCompleteInvoiceReady, orderIds));
         }
         // return list of estimation by shop
         return Result.ok(estimationsByShop);
@@ -962,9 +1017,8 @@ public class InvoiceController {
 
     @GetMapping(value = "/checkInvoiceValidity")
     public Result<?> checkInvoiceValidity(@RequestParam("invoiceNumber") String invoiceNumber) {
-        String companyOrgCode = sysDepartService.queryCodeByDepartName(env.getProperty("company.orgName"));
+        boolean isEmployee = securityService.checkIsEmployee();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        String orgCode = sysUser.getOrgCode();
         String email = sysUser.getEmail();
         String invoiceID;
         String customerFullName;
@@ -985,7 +1039,7 @@ public class InvoiceController {
             client = clientService.getClientFromPurchase(invoiceID);
         customerFullName = client.fullName();
         String destEmail;
-        if(!orgCode.equals(companyOrgCode)) {
+        if(!isEmployee) {
             log.info("User {} is trying to access invoice {} from client {}", sysUser.getUsername(), invoiceNumber, client.getInternalCode());
             Client userClient = userClientService.getClientByUserId(sysUser.getId());
 

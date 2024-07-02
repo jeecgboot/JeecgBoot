@@ -2,10 +2,8 @@ package org.jeecg.modules.business.controller;
 
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.business.service.ISecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class SecurityController {
     @Autowired
-    private ISysDepartService sysDepartService;
+    private ISecurityService securityService;
     @Autowired
     private Environment env;
     @GetMapping(value = "/isEmployee")
     public Result<?> checkIsEmployee () {
-        String companyOrgCode = sysDepartService.queryCodeByDepartName(env.getProperty("company.orgName"));
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        return Result.ok(sysUser.getOrgCode().equals(companyOrgCode));
+        return Result.ok(securityService.checkIsEmployee());
     }
 }

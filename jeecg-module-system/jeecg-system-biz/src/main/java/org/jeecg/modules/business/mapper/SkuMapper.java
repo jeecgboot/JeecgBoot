@@ -54,7 +54,8 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(@Param("orderIds") List<String> orderIds);
 
-    List<SkuOrderPage> fetchSkusByClient(@Param("clientId") String clientId);
+    List<SkuOrderPage> fetchSkusByClient(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
+    List<SkuOrderPage> fetchSkusByClientWithFilters(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
 
     String getIdFromErpCode(@Param("erpCode") String erpCode);
 
@@ -65,4 +66,6 @@ public interface SkuMapper extends BaseMapper<Sku> {
     void updateBatchStockByIds(@Param("skus") List<Sku> skuToUpdate);
 
     List<SkuOrderPage> getInventoryByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
+
+    List<Sku> listByClientId(@Param("clientId") String clientId);
 }

@@ -13,10 +13,19 @@ public class PlatformOrderOperation {
     private String action;
     @JSONField(name = "reason")
     private String reason;
+    @JSONField(name = "recipient")
+    private String recipient;
+    @JSONField(name = "phone")
+    private String phone;
+    @JSONField(name = "street1")
+    private String street1;
+    @JSONField(name = "street2")
+    private String street2;
 
     public enum Action {
         CANCEL("cancel"),
-        SUSPEND("suspend");
+        SUSPEND("suspend"),
+        EDIT("edit");
 
         private final String action;
 

@@ -10,6 +10,7 @@ import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequest;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendResponse;
+import org.jeecg.modules.business.service.IPlatformOrderMabangService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.vo.Responses;
 import org.quartz.Job;
@@ -18,14 +19,12 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -34,6 +33,8 @@ import static java.util.stream.Collectors.toList;
 public class ChangeWarehouseJob implements Job {
     @Autowired
     private IPlatformOrderService platformOrderService;
+    @Autowired
+    private IPlatformOrderMabangService platformOrderMabangService;
 
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
@@ -179,14 +180,9 @@ public class ChangeWarehouseJob implements Job {
     }
     public void replaceOrdersAccents(List<Order> orders) {
         for(Order order: orders) {
-                order.setRecipient(stripAccents(order.getRecipient()));
-                order.setAddress(stripAccents(order.getAddress()));
-                order.setAddress2(stripAccents(order.getAddress2()));
+                order.setRecipient(platformOrderMabangService.stripAccents(order.getRecipient()));
+                order.setAddress(platformOrderMabangService.stripAccents(order.getAddress()));
+                order.setAddress2(platformOrderMabangService.stripAccents(order.getAddress2()));
         }
-    }
-    public String stripAccents(String input) {
-        input = Normalizer.normalize(input, Normalizer.Form.NFD);
-        input = input.replaceAll("[^\\p{ASCII}]", "");
-        return input;
     }
 }

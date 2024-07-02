@@ -38,4 +38,14 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 	public List<String> getShopIdsByClientAndType(List<String> clientIds, String clientType) {
 		return shopMapper.getShopIdsByClientAndType(clientIds, clientType);
 	}
+
+	@Override
+	public String getNameById(String shopId) {
+		return shopMapper.getNameById(shopId);
+	}
+
+	@Override
+	public String getCodeById(String shopId) {
+		return shopMapper.getCodeById(shopId);
+	}
 }
