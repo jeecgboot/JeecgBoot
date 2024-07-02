@@ -508,7 +508,7 @@ public class InvoiceController {
      * @return A triplet of order, shipping invoice availability and purchase invoice availability
      */
     @GetMapping(value = "/preShipping/ordersStatusByShops")
-    public Result<?> getOrdersStatusByShops(@RequestParam("shopIds") String shopIds,
+    public Result<?> getOrdersStatusByShops(@RequestParam(name = "shopIds") String shopIds,
                                             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                             @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
                                             @RequestParam(name = "column", defaultValue = "order_time") String column,

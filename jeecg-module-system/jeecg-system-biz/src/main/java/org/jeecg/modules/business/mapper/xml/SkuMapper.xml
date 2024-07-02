@@ -160,7 +160,7 @@
             JOIN shop s ON po.shop_id = s.id
             JOIN client c ON s.owner_id = c.id
             WHERE c.id = #{clientId}
-            AND po.erp_status IN ('1','2')
+                AND po.erp_status IN ('1','2')
                 AND poc.erp_status IN ('1','2')
             GROUP BY sku_id
         )
@@ -208,7 +208,92 @@
                  LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
                  LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
                  LEFT JOIN qtyInOrdersNotShipped ON s.id = qtyInOrdersNotShipped.ID
-        WHERE client_sku.client_id = #{clientId};
+        WHERE client_sku.client_id = #{clientId}
+        ORDER BY ${column} ${order}
+        <if test="size != -1">
+            LIMIT #{offset}, #{size}
+        </if>
+        ;
+    </select>
+    <select id="fetchSkusByClientWithFilters" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
+        WITH qtyInOrdersNotShippedCTE AS (
+            SELECT sku_id as ID, SUM(quantity) AS quantity
+            FROM platform_order_content poc
+            JOIN platform_order po ON poc.platform_order_id = po.id
+            JOIN shop s ON po.shop_id = s.id
+            JOIN client c ON s.owner_id = c.id
+            WHERE c.id = #{clientId}
+                AND po.erp_status IN ('1','2')
+                AND poc.erp_status IN ('1','2')
+            GROUP BY sku_id
+        )
+        SELECT s.id,
+               s.erp_code,
+               p.en_name                                                     as productEn,
+               p.zh_name                                                     as product,
+               s.purchasing_amount,
+               s.available_amount,
+               qtyInOrdersNotShippedCTE.quantity                                          as qtyInOrdersNotShipped,
+               s.available_amount + s.purchasing_amount - IF(qtyInOrdersNotShippedCTE.quantity IS NULL, 0, qtyInOrdersNotShippedCTE.quantity) as stock,
+               s.image_source,
+               s.service_fee,
+               IF(sp.price_rmb IS NULL, sp.price,
+                  (
+                      ROUND(
+                              sp.price_rmb /
+                              (SELECT rate
+                               FROM exchange_rates
+                               WHERE original_currency = 'EUR' AND target_currency = 'RMB'
+                               ORDER BY create_time DESC LIMIT 1)
+                      ,2)
+                  )
+               )                                                             as sku_price,
+               sp.threshold                                                  as discount_moq,
+               IF(sp.price_rmb IS NULL, sp.discounted_price,
+                  (
+                      ROUND(
+                              sp.discounted_price_rmb /
+                              (SELECT rate
+                               FROM exchange_rates
+                               WHERE target_currency = 'EUR' AND original_currency = 'RMB'
+                               ORDER BY create_time DESC LIMIT 1)
+                      ,2)
+                   )
+               )                                                             as discounted_price,
+               s7.quantity                                                   as sales_last_week,
+               s28.quantity                                                  as sales_four_weeks,
+               s42.quantity                                                  as sales_six_weeks
+        FROM sku s
+                 JOIN client_sku ON s.id = client_sku.sku_id
+                 JOIN product p ON s.product_id = p.id
+                 LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
+                 LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
+                 LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
+                 LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
+                 LEFT JOIN qtyInOrdersNotShippedCTE ON s.id = qtyInOrdersNotShippedCTE.ID
+        WHERE client_sku.client_id = #{clientId}
+            AND (
+                <if test="erpCodes != ''">
+                    s.erp_code REGEXP #{erpCodes}
+                </if>
+                <if test="zhNames != ''">
+                    <if test="erpCodes != ''">
+                        AND
+                    </if>
+                    p.zh_name REGEXP #{zhNames}
+                </if>
+                <if test="enNames != ''">
+                    <if test="erpCodes != '' || zhNames != ''">
+                        AND
+                    </if>
+                    p.en_name REGEXP #{enNames}
+                </if>
+            )
+        ORDER BY ${column} ${order}
+        <if test="size != -1">
+            LIMIT #{offset}, #{size}
+        </if>
+        ;
     </select>
     <select id="getInventoryByInvoiceNumber" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         WITH skusFromInvoice AS (
@@ -316,4 +401,14 @@
             #{sku.id}
         </foreach>
     </update>
+    <select id="listByClientId" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
+        SELECT s.id,
+               s.erp_code,
+               p.en_name                                                     as productEn,
+               p.zh_name                                                     as product
+        FROM sku s
+             JOIN client_sku ON s.id = client_sku.sku_id
+             JOIN product p ON s.product_id = p.id
+        WHERE client_sku.client_id = #{clientId};
+    </select>
 </mapper>
