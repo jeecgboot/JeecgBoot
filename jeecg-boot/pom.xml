@@ -258,7 +258,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.6.1-GA</version>
+				<version>3.7.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.jaxb</groupId>
