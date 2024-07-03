@@ -43,7 +43,7 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 
 		if (isState(authorization)) {
 			String token = authorization.getAttribute("state");
-//			redisTemplate.setValueSerializer(RedisSerializer.java());
+			redisTemplate.setValueSerializer(RedisSerializer.java());
 			redisTemplate.opsForValue().set(buildKey(OAuth2ParameterNames.STATE, token), authorization, TIMEOUT,
 					TimeUnit.MINUTES);
 		}
@@ -54,7 +54,7 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 			OAuth2AuthorizationCode authorizationCodeToken = authorizationCode.getToken();
 			long between = ChronoUnit.MINUTES.between(authorizationCodeToken.getIssuedAt(),
 					authorizationCodeToken.getExpiresAt());
-//			redisTemplate.setValueSerializer(RedisSerializer.java());
+			redisTemplate.setValueSerializer(RedisSerializer.java());
 			redisTemplate.opsForValue().set(buildKey(OAuth2ParameterNames.CODE, authorizationCodeToken.getTokenValue()),
 					authorization, between, TimeUnit.MINUTES);
 		}
@@ -62,7 +62,7 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 		if (isRefreshToken(authorization)) {
 			OAuth2RefreshToken refreshToken = authorization.getRefreshToken().getToken();
 			long between = ChronoUnit.SECONDS.between(refreshToken.getIssuedAt(), refreshToken.getExpiresAt());
-//			redisTemplate.setValueSerializer(RedisSerializer.java());
+			redisTemplate.setValueSerializer(RedisSerializer.java());
 			redisTemplate.opsForValue().set(buildKey(OAuth2ParameterNames.REFRESH_TOKEN, refreshToken.getTokenValue()),
 					authorization, between, TimeUnit.SECONDS);
 		}
@@ -70,7 +70,7 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 		if (isAccessToken(authorization)) {
 			OAuth2AccessToken accessToken = authorization.getAccessToken().getToken();
 			long between = ChronoUnit.SECONDS.between(accessToken.getIssuedAt(), accessToken.getExpiresAt());
-//			redisTemplate.setValueSerializer(RedisSerializer.java());
+			redisTemplate.setValueSerializer(RedisSerializer.java());
 			redisTemplate.opsForValue().set(buildKey(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getTokenValue()),
 					authorization, between, TimeUnit.SECONDS);
 
@@ -125,7 +125,7 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 	public OAuth2Authorization findByToken(String token, @Nullable OAuth2TokenType tokenType) {
 		Assert.hasText(token, "token cannot be empty");
 		Assert.notNull(tokenType, "tokenType cannot be empty");
-//		redisTemplate.setValueSerializer(RedisSerializer.java());
+		redisTemplate.setValueSerializer(RedisSerializer.java());
 		return (OAuth2Authorization) redisTemplate.opsForValue().get(buildKey(tokenType.getValue(), token));
 	}
 
