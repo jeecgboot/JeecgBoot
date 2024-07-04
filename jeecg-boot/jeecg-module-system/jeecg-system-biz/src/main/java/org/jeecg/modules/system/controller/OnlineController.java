@@ -10,7 +10,7 @@ import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
 import org.jeecg.config.LogUtil;
 import org.jeecg.config.StringUtil;
 import org.jeecg.config.ThreadUtil;
-import org.jeecg.modules.quartz.job.AListJobUtil;
+import org.jeecg.modules.quartz.job.JobRequestUtil;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +91,7 @@ public class OnlineController {
 		}
 		if (StringUtils.isBlank(resourceType)) {
 			List<DictModel> resourceTypeList = sysDictService.queryDictItemsByCode("alist_resource_type");
-			resourceType = AListJobUtil.getResourceTypeName(resourceTypeList,name);
+			resourceType = JobRequestUtil.getResourceTypeName(resourceTypeList,name);
 		}
 		data.put("resource_type",resourceType);
 		data.put("mount_path","/共享/"+(StringUtils.isBlank(resourceType)?driver:resourceType)+"/"+name);
@@ -101,7 +101,7 @@ public class OnlineController {
 		Map<String, Object> result = (Map<String, Object>) DynamicDBUtil.findOne(dbKey,query, mount_path);
 		if (result != null) {
 			result.put("mount_path", data.get("mount_path"));
-			AListJobUtil.updateStorage(result);
+			JobRequestUtil.updateStorage(result);
 		}
 		LogUtil.endTime("editAListStoragesEnhance");
 		return Result.OK(params);

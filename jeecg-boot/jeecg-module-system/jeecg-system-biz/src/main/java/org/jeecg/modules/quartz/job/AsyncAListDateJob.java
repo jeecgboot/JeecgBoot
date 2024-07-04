@@ -70,7 +70,7 @@ public class AsyncAListDateJob implements Job {
             try {
                 if (StringUtils.isBlank(resourceType)) {
                     isUpdate = true;
-                    resourceType = AListJobUtil.getResourceTypeName(resourceTypeList, name);
+                    resourceType = JobRequestUtil.getResourceTypeName(resourceTypeList, name);
                 }
                 if (StringUtils.isBlank(driver)) {
                     isUpdate = true;
@@ -93,7 +93,7 @@ public class AsyncAListDateJob implements Job {
                 DynamicDBUtil.batchUpdate(dbKey, "update alist_shares set name=?,driver=?,resource_type=?,mount_path=? where id=?", sharesParams);
                 if (!removeList.isEmpty()) {
                     ThreadUtil.execute(() -> {
-                        AListJobUtil.deleteStorage(removeList);
+                        JobRequestUtil.deleteStorage(removeList);
                         DynamicDBUtil.batchUpdate(dbKey, "delete from alist_storages where mount_path=?", deleteStorages);
                     });
                 }
@@ -106,7 +106,7 @@ public class AsyncAListDateJob implements Job {
         DynamicDBUtil.batchUpdate(dbKey, "update alist_shares set name=?,driver=?,resource_type=?,mount_path=? where id=?", sharesParams);
         if (!removeList.isEmpty()) {
             ThreadUtil.execute(() -> {
-                AListJobUtil.deleteStorage(removeList);
+                JobRequestUtil.deleteStorage(removeList);
                 DynamicDBUtil.batchUpdate(dbKey, "delete from alist_storages where mount_path=?", deleteStorages);
             });
         }
@@ -123,7 +123,7 @@ public class AsyncAListDateJob implements Job {
         List<Object[]> deleteStorages = new ArrayList<>(200);
         String query = "select mount_path,resource_type,driver from alist_storages where disabled=0 and driver like '%Share' and resource_type!='' and instr(mount_path,resource_type)<=0" + debug;
         List<Map<String, Object>> result = DynamicDBUtil.findList(dbKey, query);
-        AListJobUtil.updateMountPath(resourceTypeList, result, sharesParams, deleteStorages);
+        JobRequestUtil.updateMountPath(resourceTypeList, result, sharesParams, deleteStorages);
         DynamicDBUtil.batchUpdate(dbKey, "delete from alist_storages where mount_path=?", deleteStorages);
         DynamicDBUtil.batchUpdate(dbKey, "update alist_shares set mount_path=?,resource_type=? where name=? and driver=?", sharesParams);
         log.info(String.format("updateMountPathNew: readd %d,total %d", deleteStorages.size(), result.size()));

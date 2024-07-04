@@ -1,22 +1,17 @@
 package org.jeecg.modules.quartz.job;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.system.vo.DictModel;
-import org.jeecg.common.util.RestUtil;
 import org.jeecg.config.Constant;
-import org.jeecg.config.ServiceUtil;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.jeecg.config.RequestUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class AListJobUtil {
+public class JobRequestUtil {
 
     /**
      * key:驱动类型
@@ -175,11 +170,11 @@ public class AListJobUtil {
             List<String> array = Arrays.stream(path.split("/")).collect(Collectors.toList());
             array.remove("");
             String name = array.get(array.size() - 1);
-            String resourceType = AListJobUtil.getResourceTypeName(resourceTypeList, name);
+            String resourceType = JobRequestUtil.getResourceTypeName(resourceTypeList, name);
             if (StringUtils.isBlank(resourceType)) { // 处理手动分类数据
                 resourceType = StringUtils.trimToEmpty((String) map.get("resource_type"));
             }
-            String driverName = AListJobUtil.getDriverName(map.get("driver").toString());
+            String driverName = JobRequestUtil.getDriverName(map.get("driver").toString());
             String newPath = "/共享/" + (StringUtils.isBlank(resourceType) ? driverName : resourceType) + "/" + name;
             if (pathSet.contains(newPath) || path.equals(newPath)) {
                 continue;
@@ -190,17 +185,6 @@ public class AListJobUtil {
         }
     }
 
-    public static JSONObject alistPostRequest(String api, Map<String, Object> param) {
-        HttpHeaders headers = new HttpHeaders();
-        String mediaType = org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-        headers.setContentType(org.springframework.http.MediaType.parseMediaType(mediaType));
-        headers.set("User-Agent", "Apifox/1.0.0 (https://apifox.com)");
-        headers.set("Authorization", ServiceUtil.getAListToken());
-        String url = ServiceUtil.getAListDomain() + api;
-        ResponseEntity<JSONObject> result = RestUtil.request(url, HttpMethod.POST, headers, null, JSON.toJSONString(param), JSONObject.class);
-        return result.getBody();
-    }
-
     public static JSONObject updateStorage(Map map) {
         map.remove("status");
         map.remove("remark");
@@ -209,7 +193,7 @@ public class AListJobUtil {
         map.remove("resource_type");
         map.remove("modified");
         map.remove("update_date");
-        return alistPostRequest(Constant.ALIST_STORAGE_UPDATE, map);
+        return RequestUtil.alistPostRequest(Constant.ALIST_STORAGE_UPDATE, map);
     }
 
     public static int deleteStorage(List<Map<String, Object>> maps) {
@@ -220,7 +204,7 @@ public class AListJobUtil {
             Long id = (Long) map.get("id");
             if (id != null) {
                 newMap.put("id", id);
-                object = alistPostRequest(Constant.ALIST_STORAGE_DELETE, map);
+                object = RequestUtil.alistPostRequest(Constant.ALIST_STORAGE_DELETE, map);
                 if (object.getIntValue("code") == 200) {
                     success++;
                 }

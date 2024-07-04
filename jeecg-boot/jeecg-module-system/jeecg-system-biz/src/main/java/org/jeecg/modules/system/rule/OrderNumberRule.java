@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.rule;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.jeecg.common.handler.IFillRuleHandler;
@@ -12,6 +13,7 @@ import java.util.Date;
  * 填值规则Demo：生成订单号
  * 【测试示例】
  */
+@Slf4j
 public class OrderNumberRule implements IFillRuleHandler {
 
     @Override

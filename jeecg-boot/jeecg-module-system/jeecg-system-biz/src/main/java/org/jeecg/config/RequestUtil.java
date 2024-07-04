@@ -18,24 +18,51 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class ServiceUtil {
-
-    private static ISysDictService sysDictService;
+public class RequestUtil {
 
     private static String alist_domain;
 
     private static String alist_token;
 
+    private static String pay_domain;
+
+    private static String pay_token;
+
+    private static ISysDictService sysDictService;
+
     @Autowired
-    public void setBookDao(ISysDictService sysDictService) {
-        ServiceUtil.sysDictService = sysDictService;
+    private void initService(ISysDictService sysDictService) {
+        this.sysDictService = sysDictService;
     }
 
-    public static String queryDictTextByKey(String code, String key) {
+    private static String queryDictTextByKey(String code, String key) {
         if (sysDictService == null) {
             sysDictService = (ISysDictService) SpringContextUtils.getBean("sysDictService");
         }
         return sysDictService.queryDictTextByKey(code, key);
+    }
+
+    /**
+     * 获取alist接口地址
+     *
+     * @return
+     */
+    public static String getAListDomain() {
+        if (StringUtils.isBlank(alist_domain)) {
+            alist_domain = queryDictTextByKey("alist_param", "url");
+        }
+        return alist_domain;
+    }
+
+    public static JSONObject alistPostRequest(String api, Map<String, Object> param) {
+        HttpHeaders headers = new HttpHeaders();
+        String mediaType = org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+        headers.setContentType(org.springframework.http.MediaType.parseMediaType(mediaType));
+        headers.set("User-Agent", "Apifox/1.0.0 (https://apifox.com)");
+        headers.set("Authorization", getAListToken());
+        String url = getAListDomain() + api;
+        ResponseEntity<JSONObject> result = RestUtil.request(url, HttpMethod.POST, headers, null, JSON.toJSONString(param), JSONObject.class);
+        return result.getBody();
     }
 
     /**
@@ -52,22 +79,10 @@ public class ServiceUtil {
             String mediaType = org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
             headers.setContentType(org.springframework.http.MediaType.parseMediaType(mediaType));
             headers.set("User-Agent", "Apifox/1.0.0 (https://apifox.com)");
-            String url = ServiceUtil.getAListDomain() + Constant.ALIST_AUTH_LOGIN;
+            String url = getAListDomain() + Constant.ALIST_AUTH_LOGIN;
             ResponseEntity<JSONObject> result = RestUtil.request(url, HttpMethod.POST, headers, null, JSON.toJSONString(param), JSONObject.class);
             alist_token = result.getBody().getJSONObject("data").getString("token");
         }
         return alist_token;
-    }
-
-    /**
-     * 获取alist接口地址
-     *
-     * @return
-     */
-    public static String getAListDomain() {
-        if (StringUtils.isBlank(alist_domain)) {
-            alist_domain = queryDictTextByKey("alist_param", "url");
-        }
-        return alist_domain;
     }
 }

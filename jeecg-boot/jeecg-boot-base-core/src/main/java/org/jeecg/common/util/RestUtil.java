@@ -194,7 +194,7 @@ public class RestUtil {
      * @return ResponseEntity<responseType>
      */
     public static <T> ResponseEntity<T> request(String url, HttpMethod method, HttpHeaders headers, JSONObject variables, Object params, Class<T> responseType) {
-        log.info(" RestUtil -- request -- url = {}",url);
+        log.info(" RestUtil -- request -- {} url = {}",method.name(),url);
         log.info(" RestUtil -- request -- params = {}",params);
         if (StringUtils.isEmpty(url)) {
             throw new RuntimeException("url 不能为空");

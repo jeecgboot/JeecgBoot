@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
 import org.jeecg.config.LogUtil;
 import org.jeecg.config.StringUtil;
@@ -13,12 +14,15 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,12 +42,16 @@ public class ReadHistoryFileJob implements Job {
 
     private static final String[] nameFilter = new String[]{"(&lt;|&gt);", "[,;，；。]\\s*希望大佬能转存一下", "(链接|提取码)[:：]"};
 
+    private static final String[] inValidInfo = new String[]{"文件已经被取消","此链接分享内容可能因为涉及侵权","页面不存在","没有分享的文件","链接不存在"};
+
     @Setter
     private String parameter;
 
     private JSONObject paramJson;
 
     private int totalCount = 0;
+
+    private HttpHeaders httpHeaders = new HttpHeaders();
 
     private HttpURLConnection urlCon = null;
 
@@ -113,7 +121,7 @@ public class ReadHistoryFileJob implements Job {
                         }
                         str = StringUtil.delHTMLTag(str);
                         if (StringUtils.isBlank(password)) {// 密码
-                            password = AListJobUtil.getPassword(str);
+                            password = JobRequestUtil.getPassword(str);
                         }
                         if (str.startsWith("\uD83D\uDCC1 大小：")) {
                             size = str.substring(6);
@@ -148,7 +156,7 @@ public class ReadHistoryFileJob implements Job {
                         }
                         str = StringUtil.delHTMLTag(str);
                         if ((str.startsWith("Title:") || str.startsWith("Title：")) && StringUtils.isBlank(name)) {
-                            if (!AListJobUtil.isContains(str, "转存")) {
+                            if (!JobRequestUtil.isContains(str, "转存")) {
                                 name = str.substring(str.indexOf("Title") + 6);
                             }
                         } else if ((str.startsWith("Name:") || str.startsWith("Name：")) && StringUtils.isBlank(name)) {
@@ -158,20 +166,20 @@ public class ReadHistoryFileJob implements Job {
                         } else if (StringUtil.validShareName(str)) {
                             if (str.length() < 50) {
                                 if (StringUtils.isBlank(name) && !str.contains("#") && !str.contains("https:")) {
-                                    name = AListJobUtil.replaceAll(str, nameFilter);
+                                    name = JobRequestUtil.replaceAll(str, nameFilter);
                                 }
                             } else if (StringUtils.isBlank(remark)) {
                                 remark = str;
                             }
                         }
-                        str = AListJobUtil.replaceAll(str, "[()（）]", "").trim();
+                        str = JobRequestUtil.replaceAll(str, "[()（）]", "").trim();
                         // 密码
                         if (StringUtils.isBlank(password)) {
-                            password = AListJobUtil.getPassword(str);
+                            password = JobRequestUtil.getPassword(str);
                         }
                         // 大小
                         if (StringUtils.isBlank(size)) {
-                            size = AListJobUtil.getSize(str);
+                            size = JobRequestUtil.getSize(str);
                         }
                     }
                     if (StringUtils.isNotBlank(links)) { //name默认为括号内容、备注、分享码
@@ -179,7 +187,7 @@ public class ReadHistoryFileJob implements Job {
                             name = defaultName;
                         }
                         if (StringUtils.isBlank(name) && StringUtils.isNotBlank(remark)) {
-                            name = AListJobUtil.replaceAll(remark.split(" ")[0], nameFilter);
+                            name = JobRequestUtil.replaceAll(remark.split(" ")[0], nameFilter);
                         }
                         if (StringUtils.isBlank(name)) {
                             name = links.substring(links.lastIndexOf("/") + 1);
@@ -206,7 +214,7 @@ public class ReadHistoryFileJob implements Job {
                     if (line.contains("链接:") || line.startsWith("链接：")) {
                         name = line.substring(0, line.indexOf("链接"));
                     }
-                    password = AListJobUtil.getPassword(line);
+                    password = JobRequestUtil.getPassword(line);
                 }
                 if (StringUtils.isBlank(name) || StringUtils.isBlank(links)) {
                     continue;
@@ -233,7 +241,7 @@ public class ReadHistoryFileJob implements Job {
                     continue;
                 }
                 log.info(String.format("%s -- %s -- %s -- %s", name, links, password, size));
-                resourceType = AListJobUtil.getResourceTypeName(resourceTypeList, name);
+                resourceType = JobRequestUtil.getResourceTypeName(resourceTypeList, name);
                 String mountPath = "/共享/" + (StringUtils.isBlank(resourceType) ? driverType : resourceType) + "/" + name;
                 addParamList.add(new Object[]{name, links, password, size, resourceType, driverType, mountPath, remark});
                 linkMap.put(links, name);
@@ -248,44 +256,22 @@ public class ReadHistoryFileJob implements Job {
     }
 
     private boolean validDriveLink(String link, String type) {
-        if (type.equals("123云盘")) {
-            return true;
-        } else if (type.equals("谷歌硬盘")) {
+        if (type.equals("谷歌硬盘")) {
             return false;
         }
         try {
-            URL url = new URL(link);
-            urlCon = (HttpURLConnection) url.openConnection();
-            urlCon.setRequestMethod("HEAD");
-            urlCon.setConnectTimeout(3000);
-            urlCon.setReadTimeout(3000);
-            int responseCode = urlCon.getResponseCode();
-            if (responseCode < 200 || responseCode > 399) {
-                return false;
+            ResponseEntity<String> result = RestUtil.request(link, HttpMethod.GET, httpHeaders, null, null, String.class);
+            String finaldata = result.getBody();
+            // 判断连接中是否包含失效文本
+            for (String key : inValidInfo) {
+                if (finaldata.contains(key)) {
+                    return false;
+                }
             }
-            //链接中的内容，读到程序中
-            InputStream is = url.openStream();
-            InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String data = br.readLine();
-            while (data != null) {
-                data = br.readLine();
-                sb.append(data);
-            }
-            br.close();
-            isr.close();
-            is.close();
-            String finaldata = sb.toString();
-            //看连接中是否包含失效文本
-            return finaldata != null && !finaldata.contains("文件已经被取消") && !finaldata.contains("此链接分享内容可能因为涉及侵权") && !finaldata.contains("页面不存在") && !finaldata.contains("没有分享的文件") && !finaldata.contains("链接不存在");
+            return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return false;
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(AListJobUtil.getPassword(" 提取码: 5761 "));
     }
 }

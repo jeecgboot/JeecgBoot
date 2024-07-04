@@ -7,6 +7,7 @@ import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
 import org.jeecg.config.Constant;
 import org.jeecg.config.LogUtil;
+import org.jeecg.config.RequestUtil;
 import org.jeecg.config.ThreadUtil;
 import org.jeecg.modules.system.service.ISysDictService;
 import org.quartz.*;
@@ -49,6 +50,8 @@ public class UpdateAListStorageJob implements Job {
     /** 更新未分类存储，并添加 */
     private static final String update_mountpath_sql = "update alist_shares set mount_path=?,resource_type=? where name=? and driver=?";
 
+    private Map<String, Object> enableStorageMap = new HashMap<>();
+
     @Setter
     private String parameter;
 
@@ -88,7 +91,7 @@ public class UpdateAListStorageJob implements Job {
                     if (updateMap.containsKey(String.valueOf(map.get("id"))) || cancelMap.containsKey(String.valueOf(map.get("id")))) {
                         continue;
                     }
-                    object = AListJobUtil.updateStorage(map);
+                    object = JobRequestUtil.updateStorage(map);
                     if (object == null) { //超时
                         continue;
                     }
@@ -106,6 +109,9 @@ public class UpdateAListStorageJob implements Job {
                             removeList.add(map);
                         } else if (errMsg.contains("用户验证失败") || errMsg.contains("IP登录异常,请稍候再登录！")) {
                             break;
+                        } else if (errMsg.contains("no mount path for an storage is")) {
+                            enableStorageMap.put("id",map.get("id"));
+                            RequestUtil.alistPostRequest(Constant.ALIST_STORAGE_ENABLE,enableStorageMap);
                         } else if (errMsg.contains("too many requests")) { //循环保存
                             Thread.sleep(8000);
                         }
@@ -124,7 +130,7 @@ public class UpdateAListStorageJob implements Job {
             removeList.addAll(result);
             if (!removeList.isEmpty()) {
                 ThreadUtil.execute(() -> {
-                    AListJobUtil.deleteStorage(removeList);
+                    JobRequestUtil.deleteStorage(removeList);
                     DynamicDBUtil.execute(dbKey, delete_disabled2_sql);
                 });
             }
@@ -137,12 +143,11 @@ public class UpdateAListStorageJob implements Job {
     public void reloadStorage() {
         ThreadUtil.execute(() -> {
             List<Integer> result = DynamicDBUtil.findList(dbKey, query_enable_sql, Integer.class);
-            Map<String, Object> param = new HashMap<>();
             while (!result.isEmpty()) {
                 for (int id : result) {
-                    param.put("id", id);
+                    enableStorageMap.put("id", id);
                     try {
-                        AListJobUtil.alistPostRequest(Constant.ALIST_STORAGE_ENABLE, param);
+                        RequestUtil.alistPostRequest(Constant.ALIST_STORAGE_ENABLE, enableStorageMap);
                     } catch (Exception e) {
                         log.error("reloadStorage error:", e.getMessage());
                     }
@@ -161,7 +166,7 @@ public class UpdateAListStorageJob implements Job {
         List<Object[]> sharesParams = new ArrayList<>(200);
         List<Object[]> deleteStorages = new ArrayList<>(200);
         List<Map<String, Object>> result = DynamicDBUtil.findList(dbKey, query_resourceType_empty_sql);
-        AListJobUtil.updateMountPath(resourceTypeList, result, sharesParams, deleteStorages);
+        JobRequestUtil.updateMountPath(resourceTypeList, result, sharesParams, deleteStorages);
         DynamicDBUtil.batchUpdate(dbKey, delete_mountpath_sql, deleteStorages);
         DynamicDBUtil.batchUpdate(dbKey, update_mountpath_sql, sharesParams);
         log.info(String.format("updateMountPath: readd %d,total %d", deleteStorages.size(), result.size()));
