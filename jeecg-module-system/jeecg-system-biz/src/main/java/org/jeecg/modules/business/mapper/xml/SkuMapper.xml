@@ -209,6 +209,7 @@
                  LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
                  LEFT JOIN qtyInOrdersNotShipped ON s.id = qtyInOrdersNotShipped.ID
         WHERE client_sku.client_id = #{clientId}
+            AND s.status = 3
         ORDER BY ${column} ${order}
         <if test="size != -1">
             LIMIT #{offset}, #{size}
@@ -272,6 +273,7 @@
                  LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
                  LEFT JOIN qtyInOrdersNotShippedCTE ON s.id = qtyInOrdersNotShippedCTE.ID
         WHERE client_sku.client_id = #{clientId}
+            AND s.status = 3
             AND (
                 <if test="erpCodes != ''">
                     s.erp_code REGEXP #{erpCodes}
