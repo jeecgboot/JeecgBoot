@@ -18,7 +18,7 @@ public class SkuListRequestBody implements RequestBody {
     private String stockSku = null;
     // 50 skus max
     private String stockSkuList = null;
-    private DateType datetimeType;
+    private DateType datetimeType = DateType.CREATE;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer page = 1;
