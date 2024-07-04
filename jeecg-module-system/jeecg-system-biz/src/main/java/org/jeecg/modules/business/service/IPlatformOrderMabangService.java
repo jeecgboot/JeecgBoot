@@ -1,6 +1,8 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderListRequestBody;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
@@ -40,4 +42,6 @@ public interface IPlatformOrderMabangService extends IService<Order> {
     void clearLogisticChannel(List<Order> orders, ExecutorService executor);
 
     String stripAccents(String input);
+
+    JSONObject syncOrdersFromMabang(List<String> platformOrderIds) throws JSONException;
 }

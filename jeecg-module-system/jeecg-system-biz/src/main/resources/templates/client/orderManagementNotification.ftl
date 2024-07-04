@@ -7,7 +7,13 @@
     </tr>
     <#if cancelSuccessCount??>
         <tr>
-            <td style="padding:0 0 35px 0;">Demandes d'annulations de commande : <b>${cancelSuccessCount}</b> réussie(s)</td>
+            <td style="padding:0 0 35px 0;">Demandes d'annulations de commande : <b>${cancelSuccessCount}</b> réussie(s) :
+                <ul>
+                    <#list cancelSuccesses as success>
+                        <li>${success}</li>
+                    </#list>
+                </ul>
+            </td>
         </tr>
         <#if cancelFailures?size gt 0 >
             <tr>
@@ -23,7 +29,13 @@
     </#if>
     <#if suspendSuccessCount??>
         <tr>
-            <td style="padding:0 0 35px 0;">Demandes de suspension de commande : <b>${suspendSuccessCount}</b> réussie(s)</td>
+            <td style="padding:0 0 35px 0;">Demandes de suspension de commande : <b>${suspendSuccessCount}</b> réussie(s) :
+                <ul>
+                    <#list suspendSuccesses as success>
+                        <li>${success}</li>
+                    </#list>
+                </ul>
+            </td>
         </tr>
         <#if suspendFailures?size gt 0 >
             <tr>
@@ -39,7 +51,13 @@
     </#if>
     <#if editSuccessCount??>
         <tr>
-            <td style="padding:0 0 35px 0;">Demandes de modification d'informations de commande : <b>${editSuccessCount}</b> réussie(s)</td>
+            <td style="padding:0 0 35px 0;">Demandes de modification d'informations de commande : <b>${editSuccessCount}</b> réussie(s) :
+                <ul>
+                    <#list editSuccesses as success>
+                        <li>${success}</li>
+                    </#list>
+                </ul>
+            </td>
         </tr>
         <#if editFailures?size gt 0 >
             <tr>

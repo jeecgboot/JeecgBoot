@@ -1,8 +1,12 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.*;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
@@ -23,6 +27,7 @@ import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +45,8 @@ import static java.util.stream.Collectors.toList;
 public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMabangMapper, Order> implements IPlatformOrderMabangService {
     @Autowired
     private PlatformOrderMabangMapper platformOrderMabangMapper;
+    @Autowired
+    private ISysBaseAPI ISysBaseApi;
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
@@ -324,4 +331,46 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         input = input.replaceAll("[^\\p{ASCII}]", "");
         return input;
     }
+    @Transactional
+    @Override
+    public JSONObject syncOrdersFromMabang(List<String> platformOrderIds) throws JSONException {
+        log.info("Syncing following orders {}", platformOrderIds);
+        List<List<String>> platformOrderIdLists = Lists.partition(platformOrderIds, 10);
+        List<OrderListRequestBody> requests = new ArrayList<>();
+        for (List<String> platformOrderIdList : platformOrderIdLists) {
+            requests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
+        }
+        List<Order> mabangOrders = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        List<CompletableFuture<Boolean>> futures = requests.stream()
+                .map(request -> CompletableFuture.supplyAsync(() -> {
+                    boolean success = false;
+                    try {
+                        OrderListRawStream rawStream = new OrderListRawStream(request);
+                        OrderListStream stream = new OrderListStream(rawStream);
+                        List<Order> orders = stream.all();
+                        mabangOrders.addAll(orders);
+                        success = !orders.isEmpty();
+                    } catch (RuntimeException e) {
+                        log.error("Error communicating with MabangAPI", e);
+                    }
+                    return success;
+                }, executor))
+                .collect(Collectors.toList());
+        List<Boolean> results = futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} requests have succeeded.", nbSuccesses, requests.size());
+        int syncedOrderNumber = mabangOrders.size();
+        List<String> syncedOrderIds = mabangOrders.stream().map(Order::getPlatformOrderId).collect(Collectors.toList());
+        log.info("{}/{} mabang orders have been retrieved.", syncedOrderNumber, platformOrderIds.size());
+
+        log.info("{} orders to be updated.", syncedOrderNumber);
+        saveOrderFromMabang(mabangOrders);
+
+        JSONObject res = new JSONObject();
+        res.put("synced_order_number", syncedOrderNumber);
+        res.put("synced_order_ids", syncedOrderIds);
+        return res;
+    }
+
 }
