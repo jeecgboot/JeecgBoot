@@ -1,0 +1,33 @@
+.portal{
+	padding:0;
+	margin:0;
+	border:1px solid #99BBE8;
+	overflow:auto;
+}
+.portal-noborder{
+	border:0;
+}
+.portal-panel{
+	margin-bottom:10px;
+}
+.portal-column-td{
+	vertical-align:top;
+}	
+.portal-column{
+	padding:10px 0 10px 10px;
+	overflow:hidden;
+}
+.portal-column-left{
+	padding-left:10px;
+}
+.portal-column-right{
+	padding-right:10px;
+}
+.portal-proxy{
+	opacity:0.6;
+	filter:alpha(opacity=60);
+}
+.portal-spacer{
+	border:3px dashed #eee;
+	margin-bottom:10px;
+}

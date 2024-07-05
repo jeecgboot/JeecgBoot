@@ -1,0 +1,125 @@
+
+<style>
+    .layui-table-cell {
+        height: auto;
+    }
+    .layui-table img {
+        max-width: 200px;
+    }
+</style>
+
+<div class="layui-upload">
+    <button type="button" class="layui-btn layui-btn-normal" id="testList">选择支付宝有金额的二维码</button>
+    <button type="button" class="layui-btn" onclick="saveqr()">保存二维码</button>
+
+    <table class="layui-hide" id="test" lay-filter="wxqrlist"></table>
+</div>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    var imgs = {},mytable;
+    layui.use('upload', function() {
+        var $ = layui.jquery
+            , upload = layui.upload;
+
+        mytable = layui.table.render({
+            elem: '#test'
+            ,data:imgs
+            ,cols: [[
+                {type:'numbers',title: '序号'}
+
+                ,{field:'', width:230, title: '二维码', templet:function (data) {
+                        return "<img src='"+data.b64+"'/>"
+                    }
+                }
+                ,{field:'url', minWidth:150, title: '内容'}
+                ,{field:'money',width:100, title: '金额',edit:"text"}
+                ,{title: '操作', minWidth: 80, align:'center', toolbar: '#barDemo'}
+
+            ]],
+            page:true
+        });
+        //监听工具条
+        layui.table.on('tool(wxqrlist)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    imgs = layui.table.cache.test;
+                    mytable.reload({
+                        data: imgs
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+        //多文件列表示例
+        var demoListView = $('#demoList')
+            ,uploadListIns = upload.render({
+            elem: '#testList'
+            ,url: '/upload/'
+            ,accept: 'file'
+            ,multiple: true
+            ,auto: false
+            ,bindAction: '#testListAction'
+            ,choose: function(obj){
+                imgs = [];
+                var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                layer.msg("等待所有二维码识别完毕后手动输入金额，输入完成后点击保存二维码")
+                //读取本地文件
+                obj.preview(function(index, file, result){
+                    $.post("/deQrcode","base64="+encodeURIComponent(result.split(",")[1]),function (data) {
+                        console.log(data)
+                        imgs.push({"index":imgs.length,"money":"","b64":result,"url":data.data});
+                        mytable.reload({
+                            data: imgs
+                        });
+                    });
+
+                });
+            }
+
+        });
+
+    });
+
+    function saveqr() {
+        var data = layui.table.cache.test;
+        for (var i = 0;i<data.length;i++){
+            if (data[i].money =="" || checkRate(data[i].money == false)){
+                layer.msg("序号为"+(i+1)+"的二维码金额有误，请检查");
+                return;
+            }
+        }
+        up(data,0);
+    }
+    function up(obj,index) {
+        if (obj.length==index){
+            layer.msg("操作成功！");
+            imgs = []
+            mytable.reload({
+                data: imgs
+            });
+            return;
+        }
+        $.post("/admin/addPayQrcode","type=2&payUrl="+encodeURIComponent(obj[index].url)+"&price="+obj[index].money,function (data) {
+            up(obj,index+1)
+        });
+    }
+
+    function checkRate(input) {
+
+        var re = /^[0-9]+.?[0-9]*$/; //判断字符串是否为数字 //判断正整数 /^[1-9]+[0-9]*]*$/
+
+
+
+        if (!re.test(input)) {
+
+            return false;
+
+        }
+
+    }
+</script>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>后台管理</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" href="layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="css/global.css?t=1531663423583-6" media="all">
+    <style type="text/css">ins.adsbygoogle{display:none!important;display:none}</style></head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header header header-demo" summer>
+        <div class="layui-main">
+            <span style="color: white;font-size: 30px;font-weight:100;line-height: 58px;font-family:Microsoft JhengHei">后台管理</span>
+
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                      
+                        管理员
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="index.html">退出</a></dd>
+                    </dl>
+                </li>
+                <!-- <li class="layui-nav-item"><a href="">退出</a></li> -->
+            </ul>
+        </div>
+    </div>
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+
+            <ul class="layui-nav layui-nav-tree site-demo-nav" id="v_menu">
+
+            </ul>
+
+        </div>
+    </div>
+        <div class="layui-body layui-tab-content site-demo site-demo-body">
+            <div class="layui-tab-item layui-show">
+                <div class="layui-main">
+                    <div id="LAY_preview">
+
+
+
+
+
+
+                        
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="site-tree-mobile layui-hide" style="opacity: 0.4;">
+        <i class="layui-icon">&#xe602;</i>
+    </div>
+    <div class="site-mobile-shade"></div>
+    <script src="layui/layui.js?t=1531663423583" charset="utf-8"></script>
+    <script>
+        window.global = {
+            pageType: 'demo'
+            ,preview: function(){
+                var preview = document.getElementById('LAY_preview');
+                return preview ? preview.innerHTML : '';
+            }()
+        };
+        layui.config({
+            base: 'js/'
+            ,version: '1531663423583'
+        }).use('global');
+    </script>
+</div>
+<script>
+
+
+    layui.use(['layer','element'], function(){
+        var $ = layui.$
+            ,setIframe = function(){
+            var height = $(window).height() - 370;
+            $('#demoAdmin').height(height);
+        };
+
+        setIframe();
+        $(window).on('resize', setIframe);
+
+
+
+    });
+</script>
+<script src="https://lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://unpkg.com/wangeditor@3.1.1/release/wangEditor.min.js"></script>
+<script type="text/javascript">
+
+
+$("#LAY_preview").load("main.html")
+
+$.post("/admin/getMenu",function (data) {
+    if (data == null || data == "") {
+        window.location.href = "/";
+    }
+    console.log(data);
+    var out_menu = "";
+    for (var i = 0;i<data.length;i++){
+        if (data[i].type=="menu"){
+            out_menu+='<li class="layui-nav-item layui-nav-itemed">';
+            out_menu+='<a class="" href="javascript:;">'+data[i].name+'</a>';
+            out_menu+='<dl class="layui-nav-child">';
+
+            for (var ii = 0;ii<data[i].node.length;ii++){
+                out_menu+='<dd><a onclick="$(\'#LAY_preview\').load(\''+data[i].node[ii].url+'\');">'+data[i].node[ii].name+'</a></dd>';
+            }
+            out_menu+='</dl>';
+            out_menu+='</li>';
+        } else{
+            out_menu+='<li class="layui-nav-item"><a onclick="$(\'#LAY_preview\').load(\''+data[i].url+'\');">'+data[i].name+'</a></li>';
+        }
+    }
+    console.log(out_menu);
+    $("#v_menu").append(out_menu);
+    if (layui.element)
+        layui.element.render();
+
+
+});
+</script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+@charset "UTF-8";
+html {
+    font-size: 62.5%;
+    font-family: 'helvetica neue', tahoma, arial, 'hiragino sans gb', 'microsoft yahei', 'Simsun', sans-serif
+}
+
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, button, textarea, p, blockquote, th, td, hr {
+    margin: 0;
+    padding: 0px 2px;
+}
+
+body {
+    line-height: 1.333;
+    font-size: 12px
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: 100%;
+    font-family: arial, 'hiragino sans gb', 'microsoft yahei', 'Simsun', sans-serif
+}
+
+input, textarea, select, button {
+    font-size: 12px;
+    font-weight: normal
+}
+
+input[type="button"], input[type="submit"], select, button {
+    cursor: pointer
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+address, caption, cite, code, dfn, em, th, var {
+    font-style: normal;
+    font-weight: normal
+}
+
+li {
+    list-style: none
+}
+
+caption, th {
+    text-align: left
+}
+
+q:before, q:after {
+    content: ''
+}
+
+abbr, acronym {
+    border: 0;
+    font-variant: normal
+}
+
+sup {
+    vertical-align: text-top
+}
+
+sub {
+    vertical-align: text-bottom
+}
+
+fieldset, img, a img, iframe {
+    border-width: 0;
+    border-style: none
+}
+
+img {
+    -ms-interpolation-mode: bicubic
+}
+
+textarea {
+    overflow-y: auto
+}
+
+legend {
+    color: #000
+}
+
+a:link, a:visited {
+    text-decoration: none
+}
+
+hr {
+    height: 0
+}
+
+label {
+    cursor: pointer
+}
+
+a {
+    color: #328CE5
+}
+
+a:hover {
+    color: #2b8ae8;
+    text-decoration: none
+}
+
+a:focus {
+    outline: none
+}
+
+body, .body {
+    background: #f7f7f7;
+    height: 100%;
+    max-width: 640px;
+    min-width: 300px;
+    min-height: 100%;
+
+    margin: 0 auto;
+}
+
+.mod-title {
+    height: 60px;
+    line-height: 60px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    background: #fff
+}
+
+.ico_log {
+    display: inline-block;
+    width: 130px;
+    height: 38px;
+    vertical-align: middle;
+    margin-right: 7px
+}
+
+.ico-1 {
+    background: url("weixin.jpg") no-repeat;
+}
+
+.ico-2 {
+    background: url("alipay.jpg") no-repeat;
+}
+
+.ico-3 {
+    background: url("weixin.jpg") no-repeat;
+}
+
+.mod-title .text {
+    font-size: 20px;
+    color: #333;
+    font-weight: normal;
+    vertical-align: middle
+}
+
+.mod-ct {
+    min-width: 300px;
+    max-width: 640px;
+    margin: 0 auto;
+    margin-top: 15px;
+    background: #fff url("wave.png") top center repeat-x;
+    text-align: center;
+    color: #333;
+    border: 1px solid #e5e5e5;
+    border-top: none
+}
+
+.mod-ct .order {
+    font-size: 20px;
+    padding-top: 10px
+}
+
+.mod-ct .amount {
+    font-size: 48px;
+    margin-top: 10px
+}
+
+.mod-ct .qr-image {
+    margin-top: 30px
+}
+
+.mod-ct .qr-image img {
+    width: 230px;
+    height: 230px
+}
+
+.mod-ct .detail {
+    margin-top: 10px;
+    padding-top: 0px;
+    padding-bottom: 10px;
+
+}
+
+.mod-ct .detail .arrow .ico-arrow {
+    display: inline-block;
+    width: 20px;
+    height: 11px;
+    background: url("wechat-pay.png") -25px -100px no-repeat
+}
+
+.mod-ct .detail .detail-ct {
+    display: none;
+    font-size: 12px;
+    text-align: right;
+    line-height: 28px
+}
+
+.mod-ct .detail .detail-ct dt {
+    float: left
+}
+
+.mod-ct .detail-open {
+    border-top: 1px solid #e5e5e5
+}
+
+.mod-ct .detail .arrow {
+    padding: 6px 34px;
+    border: 1px solid #e5e5e5
+}
+
+.mod-ct .detail .arrow .ico-arrow {
+    display: inline-block;
+    width: 20px;
+    height: 11px;
+    background: url("wechat-pay.png") -25px -100px no-repeat
+}
+
+.mod-ct .detail-open .arrow .ico-arrow {
+    display: inline-block;
+    width: 20px;
+    height: 11px;
+    background: url("wechat-pay.png") 0 -100px no-repeat
+}
+
+.mod-ct .detail-open .detail-ct {
+    display: block
+}
+
+.mod-ct .tip {
+    margin-top: 20px;
+    border-top: 1px dashed #e5e5e5;
+    padding: 10px 0;
+    position: relative
+}
+
+.mod-ct .tip .ico-scan {
+    display: inline-block;
+    width: 56px;
+    height: 55px;
+    background: url("wechat-pay.png") 0 0 no-repeat;
+    vertical-align: middle;
+    *display: inline;
+    *zoom: 1
+}
+
+.mod-ct .tip .tip-text {
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+    margin-left: 23px;
+    font-size: 16px;
+    line-height: 28px;
+    *display: inline;
+    *zoom: 1
+}
+
+.mod-ct .tip .dec {
+    display: inline-block;
+    width: 22px;
+    height: 45px;
+    background: url("wechat-pay.png") 0 -55px no-repeat;
+    position: absolute;
+    top: -23px
+}
+
+.mod-ct .tip .dec-left {
+    background-position: 0 -55px;
+    left: -136px
+}
+
+.mod-ct .tip .dec-right {
+    background-position: -25px -55px;
+    right: -136px
+}
+
+.foot {
+    text-align: center;
+    margin: 30px auto;
+    color: #888888;
+    font-size: 12px;
+    line-height: 20px;
+    font-family: "simsun"
+}
+
+.copyRight {
+    text-align: center;
+    color: rgba(97, 167, 184, 0.08);
+    margin-bottom: 1px;
+}
+
+.copyRight a {
+    color: rgba(88, 161, 184, 0.08);
+}
+
+h1 {
+    font-family: "微软雅黑";
+    font-size: 15px;
+    margin: 5px 0;
+    padding-bottom: 2px;
+    letter-spacing: 2px;
+}
+
+.time-item strong {
+    background: #3ec742;
+    color: #fff;
+    line-height: 25px;
+    font-size: 15px;
+    font-family: Arial;
+    padding: 0 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.item-title {
+    background: none;
+    line-height: 25px;
+    font-size: 24px;
+    padding: 0 10px;
+    float: left;
+}
+

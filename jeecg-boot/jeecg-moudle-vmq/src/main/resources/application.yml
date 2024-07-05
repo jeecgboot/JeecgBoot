@@ -1,0 +1,16 @@
+server:
+    port: 8084
+
+spring:
+    datasource:
+        url: jdbc:mysql://172.18.26.81:3306/jeecg-boot
+        username: jeecg-boot
+        password: 552200
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+    servlet:
+        multipart:
+            max-file-size: 100MB
+

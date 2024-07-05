@@ -1,0 +1,262 @@
+<div class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">后台账号</label>
+        <div class="layui-input-block">
+            <input type="text" id="user" lay-verify="required" placeholder="请输入管理员账号" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">后台密码</label>
+        <div class="layui-input-block">
+            <input type="text" id="pass" lay-verify="required" placeholder="请输入管理员密码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">订单有效期</label>
+        <div class="layui-input-block">
+            <input type="number" id="close" lay-verify="required" placeholder="请输入创建的订单几分钟后失效" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">异步回调</label>
+        <div class="layui-input-block">
+            <input type="text" id="notifyUrl" lay-verify="required" placeholder="请输入异步回调地址" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">同步回调</label>
+        <div class="layui-input-block">
+            <input type="text" id="returnUrl" lay-verify="required" placeholder="请输入支付完成后跳转地址" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">通讯密钥</label>
+        <div class="layui-input-block">
+            <input type="text" id="key" lay-verify="required" placeholder="请输入通讯密钥" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">区分方式</label>
+        <div class="layui-input-block">
+            <div class="layui-upload">
+                <select id="payQf">
+                    <option value="1">金额递增</option>
+                    <option value="2">金额递减</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">微信码</label>
+        <div class="layui-input-block">
+            <div class="layui-upload">
+                <button type="button" class="layui-btn" id="wxup">上传收款二维码</button>（此处上传的是无金额的收款二维码）
+                <div class="layui-upload-list">
+                    <img class="layui-upload-img" id="wximg">
+                    <p id="wxcs"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">支付宝码</label>
+        <div class="layui-input-block">
+            <div class="layui-upload">
+                <button type="button" class="layui-btn" id="zfbup">上传收款二维码</button>（此处上传的是无金额的收款二维码）
+                <div class="layui-upload-list">
+                    <img class="layui-upload-img" id="zfbimg">
+                    <p id="zfbcs"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="layui-form-item" style="text-align: right;">
+        <button class="layui-btn" onclick="save()">保存</button>
+    </div>
+
+
+
+    <!--<div class="layui-form-item layui-form-text">-->
+        <!--<label class="layui-form-label">设置进入网站的提示</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<textarea placeholder="请输入公告内容" id="xz" class="layui-textarea"></textarea>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="layui-form-item">-->
+        <!--<button class="layui-btn" onclick="editxz()">保存</button>-->
+    <!--</div>-->
+</div>
+
+<script>
+    function formatDate(now) {
+        now = new Date(now*1000);
+        return now.getFullYear()
+            + "-" + (now.getMonth()>8?(now.getMonth()+1):"0"+(now.getMonth()+1))
+            + "-" + (now.getDate()>9?now.getDate():"0"+now.getDate())
+            + " " + (now.getHours()>9?now.getHours():"0"+now.getHours())
+            + ":" + (now.getMinutes()>9?now.getMinutes():"0"+now.getMinutes())
+            + ":" + (now.getSeconds()>9?now.getSeconds():"0"+now.getSeconds());
+
+    }
+    layui.use(['form','layer','upload'], function(){
+        var table = layui.table,form = layui.form,upload = layui.upload;
+
+        var uploadInst = upload.render({
+            elem: '#wxup'
+            , url: 'deQrcode2'
+            , before: function (obj) {
+
+            }
+            , done: function (res) {
+                //如果上传失败
+                if (res.code == -1) {
+                    return layer.msg('上传失败');
+                }
+                if (res.data==""){
+                    return layer.msg('请上传微信无金额收款二维码');
+                }
+                $('#wximg').attr('src', "enQrcode?url="+res.data);
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#wxcs');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs wxcs">重试</a>');
+                demoText.find('.wxcs').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+
+        var uploadInst2 = upload.render({
+            elem: '#zfbup'
+            , url: 'deQrcode2'
+            , before: function (obj) {
+
+            }
+            , done: function (res) {
+                //如果上传失败
+                if (res.code == -1) {
+                    return layer.msg('上传失败');
+                }
+                if (res.data=="" ){
+                    return layer.msg('请上传支付宝无金额收款二维码');
+                }
+                $('#zfbimg').attr('src', "enQrcode?url="+res.data);
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#zfbcs');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs zfbcs">重试</a>');
+                demoText.find('.zfbcs').on('click', function () {
+                    uploadInst2.upload();
+                });
+            }
+        });
+        form.render();
+
+    });
+
+
+
+    function save() {
+        var user = $("#user").val();
+        var pass = $("#pass").val();
+        var notifyUrl = $("#notifyUrl").val();
+        var returnUrl = $("#returnUrl").val();
+        var key = $("#key").val();
+        var close = $("#close").val();
+        var payQf = $("#payQf").val();
+        if (user == ""){
+            layer.msg("请输入管理员账号");
+            return;
+        }
+        if (pass == ""){
+            layer.msg("请输入管理员密码");
+            return;
+        }
+        if (key == ""){
+            layer.msg("请输入通讯密钥");
+            return;
+        }
+        if (notifyUrl == ""){
+            layer.msg("请输入异步回调地址");
+            return;
+        }
+        if (returnUrl == ""){
+            layer.msg("请输入支付完成后跳转地址");
+            return;
+        }
+
+        if (close == ""){
+            layer.msg("请输入创建的订单几分钟后失效");
+            return;
+        }
+        var wximg = $("#wximg").attr("src");
+        if (wximg=="" || !wximg){
+            layer.msg("请上传微信无金额的收款二维码");
+            return;
+        }
+        var zfbimg = $("#zfbimg").attr("src");
+        if (zfbimg=="" || !zfbimg){
+            layer.msg("请上传支付宝无金额的收款二维码");
+            return;
+        }
+        wximg = wximg.replace(/enQrcode\?url=/g,"");
+        zfbimg = zfbimg.replace(/enQrcode\?url=/g,"");
+        $.post("/admin/saveSetting","user="+user+"&pass="+pass+"&notifyUrl="+notifyUrl+"&returnUrl="+returnUrl+"&key="+key+"&wxpay="+wximg+"&zfbpay="+zfbimg+"&close="+close+"&payQf="+payQf,function (data) {
+            if (data.code==1){
+                $.post("/admin/getSettings",function (data) {
+                    console.log(data);
+                    if (data.code==1){
+                        $("#user").val(data.data.user);
+                        $("#pass").val(data.data.pass);
+                        $("#notifyUrl").val(data.data.notifyUrl);
+                        $("#returnUrl").val(data.data.returnUrl);
+                        $("#key").val(data.data.key);
+                        $("#close").val(data.data.close);
+
+                        if (data.data.wxpay!=""){
+                            $('#wximg').attr('src', "enQrcode?url="+data.data.wxpay);
+                        }
+                        if (data.data.zfbpay!=""){
+                            $('#zfbimg').attr('src', "enQrcode?url="+data.data.zfbpay);
+                        }
+                    }
+                });
+            }
+            layer.msg(data.msg);
+        });
+    }
+
+    $.post("/admin/getSettings",function (data) {
+        console.log(data);
+        if (data.code==1){
+            $("#user").val(data.data.user);
+            $("#pass").val(data.data.pass);
+            $("#notifyUrl").val(data.data.notifyUrl);
+            $("#returnUrl").val(data.data.returnUrl);
+            $("#key").val(data.data.key);
+            $("#close").val(data.data.close);
+            $("#payQf").val(data.data.payQf);
+
+
+            if (data.data.wxpay!=""){
+                $('#wximg').attr('src', "enQrcode?url="+data.data.wxpay);
+            }
+            if (data.data.zfbpay!=""){
+                $('#zfbimg').attr('src', "enQrcode?url="+data.data.zfbpay);
+            }
+            layui.form.render();
+        }
+    });
+</script>

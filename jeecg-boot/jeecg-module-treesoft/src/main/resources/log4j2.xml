@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 该xml配置中,xml元素大小写不敏感 -->
+<!-- status="off",log4j2把自身事件记录到控制台的配置，off表示不记录，其余的记录有trace，debug，info，warn，error，fatal -->
+<!-- monitorInterval表示检测更改配置的时间,单位是秒,最小间隔为5秒,0或负数表示不检测 -->
+<configuration status="off" monitorInterval="0">
+
+	<!-- 常量引用 -->
+	<properties>
+		<!--<property name="LOG_HOME">/opt/logs/api-logs/</property> -->
+		<property name="LOG_HOME">./logs</property>
+		<property name="PROJECT">treesoft</property>
+		<property name="FORMAT">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</property>
+	</properties>
+
+	<!-- appender用于接收各种日志 -->
+	<appenders>
+		<!-- 常见的输出到console,常用于开发环境中,默认是system_err,还有一个system_out -->
+		<console name="Console" target="system_out">
+			<!-- appender级别的日志过滤 -->
+			<!-- <thresholdFilter level="info" onMatch="accept" onMismatch="deny"/> -->
+			<patternLayout pattern="${FORMAT}" />
+		</console>
+
+		<RollingFile name="RollingFileInfo" fileName="${LOG_HOME}/${PROJECT}/info.log" filePattern="${LOG_HOME}/${PROJECT}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}.log">
+			<ThresholdFilter level="info" onMatch="accept" onMismatch="deny" />
+			<PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy modulate="true" interval="1" />
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="RollingFileWarn" fileName="${LOG_HOME}/${PROJECT}/warn.log" filePattern="${LOG_HOME}/${PROJECT}/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}.log">
+			<ThresholdFilter level="warn" onMatch="accept" onMismatch="deny" />
+			<PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy modulate="true" interval="1" />
+			</Policies>
+		</RollingFile>
+
+		<RollingFile name="RollingFileError" fileName="${LOG_HOME}/${PROJECT}/error.log" filePattern="${LOG_HOME}/${PROJECT}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}.log">
+			<ThresholdFilter level="error" onMatch="accept" onMismatch="deny" />
+			<PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n" />
+			<Policies>
+				<TimeBasedTriggeringPolicy modulate="true" interval="1" />
+			</Policies>
+		</RollingFile>
+	</appenders>
+
+	<!-- 接收appender -->
+	<loggers>
+		<logger name="org.apache" level="WARN" />
+		<logger name="org.apache.http" level="WARN" />
+
+		<!-- Spring -->
+		<logger name="org.springframework" level="INFO" />
+
+		<!-- sql loggers -->
+		<logger name="java.sql.Connection" level="INFO" additivity="true" />
+		<logger name="java.sql.Statement" level="INFO" additivity="true" />
+		<logger name="java.sql.PreparedStatement" level="INFO,STDOUT" additivity="true" />
+		<logger name="java.sql.ResultSet" level="INFO" additivity="true" />
+
+		<!-- root logger,一般用于放置所有的appender -->
+		<root level="INFO">
+			<appender-ref ref="Console" />
+			<appender-ref ref="RollingFileInfo" />
+			<appender-ref ref="RollingFileWarn" />
+			<appender-ref ref="RollingFileError" />
+		</root>
+	</loggers>
+
+</configuration>

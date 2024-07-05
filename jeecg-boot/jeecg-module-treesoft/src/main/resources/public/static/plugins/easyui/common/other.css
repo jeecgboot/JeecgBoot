@@ -1,0 +1,8 @@
+*{font-family:"微软雅黑";}
+.formTable{margin-top: 5px; margin-left: 5px;}
+input,textarea{font-size: 12px;}
+input[type=radio]{width:10px;height:10px;}
+
+/*easyui btn样式*/
+.l-btn-text{margin: 0px 10px}
+.dialog-tool-separator{float: none;}

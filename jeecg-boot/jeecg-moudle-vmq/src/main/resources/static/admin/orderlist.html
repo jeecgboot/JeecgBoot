@@ -1,0 +1,273 @@
+<div class="layui-form layui-form-pane" action="">
+<div class="layui-form-item">
+
+    <div class="layui-inline">
+        <label class="layui-form-label">支付方式</label>
+        <div class="layui-input-inline">
+            <select id="type" lay-verify="required" lay-filter="type">
+                <option value="">不限制</option>
+                <option value="1">微信</option>
+                <option value="2">支付宝</option>
+
+            </select>
+        </div>
+    </div>
+    <div class="layui-inline">
+        <label class="layui-form-label">订单状态</label>
+        <div class="layui-input-inline">
+            <select id="state" lay-verify="required" lay-filter="state">
+                <option value="">不限制</option>
+                <option value="-1">过期</option>
+                <option value="0">待支付</option>
+                <option value="1">完成</option>
+                <option value="2">通知失败</option>
+
+            </select>
+        </div>
+    </div>
+
+
+</div>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delGq">删除所有过期订单</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delLast">删除七天前订单</button>
+
+    </div>
+</script>
+<table id="demo" lay-filter="test"></table>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="bd">补单</a>
+    <a class="layui-btn layui-btn-xs" lay-event="info">详情</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+
+</script>
+
+
+<script>
+    function formatDate(now) {
+        if (now=="0"){
+            return "无";
+        }
+        now = new Date(now);
+        return now.getFullYear()
+            + "-" + (now.getMonth()>8?(now.getMonth()+1):"0"+(now.getMonth()+1))
+            + "-" + (now.getDate()>9?now.getDate():"0"+now.getDate())
+            + " " + (now.getHours()>9?now.getHours():"0"+now.getHours())
+            + ":" + (now.getMinutes()>9?now.getMinutes():"0"+now.getMinutes())
+            + ":" + (now.getSeconds()>9?now.getSeconds():"0"+now.getSeconds());
+
+    }
+    var myTable,table,form;
+    layui.use(['form','table','laydate'], function(){
+        table = layui.table;
+        form = layui.form;
+
+        //第一个实例
+        myTable = table.render({
+            elem: '#demo'
+            ,height: 'full-160'
+            ,url: '/admin/getOrders'
+            ,toolbar: '#toolbarDemo'
+            ,where: {
+                state:$("#state").val(),
+                type:$("#type").val()
+            }
+            ,cols: [[ //表头
+                {field: 'createDate', title: '创建时间',minWidth:160,templet: function(d){
+                        return formatDate(d.createDate);
+                    }
+                },
+                {field: 'payId', title: '商户编号',minWidth:180},
+                {field: 'orderId', title: '云端订单编号',minWidth:180},
+                {field: 'type', title: '支付方式',minWidth:100,templet: function(d){
+                        if (d.type=="1"){
+                            return '微信';
+                        }else if (d.type=="2"){
+                            return '支付宝';
+                        }
+                    }
+                },
+                {field: 'price', title: '订单金额',minWidth:100, align:'center'},
+                {field: 'reallyPrice', title: '实际金额',minWidth:100, align:'center'},
+
+
+                {field: 'state', title: '状态',minWidth:80,templet: function(d){
+                        if (d.state=="2"){
+                            return '<span style="color: orange">通知失败</span>';
+                        }else if (d.state=="1"){
+                            return '<span style="color: green">完成</span>';
+                        }else if (d.state=="0"){
+                            return '<span style="color: orange">待支付</span>';
+                        }else if (d.state=="-1"){
+                            return '<span style="color: red">过期</span>';
+                        }
+                    }
+                },
+
+                {title: '操作', minWidth: 120, align:'center', toolbar: '#barDemo'}
+
+            ]]
+            ,page:true
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            if(layEvent === 'info'){
+                var out = "<p>创建时间："+formatDate(data.createDate)+"</p>";
+                out += "<p>支付时间："+formatDate(data.payDate)+"</p>";
+                out += "<p>关闭时间："+formatDate(data.closeDate)+"</p>";
+                out += "<p>自定义参数："+data.param+"</p>";
+                layer.alert(out);
+
+            }else if(layEvent === 'bd'){
+                layer.confirm('确定要补单吗？该操作将会将该订单标记为已支付，并向您的服务器发送订单完成通知', function(index){
+                    layer.msg('操作中', {
+                        icon: 16
+                        ,shade: 0.01
+                    });
+
+                    $.post("/admin/setBd","id="+data.id,function (data) {
+                        if (data.code==1){
+                            layer.msg("操作成功！");
+                            myTable.reload({
+                                where: {
+                                    state:$("#state").val(),
+                                    type:$("#type").val()
+                                }
+                            });
+                        }else if(data.code==-2){
+                            layer.confirm('补单失败，异步通知返回错误，是否查看通知返回数据？', {
+                                btn: ['查看','取消'] //按钮
+                            }, function(){
+                                alert(data.data);
+                            }, function(){
+
+                            });
+                        }else{
+                            layer.msg(data.msg);
+                        }
+
+
+
+                    });
+
+                    console.log(data.id);
+                });
+            }else if(layEvent === 'del'){
+                layer.confirm('确定要删除订单吗？', function(index){
+                    layer.msg('操作中', {
+                        icon: 16
+                        ,shade: 0.01
+                    });
+
+                    $.post("/admin/delOrder","id="+data.id,function (data) {
+                        if (data.code==1){
+                            layer.msg("操作成功！");
+                            myTable.reload({
+                                where: {
+                                    state:$("#state").val(),
+                                    type:$("#type").val()
+                                }
+                            });
+                        }else{
+                            layer.msg(data.msg);
+                        }
+
+
+
+                    });
+
+                    console.log(data.id);
+                });
+            }
+        });
+        form.on('select(state)', function(data){
+            myTable.reload({
+                where: {
+                    state:$("#state").val(),
+                    type:$("#type").val()
+                }
+            });
+
+        });
+
+        form.on('select(type)', function(data){
+            myTable.reload({
+                where: {
+                    state:$("#state").val(),
+                    type:$("#type").val()
+                }
+            });
+
+        });
+
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'delGq':
+                    layer.confirm('确定要删除所有过期订单吗？', function(index){
+                        layer.msg('操作中', {
+                            icon: 16
+                            ,shade: 0.01
+                        });
+
+                        $.post("/admin/delGqOrder",function (data) {
+                            if (data.code==1){
+                                layer.msg("操作成功！");
+                                myTable.reload({
+                                    where: {
+                                        state:$("#state").val(),
+                                        type:$("#type").val()
+                                    }
+                                });
+                            }else{
+                                layer.msg(data.msg);
+                            }
+
+                        });
+
+                    });
+
+                    break;
+                case 'delLast':
+                    layer.confirm('确定要删除七天前的所有订单吗？', function(index){
+                        layer.msg('操作中', {
+                            icon: 16
+                            ,shade: 0.01
+                        });
+
+                        $.post("/admin/delLastOrder",function (data) {
+                            if (data.code==1){
+                                layer.msg("操作成功！");
+                                myTable.reload({
+                                    where: {
+                                        state:$("#state").val(),
+                                        type:$("#type").val()
+                                    }
+                                });
+                            }else{
+                                layer.msg(data.msg);
+                            }
+
+                        });
+
+                    });
+                    break;
+            };
+        });
+
+
+        form.render();
+
+    });
+
+
+</script>

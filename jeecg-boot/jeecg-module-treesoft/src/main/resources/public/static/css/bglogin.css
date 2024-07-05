@@ -1,0 +1,47 @@
+body{margin:0px;padding:0px; background-color: #ededed}
+form{margin:0px;padding:0px;}
+.login_top{width: 100%;height: 150px;background: #0060A9 url("../images/mosaic-pattern.png") repeat; display: block;float:left;}
+.login_title{
+	width: 450px;height: 50px;display:block;margin: auto;
+	text-align: center;
+	color:#fff;
+	margin-top: 100px;line-height: 50px;font-family:"微软雅黑";font-size: 24px;
+	
+	}
+.login_main{
+	background: url('../images/login_bg.png');
+	width:423px;height:366px;display: block;margin:auto;margin-top:30px;
+	}
+.login_main_top{
+	width:133px;height:36px;background: url("../images/member_title.png");
+	float:left;display:blcok;margin:25px 0 0 135px;
+	}
+.login_main_errortip{
+	float:left;display:blcok;clear: both;width:100%;padding-left:95px;padding-top:5px; color: red;font-size: 12px;
+	}
+.login_main_ln{width:100%;height:45px;float:left;display:blcok;margin-top:5px;}
+.login_main_ln input{
+	width:230px;height: 45px;margin-left: 95px;text-indent: 30px;border:1px solid #bbb;font-size:17px;
+	background: url("../images/ln.png");background-repeat: no-repeat;background-position: left;line-height: 45px;
+	}
+.login_main_pw{width:100%;height:45px;float:left;display:blcok;margin-top:10px;}
+.login_main_pw input{width:230px;height: 45px;margin-left: 95px;text-indent: 30px;border:1px solid #bbb;font-size:14px;
+	background: url("../images/pw.png");background-repeat: no-repeat;background-position: left;line-height: 45px;
+	}
+.login_main_yzm{width:100%;height:45px;float:left;display:blcok;margin-top:10px;}
+.login_main_yzm input{
+	width:133px;height: 45px;margin-left: 95px;text-indent: 30px;border:1px solid #bbb;font-size:17px;line-height: 45px;
+	}
+.login_main_yzm img{
+	width:85px;height: 45px;  vertical-align:middle
+	}	
+
+.login_main_remb{width:100%;height:25px;float:left;display:blcok;margin-top:8px;color: #bbb;font-size: 12px;}
+.login_main_remb input{display: block;float:left;margin-left: 95px;}
+.login_main_remb span{display: block;float:left;line-height: 20px;}
+.login_main_submit{width:100%;height:45px;float:left;display:blcok;}
+.login_main_submit input{
+	width:150px;height:55px;display:block;background: url("../images/button.png");border: none;
+	margin-left: 135px;outline: none; cursor: pointer;
+	}
+

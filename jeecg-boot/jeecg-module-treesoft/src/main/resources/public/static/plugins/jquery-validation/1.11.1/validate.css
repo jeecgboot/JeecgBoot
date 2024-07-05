@@ -1,0 +1,7 @@
+span.error {
+  background:url("images/unchecked.png") no-repeat 0px 0px;
+  padding-left: 16px;
+  margin-left: 1em;
+  padding-bottom: 2px;
+  color: #EA5200;
+}

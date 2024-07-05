@@ -1,0 +1,95 @@
+<div class="layui-form" action="">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">监控端状态</label>
+        <div class="layui-input-block">
+            <input type="text" id="jkstate" value="" lay-verify="required" placeholder="监控端状态" autocomplete="off" readonly class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">最后心跳</label>
+        <div class="layui-input-block">
+            <input type="text" id="lastheart" lay-verify="required" placeholder="最后心跳时间" autocomplete="off" readonly class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">最后收款</label>
+        <div class="layui-input-block">
+            <input type="text" id="lastpay" lay-verify="required" placeholder="最后收款时间" autocomplete="off" readonly class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">配置数据</label>
+        <div class="layui-input-block">
+            <input type="text" id="input" lay-verify="required" placeholder="手动配置数据" autocomplete="off" readonly class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">配置二维码</label>
+        <div class="layui-input-block">
+            <img id="pzqrcode">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item" style="text-align: right">
+        <button class="layui-btn" onclick="window.open('/v.apk')">下载监控端</button>
+        <button class="layui-btn" onclick="window.open('https://github.com/szvone/vmqApk/releases')">最新版监控端下载</button>
+    </div>
+
+
+    <!--<div class="layui-form-item layui-form-text">-->
+        <!--<label class="layui-form-label">设置进入网站的提示</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<textarea placeholder="请输入公告内容" id="xz" class="layui-textarea"></textarea>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--<div class="layui-form-item">-->
+        <!--<button class="layui-btn" onclick="editxz()">保存</button>-->
+    <!--</div>-->
+</div>
+
+<script>
+    function formatDate(now) {
+        if (now==0) {
+            return "无";
+        }
+        now = new Date(now*1);
+        return now.getFullYear()
+            + "-" + (now.getMonth()>8?(now.getMonth()+1):"0"+(now.getMonth()+1))
+            + "-" + (now.getDate()>9?now.getDate():"0"+now.getDate())
+            + " " + (now.getHours()>9?now.getHours():"0"+now.getHours())
+            + ":" + (now.getMinutes()>9?now.getMinutes():"0"+now.getMinutes())
+            + ":" + (now.getSeconds()>9?now.getSeconds():"0"+now.getSeconds());
+
+    }
+    layui.use(['form','layer'], function(){
+        var table = layui.table,form = layui.form;
+
+        form.render();
+
+    });
+
+
+    $.post("/admin/getSettings",function (data) {
+        console.log(data);
+        if (data.code==1){
+            if (data.data.jkstate == -1){
+                $("#jkstate").val("监控端未绑定，请您扫码绑定");
+            }else if (data.data.jkstate == 0){
+                $("#jkstate").val("监控端已掉线，请您检查App是否正常运行");
+            }else if (data.data.jkstate == 1){
+                $("#jkstate").val("运行正常");
+            }
+
+            $("#lastheart").val(formatDate(data.data.lastheart));
+            $("#lastpay").val(formatDate(data.data.lastpay));
+
+            var img = window.location.host+"/"+data.data.key;
+
+            $("#input").val(img);
+            $("#pzqrcode").attr("src","/enQrcode?url="+img);
+        }
+    });
+</script>

@@ -1,0 +1,97 @@
+<div class="layui-row layui-col-space10 panel_box">
+    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
+        <a href="javascript:;">
+            <div class="panel_icon layui-bg-green">
+                <i class="layui-icon layui-icon-form"></i>
+            </div>
+            <div class="panel_word">
+                <span id="todayOrder">0</span>
+                <cite>今日总订单</cite>
+            </div>
+        </a>
+    </div>
+    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
+        <a href="javascript:;">
+            <div class="panel_icon layui-bg-black">
+                <i class="layui-icon layui-icon-ok"></i>
+            </div>
+            <div class="panel_word">
+                <span id="todaySuccessOrder">0</span>
+                <cite>今日成功订单</cite>
+            </div>
+        </a>
+    </div>
+    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
+        <a href="javascript:;">
+            <div class="panel_icon layui-bg-red">
+                <i class="layui-icon layui-icon-close"></i>
+            </div>
+            <div class="panel_word">
+                <span id="todayCloseOrder">0</span>
+                <cite>今日失败订单</cite>
+            </div>
+        </a>
+    </div>
+    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
+        <a href="javascript:;">
+            <div class="panel_icon layui-bg-orange">
+                <i class="layui-icon layui-icon-rmb"></i>
+            </div>
+            <div class="panel_word userAll">
+                <span id="todayMoney">0</span>
+                <cite>今日收入</cite>
+
+            </div>
+        </a>
+    </div>
+    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
+        <a href="javascript:;">
+            <div class="panel_icon layui-bg-cyan">
+                <i class="layui-icon layui-icon-rmb"></i>
+            </div>
+            <div class="panel_word outIcons">
+                <span id="countMoney">0</span>
+                <cite>总收入</cite>
+            </div>
+        </a>
+    </div>
+    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
+        <a href="javascript:;">
+            <div class="panel_icon layui-bg-blue">
+                <i class="layui-icon layui-icon-form"></i>
+            </div>
+            <div class="panel_word">
+                <span id="countOrder">0</span>
+                <cite>总成功订单</cite>
+            </div>
+        </a>
+    </div>
+</div>
+
+<style>
+    .panel_box{ margin-bottom:5px;}
+    .panel{ text-align:center; height:90px;}
+    .panel_box a{display:block; border-radius:5px; overflow:hidden; height:80px; background-color:#f2f2f2 !important; }
+    .panel_icon{ width:40%; display: inline-block; line-height:80px; float:left; position:relative; height:100%;}
+    .panel_icon i{ font-size:40px !important; color:#fff; display: inline-block;}
+    .panel_word{ width:60%; display: inline-block; float:right; margin:13px 0 14px; }
+    .panel_word span{ font-size:25px; display:block; height:34px; }
+    .panel em{ font-style:normal;}
+    .history_box{ min-height:500px; height:500px; overflow-y:scroll; padding:10px !important;}
+    .history_box .layui-timeline .layui-timeline-item:last-child{ padding-bottom:0;}
+    @media screen and (max-width:1200px) {
+        .history_box { height: auto !important; overflow-y: inherit; }
+    }
+</style>
+
+<script>
+    $.post("/admin/getMain",function (data) {
+        $("#todayOrder").html(data.data.todayOrder);
+        $("#todaySuccessOrder").html(data.data.todaySuccessOrder);
+        $("#countOrder").html(data.data.countOrder);
+        $("#todayCloseOrder").html(data.data.todayCloseOrder);
+        $("#countMoney").html(data.data.countMoney);
+        $("#todayMoney").html(data.data.todayMoney);
+
+    });
+</script>

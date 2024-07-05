@@ -1,0 +1,1 @@
+﻿该插件基于 jeasyui 官方发布的 jquery.portal.js 修改而成。

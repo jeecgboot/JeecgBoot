@@ -1,0 +1,83 @@
+
+<style>
+    .layui-table-cell {
+        height: auto;
+    }
+    .layui-table img {
+        max-width: 200px;
+    }
+</style>
+<table id="demo" lay-filter="test"></table>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+
+<script>
+    function formatDate(now) {
+        now = new Date(now*1000);
+        return now.getFullYear()
+            + "-" + (now.getMonth()>8?(now.getMonth()+1):"0"+(now.getMonth()+1))
+            + "-" + (now.getDate()>9?now.getDate():"0"+now.getDate())
+            + " " + (now.getHours()>9?now.getHours():"0"+now.getHours())
+            + ":" + (now.getMinutes()>9?now.getMinutes():"0"+now.getMinutes())
+            + ":" + (now.getSeconds()>9?now.getSeconds():"0"+now.getSeconds());
+
+    }
+    var myTable,table,form;
+    layui.use(['form','table','laydate'], function(){
+        table = layui.table;
+        form = layui.form;
+
+        //第一个实例
+        myTable = table.render({
+            elem: '#demo'
+            ,height: 'full-130'
+            ,url: '/admin/getPayQrcodes'
+            ,where: {
+                type:1,
+            }
+            ,cols: [[ //表头
+                {field: 'state', title: '二维码',templet: function(d){
+                        return '<img src="/enQrcode?url='+d.payUrl+'"/>';
+                    }
+                },
+                {field: 'price', title: '金额'},
+                {title:"操作", width: 70, align:'center', toolbar: '#barDemo'}
+
+            ]]
+            ,page:true
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            var data = obj.data //获得当前行数据
+                ,layEvent = obj.event; //获得 lay-event 对应的值
+            if(layEvent === 'del'){
+                layer.confirm('要删除该二维码么？', function(index){
+
+                    layer.close(index);
+                    //向服务端发送删除指令
+                    $.post("/admin/delPayQrcode","id="+data.id,function (data) {
+                        if (data.code==1){
+                            obj.del(); //删除对应行（tr）的DOM结构
+                        }
+
+                        layer.msg(data.msg);
+                    });
+
+                    console.log(data.id);
+                });
+            }
+        });
+
+
+
+
+        form.render();
+
+    });
+
+
+</script>

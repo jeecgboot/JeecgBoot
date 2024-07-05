@@ -1,0 +1,30 @@
+body { font-size: 12px; padding: 0; margin: 0; overflow: hidden; }
+.top-bar { width: 100%;    }
+  
+.top-bar-left { float:left; width: 430px; height: 52px; z-index: 100; }
+.top-bar-right { float:right; padding-right: 50px;  width: 580px; height: 52px; z-index: 100;}
+.top-bar-right #timerSpan {   padding-top: 5px; right: 10px; }
+.top-bar-right #themeSpan { position: absolute; width: 50px; padding-top: 5px; top: 24px; right: 10px; text-align: right;z-index: 100; }
+
+.top-toolbar { position: absolute; font-weight: normal; padding: 0; width: 100%; height: 28px; top: 51px; left: 0; border-top-width: 1px; border-bottom-width: 0; z-index: 100; }
+.top-toolbar-topmost { top: 0px; height: 27px; border-top-width: 0px; border-bottom-width: 1px; }
+.top-toolbar #infobar { float:left;  height: 26px; line-height: 26px;   }
+.top-toolbar #searchbar { position: absolute; height: 26px; left: 400px; padding-top: 1px; z-index: 100;}
+.top-toolbar #buttonbar { float:right; height: 26px;  padding-top: 1px; text-align: right; }
+
+
+.tabs-container .tabs-header .tabs-scroller-left { border-top-width: 0; border-left-width: 0; }
+.tabs-container .tabs-header .tabs-scroller-right { border-top-width: 0; border-right-width: 0; }
+.tabs-container .tabs-tool { border-top-width: 0; border-right-width: 0; }
+.tabs-tool table { border-width: 0; border-collapse: collapse; border-spacing: 0; }
+.tabs-tool table td { padding: 0; }
+
+
+/*���� easyui-tabs ѡ�ҳǩ�Ŀ��?/
+/*.tabs-container .tabs-header .tabs-wrap .tabs li a.tabs-inner { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }*/
+
+
+#eastLayout>div.layout-panel-center>div.panel-header { border-top-width: 1px; }
+
+#btn{text-align: left;}
+
