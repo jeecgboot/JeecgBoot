@@ -120,8 +120,6 @@ public class WebService {
 
         payOrderDao.save(payOrder);
 
-
-
         String timeOut = settingDao.findById("close").get().getVvalue();
         CreateOrderRes createOrderRes = new CreateOrderRes(payId,orderId,type,priceD,reallyPrice,payUrl,isAuto,0,Integer.valueOf(timeOut),payOrder.getCreateDate());
 
@@ -139,7 +137,7 @@ public class WebService {
         if (payOrder==null){
             return ResUtil.error("云端订单编号不存在");
         }
-        if (payOrder.getState()!=0){
+        if (payOrder.getState()==1){
             return ResUtil.error("订单状态不允许关闭");
         }
         tmpPriceDao.delprice(payOrder.getType()+"-"+payOrder.getReallyPrice());

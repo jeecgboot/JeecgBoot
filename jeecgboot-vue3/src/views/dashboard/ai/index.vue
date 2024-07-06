@@ -1,15 +1,8 @@
 <template>
   <div class="wrap">
-    <div class="content">
-      <AiChat></AiChat>
-    </div>
+    <div class="content"> </div>
   </div>
 </template>
-
-<script setup>
-  import AiChat from '/@/components/jeecg/AiChat/index.vue';
-  
-</script>
 
 <style lang="less" scoped>
   .wrap {

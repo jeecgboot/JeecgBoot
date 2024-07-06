@@ -64,6 +64,7 @@ export default {
     settingColumn: '列设置',
     settingColumnShow: '列展示',
     settingIndexColumnShow: '序号列',
+    settingColumnWidth: '列宽度',
     settingSelectColumnShow: '勾选列',
     settingFixedLeft: '固定到左侧',
     settingFixedRight: '固定到右侧',

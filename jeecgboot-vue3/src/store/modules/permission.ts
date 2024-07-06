@@ -15,7 +15,6 @@ import { PermissionModeEnum } from '/@/enums/appEnum';
 
 import { asyncRoutes } from '/@/router/routes';
 import { ERROR_LOG_ROUTE, PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
-import { staticRoutesList } from '../../router/routes/staticRouter';
 
 import { filter } from '/@/utils/helper/treeHelper';
 
@@ -279,7 +278,7 @@ export const usePermissionStore = defineStore({
 
           routeList = flatMultiLevelRoutes(routeList);
           // update-begin--author:liaozhiyang---date:20240529---for：【TV360X-522】ai助手路由写死在前端
-          routes = [PAGE_NOT_FOUND_ROUTE, ...routeList, ...staticRoutesList];
+          routes = [PAGE_NOT_FOUND_ROUTE, ...routeList];
           // update-end--author:liaozhiyang---date:20240529---for：【TV360X-522】ai助手路由写死在前端
           break;
       }

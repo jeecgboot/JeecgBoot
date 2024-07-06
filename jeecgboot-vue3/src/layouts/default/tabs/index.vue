@@ -58,7 +58,6 @@
   import { listenerRouteChange } from '/@/logics/mitt/routeChange';
 
   import { useRouter } from 'vue-router';
-  import Aide from "/@/views/dashboard/ai/components/aide/index.vue"
 
   export default defineComponent({
     name: 'MultipleTabs',
@@ -68,7 +67,6 @@
       Tabs,
       TabPane: Tabs.TabPane,
       TabContent,
-      Aide,
     },
     setup() {
       const affixTextList = initAffixTabs();

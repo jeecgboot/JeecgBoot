@@ -707,7 +707,7 @@
                 </div>
             </blockquote>
                 <blockquote class="layui-elem-quote news_search">
-                    <p>传输参数（示例）：payId=1547130349673&amp;param=vone666&amp;type=2&amp;price=0.1&amp;reallyPrice=0.1&amp;sign=28943820b95019b6a63598a13c46f93f</p>
+                    <p>传输参数（示例）：payId=1547130349673&amp;orderId=202007051940322312&amp;param=vone666&amp;type=2&amp;price=0.1&amp;reallyPrice=0.1&amp;sign=28943820b95019b6a63598a13c46f93f</p>
                     <div class="layui-inline">
                         传输参数说明:
                     </div>
@@ -729,6 +729,11 @@
                             <td>payId</td>
                             <td>字符串</td>
                             <td>商户订单号</td>
+                        </tr>
+                        <tr>
+                            <td>orderId</td>
+                            <td>字符串</td>
+                            <td>云端订单编号</td>
                         </tr>
                         <tr>
                             <td>param</td>
@@ -753,13 +758,10 @@
                         <tr>
                             <td>sign</td>
                             <td>字符串</td>
-                            <td>校验签名，计算方式 = md5(payId + param + type + price + reallyPrice + 通讯密钥)</td>
+                            <td>校验签名，计算方式 = md5(payId + orderId + param + type + price + reallyPrice + 通讯密钥)</td>
                         </tr>
-
                         </tbody>
                     </table>
-
-
 
                 </blockquote>
 

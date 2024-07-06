@@ -120,7 +120,7 @@ public class AdminService {
             return ResUtil.error("订单不存在");
         }
         String key = settingDao.findById("key").get().getVvalue();
-        String p = "payId="+payOrder.getPayId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
+        String p = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
         String sign = payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key;
         p = p+"&sign="+md5(sign);
 
@@ -132,7 +132,7 @@ public class AdminService {
             }
         }
 
-        String res = HttpRequest.sendGet(url,p);
+        String res = HttpRequest.sendPost(url,p);
 
         if (res!=null && res.equals("success")){
             if (payOrder.getState()==0){
@@ -230,7 +230,7 @@ public class AdminService {
 
     public PageRes getPayQrcodes(Integer page, Integer limit, Integer type){
 
-        Pageable pageable = PageRequest.of(page-1, limit, Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(page-1, limit, Sort.Direction.DESC, "price");
 
         Specification<PayQrcode> specification = new Specification<PayQrcode>() {
             @Override
