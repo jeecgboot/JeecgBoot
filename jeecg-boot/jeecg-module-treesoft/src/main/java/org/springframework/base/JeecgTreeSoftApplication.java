@@ -6,14 +6,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
-public class TreeSoftBootApplication extends SpringBootServletInitializer {
+public class JeecgTreeSoftApplication extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(TreeSoftBootApplication.class);
+        return builder.sources(JeecgTreeSoftApplication.class);
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(TreeSoftBootApplication.class, args);
+        SpringApplication.run(JeecgTreeSoftApplication.class, args);
     }
 }

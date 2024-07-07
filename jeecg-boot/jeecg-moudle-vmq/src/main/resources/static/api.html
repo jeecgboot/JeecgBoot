@@ -758,56 +758,16 @@
                         <tr>
                             <td>sign</td>
                             <td>字符串</td>
-                            <td>校验签名，计算方式 = md5(payId + orderId + param + type + price + reallyPrice + 通讯密钥)</td>
+                            <td>校验签名，计算方式 = md5(payId + param + type + price + reallyPrice + 通讯密钥)</td>
                         </tr>
                         </tbody>
                     </table>
 
                 </blockquote>
 
-            <pre class="layui-code">
-
-&lt;?php
-
-ini_set(&quot;error_reporting&quot;,&quot;E_ALL &amp; ~E_NOTICE&quot;);
-
-$key = &quot;83d551f0b3609781a22536ca2658473d&quot;;//通讯密钥
-
-
-$payId = $_GET[&#x27;payId&#x27;];//商户订单号
-$param = $_GET[&#x27;param&#x27;];//创建订单的时候传入的参数
-$type = $_GET[&#x27;type&#x27;];//支付方式 ：微信支付为1 支付宝支付为2
-$price = $_GET[&#x27;price&#x27;];//订单金额
-$reallyPrice = $_GET[&#x27;reallyPrice&#x27;];//实际支付金额
-$sign = $_GET[&#x27;sign&#x27;];//校验签名，计算方式 = md5(payId + param + type + price + reallyPrice + 通讯密钥)
-
-//开始校验签名
-$_sign =  md5($payId . $param . $type . $price . $reallyPrice . $key);
-if ($_sign != $sign) {
-    echo &quot;error_sign&quot;;//sign校验不通过
-    exit();
-}
-
-
-echo &quot;success&quot;;
-//继续业务流程
-//echo &quot;商户订单号：&quot;.$payId .&quot;&lt;br&gt;自定义参数：&quot;. $param .&quot;&lt;br&gt;支付方式：&quot;. $type .&quot;&lt;br&gt;订单金额：&quot;. $price .&quot;&lt;br&gt;实际支付金额：&quot;. $reallyPrice;
-
-?&gt;
-            </pre>
-
         </div>
     </div>
 </div>
-
-
-
-
-
-
-
-
-
 
 <script>
     layui.use(['element','code'], function(){
@@ -819,16 +779,3 @@ echo &quot;success&quot;;
 
     });
 </script>
-<!--
-
-<script type="text/javascript" src="layui/layui.js"></script>
-<script>
-    layui.use(['element', 'layer'], function(){
-        var element = layui.element;
-        var layer = layui.layer;
-
-    });
-</script>
-</body>
-</html>
--->

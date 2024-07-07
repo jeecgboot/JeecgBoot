@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecificationExecutor {
 
@@ -25,7 +26,12 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
     @Query(value = "update pay_order p set p.state=?1 where p.id=?2", nativeQuery = true)
     int setState(int state,long id);
 
-    List<PayOrder> findAllByCloseDate(Long closeDate);
+    /**
+     * 查询关闭前的订单
+     * @return
+     */
+    @Query(value = "select distinct type,really_price from pay_order where close_date between ?1-1 and ?2+1 ", nativeQuery = true)
+    List<Map<String,Object>> findAllByCloseDate(long beginTime, long endTime);
 
     @Query(value = "select * from pay_order where id = ?1", nativeQuery = true)
     PayOrder getById(Integer id);

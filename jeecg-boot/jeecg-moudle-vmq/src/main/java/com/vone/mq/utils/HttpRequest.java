@@ -24,6 +24,7 @@ public class HttpRequest {
         BufferedReader in = null;
         try {
             String urlNameString = url + "?" + param;
+            System.out.println("url: " + urlNameString);
             URL realUrl = new URL(urlNameString);
             // 打开和URL之间的连接
             URLConnection connection = realUrl.openConnection();
@@ -79,6 +80,8 @@ public class HttpRequest {
         BufferedReader in = null;
         String result = "";
         try {
+            System.out.println("url: " + url);
+            System.out.println("param: " + param);
             URL realUrl = new URL(url);
             // 打开和URL之间的连接
             URLConnection conn = realUrl.openConnection();
