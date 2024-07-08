@@ -59,7 +59,7 @@
 		<druid.version>1.2.22</druid.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.7.7</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.7.8</jimureport-spring-boot-starter.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
