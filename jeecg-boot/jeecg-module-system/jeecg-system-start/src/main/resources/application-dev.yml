@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
   undertow:
     # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
     #    max-http-post-size: 10MB
@@ -166,9 +166,9 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://172.18.26.81:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: jeecg-boot
-          password: 552200
+          password: ******
           driver-class-name: com.mysql.cj.jdbc.Driver
           # 多数据源配置
           #multi-datasource1:

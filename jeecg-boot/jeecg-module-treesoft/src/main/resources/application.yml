@@ -13,6 +13,6 @@ spring:
       maxActive: 20
       minIdle: 5
       type: com.alibaba.druid.pool.DruidDataSource
-      url: jdbc:mysql://172.18.26.81:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&autoReconnect=true
+      url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&autoReconnect=true
       username: jeecg-boot
-      password: 552200
+      password: ******

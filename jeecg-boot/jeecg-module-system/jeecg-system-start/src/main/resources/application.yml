@@ -1,4 +1,5 @@
-spring:
+server:
+  port: 8081
   application:
     name: jeecg-system
   profiles:

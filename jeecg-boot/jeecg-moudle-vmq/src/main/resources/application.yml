@@ -3,9 +3,9 @@ server:
 
 spring:
     datasource:
-        url: jdbc:mysql://172.18.26.81:3306/jeecg-boot
+        url: jdbc:mysql://127.0.0.1:3306/jeecg-boot
         username: jeecg-boot
-        password: 552200
+        password: ******
     jpa:
         hibernate:
             ddl-auto: update
