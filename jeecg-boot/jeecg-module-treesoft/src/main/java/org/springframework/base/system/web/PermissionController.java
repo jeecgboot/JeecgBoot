@@ -662,51 +662,6 @@ public class PermissionController extends BaseController {
         return "system/searchHistory";
     }
     
-    @RequestMapping(value = {"i/changePassUpdate"}, method = {RequestMethod.POST})
-    @ResponseBody
-    public Map<String, Object> changePassUpdate(@RequestBody TempDto tem) {
-        String mess;
-        String status;
-        HttpSession session = request.getSession(true);
-        String userByName = (String)session.getAttribute("LOGIN_USER_NAME");
-        String oldPass = tem.getOldPass();
-        String newPass = tem.getNewPass();
-        List<Map<String, Object>> list = permissionService.selectUserByName(userByName);
-        String oldPass2 = "";
-        String userId = "";
-        if (CollectionUtils.isNotEmpty(list)) {
-            Map<String, Object> map = list.get(0);
-            oldPass2 = (String)map.get("password");
-            userId = map.get("id").toString();
-        }
-        else {
-            mess = "error";
-            status = "fail";
-        }
-        oldPass = DigestUtils.md5Hex(oldPass + "treesoft" + userByName);
-        if (!oldPass.equals(oldPass2)) {
-            mess = "旧密码不符！";
-            status = "fail";
-        }
-        else {
-            try
-            {
-                permissionService.changePassUpdate(userId, DigestUtils.md5Hex(newPass + "treesoft" + userByName));
-                mess = "修改密码成功";
-                status = "success";
-            }
-            catch (Exception e)  {
-                logger.error(e.getMessage(), e);
-                mess = e.getMessage();
-                status = "fail";
-            }
-        }
-        Map<String, Object> map = new HashMap<>();
-        map.put("mess", mess);
-        map.put("status", status);
-        return map;
-    }
-    
     @RequestMapping(value = {"i/deleteRows/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> deleteRows(@RequestBody IdsDto tem, @PathVariable String databaseConfigId)

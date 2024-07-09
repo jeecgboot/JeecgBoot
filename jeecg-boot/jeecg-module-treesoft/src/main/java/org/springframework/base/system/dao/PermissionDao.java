@@ -313,19 +313,15 @@ public class PermissionDao {
         for (Map<String, Object> map : list3) {
             ids.append(map.get("id")).append(",");
         }
-        String updateSQL = "update treesoft_users set datascope =? where username in ('admin','treesoft')";
+        String updateSQL = "update treesoft_user_role set datascope =? where username in ('admin','treesoft')";
         jdbcTemplate.update(updateSQL, ids.toString().substring(0, ids.length() - 1));
         return bl;
     }
     
     public List<Map<String, Object>> selectUserByName(String userName) {
-        return jdbcTemplate.queryForList("select * from  treesoft_users where username=?", userName);
+        return jdbcTemplate.queryForList("select u.username,u.realname,u.status,r.* from sys_user u left join treesoft_user_role r on r.user_id=u.id where username=?", userName);
     }
-    
-    public boolean updateUserPass(String userId, String newPass) {
-        return jdbcTemplate.update("update treesoft_users set password=? where id=?", newPass, userId) > 0;
-    }
-    
+
     public int executeSqlNotRes(String sql, String dbName, String databaseConfigId)
         throws Exception {
         BusiDataBaseUtil db = new BusiDataBaseUtil(dbName, databaseConfigId);

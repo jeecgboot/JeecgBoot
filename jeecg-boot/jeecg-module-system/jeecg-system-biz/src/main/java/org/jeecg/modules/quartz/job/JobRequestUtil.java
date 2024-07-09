@@ -104,10 +104,10 @@ public class JobRequestUtil {
                     password = str.substring(str.indexOf("密码") + 2, str.indexOf(" ", str.indexOf("密码") + 3)).trim();
                 }
             } else if (str.contains("?password=") && StringUtils.isBlank(password)) {
-                int endIndex = str.indexOf("&", str.indexOf("?password="), str.indexOf(" "));
+                int endIndex = str.indexOf("&", str.indexOf("?password="));
                 password = str.substring(str.indexOf("?password=") + 10, endIndex > 0 ? endIndex : str.length()).trim();
             } else if (str.contains("?pwd=") && StringUtils.isBlank(password)) {
-                int endIndex = str.indexOf("&", str.indexOf("?pwd="), str.indexOf(" "));
+                int endIndex = str.indexOf("&", str.indexOf("?pwd="));
                 password = str.substring(str.indexOf("?pwd=") + 5, endIndex > 0 ? endIndex : str.length()).trim();
             }
             if (!password.matches("^[a-zA-Z0-9].*")) {

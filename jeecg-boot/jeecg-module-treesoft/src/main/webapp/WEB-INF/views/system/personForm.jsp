@@ -18,22 +18,12 @@
 		<table class="formTable">
 			 <tr>
 				<td>用 户 名：</td>
-				<td><input id="username"  name="username" type="text" value="${person.username}"   class="easyui-validatebox"   data-options="width: 200,required:'required'"/>
-				</td>
+				<td>${person.username}</td>
 		      </tr>
-		      
-		      <c:if test="${person.id==null }">
-		      <tr>
-				<td>用户密码：</td>
-				<td><input id="password"  name="password" type="text" value="${person.password}"   class="easyui-validatebox"   data-options="width: 200,required:'required'"/>
-				</td>
-		      </tr>
-		      </c:if>
 		      
 		      <tr>
 				<td>用户姓名：</td>
-				<td><input id="realname"  name="realname" type="text" value="${person.realname}"   class="easyui-validatebox"   data-options="width: 200,required:'required'"/>
-				</td>
+				<td>${person.realname}</td>
 		      </tr>
 			 
 			  <tr>
@@ -47,17 +37,6 @@
 				   <option value="4" <c:if test="${person.role=='4' }"> selected </c:if> >其他人员</option> 
 				</select>
 				
-				</td>
-			  </tr>
-			 
-			 
-			  <tr>
-				<td>用户状态： </td>
-				<td>
-				<select id="status" name="status" class="esayui-combobox" style="width:200px;"   >
-				   <option value="0" <c:if test="${person.status=='0' }"> selected </c:if> >启用</option>  
-				   <option value="1" <c:if test="${person.status=='1' }"> selected </c:if> >停用</option> 
-				</select>
 				</td>
 			  </tr>
 			 

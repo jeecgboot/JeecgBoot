@@ -76,17 +76,10 @@
                           </c:if>
 						  <c:if test="${fn:contains(permission,'person')}">
 							  <div style="padding-right:15px; display:inline; cursor:pointer;">
-								  <img class="imageHead"  src="${ctx}/static/images/btn_person.gif" onclick="javascript:persons()"  title="用户管理"/>
+								  <img class="imageHead"  src="${ctx}/static/images/btn_person.gif" onclick="javascript:persons()"  title="权限管理"/>
 							  </div>
 						  </c:if>
-                           <div style="padding-right:20px; display:inline;cursor:pointer; ">
-                               <img    src="${ctx}/static/images/btn_hd_pass.gif" onclick="javascript:ShowPasswordDialog()"  title="修改用户密码"  />
-                          </div>  
-                          <!--  
-                          <div style="padding-right:20px; display:inline;cursor:pointer;">
-                             <img   src="${ctx}/static/images/btn_hd_help.gif" onclick="javascript:help()"  title="帮助"   />
-                          </div>
-                           -->  
+
                           <div style=" display:inline;cursor:pointer; ">
                              <img id="btnExit"   src="${ctx}/static/images/btn_hd_exit.gif" title="注销"   /> 
 	       		          </div> 

@@ -39,14 +39,13 @@
                 type:1,
             }
             ,cols: [[ //表头
+                {title:"操作", width: 100, align:'center', toolbar: '#barDemo'},
                 {field: 'state', width: 200, title: '二维码',templet: function(d){
                         return '<img style="width: 80%;" src="/enQrcode?url='+d.payUrl+'"/>';
                     }
                 },
-                {field:'payUrl', title: '内容'},
                 {field: 'price', width: 150, title: '金额(元)'},
-                {title:"操作", width: 100, align:'center', toolbar: '#barDemo'}
-
+                {field:'payUrl', title: '内容'}
             ]]
             ,page:true
         });

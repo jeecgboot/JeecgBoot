@@ -33,10 +33,6 @@ public class PersonService {
         return this.personDao.getPerson(id);
     }
 
-    public boolean resetPersonPass(String[] ids) throws Exception {
-        return this.personDao.resetPersonPass(ids);
-    }
-
     public List<Map<String, Object>> selectPersonByIds(String[] ids) {
         return this.personDao.selectPersonByIds(ids);
     }

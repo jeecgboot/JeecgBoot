@@ -6,6 +6,8 @@
 package org.springframework.base.system.web;
 
 import com.alibaba.fastjson.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.base.system.entity.IdsDto;
 import org.springframework.base.system.entity.Person;
 import org.springframework.base.system.persistence.Page;
@@ -29,10 +31,11 @@ import java.util.Map;
 @Controller
 @RequestMapping({"system/person"})
 public class PersonController extends BaseController {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
     @Autowired
     private PersonService personService;
-    @Autowired
-    private PermissionService permissionService;
     @Autowired
     private ConfigService configService;
 
@@ -68,8 +71,6 @@ public class PersonController extends BaseController {
         } else {
             try {
                 page = this.personService.personList(page, username, realname);
-                mess = "执行完成！";
-                status = "success";
                 map2.put("rows", page.getResult());
                 map2.put("total", page.getTotalCount());
                 map2.put("columns", page.getColumns());
@@ -104,13 +105,12 @@ public class PersonController extends BaseController {
     )
     public String editPersonForm(@PathVariable("id") String id, Model model) throws Exception {
         Map<String, Object> map = new HashMap();
-
         try {
             map = this.personService.getPerson(id);
         } catch (Exception var5) {
         }
-
         List<Map<String, Object>> configList = this.configService.getAllConfigList();
+        logger.info("id {},map {}",id,map);
         model.addAttribute("configList", configList);
         model.addAttribute("person", map);
         return "system/personForm";
@@ -131,14 +131,6 @@ public class PersonController extends BaseController {
             map.put("mess", "没有操作权限！");
             map.put("status", "fail");
             return map;
-        } else if (StringUtils.isEmpty(person.getUsername())) {
-            map.put("mess", "用户名 必填！");
-            map.put("status", "fail");
-            return map;
-        } else if (StringUtils.isEmpty(person.getRealname())) {
-            map.put("mess", "姓名 必填！");
-            map.put("status", "fail");
-            return map;
         } else if (StringUtils.isEmpty(person.getRole())) {
             map.put("mess", "用户角色 必填！");
             map.put("status", "fail");
@@ -147,22 +139,8 @@ public class PersonController extends BaseController {
             map.put("mess", "数据范围  必填！");
             map.put("status", "fail");
             return map;
-        } else if (StringUtils.isEmpty(person.getStatus())) {
-            map.put("mess", "用户状态 必填！");
-            map.put("status", "fail");
-            return map;
         } else {
-            boolean isvalidate = this.permissionService.identifying();
-
             try {
-                Page<Map<String, Object>> page = this.getPage(request);
-                Page<Map<String, Object>> pageResult = this.personService.personList(page, "", "");
-                if (!isvalidate && pageResult.getTotalCount() >= 5L) {
-                    map.put("mess", "您好，试用版本限制配置数量，请购买商业授权！");
-                    map.put("status", "fail");
-                    return map;
-                }
-
                 boolean isAdd = StringUtils.isEmpty(person.getId());
                 boolean bl = this.personService.userNameIsExists(person.getUsername().toLowerCase());
                 if (isAdd && bl) {
@@ -170,7 +148,6 @@ public class PersonController extends BaseController {
                     map.put("status", "fail");
                     return map;
                 }
-
                 this.personService.personUpdate(person);
                 mess = "操作成功";
                 status = "success";
@@ -179,7 +156,6 @@ public class PersonController extends BaseController {
                 mess = "新增或修改用户出错";
                 status = "fail";
             }
-
             map.put("mess", mess);
             map.put("status", status);
             return map;
@@ -231,31 +207,6 @@ public class PersonController extends BaseController {
             map.put("status", status);
             return map;
         }
-    }
-
-    @RequestMapping(
-            value = {"i/resetPersonPass"},
-            method = {RequestMethod.POST}
-    )
-    @ResponseBody
-    public Map<String, Object> resetPersonPass(@RequestBody IdsDto tem, HttpServletRequest request) {
-        String[] ids = tem.getIds();
-        String mess = "";
-        String status = "";
-
-        try {
-            this.personService.resetPersonPass(ids);
-            mess = "操作成功，新密码为：123321";
-            status = "success";
-        } catch (Exception var7) {
-            mess = var7.getMessage();
-            status = "fail";
-        }
-
-        Map<String, Object> map = new HashMap();
-        map.put("mess", mess);
-        map.put("status", status);
-        return map;
     }
 
     @RequestMapping(

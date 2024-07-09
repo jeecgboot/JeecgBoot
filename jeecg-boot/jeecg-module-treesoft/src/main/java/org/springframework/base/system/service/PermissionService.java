@@ -109,11 +109,6 @@ public class PermissionService {
         return permissionDao.selectUserByName(userName);
     }
 
-    public String changePassUpdate(String userId, String newPass) {
-        permissionDao.updateUserPass(userId, newPass);
-        return "success";
-    }
-
     public int executeSqlNotRes(String sql, String dbName, String databaseConfigId)
         throws Exception {
         return permissionDao.executeSqlNotRes(sql, dbName, databaseConfigId);

@@ -1,10 +1,10 @@
 package org.springframework.base.system.web;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.base.system.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -64,20 +64,21 @@ public class LoginController {
             request.setAttribute("message", message);
             return "system/login";
         }
-        String sql = " select * from treesoft_users where  username=?";
+        String sql = " select u.username,u.realname,u.password,u.salt,u.status,r.* from sys_user u left join treesoft_user_role r on u.id=r.user_id where u.del_flag=0 and username=?";
         List<Map<String, Object>> mapList = jdbcTemplate.queryForList(sql, username);
         if (mapList.isEmpty()) {
             message = "您输入的帐号或密码有误！";
             request.setAttribute("message", message);
             return "system/login";
         }
-        Map<String, Object>map = mapList.get(0);
+        Map<String, Object> map = mapList.get(0);
+        String salt = (String) map.get("salt");
         String pas = (String) map.get("password");
-        String status = (String) map.get("status");
+        Boolean status = (Boolean) map.get("status");
         String expiration = (String) map.get("expiration");
         String permission = (String) map.get("permission");
-        if ("1".equals(status)) {
-            message = "当前用户已禁用！";
+        if (!status) {
+            message = "当前用户已冻结！";
             request.setAttribute("message", message);
             return "system/login";
         }
@@ -95,7 +96,8 @@ public class LoginController {
                 logger.error(e.getMessage(), e);
             }
         }
-        if (!pas.equals(DigestUtils.md5Hex(password + "treesoft" + username))) {
+        String userpassword = PasswordUtil.encrypt(username, password, salt);
+        if (!pas.equals(userpassword)) {
             message = "您输入的帐号或密码有误！";
             request.setAttribute("message", message);
             return "system/login";

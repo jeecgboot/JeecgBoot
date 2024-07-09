@@ -18,16 +18,8 @@
 
  <div id="tb3" style="padding:5px;height:auto">
                          <div>
-	       		           <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" plain="true" id="addRowButton"  onclick="addPersonForm()"> 新增</a>
-	       		           <span class="toolbar-item dialog-tool-separator"></span>
 	                       <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-remove" plain="true" id="delButton"   onclick="deletePerson()">删除</a>
 	        	           <span class="toolbar-item dialog-tool-separator"></span>
-	        	           <!--  
-	                       <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-edit" plain="true" id="editRowButton" onclick="editPersonForm()">修改</a>
-	                       <span class="toolbar-item dialog-tool-separator"></span>
-	                       -->
-	                        <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-print" plain="true" id="editRowButton" onclick="register()">注册</a>
-	                       <span class="toolbar-item dialog-tool-separator"></span>
 	                       
 	                       <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-standard-arrow-refresh" plain="true" onclick="refresh()">刷新</a>
 	                       <span class="toolbar-item dialog-tool-separator"></span>
@@ -73,7 +65,7 @@ function initData(){
     columns:[[    
 	  	{field:'TREESOFTPRIMARYKEY',checkbox:true}, 
 	  	{field:'id',title:'操作',align:'center',halign:'center',width:100,sortable:true,formatter: function(value,row,index){
-			  return '<a  class="l-btn l-btn-small" href="javascript:reset(\'' +row["id"]+  '\')" ><span class="l-btn-left l-btn-icon-left"><span class="l-btn-text" style="line-height: 18px;" title="重置密码">重置</span><span class="l-btn-icon icon-table-key">&nbsp;</span></span></a>	 <a  class="l-btn l-btn-small" href="javascript:editPersonFormOne(\'' +row["id"]+  '\')" ><span class="l-btn-left l-btn-icon-left"><span class="l-btn-text" style="line-height: 18px;">修改</span><span class="l-btn-icon icon-edit">&nbsp;</span></span></a>  ';
+			  return '<a  class="l-btn l-btn-small" href="javascript:editPersonFormOne(\'' +row["id"]+  '\')" ><span class="l-btn-left l-btn-icon-left"><span class="l-btn-text" style="line-height: 18px;">修改</span><span class="l-btn-icon icon-edit">&nbsp;</span></span></a>  ';
 		}},
 	  	{field:'username',title:'用户名',halign:'center',width:100 },
 	  	{field:'realname',title:'姓名',halign:'center',sortable:true,width:100 },
@@ -87,15 +79,13 @@ function initData(){
 				}
 		}},
         {field:'status',title:'状态',halign:'center',width:60,sortable:true,formatter: function(value,row,index){
-				if (row.status=='0'){
+				if (row.status){
 					return '启用';
 				} else {
-					return '<font color="red">停用</font>';
+					return '<font color="red">冻结</font>';
 				}
 		}},
-		{field:'expiration',title:'有效期至',halign:'center',width:90 },
-	  	{field:'last_login_time',title:'最后登录时间',halign:'center',width:90 },
-	  	{field:'last_login_ip',title:'最后登录IP',halign:'center',width:90 }
+		{field:'expiration',title:'有效期至',halign:'center',width:90 }
     ] ], 
     checkOnSelect:true,
     selectOnCheck:true,
