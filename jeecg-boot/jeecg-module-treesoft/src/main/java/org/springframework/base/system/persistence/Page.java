@@ -68,7 +68,7 @@ public class Page<T> {
         String[] var7 = orders;
         int var6 = orders.length;
 
-        for(int var5 = 0; var5 < var6; ++var5) {
+        for (int var5 = 0; var5 < var6; ++var5) {
             String orderStr = var7[var5];
             if (!StringUtils.equals("desc", orderStr) && !StringUtils.equals("asc", orderStr)) {
                 throw new IllegalArgumentException("排序方向" + orderStr + "不是合法值");
@@ -100,8 +100,8 @@ public class Page<T> {
         if (this.totalCount < 0L) {
             return -1L;
         } else {
-            long count = this.totalCount / (long)this.pageSize;
-            if (this.totalCount % (long)this.pageSize > 0L) {
+            long count = this.totalCount / (long) this.pageSize;
+            if (this.totalCount % (long) this.pageSize > 0L) {
                 ++count;
             }
             return count;
@@ -109,7 +109,7 @@ public class Page<T> {
     }
 
     public boolean isHasNext() {
-        return (long)(this.pageNo + 1) <= this.getTotalPages();
+        return (long) (this.pageNo + 1) <= this.getTotalPages();
     }
 
     public int getNextPage() {

@@ -4,9 +4,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TreeSoft数据库管理系统</title>
-<meta name="Keywords" content="TreeSoft数据库管理系统,TreeDMS">
-<meta name="Description" content="TreeSoft数据库管理系统,TreeDMS,福州青格软件有限公司 ">
+<title>IT 数据库管理</title>
+<meta name="Keywords" content="IT 数据库管理">
+<meta name="Description" content="IT 数据库管理 V2.3.1 ">
 <meta name="viewport" content="width=device-width, initial-scale=0.85">
 <link rel="stylesheet" type="text/css" href="${ctx}/static/css/bglogin.css" />
 <link rel="icon" href="${ctx}/favicon.ico" mce_href="${ctx}/favicon.ico" type="image/x-icon">
@@ -45,8 +45,8 @@
 		<form id="loginForm" action="${ctx}/treesoft/loginVaildate" method="post">
 			<div class="login_top">
 				<div class="login_title">
-					<span style="margin-left: 10px; margin-top: 10px; color: #fff"> <img src="${ctx}/static/images/logo.png">TreeSoft数据库管理系统<span
-						style="color: #00824D; font-size: 16px; font-weight: bold;">&nbsp;TreeDMS</span> <span style="color: #fffl; font-size: 12px;">V2.3.1</span>
+					<span style="margin-left: 10px; margin-top: 10px; color: #fff"> <img src="${ctx}/static/images/logo.png">IT 数据库管理
+						 <span style="color: #fffl; font-size: 12px;">V2.3.1</span>
 					</span>
 				</div>
 			</div>
@@ -73,7 +73,6 @@
 					</div>
 				</div>
 			</div>
-			<div style="text-align: center">&nbsp; &nbsp;推荐使用Chrome, FireFox, IE9+ 浏览器</div>
 		</form>
 	</div>
 </body>

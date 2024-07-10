@@ -2,9 +2,6 @@ package org.springframework.base.system.dao;
 
 import org.springframework.base.system.entity.Person;
 import org.springframework.base.system.persistence.Page;
-import org.springframework.base.system.utils.DateUtils;
-import org.springframework.base.system.utils.MD5Utils;
-import org.springframework.base.system.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,19 +23,19 @@ public class PersonDao {
     public boolean deletePerson(String[] ids) throws Exception {
         StringBuffer sb = new StringBuffer();
 
-        for(int i = 0; i < ids.length; ++i) {
+        for (int i = 0; i < ids.length; ++i) {
             sb = sb.append("'" + ids[i] + "',");
         }
 
         String newStr = sb.toString();
         String str3 = newStr.substring(0, newStr.length() - 1);
         String sql = "  delete  from  treesoft_user_role where id in (" + str3 + ")";
-        return jdbcTemplate.update(sql)>0;
+        return jdbcTemplate.update(sql) > 0;
     }
 
     public Map<String, Object> getPerson(String id) {
         String sql = " select u.username,u.realname,u.status,r.* from sys_user u left join treesoft_user_role r on u.id=r.user_id where u.del_flag=0 and r.id=?";
-        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql,id);
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, id);
         Map<String, Object> map = new HashMap();
         if (list.size() > 0) {
             map = list.get(0);
@@ -62,7 +59,7 @@ public class PersonDao {
         int rowCount = jdbcTemplate.queryForList(sql).size();
         sql = sql + "  limit " + limitFrom + "," + pageSize;
         List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-        page.setTotalCount((long)rowCount);
+        page.setTotalCount(rowCount);
         page.setResult(list);
         return page;
     }
@@ -113,7 +110,7 @@ public class PersonDao {
 
             sql = sql + "  where id='" + id + "'";
         }
-        return jdbcTemplate.update(sql)>0;
+        return jdbcTemplate.update(sql) > 0;
     }
 
     public List<Map<String, Object>> selectUserById(String userId) {
@@ -125,7 +122,7 @@ public class PersonDao {
     public List<Map<String, Object>> selectPersonByIds(String[] ids) {
         StringBuffer sb = new StringBuffer();
 
-        for(int i = 0; i < ids.length; ++i) {
+        for (int i = 0; i < ids.length; ++i) {
             sb = sb.append("'" + ids[i] + "',");
         }
 

@@ -20,10 +20,10 @@ import java.util.Map;
 public class FileUploadController extends BaseController {
     @Autowired
     HttpServletRequest request;
-    
+
     /**
      * 文件上传
-     * 
+     *
      * @param fileToUpload
      * @return
      * @see [类、类#方法、类#成员]

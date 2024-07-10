@@ -2,8 +2,6 @@ package org.springframework.base.system.web;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Expand;
@@ -31,27 +29,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Controller
 @RequestMapping({"system/permission"})
 public class PermissionController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(PermissionController.class);
-    
+
     @Autowired
     private PermissionService permissionService;
-    
+
     @Autowired
     HttpServletRequest request;
-    
+
     @ResponseBody
     @RequestMapping(value = "i/allDatabaseList", produces = "application/json;charset=UTF-8")
     public List<Map<String, Object>> allDatabaseList() {
         List<Map<String, Object>> listDb = new ArrayList<>();
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         List<Map<String, Object>> userList = permissionService.selectUserByName(username);
-        String datascope = (String)userList.get(0).get("datascope");
+        String datascope = (String) userList.get(0).get("datascope");
         try {
             listDb = permissionService.getAllDataBaseById(datascope);
         } catch (Exception e) {
@@ -59,11 +58,11 @@ public class PermissionController extends BaseController {
         }
         return listDb;
     }
-    
+
     @ResponseBody
     @RequestMapping(value = {"i/allTableAndColumn/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public List<Map<String, Object>> allTableAndColumn(@PathVariable String databaseName, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         String column_name;
         String dbName = databaseName;
         List<Map<String, Object>> resultListObject = new ArrayList<>();
@@ -73,51 +72,51 @@ public class PermissionController extends BaseController {
         Map<String, Object> tempMap;
         List<Map<String, Object>> listView = new ArrayList<>();
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 listTable = permissionService.getAllTables(dbName, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 listTable = permissionService.getAllTables(dbName, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 listTable = permissionService.getAllTablesForOracle(dbName, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 listTable = permissionService.getAllTablesForPostgreSQL(dbName, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 listTable = permissionService.getAllTablesForMSSQL(dbName, databaseConfigId);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             return Collections.emptyList();
         }
-        
+
         for (int y = 0; y < listTable.size(); y++) {
             tempObject = listTable.get(y);
-            String table_name = (String)tempObject.get("TABLE_NAME");
+            String table_name = (String) tempObject.get("TABLE_NAME");
             Map<String, Object> tempTableMap = new HashMap<>();
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 listTableColumn = permissionService.getTableColumns3(databaseName, table_name, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 listTableColumn = permissionService.getTableColumns3(databaseName, table_name, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 listTableColumn = permissionService.getTableColumns3ForOracle(databaseName, table_name, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 listTableColumn = permissionService.getTableColumns3ForPostgreSQL(databaseName, table_name, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 listTableColumn = permissionService.getTableColumns3ForMSSQL(databaseName, table_name, databaseConfigId);
             }
             List<Map<String, Object>> tempColumnsListObject = new ArrayList<>();
-            for (int z = 0; z < listTableColumn.size(); z++)  {
+            for (int z = 0; z < listTableColumn.size(); z++) {
                 tempMap = listTableColumn.get(z);
-                column_name = (String)tempMap.get("COLUMN_NAME");
+                column_name = (String) tempMap.get("COLUMN_NAME");
                 Map<String, Object> tempColumnsMap = new HashMap<>();
                 tempColumnsMap.put("text", column_name);
                 tempColumnsMap.put("displayText", column_name);
@@ -145,41 +144,41 @@ public class PermissionController extends BaseController {
         for (int y = 0; y < listView.size(); y++) {
             Map<String, Object> tempViewMap = new HashMap<>();
             tempObject = listView.get(y);
-            String viewName = (String)tempObject.get("TABLE_NAME");
+            String viewName = (String) tempObject.get("TABLE_NAME");
             tempViewMap.put("text", viewName);
             tempViewMap.put("columns", new ArrayList<>());
             resultListObject.add(tempViewMap);
         }
         return resultListObject;
     }
-    
+
     @ResponseBody
     @RequestMapping(value = {"i/databaseList/{databaseConfigId}"}, method = {RequestMethod.GET})
     public List<Map<String, Object>> databaseList(@PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         List<Map<String, Object>> listAll = new ArrayList<>();
         List<Map<String, Object>> listTable = new ArrayList<>();
         List<Map<String, Object>> listView = new ArrayList<>();
         List<Map<String, Object>> listFunction = new ArrayList<>();
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
-        String databaseName = (String)map.get("databaseName");
-        String userName = (String)map.get("userName");
+        String databaseType = (String) map.get("databaseType");
+        String databaseName = (String) map.get("databaseName");
+        String userName = (String) map.get("userName");
         List<Map<String, Object>> listDb = new ArrayList<>();
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 listDb = permissionService.getAllDataBase(databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 listDb = permissionService.getAllDataBase(databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 listDb = permissionService.getAllDataBaseForOracle(databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 listDb = permissionService.getAllDataBaseForPostgreSQL(databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 if (userName.equals("sa")) {
                     listDb = permissionService.getAllDataBaseForMSSQL(databaseConfigId);
                 } else {
@@ -188,7 +187,7 @@ public class PermissionController extends BaseController {
                     listDb.add(map3);
                 }
             }
-            if (databaseType.equals("Hive2"))  {
+            if (databaseType.equals("Hive2")) {
                 listDb = permissionService.getAllDataBaseForHive2(databaseConfigId);
             }
         } catch (Exception e) {
@@ -200,12 +199,12 @@ public class PermissionController extends BaseController {
         for (int i = 0; i < listDb.size(); i++) {
             Map<String, Object> tempObject = new HashMap<>();
             Map<String, Object> map3 = listDb.get(i);
-            String dbName = (String)map3.get("SCHEMA_NAME");
+            String dbName = (String) map3.get("SCHEMA_NAME");
             tempObject.put("id", Integer.valueOf(++id));
             tempObject.put("name", dbName);
             tempObject.put("type", "db");
             tempObject.put("icon", "icon-hamburg-database");
-            if (!dbName.equals(databaseName))  {
+            if (!dbName.equals(databaseName)) {
                 tempObject.put("state", "closed");
             }
             listAll.add(tempObject);
@@ -231,8 +230,7 @@ public class PermissionController extends BaseController {
             tempObject4.put("icon", "icon-berlin-address");
             tempObject4.put("type", "direct");
             listAll.add(tempObject4);
-            try
-            {
+            try {
                 if (databaseType.equals("MySql")) {
                     listTable = permissionService.getAllTables(dbName, databaseConfigId);
                 }
@@ -251,14 +249,13 @@ public class PermissionController extends BaseController {
                 if (databaseType.equals("Hive2")) {
                     listTable = permissionService.getAllTablesForHive2(dbName, databaseConfigId);
                 }
-            }
-            catch (Exception e)  {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 return Collections.emptyList();
             }
-            for (int y = 0; y < listTable.size(); y++)  {
+            for (int y = 0; y < listTable.size(); y++) {
                 tempObject = listTable.get(y);
-                String table_name = (String)tempObject.get("TABLE_NAME");
+                String table_name = (String) tempObject.get("TABLE_NAME");
                 Map<String, Object> tempObjectTable = new HashMap<>();
                 tempObjectTable.put("id", Integer.valueOf(++id));
                 tempObjectTable.put("pid", Integer.valueOf(pid + 1));
@@ -267,25 +264,25 @@ public class PermissionController extends BaseController {
                 tempObjectTable.put("type", "table");
                 listAll.add(tempObjectTable);
             }
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 listView = permissionService.getAllViews(dbName, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 listView = permissionService.getAllViews(dbName, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 listView = permissionService.getAllViewsForOracle(dbName, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 listView = permissionService.getAllViewsForPostgreSQL(dbName, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 listView = permissionService.getAllViewsForMSSQL(dbName, databaseConfigId);
             }
-            if (databaseType.equals("Hive2"))  {
+            if (databaseType.equals("Hive2")) {
                 listView = permissionService.getAllViewsForHive2(dbName, databaseConfigId);
             }
-            for (int y = 0; y < listView.size(); y++)  {
+            for (int y = 0; y < listView.size(); y++) {
                 tempObject = listView.get(y);
                 Map<String, Object> tempObjectView = new HashMap<>();
                 tempObjectView.put("id", Integer.valueOf(++id));
@@ -295,22 +292,22 @@ public class PermissionController extends BaseController {
                 tempObjectView.put("type", "view");
                 listAll.add(tempObjectView);
             }
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 listFunction = permissionService.getAllFuntion(dbName, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 listFunction = permissionService.getAllFuntion(dbName, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 listFunction = permissionService.getAllFuntionForOracle(dbName, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 listFunction = permissionService.getAllFuntionForPostgreSQL(dbName, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 listFunction = permissionService.getAllFuntionForMSSQL(dbName, databaseConfigId);
             }
-            for (int y = 0; y < listFunction.size(); y++)  {
+            for (int y = 0; y < listFunction.size(); y++) {
                 tempObject = listFunction.get(y);
                 Map<String, Object> tempObjectFunction = new HashMap<>();
                 tempObjectFunction.put("id", Integer.valueOf(++id));
@@ -325,7 +322,7 @@ public class PermissionController extends BaseController {
         request.setAttribute("databaseName", databaseName);
         return listAll;
     }
-    
+
     @RequestMapping(value = {"i/tableColumns/{tableName}/{dbName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     @ResponseBody
     public List<Map<String, Object>> tableColumns(@PathVariable String tableName, @PathVariable String dbName, @PathVariable String databaseConfigId) {
@@ -340,39 +337,39 @@ public class PermissionController extends BaseController {
         }
         return list2;
     }
-    
+
     @RequestMapping(value = {"i/table/{tableName}/{dbName}/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> getData(@PathVariable String tableName, @PathVariable String dbName, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         Page<Map<String, Object>> page = getPage(request);
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         Map<String, Object> result = new HashMap<>();
         String mess;
         String status;
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 page = permissionService.getData(page, tableName, dbName, databaseConfigId);
                 result.put("operator", "edit");
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 page = permissionService.getData(page, tableName, dbName, databaseConfigId);
                 result.put("operator", "edit");
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 page = permissionService.getDataForOracle(page, tableName, dbName, databaseConfigId);
                 result.put("operator", "edit");
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 page = permissionService.getDataForPostgreSQL(page, tableName, dbName, databaseConfigId);
                 result.put("operator", "edit");
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 page = permissionService.getDataForMSSQL(page, tableName, dbName, databaseConfigId);
                 result.put("operator", "edit");
             }
-            if (databaseType.equals("Hive2"))  {
+            if (databaseType.equals("Hive2")) {
                 page = permissionService.getDataForHive2(page, tableName, dbName, databaseConfigId);
                 result.put("operator", "read");
             }
@@ -395,53 +392,53 @@ public class PermissionController extends BaseController {
         }
         return result;
     }
-    
+
     @RequestMapping(value = {"i/executeSqlTest/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> executeSqlTest(@PathVariable String databaseConfigId, String sql, String databaseName) {
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         String ip = NetworkUtil.getIpAddress(request);
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         Map<String, Object> result = new HashMap<>();
         if (databaseType.equals("MySql")) {
-            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show"))  {
+            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show")) {
                 result = executeSqlHaveRes(sql, databaseName, databaseConfigId);
             } else {
                 result = executeSqlNotRes(sql, databaseName, databaseConfigId);
             }
         }
         if (databaseType.equals("MariaDB")) {
-            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show"))  {
+            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show")) {
                 result = executeSqlHaveRes(sql, databaseName, databaseConfigId);
             } else {
                 result = executeSqlNotRes(sql, databaseName, databaseConfigId);
             }
         }
         if (databaseType.equals("Oracle")) {
-            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show"))  {
+            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show")) {
                 result = executeSqlHaveResForOracle(sql, databaseName, databaseConfigId);
             } else {
                 result = executeSqlNotRes(sql, databaseName, databaseConfigId);
             }
         }
         if (databaseType.equals("PostgreSQL")) {
-            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show"))  {
+            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show")) {
                 result = executeSqlHaveResForPostgreSQL(sql, databaseName, databaseConfigId);
             } else {
                 result = executeSqlNotRes(sql, databaseName, databaseConfigId);
             }
         }
         if (databaseType.equals("MSSQL")) {
-            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show"))  {
+            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show")) {
                 result = executeSqlHaveResForMSSQL(sql, databaseName, databaseConfigId);
             } else {
                 result = executeSqlNotRes(sql, databaseName, databaseConfigId);
             }
         }
         if (databaseType.equals("Hive2")) {
-            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show"))  {
+            if (StringUtils.startsWithAny(sql.toLowerCase(), "select", "show")) {
                 result = executeSqlHaveResForHive2(sql, databaseName, databaseConfigId);
             } else {
                 result = executeSqlNotRes(sql, databaseName, databaseConfigId);
@@ -449,7 +446,7 @@ public class PermissionController extends BaseController {
         }
         return result;
     }
-    
+
     public Map<String, Object> executeSqlHaveRes(String sql, String dbName, String databaseConfigId) {
         Map<String, Object> map = new HashMap<>();
         Page<Map<String, Object>> page = getPage(request);
@@ -478,7 +475,7 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     public Map<String, Object> executeSqlNotRes(String sql, String dbName, String databaseConfigId) {
         String mess;
         String status;
@@ -502,11 +499,12 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
+
     @RequestMapping(value = {"i/saveSearchHistory"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> saveSearchHistory(@RequestBody TempDto tem) {
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         List<Map<String, Object>> userList = permissionService.selectUserByName(username);
         String userId = userList.get(0).get("id").toString();
         String id = tem.getId();
@@ -525,8 +523,7 @@ public class PermissionController extends BaseController {
         if (bool) {
             mess = "修改成功";
             status = "success";
-        }
-        else {
+        } else {
             mess = "保存失败";
             status = "fail";
         }
@@ -550,8 +547,7 @@ public class PermissionController extends BaseController {
         if (bool) {
             mess = "操作成功";
             status = "success";
-        }
-        else {
+        } else {
             mess = "操作失败";
             status = "fail";
         }
@@ -564,13 +560,13 @@ public class PermissionController extends BaseController {
     @ResponseBody
     public List<Map<String, Object>> selectSearchHistory() {
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         List<Map<String, Object>> userList = permissionService.selectUserByName(username);
         String userId = userList.get(0).get("id").toString();
         List<Map<String, Object>> list = permissionService.selectSearchHistory(userId);
         List<Map<String, Object>> list2 = new ArrayList<>();
         for (Map<String, Object> map : list) {
-            String tempName = (String)map.get("name");
+            String tempName = (String) map.get("name");
             map.put("name", tempName);
             map.put("pid", "0");
             map.put("icon", "icon-hamburg-zoom");
@@ -583,7 +579,7 @@ public class PermissionController extends BaseController {
     public String config(Model model) {
         return "system/configList";
     }
-    
+
     @RequestMapping(value = {"i/configList/{random}"}, method = {RequestMethod.GET})
     @ResponseBody
     public Map<String, Object> configList() {
@@ -595,12 +591,12 @@ public class PermissionController extends BaseController {
         }
         return getEasyUIData(page);
     }
-    
+
     @RequestMapping(value = {"i/addConfigForm"}, method = {RequestMethod.GET})
     public String addConfigForm(Model model) {
         return "system/configForm";
     }
-    
+
     @RequestMapping(value = {"i/editConfigForm/{id}"}, method = {RequestMethod.GET})
     public String editConfigForm(@PathVariable String id, Model model) {
         Map<String, Object> map = permissionService.getConfig(id);
@@ -608,7 +604,7 @@ public class PermissionController extends BaseController {
         model.addAttribute("config", map);
         return "system/configForm";
     }
-    
+
     @RequestMapping(value = {"i/configUpdate"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> configUpdate(@RequestBody Config config, Model model) {
@@ -651,48 +647,45 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/changePass"}, method = {RequestMethod.GET})
     public String changePass(Model model) {
         return "system/changePass";
     }
-    
+
     @RequestMapping(value = {"i/searchHistory"}, method = {RequestMethod.GET})
     public String searchHistory(Model model) {
         return "system/searchHistory";
     }
-    
+
     @RequestMapping(value = {"i/deleteRows/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> deleteRows(@RequestBody IdsDto tem, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         String databaseName = tem.getDatabaseName();
         String tableName = tem.getTableName();
         String primary_key = tem.getPrimary_key();
         String checkedItems = tem.getCheckedItems();
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         String ip = NetworkUtil.getIpAddress(request);
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         List<String> condition = new ArrayList<>();
         if (checkedItems != null) {
             JSONArray deleteArray = JSONArray.parseArray(checkedItems);
             for (int i = 0; i < deleteArray.size(); i++) {
-                Map<String, Object> map1 = (Map)deleteArray.get(i);
+                Map<String, Object> map1 = (Map) deleteArray.get(i);
                 String whereStr = "";
                 if (StringUtils.isEmpty(primary_key)) {
-                    for (String key : map1.keySet())
-                    {
-                        if ((map1.get(key) != null) && (!key.equals("RN")))
-                        {
+                    for (String key : map1.keySet()) {
+                        if ((map1.get(key) != null) && (!key.equals("RN"))) {
                             whereStr = whereStr + " and " + key + " = '" + map1.get(key) + "' ";
                         }
                     }
                 } else {
                     String[] primaryKeys = primary_key.split(",");
-                    for (String primaryKey : primaryKeys)
-                    {
+                    for (String primaryKey : primaryKeys) {
                         whereStr = whereStr + " and " + primaryKey + " = '" + map1.get(primaryKey) + "' ";
                     }
                 }
@@ -703,19 +696,19 @@ public class PermissionController extends BaseController {
         String mess = "";
         String status = "";
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 permissionService.deleteRowsNew(databaseName, tableName, primary_key, condition, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 permissionService.deleteRowsNew(databaseName, tableName, primary_key, condition, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 permissionService.deleteRowsNewForOracle(databaseName, tableName, primary_key, condition, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 permissionService.deleteRowsNewForPostgreSQL(databaseName, tableName, primary_key, condition, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 permissionService.deleteRowsNewForMSSQL(databaseName, tableName, primary_key, condition, databaseConfigId);
             }
             mess = "删除成功";
@@ -731,7 +724,7 @@ public class PermissionController extends BaseController {
         result.put("status", status);
         return result;
     }
-    
+
     @RequestMapping(value = {"i/saveRows"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> saveRows() {
@@ -750,7 +743,7 @@ public class PermissionController extends BaseController {
         while (it.hasNext()) {
             Map.Entry<String, String[]> entry = it.next();
             column = entry.getKey();
-            for (String i : entry.getValue())  {
+            for (String i : entry.getValue()) {
                 value = i;
                 value = value.replaceAll("'", "''");
             }
@@ -771,16 +764,16 @@ public class PermissionController extends BaseController {
         mapResult.put("status", status);
         return mapResult;
     }
-    
+
     @RequestMapping(value = {"i/editRows/{tableName}/{databaseName}/{id}/{idValues}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public String editRows(@PathVariable String tableName, @PathVariable String databaseName, @PathVariable String id, @PathVariable String idValues, @PathVariable String databaseConfigId) {
         List<Map<String, Object>> listAllColumn = permissionService.getOneRowById(databaseName, tableName, id, idValues, databaseConfigId);
         List<Map<String, Object>> newList = new ArrayList<>();
         for (int i = 0; i < listAllColumn.size(); i++) {
             Map<String, Object> map3 = listAllColumn.get(i);
-            String dataType = (String)map3.get("data_type");
-            if (dataType.equals("VARCHAR"))  {
-                String columnValue = (String)map3.get("column_value");
+            String dataType = (String) map3.get("data_type");
+            if (dataType.equals("VARCHAR")) {
+                String columnValue = (String) map3.get("column_value");
                 map3.put("column_value", htmlEscape(columnValue));
             }
             newList.add(map3);
@@ -792,7 +785,7 @@ public class PermissionController extends BaseController {
         request.setAttribute("idValues", idValues);
         return "system/editRowOne";
     }
-    
+
     @RequestMapping(value = {"i/updateRows"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> updateRows(String databaseName, String tableName, String id, String idValues, String databaseConfigId) {
@@ -808,7 +801,7 @@ public class PermissionController extends BaseController {
         while (it.hasNext()) {
             Map.Entry<String, String[]> entry = it.next();
             column = entry.getKey();
-            for (String i : entry.getValue())  {
+            for (String i : entry.getValue()) {
                 value = i;
             }
             value = value.replaceAll("'", "''");
@@ -831,19 +824,17 @@ public class PermissionController extends BaseController {
         result.put("status", status);
         return result;
     }
-    
+
     @RequestMapping(value = {"i/exportExcel"}, method = {RequestMethod.POST})
     public void exportExcel(@RequestBody String sContent, HttpServletResponse response) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("<html><body><table border=\"1px\">");
-        sb.append("<tr><td>8888888888888</td></tr>");
-        sb.append("</table></body></html>");
-        String ss = sb.toString();
+        String ss = "<html><body><table border=\"1px\">" +
+                "<tr><td>8888888888888</td></tr>" +
+                "</table></body></html>";
         try {
             OutputStream outputStream = response.getOutputStream();
             response.setContentType("application/msexcel; charset=UTF-8");
             response.setHeader("Content-disposition", "attachment; filename=data.xls");
-            byte[] dataByteArr = ss.getBytes("UTF-8");
+            byte[] dataByteArr = ss.getBytes(StandardCharsets.UTF_8);
             outputStream.write(dataByteArr);
             outputStream.flush();
             outputStream.close();
@@ -851,7 +842,7 @@ public class PermissionController extends BaseController {
             logger.error(e.getMessage(), e);
         }
     }
-    
+
     @RequestMapping(value = {"i/download"}, method = {RequestMethod.GET})
     public void download(HttpServletResponse response) {
         try {
@@ -874,13 +865,13 @@ public class PermissionController extends BaseController {
             logger.error(ex.getMessage(), ex);
         }
     }
-    
+
     @RequestMapping(value = {"i/getViewSql/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> getViewSql(@RequestBody IdsDto tem, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         Map<String, Object> mapResult = new HashMap<>();
         String tableName = tem.getTableName();
         String databaseName = tem.getDatabaseName();
@@ -888,19 +879,19 @@ public class PermissionController extends BaseController {
         String mess = "";
         String status = "";
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 viewSql = permissionService.getViewSql(databaseName, tableName, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 viewSql = permissionService.getViewSql(databaseName, tableName, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 viewSql = permissionService.getViewSqlForOracle(databaseName, tableName, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 viewSql = permissionService.getViewSqlForPostgreSQL(databaseName, tableName, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 viewSql = permissionService.getViewSqlForMSSQL(databaseName, tableName, databaseConfigId);
             }
             viewSql = viewSql.replaceAll("`", "");
@@ -917,7 +908,7 @@ public class PermissionController extends BaseController {
         mapResult.put("viewSql", viewSql);
         return mapResult;
     }
-    
+
     public static String htmlEscape(String strData) {
         if (strData == null) {
             return "";
@@ -929,7 +920,7 @@ public class PermissionController extends BaseController {
         strData = replaceString(strData, "\"", "&quot;");
         return strData;
     }
-    
+
     public static String replaceString(String strData, String regex, String replacement) {
         if (strData == null) {
             return null;
@@ -937,7 +928,7 @@ public class PermissionController extends BaseController {
         int index = strData.indexOf(regex);
         String strNew = "";
         if (index >= 0) {
-            while (index >= 0)  {
+            while (index >= 0) {
                 strNew = strNew + strData.substring(0, index) + replacement;
                 strData = strData.substring(index + regex.length());
                 index = strData.indexOf(regex);
@@ -947,17 +938,17 @@ public class PermissionController extends BaseController {
         }
         return strData;
     }
-    
+
     @RequestMapping(value = {"i/contribute"}, method = {RequestMethod.GET})
     public String contribute() {
         return "system/contribute";
     }
-    
+
     @RequestMapping(value = {"i/help"}, method = {RequestMethod.GET})
     public String help() {
         return "system/help";
     }
-    
+
     @RequestMapping(value = {"i/testConn"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> testConn(@RequestBody Config config) {
@@ -974,15 +965,14 @@ public class PermissionController extends BaseController {
         if (bl) {
             mess = "连接成功！";
             status = "success";
-        }
-        else {
+        } else {
             status = "fail";
         }
         mapResult.put("mess", mess);
         mapResult.put("status", status);
         return mapResult;
     }
-    
+
     @RequestMapping(value = {"i/showTableData/{tableName}/{databaseName}/{databaseConfigId}/{objectType}"}, method = {RequestMethod.GET})
     public String showTableData(@PathVariable String tableName, @PathVariable String databaseName, @PathVariable String databaseConfigId, @PathVariable String objectType) {
         request.setAttribute("databaseName", databaseName);
@@ -991,7 +981,7 @@ public class PermissionController extends BaseController {
         request.setAttribute("objectType", objectType);
         return "system/showTableData";
     }
-    
+
     @RequestMapping(value = {"i/showResult/{sqlIndex}"}, method = {RequestMethod.GET})
     public String showResult(@PathVariable String sqlIndex) {
         request.setAttribute("sqlIndex", sqlIndex);
@@ -1003,7 +993,7 @@ public class PermissionController extends BaseController {
     public List<Map<String, Object>> selectSqlStudy() {
         return permissionService.selectSqlStudy();
     }
-    
+
     @RequestMapping(value = {"i/updateRow/{tableName}/{databaseName}"}, method = {RequestMethod.GET})
     public Map<String, Object> updateRow(@PathVariable String tableName, @PathVariable String databaseName) {
         Map<String, Object> mapResult = new HashMap<>();
@@ -1015,7 +1005,7 @@ public class PermissionController extends BaseController {
         mapResult.put("status", status);
         return mapResult;
     }
-    
+
     @RequestMapping(value = {"i/designTable/{tableName}/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public String designTable(@PathVariable String tableName, @PathVariable String databaseName, @PathVariable String databaseConfigId) {
         request.setAttribute("databaseName", databaseName);
@@ -1023,7 +1013,7 @@ public class PermissionController extends BaseController {
         request.setAttribute("databaseConfigId", databaseConfigId);
         return "system/designTable";
     }
-    
+
     @RequestMapping(value = {"i/treeShow/{tableName}/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public String treeShow(@PathVariable String tableName, @PathVariable String databaseName, @PathVariable String databaseConfigId) {
         request.setAttribute("databaseName", databaseName);
@@ -1031,26 +1021,26 @@ public class PermissionController extends BaseController {
         request.setAttribute("databaseConfigId", databaseConfigId);
         return "system/treeShow";
     }
-    
+
     @RequestMapping(value = {"i/addNewTable/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public String addNewTable(@PathVariable String databaseName, @PathVariable String databaseConfigId) {
         request.setAttribute("databaseName", databaseName);
         request.setAttribute("databaseConfigId", databaseConfigId);
         return "system/addNewTable";
     }
-    
+
     @RequestMapping(value = {"i/jsonFormat"}, method = {RequestMethod.GET})
     public String jsonFormat() {
         return "system/jsonFormat";
     }
-    
+
     @RequestMapping(value = {"i/designTableData/{tableName}/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     @ResponseBody
     public Map<String, Object> designTableData(@PathVariable String tableName, @PathVariable String databaseName, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         List<Map<String, Object>> listAllColumn = new ArrayList<>();
         if (databaseType.equals("MySql")) {
             listAllColumn = permissionService.getTableColumns3(databaseName, tableName, databaseConfigId);
@@ -1076,232 +1066,168 @@ public class PermissionController extends BaseController {
         result.put("total", Integer.valueOf(listAllColumn.size()));
         return result;
     }
-    
+
     @RequestMapping(value = {"i/saveData/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> saveData(@PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         String databaseName = request.getParameter("databaseName");
         String tableName = request.getParameter("tableName");
         String inserted = request.getParameter("inserted");
         String updated = request.getParameter("updated");
         String primary_key = request.getParameter("primary_key");
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         String ip = NetworkUtil.getIpAddress(request);
         String mess = "";
         String status = "";
         String columnType = "";
         try {
-            if (inserted != null)  {
+            if (inserted != null) {
                 JSONArray insertArray = JSONArray.parseArray(inserted);
                 for (int i = 0; i < insertArray.size(); i++) {
-                    Map<String, Object> map1 = (Map)insertArray.get(i);
+                    Map<String, Object> map1 = (Map) insertArray.get(i);
                     Map maps = new HashMap<>();
-                    for (String key : map1.keySet())
-                    {
+                    for (String key : map1.keySet()) {
                         maps.put(key, map1.get(key));
                     }
                     maps.remove("treeSoftPrimaryKey");
-                    if (databaseType.equals("MySql"))
-                    {
+                    if (databaseType.equals("MySql")) {
                         permissionService.saveRows(maps, databaseName, tableName, databaseConfigId);
                     }
-                    if (databaseType.equals("MariaDB"))
-                    {
+                    if (databaseType.equals("MariaDB")) {
                         permissionService.saveRows(maps, databaseName, tableName, databaseConfigId);
                     }
-                    if (databaseType.equals("Oracle"))
-                    {
+                    if (databaseType.equals("Oracle")) {
                         permissionService.saveRowsForOracle(maps, databaseName, tableName, databaseConfigId);
                     }
-                    if (databaseType.equals("PostgreSQL"))
-                    {
+                    if (databaseType.equals("PostgreSQL")) {
                         permissionService.saveRowsForPostgreSQL(maps, databaseName, tableName, databaseConfigId);
                     }
-                    if (databaseType.equals("MSSQL"))
-                    {
+                    if (databaseType.equals("MSSQL")) {
                         permissionService.saveRowsForMSSQL(maps, databaseName, tableName, databaseConfigId);
                     }
                 }
             }
             List<String> condition = new ArrayList<>();
-            if (updated != null)  {
+            if (updated != null) {
                 JSONArray updateArray = JSONArray.parseArray(updated);
                 for (int i = 0; i < updateArray.size(); i++) {
-                    Map<String, Object> map1 = (Map)updateArray.get(i);
-                    Map<String, Object> map2 = (Map)map1.get("oldData");
-                    Map<String, Object> map3 = (Map)map1.get("changesData");
+                    Map<String, Object> map1 = (Map) updateArray.get(i);
+                    Map<String, Object> map2 = (Map) map1.get("oldData");
+                    Map<String, Object> map3 = (Map) map1.get("changesData");
                     String setStr = " set ";
                     String whereStr = " where 1=1 ";
-                    if (map2.size() <= 0)
-                    {
+                    if (map2.size() <= 0) {
                         break;
                     }
-                    if (map3.size() <= 0)
-                    {
+                    if (map3.size() <= 0) {
                         break;
                     }
-                    if ((primary_key == null) || (primary_key.equals("")))
-                    {
-                        for (String key : map3.keySet())
-                        {
-                            if (map3.get(key) == null)
-                            {
+                    if ((primary_key == null) || (primary_key.equals(""))) {
+                        for (String key : map3.keySet()) {
+                            if (map3.get(key) == null) {
                                 setStr = setStr + key + " = null , ";
-                            }
-                            else
-                            {
-                                if (databaseType.equals("MySql"))
-                                {
-                                    if (map3.get(key).equals(""))
-                                    {
+                            } else {
+                                if (databaseType.equals("MySql")) {
+                                    if (map3.get(key).equals("")) {
                                         setStr = setStr + key + " = null ,";
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         setStr = setStr + key + " = '" + map3.get(key) + "',";
                                     }
                                 }
-                                if (databaseType.equals("MariaDB"))
-                                {
+                                if (databaseType.equals("MariaDB")) {
                                     setStr = setStr + key + " = '" + map3.get(key) + "',";
                                 }
-                                if (databaseType.equals("Oracle"))
-                                {
+                                if (databaseType.equals("Oracle")) {
                                     columnType = permissionService.selectColumnTypeForOracle(databaseName, tableName, key, databaseConfigId);
-                                    if (columnType.equals("DATE"))
-                                    {
+                                    if (columnType.equals("DATE")) {
                                         setStr = setStr + key + " = to_date('" + map3.get(key) + "' ,'yyyy-mm-dd hh24:mi:ss'),";
-                                    }
-                                    else if (columnType.indexOf("TIMESTAMP") >= 0)
-                                    {
+                                    } else if (columnType.indexOf("TIMESTAMP") >= 0) {
                                         setStr = setStr + key + " = to_date('" + map3.get(key) + "' ,'yyyy-mm-dd hh24:mi:ss'),";
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         setStr = setStr + key + " = '" + map3.get(key) + "',";
                                     }
                                 }
-                                if (databaseType.equals("PostgreSQL"))
-                                {
+                                if (databaseType.equals("PostgreSQL")) {
                                     setStr = setStr + "\"" + key + "\" = '" + map3.get(key) + "',";
                                 }
-                                if (databaseType.equals("MSSQL"))
-                                {
+                                if (databaseType.equals("MSSQL")) {
                                     setStr = setStr + key + " = '" + map3.get(key) + "',";
                                 }
                             }
                         }
-                        for (String key : map2.keySet())
-                        {
-                            if ((map2.get(key) != null) && (!key.equals("RN")))
-                            {
-                                if (databaseType.equals("MySql"))
-                                {
+                        for (String key : map2.keySet()) {
+                            if ((map2.get(key) != null) && (!key.equals("RN"))) {
+                                if (databaseType.equals("MySql")) {
                                     columnType = permissionService.selectColumnTypeForMySql(databaseName, tableName, key, databaseConfigId);
                                 }
-                                if (databaseType.equals("MariaDB"))
-                                {
+                                if (databaseType.equals("MariaDB")) {
                                     columnType = permissionService.selectColumnTypeForMySql(databaseName, tableName, key, databaseConfigId);
                                 }
-                                if (databaseType.equals("Oracle"))
-                                {
+                                if (databaseType.equals("Oracle")) {
                                     columnType = permissionService.selectColumnTypeForOracle(databaseName, tableName, key, databaseConfigId);
                                 }
-                                if (databaseType.equals("PostgreSQL"))
-                                {
+                                if (databaseType.equals("PostgreSQL")) {
                                     columnType = permissionService.selectColumnTypeForPostgreSQL(databaseName, tableName, key, databaseConfigId);
                                 }
-                                if (databaseType.equals("MSSQL"))
-                                {
+                                if (databaseType.equals("MSSQL")) {
                                     columnType = permissionService.selectColumnTypeForMSSQL(databaseName, tableName, key, databaseConfigId);
                                 }
-                                if (columnType.equals("DATE"))
-                                {
+                                if (columnType.equals("DATE")) {
                                     whereStr = whereStr + " and " + key + " = to_date(' " + map2.get(key) + "','yyyy-mm-dd hh24:mi:ss') ";
-                                }
-                                else if (columnType.indexOf("TIMESTAMP") >= 0)
-                                {
+                                } else if (columnType.indexOf("TIMESTAMP") >= 0) {
                                     whereStr = whereStr + " and " + key + " = to_date(' " + map2.get(key) + "','yyyy-mm-dd hh24:mi:ss') ";
-                                }
-                                else if (databaseType.equals("PostgreSQL"))
-                                {
+                                } else if (databaseType.equals("PostgreSQL")) {
                                     whereStr = whereStr + " and \"" + key + "\" = '" + map2.get(key) + "' ";
-                                }
-                                else
-                                {
+                                } else {
                                     whereStr = whereStr + " and " + key + " = '" + map2.get(key) + "' ";
                                 }
                             }
                         }
-                    }
-                    else
-                    {
+                    } else {
                         String[] primaryKeys = primary_key.split(",");
-                        for (String key : map3.keySet())
-                        {
-                            if (map3.get(key) == null)
-                            {
+                        for (String key : map3.keySet()) {
+                            if (map3.get(key) == null) {
                                 setStr = setStr + key + " = null , ";
-                            }
-                            else
-                            {
-                                if (databaseType.equals("MySql"))
-                                {
-                                    if (map3.get(key).equals(""))
-                                    {
+                            } else {
+                                if (databaseType.equals("MySql")) {
+                                    if (map3.get(key).equals("")) {
                                         setStr = setStr + key + " = null ,";
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         setStr = setStr + key + " = '" + map3.get(key) + "',";
                                     }
                                 }
-                                if (databaseType.equals("MariaDB"))
-                                {
+                                if (databaseType.equals("MariaDB")) {
                                     setStr = setStr + key + " = '" + map3.get(key) + "',";
                                 }
-                                if (databaseType.equals("Oracle"))
-                                {
+                                if (databaseType.equals("Oracle")) {
                                     columnType = permissionService.selectColumnTypeForOracle(databaseName, tableName, key, databaseConfigId);
-                                    if (columnType.equals("DATE"))
-                                    {
+                                    if (columnType.equals("DATE")) {
                                         setStr = setStr + key + " = to_date('" + map3.get(key) + "' ,'yyyy-mm-dd hh24:mi:ss'),";
-                                    }
-                                    else if (columnType.indexOf("TIMESTAMP") >= 0)
-                                    {
+                                    } else if (columnType.indexOf("TIMESTAMP") >= 0) {
                                         setStr = setStr + key + " = to_date('" + map3.get(key) + "' ,'yyyy-mm-dd hh24:mi:ss'),";
-                                    }
-                                    else
-                                    {
+                                    } else {
                                         setStr = setStr + key + " = '" + map3.get(key) + "',";
                                     }
                                 }
-                                if (databaseType.equals("PostgreSQL"))
-                                {
+                                if (databaseType.equals("PostgreSQL")) {
                                     setStr = setStr + "\"" + key + "\" = '" + map3.get(key) + "',";
                                 }
-                                if (databaseType.equals("MSSQL"))
-                                {
+                                if (databaseType.equals("MSSQL")) {
                                     setStr = setStr + key + " = '" + map3.get(key) + "',";
                                 }
                             }
                         }
-                        if (databaseType.equals("PostgreSQL"))
-                        {
-                            for (String primaryKey : primaryKeys)
-                            {
+                        if (databaseType.equals("PostgreSQL")) {
+                            for (String primaryKey : primaryKeys) {
                                 whereStr = whereStr + " and \"" + primaryKey + "\" = '" + map2.get(primaryKey) + "' ";
                             }
-                        }
-                        else
-                        {
-                            for (String primaryKey : primaryKeys)
-                            {
+                        } else {
+                            for (String primaryKey : primaryKeys) {
                                 whereStr = whereStr + " and " + primaryKey + " = '" + map2.get(primaryKey) + "' ";
                             }
                         }
@@ -1336,54 +1262,48 @@ public class PermissionController extends BaseController {
         result.put("status", status);
         return result;
     }
-    
+
     @RequestMapping(value = {"i/designTableUpdate/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> designTableUpdate(@PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         Map<String, Object> mapResult = new HashMap<>();
         String mess = "";
         String status = "";
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         String databaseName = request.getParameter("databaseName");
         String tableName = request.getParameter("tableName");
         String inserted = request.getParameter("inserted");
         String updated = request.getParameter("updated");
         try {
-            if (inserted != null)  {
+            if (inserted != null) {
                 JSONArray insertArray = JSONArray.parseArray(inserted);
                 for (int i = 0; i < insertArray.size(); i++) {
-                    Map<String, Object> map1 = (Map)insertArray.get(i);
+                    Map<String, Object> map1 = (Map) insertArray.get(i);
                     Map maps = new HashMap<>();
-                    for (String key : map1.keySet())
-                    {
+                    for (String key : map1.keySet()) {
                         maps.put(key, map1.get(key));
                     }
                     maps.remove("TREESOFTPRIMARYKEY");
-                    if (databaseType.equals("MySql"))
-                    {
+                    if (databaseType.equals("MySql")) {
                         permissionService.saveDesginColumn(maps, databaseName, tableName, databaseConfigId);
                     }
-                    if (databaseType.equals("MariaDB"))
-                    {
+                    if (databaseType.equals("MariaDB")) {
                         permissionService.saveDesginColumn(maps, databaseName, tableName, databaseConfigId);
                     }
-                    if (databaseType.equals("Oracle"))
-                    {
+                    if (databaseType.equals("Oracle")) {
                         permissionService.saveDesginColumnForOracle(maps, databaseName, tableName, databaseConfigId);
                     }
-                    if (databaseType.equals("PostgreSQL"))
-                    {
+                    if (databaseType.equals("PostgreSQL")) {
                         permissionService.saveDesginColumnForPostgreSQL(maps, databaseName, tableName, databaseConfigId);
                     }
-                    if (databaseType.equals("MSSQL"))
-                    {
+                    if (databaseType.equals("MSSQL")) {
                         permissionService.saveDesginColumnForMSSQL(maps, databaseName, tableName, databaseConfigId);
                     }
                 }
             }
-            if (updated != null)  {
+            if (updated != null) {
                 if (databaseType.equals("MySql")) {
                     permissionService.updateTableColumn(updated, databaseName, tableName, databaseConfigId);
                 }
@@ -1411,33 +1331,33 @@ public class PermissionController extends BaseController {
         mapResult.put("status", status);
         return mapResult;
     }
-    
+
     @RequestMapping(value = {"i/deleteTableColumn/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> deleteTableColumn(@PathVariable String databaseConfigId, @RequestBody IdsDto tem)
-        throws Exception {
+            throws Exception {
         String databaseName = tem.getDatabaseName();
         String tableName = tem.getTableName();
         String[] ids = tem.getIds();
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map0.get("databaseType");
+        String databaseType = (String) map0.get("databaseType");
         int i = 0;
         String mess = "";
         String status = "";
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 permissionService.deleteTableColumn(databaseName, tableName, ids, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 permissionService.deleteTableColumn(databaseName, tableName, ids, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 permissionService.deleteTableColumnForOracle(databaseName, tableName, ids, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 permissionService.deleteTableColumnForPostgreSQL(databaseName, tableName, ids, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 permissionService.deleteTableColumnForMSSQL(databaseName, tableName, ids, databaseConfigId);
             }
             mess = "删除成功";
@@ -1453,33 +1373,33 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/designTableSetNull/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> designTableSetNull(@PathVariable String databaseConfigId, @RequestBody IdsDto tem)
-        throws Exception {
+            throws Exception {
         String mess = "";
         String status = "";
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map0.get("databaseType");
+        String databaseType = (String) map0.get("databaseType");
         String databaseName = tem.getDatabaseName();
         String tableName = tem.getTableName();
         String column_name = tem.getColumn_name();
         String is_nullable = tem.getIs_nullable();
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 permissionService.updateTableNullAble(databaseName, tableName, column_name, is_nullable, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 permissionService.updateTableNullAble(databaseName, tableName, column_name, is_nullable, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 permissionService.updateTableNullAbleForOracle(databaseName, tableName, column_name, is_nullable, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 permissionService.updateTableNullAbleForPostgreSQL(databaseName, tableName, column_name, is_nullable, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 permissionService.updateTableNullAbleForMSSQL(databaseName, tableName, column_name, is_nullable, databaseConfigId);
             }
             mess = "保存成功";
@@ -1494,33 +1414,33 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/designTableSetPimary/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> designTableSetPimary(@PathVariable String databaseConfigId, @RequestBody IdsDto tem)
-        throws Exception {
+            throws Exception {
         String mess = "";
         String status = "";
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map0.get("databaseType");
+        String databaseType = (String) map0.get("databaseType");
         String databaseName = tem.getDatabaseName();
         String tableName = tem.getTableName();
         String column_name = tem.getColumn_name();
         String column_key = tem.getColumn_key();
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 permissionService.savePrimaryKey(databaseName, tableName, column_name, column_key, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 permissionService.savePrimaryKey(databaseName, tableName, column_name, column_key, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 permissionService.savePrimaryKeyForOracle(databaseName, tableName, column_name, column_key, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 permissionService.savePrimaryKeyForPostgreSQL(databaseName, tableName, column_name, column_key, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 permissionService.savePrimaryKeyForMSSQL(databaseName, tableName, column_name, column_key, databaseConfigId);
             }
             mess = "保存成功";
@@ -1535,39 +1455,39 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/upDownColumn/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> upDownColumn(@PathVariable String databaseConfigId, @RequestBody IdsDto tem)
-        throws Exception {
+            throws Exception {
         String mess = "";
         String status = "";
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map0.get("databaseType");
+        String databaseType = (String) map0.get("databaseType");
         String databaseName = tem.getDatabaseName();
         String tableName = tem.getTableName();
         String column_name = tem.getColumn_name();
         String column_name2 = tem.getColumn_name2();
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 permissionService.upDownColumn(databaseName, tableName, column_name, column_name2, databaseConfigId);
                 mess = "保存成功";
                 status = "success";
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 permissionService.upDownColumn(databaseName, tableName, column_name, column_name2, databaseConfigId);
                 mess = "保存成功";
                 status = "success";
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 mess = "Oracle不支持该操作！";
                 status = "success";
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 mess = "PostgreSQL不支持该操作！";
                 status = "success";
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 mess = "SQL Server不支持该操作！";
                 status = "success";
             }
@@ -1581,7 +1501,7 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     public Map<String, Object> executeSqlHaveResForOracle(String sql, String dbName, String databaseConfigId) {
         Map<String, Object> map = new HashMap<>();
         Page<Map<String, Object>> page = getPage(request);
@@ -1609,7 +1529,7 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     public Map<String, Object> executeSqlHaveResForPostgreSQL(String sql, String dbName, String databaseConfigId) {
         Map<String, Object> map = new HashMap<>();
         Page<Map<String, Object>> page = getPage(request);
@@ -1637,7 +1557,7 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     public Map<String, Object> executeSqlHaveResForMSSQL(String sql, String dbName, String databaseConfigId) {
         Map<String, Object> map = new HashMap<>();
         Page<Map<String, Object>> page = getPage(request);
@@ -1665,7 +1585,7 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     public Map<String, Object> executeSqlHaveResForHive2(String sql, String dbName, String databaseConfigId) {
         Map<String, Object> map = new HashMap<>();
         Page<Map<String, Object>> page = getPage(request);
@@ -1693,22 +1613,22 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/backupDatabase/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public String backupDatabase(@PathVariable String databaseName, @PathVariable String databaseConfigId) {
         request.setAttribute("databaseName", databaseName);
         request.setAttribute("databaseConfigId", databaseConfigId);
         return "system/backupDatabase";
     }
-    
+
     @RequestMapping(value = {"i/monitor/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public String monitor(@PathVariable String databaseName, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String ip = (String)map0.get("ip");
-        String port = (String)map0.get("port");
-        String name = (String)map0.get("name");
-        String databaseType = (String)map0.get("databaseType");
+        String ip = (String) map0.get("ip");
+        String port = (String) map0.get("port");
+        String name = (String) map0.get("name");
+        String databaseType = (String) map0.get("databaseType");
         request.setAttribute("ip", ip);
         request.setAttribute("port", port);
         request.setAttribute("name", name);
@@ -1719,7 +1639,7 @@ public class PermissionController extends BaseController {
             String tableSpaceName = "";
             String TABLESPACE_SIZE_FREE = "";
             String TABLESPACE_SIZE_USED = "";
-            for (int i = 0; i < list.size(); i++)  {
+            for (int i = 0; i < list.size(); i++) {
                 Map<String, Object> map = list.get(i);
                 tableSpaceName = tableSpaceName + "'" + map.get("TABLESPACE_NAME") + "',";
                 TABLESPACE_SIZE_FREE = TABLESPACE_SIZE_FREE + map.get("TABLESPACE_SIZE_FREE") + ",";
@@ -1744,14 +1664,14 @@ public class PermissionController extends BaseController {
         }
         return "system/monitor";
     }
-    
+
     @RequestMapping(value = {"i/monitorItem/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public String monitorItem(@PathVariable String databaseName, @PathVariable String databaseConfigId) {
         request.setAttribute("databaseName", databaseName);
         request.setAttribute("databaseConfigId", databaseConfigId);
         return "system/monitorItem";
     }
-    
+
     @RequestMapping({"i/queryDatabaseStatus/{databaseName}/{databaseConfigId}"})
     @ResponseBody
     public Map<String, Object> queryDatabaseStatus(@PathVariable String databaseName, @PathVariable String databaseConfigId) {
@@ -1760,28 +1680,28 @@ public class PermissionController extends BaseController {
         String status = "";
         try {
             Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-            String databaseType = (String)map0.get("databaseType");
-            if (databaseType.equals("MySql"))  {
+            String databaseType = (String) map0.get("databaseType");
+            if (databaseType.equals("MySql")) {
                 map = permissionService.queryDatabaseStatus(databaseName, databaseConfigId);
                 mess = "查询成功";
                 status = "success";
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 map = permissionService.queryDatabaseStatus(databaseName, databaseConfigId);
                 mess = "查询成功";
                 status = "success";
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 map = permissionService.queryDatabaseStatusForOracle(databaseName, databaseConfigId);
                 mess = "查询成功";
                 status = "success";
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 map = permissionService.queryDatabaseStatusForPostgreSQL(databaseName, databaseConfigId);
                 mess = "查询成功";
                 status = "success";
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 mess = "暂不支持SQL Server状态监控!";
                 status = "fail";
             }
@@ -1798,39 +1718,39 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping({"i/monitorItemValue/{databaseName}/{databaseConfigId}"})
     @ResponseBody
     public Map<String, Object> monitorItemValue(@PathVariable String databaseName, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         List<Map<String, Object>> list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map0.get("databaseType");
+        String databaseType = (String) map0.get("databaseType");
         String mess = "";
         String status = "";
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 list = permissionService.monitorItemValue(databaseName, databaseConfigId);
                 mess = "查询成功";
                 status = "success";
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 list = permissionService.monitorItemValue(databaseName, databaseConfigId);
                 mess = "查询成功";
                 status = "success";
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 list = permissionService.monitorItemValueForOracle(databaseName, databaseConfigId);
                 mess = "查询成功";
                 status = "success";
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 Thread.sleep(3000L);
                 mess = "暂不支持";
                 status = "fail";
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 Thread.sleep(3000L);
                 mess = "暂不支持";
                 status = "fail";
@@ -1853,40 +1773,40 @@ public class PermissionController extends BaseController {
     @RequestMapping(value = {"i/copyTable/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> copyTable(@RequestBody IdsDto tem, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         String databaseName = tem.getDatabaseName();
         String tableName = tem.getTableName();
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         Map<String, Object> mapResult = new HashMap<>();
         String mess = "";
         String status = "";
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 permissionService.copyTableForMySql(databaseName, tableName, databaseConfigId);
                 Thread.sleep(3000L);
                 mess = "复制表完成！";
                 status = "success";
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 permissionService.copyTableForMySql(databaseName, tableName, databaseConfigId);
                 Thread.sleep(3000L);
                 mess = "复制表完成！";
                 status = "success";
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 permissionService.copyTableForOracle(databaseName, tableName, databaseConfigId);
                 Thread.sleep(3000L);
                 mess = "复制表完成！";
                 status = "success";
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 permissionService.copyTableForPostgreSQL(databaseName, tableName, databaseConfigId);
                 Thread.sleep(3000L);
                 mess = "复制表完成！";
                 status = "success";
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 mess = "暂不支持MSSQL复制表！";
                 status = "fail";
             }
@@ -1899,51 +1819,51 @@ public class PermissionController extends BaseController {
         mapResult.put("status", status);
         return mapResult;
     }
-    
+
     @RequestMapping(value = {"i/renameTable/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> renameTable(@RequestBody IdsDto tem, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         String databaseName = tem.getDatabaseName();
         String tableName = tem.getTableName();
         String newTableName = tem.getNewTableName();
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         Map<String, Object> mapResult = new HashMap<>();
         String mess = "";
         String status = "";
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 permissionService.renameTableForMySql(databaseName, tableName, databaseConfigId, newTableName);
                 Thread.sleep(3000L);
                 mess = "操作完成！";
                 status = "success";
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 permissionService.renameTableForMySql(databaseName, tableName, databaseConfigId, newTableName);
                 Thread.sleep(3000L);
                 mess = "操作完成！";
                 status = "success";
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 permissionService.renameTableForOracle(databaseName, tableName, databaseConfigId, newTableName);
                 Thread.sleep(3000L);
                 mess = "操作完成！";
                 status = "success";
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 permissionService.renameTableForPostgreSQL(databaseName, tableName, databaseConfigId, newTableName);
                 Thread.sleep(3000L);
                 mess = "操作完成！";
                 status = "success";
             }
-            if (databaseType.equals("Hive2"))  {
+            if (databaseType.equals("Hive2")) {
                 permissionService.renameTableForHive2(databaseName, tableName, databaseConfigId, newTableName);
                 Thread.sleep(3000L);
                 mess = "操作完成！";
                 status = "success";
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 mess = "暂不支持MSSQL重命名表！";
                 status = "fail";
             }
@@ -1956,7 +1876,7 @@ public class PermissionController extends BaseController {
         mapResult.put("status", status);
         return mapResult;
     }
-    
+
     @RequestMapping(value = {"i/deleteBackupFile"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> deleteBackupFile(@RequestBody IdsDto tem) {
@@ -1978,7 +1898,7 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/backupFileDownload/{fileName:.+}"}, method = {RequestMethod.GET})
     @ResponseBody
     public void backupFileDownload(@PathVariable("fileName") String fileName, HttpServletResponse response) {
@@ -1992,7 +1912,7 @@ public class PermissionController extends BaseController {
             ServletOutputStream out = response.getOutputStream();
             byte[] buffer = new byte[1024];
             int len = 0;
-            while ((len = inputStream.read(buffer)) > 0)  {
+            while ((len = inputStream.read(buffer)) > 0) {
                 out.write(buffer, 0, len);
             }
             inputStream.close();
@@ -2002,7 +1922,7 @@ public class PermissionController extends BaseController {
             logger.error(e.getMessage(), e);
         }
     }
-    
+
     @RequestMapping(value = {"i/zipFile"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> zipFile(@RequestBody IdsDto tem) {
@@ -2012,7 +1932,7 @@ public class PermissionController extends BaseController {
         String fileName = "";
         String[] ids = tem.getIds();
         try {
-            for (int i = 0; i < ids.length; i++)  {
+            for (int i = 0; i < ids.length; i++) {
                 fileName = ids[i];
                 File srcFile = new File(path + fileName);
                 File zipFile = new File(path + fileName.replaceAll(".sql", "") + ".zip");
@@ -2038,14 +1958,14 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/unzipFile"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> unzip(String zipFilepath, String destDir) {
         String mess = "";
         String status = "";
         try {
-            if (!new File(zipFilepath).exists())  {
+            if (!new File(zipFilepath).exists()) {
                 throw new RuntimeException("zip file " + zipFilepath + " does not exist.");
             }
             Project proj = new Project();
@@ -2068,24 +1988,24 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/dropTable/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> dropTable(@RequestBody IdsDto tem, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         String mess = "";
         String status = "";
         Map<String, Object> map = new HashMap<>();
         String tableName = tem.getTableName();
         String databaseName = tem.getDatabaseName();
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         String ip = NetworkUtil.getIpAddress(request);
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map0.get("databaseType");
+        String databaseType = (String) map0.get("databaseType");
         boolean bool = true;
         try {
-            if ((tableName != null) || (!"".equals(tableName)))  {
+            if ((tableName != null) || (!"".equals(tableName))) {
                 if (databaseType.equals("Oracle")) {
                     bool = permissionService.dropTableForOracle(databaseName, tableName, databaseConfigId);
                 } else if (databaseType.equals("PostgreSQL")) {
@@ -2105,17 +2025,17 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/dropDatabase/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> dropDatabase(@RequestBody IdsDto tem, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         String mess = "";
         String status = "";
         Map<String, Object> map = new HashMap<>();
         String databaseName = tem.getDatabaseName();
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         String ip = NetworkUtil.getIpAddress(request);
         boolean bool = true;
         try {
@@ -2131,24 +2051,24 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/clearTable/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> clearTable(@PathVariable String databaseConfigId, @RequestBody IdsDto tem)
-        throws Exception {
+            throws Exception {
         String mess = "";
         String status = "";
         Map<String, Object> map = new HashMap<>();
         String tableName = tem.getTableName();
         String databaseName = tem.getDatabaseName();
         HttpSession session = request.getSession(true);
-        String username = (String)session.getAttribute("LOGIN_USER_NAME");
+        String username = (String) session.getAttribute("LOGIN_USER_NAME");
         String ip = NetworkUtil.getIpAddress(request);
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map0.get("databaseType");
+        String databaseType = (String) map0.get("databaseType");
         boolean bool = true;
         try {
-            if ((tableName != null) || (!"".equals(tableName)))  {
+            if ((tableName != null) || (!"".equals(tableName))) {
                 bool = permissionService.clearTable(databaseName, tableName, databaseConfigId);
             }
             mess = "删除成功";
@@ -2162,7 +2082,7 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/showTableMess/{tableName}/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     public String showTableMess(@PathVariable String tableName, @PathVariable String databaseName, @PathVariable String databaseConfigId) {
         request.setAttribute("databaseName", databaseName);
@@ -2170,14 +2090,14 @@ public class PermissionController extends BaseController {
         request.setAttribute("databaseConfigId", databaseConfigId);
         return "system/showTableMess";
     }
-    
+
     @RequestMapping(value = {"i/viewTableMess/{tableName}/{databaseName}/{databaseConfigId}"}, method = {RequestMethod.GET})
     @ResponseBody
     public Map<String, Object> viewTableMess(@PathVariable String tableName, @PathVariable String databaseName, @PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         Map<String, Object> map = new HashMap<>();
         Map<String, Object> map0 = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map0.get("databaseType");
+        String databaseType = (String) map0.get("databaseType");
         List<Map<String, Object>> listAllColumn = new ArrayList<>();
         if (databaseType.equals("MySql")) {
             listAllColumn = permissionService.viewTableMessForMySql(databaseName, tableName, databaseConfigId);
@@ -2201,35 +2121,35 @@ public class PermissionController extends BaseController {
         map.put("total", Integer.valueOf(listAllColumn.size()));
         return map;
     }
-    
+
     @RequestMapping(value = {"i/saveNewTable/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> saveNewTable(@PathVariable String databaseConfigId)
-        throws Exception {
+            throws Exception {
         Map<String, Object> mapResult = new HashMap<>();
         String mess = "";
         String status = "";
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         String databaseName = request.getParameter("databaseName");
         String tableName = request.getParameter("tableName");
         String inserted = request.getParameter("inserted");
         try {
             JSONObject jsonObject = JSONObject.parseObject(inserted);
             JSONArray insertArray = jsonObject.getJSONArray("rows");
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 permissionService.saveNewTable(insertArray, databaseName, tableName, databaseConfigId);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 permissionService.saveNewTable(insertArray, databaseName, tableName, databaseConfigId);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 permissionService.saveNewTableForOracle(insertArray, databaseName, tableName, databaseConfigId);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 permissionService.saveNewTableForPostgreSQL(insertArray, databaseName, tableName, databaseConfigId);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 permissionService.saveNewTableForMSSQL(insertArray, databaseName, tableName, databaseConfigId);
             }
             mess = "保存成功！";
@@ -2243,7 +2163,7 @@ public class PermissionController extends BaseController {
         mapResult.put("status", status);
         return mapResult;
     }
-    
+
     @RequestMapping(value = {"i/restoreDB/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> restoreDB(@RequestBody IdsDto tem, @PathVariable String databaseConfigId) {
@@ -2253,22 +2173,20 @@ public class PermissionController extends BaseController {
         String fileName = "";
         String[] ids = tem.getIds();
         try {
-            for (int i = 0; i < ids.length; i++)  {
+            for (int i = 0; i < ids.length; i++) {
                 fileName = ids[i];
                 File file = new File(path + fileName);
                 if (fileName.indexOf(".rar") > 0) {
                     FileUtil.unRarFile(path + fileName, path + "temp" + File.separator);
                     doImportDB(path + "temp" + File.separator);
-                    for (int a = 0; a < tempFileList.size(); a++)
-                    {
+                    for (int a = 0; a < tempFileList.size(); a++) {
                         permissionService.restoreDBFromFile(tem.getDatabaseName(), tempFileList.get(a), databaseConfigId);
                     }
                 }
                 if (fileName.indexOf(".zip") > 0) {
                     FileUtil.unZipFiles(file, path + "temp" + File.separator);
                     doImportDB(path + "temp" + File.separator);
-                    for (int a = 0; a < tempFileList.size(); a++)
-                    {
+                    for (int a = 0; a < tempFileList.size(); a++) {
                         permissionService.restoreDBFromFile(tem.getDatabaseName(), tempFileList.get(a), databaseConfigId);
                     }
                 }
@@ -2288,31 +2206,30 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     List<String> tempFileList = new ArrayList<>();
-    
+
     public void doImportDB(String path) {
         File file = new File(path);
         getSqlFile(file);
     }
-    
+
     public void getSqlFile(File f) {
         if (f != null) {
             String fileName = f.getName();
-            if (f.isDirectory())  {
+            if (f.isDirectory()) {
                 File[] fileArray = f.listFiles();
                 if (fileArray != null) {
-                    for (File file : fileArray)
-                    {
+                    for (File file : fileArray) {
                         getSqlFile(file);
                     }
                 }
-            } else if (fileName.toUpperCase().contains(".SQL"))  {
+            } else if (fileName.toUpperCase().contains(".SQL")) {
                 tempFileList.add(f.getAbsolutePath());
             }
         }
     }
-    
+
     @RequestMapping(value = {"i/deleteConfig"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> deleteConfig(@RequestBody IdsDto tem) {
@@ -2333,7 +2250,7 @@ public class PermissionController extends BaseController {
         map.put("status", status);
         return map;
     }
-    
+
     @RequestMapping(value = {"i/getDataBaseConfig/{databaseConfigId}"}, method = {RequestMethod.GET})
     @ResponseBody
     public Map<String, Object> getDataBaseConfig(@PathVariable String databaseConfigId) {
@@ -2346,24 +2263,24 @@ public class PermissionController extends BaseController {
     public String dataSynchronize(Model model) {
         return "system/dataSynchronizeList";
     }
-    
+
     @RequestMapping(value = {"i/addDataSynchronizeForm"}, method = {RequestMethod.GET})
     public String addDataSynchronizeForm(Model model) {
         List<Map<String, Object>> configList = permissionService.getAllConfigList();
         model.addAttribute("configList", configList);
         return "system/dataSynchronizeForm";
     }
-    
+
     @RequestMapping(value = {"i/dataSynchronizeLogForm/{dataSynchronizeId}"}, method = {RequestMethod.GET})
     public String dataSynchronizeLogForm(@PathVariable String dataSynchronizeId) {
         request.setAttribute("dataSynchronizeId", dataSynchronizeId);
         return "system/dataSynchronizeLogForm";
     }
-    
+
     @RequestMapping(value = {"i/treeShowData/{tableName}/{dbName}/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> treeShowData(@PathVariable String tableName, @PathVariable String dbName, @PathVariable String databaseConfigId, @RequestBody Page<Map<String, Object>> page)
-        throws Exception {
+            throws Exception {
         Map<String, Object> map2 = new HashMap<>();
         return map2;
     }

@@ -17,13 +17,13 @@ import java.io.IOException;
 public class CaptchaController {
     @Autowired
     private HttpSession session;
-    
+
     @Autowired
     private Producer producer;
-    
+
     @RequestMapping("/static/images/securityCode.jpg")
     public void captcha(HttpServletResponse response)
-        throws IOException {
+            throws IOException {
         response.setHeader("Cache-Control", "no-store, no-cache");
         response.setContentType("image/jpeg");
         // 生成文字验证码

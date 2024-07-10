@@ -11,9 +11,8 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 /**
- * 
  * 注册 JdbcTemplate
- * 
+ *
  * @author 00fly
  * @version [版本号, 2018年11月20日]
  * @see [相关类/方法]
@@ -23,17 +22,17 @@ import javax.sql.DataSource;
 public class JdbcTemplateConfig {
     @Autowired
     private DataSource dataSource;
-    
+
     @PostConstruct
     public void initSysDataSources() {
         SysDataBaseUtil.setDataSource(dataSource);
     }
-    
+
     @Bean
     public JdbcTemplate jdbcTemplate() {
         return new JdbcTemplate(dataSource);
     }
-    
+
     @Bean
     public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
         return new NamedParameterJdbcTemplate(dataSource);

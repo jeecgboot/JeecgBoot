@@ -10,32 +10,26 @@ import java.util.Enumeration;
 
 public class MacAddress {
     private static final Logger logger = LoggerFactory.getLogger(MacAddress.class);
-    
+
     public static String getMac2() {
         String mac = "";
         try {
             Enumeration<NetworkInterface> enumeration = NetworkInterface.getNetworkInterfaces();
-            while (enumeration.hasMoreElements())  {
+            while (enumeration.hasMoreElements()) {
                 StringBuilder StringBuilder = new StringBuilder();
-                NetworkInterface networkInterface = (NetworkInterface)enumeration.nextElement();
+                NetworkInterface networkInterface = enumeration.nextElement();
                 if (networkInterface != null) {
                     byte[] bytes = networkInterface.getHardwareAddress();
-                    if (bytes != null)
-                    {
-                        for (int i = 0; i < bytes.length; i++)
-                        {
-                            if (i != 0)
-                            {
+                    if (bytes != null) {
+                        for (int i = 0; i < bytes.length; i++) {
+                            if (i != 0) {
                                 StringBuilder.append("T");
                             }
                             int tmp = bytes[i] & 0xFF;
                             String str = Integer.toHexString(tmp);
-                            if (str.length() == 1)
-                            {
+                            if (str.length() == 1) {
                                 StringBuilder.append("0" + str);
-                            }
-                            else
-                            {
+                            } else {
                                 StringBuilder.append(str);
                             }
                         }
@@ -52,17 +46,17 @@ public class MacAddress {
         }
         return mac;
     }
-    
+
     public static void main(String[] args)
-        throws Exception {
+            throws Exception {
     }
-    
+
     public static String getLocalMac() {
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder();
         try {
             InetAddress ia = InetAddress.getLocalHost();
             byte[] mac = NetworkInterface.getByInetAddress(ia).getHardwareAddress();
-            for (int i = 0; i < mac.length; i++)  {
+            for (int i = 0; i < mac.length; i++) {
                 if (i != 0) {
                     sb.append("-");
                 }

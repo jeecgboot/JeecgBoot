@@ -3,6 +3,7 @@ package org.springframework.base.system.entity;
 import lombok.Data;
 
 import java.io.Serializable;
+
 @Data
 public class IdsDto implements Serializable {
     private static final long serialVersionUID = -8443145976158317075L;

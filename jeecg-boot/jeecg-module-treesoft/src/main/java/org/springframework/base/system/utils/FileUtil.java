@@ -11,7 +11,7 @@ import java.util.Enumeration;
 
 public class FileUtil {
     private static final Logger logger = LoggerFactory.getLogger(FileUtil.class);
-    
+
     public static void ZipFiles(File srcfile, File zipfile) {
         byte[] buf = new byte[1024];
         try {
@@ -19,7 +19,7 @@ public class FileUtil {
             FileInputStream in = new FileInputStream(srcfile);
             out.putNextEntry(new ZipEntry(srcfile.getName()));
             int len;
-            while ((len = in.read(buf)) > 0)  {
+            while ((len = in.read(buf)) > 0) {
                 out.write(buf, 0, len);
             }
             out.closeEntry();
@@ -29,25 +29,25 @@ public class FileUtil {
             logger.error(e.getMessage(), e);
         }
     }
-    
+
     public static void unZipFiles(File zipfile, String descDir)
-        throws Exception {
+            throws Exception {
         ZipFile zf = new ZipFile(zipfile);
-        for (Enumeration entries = zf.getEntries(); entries.hasMoreElements();) {
-            ZipEntry entry = (ZipEntry)entries.nextElement();
+        for (Enumeration entries = zf.getEntries(); entries.hasMoreElements(); ) {
+            ZipEntry entry = (ZipEntry) entries.nextElement();
             String zipEntryName = entry.getName();
             InputStream in = zf.getInputStream(entry);
             OutputStream out = new FileOutputStream(descDir + zipEntryName);
             byte[] buf1 = new byte[1024];
             int len;
-            while ((len = in.read(buf1)) > 0)  {
+            while ((len = in.read(buf1)) > 0) {
                 out.write(buf1, 0, len);
             }
             in.close();
             out.close();
         }
     }
-    
+
     public static void unRarFile(String srcRarPath, String dstDirectoryPath) {
         // if (!srcRarPath.toLowerCase().endsWith(".rar"))
         // {

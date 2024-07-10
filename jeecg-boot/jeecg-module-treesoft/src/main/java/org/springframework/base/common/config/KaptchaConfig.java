@@ -1,4 +1,3 @@
-
 package org.springframework.base.common.config;
 
 import com.google.code.kaptcha.impl.DefaultKaptcha;
@@ -10,7 +9,6 @@ import java.util.Properties;
 
 /**
  * 生成验证码配置
- *
  */
 @Configuration
 public class KaptchaConfig {

@@ -20,10 +20,10 @@ import java.util.Map;
 public class GraphicController extends BaseController {
     @Autowired
     HttpServletRequest request;
-    
+
     @Autowired
     private PermissionService permissionService;
-    
+
     @RequestMapping(value = {"graphicPage/{databaseName}/{databaseConfigId}/{temp}"}, method = {RequestMethod.GET})
     public String config(@PathVariable String databaseName, @PathVariable String databaseConfigId, @PathVariable String temp) {
         request.setAttribute("databaseName", databaseName);
@@ -31,35 +31,35 @@ public class GraphicController extends BaseController {
         request.setAttribute("temp", temp);
         return "system/graphicPage";
     }
-    
+
     @RequestMapping(value = {"getViewData/{databaseConfigId}"}, method = {RequestMethod.POST})
     @ResponseBody
     public Map<String, Object> getViewData(@PathVariable String databaseConfigId, String sql, String databaseName, String limitForm, String pageSize)
-        throws Exception {
+            throws Exception {
         Map<String, Object> map = permissionService.getConfig(databaseConfigId);
-        String databaseType = (String)map.get("databaseType");
+        String databaseType = (String) map.get("databaseType");
         String mess;
         String status;
         List<Map<String, Object>> dataList = new ArrayList<>();
         try {
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 sql = "select * from (" + sql + ") tab limit " + limitForm + "," + pageSize;
                 dataList = permissionService.selectAllDataFromSQLForMysql(databaseName, databaseConfigId, sql);
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 sql = "select * from (" + sql + ") tab limit " + limitForm + "," + pageSize;
                 dataList = permissionService.selectAllDataFromSQLForMysql(databaseName, databaseConfigId, sql);
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 dataList = permissionService.selectAllDataFromSQLForOracle(databaseName, databaseConfigId, sql);
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 dataList = permissionService.selectAllDataFromSQLForPostgreSQL(databaseName, databaseConfigId, sql);
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 dataList = permissionService.selectAllDataFromSQLForMSSQL(databaseName, databaseConfigId, sql);
             }
-            if (databaseType.equals("Hive2"))  {
+            if (databaseType.equals("Hive2")) {
                 dataList = permissionService.selectAllDataFromSQLForHive2(databaseName, databaseConfigId, sql);
             }
             mess = "查询数据成功";

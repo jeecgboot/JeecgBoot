@@ -12,7 +12,6 @@ import org.springframework.base.system.entity.IdsDto;
 import org.springframework.base.system.entity.Person;
 import org.springframework.base.system.persistence.Page;
 import org.springframework.base.system.service.ConfigService;
-import org.springframework.base.system.service.PermissionService;
 import org.springframework.base.system.service.PersonService;
 import org.springframework.base.system.utils.LogUtil;
 import org.springframework.base.system.utils.NetworkUtil;
@@ -61,7 +60,7 @@ public class PersonController extends BaseController {
         String mess = "";
         String status = "";
         HttpSession session = request.getSession(true);
-        String permission = (String)session.getAttribute("LOGIN_USER_PERMISSION");
+        String permission = (String) session.getAttribute("LOGIN_USER_PERMISSION");
         if (permission.indexOf("person") == -1) {
             map2.put("mess", "没有操作权限！");
             map2.put("status", "fail");
@@ -110,7 +109,7 @@ public class PersonController extends BaseController {
         } catch (Exception var5) {
         }
         List<Map<String, Object>> configList = this.configService.getAllConfigList();
-        logger.info("id {},map {}",id,map);
+        logger.info("id {},map {}", id, map);
         model.addAttribute("configList", configList);
         model.addAttribute("person", map);
         return "system/personForm";
@@ -126,7 +125,7 @@ public class PersonController extends BaseController {
         String status = "";
         Map<String, Object> map = new HashMap();
         HttpSession session = request.getSession(true);
-        String permission = (String)session.getAttribute("LOGIN_USER_PERMISSION");
+        String permission = (String) session.getAttribute("LOGIN_USER_PERMISSION");
         if (permission.indexOf("person") == -1) {
             map.put("mess", "没有操作权限！");
             map.put("status", "fail");
@@ -173,7 +172,7 @@ public class PersonController extends BaseController {
         String mess = "";
         String status = "";
         HttpSession session = request.getSession(true);
-        String permission = (String)session.getAttribute("LOGIN_USER_PERMISSION");
+        String permission = (String) session.getAttribute("LOGIN_USER_PERMISSION");
         if (permission.indexOf("person") == -1) {
             map.put("mess", "没有操作权限！");
             map.put("status", "fail");
@@ -190,12 +189,12 @@ public class PersonController extends BaseController {
                 this.personService.deletePerson(ids);
                 mess = "删除成功";
                 status = "success";
-                String username = (String)session.getAttribute("LOGIN_USER_NAME");
+                String username = (String) session.getAttribute("LOGIN_USER_NAME");
                 String ip = NetworkUtil.getIpAddress(request);
                 String userName = "";
 
-                for(int i = 0; i < list.size(); ++i) {
-                    userName = userName + ((Map)list.get(i)).get("username") + ",";
+                for (int i = 0; i < list.size(); ++i) {
+                    userName = userName + list.get(i).get("username") + ",";
                 }
             } catch (Exception var14) {
                 LogUtil.e("删除用户出错，" + var14);
@@ -218,7 +217,7 @@ public class PersonController extends BaseController {
 
         try {
             Map<String, Object> map = this.personService.getPerson(id);
-            String datascope = (String)map.get("datascope");
+            String datascope = (String) map.get("datascope");
             model.addAttribute("personId", id);
             model.addAttribute("datascope", datascope);
             return "system/configListSelect";
@@ -244,7 +243,7 @@ public class PersonController extends BaseController {
                 String[] var9;
                 int var8 = (var9 = tem.getIds()).length;
 
-                for(int var7 = 0; var7 < var8; ++var7) {
+                for (int var7 = 0; var7 < var8; ++var7) {
                     String idTemp = var9[var7];
                     datasource = datasource + idTemp + ",";
                 }

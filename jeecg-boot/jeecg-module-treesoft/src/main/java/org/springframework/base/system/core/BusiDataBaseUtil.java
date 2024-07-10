@@ -10,9 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * 
  * 业务数据库操作工具
- * 
+ *
  * @author 00fly
  * @version [版本号, 2018年11月22日]
  * @see [相关类/方法]
@@ -20,23 +19,23 @@ import java.util.*;
  */
 public class BusiDataBaseUtil {
     private static final Logger logger = LoggerFactory.getLogger(BusiDataBaseUtil.class);
-    
+
     private static String driver;
-    
+
     private static String url;
-    
+
     private static String userName;
-    
+
     private static String passWord;
-    
-    private SysDataBaseUtil sysDataBaseUtil = new SysDataBaseUtil();
-    
+
+    private final SysDataBaseUtil sysDataBaseUtil = new SysDataBaseUtil();
+
     public BusiDataBaseUtil(String dbName, String databaseConfigId) {
         String sql = " select database_type as databaseType, user_name as userName, password, port, ip, url from treesoft_config where id=?";
         Map<String, Object> map = sysDataBaseUtil.queryForMap(sql, databaseConfigId);
-        String ip = (String)map.get("ip");
-        String port = (String)map.get("port");
-        String databaseType = (String)map.get("databaseType");
+        String ip = (String) map.get("ip");
+        String port = (String) map.get("port");
+        String databaseType = (String) map.get("databaseType");
         switch (databaseType) {
             case "MySql":
             case "MariaDB":
@@ -62,13 +61,13 @@ public class BusiDataBaseUtil {
             default:
                 break;
         }
-        userName = (String)map.get("userName");
+        userName = (String) map.get("userName");
         passWord = CryptoUtil.decode(map.get("password").toString());
         if (passWord.contains("`")) {
             passWord = StringUtils.substringAfter(passWord, "`");
         }
     }
-    
+
     private synchronized Connection getConnection() {
         try {
             Class.forName(driver);
@@ -78,31 +77,31 @@ public class BusiDataBaseUtil {
             return null;
         }
     }
-    
+
     public static boolean testConnection(String databaseType, String databaseName, String ip, String port, String user, String password) {
         try {
             String url = "";
-            if (databaseType.equals("MySql"))  {
+            if (databaseType.equals("MySql")) {
                 Class.forName("com.mysql.jdbc.Driver");
                 url = "jdbc:mysql://" + ip + ":" + port + "/" + databaseName + "?characterEncoding=utf8";
             }
-            if (databaseType.equals("MariaDB"))  {
+            if (databaseType.equals("MariaDB")) {
                 Class.forName("com.mysql.jdbc.Driver");
                 url = "jdbc:mysql://" + ip + ":" + port + "/" + databaseName + "?characterEncoding=utf8";
             }
-            if (databaseType.equals("Oracle"))  {
+            if (databaseType.equals("Oracle")) {
                 Class.forName("oracle.jdbc.driver.OracleDriver");
                 url = "jdbc:oracle:thin:@" + ip + ":" + port + ":" + databaseName;
             }
-            if (databaseType.equals("PostgreSQL"))  {
+            if (databaseType.equals("PostgreSQL")) {
                 Class.forName("org.postgresql.Driver");
                 url = "jdbc:postgresql://" + ip + ":" + port + "/" + databaseName;
             }
-            if (databaseType.equals("MSSQL"))  {
+            if (databaseType.equals("MSSQL")) {
                 Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                 url = "jdbc:sqlserver://" + ip + ":" + port + ";database=" + databaseName;
             }
-            if (databaseType.equals("Hive2"))  {
+            if (databaseType.equals("Hive2")) {
                 Class.forName("org.apache.hive.jdbc.HiveDriver");
                 url = "jdbc:hive2://" + ip + ":" + port + "/" + databaseName;
             }
@@ -113,9 +112,9 @@ public class BusiDataBaseUtil {
         }
         return false;
     }
-    
+
     public int setupdateData(String sql)
-        throws Exception {
+            throws Exception {
         Connection conn = getConnection();
         Statement stmt = null;
         try {
@@ -124,27 +123,24 @@ public class BusiDataBaseUtil {
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
             throw new Exception(e.getMessage());
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 stmt.close();
                 conn.close();
-            }
-            catch (SQLException e)  {
+            } catch (SQLException e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
-    
+
     public int updateExecuteBatch(List<String> sqlList)
-        throws Exception {
+            throws Exception {
         Connection conn = getConnection();
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
             conn.setAutoCommit(false);
-            for (String sql : sqlList)  {
+            for (String sql : sqlList) {
                 sql = sql.replaceAll(";", "");
                 stmt.addBatch(sql);
             }
@@ -155,21 +151,18 @@ public class BusiDataBaseUtil {
             conn.rollback();
             logger.error(e.getMessage(), e);
             throw new Exception(e.getMessage());
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 stmt.close();
                 conn.close();
-            }
-            catch (SQLException e)  {
+            } catch (SQLException e) {
                 logger.error(e.getMessage(), e);
             }
         }
     }
-    
+
     public List<Map<String, Object>> queryForList(String sql)
-        throws Exception {
+            throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -188,13 +181,13 @@ public class BusiDataBaseUtil {
         fields = new String[maxSize];
         for (int i = 0; i < maxSize; i++) {
             fields[i] = rsmd.getColumnLabel(i + 1);
-            if (("java.sql.Timestamp".equals(rsmd.getColumnClassName(i + 1))) || ("oracle.sql.TIMESTAMP".equals(rsmd.getColumnClassName(i + 1))))  {
+            if (("java.sql.Timestamp".equals(rsmd.getColumnClassName(i + 1))) || ("oracle.sql.TIMESTAMP".equals(rsmd.getColumnClassName(i + 1)))) {
                 times.add(fields[i]);
             }
-            if (("oracle.jdbc.OracleClob".equals(rsmd.getColumnClassName(i + 1))) || ("oracle.jdbc.OracleBlob".equals(rsmd.getColumnClassName(i + 1))))  {
+            if (("oracle.jdbc.OracleClob".equals(rsmd.getColumnClassName(i + 1))) || ("oracle.jdbc.OracleBlob".equals(rsmd.getColumnClassName(i + 1)))) {
                 clob.add(fields[i]);
             }
-            if ("[B".equals(rsmd.getColumnClassName(i + 1)))  {
+            if ("[B".equals(rsmd.getColumnClassName(i + 1))) {
                 binary.add(fields[i]);
             }
         }
@@ -202,7 +195,7 @@ public class BusiDataBaseUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         while (rs.next()) {
             row = new LinkedHashMap<>();
-            for (int i = 0; i < maxSize; i++)  {
+            for (int i = 0; i < maxSize; i++) {
                 Object value = times.contains(fields[i]) ? rs.getTimestamp(fields[i]) : rs.getObject(fields[i]);
                 if ((times.contains(fields[i])) && (value != null)) {
                     value = sdf.format(value);
@@ -211,7 +204,7 @@ public class BusiDataBaseUtil {
                     value = "(Blob)";
                 }
                 if ((binary.contains(fields[i])) && (value != null)) {
-                    value = new String((byte[])value);
+                    value = new String((byte[]) value);
                 }
                 row.put(fields[i], value);
             }
@@ -226,9 +219,9 @@ public class BusiDataBaseUtil {
         }
         return rows;
     }
-    
+
     public List<Map<String, Object>> queryForListForPostgreSQL(String sql)
-        throws Exception {
+            throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -247,13 +240,13 @@ public class BusiDataBaseUtil {
         fields = new String[maxSize];
         for (int i = 0; i < maxSize; i++) {
             fields[i] = rsmd.getColumnLabel(i + 1);
-            if (("java.sql.Timestamp".equals(rsmd.getColumnClassName(i + 1))) || ("oracle.sql.TIMESTAMP".equals(rsmd.getColumnClassName(i + 1))))  {
+            if (("java.sql.Timestamp".equals(rsmd.getColumnClassName(i + 1))) || ("oracle.sql.TIMESTAMP".equals(rsmd.getColumnClassName(i + 1)))) {
                 times.add(fields[i]);
             }
-            if ("java.lang.Object".equals(rsmd.getColumnClassName(i + 1)))  {
+            if ("java.lang.Object".equals(rsmd.getColumnClassName(i + 1))) {
                 object.add(fields[i]);
             }
-            if ("[B".equals(rsmd.getColumnClassName(i + 1)))  {
+            if ("[B".equals(rsmd.getColumnClassName(i + 1))) {
                 binary.add(fields[i]);
             }
         }
@@ -261,23 +254,19 @@ public class BusiDataBaseUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         while (rs.next()) {
             row = new LinkedHashMap<>();
-            for (int i = 0; i < maxSize; i++)  {
+            for (int i = 0; i < maxSize; i++) {
                 Object value = times.contains(fields[i]) ? rs.getTimestamp(fields[i]) : rs.getObject(fields[i]);
                 if ((times.contains(fields[i])) && (value != null)) {
                     value = sdf.format(value);
                 }
-                try
-                {
-                    if ((binary.contains(fields[i])) && (value != null))
-                    {
-                        value = new String((byte[])value);
+                try {
+                    if ((binary.contains(fields[i])) && (value != null)) {
+                        value = new String((byte[]) value);
                     }
-                    if ((object.contains(fields[i])) && (value != null))
-                    {
+                    if ((object.contains(fields[i])) && (value != null)) {
                         value = value.toString();
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     value = "(Object)";
                 }
                 row.put(fields[i], value);
@@ -293,9 +282,9 @@ public class BusiDataBaseUtil {
         }
         return rows;
     }
-    
+
     public List<Map<String, Object>> queryForList2(String sql)
-        throws Exception {
+            throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -310,16 +299,16 @@ public class BusiDataBaseUtil {
         Map<String, Object> row;
         while (rs.next()) {
             row = new HashMap<>();
-            for (int i = 0; i < maxSize; i++)  {
+            for (int i = 0; i < maxSize; i++) {
                 row.put(rsmd.getColumnLabel(i + 1), rs.getObject(rsmd.getColumnLabel(i + 1)));
             }
             rows.add(row);
         }
         return rows;
     }
-    
+
     public List<Map<String, Object>> queryForListPageForMSSQL(String sql, int maxRow, int beginIndex)
-        throws Exception {
+            throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -336,7 +325,7 @@ public class BusiDataBaseUtil {
         fields = new String[maxSize];
         for (int i = 0; i < maxSize; i++) {
             fields[i] = rsmd.getColumnLabel(i + 1);
-            if ("java.sql.Timestamp".equals(rsmd.getColumnClassName(i + 1)))  {
+            if ("java.sql.Timestamp".equals(rsmd.getColumnClassName(i + 1))) {
                 times.add(fields[i]);
             }
         }
@@ -346,7 +335,7 @@ public class BusiDataBaseUtil {
         rs.absolute(beginIndex);
         while (rs.next()) {
             row = new HashMap<>();
-            for (int i = 0; i < maxSize; i++)  {
+            for (int i = 0; i < maxSize; i++) {
                 Object value = times.contains(fields[i]) ? rs.getTimestamp(fields[i]) : rs.getObject(fields[i]);
                 if ((times.contains(fields[i])) && (value != null)) {
                     value = sdf.format(value);
@@ -364,9 +353,9 @@ public class BusiDataBaseUtil {
         }
         return rows;
     }
-    
+
     public List<Map<String, Object>> queryForListPageForHive2(String sql, int maxRow, int beginIndex)
-        throws Exception {
+            throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -383,7 +372,7 @@ public class BusiDataBaseUtil {
         fields = new String[maxSize];
         for (int i = 0; i < maxSize; i++) {
             fields[i] = rsmd.getColumnLabel(i + 1);
-            if ("java.sql.Timestamp".equals(rsmd.getColumnClassName(i + 1)))  {
+            if ("java.sql.Timestamp".equals(rsmd.getColumnClassName(i + 1))) {
                 times.add(fields[i]);
             }
         }
@@ -392,7 +381,7 @@ public class BusiDataBaseUtil {
         Map<String, Object> row = null;
         while (rs.next()) {
             row = new LinkedHashMap<>();
-            for (int i = 0; i < maxSize; i++)  {
+            for (int i = 0; i < maxSize; i++) {
                 Object value = times.contains(fields[i]) ? rs.getTimestamp(fields[i]) : rs.getObject(fields[i]);
                 if ((times.contains(fields[i])) && (value != null)) {
                     value = sdf.format(value);
@@ -410,7 +399,7 @@ public class BusiDataBaseUtil {
         }
         return rows;
     }
-    
+
     public List<Map<String, Object>> queryForListWithType(String sql) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -423,7 +412,7 @@ public class BusiDataBaseUtil {
             ResultSetMetaData rsme = rs.getMetaData();
             int columnCount = rsme.getColumnCount();
             rs.next();
-            for (int i = 1; i < columnCount + 1; i++)  {
+            for (int i = 1; i < columnCount + 1; i++) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("column_name", rsme.getColumnName(i));
                 map.put("column_value", rs.getObject(rsme.getColumnName(i)));
@@ -436,21 +425,18 @@ public class BusiDataBaseUtil {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 rs.close();
                 pstmt.close();
                 conn.close();
-            }
-            catch (SQLException localSQLException1)  {
+            } catch (SQLException localSQLException1) {
                 logger.error(localSQLException1.getMessage(), localSQLException1);
             }
         }
         return rows2;
     }
-    
+
     public List<Map<String, Object>> queryForColumnOnly(String sql) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -462,7 +448,7 @@ public class BusiDataBaseUtil {
             rs = pstmt.executeQuery();
             ResultSetMetaData rsme = rs.getMetaData();
             int columnCount = rsme.getColumnCount();
-            for (int i = 1; i < columnCount + 1; i++)  {
+            for (int i = 1; i < columnCount + 1; i++) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("column_name", rsme.getColumnName(i));
                 map.put("data_type", rsme.getColumnTypeName(i));
@@ -474,23 +460,20 @@ public class BusiDataBaseUtil {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 rs.close();
                 pstmt.close();
                 conn.close();
-            }
-            catch (SQLException localSQLException1)  {
+            } catch (SQLException localSQLException1) {
                 logger.error(localSQLException1.getMessage(), localSQLException1);
             }
         }
         return rows2;
     }
-    
+
     public List<Map<String, Object>> executeSqlForColumns(String sql)
-        throws Exception {
+            throws Exception {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -503,27 +486,24 @@ public class BusiDataBaseUtil {
             rs = pstmt.executeQuery();
             rsmd = rs.getMetaData();
             maxSize = rsmd.getColumnCount();
-            for (int i = 0; i < maxSize; i++)  {
+            for (int i = 0; i < maxSize; i++) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("column_name", rsmd.getColumnLabel(i + 1));
                 map.put("data_type", rsmd.getColumnTypeName(i + 1));
                 rows.add(map);
             }
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 rs.close();
                 pstmt.close();
                 conn.close();
-            }
-            catch (Exception e)  {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             }
         }
         return rows;
     }
-    
+
     public int executeQueryForCount(String sql) {
         int rowCount = 0;
         Connection conn = getConnection();
@@ -532,21 +512,18 @@ public class BusiDataBaseUtil {
         try {
             stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
-            while (rs.next())  {
+            while (rs.next()) {
                 Object count = rs.getObject("count(*)");
                 rowCount = Integer.parseInt(count.toString());
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 rs.close();
                 stmt.close();
                 conn.close();
-            }
-            catch (SQLException localSQLException1)  {
+            } catch (SQLException localSQLException1) {
                 logger.error(localSQLException1.getMessage(), localSQLException1);
             }
         }
@@ -560,20 +537,20 @@ public class BusiDataBaseUtil {
         ResultSet rs = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            rs.last();
-            rowCount = rs.getRow();
+            String time = String.valueOf(System.currentTimeMillis() / 1000);
+            rs = stmt.executeQuery("select count(*) from (" + sql + ") tableCount" + time);
+            while (rs.next()) {
+                Object count = rs.getObject("count(*)");
+                rowCount = Integer.parseInt(count.toString());
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 rs.close();
                 stmt.close();
                 conn.close();
-            }
-            catch (SQLException localSQLException1)  {
+            } catch (SQLException localSQLException1) {
                 logger.error(localSQLException1.getMessage(), localSQLException1);
             }
         }
@@ -593,21 +570,18 @@ public class BusiDataBaseUtil {
             rowCount = rs.getInt("count");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 rs.close();
                 stmt.close();
                 conn.close();
-            }
-            catch (SQLException localSQLException1)  {
+            } catch (SQLException localSQLException1) {
                 logger.error(localSQLException1.getMessage(), localSQLException1);
             }
         }
         return rowCount;
     }
-    
+
     public int executeQueryForCountForPostgreSQL(String sql) {
         int rowCount = 0;
         Connection conn = getConnection();
@@ -621,15 +595,12 @@ public class BusiDataBaseUtil {
             rowCount = rs.getInt("count");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-        }
-        finally {
-            try
-            {
+        } finally {
+            try {
                 rs.close();
                 stmt.close();
                 conn.close();
-            }
-            catch (SQLException localSQLException1)  {
+            } catch (SQLException localSQLException1) {
                 logger.error(localSQLException1.getMessage(), localSQLException1);
             }
         }

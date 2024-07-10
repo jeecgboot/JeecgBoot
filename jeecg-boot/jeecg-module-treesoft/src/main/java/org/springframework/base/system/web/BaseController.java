@@ -58,11 +58,11 @@ public class BaseController {
         }
 
         if (StringUtil.isNotEmpty(request.getParameter("sort"))) {
-            orderBy = request.getParameter("sort").toString();
+            orderBy = request.getParameter("sort");
         }
 
         if (StringUtil.isNotEmpty(request.getParameter("order"))) {
-            order = request.getParameter("order").toString();
+            order = request.getParameter("order");
         }
 
         return new Page(pageNo, pageSize, orderBy, order);

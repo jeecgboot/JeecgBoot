@@ -20,31 +20,31 @@ public class BaseController {
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new PropertyEditorSupport() {
             @Override
-            public void setAsText(String text)  {
+            public void setAsText(String text) {
                 setValue(text == null ? null : StringEscapeUtils.escapeHtml4(text.trim()));
             }
-            
+
             @Override
-            public String getAsText()  {
+            public String getAsText() {
                 Object value = getValue();
                 return value != null ? value.toString() : "";
             }
         });
         binder.registerCustomEditor(Date.class, new PropertyEditorSupport() {
             @Override
-            public void setAsText(String text)  {
+            public void setAsText(String text) {
                 setValue(DateUtil.parseDate(text));
             }
         });
         binder.registerCustomEditor(Timestamp.class, new PropertyEditorSupport() {
             @Override
-            public void setAsText(String text)  {
+            public void setAsText(String text) {
                 Date date = DateUtil.parseDate(text);
                 setValue(date == null ? null : new Timestamp(date.getTime()));
             }
         });
     }
-    
+
     public <T> Page<T> getPage(HttpServletRequest request) {
         int pageNo = NumberUtils.toInt(request.getParameter("page"), 1);
         int pageSize = NumberUtils.toInt(request.getParameter("rows"), 20);
@@ -52,7 +52,7 @@ public class BaseController {
         String order = StringUtils.defaultIfBlank(request.getParameter("order"), "asc");
         return new Page<>(pageNo, pageSize, orderBy, order);
     }
-    
+
     public <T> Map<String, Object> getEasyUIData(Page<T> page) {
         Map<String, Object> map = new HashMap<>();
         map.put("rows", page.getResult());

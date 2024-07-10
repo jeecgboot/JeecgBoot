@@ -4,9 +4,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title>TreeSoft数据库管理系统</title>
-<meta name="Keywords" content="Treesoft数据库管理系统">
-<meta name="Description" content="Treesoft数据库管理系统">
+<title>IT 数据库管理</title>
+<meta name="Keywords" content="IT 数据库管理">
+<meta name="Description" content="IT 数据库管理">
 <%@ include file="/WEB-INF/views/include/easyui.jsp"%>
 <%@ include file="/WEB-INF/views/include/codemirror.jsp"%>
 <script src="${ctx}/static/plugins/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
@@ -49,7 +49,7 @@
             <div id="topbar"  style="width: 100%;height:52px; background: #0092dc url('${ctx}/static/images/mosaic-pattern.png') repeat;opacity:0.8;">
             
                 <div class="top-bar-left">
-                    <h1 style="margin-left: 10px; margin-top: 10px;color: #fff"> <img src="${ctx}/static/images/logo.png" >TreeSoft数据库管理系统<span style="color:#00824D;font-size:14px; font-weight:bold;"> TreeDMS</span> <span style="color: #fff;font-size:12px;">V2.3.1</span> </h1>
+                    <h1 style="margin-left: 10px; margin-top: 10px;color: #fff"> <img src="${ctx}/static/images/logo.png" >IT 数据库管理<span style="color: #fff;font-size:12px;">V2.3.1</span> </h1>
                 </div>
                 
                 <div class="top-bar-right" >
@@ -357,14 +357,6 @@
 				</div>
 			</div>
 		</div>
-
-        <div data-options="region: 'south', title: '关于...', iconCls: 'icon-standard-information', collapsed: true, border: false" style="height: 70px;">
-            <div style="color: #4e5766; padding: 6px 0px 0px 0px; margin: 0px auto; text-align: center; font-size:12px; font-family:微软雅黑;">
-                TreeSoft<sup>®</sup>&nbsp;CopyRight@2018 福州青格软件 版权所有  <a href="http://www.treesoft.cn" target="_blank" style="text-decoration:none;" > www.treesoft.cn </a> &nbsp;。
-                &nbsp; 
-            </div>
-            
-        </div>
     </div>
   
   <div id='tb3' style='padding:5px;height:auto'>    

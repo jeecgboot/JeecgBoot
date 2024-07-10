@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class LogUtil {
-    private static Log log = LogFactory.getLog(LogUtil.class);
+    private static final Log log = LogFactory.getLog(LogUtil.class);
 
     public LogUtil() {
     }

@@ -13,7 +13,7 @@ public class MD5Utils {
         String resultString = null;
 
         try {
-            resultString = new String(origin);
+            resultString = origin;
             MessageDigest md = MessageDigest.getInstance("MD5");
             if (charsetname != null && !"".equals(charsetname)) {
                 resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetname)));
@@ -29,7 +29,7 @@ public class MD5Utils {
     public static String byteArrayToHexString(byte[] b) {
         StringBuffer resultSb = new StringBuffer();
 
-        for(int i = 0; i < b.length; ++i) {
+        for (int i = 0; i < b.length; ++i) {
             resultSb.append(byteToHexString(b[i]));
         }
 

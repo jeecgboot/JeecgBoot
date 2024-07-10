@@ -32,7 +32,7 @@ public class StringUtil extends StringUtils {
                 char[] var7;
                 int var6 = (var7 = replaceHtml(StringEscapeUtils.unescapeHtml4(str)).toCharArray()).length;
 
-                for(int var5 = 0; var5 < var6; ++var5) {
+                for (int var5 = 0; var5 < var6; ++var5) {
                     char c = var7[var5];
                     currentLength += String.valueOf(c).getBytes("GBK").length;
                     if (currentLength > length - 3) {
