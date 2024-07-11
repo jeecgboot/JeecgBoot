@@ -1,8 +1,8 @@
 package org.springframework.base.system.utils;
 
 import com.sun.management.OperatingSystemMXBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Cleanup;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
+@Slf4j
 public class ComputerMonitorUtil {
-    private static final Logger logger = LoggerFactory.getLogger(ComputerMonitorUtil.class);
 
     private static final String osName = System.getProperty("os.name");
 
@@ -31,7 +31,7 @@ public class ComputerMonitorUtil {
                 }
                 return 0.0D;
             } catch (Exception ex) {
-                logger.error(ex.getMessage(), ex);
+                log.error(ex.getMessage(), ex);
                 return 0.0D;
             }
         }
@@ -61,18 +61,19 @@ public class ComputerMonitorUtil {
             BigDecimal b1 = BigDecimal.valueOf(cpusage);
             return b1.setScale(2, RoundingMode.HALF_UP).doubleValue();
         } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return 0.0D;
     }
 
     public static Map<String, Object> cpuinfo() {
-        InputStreamReader inputs = null;
-        BufferedReader buffer = null;
+
         Map<String, Object> map = new HashMap<>();
         try {
-            inputs = new InputStreamReader(new FileInputStream("/proc/stat"));
-            buffer = new BufferedReader(inputs);
+            @Cleanup
+            InputStreamReader inputs = new InputStreamReader(new FileInputStream("/proc/stat"));
+            @Cleanup
+            BufferedReader buffer =new BufferedReader(inputs);
             String line = "";
             do {
                 line = buffer.readLine();
@@ -95,14 +96,7 @@ public class ComputerMonitorUtil {
             map.put("softirq", temp.get(7));
             map.put("stealstolen", temp.get(8));
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            try {
-                buffer.close();
-                inputs.close();
-            } catch (Exception e2) {
-                logger.error(e2.getMessage(), e2);
-            }
+            log.error(e.getMessage(), e);
         }
         return map;
     }
@@ -117,15 +111,15 @@ public class ComputerMonitorUtil {
                 BigDecimal b1 = BigDecimal.valueOf(usage.doubleValue());
                 return b1.setScale(2, RoundingMode.HALF_UP).doubleValue();
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
         } else {
             Map<String, Object> map = new HashMap();
-            InputStreamReader inputs = null;
-            BufferedReader buffer = null;
             try {
-                inputs = new InputStreamReader(new FileInputStream("/proc/meminfo"));
-                buffer = new BufferedReader(inputs);
+                @Cleanup
+                InputStreamReader inputs = new InputStreamReader(new FileInputStream("/proc/meminfo"));
+                @Cleanup
+                BufferedReader buffer = new BufferedReader(inputs);
                 String line = "";
                 for (; ; ) {
                     line = buffer.readLine();
@@ -154,14 +148,7 @@ public class ComputerMonitorUtil {
                 double memoryUsage = b1.setScale(2, RoundingMode.HALF_UP).doubleValue();
                 return memoryUsage;
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            } finally {
-                try {
-                    buffer.close();
-                    inputs.close();
-                } catch (Exception e2) {
-                    logger.error(e2.getMessage(), e2);
-                }
+                log.error(e.getMessage(), e);
             }
         }
         return 0.0D;
@@ -238,12 +225,12 @@ public class ComputerMonitorUtil {
             retn[1] = (kneltime + usertime);
             return retn;
         } catch (Exception ex) {
-            logger.error(ex.getMessage(), ex);
+            log.error(ex.getMessage(), ex);
         } finally {
             try {
                 proc.getInputStream().close();
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
         }
         return null;
@@ -268,8 +255,8 @@ public class ComputerMonitorUtil {
         double cpuUsage = getCpuUsage();
         double memUsage = getMemUsage();
         double diskUsage = getDiskUsage();
-        logger.info("cpuUsage:{}", cpuUsage);
-        logger.info("memUsage:{}", memUsage);
-        logger.info("diskUsage:{}", diskUsage);
+        log.info("cpuUsage:{}", cpuUsage);
+        log.info("memUsage:{}", memUsage);
+        log.info("diskUsage:{}", diskUsage);
     }
 }

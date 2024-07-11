@@ -1,9 +1,8 @@
 package org.springframework.base.system.web;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.base.system.utils.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,10 +16,10 @@ import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Slf4j
 @Controller
 @RequestMapping({"treesoft"})
 public class LoginController {
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -93,7 +92,7 @@ public class LoginController {
                     return "system/login";
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
         }
         String userpassword = PasswordUtil.encrypt(username, password, salt);

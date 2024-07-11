@@ -6,8 +6,7 @@
 package org.springframework.base.system.web;
 
 import com.alibaba.fastjson.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.base.system.entity.IdsDto;
 import org.springframework.base.system.entity.Person;
 import org.springframework.base.system.persistence.Page;
@@ -27,11 +26,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping({"system/person"})
 public class PersonController extends BaseController {
-
-    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     private PersonService personService;
@@ -109,7 +107,7 @@ public class PersonController extends BaseController {
         } catch (Exception var5) {
         }
         List<Map<String, Object>> configList = this.configService.getAllConfigList();
-        logger.info("id {},map {}", id, map);
+        log.info("id {},map {}", id, map);
         model.addAttribute("configList", configList);
         model.addAttribute("person", map);
         return "system/personForm";

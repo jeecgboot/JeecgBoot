@@ -24,7 +24,7 @@
 </head>
 
 <body>
-<div class="body" id="body">
+<div class="body" id="body" style="display: none">
     <h1 class="mod-title">
 
         <span class="ico_log ico-1" v-if="payType == 1"></span>
@@ -43,32 +43,16 @@
                     <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
                     <div style="position: relative;display: inline-block;">
                         <img  id='show_qrcode' alt="加载中..." :src="'/enQrcode?url='+payUrl" width="210" height="210" style="display: block;">
-                        <!--<img onclick="$('#use').hide()" id="use" src="use_1.png" v-if="payType==1"
-                             style="position: absolute;top: 50%;left: 50%;width:32px;height:32px;margin-left: -16px;margin-top: -16px">
-                        <img onclick="$('#use').hide()" id="use" src="use_2.png" v-if="payType==2"
-                             style="position: absolute;top: 50%;left: 50%;width:32px;height:32px;margin-left: -16px;margin-top: -16px">-->
                     </div>
                 </div>
-
-
             </div>
             <div class="time-item">
-
-
                 <div class="time-item" id="msg">
                     <h1  v-if="price != reallyPrice">
                         <span style="color:red">为了您正常支付 请务必付款 {{ reallyPrice }} 元 <br>备注说明无需填写</span><br>
 
-
                     </h1>
-
                 </div>
-
-
-
-
-
-
 
                 <strong id="hour_show">0时</strong>
                 <strong id="minute_show">0分</strong>
@@ -223,19 +207,16 @@
                 time = 0;
             }
             timer(time);
-            
             if (data.data.payType == 1) {
                 data.data.payType1 = "微信";
             }else if (data.data.payType == 2) {
                 data.data.payType1 = "支付宝";
             }
-
-
             new Vue({
                 el: '#body',
                 data: data.data
             })
-
+            document.getElementById("body").style.display = "block";
             check();
         }else{
             timer(0)

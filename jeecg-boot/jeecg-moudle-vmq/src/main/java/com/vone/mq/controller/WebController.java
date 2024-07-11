@@ -11,6 +11,7 @@ import com.vone.mq.dto.CommonRes;
 import com.vone.mq.dto.CreateOrderRes;
 import com.vone.mq.service.WebService;
 import com.vone.mq.utils.ResUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +28,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 public class WebController {
 
@@ -93,14 +95,18 @@ public class WebController {
                 BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
                 Result result = multiFormatReader.decode(binaryBitmap, hints);
 
-                //stream.print(result.getText());
-                System.out.println(result.getText());
+                log.info(result.getText());
                 return ResUtil.success(result.getText());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         return ResUtil.error();
+    }
+
+    @RequestMapping("/md5")
+    public String md5(String content) {
+        return webService.getMd5(content);
     }
 
     /**

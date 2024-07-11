@@ -1,10 +1,13 @@
 package com.vone.mq.entity;
 
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+@Data
 @Entity
 public class PayQrcode {
     @Id
@@ -15,35 +18,4 @@ public class PayQrcode {
     private double price;
     private int type;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getPayUrl() {
-        return payUrl;
-    }
-
-    public void setPayUrl(String payUrl) {
-        this.payUrl = payUrl;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
 }

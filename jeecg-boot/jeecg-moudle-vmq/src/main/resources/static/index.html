@@ -1,151 +1,150 @@
-<!DOCTYPE html>
+
+<!DOCTYPE HTML>
+
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>后台管理</title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
-
-    <link rel="stylesheet" href="layui/css/layui.css"  media="all">
-    <link rel="stylesheet" href="css/global.css?t=1531663423583-6" media="all">
-    <style type="text/css">ins.adsbygoogle{display:none!important;display:none}</style></head>
+	<title>V免签</title>
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<meta charset="utf-8" />
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="bookmark" href="/favicon.ico" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link rel="stylesheet" href="/assets/css/main.css" />
+	<noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+</head>
 <body>
-<div class="layui-layout layui-layout-admin">
-    <div class="layui-header header header-demo" summer>
-        <div class="layui-main">
-            <span style="color: white;font-size: 30px;font-weight:100;line-height: 58px;font-family:Microsoft JhengHei">后台管理</span>
+<div id="wrapper">
 
-            <ul class="layui-nav layui-layout-right">
-                <li class="layui-nav-item">
-                    <a href="javascript:;">
-                      
-                        管理员
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="index.html">退出</a></dd>
-                    </dl>
-                </li>
-                <!-- <li class="layui-nav-item"><a href="">退出</a></li> -->
-            </ul>
-        </div>
-    </div>
-    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
-    <!--[if lt IE 9]>
-    <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-    <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
+	<header id="header">
+		<div class="logo">
+			<span class="icon fa-rmb"></span>
+		</div>
+		<div class="content">
+			<div class="inner">
+				<h1>小码哥V免签</h1>
+				<p>个人用户收款解决方案</p>
+			</div>
+		</div>
+		<nav>
+			<ul>
+				<li><a href="#login">登录</a></li>
+				<li><a href="#pay">支付体验</a></li>
+				<li><a href="#about">简介</a></li>
+			</ul>
+		</nav>
+	</header>
 
-            <ul class="layui-nav layui-nav-tree site-demo-nav" id="v_menu">
+	<div id="main">
 
-            </ul>
+		<article id="pay">
+			<h3 class="major">创建订单</h3>
+			<div>
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">商户订单号：</label>
+					<input style="width: 200px;" type="text" id="payId" name="payId" readonly><input type="submit" value="生成订单号" style="background-color: darkcyan;margin-left: 10px" onclick="getOrderNo()"/></div>
 
-        </div>
-    </div>
-        <div class="layui-body layui-tab-content site-demo site-demo-body">
-            <div class="layui-tab-item layui-show">
-                <div class="layui-main">
-                    <div id="LAY_preview">
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">订单金额：</label>
+					<input style="width: 200px;" type="text" id="price" name="price" value="0.1" />
+				</div>
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">自定义参数：</label>
+					<input style="width: 200px;" type="text" id="param" name="param" value="" />
+				</div>
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">支付方式：</label>
+					<select style="width: 200px" id="type" name="type" lay-verify="required" lay-filter="type">
+						<option value="1" selected>微信</option><option value="2">支付宝</option>
+					</select>
+				</div>
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">返回类型：</label>
+					<select style="width: 200px" id="isHtml" name="isHtml" lay-verify="required" lay-filter="isHtml">
+						<option value="0">JSON</option><option value="1" selected>页面</option>
+					</select>
+				</div>
+			</div>
+			<div>
+				<input type="submit" value="支付" style="background-color: forestgreen;margin-left: 480px" onclick="payOrder()"/>
+			</div>
+		</article>
+
+		<article id="about">
+			<h2 class="major">简介</h2>
+			<p>1、V免签为个人用户提供支付宝、微信的免签约收款解决方案。</p>
+			<p>2、V免签为开源免费产品，请勿二次出售。</p>
+			<p>3、V免签仅供交流学习使用，请勿用于商业用途。</p>
+			<p>4、请遵守相关法律法规，请勿用于非法用途。</p>
+		</article>
 
 
+		<article id="login">
+			<h2 class="major">登录</h2>
+			<form method="post" action="javascript:login();">
+				<div class="field half first">
+					<label for="user">账号</label>
+					<input type="text" name="user" id="user" />
+				</div>
+				<div class="field half">
+					<label for="pass">密码</label>
+					<input type="password" name="pass" id="pass" />
+				</div>
 
+				<ul class="actions">
+					<li><input id="login2" type="submit" value="登录" class="special" /></li>
+					<li><input type="reset" value="清空" /></li>
+				</ul>
+			</form>
+			<br>
+			<div id="result" role="dialog">
+				<p color class="h5 margin-top-sm text-black-hint" id="msg"></p>
+			</div>
+		</article>
 
+	</div>
 
+	<footer id="footer">
+		<p class="copyright">&copy;2024 V免签</p>
+	</footer>
 
-                        
-
-
-
-
-
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-    </div>
-    <div class="site-tree-mobile layui-hide" style="opacity: 0.4;">
-        <i class="layui-icon">&#xe602;</i>
-    </div>
-    <div class="site-mobile-shade"></div>
-    <script src="layui/layui.js?t=1531663423583" charset="utf-8"></script>
-    <script>
-        window.global = {
-            pageType: 'demo'
-            ,preview: function(){
-                var preview = document.getElementById('LAY_preview');
-                return preview ? preview.innerHTML : '';
-            }()
-        };
-        layui.config({
-            base: 'js/'
-            ,version: '1531663423583'
-        }).use('global');
-    </script>
 </div>
+
+<div id="bg"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@1.11.3"></script>
+<script src="https://cdn.jsdelivr.net/gh/ajlkn/skel@3.0.1/dist/skel.min.js"></script>
+<script src="/assets/js/util.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="/assets/js/function.js"></script>
+<script src="/assets/js/function.js"></script>
+<script src="https://lib.baomitu.com/layer/3.1.1/layer.js"></script>
+
+
 <script>
+	getOrderNo();
+	function getOrderNo() {
+		$("#payId").val(new Date().getTime());
+	}
 
+	function payOrder() {
+		var payId = $("#payId").val();
+		var param = $("#param").val();
+		var type = $("#type").val();
+		var price = $("#price").val();
+		var isHtml = $("#isHtml").val();
+		creatOrder(payId,param,type,price,isHtml);
+	}
 
-    layui.use(['layer','element'], function(){
-        var $ = layui.$
-            ,setIframe = function(){
-            var height = $(window).height() - 370;
-            $('#demoAdmin').height(height);
-        };
+	function login() {
+		$.post("/login","user="+$("#user").val()+"&pass="+$("#pass").val(),function (data) {
+			layer.msg(data.msg);
+			if (data.code==1){
+				window.location.href = "aaa.html";
+			}
+		});
+	}
 
-        setIframe();
-        $(window).on('resize', setIframe);
-
-
-
-    });
 </script>
-<script src="https://lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script>
-<script type="text/javascript" src="https://unpkg.com/wangeditor@3.1.1/release/wangEditor.min.js"></script>
-<script type="text/javascript">
-
-
-$("#LAY_preview").load("main.html")
-
-$.post("/admin/getMenu",function (data) {
-    if (data == null || data == "") {
-        window.location.href = "/";
-    }
-    console.log(data);
-    var out_menu = "";
-    for (var i = 0;i<data.length;i++){
-        if (data[i].type=="menu"){
-            out_menu+='<li class="layui-nav-item layui-nav-itemed">';
-            out_menu+='<a class="" href="javascript:;">'+data[i].name+'</a>';
-            out_menu+='<dl class="layui-nav-child">';
-
-            for (var ii = 0;ii<data[i].node.length;ii++){
-                out_menu+='<dd><a onclick="$(\'#LAY_preview\').load(\''+data[i].node[ii].url+'\');">'+data[i].node[ii].name+'</a></dd>';
-            }
-            out_menu+='</dl>';
-            out_menu+='</li>';
-        } else{
-            out_menu+='<li class="layui-nav-item"><a onclick="$(\'#LAY_preview\').load(\''+data[i].url+'\');">'+data[i].name+'</a></li>';
-        }
-    }
-    console.log(out_menu);
-    $("#v_menu").append(out_menu);
-    if (layui.element)
-        layui.element.render();
-
-
-});
-</script>
-
-
-
-
-
 </body>
 </html>

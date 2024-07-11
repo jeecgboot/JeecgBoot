@@ -1,6 +1,5 @@
 <div class="layui-form layui-form-pane" action="">
 <div class="layui-form-item">
-
     <div class="layui-inline">
         <label class="layui-form-label">支付方式</label>
         <div class="layui-input-inline">
@@ -8,7 +7,6 @@
                 <option value="">不限制</option>
                 <option value="1">微信</option>
                 <option value="2">支付宝</option>
-
             </select>
         </div>
     </div>
@@ -21,17 +19,15 @@
                 <option value="0">待支付</option>
                 <option value="1">完成</option>
                 <option value="2">通知失败</option>
-
             </select>
         </div>
     </div>
-
-
-</div>
+    </div>
 </div>
 
 <script type="text/html" id="toolbarDemo">
     <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="add" style="background-color: cornflowerblue;">创建订单</button>
         <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delGq">删除所有过期订单</button>
         <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delLast">删除七天前订单</button>
 
@@ -43,9 +39,7 @@
     <a class="layui-btn layui-btn-xs" lay-event="bd">补单</a>
     <a class="layui-btn layui-btn-xs" lay-event="info">详情</a>
     <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
-
 </script>
-
 
 <script>
     function formatDate(now) {
@@ -94,7 +88,6 @@
                 {field: 'price', title: '订单金额',minWidth:100, align:'center'},
                 {field: 'reallyPrice', title: '实际金额',minWidth:100, align:'center'},
 
-
                 {field: 'state', title: '状态',minWidth:80,templet: function(d){
                         if (d.state=="2"){
                             return '<span style="color: orange">通知失败</span>';
@@ -107,9 +100,7 @@
                         }
                     }
                 },
-
                 {title: '操作', minWidth: 120, align:'center', toolbar: '#barDemo'}
-
             ]]
             ,page:true
         });
@@ -147,16 +138,11 @@
                             }, function(){
                                 alert(data.data);
                             }, function(){
-
                             });
                         }else{
                             layer.msg(data.msg);
                         }
-
-
-
                     });
-
                     console.log(data.id);
                 });
             }else if(layEvent === 'del'){
@@ -165,7 +151,6 @@
                         icon: 16
                         ,shade: 0.01
                     });
-
                     $.post("/admin/delOrder","id="+data.id,function (data) {
                         if (data.code==1){
                             layer.msg("操作成功！");
@@ -178,11 +163,7 @@
                         }else{
                             layer.msg(data.msg);
                         }
-
-
-
                     });
-
                     console.log(data.id);
                 });
             }
@@ -194,7 +175,6 @@
                     type:$("#type").val()
                 }
             });
-
         });
 
         form.on('select(type)', function(data){
@@ -204,14 +184,37 @@
                     type:$("#type").val()
                 }
             });
-
         });
-
 
         //头工具栏事件
         table.on('toolbar(test)', function(obj){
-            var checkStatus = table.checkStatus(obj.config.id);
+            var payId = new Date().getTime();
+            var typeHtml = "<select id=\"typeOpt\" lay-verify=\"required\" lay-filter=\"type\">" +
+                "               <option value=\"1\">微信</option><option value=\"2\">支付宝</option>" +
+                "           </select>";
+            var isHtmlStr = "<select id=\"isHtmlOpt\" lay-verify=\"required\" lay-filter=\"isHtml\">" +
+                "               <option value=\"0\">json</option><option value=\"1\">页面</option>" +
+                "           </select>";
             switch(obj.event){
+                case 'add':
+                    layer.confirm("<div style='line-height: 40px;'><p>商户订单号："+payId+"</p><p>支付方式："+typeHtml+"</p><p>订单金额：<input id='price' name='price' value='1' /></p>" +
+                        "<p>自定义参数：<input id='param' name='param' value='' /></p><p>返回类型："+isHtmlStr+"</p></div>",function () {
+                        layer.msg('操作中');
+                        var param = $("#param").val();
+                        var type = $("#typeOpt").val();
+                        var price = $("#price").val();
+                        var isHtml = $("#isHtmlOpt").val();
+                        var code = creatOrder(payId,param,type,price,isHtml);
+                        if (code==1){
+                            myTable.reload({
+                                where: {
+                                    state:$("#state").val(),
+                                    type:$("#type").val()
+                                }
+                            });
+                        }
+                    });
+                    break;
                 case 'delGq':
                     layer.confirm('确定要删除所有过期订单吗？', function(index){
                         layer.msg('操作中', {
@@ -231,9 +234,7 @@
                             }else{
                                 layer.msg(data.msg);
                             }
-
                         });
-
                     });
 
                     break;
@@ -256,18 +257,11 @@
                             }else{
                                 layer.msg(data.msg);
                             }
-
                         });
-
                     });
                     break;
             };
         });
-
-
         form.render();
-
     });
-
-
 </script>

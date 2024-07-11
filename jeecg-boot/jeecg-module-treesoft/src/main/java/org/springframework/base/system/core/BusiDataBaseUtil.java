@@ -1,8 +1,8 @@
 package org.springframework.base.system.core;
 
+import lombok.Cleanup;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.base.system.utils.CryptoUtil;
 
 import java.sql.*;
@@ -17,8 +17,8 @@ import java.util.*;
  * @see [相关类/方法]
  * @since [产品/模块版本]
  */
+@Slf4j
 public class BusiDataBaseUtil {
-    private static final Logger logger = LoggerFactory.getLogger(BusiDataBaseUtil.class);
 
     private static String driver;
 
@@ -39,7 +39,7 @@ public class BusiDataBaseUtil {
         switch (databaseType) {
             case "MySql":
             case "MariaDB":
-                driver = "com.mysql.jdbc.Driver";
+                driver = "com.mysql.cj.jdbc.Driver";
                 url = "jdbc:mysql://" + ip + ":" + port + "/" + dbName + "?characterEncoding=utf8&tinyInt1isBit=false&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true";
                 break;
             case "Oracle":
@@ -73,7 +73,7 @@ public class BusiDataBaseUtil {
             Class.forName(driver);
             return DriverManager.getConnection(url, userName, passWord);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return null;
         }
     }
@@ -82,7 +82,7 @@ public class BusiDataBaseUtil {
         try {
             String url = "";
             if (databaseType.equals("MySql")) {
-                Class.forName("com.mysql.jdbc.Driver");
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 url = "jdbc:mysql://" + ip + ":" + port + "/" + databaseName + "?characterEncoding=utf8";
             }
             if (databaseType.equals("MariaDB")) {
@@ -108,34 +108,29 @@ public class BusiDataBaseUtil {
             Connection conn = DriverManager.getConnection(url, user, password);
             return (conn != null);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return false;
     }
 
-    public int setupdateData(String sql)
-            throws Exception {
+    public int setupdateData(String sql) throws Exception {
+        @Cleanup
         Connection conn = getConnection();
+        @Cleanup
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
             return stmt.executeUpdate(sql);
         } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             throw new Exception(e.getMessage());
-        } finally {
-            try {
-                stmt.close();
-                conn.close();
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 
-    public int updateExecuteBatch(List<String> sqlList)
-            throws Exception {
+    public int updateExecuteBatch(List<String> sqlList) throws Exception {
+        @Cleanup
         Connection conn = getConnection();
+        @Cleanup
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
@@ -149,22 +144,17 @@ public class BusiDataBaseUtil {
             return updateCounts.length;
         } catch (Exception e) {
             conn.rollback();
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             throw new Exception(e.getMessage());
-        } finally {
-            try {
-                stmt.close();
-                conn.close();
-            } catch (SQLException e) {
-                logger.error(e.getMessage(), e);
-            }
         }
     }
 
-    public List<Map<String, Object>> queryForList(String sql)
-            throws Exception {
+    public List<Map<String, Object>> queryForList(String sql) throws Exception {
+        @Cleanup
         Connection conn = null;
+        @Cleanup
         PreparedStatement pstmt = null;
+        @Cleanup
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         int maxSize = -1;
@@ -210,20 +200,15 @@ public class BusiDataBaseUtil {
             }
             rows.add(row);
         }
-        try {
-            rs.close();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
-        }
         return rows;
     }
 
-    public List<Map<String, Object>> queryForListForPostgreSQL(String sql)
-            throws Exception {
+    public List<Map<String, Object>> queryForListForPostgreSQL(String sql) throws Exception {
+        @Cleanup
         Connection conn = null;
+        @Cleanup
         PreparedStatement pstmt = null;
+        @Cleanup
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         int maxSize = -1;
@@ -273,13 +258,6 @@ public class BusiDataBaseUtil {
             }
             rows.add(row);
         }
-        try {
-            rs.close();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
-        }
         return rows;
     }
 
@@ -307,10 +285,12 @@ public class BusiDataBaseUtil {
         return rows;
     }
 
-    public List<Map<String, Object>> queryForListPageForMSSQL(String sql, int maxRow, int beginIndex)
-            throws Exception {
+    public List<Map<String, Object>> queryForListPageForMSSQL(String sql, int maxRow, int beginIndex) throws Exception {
+        @Cleanup
         Connection conn = null;
+        @Cleanup
         PreparedStatement pstmt = null;
+        @Cleanup
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         int maxSize = -1;
@@ -344,20 +324,15 @@ public class BusiDataBaseUtil {
             }
             rows.add(row);
         }
-        try {
-            rs.close();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
-        }
         return rows;
     }
 
-    public List<Map<String, Object>> queryForListPageForHive2(String sql, int maxRow, int beginIndex)
-            throws Exception {
+    public List<Map<String, Object>> queryForListPageForHive2(String sql, int maxRow, int beginIndex) throws Exception {
+        @Cleanup
         Connection conn = null;
+        @Cleanup
         PreparedStatement pstmt = null;
+        @Cleanup
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         int maxSize = -1;
@@ -390,25 +365,19 @@ public class BusiDataBaseUtil {
             }
             rows.add(row);
         }
-        try {
-            rs.close();
-            pstmt.close();
-            conn.close();
-        } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
-        }
         return rows;
     }
 
     public List<Map<String, Object>> queryForListWithType(String sql) {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+
         List<Map<String, Object>> rows2 = new ArrayList<>();
         try {
-            conn = getConnection();
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
+            @Cleanup
+            Connection conn = getConnection();
+            @Cleanup
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            @Cleanup
+            ResultSet rs = pstmt.executeQuery();
             ResultSetMetaData rsme = rs.getMetaData();
             int columnCount = rsme.getColumnCount();
             rs.next();
@@ -424,28 +393,21 @@ public class BusiDataBaseUtil {
                 rows2.add(map);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            try {
-                rs.close();
-                pstmt.close();
-                conn.close();
-            } catch (SQLException localSQLException1) {
-                logger.error(localSQLException1.getMessage(), localSQLException1);
-            }
+            log.error(e.getMessage(), e);
         }
         return rows2;
     }
 
     public List<Map<String, Object>> queryForColumnOnly(String sql) {
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
+
         List<Map<String, Object>> rows2 = new ArrayList<>();
         try {
-            conn = getConnection();
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
+            @Cleanup
+            Connection conn = getConnection();
+            @Cleanup
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            @Cleanup
+            ResultSet rs = pstmt.executeQuery();
             ResultSetMetaData rsme = rs.getMetaData();
             int columnCount = rsme.getColumnCount();
             for (int i = 1; i < columnCount + 1; i++) {
@@ -459,150 +421,106 @@ public class BusiDataBaseUtil {
                 rows2.add(map);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            try {
-                rs.close();
-                pstmt.close();
-                conn.close();
-            } catch (SQLException localSQLException1) {
-                logger.error(localSQLException1.getMessage(), localSQLException1);
-            }
+            log.error(e.getMessage(), e);
         }
         return rows2;
     }
 
-    public List<Map<String, Object>> executeSqlForColumns(String sql)
-            throws Exception {
+    public List<Map<String, Object>> executeSqlForColumns(String sql) throws Exception {
+        @Cleanup
         Connection conn = null;
+        @Cleanup
         PreparedStatement pstmt = null;
+        @Cleanup
         ResultSet rs = null;
         ResultSetMetaData rsmd = null;
         int maxSize = -1;
         conn = getConnection();
         List<Map<String, Object>> rows = new ArrayList<>();
-        try {
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-            rsmd = rs.getMetaData();
-            maxSize = rsmd.getColumnCount();
-            for (int i = 0; i < maxSize; i++) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("column_name", rsmd.getColumnLabel(i + 1));
-                map.put("data_type", rsmd.getColumnTypeName(i + 1));
-                rows.add(map);
-            }
-        } finally {
-            try {
-                rs.close();
-                pstmt.close();
-                conn.close();
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-            }
+        pstmt = conn.prepareStatement(sql);
+        rs = pstmt.executeQuery();
+        rsmd = rs.getMetaData();
+        maxSize = rsmd.getColumnCount();
+        for (int i = 0; i < maxSize; i++) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("column_name", rsmd.getColumnLabel(i + 1));
+            map.put("data_type", rsmd.getColumnTypeName(i + 1));
+            rows.add(map);
         }
         return rows;
     }
 
     public int executeQueryForCount(String sql) {
         int rowCount = 0;
-        Connection conn = getConnection();
-        Statement stmt = null;
-        ResultSet rs = null;
         try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
+            @Cleanup
+            Connection conn = getConnection();
+            @Cleanup
+            Statement stmt = conn.createStatement();
+            @Cleanup
+            ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 Object count = rs.getObject("count(*)");
                 rowCount = Integer.parseInt(count.toString());
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-                conn.close();
-            } catch (SQLException localSQLException1) {
-                logger.error(localSQLException1.getMessage(), localSQLException1);
-            }
+            log.error(e.getMessage(), e);
         }
         return rowCount;
     }
 
     public int executeQueryForCount2(String sql) {
         int rowCount = 0;
-        Connection conn = getConnection();
-        Statement stmt = null;
-        ResultSet rs = null;
         try {
-            stmt = conn.createStatement();
             String time = String.valueOf(System.currentTimeMillis() / 1000);
-            rs = stmt.executeQuery("select count(*) from (" + sql + ") tableCount" + time);
+            @Cleanup
+            Connection conn = getConnection();
+            @Cleanup
+            Statement stmt = conn.createStatement();
+            @Cleanup
+            ResultSet rs = stmt.executeQuery("select count(*) from (" + sql + ") tableCount" + time);
             while (rs.next()) {
                 Object count = rs.getObject("count(*)");
                 rowCount = Integer.parseInt(count.toString());
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-                conn.close();
-            } catch (SQLException localSQLException1) {
-                logger.error(localSQLException1.getMessage(), localSQLException1);
-            }
+            log.error(e.getMessage(), e);
         }
         return rowCount;
     }
 
     public int executeQueryForCountForOracle(String sql) {
         int rowCount = 0;
-        Connection conn = getConnection();
-        Statement stmt = null;
-        ResultSet rs = null;
         String sql3 = " select count(*) as count from  (" + sql + ")";
         try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql3);
+            @Cleanup
+            Connection conn = getConnection();
+            @Cleanup
+            Statement stmt = conn.createStatement();
+            @Cleanup
+            ResultSet rs = stmt.executeQuery(sql3);
             rs.next();
             rowCount = rs.getInt("count");
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-                conn.close();
-            } catch (SQLException localSQLException1) {
-                logger.error(localSQLException1.getMessage(), localSQLException1);
-            }
+            log.error(e.getMessage(), e);
         }
         return rowCount;
     }
 
     public int executeQueryForCountForPostgreSQL(String sql) {
         int rowCount = 0;
-        Connection conn = getConnection();
-        Statement stmt = null;
-        ResultSet rs = null;
         String sql3 = " select count(*) as count from  (" + sql + ") t ";
         try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql3);
+            @Cleanup
+            Connection conn = getConnection();
+            @Cleanup
+            Statement stmt = conn.createStatement();
+            @Cleanup
+            ResultSet rs = stmt.executeQuery(sql3);
             rs.next();
             rowCount = rs.getInt("count");
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        } finally {
-            try {
-                rs.close();
-                stmt.close();
-                conn.close();
-            } catch (SQLException localSQLException1) {
-                logger.error(localSQLException1.getMessage(), localSQLException1);
-            }
+            log.error(e.getMessage(), e);
         }
         return rowCount;
     }

@@ -3,8 +3,8 @@ package com.vone.mq.service;
 import com.vone.mq.dao.PayOrderDao;
 import com.vone.mq.dao.SettingDao;
 import com.vone.mq.dao.TmpPriceDao;
-import com.vone.mq.entity.PayOrder;
 import com.vone.mq.entity.Setting;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class QuartzService {
     @Autowired
@@ -21,13 +22,12 @@ public class QuartzService {
     private PayOrderDao payOrderDao;
     @Autowired
     private TmpPriceDao tmpPriceDao;
-
-
+    
     @Scheduled(fixedRate = 30000)
     public void timerToZZP(){
 
         try {
-            System.out.println("开始清理过期订单...");
+            log.info("开始清理过期订单...");
             // 获取超时时间（分钟）
             String timeout = settingDao.findById("close").get().getVvalue();
             int timeoutMS = Integer.valueOf(timeout)*60*1000;
@@ -44,7 +44,7 @@ public class QuartzService {
             for (Map payOrder: payOrders) {
                 tmpPriceDao.delprice(payOrder.get("type")+"-"+payOrder.get("really_price"));
             }
-            System.out.println("成功清理" + row + "个订单");
+            log.info("成功清理" + row + "个订单");
         }catch (Exception e){
             e.printStackTrace();
         }

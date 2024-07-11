@@ -2,13 +2,13 @@ package org.springframework.base.system.web;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import lombok.Cleanup;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Expand;
 import org.apache.tools.ant.taskdefs.Zip;
 import org.apache.tools.ant.types.FileSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.base.common.web.BaseController;
 import org.springframework.base.system.entity.Config;
 import org.springframework.base.system.entity.IdsDto;
@@ -32,10 +32,10 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Slf4j
 @Controller
 @RequestMapping({"system/permission"})
 public class PermissionController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(PermissionController.class);
 
     @Autowired
     private PermissionService permissionService;
@@ -54,7 +54,7 @@ public class PermissionController extends BaseController {
         try {
             listDb = permissionService.getAllDataBaseById(datascope);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return listDb;
     }
@@ -90,7 +90,7 @@ public class PermissionController extends BaseController {
                 listTable = permissionService.getAllTablesForMSSQL(dbName, databaseConfigId);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return Collections.emptyList();
         }
 
@@ -191,7 +191,7 @@ public class PermissionController extends BaseController {
                 listDb = permissionService.getAllDataBaseForHive2(databaseConfigId);
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return Collections.emptyList();
         }
         int id = 0;
@@ -250,7 +250,7 @@ public class PermissionController extends BaseController {
                     listTable = permissionService.getAllTablesForHive2(dbName, databaseConfigId);
                 }
             } catch (Exception e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 return Collections.emptyList();
             }
             for (int y = 0; y < listTable.size(); y++) {
@@ -384,7 +384,7 @@ public class PermissionController extends BaseController {
             result.put("status", status);
             return result;
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
             result.put("mess", mess);
@@ -458,7 +458,7 @@ public class PermissionController extends BaseController {
             mess = "执行成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -487,7 +487,7 @@ public class PermissionController extends BaseController {
             mess = "执行成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -639,7 +639,7 @@ public class PermissionController extends BaseController {
             mess = "修改成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "error:" + e.getMessage();
             status = "fail";
         }
@@ -714,7 +714,7 @@ public class PermissionController extends BaseController {
             mess = "删除成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -756,7 +756,7 @@ public class PermissionController extends BaseController {
             mess = "新增成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -816,7 +816,7 @@ public class PermissionController extends BaseController {
             mess = " 更新成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -831,15 +831,15 @@ public class PermissionController extends BaseController {
                 "<tr><td>8888888888888</td></tr>" +
                 "</table></body></html>";
         try {
+            @Cleanup
             OutputStream outputStream = response.getOutputStream();
             response.setContentType("application/msexcel; charset=UTF-8");
             response.setHeader("Content-disposition", "attachment; filename=data.xls");
             byte[] dataByteArr = ss.getBytes(StandardCharsets.UTF_8);
             outputStream.write(dataByteArr);
             outputStream.flush();
-            outputStream.close();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -849,20 +849,20 @@ public class PermissionController extends BaseController {
             String path = "E://a.xls";
             File file = new File(path);
             String filename = file.getName();
+            @Cleanup
             InputStream fis = new BufferedInputStream(new FileInputStream(path));
             byte[] buffer = new byte[fis.available()];
             fis.read(buffer);
-            fis.close();
             response.reset();
             response.addHeader("Content-Disposition", "attachment;filename=" + new String(filename.getBytes()));
             response.addHeader("Content-Length", String.valueOf(file.length()));
+            @Cleanup
             OutputStream toClient = new BufferedOutputStream(response.getOutputStream());
             response.setContentType("application/vnd.ms-excel;charset=gb2312");
             toClient.write(buffer);
             toClient.flush();
-            toClient.close();
         } catch (IOException ex) {
-            logger.error(ex.getMessage(), ex);
+            log.error(ex.getMessage(), ex);
         }
     }
 
@@ -899,7 +899,7 @@ public class PermissionController extends BaseController {
             mess = "查询成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1254,7 +1254,7 @@ public class PermissionController extends BaseController {
             mess = "保存成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "保存出错！" + e.getMessage();
             status = "fail";
         }
@@ -1323,7 +1323,7 @@ public class PermissionController extends BaseController {
             mess = "保存成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "保存出错！" + e.getMessage();
             status = "fail";
         }
@@ -1363,7 +1363,7 @@ public class PermissionController extends BaseController {
             mess = "删除成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1405,7 +1405,7 @@ public class PermissionController extends BaseController {
             mess = "保存成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1446,7 +1446,7 @@ public class PermissionController extends BaseController {
             mess = "保存成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1492,7 +1492,7 @@ public class PermissionController extends BaseController {
                 status = "success";
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1513,7 +1513,7 @@ public class PermissionController extends BaseController {
             mess = "执行成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1541,7 +1541,7 @@ public class PermissionController extends BaseController {
             mess = "执行成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1569,7 +1569,7 @@ public class PermissionController extends BaseController {
             mess = "执行成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1597,7 +1597,7 @@ public class PermissionController extends BaseController {
             mess = "执行成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1710,7 +1710,7 @@ public class PermissionController extends BaseController {
             map.put("memUsage", Double.valueOf(memUsage));
             map.put("diskUsage", Double.valueOf(diskUsage));
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1758,7 +1758,7 @@ public class PermissionController extends BaseController {
             mess = "查询成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
             return null;
@@ -1811,7 +1811,7 @@ public class PermissionController extends BaseController {
                 status = "fail";
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "复制表失败！";
             status = "fail";
         }
@@ -1868,7 +1868,7 @@ public class PermissionController extends BaseController {
                 status = "fail";
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "重命名表失败！";
             status = "fail";
         }
@@ -1889,7 +1889,7 @@ public class PermissionController extends BaseController {
             mess = "删除成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }
@@ -1908,18 +1908,18 @@ public class PermissionController extends BaseController {
         response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);
         response.addHeader("Content-Length", String.valueOf(file.length()));
         try {
+            @Cleanup
             FileInputStream inputStream = new FileInputStream(file);
+            @Cleanup
             ServletOutputStream out = response.getOutputStream();
             byte[] buffer = new byte[1024];
             int len = 0;
             while ((len = inputStream.read(buffer)) > 0) {
                 out.write(buffer, 0, len);
             }
-            inputStream.close();
-            out.close();
             out.flush();
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -1949,7 +1949,7 @@ public class PermissionController extends BaseController {
             mess = "压缩成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "压缩文件出错";
             status = "fail";
         }
@@ -1979,7 +1979,7 @@ public class PermissionController extends BaseController {
             mess = "解压缩成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "解压缩文件出错";
             status = "fail";
         }
@@ -2017,7 +2017,7 @@ public class PermissionController extends BaseController {
             mess = "删除成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "删除失败," + e.getMessage();
             status = "fail";
         }
@@ -2043,7 +2043,7 @@ public class PermissionController extends BaseController {
             mess = "删除成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "删除失败";
             status = "fail";
         }
@@ -2074,7 +2074,7 @@ public class PermissionController extends BaseController {
             mess = "删除成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "删除失败";
             status = "fail";
         }
@@ -2155,7 +2155,7 @@ public class PermissionController extends BaseController {
             mess = "保存成功！";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "保存出错！" + e.getMessage();
             status = "fail";
         }
@@ -2197,7 +2197,7 @@ public class PermissionController extends BaseController {
             mess = "数据库还原成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = "数据库还原出错!";
             status = "fail";
         }
@@ -2241,7 +2241,7 @@ public class PermissionController extends BaseController {
             mess = "删除成功";
             status = "success";
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             mess = e.getMessage();
             status = "fail";
         }

@@ -1,9 +1,12 @@
 package com.vone.mq.entity;
 
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@Data
 @Entity
 @Table(name = "pay_setting")
 public class Setting {
@@ -11,19 +14,4 @@ public class Setting {
     private String vkey;
     private String vvalue;
 
-    public String getVkey() {
-        return vkey;
-    }
-
-    public void setVkey(String vkey) {
-        this.vkey = vkey;
-    }
-
-    public String getVvalue() {
-        return vvalue;
-    }
-
-    public void setVvalue(String vvalue) {
-        this.vvalue = vvalue;
-    }
 }

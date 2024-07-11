@@ -32,6 +32,11 @@ public class WebService {
     @Autowired
     private PayQrcodeDao payQrcodeDao;
 
+    public String getMd5(String content) {
+        String key = settingDao.findById("key").get().getVvalue();
+        return md5(content + key);
+    }
+
     public CommonRes createOrder(String payId, String param, Integer type, String price, String notifyUrl, String returnUrl, String sign){
         String key = settingDao.findById("key").get().getVvalue();
         String jsSign =  md5(payId+param+type+price+key);
@@ -40,7 +45,6 @@ public class WebService {
         }
 
         Double priceD = Double.valueOf(price);
-
 
         Date currentTime = new Date();
 
@@ -59,15 +63,12 @@ public class WebService {
             }catch (Exception e){
                 row = 0;
             }
-
             if (row == 0){
                 if (payQf==1){
-
                     reallyPrice = Arith.add(reallyPrice,0.01);
                 }else{
                     reallyPrice = Arith.sub(reallyPrice,0.01);
                 }
-
             }else{
                 break;
             }
@@ -82,19 +83,16 @@ public class WebService {
         }else if (type == 2){
             payUrl = settingDao.findById("zfbpay").get().getVvalue();
         }
-
         if (payUrl==""){
             return ResUtil.error("请您先进入后台配置程序");
         }
 
         int isAuto = 1;
-
         PayQrcode payQrcode = payQrcodeDao.findByPriceAndType(reallyPrice,type);
         if (payQrcode!=null){
             payUrl = payQrcode.getPayUrl();
             isAuto = 0;
         }
-
 
         PayOrder tmp = payOrderDao.findByPayId(payId);
         if (tmp!=null){
@@ -246,7 +244,6 @@ public class WebService {
                 //通知失败，设置状态为2
                 payOrderDao.setState(2,payOrder.getId());
                 return ResUtil.error("通知异步地址失败");
-
             }
         }
     }
@@ -261,11 +258,8 @@ public class WebService {
         CreateOrderRes createOrderRes = new CreateOrderRes(
                 payOrder.getPayId(),payOrder.getOrderId(),payOrder.getType(),payOrder.getPrice(),payOrder.getReallyPrice()
                 ,payOrder.getPayUrl(),payOrder.getIsAuto(),payOrder.getState(),Integer.valueOf(timeOut),payOrder.getCreateDate());
-
         return ResUtil.success(createOrderRes);
     }
-
-
 
     public CommonRes checkOrder(String orderId){
         PayOrder payOrder = payOrderDao.findByOrderId(orderId);

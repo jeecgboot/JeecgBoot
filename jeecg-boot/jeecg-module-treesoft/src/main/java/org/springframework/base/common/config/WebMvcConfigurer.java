@@ -11,7 +11,9 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         // addPathPatterns 用于添加拦截规则
         // excludePathPatterns 用户排除拦截
-        registry.addInterceptor(new CommonInterceptor()).excludePathPatterns("/static/**").addPathPatterns("/**");
+        registry.addInterceptor(new CommonInterceptor())
+                .excludePathPatterns("/static/**","/treesoft/login","/treesoft/logout","/treesoft/loginVaildate")
+                .addPathPatterns("/**");
         super.addInterceptors(registry);
     }
 }

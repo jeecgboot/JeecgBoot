@@ -4,6 +4,7 @@ import com.vone.mq.dto.CommonRes;
 import com.vone.mq.dto.PageRes;
 import com.vone.mq.entity.PayQrcode;
 import com.vone.mq.service.AdminService;
+import com.vone.mq.utils.JWTUtil;
 import com.vone.mq.utils.ResUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,27 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+
+    @RequestMapping("/login")
+    public CommonRes login(HttpSession session,String user, String pass){
+        if (user==null){
+            return ResUtil.error("请输入账号");
+        }
+        if (pass==null){
+            return ResUtil.error("请输入密码");
+        }
+        CommonRes r = adminService.login(user, pass);
+        if (r.getCode()==1){
+            String token = JWTUtil.getToken(user,pass);
+            session.setAttribute("token",token);
+        }
+        return r;
+    }
+
+    @RequestMapping("/logout")
+    public void logout(HttpSession session,String user){
+        session.removeAttribute("token");
+    }
 
     @RequestMapping("/admin/getMenu")
     public List<Map<String,Object>> getMenu(HttpSession session){

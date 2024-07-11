@@ -17,40 +17,11 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession(true);
         String userName = (String) session.getAttribute("LOGIN_USER_NAME");
-        String url = request.getServletPath();
-        if (url.indexOf("treesoft/login") != -1) {
-            return true;
-        }
-        if (url.indexOf("treesoft/treesoft") != -1) {
-            return true;
-        }
-        if (url.indexOf("static/css") != -1) {
-            return true;
-        }
-        if (url.indexOf("static/images") != -1) {
-            return true;
-        }
-        if (url.indexOf("static/plugins") != -1) {
-            return true;
-        }
-        if (url.indexOf("treesoft/logout") != -1) {
-            return true;
-        }
-        if (url.indexOf("logout") != -1) {
-            return true;
-        }
-        if (url.indexOf("system/login") != -1) {
-            return true;
-        }
-        if (url.indexOf("treesoft/loginVaildate") != -1) {
-            return true;
-        }
         Map<String, String> map = new HashMap<>();//LoginController.getLoginUserMap();
         map.put(userName, session.getId());
         if (userName != null) {

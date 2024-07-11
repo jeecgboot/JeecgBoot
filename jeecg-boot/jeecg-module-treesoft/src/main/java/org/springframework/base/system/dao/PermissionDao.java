@@ -2,9 +2,9 @@ package org.springframework.base.system.dao;
 
 import com.alibaba.fastjson.JSONArray;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Cleanup;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.base.common.utils.DateUtil;
 import org.springframework.base.system.core.BusiDataBaseUtil;
 import org.springframework.base.system.entity.Config;
@@ -21,9 +21,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Repository
 public class PermissionDao {
-    private static final Logger logger = LoggerFactory.getLogger(PermissionDao.class);
 
     Pattern numPattern = Pattern.compile("\\s+");
 
@@ -954,7 +954,7 @@ public class PermissionDao {
             map2.put("field", map.get("column_name"));
             map2.put("title", map.get("column_name"));
             map2.put("sortable", Boolean.valueOf(true));
-            logger.info("{}", map.get("data_type"));
+            log.info("{}", map.get("data_type"));
             if ((map.get("data_type").equals("DATETIME")) || (map.get("data_type").equals("DATE")) || (map.get("data_type").equals("date")) || (map.get("data_type").equals("timestamp"))) {
                 map2.put("editor", "datetimebox");
             } else if ((map.get("data_type").equals("integer")) || (map.get("data_type").equals("float4")) || (map.get("data_type").equals("numeric")) || (map.get("data_type").equals("int4"))) {
@@ -1209,7 +1209,7 @@ public class PermissionDao {
             BusiDataBaseUtil db = new BusiDataBaseUtil(databaseName, databaseConfigId);
             list = db.queryForList(sql);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         List<Map<String, Object>> list2 = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -1235,7 +1235,7 @@ public class PermissionDao {
             BusiDataBaseUtil db = new BusiDataBaseUtil(databaseName, databaseConfigId);
             list = db.queryForList(sql);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         List<Map<String, Object>> list2 = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -1824,6 +1824,7 @@ public class PermissionDao {
             throws Exception {
         BusiDataBaseUtil db = new BusiDataBaseUtil(databaseName, databaseConfigId);
         StringBuilder sb = new StringBuilder();
+        @Cleanup
         BufferedReader reader = null;
         boolean isZS = false;
         boolean isNull = false;
@@ -1845,7 +1846,7 @@ public class PermissionDao {
                         try {
                             db.setupdateData(sb.toString());
                         } catch (Exception e) {
-                            logger.error(e.getMessage(), e);
+                            log.error(e.getMessage(), e);
                         }
                         sb.setLength(0);
                     } else if (isDELIMITER) {
@@ -1865,7 +1866,7 @@ public class PermissionDao {
                                     try {
                                         db.setupdateData(sb.toString());
                                     } catch (Exception e) {
-                                        logger.error(e.getMessage(), e);
+                                        log.error(e.getMessage(), e);
                                     }
                                     sb.setLength(0);
                                 }
@@ -1885,21 +1886,8 @@ public class PermissionDao {
                 db.updateExecuteBatch(insertSQLList);
                 insertSQLList.clear();
             }
-            reader.close();
         } catch (IOException e) {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException localIOException1) {
-                }
-            }
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException localIOException2) {
-                }
-            }
+            log.error(e.getMessage(),e);
         }
         return true;
     }
@@ -2126,7 +2114,7 @@ public class PermissionDao {
                 value = (String) temp.get("tablespacesize");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return value;
     }
@@ -2173,7 +2161,7 @@ public class PermissionDao {
                 value = (String) temp.get("locks");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             value = "0";
         }
         return value;

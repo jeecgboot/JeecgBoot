@@ -1,10 +1,13 @@
 package com.vone.mq.entity;
 
+import lombok.Data;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+@Data
 @Entity
 public class PayOrder {
     @Id
@@ -50,142 +53,4 @@ public class PayOrder {
     private int isAuto;
     //二维码内容
     private String payUrl;
-
-    public String getPayUrl() {
-        return payUrl;
-    }
-
-    public void setPayUrl(String payUrl) {
-        this.payUrl = payUrl;
-    }
-
-    public String getPayId() {
-        return payId;
-    }
-
-    public void setPayId(String payId) {
-        this.payId = payId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
-    public long getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(long createDate) {
-        this.createDate = createDate;
-    }
-
-    public long getPayDate() {
-        return payDate;
-    }
-
-    public void setPayDate(long payDate) {
-        this.payDate = payDate;
-    }
-
-    public long getCloseDate() {
-        return closeDate;
-    }
-
-    public void setCloseDate(long closeDate) {
-        this.closeDate = closeDate;
-    }
-
-    public String getParam() {
-        return param;
-    }
-
-    public void setParam(String param) {
-        this.param = param;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public double getReallyPrice() {
-        return reallyPrice;
-    }
-
-    public void setReallyPrice(double reallyPrice) {
-        this.reallyPrice = reallyPrice;
-    }
-
-    public String getNotifyUrl() {
-        return notifyUrl;
-    }
-
-    public void setNotifyUrl(String notifyUrl) {
-        this.notifyUrl = notifyUrl;
-    }
-
-    public String getReturnUrl() {
-        return returnUrl;
-    }
-
-    public void setReturnUrl(String returnUrl) {
-        this.returnUrl = returnUrl;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-    public void setState(int state) {
-        this.state = state;
-    }
-
-    public int getIsAuto() {
-        return isAuto;
-    }
-
-    public void setIsAuto(int isAuto) {
-        this.isAuto = isAuto;
-    }
-
-    @Override
-    public String toString() {
-        return "PayOrder{" +
-                "id=" + id +
-                ", orderId='" + orderId + '\'' +
-                ", createDate=" + createDate +
-                ", payDate=" + payDate +
-                ", closeDate=" + closeDate +
-                ", param='" + param + '\'' +
-                ", type=" + type +
-                ", price=" + price +
-                ", reallyPrice=" + reallyPrice +
-                ", notifyUrl='" + notifyUrl + '\'' +
-                ", returnUrl='" + returnUrl + '\'' +
-                ", state=" + state +
-                '}';
-    }
 }

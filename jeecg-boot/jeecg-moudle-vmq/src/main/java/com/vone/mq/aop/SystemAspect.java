@@ -1,4 +1,4 @@
-package org.springframework.base.common.aop;
+package com.vone.mq.aop;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class SystemAspect {
 
-    @Around("within(org.springframework.base.system.web.*)")
+    @Around("within(com.vone.mq.controller.*)")
     public Object around(ProceedingJoinPoint joinPoint)
             throws Throwable {
         String className = joinPoint.getTarget().getClass().getSimpleName();
@@ -60,7 +60,7 @@ public class SystemAspect {
                 object instanceof Boolean) {
             return true;
         }
-        if (Objects.nonNull(object) && object.getClass().getName().startsWith("org.springframework.base")) {
+        if (Objects.nonNull(object) && object.getClass().getName().startsWith("com.vone.mq")) {
             return true;
         }
         return false;

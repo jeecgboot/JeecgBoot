@@ -1,15 +1,14 @@
 package org.springframework.base.system.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
+@Slf4j
 public class MacAddress {
-    private static final Logger logger = LoggerFactory.getLogger(MacAddress.class);
 
     public static String getMac2() {
         String mac = "";
@@ -42,7 +41,7 @@ public class MacAddress {
                 }
             }
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         }
         return mac;
     }

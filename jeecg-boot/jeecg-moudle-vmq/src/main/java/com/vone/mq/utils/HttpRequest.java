@@ -1,7 +1,9 @@
 package com.vone.mq.utils;
 
+import lombok.Cleanup;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -9,7 +11,9 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 public class HttpRequest {
+
     /**
      * 向指定URL发送GET方法的请求
      *
@@ -21,10 +25,11 @@ public class HttpRequest {
      */
     public static String sendGet(String url, String param) {
         String result = "";
-        BufferedReader in = null;
         try {
+            @Cleanup
+            BufferedReader in = null;
             String urlNameString = url + "?" + param;
-            System.out.println("url: " + urlNameString);
+            log.info("url: " + urlNameString);
             URL realUrl = new URL(urlNameString);
             // 打开和URL之间的连接
             URLConnection connection = realUrl.openConnection();
@@ -39,7 +44,7 @@ public class HttpRequest {
             Map<String, List<String>> map = connection.getHeaderFields();
             // 遍历所有的响应头字段
             for (String key : map.keySet()) {
-                System.out.println(key + "--->" + map.get(key));
+                log.info(key + "--->" + map.get(key));
             }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
@@ -49,19 +54,9 @@ public class HttpRequest {
                 result += line;
             }
         } catch (Exception e) {
-            System.out.println("发送GET请求出现异常！" + e);
+            log.info("发送GET请求出现异常！" + e);
             e.printStackTrace();
             result = "服务器无响应";
-        }
-        // 使用finally块来关闭输入流
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (Exception e2) {
-                e2.printStackTrace();
-            }
         }
         return result;
     }
@@ -76,12 +71,14 @@ public class HttpRequest {
      * @return 所代表远程资源的响应结果
      */
     public static String sendPost(String url, String param) {
-        PrintWriter out = null;
-        BufferedReader in = null;
         String result = "";
         try {
-            System.out.println("url: " + url);
-            System.out.println("param: " + param);
+            @Cleanup
+            PrintWriter out = null;
+            @Cleanup
+            BufferedReader in = null;
+            log.info("url: " + url);
+            log.info("param: " + param);
             URL realUrl = new URL(url);
             // 打开和URL之间的连接
             URLConnection conn = realUrl.openConnection();
@@ -107,22 +104,8 @@ public class HttpRequest {
                 result += line;
             }
         } catch (Exception e) {
-            System.out.println("发送 POST 请求出现异常！"+e);
+            log.info("发送 POST 请求出现异常！"+e);
             e.printStackTrace();
-        }
-        //使用finally块来关闭输出流、输入流
-        finally{
-            try{
-                if(out!=null){
-                    out.close();
-                }
-                if(in!=null){
-                    in.close();
-                }
-            }
-            catch(IOException ex){
-                ex.printStackTrace();
-            }
         }
         return result;
     }

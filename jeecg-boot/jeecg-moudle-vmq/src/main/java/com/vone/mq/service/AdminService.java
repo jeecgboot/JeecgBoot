@@ -17,18 +17,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
-import java.text.DecimalFormat;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.text.NumberFormat;
 import java.util.*;
-
-
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
-
-import javax.persistence.criteria.*;
 
 @Service
 public class AdminService {
@@ -41,6 +39,18 @@ public class AdminService {
     private TmpPriceDao tmpPriceDao;
     @Autowired
     private PayQrcodeDao payQrcodeDao;
+
+    public CommonRes login(String user,String pass){
+        String u = settingDao.findById("user").get().getVvalue();
+        if (!user.equals(u)){
+            return ResUtil.error("账号或密码不正确");
+        }
+        String p = settingDao.findById("pass").get().getVvalue();
+        if (!pass.equals(p)){
+            return ResUtil.error("账号或密码不正确");
+        }
+        return ResUtil.success();
+    }
 
     public CommonRes saveSetting(String user,String pass,String notifyUrl,String returnUrl,String key,String wxpay,String zfbpay,String close,String payQf){
         Setting s = new Setting();
