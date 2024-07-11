@@ -36,6 +36,7 @@
     <properties>
         <log4j2.version>2.17.0</log4j2.version>
         <dm8.version>8.1.1.49</dm8.version>
+        <nacos.version>2.3.2</nacos.version>
     </properties>
     
     <dependencies>
@@ -50,22 +51,22 @@
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-naming</artifactId>
-            <version>2.3.2</version>
+            <version>${nacos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-istio</artifactId>
-            <version>2.3.2</version>
+            <version>${nacos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-config</artifactId>
-            <version>2.3.2</version>
+            <version>${nacos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.nacos</groupId>
             <artifactId>nacos-console</artifactId>
-            <version>2.3.2</version>
+            <version>${nacos.version}</version>
         </dependency>
 
         <!--达梦数据库驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->
