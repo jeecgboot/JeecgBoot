@@ -49,6 +49,7 @@
   import { defHttp } from '/@/utils/http/axios';
   import { debounce } from 'lodash-es';
   import { setPopContainer } from '/@/utils';
+  import { isObject } from '/@/utils/is';
 
   export default defineComponent({
     name: 'JSearchSelect',
@@ -353,7 +354,9 @@
       //update-end-author:taoyan date:2022-8-15 for: VUEN-1971 【online 专项测试】关联记录和他表字段 1
       // update-begin--author:liaozhiyang---date:20240523---for：【TV360X-26】下拉搜索控件选中选项后再次点击下拉应该显示初始的下拉选项，而不是只展示选中结果
       const handleAsyncFocus = () => {
-        options.value.length && initDictCodeData();
+        // update-begin--author:liaozhiyang---date:20240709---for：【issues/6681】异步查询不生效
+        (isObject(selectedAsyncValue.value) || selectedAsyncValue.value?.length) && isDictTable.value && props.async && initDictTableData();
+        // update-end--author:liaozhiyang---date:20240709---for：【issues/6681】异步查询不生效
         attrs.onFocus?.();
       };
       // update-end--author:liaozhiyang---date:20240523---for：【TV360X-26】下拉搜索控件选中选项后再次点击下拉应该显示初始的下拉选项，而不是只展示选中结果
