@@ -34,13 +34,20 @@ const whitePathList: PageEnum[] = [LOGIN_PATH, OAUTH2_LOGIN_PAGE_PATH,SYS_FILES_
 export function createPermissionGuard(router: Router) {
   const userStore = useUserStoreWithOut();
   const permissionStore = usePermissionStoreWithOut();
+
+  // 自定义首页跳转次数
+  let homePathJumpCount = 0;
+
   router.beforeEach(async (to, from, next) => {
     if (
+      // 【#6861】跳转到自定义首页的逻辑，只跳转一次即可
+      homePathJumpCount < 1 &&
       from.path === ROOT_PATH &&
       to.path === PageEnum.BASE_HOME &&
       userStore.getUserInfo.homePath &&
       userStore.getUserInfo.homePath !== PageEnum.BASE_HOME
     ) {
+      homePathJumpCount++;
       next(userStore.getUserInfo.homePath);
       return;
     }
