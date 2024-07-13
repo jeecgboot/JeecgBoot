@@ -11,7 +11,7 @@
 </#list>
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :title="getTitle" @ok="handleSubmit">
-    <BasicForm @register="registerForm"/>
+    <BasicForm @register="registerForm" name="${entityName}Form" />
   </BasicModal>
 </template>
 <script lang="ts" setup>
@@ -29,7 +29,7 @@
   // 当前编辑的数据
   let model:Nullable<Recordable> = null;
   //表单配置
-  const [registerForm, {setProps,resetFields, setFieldsValue, validate, updateSchema}] = useForm({
+  const [registerForm, { setProps,resetFields, setFieldsValue, validate, updateSchema, scrollToField }] = useForm({
     schemas: formSchema,
     showActionButtonGroup: false,
     baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}},
@@ -103,6 +103,14 @@
         // 是否更改了父级节点
         changeParent: model != null && (model['${pidFieldName}'] != values['${pidFieldName}']),
       });
+    } catch ({ errorFields }) {
+      if (errorFields) {
+        const firstField = errorFields[0];
+        if (firstField) {
+          scrollToField(firstField.name, { behavior: 'smooth', block: 'center' });
+        }
+      }
+      return Promise.reject(errorFields);
     } finally {
       setModalProps({confirmLoading: false});
     }
