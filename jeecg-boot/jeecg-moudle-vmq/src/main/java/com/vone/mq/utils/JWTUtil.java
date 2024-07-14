@@ -12,7 +12,7 @@ import java.util.Date;
  *
  */
 public class JWTUtil {
-	public static final long EXPIRE_TIME = 10 * 1000;
+	public static final long EXPIRE_TIME = 24 * 60 * 60 * 1000;
 
 	/**
 	 * 生产token
@@ -41,18 +41,15 @@ public class JWTUtil {
 	}
 
 	public static String getUsername(String token) {
+		if (token == null) {
+			return "";
+		}
 		try {
 			DecodedJWT jwt = JWT.decode(token);
 			return jwt.getClaim("username").asString();
 		} catch (JWTDecodeException e) {
 			return null;
 		}
-	}
-
-	public static void main(String args[]) {
-		String token = getToken("admin", "552200");
-		System.out.println(token);
-		System.out.println(verify(token,"admin", "552200"));
 	}
 
 }

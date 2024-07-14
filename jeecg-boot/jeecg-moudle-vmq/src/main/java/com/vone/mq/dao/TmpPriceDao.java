@@ -10,12 +10,12 @@ public interface TmpPriceDao  extends JpaRepository<TmpPrice,String> {
 
     @Transactional
     @Modifying
-    @Query(value = "INSERT INTO pay_price_tmp (price) VALUES (?1)", nativeQuery = true)
-    int checkPrice(String price);
+    @Query(value = "INSERT INTO pay_price_tmp (id,username,price) VALUES (TRUNCATE(unix_timestamp(now(3))*1000,0),?1,?2)", nativeQuery = true)
+    int checkPrice(String username,String price);
 
 
     @Transactional
     @Modifying
-    @Query(value = "delete from pay_price_tmp where price = ?1", nativeQuery = true)
-    int delprice(String aDouble);
+    @Query(value = "delete from pay_price_tmp where username=?1 and price = ?2", nativeQuery = true)
+    int delprice(String username,String aDouble);
 }

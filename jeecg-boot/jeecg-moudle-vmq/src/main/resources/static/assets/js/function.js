@@ -1,3 +1,9 @@
+function logout() {
+    $.post("/logout", function (data) {
+        window.location.href = "index.html";
+    });
+}
+
 function creatOrder(payId, param, type, price, isHtml) {
     var code = -1;
     var sign = getMd5(payId + param + type + price);
@@ -36,4 +42,32 @@ function getMd5(content) {
         }
     });
     return sign;
+}
+
+function getToken(user,pass) {
+    var token = "";
+    $.ajax({
+        type: 'POST',
+        url: "/getToken",
+        async: false,
+        data: {"user": user,"pass":pass},
+        success: function (data) {
+            token = data;
+        }
+    });
+    return token;
+}
+
+function formatDate(now) {
+    if (now=="0"){
+        return "无";
+    }
+    now = new Date(now);
+    return now.getFullYear()
+        + "-" + (now.getMonth()>8?(now.getMonth()+1):"0"+(now.getMonth()+1))
+        + "-" + (now.getDate()>9?now.getDate():"0"+now.getDate())
+        + " " + (now.getHours()>9?now.getHours():"0"+now.getHours())
+        + ":" + (now.getMinutes()>9?now.getMinutes():"0"+now.getMinutes())
+        + ":" + (now.getSeconds()>9?now.getSeconds():"0"+now.getSeconds());
+
 }

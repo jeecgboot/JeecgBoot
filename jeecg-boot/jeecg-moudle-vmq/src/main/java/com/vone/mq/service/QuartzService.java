@@ -23,13 +23,13 @@ public class QuartzService {
     @Autowired
     private TmpPriceDao tmpPriceDao;
     
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedRate = 60000)
     public void timerToZZP(){
-
+        log.info("开始清理过期订单...");
+        // 获取超时时间（分钟）
+        Setting setting = settingDao.getSettingByUserName("guest");
         try {
-            log.info("开始清理过期订单...");
-            // 获取超时时间（分钟）
-            String timeout = settingDao.findById("close").get().getVvalue();
+            String timeout = setting.getClose();
             int timeoutMS = Integer.valueOf(timeout)*60*1000;
 
             String closeTime = String.valueOf(new Date().getTime());
@@ -42,23 +42,17 @@ public class QuartzService {
 
             List<Map<String,Object>> payOrders = payOrderDao.findAllByCloseDate(beginTime, Long.valueOf(closeTime));
             for (Map payOrder: payOrders) {
-                tmpPriceDao.delprice(payOrder.get("type")+"-"+payOrder.get("really_price"));
+                tmpPriceDao.delprice((String) payOrder.get("username"),payOrder.get("type")+"-"+payOrder.get("really_price"));
             }
             log.info("成功清理" + row + "个订单");
         }catch (Exception e){
             e.printStackTrace();
         }
-
-        String lastheart = settingDao.findById("lastheart").get().getVvalue();
-        String state = settingDao.findById("jkstate").get().getVvalue();
-        if (state.equals("1") && new Date().getTime() - Long.valueOf(lastheart) > 60*1000){
-            Setting setting = new Setting();
-            setting.setVkey("jkstate");
-            setting.setVvalue("0");
+        String lastheart = setting.getLastheart();
+        String state = setting.getJkstate();
+        if ("1".equals(state) && new Date().getTime() - Long.valueOf(lastheart) > 60*1000){
+            setting.setJkstate("0");
             settingDao.save(setting);
         }
-
-
-
     }
 }

@@ -42,19 +42,6 @@
 </script>
 
 <script>
-    function formatDate(now) {
-        if (now=="0"){
-            return "无";
-        }
-        now = new Date(now);
-        return now.getFullYear()
-            + "-" + (now.getMonth()>8?(now.getMonth()+1):"0"+(now.getMonth()+1))
-            + "-" + (now.getDate()>9?now.getDate():"0"+now.getDate())
-            + " " + (now.getHours()>9?now.getHours():"0"+now.getHours())
-            + ":" + (now.getMinutes()>9?now.getMinutes():"0"+now.getMinutes())
-            + ":" + (now.getSeconds()>9?now.getSeconds():"0"+now.getSeconds());
-
-    }
     var myTable,table,form;
     layui.use(['form','table','laydate'], function(){
         table = layui.table;
@@ -71,13 +58,10 @@
                 type:$("#type").val()
             }
             ,cols: [[ //表头
-                {field: 'createDate', title: '创建时间',minWidth:160,templet: function(d){
-                        return formatDate(d.createDate);
-                    }
-                },
+                {field: 'username', title: '商家',minWidth:150},
                 {field: 'payId', title: '商户编号',minWidth:180},
                 {field: 'orderId', title: '云端订单编号',minWidth:180},
-                {field: 'type', title: '支付方式',minWidth:100,templet: function(d){
+                {field: 'type', title: '支付方式',minWidth:80,templet: function(d){
                         if (d.type=="1"){
                             return '微信';
                         }else if (d.type=="2"){
@@ -85,9 +69,8 @@
                         }
                     }
                 },
-                {field: 'price', title: '订单金额',minWidth:100, align:'center'},
-                {field: 'reallyPrice', title: '实际金额',minWidth:100, align:'center'},
-
+                {field: 'price', title: '订单金额',minWidth:80, align:'center'},
+                {field: 'reallyPrice', title: '实际金额',minWidth:80, align:'center'},
                 {field: 'state', title: '状态',minWidth:80,templet: function(d){
                         if (d.state=="2"){
                             return '<span style="color: orange">通知失败</span>';
@@ -98,6 +81,10 @@
                         }else if (d.state=="-1"){
                             return '<span style="color: red">过期</span>';
                         }
+                    }
+                },
+                {field: 'createDate', title: '创建时间',minWidth:160,templet: function(d){
+                        return formatDate(d.createDate);
                     }
                 },
                 {title: '操作', minWidth: 120, align:'center', toolbar: '#barDemo'}
@@ -113,7 +100,6 @@
                 var out = "<p>创建时间："+formatDate(data.createDate)+"</p>";
                 out += "<p>支付时间："+formatDate(data.payDate)+"</p>";
                 out += "<p>关闭时间："+formatDate(data.closeDate)+"</p>";
-                out += "<p>自定义参数："+data.param+"</p>";
                 layer.alert(out);
 
             }else if(layEvent === 'bd'){
@@ -197,10 +183,11 @@
                 "           </select>";
             switch(obj.event){
                 case 'add':
-                    layer.confirm("<div style='line-height: 40px;'><p>商户订单号："+payId+"</p><p>支付方式："+typeHtml+"</p><p>订单金额：<input id='price' name='price' value='1' /></p>" +
-                        "<p>自定义参数：<input id='param' name='param' value='' /></p><p>返回类型："+isHtmlStr+"</p></div>",function () {
+                    layer.confirm("<div style='line-height: 40px;width: 300px'><p>商户编号："+payId+"</p>" +
+                        "<p>订单金额：<input id='price' name='price' value='1' style='width: 60px' /></p>" +
+                        "<p>支付方式："+typeHtml+"</p><p>返回类型："+isHtmlStr+"</p></div>",function () {
                         layer.msg('操作中');
-                        var param = $("#param").val();
+                        var param = $("#token").val();
                         var type = $("#typeOpt").val();
                         var price = $("#price").val();
                         var isHtml = $("#isHtmlOpt").val();

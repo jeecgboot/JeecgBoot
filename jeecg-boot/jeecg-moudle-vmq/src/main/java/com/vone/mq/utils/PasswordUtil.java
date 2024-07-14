@@ -1,4 +1,4 @@
-package org.springframework.base.system.utils;
+package com.vone.mq.utils;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;

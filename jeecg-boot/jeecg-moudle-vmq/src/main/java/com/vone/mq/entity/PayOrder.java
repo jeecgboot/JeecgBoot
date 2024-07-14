@@ -14,12 +14,13 @@ public class PayOrder {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
+    private String username;
+
     //支付云端唯一订单号
     private String orderId;
 
     //支付商户订单号
     private String payId;
-
 
     //创建时间
     private long createDate;

@@ -1,5 +1,6 @@
 package com.vone.mq.aop;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -27,9 +28,9 @@ import java.util.stream.Collectors;
 @Component
 public class SystemAspect {
 
+    @SneakyThrows
     @Around("within(com.vone.mq.controller.*)")
-    public Object around(ProceedingJoinPoint joinPoint)
-            throws Throwable {
+    public Object around(ProceedingJoinPoint joinPoint) {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -38,7 +39,11 @@ public class SystemAspect {
             if (Objects.isNull(e)) {
                 return null;
             }
-            return isBaseType(e) ? e+"("+e.getClass().getSimpleName()+")" : e.getClass().getSimpleName() + ".class";
+            String paramName = e.getClass().getSimpleName();
+            if (isBaseType(e)) {
+                return (e.toString().length() > 100 ? e.toString().substring(0, 100) + "......" : e) + "(" + paramName + ")";
+            }
+            return paramName + ".class";
         }).collect(Collectors.toList());
         StopWatch clock = new StopWatch();
         clock.start(methodName);

@@ -1,38 +1,36 @@
 package com.vone.mq.service;
 
-import com.vone.mq.dao.PayOrderDao;
-import com.vone.mq.dao.PayQrcodeDao;
-import com.vone.mq.dao.SettingDao;
-import com.vone.mq.dao.TmpPriceDao;
+import com.vone.mq.dao.*;
 import com.vone.mq.dto.CommonRes;
 import com.vone.mq.dto.PageRes;
+import com.vone.mq.entity.PayGoods;
 import com.vone.mq.entity.PayOrder;
 import com.vone.mq.entity.PayQrcode;
 import com.vone.mq.entity.Setting;
 import com.vone.mq.utils.Arith;
 import com.vone.mq.utils.HttpRequest;
+import com.vone.mq.utils.PasswordUtil;
 import com.vone.mq.utils.ResUtil;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.text.NumberFormat;
 import java.util.*;
 
+@Slf4j
 @Service
 public class AdminService {
 
     @Autowired
     private SettingDao settingDao;
+    @Autowired
+    private PayGoodsDao payGoodsDao;
     @Autowired
     private PayOrderDao payOrderDao;
     @Autowired
@@ -41,82 +39,78 @@ public class AdminService {
     private PayQrcodeDao payQrcodeDao;
 
     public CommonRes login(String user,String pass){
-        String u = settingDao.findById("user").get().getVvalue();
-        if (!user.equals(u)){
+        String password = "";
+        Map<String,Object> userMap = new HashMap<>();
+        Map<String,Object> map = settingDao.getUserInfo(user);
+        userMap.putAll(map);
+        if (userMap.isEmpty()) {
+            return ResUtil.error("账号【"+user+"】不存在");
+        }
+
+        password = (String) userMap.get("password");
+        Boolean status = (Boolean) userMap.get("status");
+        if (!status) {
+            return ResUtil.error("当前用户已冻结");
+        }
+        String salt = (String) userMap.get("salt");
+        log.info(user,pass,salt,PasswordUtil.encrypt(user, pass, salt));
+        pass = PasswordUtil.encrypt(user, pass, salt);
+        if (!pass.equals(password)) {
             return ResUtil.error("账号或密码不正确");
         }
-        String p = settingDao.findById("pass").get().getVvalue();
-        if (!pass.equals(p)){
-            return ResUtil.error("账号或密码不正确");
+        userMap.remove("status");
+        userMap.remove("salt");
+        userMap.remove("password");
+        return ResUtil.success(userMap);
+    }
+
+    @SneakyThrows
+    public CommonRes regist(String user,String pass){
+        Map<String,Object> map = settingDao.getUserInfo(user);
+        if (!map.isEmpty()) {
+            log.info("{}",map);
+            return ResUtil.error("账号【"+user+"】已存在");
         }
+        String salt = PasswordUtil.randomGen(8);
+        String password = PasswordUtil.encrypt(user,pass,salt);
+        settingDao.regist(user,password,salt);
+        CommonRes res = ResUtil.success();
+        res.setMsg("注册成功");
+        return res;
+    }
+
+
+    public CommonRes saveSetting(Setting setting){
+        settingDao.save(setting);
         return ResUtil.success();
     }
 
-    public CommonRes saveSetting(String user,String pass,String notifyUrl,String returnUrl,String key,String wxpay,String zfbpay,String close,String payQf){
-        Setting s = new Setting();
-        s.setVkey("user");
-        s.setVvalue(user);
-        settingDao.save(s);
-
-        s.setVkey("pass");
-        s.setVvalue(pass);
-        settingDao.save(s);
-
-        s.setVkey("notifyUrl");
-        s.setVvalue(notifyUrl);
-        settingDao.save(s);
-
-        s.setVkey("returnUrl");
-        s.setVvalue(returnUrl);
-        settingDao.save(s);
-
-        s.setVkey("key");
-        s.setVvalue(key);
-        settingDao.save(s);
-
-        s.setVkey("wxpay");
-        s.setVvalue(wxpay);
-        settingDao.save(s);
-        s.setVkey("zfbpay");
-        s.setVvalue(zfbpay);
-        settingDao.save(s);
-
-        s.setVkey("payQf");
-        s.setVvalue(payQf);
-        settingDao.save(s);
-
-        s.setVkey("close");
-        s.setVvalue(close);
-        settingDao.save(s);
-        return ResUtil.success();
-    }
-    public CommonRes getSettings(){
-        List<Setting> settings = settingDao.findAll();
-        Map<String,String> map = new HashMap<>();
-        for (Setting s:settings ) {
-            map.put(s.getVkey(),s.getVvalue());
+    public CommonRes getSettings(String username){
+        Setting query = new Setting();
+        query.setUsername(username);
+        Example<Setting> example = Example.of(query);
+        Optional<Setting> settings = settingDao.findOne(example);
+        if (!settings.isEmpty()) {
+            return ResUtil.success(settings.get());
         }
-        return ResUtil.success(map);
+        return ResUtil.success(null);
     }
 
-    public PageRes getOrders(Integer page, Integer limit, Integer type, Integer state){
+    public PageRes getOrders(String username,Integer page, Integer limit, Integer type, Integer state){
 
         Pageable pageable = PageRequest.of(page-1, limit, Sort.Direction.DESC, "id");
 
-        Specification<PayOrder> specification = new Specification<PayOrder>() {
-            @Override
-            public Predicate toPredicate(Root<PayOrder> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-                List<Predicate> list = new ArrayList<Predicate>();
-
-                if (type!=null) {
-                    list.add(cb.equal(root.get("type").as(int.class), type));
-                }
-
-                if (state!=null) {
-                    list.add(cb.equal(root.get("state").as(int.class), state));
-                }
-                return cb.and(list.toArray(new Predicate[list.size()]));
+        Specification<PayOrder> specification = (root, criteriaQuery, cb) -> {
+            List<Predicate> list = new ArrayList<Predicate>();
+            list.add(cb.in(root.get("username")).value(username).value("guest"));
+            if (type!=null) {
+                list.add(cb.equal(root.get("type").as(int.class), type));
             }
+
+            if (state!=null) {
+                list.add(cb.equal(root.get("state").as(int.class), state));
+            }
+            return cb.and(list.toArray(new Predicate[list.size()]));
         };
         Page<PayOrder> payOrders = payOrderDao.findAll(specification, pageable);
 
@@ -124,19 +118,46 @@ public class AdminService {
         return list;
     }
 
-    public CommonRes setBd(Integer id){
+    public PageRes getGoods(String username,Integer page, Integer limit, String name, Integer state){
+
+        Pageable pageable = PageRequest.of(page-1, limit, Sort.Direction.DESC, "id");
+
+        Specification<PayGoods> specification = (root, criteriaQuery, cb) -> {
+            List<Predicate> list = new ArrayList<>();
+            list.add(cb.in(root.get("username")).value(username).value("guest"));
+            if (name!=null) {
+                list.add(cb.equal(root.get("name").as(String.class), name));
+            }
+            if (state!=null) {
+                list.add(cb.equal(root.get("state").as(int.class), state));
+            }
+            return cb.and(list.toArray(new Predicate[list.size()]));
+        };
+        Page<PayGoods> goodsPage = payGoodsDao.findAll(specification, pageable);
+
+        PageRes list = PageRes.success(goodsPage.getTotalElements(),goodsPage.getContent());
+        return list;
+    }
+
+
+    public CommonRes setBd(Integer id,String username){
         PayOrder payOrder = payOrderDao.getById(id);
         if (payOrder==null){
             return ResUtil.error("订单不存在");
         }
-        String key = settingDao.findById("key").get().getVvalue();
+        if (!validUserPermission(username,payOrder)) {
+            return ResUtil.error("抱歉，您无权操作其它商家订单");
+        }
+        // 敏感操作，只能使用自己的密钥
+        Setting setting = settingDao.getSettingByUserName(username);
+        String key = setting.getMd5key();
         String p = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
         String sign = payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key;
         p = p+"&sign="+md5(sign);
 
         String url = payOrder.getNotifyUrl();
         if (url==null || url.equals("")){
-            url = settingDao.findById("notifyUrl").get().getVvalue();
+            url = setting.getNotifyUrl();
             if (url==null || url.equals("")){
                 return ResUtil.error("您还未配置异步通知地址，请现在系统配置中配置");
             }
@@ -146,7 +167,7 @@ public class AdminService {
 
         if (res!=null && res.equals("success")){
             if (payOrder.getState()==0){
-                tmpPriceDao.delprice(payOrder.getType()+"-"+payOrder.getReallyPrice());
+                tmpPriceDao.delprice(username,payOrder.getType()+"-"+payOrder.getReallyPrice());
             }
             payOrderDao.setState(1,payOrder.getId());
             return ResUtil.success();
@@ -170,62 +191,61 @@ public class AdminService {
         return ResUtil.success();
     }
 
-    public CommonRes getMain(){
+    public CommonRes getMain(String username){
         Calendar currentDate = new GregorianCalendar();
 
         currentDate.set(Calendar.HOUR_OF_DAY, 0);
         currentDate.set(Calendar.MINUTE, 0);
         currentDate.set(Calendar.SECOND, 0);
-        Date tmp = (Date) currentDate.getTime();
+        Date tmp = currentDate.getTime();
         String startDate = String.valueOf(tmp.getTime());
         currentDate = new GregorianCalendar();
         currentDate.set(Calendar.HOUR_OF_DAY, 23);
         currentDate.set(Calendar.MINUTE, 59);
         currentDate.set(Calendar.SECOND, 59);
-        tmp = (Date) currentDate.getTime();
+        tmp = currentDate.getTime();
         String endDate = String.valueOf(tmp.getTime());
 
         NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setMaximumFractionDigits(2);
 
-        int todayOrder = payOrderDao.getTodayCount(startDate,endDate);//当日总订单
+        int todayOrder = payOrderDao.getTodayCount(startDate,endDate,username);//当日总订单
 
-        int todaySuccessOrder =  payOrderDao.getTodayCount(startDate,endDate,1);//当日成功订单
-        int todaySuccessOrder2 =  payOrderDao.getTodayCount(startDate,endDate,2);//当日成功订单
+        int todaySuccessOrder =  payOrderDao.getTodayCount(startDate,endDate,1,username);//当日成功订单
+        int todaySuccessOrder2 =  payOrderDao.getTodayCount(startDate,endDate,2,username);//当日成功订单
         todaySuccessOrder += todaySuccessOrder2;
 
-        int todayCloseOrder =  payOrderDao.getTodayCount(startDate,endDate,-1);//当日失败订单
+        int todayCloseOrder =  payOrderDao.getTodayCount(startDate,endDate,-1,username);//当日失败订单
 
         double todayMoney;
         double todayMoney2;
         try {
-            todayMoney = payOrderDao.getTodayCountMoney(startDate,endDate,1);
+            todayMoney = payOrderDao.getTodayCountMoney(startDate,endDate,1,username);
         }catch (Exception e){
             todayMoney = 0;
         }
         try {
-            todayMoney2 = payOrderDao.getTodayCountMoney(startDate,endDate,2);
+            todayMoney2 = payOrderDao.getTodayCountMoney(startDate,endDate,2,username);
         }catch (Exception e){
             todayMoney2 = 0;
         }
 
         todayMoney = Arith.add(todayMoney,todayMoney2);
 
-        int countOrder = payOrderDao.getCount(1);
+        int countOrder = payOrderDao.getCount(1,username);
         double countMoney;
         double countMoney2;
         try {
-            countMoney = payOrderDao.getCountMoney(1);
+            countMoney = payOrderDao.getCountMoney(1,username);
         }catch (Exception e){
             countMoney = 0;
         }
         try {
-            countMoney2 = payOrderDao.getCountMoney(2);
+            countMoney2 = payOrderDao.getCountMoney(2,username);
         }catch (Exception e){
             countMoney2 = 0;
         }
         countMoney = Arith.add(countMoney,countMoney2);
-
 
         Map<String,String> map = new HashMap<>();
         map.put("todayOrder", String.valueOf(todayOrder));
@@ -238,46 +258,56 @@ public class AdminService {
         return ResUtil.success(map);
     }
 
-    public PageRes getPayQrcodes(Integer page, Integer limit, Integer type){
+    public PageRes getPayQrcodes(String username, Integer page, Integer limit, Integer type){
 
         Pageable pageable = PageRequest.of(page-1, limit, Sort.Direction.DESC, "price");
 
-        Specification<PayQrcode> specification = new Specification<PayQrcode>() {
-            @Override
-            public Predicate toPredicate(Root<PayQrcode> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-                List<Predicate> list = new ArrayList<Predicate>();
-
-                if (type!=null) {
-                    list.add(cb.equal(root.get("type").as(int.class), type));
-                }
-
-                return cb.and(list.toArray(new Predicate[list.size()]));
+        Specification<PayQrcode> specification = (root, criteriaQuery, cb) -> {
+            List<Predicate> list = new ArrayList<Predicate>();
+            list.add(cb.equal(root.get("username").as(String.class), username));
+            if (type!=null) {
+                list.add(cb.equal(root.get("type").as(int.class), type));
             }
+
+            return cb.and(list.toArray(new Predicate[list.size()]));
         };
         Page<PayQrcode> payQrcodes = payQrcodeDao.findAll(specification, pageable);
 
         PageRes list = PageRes.success(payQrcodes.getTotalElements(),payQrcodes.getContent());
         return list;
     }
+
     public CommonRes delPayQrcode(Long id){
         payQrcodeDao.deleteById(id);
         return ResUtil.success();
     }
-    public CommonRes delOrder(Long id){
+
+    public CommonRes delOrder(Long id,String username){
         PayOrder payOrder = payOrderDao.findById(id).get();
+        if (!validUserPermission(username,payOrder)) {
+            return ResUtil.error("抱歉，您无权删除其它商家订单");
+        }
         if (payOrder.getState()==0){
-            tmpPriceDao.delprice(payOrder.getType()+"-"+payOrder.getReallyPrice());
+            tmpPriceDao.delprice(payOrder.getUsername(),payOrder.getType()+"-"+payOrder.getReallyPrice());
         }
         payOrderDao.deleteById(id);
         return ResUtil.success();
     }
-    public CommonRes delGqOrder(){
-        payOrderDao.deleteByState(-1);
+
+    private static boolean validUserPermission(String username, PayOrder payOrder) {
+        if (!payOrder.getUsername().equals(username)) {
+            return false;
+        }
+        return true;
+    }
+
+    public CommonRes delGqOrder(String username){
+        payOrderDao.deleteByState(username,-1);
         return ResUtil.success();
     }
 
-    public CommonRes delLastOrder(){
-        payOrderDao.deleteByAfterCreateDate(String.valueOf(new Date().getTime()-7*86400*1000));
+    public CommonRes delLastOrder(String username){
+        payOrderDao.deleteByAfterCreateDate(username,String.valueOf(new Date().getTime()-7*86400*1000));
         return ResUtil.success();
     }
 

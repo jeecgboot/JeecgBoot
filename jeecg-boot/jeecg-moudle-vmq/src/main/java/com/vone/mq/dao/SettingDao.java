@@ -2,8 +2,22 @@ package com.vone.mq.dao;
 
 import com.vone.mq.entity.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 public interface SettingDao extends JpaRepository<Setting,String> {
 
+    @Query(value = "select u.username,u.realname,u.password,u.salt,u.status from sys_user u where u.del_flag=0 and u.username=?1", nativeQuery = true)
+    Map<String, Object> getUserInfo(String username);
 
+    @Query(value = "select s from Setting s where s.username=?1")
+    Setting getSettingByUserName(String userName);
+
+    @Transactional
+    @Modifying
+    @Query(value = "insert into sys_user(id, username, realname, password, salt, status, del_flag) values (TRUNCATE(unix_timestamp(now(3))*1000,0),?1,?1,?2,?3,true,false)",nativeQuery = true)
+    void regist(String user, String password, String salt);
 }

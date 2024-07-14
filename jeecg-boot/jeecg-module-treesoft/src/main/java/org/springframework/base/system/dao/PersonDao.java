@@ -2,6 +2,8 @@ package org.springframework.base.system.dao;
 
 import org.springframework.base.system.entity.Person;
 import org.springframework.base.system.persistence.Page;
+import org.springframework.base.system.utils.PasswordUtil;
+import org.springframework.base.system.utils.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -68,7 +70,7 @@ public class PersonDao {
         String id = person.getId();
         String sql = "";
         boolean existsConfig = false;
-        if (!StringUtils.isEmpty(person.getId())) {
+        if (!StringUtils.isEmpty(id)) {
             Map<String, Object> map = this.getPerson(person.getId());
             if (map.size() > 1) {
                 existsConfig = true;
@@ -107,8 +109,15 @@ public class PersonDao {
             if (StringUtils.isEmpty(person.getNote())) {
                 sql = sql + "note='' ";
             }
-
             sql = sql + "  where id='" + id + "'";
+        } else {
+            String tempId = StringUtil.getUUID();
+            String userId = String.valueOf(System.currentTimeMillis());
+            sql = " insert into treesoft_user_role (id, user_id,role,note,expiration,datascope,permission ) values ( '" + tempId + "','" + userId + "','" + person.getRole() + "','" + person.getNote() + "','" + person.getExpiration() + "','" + person.getDatascope() + "','" + person.getPermission() + "' ) ";
+            String addPersonSql = "insert into sys_user(id, username, realname, password, salt, status, del_flag) values (?,?,?,?,?,?,?)";
+            String salt = PasswordUtil.randomGen(8);
+            String password = PasswordUtil.encrypt(person.getUsername(),person.getPassword(),salt);
+            jdbcTemplate.update(addPersonSql,userId,person.getUsername(),person.getRealname(),password,salt,true,false);
         }
         return jdbcTemplate.update(sql) > 0;
     }

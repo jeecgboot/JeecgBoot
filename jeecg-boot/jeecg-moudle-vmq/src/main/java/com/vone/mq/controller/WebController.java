@@ -9,10 +9,13 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.vone.mq.dto.CommonRes;
 import com.vone.mq.dto.CreateOrderRes;
+import com.vone.mq.service.AdminService;
 import com.vone.mq.service.WebService;
+import com.vone.mq.utils.JWTUtil;
 import com.vone.mq.utils.ResUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,6 +38,9 @@ public class WebController {
 
     @Autowired
     private WebService webService;
+
+    @Autowired
+    private AdminService adminService;
 
     @RequestMapping("/enQrcode")
     public void enQrcode(HttpServletResponse resp, String url) throws IOException {
@@ -105,9 +112,26 @@ public class WebController {
     }
 
     @RequestMapping("/md5")
-    public String md5(String content) {
-        return webService.getMd5(content);
+    public String md5(HttpSession session, String content) {
+        String username = (String) session.getAttribute("username");
+        return webService.getMd5(username,content);
     }
+
+    @RequestMapping("/getToken")
+    public String getToken(HttpSession session, String user, String pass) {
+        String token = (String) session.getAttribute("token");
+        if (StringUtils.isEmpty(token)) {
+            if (StringUtils.isEmpty(user) || StringUtils.isEmpty(pass)) {
+                return null;
+            }
+            CommonRes res = adminService.login(user,pass);
+            if (res.getCode() == 1) {
+                token = JWTUtil.getToken(user,pass);
+            }
+        }
+        return token;
+    }
+
 
     /**
      * 创建订单
@@ -134,7 +158,6 @@ public class WebController {
             return new Gson().toJson(ResUtil.error("支付方式错误=>1|微信 2|支付宝"));
         }
 
-
         Double priceD;
         try {
             priceD = Double.valueOf(price);
@@ -148,7 +171,6 @@ public class WebController {
         if (priceD < 0) {
             return new Gson().toJson(ResUtil.error("订单金额必须大于0"));
         }
-
 
         if (sign == null || sign.equals("")) {
             return new Gson().toJson(ResUtil.error("请传入签名"));

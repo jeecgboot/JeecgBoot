@@ -15,8 +15,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginInterceptor)
-                .addPathPatterns("/admin/**")  // 其他接口需要token验证
-                .excludePathPatterns("/**.html");
+                .excludePathPatterns("/index","/static/js/**","/static/css/**","/static/image/**")
+                .addPathPatterns("/admin/**","/aaa.html*");
 
     }
 

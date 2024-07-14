@@ -3,160 +3,113 @@ package com.vone.mq.controller;
 import com.vone.mq.dto.CommonRes;
 import com.vone.mq.dto.PageRes;
 import com.vone.mq.entity.PayQrcode;
+import com.vone.mq.entity.Setting;
 import com.vone.mq.service.AdminService;
-import com.vone.mq.utils.JWTUtil;
 import com.vone.mq.utils.ResUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/admin")
 public class AdminController {
 
     @Autowired
     private AdminService adminService;
 
-    @RequestMapping("/login")
-    public CommonRes login(HttpSession session,String user, String pass){
-        if (user==null){
-            return ResUtil.error("请输入账号");
-        }
-        if (pass==null){
-            return ResUtil.error("请输入密码");
-        }
-        CommonRes r = adminService.login(user, pass);
-        if (r.getCode()==1){
-            String token = JWTUtil.getToken(user,pass);
-            session.setAttribute("token",token);
-        }
-        return r;
-    }
-
-    @RequestMapping("/logout")
-    public void logout(HttpSession session,String user){
-        session.removeAttribute("token");
-    }
-
-    @RequestMapping("/admin/getMenu")
-    public List<Map<String,Object>> getMenu(HttpSession session){
+    @RequestMapping("/getMenu")
+    public List<Map<String,Object>> getMenu(){
         List<Map<String,Object>> menu = new ArrayList<>();
-        Map<String,Object> node = new HashMap<>();
-        node.put("name","系统设置");
-        node.put("type","url");
-        node.put("url","admin/setting.html?t="+new Date().getTime());
-        menu.add(node);
-
-        node = new HashMap<>();
-        node.put("name","监控端设置");
-        node.put("type","url");
-        node.put("url","admin/jk.html?t="+new Date().getTime());
-        menu.add(node);
-
-
-        List<Map<String,Object>> menu1 = new ArrayList<>();
-
-        node = new HashMap<>();
-        node.put("name","添加");
-        node.put("type","url");
-        node.put("url","admin/addwxqrcode.html?t="+new Date().getTime());
-        menu1.add(node);
-
-        node = new HashMap<>();
-        node.put("name","管理");
-        node.put("type","url");
-        node.put("url","admin/wxqrcodelist.html?t="+new Date().getTime());
-        menu1.add(node);
-
-        node = new HashMap<>();
-        node.put("name","微信二维码");
-        node.put("type","menu");
-        node.put("node",menu1);
-        menu.add(node);
-
-
-        List<Map<String,Object>> menu2 = new ArrayList<>();
-
-        node = new HashMap<>();
-        node.put("name","添加");
-        node.put("type","url");
-        node.put("url","admin/addzfbqrcode.html?t="+new Date().getTime());
-        menu2.add(node);
-
-        node = new HashMap<>();
-        node.put("name","管理");
-        node.put("type","url");
-        node.put("url","admin/zfbqrcodelist.html?t="+new Date().getTime());
-        menu2.add(node);
-
-        node = new HashMap<>();
-        node.put("name","支付宝二维码");
-        node.put("type","menu");
-        node.put("node",menu2);
-        menu.add(node);
-
-        node = new HashMap<>();
-        node.put("name","订单列表");
-        node.put("type","url");
-        node.put("url","admin/orderlist.html?t="+new Date().getTime());
-        menu.add(node);
-
-        node = new HashMap<>();
-        node.put("name","Api说明");
-        node.put("type","url");
-        node.put("url","../api.html?t="+new Date().getTime());
-        menu.add(node);
         return menu;
     }
-    @RequestMapping("/admin/saveSetting")
-    public CommonRes saveSetting(HttpSession session,String user,String pass,String notifyUrl,String returnUrl,String key,String wxpay,String zfbpay,String close,String payQf){
-        return adminService.saveSetting(user, pass, notifyUrl, returnUrl, key, wxpay, zfbpay, close, payQf);
+
+    @RequestMapping("/saveSetting")
+    public CommonRes saveSetting(@RequestBody Setting setting){
+        return adminService.saveSetting(setting);
     }
-    @RequestMapping("/admin/getSettings")
+
+    @RequestMapping("/getSettings")
     public CommonRes getSettings(HttpSession session){
-        return adminService.getSettings();
+        String username = (String) session.getAttribute("username");
+        CommonRes res = adminService.getSettings(username);
+        if (res.getData() == null) {
+            Setting setting = new Setting();
+            setting.setUsername(username);
+            res.setData(setting);
+        }
+        return res;
     }
-    @RequestMapping("/admin/getOrders")
+
+    @RequestMapping("/getOrders")
     public PageRes getOrders(HttpSession session,Integer page, Integer limit, Integer type, Integer state){
-        return adminService.getOrders(page, limit, type,state);
+        String username = (String) session.getAttribute("username");
+        return adminService.getOrders(username,page, limit, type,state);
     }
-    @RequestMapping("/admin/setBd")
+
+    @RequestMapping("/getGoods")
+    public PageRes getGoods(HttpSession session,Integer page, Integer limit, String name, Integer state){
+        String username = (String) session.getAttribute("username");
+        return adminService.getGoods(username, page, limit, name, state);
+    }
+
+    @RequestMapping("/setBd")
     public CommonRes setBd(HttpSession session,Integer id){
         if (id==null){
             return ResUtil.error();
         }
-        return adminService.setBd(id);
+        String username = (String) session.getAttribute("username");
+        if (StringUtils.isEmpty(username)) {
+            return ResUtil.error("请先登录系统，再进行操作");
+        }
+        return adminService.setBd(id,username);
     }
-    @RequestMapping("/admin/getPayQrcodes")
+
+    @RequestMapping("/getPayQrcodes")
     public PageRes getPayQrcodes(HttpSession session,Integer page, Integer limit, Integer type){
-        return adminService.getPayQrcodes(page, limit, type);
+        String username = (String) session.getAttribute("username");
+        return adminService.getPayQrcodes(username,page, limit, type);
     }
-    @RequestMapping("/admin/delPayQrcode")
+
+    @RequestMapping("/delPayQrcode")
     public CommonRes delPayQrcode(HttpSession session,Long id){
         return adminService.delPayQrcode(id);
     }
-    @RequestMapping("/admin/addPayQrcode")
+
+    @RequestMapping("/addPayQrcode")
     public CommonRes addPayQrcode(HttpSession session,PayQrcode payQrcode){
+        String username = (String) session.getAttribute("username");
+        payQrcode.setUsername(username);
         return adminService.addPayQrcode(payQrcode);
     }
-    @RequestMapping("/admin/getMain")
+
+    @RequestMapping("/getMain")
     public CommonRes getMain(HttpSession session){
-        return adminService.getMain();
+        String username = (String) session.getAttribute("username");
+        return adminService.getMain(username);
     }
 
-    @RequestMapping("/admin/delOrder")
+    @RequestMapping("/delOrder")
     public CommonRes delOrder(HttpSession session,Long id){
-        return adminService.delOrder(id);
+        String username = (String) session.getAttribute("username");
+        return adminService.delOrder(id,username);
     }
 
-    @RequestMapping("/admin/delGqOrder")
+    @RequestMapping("/delGqOrder")
     public CommonRes delGqOrder(HttpSession session){
-        return adminService.delGqOrder();
+        String username = (String) session.getAttribute("username");
+        return adminService.delGqOrder(username);
     }
-    @RequestMapping("/admin/delLastOrder")
+
+    @RequestMapping("/delLastOrder")
     public CommonRes delLastOrder(HttpSession session){
-        return adminService.delLastOrder();
+        String username = (String) session.getAttribute("username");
+        return adminService.delLastOrder(username);
     }
 }

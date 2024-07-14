@@ -1,15 +1,10 @@
 <div class="layui-form" action="">
 
-    <div class="layui-form-item">
+    <div class="layui-form-item" >
         <label class="layui-form-label">后台账号</label>
         <div class="layui-input-block">
-            <input type="text" id="user" lay-verify="required" placeholder="请输入管理员账号" autocomplete="off" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">后台密码</label>
-        <div class="layui-input-block">
-            <input type="text" id="pass" lay-verify="required" placeholder="请输入管理员密码" autocomplete="off" class="layui-input">
+            <input type="hidden" id="id" name="id">
+            <input type="text" id="user" lay-verify="required" autocomplete="off" class="layui-input" readonly>
         </div>
     </div>
 
@@ -17,6 +12,12 @@
         <label class="layui-form-label">订单有效期(分钟)</label>
         <div class="layui-input-block">
             <input type="number" id="close" lay-verify="required" placeholder="请输入创建的订单几分钟后失效" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">通知邮箱</label>
+        <div class="layui-input-block">
+            <input type="email" id="email" lay-verify="required" placeholder="请输入通知邮箱" autocomplete="off" class="layui-input">
         </div>
     </div>
 
@@ -77,17 +78,6 @@
         <button class="layui-btn" onclick="save()">保存</button>
     </div>
 
-
-
-    <!--<div class="layui-form-item layui-form-text">-->
-        <!--<label class="layui-form-label">设置进入网站的提示</label>-->
-        <!--<div class="layui-input-block">-->
-            <!--<textarea placeholder="请输入公告内容" id="xz" class="layui-textarea"></textarea>-->
-        <!--</div>-->
-    <!--</div>-->
-    <!--<div class="layui-form-item">-->
-        <!--<button class="layui-btn" onclick="editxz()">保存</button>-->
-    <!--</div>-->
 </div>
 
 <style>
@@ -104,16 +94,12 @@
     }
 </style>
 <script>
-    function formatDate(now) {
-        now = new Date(now*1000);
-        return now.getFullYear()
-            + "-" + (now.getMonth()>8?(now.getMonth()+1):"0"+(now.getMonth()+1))
-            + "-" + (now.getDate()>9?now.getDate():"0"+now.getDate())
-            + " " + (now.getHours()>9?now.getHours():"0"+now.getHours())
-            + ":" + (now.getMinutes()>9?now.getMinutes():"0"+now.getMinutes())
-            + ":" + (now.getSeconds()>9?now.getSeconds():"0"+now.getSeconds());
-
+    var useLocalUser = false;
+    $(".useLocalUser").hide();
+    if (useLocalUser) {
+        $(".useLocalUser").show();
     }
+
     layui.use(['form','layer','upload'], function(){
         var table = layui.table,form = layui.form,upload = layui.upload;
 
@@ -173,10 +159,10 @@
     });
 
 
-
     function save() {
+        var id = $("#id").val();
         var user = $("#user").val();
-        var pass = $("#pass").val();
+        var email = $("#email").val();
         var notifyUrl = $("#notifyUrl").val();
         var returnUrl = $("#returnUrl").val();
         var key = $("#key").val();
@@ -184,22 +170,6 @@
         var payQf = $("#payQf").val();
         if (user == ""){
             layer.msg("请输入管理员账号");
-            return;
-        }
-        if (pass == ""){
-            layer.msg("请输入管理员密码");
-            return;
-        }
-        if (key == ""){
-            layer.msg("请输入通讯密钥");
-            return;
-        }
-        if (notifyUrl == ""){
-            layer.msg("请输入异步回调地址");
-            return;
-        }
-        if (returnUrl == ""){
-            layer.msg("请输入支付完成后跳转地址");
             return;
         }
 
@@ -219,50 +189,43 @@
         }
         wximg = wximg.replace(/enQrcode\?url=/g,"");
         zfbimg = zfbimg.replace(/enQrcode\?url=/g,"");
-        $.post("/admin/saveSetting","user="+user+"&pass="+pass+"&notifyUrl="+notifyUrl+"&returnUrl="+returnUrl+"&key="+key+"&wxpay="+wximg+"&zfbpay="+zfbimg+"&close="+close+"&payQf="+payQf,function (data) {
-            if (data.code==1){
-                $.post("/admin/getSettings",function (data) {
-                    console.log(data);
-                    if (data.code==1){
-                        $("#user").val(data.data.user);
-                        $("#pass").val(data.data.pass);
-                        $("#notifyUrl").val(data.data.notifyUrl);
-                        $("#returnUrl").val(data.data.returnUrl);
-                        $("#key").val(data.data.key);
-                        $("#close").val(data.data.close);
-
-                        if (data.data.wxpay!=""){
-                            $('#wximg').attr('src', "enQrcode?url="+data.data.wxpay);
-                        }
-                        if (data.data.zfbpay!=""){
-                            $('#zfbimg').attr('src', "enQrcode?url="+data.data.zfbpay);
-                        }
-                    }
-                });
+        $.ajax({
+            type: 'POST',
+            url: "/admin/saveSetting",
+            contentType: "application/json",
+            async: false,
+            data: JSON.stringify( { 'id':id ,'username':user ,'email':email,'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':key ,'wxpay':wximg ,'zfbpay':zfbimg ,'close':close,'payQf':payQf} ),
+            datatype: "json",
+            success: function (data) {
+                if (data.code==1){
+                    getSettings();
+                }
+                layer.msg(data.msg);
             }
-            layer.msg(data.msg);
         });
     }
 
-    $.post("/admin/getSettings",function (data) {
-        console.log(data);
-        if (data.code==1){
-            $("#user").val(data.data.user);
-            $("#pass").val(data.data.pass);
-            $("#notifyUrl").val(data.data.notifyUrl);
-            $("#returnUrl").val(data.data.returnUrl);
-            $("#key").val(data.data.key);
-            $("#close").val(data.data.close);
-            $("#payQf").val(data.data.payQf);
+    function getSettings() {
+        $.post("/admin/getSettings",function (data) {
+            if (data.code==1){
+                $("#id").val(data.data.id);
+                $("#user").val(data.data.username);
+                $("#email").val(data.data.email);
+                $("#notifyUrl").val(data.data.notifyUrl);
+                $("#returnUrl").val(data.data.returnUrl);
+                $("#key").val(data.data.md5key);
+                $("#close").val(data.data.close);
+                $("#payQf").val(data.data.payQf);
 
-
-            if (data.data.wxpay!=""){
-                $('#wximg').attr('src', "enQrcode?url="+data.data.wxpay);
+                if (data.data.wxpay!=""){
+                    $('#wximg').attr('src', "enQrcode?url="+data.data.wxpay);
+                }
+                if (data.data.zfbpay!=""){
+                    $('#zfbimg').attr('src', "enQrcode?url="+data.data.zfbpay);
+                }
+                layui.form.render();
             }
-            if (data.data.zfbpay!=""){
-                $('#zfbimg').attr('src', "enQrcode?url="+data.data.zfbpay);
-            }
-            layui.form.render();
-        }
-    });
+        });
+    }
+    getSettings();
 </script>

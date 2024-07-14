@@ -66,7 +66,7 @@ public class LoginController {
         String sql = " select u.username,u.realname,u.password,u.salt,u.status,r.* from sys_user u left join treesoft_user_role r on u.id=r.user_id where u.del_flag=0 and username=?";
         List<Map<String, Object>> mapList = jdbcTemplate.queryForList(sql, username);
         if (mapList.isEmpty()) {
-            message = "您输入的帐号或密码有误！";
+            message = "您输入的帐号有误！";
             request.setAttribute("message", message);
             return "system/login";
         }
@@ -78,6 +78,11 @@ public class LoginController {
         String permission = (String) map.get("permission");
         if (!status) {
             message = "当前用户已冻结！";
+            request.setAttribute("message", message);
+            return "system/login";
+        }
+        if (!pas.equals(PasswordUtil.encrypt(username, password, salt))) {
+            message = "您输入的密码有误！";
             request.setAttribute("message", message);
             return "system/login";
         }
@@ -94,12 +99,6 @@ public class LoginController {
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
             }
-        }
-        String userpassword = PasswordUtil.encrypt(username, password, salt);
-        if (!pas.equals(userpassword)) {
-            message = "您输入的帐号或密码有误！";
-            request.setAttribute("message", message);
-            return "system/login";
         }
         session.setAttribute("LOGIN_USER_NAME", username);
         session.setAttribute("LOGIN_USER_PERMISSION", permission);

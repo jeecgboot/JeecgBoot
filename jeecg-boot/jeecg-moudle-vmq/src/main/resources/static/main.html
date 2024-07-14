@@ -1,6 +1,30 @@
 <div class="layui-row layui-col-space10 panel_box">
     <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
         <a href="javascript:;">
+            <div class="panel_icon layui-bg-cyan">
+                <i class="layui-icon layui-icon-rmb"></i>
+            </div>
+            <div class="panel_word outIcons">
+                <span id="countMoney">0</span>
+                <cite>总收入</cite>
+            </div>
+        </a>
+    </div>
+    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
+        <a href="javascript:;">
+            <div class="panel_icon layui-bg-blue">
+                <i class="layui-icon layui-icon-form"></i>
+            </div>
+            <div class="panel_word">
+                <span id="countOrder">0</span>
+                <cite>总成功订单</cite>
+            </div>
+        </a>
+    </div>
+</div>
+<div class="layui-row layui-col-space10 panel_box">
+    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
+        <a href="javascript:;">
             <div class="panel_icon layui-bg-green">
                 <i class="layui-icon layui-icon-form"></i>
             </div>
@@ -44,28 +68,6 @@
             </div>
         </a>
     </div>
-    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
-        <a href="javascript:;">
-            <div class="panel_icon layui-bg-cyan">
-                <i class="layui-icon layui-icon-rmb"></i>
-            </div>
-            <div class="panel_word outIcons">
-                <span id="countMoney">0</span>
-                <cite>总收入</cite>
-            </div>
-        </a>
-    </div>
-    <div class="panel layui-col-xs12 layui-col-sm6 layui-col-md4 layui-col-lg2">
-        <a href="javascript:;">
-            <div class="panel_icon layui-bg-blue">
-                <i class="layui-icon layui-icon-form"></i>
-            </div>
-            <div class="panel_word">
-                <span id="countOrder">0</span>
-                <cite>总成功订单</cite>
-            </div>
-        </a>
-    </div>
 </div>
 
 <style>
@@ -86,12 +88,13 @@
 
 <script>
     $.post("/admin/getMain",function (data) {
-        $("#todayOrder").html(data.data.todayOrder);
-        $("#todaySuccessOrder").html(data.data.todaySuccessOrder);
-        $("#countOrder").html(data.data.countOrder);
-        $("#todayCloseOrder").html(data.data.todayCloseOrder);
-        $("#countMoney").html(data.data.countMoney);
-        $("#todayMoney").html(data.data.todayMoney);
-
+        if (data.code === 1) {
+            $("#todayOrder").html(data.data.todayOrder);
+            $("#todaySuccessOrder").html(data.data.todaySuccessOrder);
+            $("#countOrder").html(data.data.countOrder);
+            $("#todayCloseOrder").html(data.data.todayCloseOrder);
+            $("#countMoney").html(data.data.countMoney);
+            $("#todayMoney").html(data.data.todayMoney);
+        }
     });
 </script>

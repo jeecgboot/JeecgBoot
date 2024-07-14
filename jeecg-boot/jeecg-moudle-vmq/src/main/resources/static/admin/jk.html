@@ -37,40 +37,15 @@
         <button class="layui-btn" onclick="window.open('/v.apk')">下载监控端</button>
         <button class="layui-btn" onclick="window.open('https://github.com/szvone/vmqApk/releases')">最新版监控端下载</button>
     </div>
-
-
-    <!--<div class="layui-form-item layui-form-text">-->
-        <!--<label class="layui-form-label">设置进入网站的提示</label>-->
-        <!--<div class="layui-input-block">-->
-            <!--<textarea placeholder="请输入公告内容" id="xz" class="layui-textarea"></textarea>-->
-        <!--</div>-->
-    <!--</div>-->
-    <!--<div class="layui-form-item">-->
-        <!--<button class="layui-btn" onclick="editxz()">保存</button>-->
-    <!--</div>-->
 </div>
 
 <script>
-    function formatDate(now) {
-        if (now==0) {
-            return "无";
-        }
-        now = new Date(now*1);
-        return now.getFullYear()
-            + "-" + (now.getMonth()>8?(now.getMonth()+1):"0"+(now.getMonth()+1))
-            + "-" + (now.getDate()>9?now.getDate():"0"+now.getDate())
-            + " " + (now.getHours()>9?now.getHours():"0"+now.getHours())
-            + ":" + (now.getMinutes()>9?now.getMinutes():"0"+now.getMinutes())
-            + ":" + (now.getSeconds()>9?now.getSeconds():"0"+now.getSeconds());
-
-    }
     layui.use(['form','layer'], function(){
         var table = layui.table,form = layui.form;
 
         form.render();
 
     });
-
 
     $.post("/admin/getSettings",function (data) {
         console.log(data);
@@ -83,10 +58,10 @@
                 $("#jkstate").val("运行正常");
             }
 
-            $("#lastheart").val(formatDate(data.data.lastheart));
-            $("#lastpay").val(formatDate(data.data.lastpay));
+            $("#lastheart").val(formatDate(data.data.lastheart*1));
+            $("#lastpay").val(formatDate(data.data.lastpay*1));
 
-            var img = window.location.host+"/"+data.data.key;
+            var img = window.location.host+"/"+data.data.md5key;
 
             $("#input").val(img);
             $("#pzqrcode").attr("src","/enQrcode?url="+img);

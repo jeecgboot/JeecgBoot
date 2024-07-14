@@ -3,7 +3,7 @@
 
 <html>
 <head>
-	<title>V免签</title>
+	<title>码支付</title>
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
 	<meta charset="utf-8" />
@@ -22,13 +22,14 @@
 		</div>
 		<div class="content">
 			<div class="inner">
-				<h1>小码哥V免签</h1>
+				<h1>码支付</h1>
 				<p>个人用户收款解决方案</p>
 			</div>
 		</div>
 		<nav>
 			<ul>
 				<li><a href="#login">登录</a></li>
+				<li><a href="#regist">注册</a></li>
 				<li><a href="#pay">支付体验</a></li>
 				<li><a href="#about">简介</a></li>
 			</ul>
@@ -36,48 +37,6 @@
 	</header>
 
 	<div id="main">
-
-		<article id="pay">
-			<h3 class="major">创建订单</h3>
-			<div>
-				<div style="display: flex">
-					<label style="width: 150px;line-height: 40px;">商户订单号：</label>
-					<input style="width: 200px;" type="text" id="payId" name="payId" readonly><input type="submit" value="生成订单号" style="background-color: darkcyan;margin-left: 10px" onclick="getOrderNo()"/></div>
-
-				<div style="display: flex">
-					<label style="width: 150px;line-height: 40px;">订单金额：</label>
-					<input style="width: 200px;" type="text" id="price" name="price" value="0.1" />
-				</div>
-				<div style="display: flex">
-					<label style="width: 150px;line-height: 40px;">自定义参数：</label>
-					<input style="width: 200px;" type="text" id="param" name="param" value="" />
-				</div>
-				<div style="display: flex">
-					<label style="width: 150px;line-height: 40px;">支付方式：</label>
-					<select style="width: 200px" id="type" name="type" lay-verify="required" lay-filter="type">
-						<option value="1" selected>微信</option><option value="2">支付宝</option>
-					</select>
-				</div>
-				<div style="display: flex">
-					<label style="width: 150px;line-height: 40px;">返回类型：</label>
-					<select style="width: 200px" id="isHtml" name="isHtml" lay-verify="required" lay-filter="isHtml">
-						<option value="0">JSON</option><option value="1" selected>页面</option>
-					</select>
-				</div>
-			</div>
-			<div>
-				<input type="submit" value="支付" style="background-color: forestgreen;margin-left: 480px" onclick="payOrder()"/>
-			</div>
-		</article>
-
-		<article id="about">
-			<h2 class="major">简介</h2>
-			<p>1、V免签为个人用户提供支付宝、微信的免签约收款解决方案。</p>
-			<p>2、V免签为开源免费产品，请勿二次出售。</p>
-			<p>3、V免签仅供交流学习使用，请勿用于商业用途。</p>
-			<p>4、请遵守相关法律法规，请勿用于非法用途。</p>
-		</article>
-
 
 		<article id="login">
 			<h2 class="major">登录</h2>
@@ -101,6 +60,63 @@
 				<p color class="h5 margin-top-sm text-black-hint" id="msg"></p>
 			</div>
 		</article>
+		<article id="regist">
+			<h2 class="major">注册</h2>
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">账号</label>
+					<input style="width: 200px;" type="text" name="username_r" id="username_r" />
+				</div>
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">密码</label>
+					<input style="width: 200px;" type="password" name="password_r" id="password_r" />
+				</div>
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">密码确认</label>
+					<input style="width: 200px;" type="password" name="password_r2" id="password_r2" />
+				</div>
+				<ul class="actions">
+					<li><input id="regist2" type="submit" value="注册" class="special" onclick="regist()" /></li>
+				</ul>
+		</article>
+		<article id="pay">
+			<h3 class="major">创建订单</h3>
+			<div style="display: flex">
+				<label style="width: 150px;line-height: 40px;">商户编号：</label>
+				<input style="width: 200px;" type="text" id="payId" name="payId" readonly><input type="submit" value="生成订单号" style="background-color: darkcyan;margin-left: 10px" onclick="getOrderNo()"/></div>
+
+			<div style="display: flex">
+				<label style="width: 150px;line-height: 40px;">订单金额：</label>
+				<input style="width: 200px;" type="text" id="price" name="price" value="0.1" />
+			</div>
+			<div style="display: flex">
+				<label style="width: 150px;line-height: 40px;">自定义参数：</label>
+				<input style="width: 200px;" type="text" id="param" name="param" value="" />
+			</div>
+			<div style="display: flex">
+				<label style="width: 150px;line-height: 40px;">支付方式：</label>
+				<select style="width: 200px" id="type" name="type" lay-verify="required" lay-filter="type">
+					<option value="1" selected>微信</option><option value="2">支付宝</option>
+				</select>
+			</div>
+			<div style="display: flex">
+				<label style="width: 150px;line-height: 40px;">返回类型：</label>
+				<select style="width: 200px" id="isHtml" name="isHtml" lay-verify="required" lay-filter="isHtml">
+					<option value="0">JSON</option><option value="1" selected>页面</option>
+				</select>
+			</div>
+			<ul class="actions">
+				<li><input type="submit" value="支付" class="special" style="background-color: forestgreen;margin-right: 50px" onclick="payOrder()" /></li>
+			</ul>
+		</article>
+
+		<article id="about">
+			<h2 class="major">简介</h2>
+			<p>1、码支付是在V免签基础上二开，仅供交流学习使用，请勿用于商业用途。</p>
+			<p>2、码支付为个人用户提供支付宝、微信的免签约收款解决方案。</p>
+			<p>3、用户可以注册自己账号，并自定义支付配置信息，否则使用默认密钥。</p>
+			<p>4、请遵守相关法律法规，请勿用于非法用途。</p>
+			<p>5、后续版本计划：新增商品管理、商品订购页面</p>
+		</article>
 
 	</div>
 
@@ -116,7 +132,6 @@
 <script src="https://cdn.jsdelivr.net/gh/ajlkn/skel@3.0.1/dist/skel.min.js"></script>
 <script src="/assets/js/util.js"></script>
 <script src="/assets/js/main.js"></script>
-<script src="/assets/js/function.js"></script>
 <script src="/assets/js/function.js"></script>
 <script src="https://lib.baomitu.com/layer/3.1.1/layer.js"></script>
 
@@ -140,7 +155,27 @@
 		$.post("/login","user="+$("#user").val()+"&pass="+$("#pass").val(),function (data) {
 			layer.msg(data.msg);
 			if (data.code==1){
-				window.location.href = "aaa.html";
+				window.location.href = "aaa.html?username="+data.data;
+			}
+		});
+	}
+
+	function regist() {
+		var name = $("#username_r").val();
+		var pass = $("#password_r").val();
+		var pass2 = $("#password_r2").val();
+		if (name.length < 4 || pass.length < 4) {
+			layer.msg("用户名和密码长度均不能小于4位");
+			return;
+		}
+		if (pass2 != pass) {
+			layer.msg("两次输入密码不一致，请确认");
+			return;
+		}
+		$.post("/regist","username="+name+"&password="+pass,function (data) {
+			layer.msg(data.msg);
+			if (data.code==1){
+				window.location.href = "index.html";
 			}
 		});
 	}
