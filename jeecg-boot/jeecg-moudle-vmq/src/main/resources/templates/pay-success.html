@@ -1,0 +1,50 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <title>操作成功</title>
+        <meta name="description" content="码支付·个人收款支付系统 无需签约 无需第三方SDK 完全免费">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            .main{
+                margin-top: 40px;
+            }
+        </style>
+    </head>
+
+    <body>
+            <div class="main">
+                <table align="center" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td height="20" colspan="3"></td>
+                    </tr>
+                    <!-- content -->
+                    <tr>
+                        <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="center" colspan="3">
+                            <img src="https://i.loli.net/2018/07/18/5b4f12fb00713.png" width="50">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="center" colspan="3">
+                            恭喜您，支付成功！
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="left">订单号：<span th:text="${orderId}"></span></td>
+                        <td style="width: 40px"></td>
+                        <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="left">支付方式：<span th:text="${type}"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="left">订单金额：<span th:text="${price}"></span></td>
+                        <td style="width: 40px"></td>
+                        <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="left">支付金额：<span th:text="${reallyPrice}"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="left">创建时间：<span th:text="${createDate}"></span></td>
+                        <td style="width: 40px"></td>
+                        <td style="font-size:13px; color:#7f8c8d; line-height:26px;" align="left">支付时间：<span th:text="${payDate}"></span></td>
+                    </tr>
+                </table>
+            </div>
+    </body>
+</html>

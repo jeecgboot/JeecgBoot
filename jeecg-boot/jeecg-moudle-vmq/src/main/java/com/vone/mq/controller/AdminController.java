@@ -5,6 +5,7 @@ import com.vone.mq.dto.PageRes;
 import com.vone.mq.entity.PayQrcode;
 import com.vone.mq.entity.Setting;
 import com.vone.mq.service.AdminService;
+import com.vone.mq.utils.EmailUtils;
 import com.vone.mq.utils.ResUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -32,6 +33,10 @@ public class AdminController {
 
     @RequestMapping("/saveSetting")
     public CommonRes saveSetting(@RequestBody Setting setting){
+        String email = setting.getEmail();
+        if (!StringUtils.isEmpty(email) && !EmailUtils.checkEmail(email)) {
+            return ResUtil.error("请填写正确的邮箱地址");
+        }
         return adminService.saveSetting(setting);
     }
 
@@ -79,7 +84,8 @@ public class AdminController {
 
     @RequestMapping("/delPayQrcode")
     public CommonRes delPayQrcode(HttpSession session,Long id){
-        return adminService.delPayQrcode(id);
+        String username = (String) session.getAttribute("username");
+        return adminService.delPayQrcode(id,username);
     }
 
     @RequestMapping("/addPayQrcode")

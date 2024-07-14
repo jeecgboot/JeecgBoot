@@ -9,6 +9,7 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.vone.mq.dto.CommonRes;
 import com.vone.mq.dto.CreateOrderRes;
+import com.vone.mq.entity.PayOrder;
 import com.vone.mq.service.AdminService;
 import com.vone.mq.service.WebService;
 import com.vone.mq.utils.JWTUtil;
@@ -16,6 +17,7 @@ import com.vone.mq.utils.ResUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -136,31 +138,25 @@ public class WebController {
     /**
      * 创建订单
      *
-     * @param payId     商户订单号
-     * @param param     订单保存的信息
-     * @param type      支付方式 1|微信 2|支付宝
-     * @param price     订单价格
-     * @param notifyUrl 异步通知地址，如果为空则使用系统后台设置的地址
-     * @param returnUrl 支付完成后同步跳转地址，将会携带参数跳转
-     * @param sign      签名认证 签名方式为 md5(payId + param + type + price + 通讯密钥)
-     * @param isHtml    0返回json数据 1跳转到支付页面
+     * @param payOrder    0返回json数据 1跳转到支付页面
      * @return
      */
     @RequestMapping("/createOrder")
-    public String createOrder(String payId, String param, Integer type, String price, String notifyUrl, String returnUrl, String sign, Integer isHtml) {
-        if (payId == null || payId.equals("")) {
+    public String createOrder(@RequestBody PayOrder payOrder) {
+        log.info("{}",payOrder);
+        if (StringUtils.isEmpty(payOrder.getPayId())) {
             return new Gson().toJson(ResUtil.error("请传入商户订单号"));
         }
-        if (type == null) {
+        if (StringUtils.isEmpty(payOrder.getType())) {
             return new Gson().toJson(ResUtil.error("请传入支付方式=>1|微信 2|支付宝"));
         }
-        if (type != 1 && type != 2) {
+        if (payOrder.getType()<1 || payOrder.getType()>2) {
             return new Gson().toJson(ResUtil.error("支付方式错误=>1|微信 2|支付宝"));
         }
 
         Double priceD;
         try {
-            priceD = Double.valueOf(price);
+            priceD = Double.valueOf(payOrder.getPrice());
         } catch (Exception e){
             return new Gson().toJson(ResUtil.error("请传入订单金额"));
         }
@@ -172,16 +168,11 @@ public class WebController {
             return new Gson().toJson(ResUtil.error("订单金额必须大于0"));
         }
 
-        if (sign == null || sign.equals("")) {
+        if (StringUtils.isEmpty(payOrder.getSign())) {
             return new Gson().toJson(ResUtil.error("请传入签名"));
         }
-        if (param == null) {
-            param = "";
-        }
-        if (isHtml == null) {
-            isHtml = 0;
-        }
-        CommonRes commonRes = webService.createOrder(payId, param, type, price, notifyUrl, returnUrl, sign);
+        int isHtml = payOrder.getIsHtml();
+        CommonRes commonRes = webService.createOrder(payOrder);
         if (isHtml == 0) {
             String res = new Gson().toJson(commonRes);
             return res;
@@ -230,7 +221,6 @@ public class WebController {
             return ResUtil.error("请传入订单编号");
         }
         return webService.checkOrder(orderId);
-
     }
 
     @RequestMapping("/getState")

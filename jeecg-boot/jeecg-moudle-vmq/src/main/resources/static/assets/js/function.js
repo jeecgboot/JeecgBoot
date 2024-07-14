@@ -4,15 +4,16 @@ function logout() {
     });
 }
 
-function creatOrder(payId, param, type, price, isHtml) {
+function creatOrder(payId, param, type, price, isHtml,email) {
     var code = -1;
     var sign = getMd5(payId + param + type + price);
-    var reqParam = "payId=" + payId + "&type=" + type + "&price=" + price + "&sign=" + sign + "&param=" + param + "&isHtml=" + isHtml;
     $.ajax({
         type: 'POST',
         url: "/createOrder",
         async: false,
-        data: reqParam,
+        datatype: "json",
+        contentType: "application/json",
+        data: JSON.stringify({"payId":payId,"type":type,"price":price,"sign":sign,"param":param,"isHtml":isHtml,"email":email}),
         success: function (data2) {
             if (isHtml == 1) {
                 try {

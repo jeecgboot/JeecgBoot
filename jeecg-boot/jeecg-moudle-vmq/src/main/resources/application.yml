@@ -1,5 +1,6 @@
 server:
     port: 8084
+    url: http://msl1214.gnway.cc:8000
 
 spring:
     datasource:
@@ -10,7 +11,26 @@ spring:
         hibernate:
             ddl-auto: update
         show-sql: true
+    thymeleaf:
+        cache: false
+        mode: LEGACY HTML5
+    mail:
+        host: smtp.qq.com
+        port: 587
+        username: 987159729@qq.com
+        password: jrrmaaejqzrwbcfd
+        protocol: smtp
+        properties:
+          mail:
+              smtp:
+                  auth: true
+                  starttls:
+                      enable: true
+                      required: true
     servlet:
         multipart:
             max-file-size: 100MB
+token:
+    expire:
+        link: 24
 

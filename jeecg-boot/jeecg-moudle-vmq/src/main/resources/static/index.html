@@ -89,20 +89,24 @@
 				<input style="width: 200px;" type="text" id="price" name="price" value="0.1" />
 			</div>
 			<div style="display: flex">
-				<label style="width: 150px;line-height: 40px;">自定义参数：</label>
-				<input style="width: 200px;" type="text" id="param" name="param" value="" />
-			</div>
-			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">支付方式：</label>
 				<select style="width: 200px" id="type" name="type" lay-verify="required" lay-filter="type">
 					<option value="1" selected>微信</option><option value="2">支付宝</option>
 				</select>
 			</div>
 			<div style="display: flex">
+				<label style="width: 150px;line-height: 40px;">通知邮箱：</label>
+				<input style="width: 200px;" type="email" id="email" name="email" value="" />
+			</div>
+			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">返回类型：</label>
 				<select style="width: 200px" id="isHtml" name="isHtml" lay-verify="required" lay-filter="isHtml">
 					<option value="0">JSON</option><option value="1" selected>页面</option>
 				</select>
+			</div>
+			<div style="display: flex">
+				<label style="width: 150px;line-height: 40px;">自定义参数：</label>
+				<input style="width: 200px;" type="text" id="param" name="param" value="" />
 			</div>
 			<ul class="actions">
 				<li><input type="submit" value="支付" class="special" style="background-color: forestgreen;margin-right: 50px" onclick="payOrder()" /></li>
@@ -148,7 +152,8 @@
 		var type = $("#type").val();
 		var price = $("#price").val();
 		var isHtml = $("#isHtml").val();
-		creatOrder(payId,param,type,price,isHtml);
+		var email = $("#email").val();
+		creatOrder(payId,param,type,price,isHtml,email);
 	}
 
 	function login() {

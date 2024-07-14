@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class Setting implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     /** 用户名 */
     private String username;
@@ -33,20 +33,26 @@ public class Setting implements Serializable {
      */
     private String md5key;
 
+    /** 是否发送付款审核 */
+    private Integer isApprove;
+
+    /** 是否发送付款通知 */
+    private Integer isNotice;
+
+    /** 区分方式 */
+    private Integer payQf;
+
+    /** 异步回调 */
+    private String notifyUrl;
+
+    /** 同步回调 */
+    private String returnUrl;
+
     /** 心跳 */
     private String lastheart;
 
     /** 最后收款时间 */
     private String lastpay;
-
-    /** 异步回调 */
-    private String notifyUrl;
-
-    /** 区分方式 */
-    private String payQf;
-
-    /** 同步回调 */
-    private String returnUrl;
 
     /** 微信二维码 */
     private String wxpay;

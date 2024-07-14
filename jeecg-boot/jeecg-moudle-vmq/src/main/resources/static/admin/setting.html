@@ -20,6 +20,23 @@
             <input type="email" id="email" lay-verify="required" placeholder="请输入通知邮箱" autocomplete="off" class="layui-input">
         </div>
     </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">付款审核通知</label>
+        <div class="layui-input-block">
+            <select id="isApprove">
+                <option value="1">是</option><option value="0">否</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">付款成功通知</label>
+        <div class="layui-input-block">
+            <select id="isNotice">
+                <option value="1">是</option><option value="0">否</option>
+            </select>
+        </div>
+    </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label">异步回调</label>
@@ -168,6 +185,8 @@
         var key = $("#key").val();
         var close = $("#close").val();
         var payQf = $("#payQf").val();
+        var isApprove = $("#isApprove").val();
+        var isNotice = $("#isNotice").val();
         if (user == ""){
             layer.msg("请输入管理员账号");
             return;
@@ -176,6 +195,12 @@
         if (close == ""){
             layer.msg("请输入创建的订单几分钟后失效");
             return;
+        }
+        if (isApprove == 1 || isNotice == 1) {
+            if (email=="" || !email) {
+                layer.msg("请输入邮箱地址");
+                return;
+            }
         }
         var wximg = $("#wximg").attr("src");
         if (wximg=="" || !wximg){
@@ -194,7 +219,8 @@
             url: "/admin/saveSetting",
             contentType: "application/json",
             async: false,
-            data: JSON.stringify( { 'id':id ,'username':user ,'email':email,'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':key ,'wxpay':wximg ,'zfbpay':zfbimg ,'close':close,'payQf':payQf} ),
+            data: JSON.stringify( { 'id':id ,'username':user ,'email':email,'isApprove':isApprove,'isNotice':isNotice,
+                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':key ,'wxpay':wximg ,'zfbpay':zfbimg ,'close':close,'payQf':payQf} ),
             datatype: "json",
             success: function (data) {
                 if (data.code==1){
@@ -216,6 +242,8 @@
                 $("#key").val(data.data.md5key);
                 $("#close").val(data.data.close);
                 $("#payQf").val(data.data.payQf);
+                $("#isApprove").val(data.data.isApprove);
+                $("#isNotice").val(data.data.isNotice);
 
                 if (data.data.wxpay!=""){
                     $('#wximg').attr('src', "enQrcode?url="+data.data.wxpay);

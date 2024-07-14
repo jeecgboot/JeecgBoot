@@ -18,6 +18,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.Predicate;
 import java.text.NumberFormat;
@@ -37,6 +38,9 @@ public class AdminService {
     private TmpPriceDao tmpPriceDao;
     @Autowired
     private PayQrcodeDao payQrcodeDao;
+
+    @Autowired
+    private WebService webService;
 
     public CommonRes login(String user,String pass){
         String password = "";
@@ -145,12 +149,11 @@ public class AdminService {
         if (payOrder==null){
             return ResUtil.error("订单不存在");
         }
-        if (!validUserPermission(username,payOrder)) {
+        if (!validUserPermission(username,payOrder.getUsername())) {
             return ResUtil.error("抱歉，您无权操作其它商家订单");
         }
-        // 敏感操作，只能使用自己的密钥
-        Setting setting = settingDao.getSettingByUserName(username);
-        String key = setting.getMd5key();
+        Setting setting = webService.getDefaultSetting(username);
+        String key = webService.getDefaultMd5Key(username);
         String p = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
         String sign = payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key;
         p = p+"&sign="+md5(sign);
@@ -277,14 +280,24 @@ public class AdminService {
         return list;
     }
 
-    public CommonRes delPayQrcode(Long id){
+    public CommonRes delPayQrcode(Long id,String username){
+        PayQrcode payQrcode = payQrcodeDao.getById(id);
+        if (payQrcode==null){
+            return ResUtil.error("二维码不存在");
+        }
+        if (!validUserPermission(username,payQrcode.getUsername())) {
+            return ResUtil.error("抱歉，您无权删除其他用户数据");
+        }
         payQrcodeDao.deleteById(id);
         return ResUtil.success();
     }
 
     public CommonRes delOrder(Long id,String username){
         PayOrder payOrder = payOrderDao.findById(id).get();
-        if (!validUserPermission(username,payOrder)) {
+        if (payOrder==null){
+            return ResUtil.error("订单不存在");
+        }
+        if (!validUserPermission(username,payOrder.getUsername())) {
             return ResUtil.error("抱歉，您无权删除其它商家订单");
         }
         if (payOrder.getState()==0){
@@ -294,11 +307,11 @@ public class AdminService {
         return ResUtil.success();
     }
 
-    private static boolean validUserPermission(String username, PayOrder payOrder) {
-        if (!payOrder.getUsername().equals(username)) {
+    private static boolean validUserPermission(String username, String userdata) {
+        if (StringUtils.isEmpty(userdata)) {
             return false;
         }
-        return true;
+        return userdata.equals(username);
     }
 
     public CommonRes delGqOrder(String username){

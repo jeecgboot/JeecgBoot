@@ -2,8 +2,10 @@ package com.vone.mq.entity;
 
 import lombok.Data;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Data
 //@Entity
@@ -26,6 +28,8 @@ public class SysUser {
 
     private boolean delFlag;
 
-    private long createDate;
+    private Date updateTime;
+
+    private Date createTime;
 
 }

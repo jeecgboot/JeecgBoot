@@ -25,9 +25,12 @@ public class QuartzService {
     
     @Scheduled(fixedRate = 60000)
     public void timerToZZP(){
-        log.info("开始清理过期订单...");
         // 获取超时时间（分钟）
         Setting setting = settingDao.getSettingByUserName("guest");
+        if (setting == null) {
+            return;
+        }
+        log.info("开始清理过期订单...");
         try {
             String timeout = setting.getClose();
             int timeoutMS = Integer.valueOf(timeout)*60*1000;
