@@ -1,11 +1,13 @@
 package org.jeecg.config.security;
 
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import org.jeecg.config.security.app.AppGrantAuthenticationConvert;
 import org.jeecg.config.security.app.AppGrantAuthenticationProvider;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationConvert;
@@ -38,8 +40,6 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.token.*;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.header.writers.frameoptions.RegExpAllowFromStrategy;
-import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
@@ -47,10 +47,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * spring authorization server核心配置
@@ -65,6 +64,7 @@ public class SecurityConfig {
 
     private JdbcTemplate jdbcTemplate;
     private OAuth2AuthorizationService authorizationService;
+    private JeecgAuthenticationConvert jeecgAuthenticationConvert;
 
     @Bean
     @Order(1)
@@ -90,10 +90,7 @@ public class SecurityConfig {
                                 new LoginUrlAuthenticationEntryPoint("/sys/login"),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
                         )
-                )
-                // 使用jwt处理接收到的access token
-                .oauth2ResourceServer(oauth2ResourceServer ->
-                        oauth2ResourceServer.jwt(Customizer.withDefaults()));
+                );
 
         return http.build();
     }
@@ -176,7 +173,7 @@ public class SecurityConfig {
                             return config;
                         }))
                 .csrf(AbstractHttpConfigurer::disable)
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jeecgAuthenticationConvert)));
         return http.build();
     }
 
@@ -193,44 +190,29 @@ public class SecurityConfig {
      * JWK详细见：https://datatracker.ietf.org/doc/html/draft-ietf-jose-json-web-key-41
      */
     @Bean
+    @SneakyThrows
     public JWKSource<SecurityContext> jwkSource() {
-        KeyPair keyPair = generateRsaKey();
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        RSAKey rsaKey = new RSAKey.Builder(publicKey)
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
+        // 如果不设置secureRandom，会存在一个问题，当应用重启后，原有的token将会全部失效，因为重启的keyPair与之前已经不同
+        SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
+        // 重要！生产环境需要修改！
+        secureRandom.setSeed("jeecg".getBytes());
+        keyPairGenerator.initialize(256, secureRandom);
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        ECPublicKey publicKey = (ECPublicKey) keyPair.getPublic();
+        ECPrivateKey privateKey = (ECPrivateKey) keyPair.getPrivate();
+
+        ECKey jwk = new ECKey.Builder(Curve.P_256, publicKey)
                 .privateKey(privateKey)
-                // 重要！生产环境需要修改！
                 .keyID("jeecg")
                 .build();
-        JWKSet jwkSet = new JWKSet(rsaKey);
+        JWKSet jwkSet = new JWKSet(jwk);
         return new ImmutableJWKSet<>(jwkSet);
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
-    }
-
-    /**
-     *生成RSA密钥对，给上面jwkSource() 方法的提供密钥对
-     */
-    private static KeyPair generateRsaKey() {
-        KeyPair keyPair;
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-
-            // 生产环境不应该设置secureRandom，seed如果被泄露，jwt容易被伪造
-            // 如果不设置secureRandom，会存在一个问题，当应用重启后，原有的token将会全部失效，因为重启的keyPair与之前已经不同
-            SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG");
-            // 重要！生产环境需要修改！
-            secureRandom.setSeed("jeecg".getBytes());
-            keyPairGenerator.initialize(2048, secureRandom);
-            keyPair = keyPairGenerator.generateKeyPair();
-        }
-        catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-        return keyPair;
     }
 
     /**
@@ -242,14 +224,6 @@ public class SecurityConfig {
     }
 
     /**
-     *配置认证服务器请求地址
-     */
-    @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().tokenEndpoint("/sys/login").build();
-    }
-
-    /**
      *配置token生成器
      */
     @Bean
@@ -258,7 +232,9 @@ public class SecurityConfig {
         OAuth2AccessTokenGenerator accessTokenGenerator = new OAuth2AccessTokenGenerator();
         OAuth2RefreshTokenGenerator refreshTokenGenerator = new OAuth2RefreshTokenGenerator();
         return new DelegatingOAuth2TokenGenerator(
-                jwtGenerator, accessTokenGenerator, refreshTokenGenerator);
+                new JeecgOAuth2AccessTokenGenerator(new NimbusJwtEncoder(jwkSource())),
+                new OAuth2RefreshTokenGenerator()
+        );
     }
 
 }

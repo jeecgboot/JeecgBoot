@@ -3,6 +3,7 @@ package org.jeecg.config.security.self;
 import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.exception.JeecgBoot401Exception;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysDepartModel;
@@ -80,19 +81,13 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
         OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(passwordGrantAuthenticationToken);
         RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 
-        if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("message", "非法登录");
-            return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
-        }
-
         // 通过用户名获取用户信息
-        LoginUser loginUser = commonAPI.getUserByName(username);
+//        LoginUser loginUser = commonAPI.getUserByName(username);
         // 检查用户可行性
-        checkUserIsEffective(loginUser);
+//        checkUserIsEffective(loginUser);
 
         //由于在上面已验证过用户名、密码，现在构建一个已认证的对象UsernamePasswordAuthenticationToken
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken.authenticated(loginUser,clientPrincipal,new ArrayList<>());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = UsernamePasswordAuthenticationToken.authenticated(username,clientPrincipal,new ArrayList<>());
 
         DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
                 .registeredClient(registeredClient)
@@ -101,90 +96,87 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
                 .authorizedScopes(requestScopeSet)
                 .authorizationGrant(passwordGrantAuthenticationToken);
 
-        OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
-                .principalName(clientPrincipal.getName())
-                .authorizedScopes(requestScopeSet)
-                .attribute(Principal.class.getName(), username)
-                .authorizationGrantType(authorizationGrantType);
+//        OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(registeredClient)
+//                .principalName(clientPrincipal.getName())
+//                .authorizedScopes(requestScopeSet)
+//                .attribute(Principal.class.getName(), username)
+//                .authorizationGrantType(authorizationGrantType);
 
 
         // ----- Access token -----
         OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();
         OAuth2Token generatedAccessToken = this.tokenGenerator.generate(tokenContext);
         if (generatedAccessToken == null) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("message", "无法生成刷新token，请联系管理员。");
-            return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
-
+            throw new JeecgBoot401Exception("无法生成刷新token，请联系管理员。");
         }
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
                 generatedAccessToken.getTokenValue(), generatedAccessToken.getIssuedAt(),
                 generatedAccessToken.getExpiresAt(), tokenContext.getAuthorizedScopes());
-        if (generatedAccessToken instanceof ClaimAccessor) {
-            authorizationBuilder.token(accessToken, (metadata) -> {
-                metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, ((ClaimAccessor) generatedAccessToken).getClaims());
-            });
-        } else {
-            authorizationBuilder.accessToken(accessToken);
-        }
+//        if (generatedAccessToken instanceof ClaimAccessor) {
+//            authorizationBuilder.token(accessToken, (metadata) -> {
+//                metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, ((ClaimAccessor) generatedAccessToken).getClaims());
+//            });
+//        } else {
+//            authorizationBuilder.accessToken(accessToken);
+//        }
 
         // ----- Refresh token -----
-        OAuth2RefreshToken refreshToken = null;
-        if (registeredClient.getAuthorizationGrantTypes().contains(AuthorizationGrantType.REFRESH_TOKEN) &&
-                // 不向公共客户端颁发刷新令牌
-                !clientPrincipal.getClientAuthenticationMethod().equals(ClientAuthenticationMethod.NONE)) {
+//        OAuth2RefreshToken refreshToken = null;
+//        if (registeredClient.getAuthorizationGrantTypes().contains(AuthorizationGrantType.REFRESH_TOKEN) &&
+//                // 不向公共客户端颁发刷新令牌
+//                !clientPrincipal.getClientAuthenticationMethod().equals(ClientAuthenticationMethod.NONE)) {
+//
+//            tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.REFRESH_TOKEN).build();
+//            OAuth2Token generatedRefreshToken = this.tokenGenerator.generate(tokenContext);
+//            if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
+//                Map<String, Object> map = new HashMap<>();
+//                map.put("message", "无法生成刷新token，请联系管理员。");
+//                return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
+//            }
+//
+//            refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
+//            authorizationBuilder.refreshToken(refreshToken);
+//        }
 
-            tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.REFRESH_TOKEN).build();
-            OAuth2Token generatedRefreshToken = this.tokenGenerator.generate(tokenContext);
-            if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("message", "无法生成刷新token，请联系管理员。");
-                return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,"fdsafas", Instant.now(), Instant.now().plusNanos(1)), null, map);
-            }
+//        OAuth2Authorization authorization = authorizationBuilder.build();
+//
+//        // 保存认证信息至redis
+//        authorizationService.save(authorization);
 
-            refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
-            authorizationBuilder.refreshToken(refreshToken);
-        }
-
-        OAuth2Authorization authorization = authorizationBuilder.build();
-
-        // 保存认证信息至redis
-        authorizationService.save(authorization);
-
-        JSONObject addition = new JSONObject(new LinkedHashMap<>());
-        addition.put("token", accessToken.getTokenValue());
-        // 设置租户
-        JSONObject jsonObject = commonAPI.setLoginTenant(username);
-        addition.putAll(jsonObject.getInnerMap());
-
-        // 设置登录用户信息
-        addition.put("userInfo", loginUser);
-        addition.put("sysAllDictItems", commonAPI.queryAllDictItems());
-
-        List<SysDepartModel> departs = commonAPI.queryUserDeparts(loginUser.getId());
-        addition.put("departs", departs);
-        if (departs == null || departs.size() == 0) {
-            addition.put("multi_depart", 0);
-        } else if (departs.size() == 1) {
-            commonAPI.updateUserDepart(username, departs.get(0).getOrgCode(),null);
-            addition.put("multi_depart", 1);
-        } else {
-            //查询当前是否有登录部门
-            if(oConvertUtils.isEmpty(loginUser.getOrgCode())){
-                commonAPI.updateUserDepart(username, departs.get(0).getOrgCode(),null);
-            }
-            addition.put("multi_depart", 2);
-        }
+//        JSONObject addition = new JSONObject(new LinkedHashMap<>());
+//        addition.put("token", accessToken.getTokenValue());
+//        // 设置租户
+//        JSONObject jsonObject = commonAPI.setLoginTenant(username);
+//        addition.putAll(jsonObject.getInnerMap());
+//
+//        // 设置登录用户信息
+//        addition.put("userInfo", loginUser);
+//        addition.put("sysAllDictItems", commonAPI.queryAllDictItems());
+//
+//        List<SysDepartModel> departs = commonAPI.queryUserDeparts(loginUser.getId());
+//        addition.put("departs", departs);
+//        if (departs == null || departs.size() == 0) {
+//            addition.put("multi_depart", 0);
+//        } else if (departs.size() == 1) {
+//            commonAPI.updateUserDepart(username, departs.get(0).getOrgCode(),null);
+//            addition.put("multi_depart", 1);
+//        } else {
+//            //查询当前是否有登录部门
+//            if(oConvertUtils.isEmpty(loginUser.getOrgCode())){
+//                commonAPI.updateUserDepart(username, departs.get(0).getOrgCode(),null);
+//            }
+//            addition.put("multi_depart", 2);
+//        }
 
         // 兼容原有shiro登录结果处理
-        Map<String, Object> map = new HashMap<>();
-        map.put("result", addition);
-        map.put("code", 200);
-        map.put("success", true);
-        map.put("timestamp", System.currentTimeMillis());
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("result", addition);
+//        map.put("code", 200);
+//        map.put("success", true);
+//        map.put("timestamp", System.currentTimeMillis());
 
         // 返回access_token、refresh_token以及其它信息给到前端
-        return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken, refreshToken, map);
+        return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken);
     }
 
     @Override

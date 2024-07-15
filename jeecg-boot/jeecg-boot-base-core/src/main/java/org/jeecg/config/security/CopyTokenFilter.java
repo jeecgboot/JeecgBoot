@@ -25,12 +25,18 @@ public class CopyTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 以下为undertow定制代码，如切换其它servlet容器，需要同步更换
         HttpServletRequestImpl undertowRequest = (HttpServletRequestImpl) request;
-        String bearerToken = request.getParameter("token");
-        String headerBearerToken = request.getHeader("X-Access-Token");
-        if (StringUtils.hasText(bearerToken)) {
-            undertowRequest.getExchange().getRequestHeaders().add(new HttpString("Authorization"), "bearer " + bearerToken);
-        } else if (StringUtils.hasText(headerBearerToken)) {
-            undertowRequest.getExchange().getRequestHeaders().add(new HttpString("Authorization"), "bearer " + headerBearerToken);
+        String token = request.getHeader("Authorization");
+        if (StringUtils.hasText(token)) {
+            undertowRequest.getExchange().getRequestHeaders().remove("Authorization");
+            undertowRequest.getExchange().getRequestHeaders().add(new HttpString("Authorization"), "bearer " + token);
+        } else {
+            String bearerToken = request.getParameter("token");
+            String headerBearerToken = request.getHeader("X-Access-Token");
+            if (StringUtils.hasText(bearerToken)) {
+                undertowRequest.getExchange().getRequestHeaders().add(new HttpString("Authorization"), "bearer " + bearerToken);
+            } else if (StringUtils.hasText(headerBearerToken)) {
+                undertowRequest.getExchange().getRequestHeaders().add(new HttpString("Authorization"), "bearer " + headerBearerToken);
+            }
         }
         filterChain.doFilter(undertowRequest, response);
     }
