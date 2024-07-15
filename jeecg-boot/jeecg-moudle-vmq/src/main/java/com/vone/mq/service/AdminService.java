@@ -7,10 +7,7 @@ import com.vone.mq.entity.PayGoods;
 import com.vone.mq.entity.PayOrder;
 import com.vone.mq.entity.PayQrcode;
 import com.vone.mq.entity.Setting;
-import com.vone.mq.utils.Arith;
-import com.vone.mq.utils.HttpRequest;
-import com.vone.mq.utils.PasswordUtil;
-import com.vone.mq.utils.ResUtil;
+import com.vone.mq.utils.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
+
 
 import javax.persistence.criteria.Predicate;
 import java.text.NumberFormat;
@@ -129,7 +126,7 @@ public class AdminService {
         Specification<PayGoods> specification = (root, criteriaQuery, cb) -> {
             List<Predicate> list = new ArrayList<>();
             list.add(cb.in(root.get("username")).value(username).value("guest"));
-            if (name!=null) {
+            if (StringUtils.isNotBlank(name)) {
                 list.add(cb.equal(root.get("name").as(String.class), name));
             }
             if (state!=null) {

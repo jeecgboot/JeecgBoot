@@ -1,8 +1,10 @@
-package com.vone.mq.utils;
+package com.vone.mq.config;
 
+import com.vone.mq.utils.JWTUtil;
+import com.vone.mq.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 

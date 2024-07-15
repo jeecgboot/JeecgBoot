@@ -7,24 +7,28 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.vone.mq.config.EmailUtils;
 import com.vone.mq.dto.CommonRes;
 import com.vone.mq.dto.CreateOrderRes;
 import com.vone.mq.entity.PayOrder;
 import com.vone.mq.service.AdminService;
 import com.vone.mq.service.WebService;
-import com.vone.mq.utils.JWTUtil;
-import com.vone.mq.utils.ResUtil;
+import com.vone.mq.utils.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
+
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
@@ -33,16 +37,24 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RestController
+@Api(tags = "开放接口",description = "API支付接口")
 public class WebController {
+
+    @Value("${token.expire.ip}")
+    private int expireCount;
 
     @Autowired
     private WebService webService;
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @RequestMapping("/enQrcode")
     public void enQrcode(HttpServletResponse resp, String url) throws IOException {
@@ -119,8 +131,9 @@ public class WebController {
         return webService.getMd5(username,content);
     }
 
-    @RequestMapping("/getToken")
-    public String getToken(HttpSession session, String user, String pass) {
+    @GetMapping(value = "/getToken")
+    @ApiOperation(value = "获取token")
+    public String getToken(@ApiIgnore HttpSession session, @RequestParam String user, @RequestParam String pass) {
         String token = (String) session.getAttribute("token");
         if (StringUtils.isEmpty(token)) {
             if (StringUtils.isEmpty(user) || StringUtils.isEmpty(pass)) {
@@ -141,9 +154,9 @@ public class WebController {
      * @param payOrder    0返回json数据 1跳转到支付页面
      * @return
      */
-    @RequestMapping("/createOrder")
-    public String createOrder(@RequestBody PayOrder payOrder) {
-        log.info("{}",payOrder);
+    @PostMapping("/createOrder")
+    @ApiOperation(value = "创建订单")
+    public String createOrder(@RequestBody PayOrder payOrder, HttpServletRequest request) {
         if (StringUtils.isEmpty(payOrder.getPayId())) {
             return new Gson().toJson(ResUtil.error("请传入商户订单号"));
         }
@@ -153,7 +166,17 @@ public class WebController {
         if (payOrder.getType()<1 || payOrder.getType()>2) {
             return new Gson().toJson(ResUtil.error("支付方式错误=>1|微信 2|支付宝"));
         }
+        if (!StringUtils.isEmpty(payOrder.getEmail()) && !EmailUtils.checkEmail(payOrder.getEmail())) {
+            return new Gson().toJson(ResUtil.error("请填写正确的邮箱地址"));
+        }
 
+        String ip = HttpRequest.getIpAddr(request);
+        String temp = redisTemplate.opsForValue().get(ip);
+        Long expire = redisTemplate.getExpire(ip, TimeUnit.SECONDS);
+        log.info("{},{}",ip,expire);
+        if(StringUtils.isNotBlank(temp)){
+            return new Gson().toJson(ResUtil.error("您提交的太频繁了，请"+expire+"秒后再试"));
+        }
         Double priceD;
         try {
             priceD = Double.valueOf(payOrder.getPrice());
@@ -173,6 +196,8 @@ public class WebController {
         }
         int isHtml = payOrder.getIsHtml();
         CommonRes commonRes = webService.createOrder(payOrder);
+        //记录缓存
+        redisTemplate.opsForValue().set(ip,"added",expireCount, TimeUnit.SECONDS);
         if (isHtml == 0) {
             String res = new Gson().toJson(commonRes);
             return res;
@@ -186,7 +211,8 @@ public class WebController {
         }
     }
 
-    @RequestMapping("/closeOrder")
+    @PostMapping("/closeOrder")
+    @ApiOperation(value = "关闭订单")
     public CommonRes closeOrder(String orderId, String sign) {
         if (orderId == null) {
             return ResUtil.error("请传入云端订单号");
@@ -207,7 +233,8 @@ public class WebController {
         return webService.appPush(type, price, t, sign);
     }
 
-    @RequestMapping("/getOrder")
+    @GetMapping(value = "/getOrder")
+    @ApiOperation(value = "查询订单信息")
     public CommonRes getOrder(String orderId) {
         if (orderId == null) {
             return ResUtil.error("请传入订单编号");
@@ -215,7 +242,8 @@ public class WebController {
         return webService.getOrder(orderId);
     }
 
-    @RequestMapping("/checkOrder")
+    @GetMapping(value = "/checkOrder")
+    @ApiOperation(value = "查询订单状态")
     public CommonRes checkOrder(String orderId) {
         if (orderId == null) {
             return ResUtil.error("请传入订单编号");

@@ -8,15 +8,18 @@ import com.vone.mq.entity.PayOrder;
 import com.vone.mq.entity.Setting;
 import com.vone.mq.service.AdminService;
 import com.vone.mq.service.WebService;
-import com.vone.mq.utils.EmailUtils;
+import com.vone.mq.config.EmailUtils;
 import com.vone.mq.utils.JWTUtil;
 import com.vone.mq.utils.ResUtil;
 import com.vone.mq.utils.StringUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -25,6 +28,7 @@ import java.util.Map;
 
 @Slf4j
 @Controller
+@Api(tags = "登录接口")
 public class LoginController {
 
     @Value("${token.expire.link}")
@@ -98,7 +102,8 @@ public class LoginController {
         return "success";
     }
 
-    @RequestMapping("/passOrder")
+    @GetMapping("/passOrder")
+    @ApiOperation(value = "订单审核通过")
     public String passOrder(String orderId,String sign,Model model) {
         PayOrder payOrder = auditOrder(orderId, sign, model);
         log.info("{}",model.getAttribute("errorMsg"));
@@ -115,16 +120,30 @@ public class LoginController {
         return "success";
     }
     
-    @RequestMapping("/backOrder")
+    @GetMapping("/backOrder")
+    @ApiOperation(value = "订单驳回")
     public String backOrder(String orderId, String sign, Model model) {
         PayOrder payOrder = auditOrder(orderId, sign, model);
         log.info("{}",model.getAttribute("errorMsg"));
         if (payOrder == null) return "500";
+        if (payOrder.getState()==-1){
+            model.addAttribute("errorMsg","订单已过期");
+            return "500";
+        }
+        Setting setting = webService.getDefaultSetting(payOrder.getUsername());
+        if (setting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
+            PayInfo payInfo = new PayInfo(payOrder);
+            if (payOrder.getPayDate() < 1) {
+                payInfo.setPayDate(StringUtils.format(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss"));
+            }
+            emailUtils.sendTemplateMail(sender, payOrder.getEmail(),"【码支付】支付失败通知", "pay-fail", payInfo);
+        }
         payOrderDao.setState(-1,payOrder.getId());
         return "success";
     }
 
-    @RequestMapping("/delOrder")
+    @GetMapping("/delOrder")
+    @ApiOperation(value = "订单删除")
     public String delOrder(String orderId,String sign,Model model) {
         PayOrder payOrder = auditOrder(orderId, sign, model);
         log.info("{}",model.getAttribute("errorMsg"));
@@ -144,7 +163,7 @@ public class LoginController {
         }
         PayOrder payOrder = payOrderDao.findByOrderId(orderId);
         if (payOrder == null) {
-            model.addAttribute("errorMsg","订单号不存在");
+            model.addAttribute("errorMsg","订单号不存在或已删除");
             return null;
         }
         if (System.currentTimeMillis()-payOrder.getCreateDate()>expireHour*60*60*1000) {

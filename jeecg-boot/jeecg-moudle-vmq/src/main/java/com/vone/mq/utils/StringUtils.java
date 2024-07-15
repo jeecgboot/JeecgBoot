@@ -12,7 +12,7 @@ import java.util.Random;
 /**
  * @author Exrickx
  */
-public class StringUtils {
+public class StringUtils extends org.springframework.util.StringUtils {
 
     private static SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

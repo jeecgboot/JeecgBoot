@@ -93,7 +93,10 @@
 <script>
     var username = window.location.href.split("=")[1];
     $("#username").html(username);
-    var token = getToken(username,"");
+    var token = getToken();
+    if (token == "" || token == null || token == undefined) {
+        window.location.href = "index.html";
+    }
     $("#token").val(token);
     window.global = {
         pageType: 'demo'

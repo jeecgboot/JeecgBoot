@@ -45,13 +45,13 @@ function getMd5(content) {
     return sign;
 }
 
-function getToken(user,pass) {
+function getToken() {
     var token = "";
     $.ajax({
-        type: 'POST',
+        type: 'GET',
         url: "/getToken",
         async: false,
-        data: {"user": user,"pass":pass},
+        data: {},
         success: function (data) {
             token = data;
         }

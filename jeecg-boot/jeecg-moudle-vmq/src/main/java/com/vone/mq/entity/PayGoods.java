@@ -25,6 +25,9 @@ public class PayGoods {
     // 图片
     private String picture;
 
+    // 发货内容
+    private String sendContent;
+
     // 价格
     private Double price;
 

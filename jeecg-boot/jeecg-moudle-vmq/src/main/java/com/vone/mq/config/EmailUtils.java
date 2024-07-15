@@ -1,5 +1,6 @@
-package com.vone.mq.utils;
+package com.vone.mq.config;
 
+import com.vone.mq.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +38,8 @@ public class EmailUtils {
      */
     @Async
     public void sendTemplateMail(String sender, String sendto,String title, String templateName,Object o) {
-
-        log.info("开始给"+sendto+"发送邮件");
-        MimeMessage message = mailSender.createMimeMessage();
         try {
+            MimeMessage message = mailSender.createMimeMessage();
             //true表示需要创建一个multipart message html内容
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setFrom(sender);

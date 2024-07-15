@@ -40,8 +40,7 @@
             ,url: '/admin/getGoods'
             ,toolbar: '#toolbarDemo'
             ,where: {
-                state:$("#state").val(),
-                type:$("#type").val()
+                name:$("#name").val()
             }
             ,cols: [[ //表头
                 {field: 'name', title: '名称',minWidth:150},
@@ -49,11 +48,12 @@
                 {field: 'picture', title: '图片',minWidth:180},
                 {field: 'price', title: '价格',minWidth:80, align:'center'},
                 {field: 'number', title: '数量',minWidth:80, align:'center'},
-                {field: 'createDate', title: '创建时间',minWidth:160,templet: function(d){
+                {field: 'sendContent', title: '自动发货内容',minWidth:200},
+                {field: 'createDate', title: '创建时间',minWidth:150,templet: function(d){
                         return formatDate(d.createDate);
                     }
                 },
-                {title: '操作', minWidth: 120, align:'center', toolbar: '#barDemo'}
+                {title: '操作', minWidth: 100, align:'center', toolbar: '#barDemo'}
             ]]
             ,page:true
         });

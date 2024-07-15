@@ -1,5 +1,6 @@
 package com.vone.mq.service;
 
+import com.vone.mq.config.EmailUtils;
 import com.vone.mq.dao.PayOrderDao;
 import com.vone.mq.dao.PayQrcodeDao;
 import com.vone.mq.dao.SettingDao;
@@ -16,9 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 
-import java.text.SimpleDateFormat;
+
 import java.util.*;
 
 @Slf4j
@@ -46,7 +46,6 @@ public class WebService {
 
     public String getMd5(String username, String content) {
         String key = getDefaultMd5Key(username);
-        log.info("{},{},{}",username,content,md5(content+key));
         return md5(content + key);
     }
 
@@ -56,6 +55,7 @@ public class WebService {
      * @return CommonRes
      */
     public CommonRes createOrder(PayOrder payOrder){
+        log.info("createOrder...");
         String username = JWTUtil.getUsername(payOrder.getParam());
         String msg = "自定义";
         if (StringUtils.isEmpty(username)) {

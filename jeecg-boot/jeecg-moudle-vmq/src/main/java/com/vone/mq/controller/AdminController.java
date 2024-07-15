@@ -1,14 +1,15 @@
 package com.vone.mq.controller;
 
+import com.vone.mq.config.EmailUtils;
 import com.vone.mq.dto.CommonRes;
 import com.vone.mq.dto.PageRes;
 import com.vone.mq.entity.PayQrcode;
 import com.vone.mq.entity.Setting;
 import com.vone.mq.service.AdminService;
-import com.vone.mq.utils.EmailUtils;
 import com.vone.mq.utils.ResUtil;
+import com.vone.mq.utils.StringUtils;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
+@Api(tags = "系统内部接口",description = "用户登录后才能操作")
 public class AdminController {
 
     @Autowired
