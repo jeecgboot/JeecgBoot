@@ -177,11 +177,12 @@ spring:
           #password: root
           #driver-class-name: com.mysql.cj.jdbc.Driver
   #redis 配置
-  redis:
-    database: 4
-    host: 172.18.26.81
-    port: 6379
-    password: ''
+  data:
+    redis:
+      database: 4
+      host: 172.18.26.81
+      port: 6379
+      password: ''
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml

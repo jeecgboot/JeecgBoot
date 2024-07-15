@@ -133,7 +133,7 @@ public class WebController {
 
     @GetMapping(value = "/getToken")
     @ApiOperation(value = "获取token")
-    public String getToken(@ApiIgnore HttpSession session, @RequestParam String user, @RequestParam String pass) {
+    public String getToken(@ApiIgnore HttpSession session, @RequestParam(required = false) String user, @RequestParam(required = false) String pass) {
         String token = (String) session.getAttribute("token");
         if (StringUtils.isEmpty(token)) {
             if (StringUtils.isEmpty(user) || StringUtils.isEmpty(pass)) {

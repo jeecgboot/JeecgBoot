@@ -3,10 +3,15 @@ server:
     url: http://msl1214.gnway.cc:8000
 
 spring:
+    redis:
+        database: 5
+        host: 127.0.0.1
+        port: 6379
+        timeout: 1000
     datasource:
         url: jdbc:mysql://127.0.0.1:3306/jeecg-boot
-        username: jeecg-boot
-        password: ******
+        username: username
+        password: password
     jpa:
         hibernate:
             ddl-auto: update
@@ -17,8 +22,8 @@ spring:
     mail:
         host: smtp.qq.com
         port: 587
-        username: 987159729@qq.com
-        password: jrrmaaejqzrwbcfd
+        username: username
+        password: password
         protocol: smtp
         properties:
           mail:
@@ -30,7 +35,12 @@ spring:
     servlet:
         multipart:
             max-file-size: 100MB
+    mvc:
+        pathmatch:
+            matching-strategy: ant_path_matcher
+
 token:
     expire:
         link: 24
+        ip: 10
 

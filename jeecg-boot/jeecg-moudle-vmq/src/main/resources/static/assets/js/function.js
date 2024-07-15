@@ -48,10 +48,9 @@ function getMd5(content) {
 function getToken() {
     var token = "";
     $.ajax({
-        type: 'GET',
+        type: 'get',
         url: "/getToken",
         async: false,
-        data: {},
         success: function (data) {
             token = data;
         }
