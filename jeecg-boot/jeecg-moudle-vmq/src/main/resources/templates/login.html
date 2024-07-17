@@ -1,17 +1,16 @@
 
 <!DOCTYPE HTML>
-
 <html>
 <head>
 	<title>码支付</title>
 	<meta name="keywords" content="" />
 	<meta name="description" content="" />
 	<meta charset="utf-8" />
-	<link rel="shortcut icon" href="/favicon.ico" />
-	<link rel="bookmark" href="/favicon.ico" />
+	<link rel="shortcut icon" href="favicon.ico" />
+	<link rel="bookmark" href="favicon.ico" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-	<link rel="stylesheet" href="/assets/css/main.css" />
-	<noscript><link rel="stylesheet" href="/assets/css/noscript.css" /></noscript>
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 </head>
 <body>
 <div id="wrapper">
@@ -115,11 +114,13 @@
 
 		<article id="about">
 			<h2 class="major">简介</h2>
-			<p>1、码支付是在V免签基础上二开，仅供交流学习使用，请勿用于商业用途。</p>
-			<p>2、码支付为个人用户提供支付宝、微信的免签约收款解决方案。</p>
-			<p>3、用户可以注册自己账号，并自定义支付配置信息，否则使用默认密钥。</p>
-			<p>4、请遵守相关法律法规，请勿用于非法用途。</p>
-			<p>5、后续版本计划：新增商品管理、商品订购页面</p>
+			<p>一、码支付为个人用户提供微信、支付宝免签约收款解决方案。资金直接到达本人账号，无费率问题。</p>
+			<p>二、对于不懂编程的新手同学，仅需注册账号并上传个人收款码，即可轻松实现个人收款。</p>
+			<p>三、对于具有一定开发能力的同学，可以通过安装工具来实现支付结果自动回调，或自行对接系统API。</p>
+			<p>产品优势：1、完全免费。2、无需单独部署即可在线使用。3、有强大的后台管理和商城系统。</p>
+			<p>后续版本计划：增加内置虚拟商品管理功能，支付成功后自动发送邮件通知。</p>
+			<p>如果您具有商户资质，想要更多的支付功能请前往<a href="http://mctz.gnway.cc" target="_blank" style="color: darkturquoise">管理后台</a>查看</p>
+			<p>请遵守相关法律法规，请勿用于非法用途。</p>
 		</article>
 
 	</div>
@@ -132,12 +133,12 @@
 
 <div id="bg"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@1.11.3"></script>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/ajlkn/skel@3.0.1/dist/skel.min.js"></script>
-<script src="/assets/js/util.js"></script>
-<script src="/assets/js/main.js"></script>
-<script src="/assets/js/function.js"></script>
-<script src="https://lib.baomitu.com/layer/3.1.1/layer.js"></script>
+<script src="assets/js/util.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/function.js"></script>
+<script src="http://lib.baomitu.com/layer/3.3.0/layer.js"></script>
 
 
 <script>
@@ -157,10 +158,10 @@
 	}
 
 	function login() {
-		$.post("/login","user="+$("#user").val()+"&pass="+$("#pass").val(),function (data) {
+		$.post("loginValid","user="+$("#user").val()+"&pass="+$("#pass").val(),function (data) {
 			layer.msg(data.msg);
 			if (data.code==1){
-				window.location.href = "aaa.html?username="+data.data;
+				window.location.href = "menu";
 			}
 		});
 	}
@@ -177,10 +178,10 @@
 			layer.msg("两次输入密码不一致，请确认");
 			return;
 		}
-		$.post("/regist","username="+name+"&password="+pass,function (data) {
+		$.post("regist","username="+name+"&password="+pass,function (data) {
 			layer.msg(data.msg);
 			if (data.code==1){
-				window.location.href = "index.html";
+				window.location.href = "login";
 			}
 		});
 	}

@@ -30,7 +30,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         try {
             String token = (String) session.getAttribute("token");
             if (token == null) {
-                response.sendRedirect(request.getContextPath()+"/index");
+                response.sendRedirect(request.getContextPath()+"/login");
                 return false;
             }
             String username = JWTUtil.getUsername(token);

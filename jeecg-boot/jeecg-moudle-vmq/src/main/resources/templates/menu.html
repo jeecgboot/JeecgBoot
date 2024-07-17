@@ -25,8 +25,8 @@
 
             <ul class="layui-nav layui-layout-right">
                 <li class="layui-nav-item">
-                    <input id="token" name="token" type="hidden" value="${session.token}">
-                    <a id="username" href="javascript:">${session.username}</a>
+                    <input id="token" name="token" type="hidden" value="${token}">
+                    <a id="username" href="javascript:">${username}</a>
                     <dl class="layui-nav-child">
                         <dd><a onclick="logout()">退出</a></dd>
                     </dl>
@@ -67,7 +67,7 @@
                 <li class="layui-nav-item"><a
                         onclick="$('#LAY_preview').load('admin/orderlist.html');">订单列表</a></li>
                 <li class="layui-nav-item"><a
-                        onclick="$('#LAY_preview').load('../api.html');">Api说明</a></li>
+                        onclick="$('#LAY_preview').load('api.html');">Api说明</a></li>
                 <span class="layui-nav-bar" style="top: 22.5px; height: 0px; opacity: 0;"></span>
             </ul>
         </div>
@@ -87,16 +87,17 @@
 <div class="site-mobile-shade"></div>
 <script src="layui/layui.js?t=1531663423583" charset="utf-8"></script>
 </div>
-<script src="/assets/js/function.js"></script>
+<script src="assets/js/function.js"></script>
 <script src="https://lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/wangeditor@3.1.1/release/wangEditor.min.js"></script>
 <script>
-    var username = window.location.href.split("=")[1];
-    $("#username").html(username);
-    var token = getToken();
+    var userMap = getUserInfo();
+    var token = userMap.token;
+    console.log(token);
     if (token == "" || token == null || token == undefined) {
-        window.location.href = "index.html";
+        window.location.href = "login";
     }
+    $("#username").html(userMap.username);
     $("#token").val(token);
     window.global = {
         pageType: 'demo'

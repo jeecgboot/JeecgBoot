@@ -87,7 +87,7 @@
 </style>
 
 <script>
-    $.post("/admin/getMain",function (data) {
+    $.post("admin/getMain",function (data) {
         if (data.code === 1) {
             $("#todayOrder").html(data.data.todayOrder);
             $("#todaySuccessOrder").html(data.data.todaySuccessOrder);

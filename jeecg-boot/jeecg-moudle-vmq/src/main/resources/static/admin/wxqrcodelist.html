@@ -24,14 +24,14 @@
         myTable = table.render({
             elem: '#demo'
             ,height: 'full-130'
-            ,url: '/admin/getPayQrcodes'
+            ,url: 'admin/getPayQrcodes'
             ,where: {
                 type:1,
             }
             ,cols: [[ //表头
                 {title:"操作", width: 100, align:'center', toolbar: '#barDemo'},
                 {field: 'state', width: 200, title: '二维码',templet: function(d){
-                        return '<img style="width: 80%;" src="/enQrcode?url='+d.payUrl+'"/>';
+                        return '<img style="width: 80%;" src="enQrcode?url='+d.payUrl+'"/>';
                     }
                 },
                 {field: 'price', width: 150, title: '金额(元)'},
@@ -49,7 +49,7 @@
 
                     layer.close(index);
                     //向服务端发送删除指令
-                    $.post("/admin/delPayQrcode","id="+data.id,function (data) {
+                    $.post("admin/delPayQrcode","id="+data.id,function (data) {
                         if (data.code==1){
                             obj.del(); //删除对应行（tr）的DOM结构
                         }

@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -52,14 +55,35 @@ public class LoginController {
     @Autowired
     private EmailUtils emailUtils;
 
-    @RequestMapping("/index")
-    public String index() {
-        return "forward:/index.html";
+    @Autowired
+    HttpServletRequest request;
+
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+
+    @GetMapping("/")
+    public String defaultPage(){
+        return "login";
+    }
+
+    @GetMapping("/index")
+    public String index(){
+        return "menu";
+    }
+
+    @GetMapping("/menu")
+    public String menu() {
+        HttpSession session = request.getSession(true);
+        request.setAttribute("username", session.getAttribute("username"));
+        request.setAttribute("token", session.getAttribute("token"));
+        return "menu";
     }
 
     @ResponseBody
-    @RequestMapping("/login")
-    public CommonRes login(HttpSession session,String user, String pass){
+    @RequestMapping("/loginValid")
+    public CommonRes loginValid(HttpSession session,String user, String pass){
         if (user==null){
             return ResUtil.error("请输入账号");
         }
@@ -74,6 +98,16 @@ public class LoginController {
             r.setData(userMap.get("realname"));
         }
         return r;
+    }
+
+    @ResponseBody
+    @GetMapping("/getUserInfo")
+    public CommonRes getUserInfo(){
+        HttpSession session = request.getSession(true);
+        Map<String,Object> map = new HashMap<>();
+        map.put("username",session.getAttribute("username"));
+        map.put("token",session.getAttribute("token"));
+        return ResUtil.success(map);
     }
 
     @ResponseBody

@@ -216,7 +216,7 @@
         zfbimg = zfbimg.replace(/enQrcode\?url=/g,"");
         $.ajax({
             type: 'POST',
-            url: "/admin/saveSetting",
+            url: "admin/saveSetting",
             contentType: "application/json",
             async: false,
             data: JSON.stringify( { 'id':id ,'username':user ,'email':email,'isApprove':isApprove,'isNotice':isNotice,
@@ -232,7 +232,7 @@
     }
 
     function getSettings() {
-        $.post("/admin/getSettings",function (data) {
+        $.post("admin/getSettings",function (data) {
             if (data.code==1){
                 $("#id").val(data.data.id);
                 $("#user").val(data.data.username);

@@ -1,6 +1,8 @@
 server:
     port: 8084
-    url: http://msl1214.gnway.cc:8000
+    url: http://msl1214.gnway.cc/vmq
+    servlet:
+        context-path: /vmq
 
 spring:
     redis:
@@ -42,5 +44,5 @@ spring:
 token:
     expire:
         link: 24
-        ip: 10
+        ip: 5
 

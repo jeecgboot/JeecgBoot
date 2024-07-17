@@ -139,7 +139,7 @@ public class WebService {
             payInfo.setPassUrl(url + "/passOrder" + urlParam);
             payInfo.setBackUrl(url + "/backOrder" + urlParam);
             payInfo.setDelUrl(url + "/delOrder" + urlParam);
-            emailUtils.sendTemplateMail(sender,setting.getEmail(),"【码支付】待审核处理","email-admin",payInfo);
+            emailUtils.sendTemplateMail(sender,setting.getEmail(),"【码支付】待审核处理","pay-audit",payInfo);
         }
         return ResUtil.success(createOrderRes);
     }

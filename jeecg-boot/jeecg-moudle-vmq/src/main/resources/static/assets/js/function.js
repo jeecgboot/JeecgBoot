@@ -1,6 +1,7 @@
+
 function logout() {
-    $.post("/logout", function (data) {
-        window.location.href = "index.html";
+    $.post("logout", function (data) {
+        window.location.href = "login";
     });
 }
 
@@ -9,7 +10,7 @@ function creatOrder(payId, param, type, price, isHtml,email) {
     var sign = getMd5(payId + param + type + price);
     $.ajax({
         type: 'POST',
-        url: "/createOrder",
+        url: "createOrder",
         async: false,
         datatype: "json",
         contentType: "application/json",
@@ -35,7 +36,7 @@ function getMd5(content) {
     var sign = "";
     $.ajax({
         type: 'POST',
-        url: "/md5",
+        url: "md5",
         async: false,
         data: {"content": content},
         success: function (data1) {
@@ -45,17 +46,17 @@ function getMd5(content) {
     return sign;
 }
 
-function getToken() {
-    var token = "";
+function getUserInfo() {
+    var userMap;
     $.ajax({
         type: 'get',
-        url: "/getToken",
+        url: "getUserInfo",
         async: false,
         success: function (data) {
-            token = data;
+            userMap = data.data;
         }
     });
-    return token;
+    return userMap;
 }
 
 function formatDate(now) {

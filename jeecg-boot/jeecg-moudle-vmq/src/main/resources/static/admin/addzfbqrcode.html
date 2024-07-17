@@ -59,7 +59,7 @@
         var demoListView = $('#demoList')
             ,uploadListIns = upload.render({
             elem: '#testList'
-            ,url: '/upload/'
+            ,url: 'upload/'
             ,accept: 'file'
             ,multiple: true
             ,auto: false
@@ -70,7 +70,7 @@
                 layer.msg("等待所有二维码识别完毕后手动输入金额，输入完成后点击保存二维码")
                 //读取本地文件
                 obj.preview(function(index, file, result){
-                    $.post("/deQrcode","base64="+encodeURIComponent(result.split(",")[1]),function (data) {
+                    $.post("deQrcode","base64="+encodeURIComponent(result.split(",")[1]),function (data) {
                         console.log(data)
                         imgs.push({"index":imgs.length,"money":"","b64":result,"url":data.data});
                         mytable.reload({
@@ -104,7 +104,7 @@
             });
             return;
         }
-        $.post("/admin/addPayQrcode","type=2&payUrl="+encodeURIComponent(obj[index].url)+"&price="+obj[index].money,function (data) {
+        $.post("admin/addPayQrcode","type=2&payUrl="+encodeURIComponent(obj[index].url)+"&price="+obj[index].money,function (data) {
             up(obj,index+1)
         });
     }
