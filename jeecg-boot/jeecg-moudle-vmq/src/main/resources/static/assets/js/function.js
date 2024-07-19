@@ -7,14 +7,13 @@ function logout() {
 
 function creatOrder(payId, param, type, price, isHtml,email) {
     var code = -1;
-    var sign = getMd5(payId + param + type + price);
     $.ajax({
         type: 'POST',
-        url: "createOrder",
+        url: "addOrder",
         async: false,
         datatype: "json",
         contentType: "application/json",
-        data: JSON.stringify({"payId":payId,"type":type,"price":price,"sign":sign,"param":param,"isHtml":isHtml,"email":email}),
+        data: JSON.stringify({"payId":payId,"type":type,"price":price,"sign":"","param":param,"isHtml":isHtml,"email":email}),
         success: function (data2) {
             if (isHtml == 1) {
                 try {
@@ -32,19 +31,6 @@ function creatOrder(payId, param, type, price, isHtml,email) {
     return code;
 }
 
-function getMd5(content) {
-    var sign = "";
-    $.ajax({
-        type: 'POST',
-        url: "md5",
-        async: false,
-        data: {"content": content},
-        success: function (data1) {
-            sign = data1;
-        }
-    });
-    return sign;
-}
 
 function getUserInfo() {
     var userMap;
