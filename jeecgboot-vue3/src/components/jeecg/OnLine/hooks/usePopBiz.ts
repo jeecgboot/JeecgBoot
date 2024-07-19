@@ -117,7 +117,9 @@ export function usePopBiz(ob, tableRef?) {
     if (!props.multi) {
       selectRows.value = [];
       checkedKeys.value = [];
-      selectedRowKeys = [selectedRowKeys[selectedRowKeys.length - 1]];
+      // update-begin--author:liaozhiyang---date:20240717---for：【issues/6883】单选模式第二次打开已勾选
+      // selectedRowKeys = [selectedRowKeys[selectedRowKeys.length - 1]];
+      // update-end--author:liaozhiyang---date:20240717---for：【issues/6883】单选模式第二次打开已勾选
     }
     // update-end--author:liaozhiyang---date:20240105---for：【QQYUN-7514】popup单选显示radio
     // update-begin--author:liaozhiyang---date:20230919---for：【QQYUN-4263】跨页选择导出问题
