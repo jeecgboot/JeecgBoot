@@ -1,0 +1,232 @@
+/** 应用快捷块样式 */
+.console-app-group {
+    padding: 16px;
+    border-radius: 4px;
+    text-align: center;
+    background-color: #fff;
+    cursor: pointer;
+    display: block;
+}
+
+.console-app-group .console-app-icon {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    margin-bottom: 6px;
+    display: inline-block;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    font-size: 32px;
+    color: #69c0ff;
+}
+
+.console-app-group:hover {
+    box-shadow: 0 0 15px rgba(0, 0, 0, .08);
+}
+
+/** //应用快捷块样式 */
+
+/** 小组成员 */
+.console-user-group {
+    position: relative;
+    padding: 10px 0 10px 60px;
+}
+
+.console-user-group .console-user-group-head {
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    margin-top: -16px;
+    border-radius: 50%;
+}
+
+.console-user-group .layui-badge {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    margin-top: -10px;
+}
+
+.console-user-group .console-user-group-name {
+    line-height: 1.2;
+}
+
+.console-user-group .console-user-group-desc {
+    color: #8c8c8c;
+    line-height: 1;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/** 卡片轮播图样式 */
+.admin-carousel .layui-carousel-ind {
+    position: absolute;
+    top: -41px;
+    text-align: right;
+}
+
+.admin-carousel .layui-carousel-ind ul {
+    background: 0 0;
+}
+
+.admin-carousel .layui-carousel-ind li {
+    background-color: #e2e2e2;
+}
+
+.admin-carousel .layui-carousel-ind li.layui-this {
+    background-color: #999;
+}
+
+/** 广告位轮播图 */
+.admin-news .layui-carousel-ind {
+    height: 45px;
+}
+
+.admin-news a {
+    display: block;
+    line-height: 70px;
+    text-align: center;
+}
+
+/** 最新动态时间线 */
+.layui-timeline-dynamic .layui-timeline-item {
+    padding-bottom: 0;
+}
+
+.layui-timeline-dynamic .layui-timeline-item:before {
+    top: 16px;
+}
+
+.layui-timeline-dynamic .layui-timeline-axis {
+    width: 9px;
+    height: 9px;
+    left: 1px;
+    top: 7px;
+    background-color: #cbd0db;
+}
+
+.layui-timeline-dynamic .layui-timeline-axis.active {
+    background-color: #0c64eb;
+    box-shadow: 0 0 0 2px rgba(12, 100, 235, .3);
+}
+
+.dynamic-card-body {
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.dynamic-card-body:hover {
+    overflow-y: auto;
+    padding-right: 15px;
+}
+
+/** 优先级徽章 */
+.layui-badge-priority {
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    line-height: 18px;
+    border-width: 2px;
+    font-weight: 600;
+}
+
+/* 用户信息 */
+.user-info-head {
+    width: 110px;
+    height: 110px;
+    line-height: 110px;
+    position: relative;
+    display: inline-block;
+    border: 2px solid #eee;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    margin: 0 auto;
+}
+
+.user-info-head:hover:after {
+    content: '\e681';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.3);
+    font-size: 28px;
+    padding-top: 2px;
+    font-style: normal;
+    font-family: layui-icon;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.user-info-head img {
+    width: 110px;
+    height: 110px;
+}
+
+.user-info-list-item {
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.user-info-list-item > .layui-icon {
+    position: absolute;
+}
+
+.user-info-list-item > p {
+    padding-left: 30px;
+}
+
+.layui-line-dash {
+    border-bottom: 1px dashed #ccc;
+    margin: 15px 0;
+}
+
+/* 基本信息 */
+#userInfoForm .layui-form-item {
+    margin-bottom: 25px;
+}
+
+/* 账号绑定 */
+.user-bd-list-item {
+    padding: 14px 60px 14px 10px;
+    border-bottom: 1px solid #e8e8e8;
+    position: relative;
+}
+
+.user-bd-list-item .user-bd-list-lable {
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.user-bd-list-item .user-bd-list-oper {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    margin-top: -8px;
+    cursor: pointer;
+}
+
+.user-bd-list-item .user-bd-list-img {
+    width: 48px;
+    height: 48px;
+    line-height: 48px;
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    margin-top: -24px;
+}
+
+.user-bd-list-item .user-bd-list-img + .user-bd-list-content {
+    margin-left: 68px;
+}
+
+.btn-cloud {
+    width: 28%;
+}

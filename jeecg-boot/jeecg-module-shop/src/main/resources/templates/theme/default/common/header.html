@@ -1,0 +1,28 @@
+<div class="ew-header">
+    <div class="layui-container">
+        <a class="layui-logo" href="${ctxPath}" style="letter-spacing: 1.5px;position: relative;">
+            <img src="<:if test="${websiteLogo == null || websiteLogo == ''}">${ctxPath}/default/images/logo.svg</:if><:if test="${websiteLogo != null || websiteLogo != ''}">${ctxPath + websiteLogo!}</:if>" class="img-item"
+                 style="width: 32px;height: 32px;position: absolute;left: 0;">
+            <span>${websiteName!}</span>
+        </a>
+        <div class="ew-nav-group-mobile">
+            <button id="btn-show" class="layui-btn" style="height: 30px; line-height: 30px; border-radius: 5px;">公告</button>
+        </div>
+        <div class="ew-nav-group">
+            <ul class="layui-nav">
+                <li class="layui-nav-item layui-this">
+                    <a href="${ctxPath}/index">商店首页</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="${ctxPath}/article">文章教程</a>
+                </li>
+                <li class="layui-nav-item back-item" style="padding: 0px; padding-left: 15px;">
+                    <a href="${ctxPath}/search" class="layui-btn search-by" style="background-color: #ffffff; border-width: 1px; border-style: solid; border-color: #d9d9d9;">
+                        <i class="layui-icon">&#xe615;</i>
+                        查询订单
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

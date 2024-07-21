@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="./common/title.html" websiteName="订单详情 - ${website.websiteName}"
+              keywords="${website.keywords}" description="${website.description}" favicon="${website.favicon}" shop="${shop}"/>
+    <link rel="stylesheet" href="${ctxPath}/default/css/order.css"/>
+</head>
+<body class="page-no-scroll">
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- header -->
+<:include file="./common/header.html" websiteName="${website.websiteName}" websiteLogo="${website.websiteLogo}"/>
+<!-- goods-card -->
+<div class="layui-container body-card">
+    <div class="layui-row layui-col-space15">
+        <!-- 左 -->
+        <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+            <div class="layui-card order-show">
+                <:if test="${orders.status == 0}">
+                    <div class="layui-text">
+                        <span>订单还未付款！</span>
+                    </div>
+                </:if>
+                <!-- 自动发货 -->
+                <:if test="${orders.status == 2}">
+                    <div class="layui-text">
+                        <span>请耐心等待店主发货哦！</span>
+                    </div>
+                </:if>
+                <!-- 自动发货 -->
+                <:if test="${orders.status == 1 || orders.status == 3}">
+                    <div class="layui-text" style="font-size: 18px; height: auto">
+                        <div class="user-info-list-item">
+                            <textarea id="card-txt" placeholder="查看卡密信息" class="layui-textarea" style="height: 237px;"><:for items="${cardsList}" var="item">${item!}</:for></textarea>
+                        </div>
+                    </div>
+                    <div class="reset">
+                        <a id="card-copy" href="#" data-clipboard-target="#card-txt" class="reset-left layui-btn">复制卡密</a>
+                        <a href="${ctxPath}/exportCards?orderId=${orders.id!}" class="reset-left layui-btn">下载卡密</a>
+                    </div>
+                </:if>
+            </div>
+        </div>
+        <!-- 右 -->
+        <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+            <div class="layui-card order-show">
+                <div class="weui-cells">
+                    <div class="weui-cell">
+                        <div class="weui-cell__bd">联系方式</div>
+                        <div class="weui-cell__ft">${orders.email!orders.contact}</div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__bd">订单号</div>
+                        <div class="weui-cell__ft">${orders.member!}</div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__bd">支付状态</div>
+                        <div class="weui-cell__ft">
+                            <:if test="${orders.status==3}">
+                                已发货
+                            </:if>
+                            <:if test="${orders.status==2}">
+                                待发货
+                            </:if>
+                            <:if test="${orders.status==1}">
+                                已支付
+                            </:if>
+                            <:if test="${orders.status==0}">
+                                未支付
+                            </:if>
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__bd">支付时间</div>
+                        <div class="weui-cell__ft">${orders.payTime!}</div>
+                    </div>
+                    <div class="weui-cell-bottom">
+                        <div class="weui-cell__bd">付款金额</div>
+                        <div class="weui-cell__ft">${orders.money!} 元</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 表单弹窗 -->
+<script type="text/html" id="ordersInfoDialog">
+    <div id="imgView"
+         style="padding: 10px; border-radius: 5px;">
+    </div>
+</script>
+<!-- footer -->
+<:include file="./common/footer.html" websiteName="${website.websiteName}" beianIcp="${website.beianIcp}" shop="${shop}"/>
+<!-- js部分 -->
+<:include file="./common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'QRCode', 'admin', 'ClipboardJS'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var ClipboardJS = layui.ClipboardJS;
+        var clipboard = new ClipboardJS('#card-copy');
+        clipboard.on('success', function(e) {
+            layer.msg("卡密复制成功<br>" + e.text);
+        });
+    })
+</script>
+</body>
+</html>

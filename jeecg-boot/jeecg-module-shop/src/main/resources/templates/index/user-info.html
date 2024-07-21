@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="个人中心"/>
+    <style>
+        /* 用户信息 */
+        .user-info-head {
+            width: 110px;
+            height: 110px;
+            line-height: 110px;
+            position: relative;
+            display: inline-block;
+            border: 2px solid #eee;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+
+        .user-info-head:hover:after {
+            content: '\e681';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.3);
+            font-size: 28px;
+            padding-top: 2px;
+            font-style: normal;
+            font-family: layui-icon;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .user-info-head img {
+            width: 110px;
+            height: 110px;
+        }
+
+        .user-info-list-item {
+            position: relative;
+            padding-bottom: 8px;
+        }
+
+        .user-info-list-item > .layui-icon {
+            position: absolute;
+        }
+
+        .user-info-list-item > p {
+            padding-left: 30px;
+        }
+
+        .layui-line-dash {
+            border-bottom: 1px dashed #ccc;
+            margin: 15px 0;
+        }
+
+        /* 基本信息 */
+        #userInfoForm .layui-form-item {
+            margin-bottom: 25px;
+        }
+
+        /* 账号绑定 */
+        .user-bd-list-item {
+            padding: 14px 60px 14px 10px;
+            border-bottom: 1px solid #e8e8e8;
+            position: relative;
+        }
+
+        .user-bd-list-item .user-bd-list-lable {
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .user-bd-list-item .user-bd-list-oper {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            margin-top: -8px;
+            cursor: pointer;
+        }
+
+        .user-bd-list-item .user-bd-list-img {
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            margin-top: -24px;
+        }
+
+        .user-bd-list-item .user-bd-list-img + .user-bd-list-content {
+            margin-left: 68px;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <!-- 左 -->
+        <div class="layui-col-sm12 layui-col-md3">
+            <div class="layui-card" style="min-height: 528px;">
+                <div class="layui-card-body" style="padding: 25px;">
+                    <div class="text-center layui-text">
+                        <div class="user-info-head" id="userInfoHead">
+                            <img src="${ctxPath}/file/${user.avatar!'../assets/images/head.jpg'}" alt=""/>
+                        </div>
+                        <h2 style="padding-top: 20px;">${user.nickName!}</h2>
+                        <p style="padding-top: 8px;">${user.introduction!'这家伙很懒，什么都不说~'}</p>
+                    </div>
+                    <div class="layui-text" style="padding-top: 30px;">
+                        <div class="user-info-list-item">
+                            <i class="layui-icon layui-icon-username"></i>
+                            <p>登录账号: ${user.username!}</p>
+                        </div>
+                        <div class="user-info-list-item">
+                            <i class="layui-icon layui-icon-release"></i>
+                            <p>用户角色: ${user.roles[0].roleName!}</p>
+                        </div>
+                        <div class="user-info-list-item">
+                            <i class="layui-icon layui-icon-flag"></i>
+                            <p>组织机构: ${user.organizationName!}</p>
+                        </div>
+                    </div>
+                    <div class="layui-line-dash"></div>
+                    <h3>标签</h3>
+                    <div class="layui-badge-list" style="padding-top: 6px;">
+                        <span class="layui-badge layui-bg-gray">很有想法的</span>
+                        <span class="layui-badge layui-bg-gray">专注设计</span>
+                        <span class="layui-badge layui-bg-gray">辣~</span>
+                        <span class="layui-badge layui-bg-gray">大长腿</span>
+                        <span class="layui-badge layui-bg-gray">川妹子</span>
+                        <span class="layui-badge layui-bg-gray">海纳百川</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 右 -->
+        <div class="layui-col-sm12 layui-col-md9">
+            <div class="layui-card">
+                <!-- 选项卡开始 -->
+                <div class="layui-tab layui-tab-brief" lay-filter="userInfoTab">
+                    <ul class="layui-tab-title">
+                        <li class="layui-this">个人信息</li>
+                    </ul>
+                    <div class="layui-tab-content">
+                        <!-- tab1 -->
+                        <div class="layui-tab-item layui-show">
+                            <form class="layui-form" id="userInfoForm" lay-filter="userInfoForm"
+                                  style="max-width: 400px;padding: 25px 10px 0 0;">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label layui-form-required">用户名:</label>
+                                    <div class="layui-input-block">
+                                        <input name="nickName" value="${user.nickName!}" class="layui-input"
+                                               lay-verify="required" required/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label layui-form-required">性别:</label>
+                                    <div class="layui-input-block">
+                                        <select name="sex" lay-verify="required" required>
+                                            <option value="">请选择</option>
+                                            <:for items="${sexList}" var="item">
+                                                <option value="${item.dictDataId}">${item.dictDataName}</option>
+                                            </:for>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">手机号:</label>
+                                    <div class="layui-input-block">
+                                        <input name="phone" placeholder="请输入手机号" class="layui-input"
+                                               value="${user.phone!}" lay-verify="phoneX" required/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">邮箱:</label>
+                                    <div class="layui-input-block">
+                                        <input name="email" value="${user.email!}" class="layui-input"
+                                               placeholder="请输入邮箱" lay-verify="emailX" required/>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">个人简介:</label>
+                                    <div class="layui-input-block">
+                                        <textarea name="introduction" placeholder="个人简介"
+                                                  class="layui-textarea">${user.introduction!}</textarea>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button class="layui-btn" lay-filter="userInfoSubmit" lay-submit>保存修改
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- //选项卡结束 -->
+            </div>
+        </div>
+    </div>
+</div>
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'element', 'admin', 'formX'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var admin = layui.admin;
+        $('select[name="sex"]').val('${user.sex!}');
+        form.render('select', 'userInfoForm');
+
+        /* 选择头像 */
+        $('#userInfoHead').click(function () {
+            admin.cropImg({
+                imgSrc: $('#userInfoHead>img').attr('src'),
+                onCrop: function (data) {
+                    var loadIndex = layer.load(2);
+                    $.post('${ctxPath}/file/upload/base64', {base64: data}, function (res) {
+                        if (0 === res.code) {
+                            $.post('${ctxPath}/info/update', {avatar: res.url}, function (res) {
+                                layer.close(loadIndex);
+                                if (0 === res.code) {
+                                    layer.msg(res.msg, {icon: 1});
+                                    $('#userInfoHead>img').attr('src', data);
+                                    parent.layui.jquery('.layui-layout-admin>.layui-header .layui-nav img.layui-nav-img').attr('src', data);
+                                } else {
+                                    layer.msg(res.msg, {icon: 2, anim: 6});
+                                }
+                            });
+                        } else {
+                            layer.close(loadIndex);
+                            layer.msg(res.msg, {icon: 2, anim: 6});
+                        }
+                    });
+                }
+            });
+        });
+
+        /* 监听表单提交 */
+        form.on('submit(userInfoSubmit)', function (data) {
+            admin.confirm('确定要保存修改吗？', function (index) {
+                layer.close(index);
+                var loadIndex = layer.load(2);
+                $.post('${ctxPath}/info/update', data.field, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        $('#userInfoHead+h2').text(data.field.nickName);
+                        $('#userInfoHead+h2+p').text(data.field.introduction);
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@ package com.vmq.controller;
 
 import com.vmq.config.EmailUtils;
 import com.vmq.dto.CommonRes;
+import com.vmq.dto.CreateOrderRes;
 import com.vmq.entity.PayOrder;
 import com.vmq.entity.Setting;
 import com.vmq.dao.PayOrderDao;
@@ -134,6 +135,13 @@ public class LoginController {
     public String logout(HttpSession session){
         session.removeAttribute("token");
         return "success";
+    }
+
+    @GetMapping("/payPage")
+    public String payPage(String orderId){
+        HttpSession session = request.getSession(true);
+        session.setAttribute("orderId",orderId);
+        return "pay";
     }
 
     @RequestMapping(value = "/passOrder",method = {RequestMethod.GET, RequestMethod.POST})

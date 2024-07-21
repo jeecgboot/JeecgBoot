@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="shirocache">
+    <!-- 磁盘缓存位置 -->
+    <diskStore path="java.io.tmpdir"/>
+
+    <!-- 默认配置 -->
+    <defaultCache
+            eternal="false"
+            maxElementsInMemory="10000"
+            timeToIdleSeconds="3600"
+            timeToLiveSeconds="3600"
+            overflowToDisk="false"
+            memoryStoreEvictionPolicy="LFU"/>
+
+    <!-- 系统会话缓存 -->
+    <cache name="shiro-activeSessionCache"
+           eternal="false"
+           maxElementsInMemory="10000"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="0"
+           overflowToDisk="true"
+           diskPersistent="true"
+           diskExpiryThreadIntervalSeconds="600"/>
+
+</ehcache>

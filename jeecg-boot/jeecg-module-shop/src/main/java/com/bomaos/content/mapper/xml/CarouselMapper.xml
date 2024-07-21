@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bomaos.content.mapper.CarouselMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM sys_carousel a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.id != null">
+                    AND a.id = #{page.pageData.id}
+                </if>
+                <if test="page.pageData.title != null">
+                    AND a.title LIKE CONCAT('%', #{page.pageData.title}, '%')
+                </if>
+                <if test="page.pageData.link != null">
+                    AND a.link LIKE CONCAT('%', #{page.pageData.link}, '%')
+                </if>
+                <if test="page.pageData.imageLogo != null">
+                    AND a.image_logo LIKE CONCAT('%', #{page.pageData.imageLogo}, '%')
+                </if>
+                <if test="page.pageData.summary != null">
+                    AND a.summary LIKE CONCAT('%', #{page.pageData.summary}, '%')
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                <if test="page.pageData.enabled != null">
+                    AND a.enabled = #{page.pageData.enabled}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.bomaos.content.entity.Carousel">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.bomaos.content.entity.Carousel">
+        <include refid="relSelect"></include>
+    </select>
+
+</mapper>

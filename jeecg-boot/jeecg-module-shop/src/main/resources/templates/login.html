@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>if (window !== top) top.location.replace(location.href);</script>
+    <:include file="./common/css.html" title="登入后台 - ${website.websiteName}" favicon="${website.favicon}"/>
+    <link rel="stylesheet" href="${ctxPath}/default/css/login.css"/>
+    <![endif]-->
+</head>
+<body>
+<div class="login-wrapper layui-anim layui-anim-scale layui-hide">
+    <form class="layui-form">
+        <h2>用户登录</h2>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-username"></i>
+            <input class="layui-input" name="username" placeholder="请输入登录账号" autocomplete="off"
+                   lay-verType="tips" lay-verify="required" value="guest" required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-password"></i>
+            <input class="layui-input" name="password" placeholder="请输入登录密码" type="password"
+                   lay-verType="tips" lay-verify="required" value="guest#123" required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group login-captcha-group">
+            <i class="layui-icon layui-icon-auz"></i>
+            <input class="layui-input" name="code" placeholder="请输入验证码" autocomplete="off"
+                   lay-verType="tips" lay-verify="required" required/>
+            <img class="login-captcha" src="assets/captcha" alt=""/>
+        </div>
+        <div class="layui-form-item">
+            <input type="checkbox" name="remember" value="true" title="记住密码" lay-skin="primary"/>
+            <a href="javascript:layer.msg('请联系管理员',{icon:7,anim:6});" class="layui-link pull-right">忘记密码</a>
+        </div>
+        <div class="layui-form-item" style="margin-bottom: 15px;">
+            <button class="layui-btn layui-btn-fluid" lay-filter="loginSubmit" lay-submit>登录</button>
+        </div>
+    </form>
+</div>
+<div class="login-copyright">${website.websiteName}</div>
+<:include file="./common/js.html"/>
+<script>
+    layui.use(['index', 'layer', 'form'], function () {
+        var $ = layui.jquery;
+        var index = layui.index;
+        var layer = layui.layer;
+        var form = layui.form;
+        $('.login-wrapper').removeClass('layui-hide');
+
+        /* 表单提交 */
+        form.on('submit(loginSubmit)', function (data) {
+            var loadIndex = layer.msg('登录中...', {icon: 16, shade: 0.01, time: false});
+            $.post('${ctxPath}/login', data.field, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    layer.msg('登录成功', {icon: 1, time: 1000}, function () {
+                        index.clearTabCache();
+                        location.replace('${ctxPath}/admin');
+                    });
+                } else {
+				    /* 刷新图形验证码 */
+                    $('img.login-captcha').click(function () {
+                        this.src = this.src + '?t=' + (new Date).getTime();
+                    }).trigger('click');
+                    layer.msg(res.msg || '登录失败', {icon: 2, anim: 6});
+                }
+            });
+            return false;
+        });
+
+        /* 图形验证码 */
+        $('img.login-captcha').click(function () {
+            this.src = this.src + '?t=' + (new Date).getTime();
+        }).trigger('click');
+
+    });
+</script>
+</body>
+</html>

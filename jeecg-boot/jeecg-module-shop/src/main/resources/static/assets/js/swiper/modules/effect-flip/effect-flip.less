@@ -1,0 +1,24 @@
+.swiper-flip {
+  overflow: visible;
+  .swiper-slide {
+    pointer-events: none;
+    backface-visibility: hidden;
+    z-index: 1;
+    .swiper-slide {
+      pointer-events: none;
+    }
+  }
+  .swiper-slide-active {
+    &,
+    & .swiper-slide-active {
+      pointer-events: auto;
+    }
+  }
+  .swiper-slide-shadow-top,
+  .swiper-slide-shadow-bottom,
+  .swiper-slide-shadow-left,
+  .swiper-slide-shadow-right {
+    z-index: 0;
+    backface-visibility: hidden;
+  }
+}

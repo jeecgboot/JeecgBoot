@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <:include file="./common/title.html" websiteName="商店首页 - ${website.websiteName}" keywords="${website.keywords}"
+              description="${website.description}" favicon="${website.favicon}" shop="${shop}"/>
+    <link rel="stylesheet" href="${ctxPath}/default/css/index.css"/>
+    <link rel="stylesheet" href="${ctxPath}/assets/js/swiper/swiper-bundle.min.css"/>
+    <style>
+        .no-content {
+            padding: 60px 0 55px;
+            text-align: center;
+            color: #999;
+            border-radius: 5px;
+        }
+
+        .no-content .no-content-img {
+            width: 150px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .no-content .user-no-contents {
+            margin-bottom: 0;
+            padding-bottom: 15px;
+            text-align: center;
+            font-size: 18px;
+            color: #c8c8c8;
+        }
+    </style>
+</head>
+<body>
+
+<!-- header -->
+<:include file="./common/header.html" websiteName="${website.websiteName}"
+          websiteLogo="${website.websiteLogo}"/>
+
+<!-- goods-card -->
+<div class="layui-container body-card" style="margin-bottom: 15px;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md8">
+            <div class="layui-card" style="border-radius: 5px; box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);">
+                <!-- Swiper -->
+                <div class="swiper mySwiper">
+                    <div class="swiper-wrapper">
+                        <:for items="${carouselList}" var="item">
+                            <div class="swiper-slide">
+                                <a href="${item.link}" style="height: 100%; background-image: url(<:if test="${item.imageLogo == null || item.imageLogo == ''}">../default/images/carousel_logo.png</:if><:if test="${item.imageLogo != null || item.imageLogo != ''}">${item.imageLogo!}</:if>);">
+                                    <div class="swiper-text">
+                                        <h2>${item.title}</h2>
+                                        <:if test="${item.summary != '' || item.summary != null}">
+                                            <h3>${item.summary}</h3>
+                                        </:if>
+                                    </div>
+                                </a>
+                            </div>
+                        </:for>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md4">
+            <div class="user-widget-content">
+                <div class="widget-mission-header">
+                    <div class="user-w-logon">
+                        <p class="user-w-logon-title b2-color" style="margin-bottom: 6px">欢迎访问${website.websiteName}</p>
+                        <div>${shop.storeDetails}</div>
+                    </div>
+                    <div class="bd">
+                        <dl style="position: relative; display: block; -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;">
+                            <dt><img src="${ctxPath}/default/images/ship.svg"></dt>
+                            <dd>自动发货</dd>
+                        </dl>
+                        <dl class="dd-box" style="position: relative; display: block; -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;">
+                            <dt><img src="${ctxPath}/default/images/security.svg"></dt>
+                            <dd>数据安全</dd>
+                        </dl>
+                        <dl class="dd-box" style="position: relative; display: block; -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;">
+                            <dt><img src="${ctxPath}/default/images/demand.svg"></dt>
+                            <dd>实时查询</dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="widget-mission-footer">
+                    <div style="position: relative; padding: 15px; border-top: 1px solid #f6f6f6;">
+                        <i class="layui-icon layui-icon-search layui-icon-screen-show"></i>
+                        <input id="screen-product" placeholder="请输入商品名称" class="layui-input screen-input" lay-verify="required" required/>
+                    </div>
+                    <!--<a href="${ctxPath}/search">订单查询 <i class="layui-icon" style="transform: rotate(-0deg);">&#xe602;</i></a>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- goods-card -->
+<div class="layui-container body-card" style="margin-bottom: 15px;">
+    <div class="layui-card" style="border-radius: 5px; box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);">
+        <div class="layui-card-header">
+            选择分类
+            <div class="pull-right el-slide">
+                <svg t="1647872150358" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3894" width="200" height="200"><path d="M51.2 281.6h307.2c15.36 0 25.6 10.24 25.6 25.6v307.2c0 15.36-10.24 25.6-25.6 25.6H51.2c-15.36 0-25.6-10.24-25.6-25.6V307.2c0-15.36 10.24-25.6 25.6-25.6z m409.6 0h307.2c15.36 0 25.6 10.24 25.6 25.6v307.2c0 15.36-10.24 25.6-25.6 25.6H460.8c-15.36 0-25.6-10.24-25.6-25.6V307.2c0-15.36 10.24-25.6 25.6-25.6z m409.6 0h102.4c15.36 0 25.6 10.24 25.6 25.6v307.2c0 15.36-10.24 25.6-25.6 25.6h-102.4c-15.36 0-25.6-10.24-25.6-25.6V307.2c0-15.36 10.24-25.6 25.6-25.6z" fill="#A9CFFF" p-id="3895"></path><path d="M51.2 716.8h921.6c15.36 0 25.6 10.24 25.6 25.6s-10.24 25.6-25.6 25.6H51.2c-15.36 0-25.6-10.24-25.6-25.6s10.24-25.6 25.6-25.6z" fill="#A5C8F4" p-id="3896"></path><path d="M38.4 716.8h486.4c7.68 0 12.8 5.12 12.8 12.8v25.6c0 7.68-5.12 12.8-12.8 12.8h-486.4c-7.68 0-12.8-5.12-12.8-12.8v-25.6c0-7.68 5.12-12.8 12.8-12.8z" fill="#2589FF" p-id="3897"></path></svg>
+            </div>
+        </div>
+        <div class="layui-card-body" style="padding: 15px 15px;">
+            <div class="layui-row layui-col-space15 classify-type" id="classifyList">
+            </div>
+        </div>
+    </div>
+    <div class="layui-row layui-col-space15" id="goodsList" style="padding: 1px 0;">
+    </div>
+</div>
+
+<!-- footer -->
+<:include file="./common/footer.html" websiteName="${website.websiteName}" beianIcp="${website.beianIcp}" shop="${shop}"/>
+<!-- footer -->
+<:include file="./common/footer-menu-home.html"/>
+<!-- 项目模板 -->
+<script type="text/html" id="classifyItem">
+    <div class="layui-col-xs6 layui-col-sm6 layui-col-md2">
+        <div class="project-list-item {{#  if(d.andIncrement === 0){ }}active{{#  } }} " data-id="{{d.id}}"
+             lay-filter="classifySubmit" lay-submit>
+            <div class="project-list-item-body">
+                <div class="item-title"
+                     style="overflow:hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 17px; font-weight: 600;">
+                    {{d.name}}
+                </div>
+                <div class="project-list-item-text">
+                    商品数量： {{d.productsMember}}
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<!-- 项目模板 -->
+<script type="text/html" id="productItem">
+    <div class="layui-col-xs6 layui-col-sm4 layui-col-md3 zlian-animation">
+        <div class="item-in box b2-radius">
+            <div class="post-module-thumb">
+                <a href="${ctxPath}/product/{{d.link}}" rel="nofollow" class="thumb-link">
+                    <picture class="picture">
+                        <img src="{{# if(d.indexLogo == null || d.indexLogo == ''){ }}${ctxPath}/default/images/commodity.svg{{# } }}{{# if(d.indexLogo != null){ }}{{d.indexLogo}}{{# } }}" class="post-thumb lazy">
+                    </picture>
+                </a>
+            </div>
+            <div class="post-info">
+                <h2>
+                    <a href="${ctxPath}/product/{{d.link}}">{{d.name}}</a>
+                </h2>
+                <div class="post-list-meta-box">
+                    <div class="post-list-cat b2-radius">
+                        <span style="color: #F56C6C; font-size: 15px">¥ {{d.price}}</span>
+                    </div>
+                </div>
+                <div class="list-footer">
+                    <a href="${ctxPath}/product/{{d.link}}" class="post-list-meta-avatar">
+                        <span>库存: {{d.cardMember}}</span>
+                    </a>
+                    <span>
+                    {{# if(d.isCoupon >= 1){ }}<span style="color: #67C23A">券</span>{{# } }}
+                    {{# if(d.restricts >= 1){ }}<span style="color: #F56C6C">限购</span>{{# } }}
+                    {{# if(d.isWholesale === 1){ }}<span style="color: #E6A23C">折扣</span>{{# } }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="product-tag">
+            {{# if(d.shipType == 0){ }}<span class="el-tag el-tag&#45;&#45;light">自动发货</span>{{# } }}
+            {{# if(d.shipType == 1){ }}<span class="el-tag el-tag&#45;&#45;success el-tag&#45;&#45;danger">手动发货</span>{{# } }}
+        </div>
+        {{# if(d.cardMember == 0){ }}
+        <div class="ribbon-two ribbon-two-danger"><span>售罄</span></div>
+        {{# } }}
+    </div>
+</script>
+
+<!-- js部分 -->
+<:include file="./common/js.html"/>
+<script type="text/javascript" src="${ctxPath}/assets/js/jquery-3.5.1.min.js"></script>
+<script type="text/javascript" src="${ctxPath}/assets/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="${ctxPath}/assets/js/swiper/swiper-bundle.min.js"></script>
+<script>
+    layui.use(['layer', 'form', 'dataGrid'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var dataGrid = layui.dataGrid;
+        var classifysListJson = JSON.parse('${classifysListJson!}');
+        var classifyId;
+        var shopSettingsJson = JSON.parse(JSON.stringify(${shopSettings!}));
+
+        if (shopSettingsJson.isWindow == 1) {
+            var isWindow = $.cookie('isWindow');
+            if ($.cookie("isWindow") != 'yes') {
+                //示范一个公告层
+                layer.open({
+                    type: 1,
+                    title: '站点公告',
+                    closeBtn: false,
+                    area: '300px;',
+                    shade: 0.4,
+                    id: 'LAY_layuipro',
+                    btn: ['我知道啦'],
+                    btnAlign: 'c',
+                    moveType: 1,
+                    content: '<div style="padding: 20px; font-size: 16px; font-family: Content-font, Roboto, sans-serif; font-weight: 400;">' + shopSettingsJson.windowText + '</div>',
+                    success: function (layero) {
+                        var btn = layero.find('.layui-layer-btn');
+                        btn.click(function () {
+                            /*var date = new Date();
+                            date.setTime(date.getTime() + (5 * 1000));*/
+                            $.cookie('isWindow', 'yes', {expires: 1});
+                        })
+                    }
+                });
+            }
+        }
+
+        // 分类点击事件
+        $('.pay-type-group>div').click(function () {
+            $('.pay-type-group>div').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        var list = classifysListJson;
+        var classifyHtml = '';
+        if (list.length != 0) {
+            classifyId = list[0].id;
+            dataGrid.render({
+                elem: '#classifyList',
+                templet: '#classifyItem',
+                data: list
+            });
+        } else {
+            classifyHtml = '' +
+                '<div style="text-align: center; padding: 30px 0; width: 100%;">' +
+                '   <div style="letter-spacing: 1.5px; position: relative; height: 40px; line-height: 50px; display: inline-block; font-size: 18px; color: #888; background-size: 32px; background-position: 0 19px; background-repeat: no-repeat;">' +
+                '       <img src="/default/images/no.svg" style="top: 11px; width: 50px; margin-right: 10px; left: 0;">' +
+                '       <span>暂无分类</span>' +
+                '   </div>' +
+                '</div>';
+            $("#classifyList").html(classifyHtml);
+        }
+
+        // 点击事件
+        $('.classify-type>div .project-list-item').click(function () {
+            $('.classify-type>div .project-list-item').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        dataGrid.render({
+            elem: '#goodsList',
+            templet: '#productItem',
+            url: '/getProductList',
+            where: {classifyId: classifyId},
+            loadMore: {limit: 12, class: 'datagrid-page-goodsList', noText: "商品内容为空"}  // 开启加载更多 //
+        });
+
+        /* 表单提交 */
+        form.on('submit(classifySubmit)', function () {
+            classifyId = $('.classify-type>div .project-list-item.active').data('id');
+            dataGrid.render({
+                elem: '#goodsList',
+                templet: '#productItem',
+                url: '/getProductList',
+                where: {classifyId: classifyId},
+                loadMore: {limit: 12, class: 'datagrid-page-goodsList'}  // 开启加载更多
+            });
+        });
+
+        $(document).ready(function (e) {
+            $("#screen-product").keyup(function (e) {
+                var content = $(this).val(); // 获取到搜索框输入的内容
+                dataGrid.render({
+                    elem: '#goodsList',
+                    templet: '#productItem',
+                    url: '/getProductList',
+                    where: {classifyId: classifyId, name: content},
+                    loadMore: {limit: 12, class: 'datagrid-page-goodsList'}  // 开启加载更多
+                });
+            });
+        });
+
+        var swiper = new Swiper(".mySwiper", {
+            pagination: {
+                el: ".swiper-pagination",
+            },
+            autoplay:true
+        });
+
+    });
+</script>
+</body>
+</html>

@@ -61,10 +61,10 @@
             $("#lastheart").val(formatDate(data.data.lastheart*1));
             $("#lastpay").val(formatDate(data.data.lastpay*1));
 
-            var img = window.location.host+"/"+data.data.md5key;
+            var img = window.location.host + window.location.pathname.replace("menu","") + data.data.md5key;
 
             $("#input").val(img);
-            $("#pzqrcode").attr("src","/enQrcode?url="+img);
+            $("#pzqrcode").attr("src","enQrcode?url="+img);
         }
     });
 </script>

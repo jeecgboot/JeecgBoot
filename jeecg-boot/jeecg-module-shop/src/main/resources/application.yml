@@ -1,0 +1,92 @@
+# 端口
+server:
+  port: 8086
+  servlet:
+    context-path: /shop
+
+# 多环境配置
+spring:
+  profiles:
+    active: dev
+
+  # 连接池配置
+  datasource:
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 30000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      test-while-idle: true
+      test-on-borrow: true
+      test-on-return: false
+      remove-abandoned: true
+      remove-abandoned-timeout: 1800
+      #pool-prepared-statements: false
+      #max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall
+      validation-query: SELECT 'x'
+      aop-patterns: com.bomaos.*.*.service.*
+      stat-view-servlet:
+        url-pattern: /druid/*
+        reset-enable: true
+        login-username:
+        login-password:
+
+  # json时间格式设置
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy/MM/dd HH:mm:ss
+
+  # 设置上传文件大小
+  servlet:
+    multipart.max-file-size: 100MB
+    multipart.max-request-size: 100MB
+
+  # 邮件服务器配置
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: mctz1214@qq.com
+    password: nytcrdairepigcfb
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            port: 465
+
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    servlet:
+      content-type: text/html
+
+  main:
+    allow-bean-definition-overriding: true
+
+# Mybatis-plus配置
+mybatis-plus:
+  mapper-locations: classpath:com/bomaos/**/*.xml
+  typeAliasesPackage: com.bomaos.**.entity
+  global-config:
+    id-type: 0
+    field-strategy: 1
+    db-column-underline: true
+    logic-delete-value: 1
+    logic-not-delete-value: 0
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+## 0是 redisTokenStore ，1是 jdbcTokenStore ，默认是0
+jwtp:
+  store-type: 1
+  ## 拦截路径，默认是/**
+  path: /api/**
+  ## 单个用户最大token数，默认-1不限制
+  max-token: 10

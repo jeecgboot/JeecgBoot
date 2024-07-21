@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="修改文章"/>
+    <style>
+        .layui-upload-img {
+            height: 120px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 正文开始 -->
+<div class="layui-fluid" style="padding-bottom: 65px;">
+
+    <!-- 表格工具栏 -->
+    <form class="layui-form" id="formBasForm" lay-filter="formBasForm">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                修改文章
+            </div>
+            <div class="layui-card-body">
+                <input name="id" type="hidden"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">文章标题:</label>
+                    <div class="layui-input-block">
+                        <input name="title" class="layui-input" placeholder="输入文章标题"/>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">文章摘要:</label>
+                    <div class="layui-input-block">
+                        <textarea name="excerpt" lay-verify="required" placeholder="输入文章摘要"
+                                  class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" style="margin-top: 15px">
+                    <label class="layui-form-label">文章图片:</label>
+                    <div class="layui-input-block" style="width: auto">
+                        <input id="picture" name="picture" placeholder="文章图片/可使用外链" class="layui-input"/>
+                        <div class="layui-upload" style="margin-top: 10px">
+                            <button type="button" class="layui-btn" id="image">上传图片</button>
+                            <div class="layui-upload-list">
+                                <img class="layui-upload-img" id="image_url">
+                            </div>
+                        </div>
+                        <div class="layui-word-aux">推荐图片尺寸为【256x146】</div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">文章内容:</label>
+                    <div class="layui-input-block">
+                        <textarea id="contentEditor"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">前台显示:</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="enabled" value="1" title="显示" checked>
+                        <input type="radio" name="enabled" value="0" title="下架">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- 提交 -->
+        <div class="form-group-bottom text-right">
+            <button type="reset" class="layui-btn layui-btn-primary">&emsp;重置&emsp;</button>
+            <button class="layui-btn" lay-filter="formBasSubmit" lay-submit>&emsp;保存文章&emsp;</button>
+        </div>
+    </form>
+</div>
+
+<:include file="../common/js.html"/>
+<script type="text/javascript" src="${ctxPath}/assets/libs/tinymce/tinymce.min.js"></script>
+<script>
+    layui.use(['layer', 'form', 'notice', 'upload', 'element', 'fileChoose'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var notice = layui.notice;
+        var fileChoose = layui.fileChoose;
+        var article = JSON.parse(JSON.stringify(${article!}));
+
+        // 回显表单数据
+        form.val('formBasForm', article);
+        $('#image_url').attr('src', article.picture); //图片链接
+
+        $('#image').click(function (res) {
+            fileChoose.open({
+                fileUrl: '${ctxPath}/file',
+                listUrl: '${ctxPath}/file/list',
+                upload: {url: '${ctxPath}/file/upload'},
+                num: 1,
+                onChoose: function (urls) {
+                    var list = urls;
+                    $("#picture").val("${ctxPath}/file" + list[0].url);
+                    $('#image_url').attr('src', "${ctxPath}/file" + list[0].url); //图片链接（base64）
+                },
+                response: {code: 0}
+            });
+        });
+
+        /* 渲染富文本编辑器 */
+        tinymce.init({
+            selector: '#contentEditor',
+            height: 500,
+            branding: false,
+            language: 'zh_CN',
+            plugins: 'code print preview fullscreen paste searchreplace save autosave link autolink image imagetools media table codesample lists advlist hr charmap emoticons anchor directionality pagebreak quickbars nonbreaking visualblocks visualchars wordcount',
+            toolbar: 'fullscreen preview code | undo redo | forecolor backcolor | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | formatselect fontselect fontsizeselect | link image media emoticons charmap anchor pagebreak codesample | ltr rtl',
+            toolbar_drawer: 'sliding',
+            images_upload_url: '${ctxPath}/file/upload',
+            file_picker_types: 'media',
+            file_picker_callback: function (callback, value, meta) {
+                layer.msg('演示环境不允许上传', {anim: 6});
+            },
+            init_instance_callback: function (editor) {
+                tinymce.get('contentEditor').setContent(article.content);
+            }
+        });
+
+        /* 监听表单提交 */
+        form.on('submit(formBasSubmit)', function (data) {
+            data.field.content = tinymce.get('contentEditor').getContent();
+            $.post('${ctxPath}/content/article/update', data.field, function (res) {
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1, time: 1000}, function () {
+                        location.reload();
+                    });
+                } else {
+                    notice.msg(res.msg, {icon: 2});
+                }
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

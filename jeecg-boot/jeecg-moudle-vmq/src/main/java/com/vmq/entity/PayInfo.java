@@ -18,10 +18,10 @@ public class PayInfo {
     private String type;
 
     //订单价格
-    private double price;
+    private String price;
 
     //实际支付价格
-    private double reallyPrice;
+    private String reallyPrice;
 
     private String passUrl;
 

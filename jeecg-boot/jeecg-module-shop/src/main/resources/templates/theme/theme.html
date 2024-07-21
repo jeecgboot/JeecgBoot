@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="主题配置管理"/>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 数据表格 -->
+            <table id="themeTable" lay-filter="themeTable"></table>
+        </div>
+    </div>
+</div>
+<!-- 商品状态 -->
+<script type="text/html" id="themeTbStatus">
+    <input type="checkbox" lay-filter="themeTbStatuCk" value="{{d.id}}" lay-skin="switch" lay-text="开启|关闭" {{d.enable==1?'checked':''}}/>
+</script>
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var admin = layui.admin;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#themeTable',
+            url: 'theme/page',
+            page: true,
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'name', title: '主题名称'},
+                {field: 'description', title: '说明'},
+                {field: 'driver', title: '主题驱动'},
+                {field: 'enable', title: '是否开启', templet: '#themeTbStatus', width: 90},
+                {field: 'createDate', title: '创建时间'},
+            ]]
+        });
+
+        /* 修改商品状态 */
+        form.on('switch(themeTbStatuCk)', function (obj) {
+            var loadIndex = layer.load(2);
+            $.post('${ctxPath}/theme/status/update', {
+                id: obj.elem.value,
+                enabled: obj.elem.checked ? 1 : 0
+            }, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    insTb.reload({page: {curr: 1}});
+                    layer.msg(res.msg, {icon: 1});
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                    $(obj.elem).prop('checked', !obj.elem.checked);
+                    form.render('checkbox', $('#paysTable').next().attr('lay-filter'));
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

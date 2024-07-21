@@ -1,0 +1,132 @@
+/** 隐藏原始elem */
+.ew-tagsinput-hide {
+    display: block !important;
+    visibility: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+/** 标签输入框样式 */
+div.tagsinput {
+    border: 1px solid #e6e6e6;
+    background: #FFF;
+    padding: 5px 5px 0 5px;
+    border-radius: 2px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+div.tagsinput:hover {
+    border: 1px solid #ccc;
+}
+
+div.tagsinput span.tag {
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    display: inline-block;
+    padding: 0 5px 0 8px;
+    background: #009688;
+    color: #fff;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    font-size: 14px;
+    cursor: default;
+}
+
+div.tagsinput span.tag a {
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+div.tagsinput span.tag a .layui-icon {
+    font-size: 12px;
+    margin: 0;
+}
+
+div.tagsinput span.tag a .default-close-text {
+    font-size: 16px;
+    font-weight: normal;
+}
+
+div.tagsinput input {
+    color: #000;
+    font-size: 14px;
+    padding: 5px;
+    margin-bottom: 5px;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 60px;
+}
+
+div.tagsinput div {
+    display: inline-block;
+}
+
+div.tagsinput > div {
+    position: relative;
+}
+
+.not_valid {
+    background: #FBD8DB !important;
+    color: #90111A !important;
+}
+
+/* 无边框的风格 */
+.tagsinput.tagsinput-default, .tagsinput.tagsinput-default:hover {
+    border: none;
+}
+
+.tagsinput.tagsinput-default span.tag {
+    background: #FAFAFA !important;
+    border: 1px solid #d9d9d9 !important;
+    border-radius: 4px;
+    color: #666;
+    line-height: 24px;
+}
+
+.tagsinput.tagsinput-default span.tag a {
+    color: #aaa;
+}
+
+.tagsinput.tagsinput-default input {
+    border: 1px dashed #d9d9d9;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.tagsinput.tagsinput-default input:focus {
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+/* 提示列表 */
+.tagsinput-tip-list {
+    position: absolute;
+    width: max-content;
+    left: 0;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
+    border: 1px solid #d2d2d2;
+    min-width: 100px;
+    width: max-content;
+    z-index: 999;
+}
+
+.tagsinput-tip-list li {
+    font-size: 14px;
+    color: #666;
+    padding: 0 10px 0 10px;
+    cursor: pointer;
+    display: block;
+    line-height: 30px;
+}
+
+.tagsinput-tip-list li:hover {
+    background: #f2f2f2;
+}

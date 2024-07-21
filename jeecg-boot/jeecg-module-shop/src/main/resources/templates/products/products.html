@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="商品管理"/>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商品名称:</label>
+                        <div class="layui-input-inline">
+                            <input name="name" class="layui-input" placeholder="输入商品名称"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn" lay-filter="productsTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="productsTable" lay-filter="productsTable"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="productsTbBar">
+    <a class="layui-btn layui-btn-xs layui-btn-normal" href="${ctxPath}/product/{{d.link}}" target="_blank">商品链接</a>
+    <a ew-href="${ctxPath}/products/products/editProduct/{{d.id}}" class="layui-btn layui-btn-primary layui-btn-xs" ew-title="编辑商品">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#productsTbDelDrop{{d.LAY_INDEX}}" no-shade="true">删除</a>
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="productsTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要删除吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="del">确定</a>
+        </div>
+    </div>
+</script>
+<!-- 商品状态 -->
+<script type="text/html" id="productsTbStatus">
+    <input type="checkbox" lay-filter="productsTbStatuCk" value="{{d.id}}" lay-skin="switch"
+           lay-text="上架|下架" {{d.status==1?'checked':''}}/>
+</script>
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var admin = layui.admin;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#productsTable',
+            url: 'products/page',
+            page: true,
+            toolbar: ['<p>',
+                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除商品</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'name', title: '商品名称'},
+                {field: 'classifyName', title: '所属分类', width: 100},
+                {field: 'price', title: '商品金额', sort: true, width: 110},
+                {field: 'sellInfo', title: '销售[未出售/已出售]', align: 'center', width: 180, templet: function(res) {
+                    if (res.shipType == 0) {
+                        return '<span class="layui-badge layui-badge-blue">'+ res.cardMember +'/' + res.sellCardMember + '</span>';
+                    } else {
+                        return '<span class="layui-badge layui-badge-blue">'+ res.inventory +'/' + res.sales + '</span>';
+                    }
+                    }
+                },
+                {field: 'shipType', title: '发货类型', width: 100, templet: function (res) {
+                    if (res.shipType == 0) {
+                        return '<span class="layui-badge layui-bg-blue">自动发货</span>';
+                    } else {
+                        return '<span class="layui-badge layui-bg-orange">手动发货</span>';
+                    }
+                    }},
+                {field: 'sort', title: '排序', sort: true, width: 100},
+                {field: 'status', title: '商品状态', templet: '#productsTbStatus', width: 100},
+                {field: 'createdAt', title: '创建时间', sort: true, width: 200},
+                {title: '操作', toolbar: '#productsTbBar', align: 'center', minWidth: 200}
+            ]]
+        });
+
+        /* 表格搜索 */
+        form.on('submit(productsTbSearch)', function (data) {
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(productsTable)', function (obj) {
+            if ('del' === obj.event) { // 删除
+                doDel(obj);
+            }
+        });
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(productsTable)', function (obj) {
+            if ('del' === obj.event) { // 删除
+                var checkRows = table.checkStatus('productsTable');
+                if (0 === checkRows.data.length) {
+                    return layer.msg('请选择要删除的数据', {icon: 2, anim: 6});
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.id;
+                });
+                doDel({ids: ids});
+            }
+        });
+
+        /* 删除 */
+        function doDel(obj) {
+            if (obj.ids) {  // 批量删除
+                admin.confirm('确定要删除选中数据吗？', function (i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    admin.req('products/removeBatch', JSON.stringify(obj.ids), function (res) {
+                        layer.close(loadIndex);
+                        if (0 === res.code) {
+                            layer.msg(res.msg, {icon: 1});
+                            insTb.reload({page: {curr: 1}});
+                        } else {
+                            layer.msg(res.msg, {icon: 2, anim: 6});
+                        }
+                    }, 'post');
+                });
+            } else {  // 单个删除
+                var loadIndex = layer.load(2);
+                $.get('products/remove', {id: obj.data.id}, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            }
+        }
+
+        /* 修改商品状态 */
+        form.on('switch(productsTbStatuCk)', function (obj) {
+            var loadIndex = layer.load(2);
+            $.post('${ctxPath}/products/status/update', {
+                id: obj.elem.value,
+                status: obj.elem.checked ? 1 : 0
+            }, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    notice.msg(res.msg, {icon: 1});
+                } else {
+                    notice.msg(res.msg, {icon: 2});
+                    $(obj.elem).prop('checked', !obj.elem.checked);
+                    form.render('checkbox', $('#productsTable').next().attr('lay-filter'));
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

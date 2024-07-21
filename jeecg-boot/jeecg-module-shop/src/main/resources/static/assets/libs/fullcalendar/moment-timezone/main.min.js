@@ -1,0 +1,6 @@
+/*!
+FullCalendar Moment Timezone Plugin v4.3.0
+Docs & License: https://fullcalendar.io/
+(c) 2019 Adam Shaw
+*/
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("moment"),require("moment-timezone/builds/moment-timezone-with-data"),require("@fullcalendar/core")):"function"==typeof define&&define.amd?define(["exports","moment","moment-timezone/builds/moment-timezone-with-data","@fullcalendar/core"],t):t((e=e||self).FullCalendarMomentTimezone={},e.moment,e.moment,e.FullCalendar)}(this,function(e,t,n,o){"use strict";var r=function(e,t){return(r=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)t.hasOwnProperty(n)&&(e[n]=t[n])})(e,t)};var i=t,u=function(e){function t(){return null!==e&&e.apply(this,arguments)||this}return function(e,t){function n(){this.constructor=e}r(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)}(t,e),t.prototype.offsetForArray=function(e){return i.tz(e,this.timeZoneName).utcOffset()},t.prototype.timestampToArray=function(e){return i.tz(e,this.timeZoneName).toArray()},t}(o.NamedTimeZoneImpl),m=o.createPlugin({namedTimeZonedImpl:u});e.default=m,Object.defineProperty(e,"__esModule",{value:!0})});

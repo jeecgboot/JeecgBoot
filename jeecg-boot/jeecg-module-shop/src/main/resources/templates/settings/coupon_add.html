@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="优惠券添加"/>
+</head>
+<body>
+
+<!-- 正文开始 -->
+<div class="layui-fluid" style="padding-bottom: 65px;">
+
+    <!-- 表单开始 -->
+    <form class="layui-form" id="formBasForm" lay-filter="formBasForm">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                添加优惠券
+            </div>
+            <div class="layui-card-body">
+                <!-- 商品选择 -->
+                <div class="layui-form-item" id="selectByitem">
+                    <label class="layui-form-label layui-form-required">选择商品:</label>
+                    <div class="layui-input-inline" id="selectClassify">
+                        <select name="classifysId" id="classifysid" lay-verType="tips" lay-filter="classifysid"
+                                lay-verify="required">
+                            <option value="">请选择分类</option>
+                            <:for items="${classifyList}" var="item">
+                                <option value="${item.id}">${item.name}</option>
+                            </:for>
+                        </select>
+                    </div>
+
+                    <div class="layui-input-inline" id="selectGoods">
+                        <select name="productId" id="productId" lay-verify="required" lay-filter="productId">
+                            <option value="">请选择商品</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 面额 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">面额:</label>
+                    <div class="layui-input-inline" id="discountVal">
+                        <input name="discountVal" type="number" placeholder="请输入满减" class="layui-input"
+                               lay-verify="required" required/>
+                        <div class="layui-word-aux">请输入金额,金额在0.1-20000元之间</div>
+                    </div>
+                    <div class="layui-input-inline">
+                        <select name="discountType" lay-filter="discountType" lay-verify="required">
+                            <option value="0">¥ 满减优惠券</option> <!-- 0 为钱 -->
+                            <option value="1">% 折扣优惠券</option> <!-- 1 为百分比-->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 满减金额 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">准用金额:</label>
+                    <div class="layui-input-inline">
+                        <input name="fullReduction" type="number" placeholder="请输入准用金额" class="layui-input"
+                               lay-verify="required" required/>
+                        <div class="layui-word-aux">请输入金额,金额在0-20000元之间,如您输入了200,则代表此优惠券需订单金额满了200元才可以使用</div>
+                    </div>
+                </div>
+
+                <!-- 生成数量 -->
+                <!-- 可用次数 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">生成数量:</label>
+                    <div class="layui-input-inline">
+                        <input name="countAll" type="number" placeholder="请输入生成数量" class="layui-input"
+                               lay-verify="required" required/>
+                    </div>
+                </div>
+
+                <!-- 重复使用出现，券代码 -->
+                <div class="layui-form-item" id="coupon" style="display:none;">
+                    <label class="layui-form-label layui-form-required">券代码:</label>
+                    <div class="layui-input-inline" id="inputCoupon">
+                        <input name="coupon" placeholder="输入券的代码" class="layui-input" lay-verType="tips"/>
+                    </div>
+                </div>
+
+                <!-- 使用类型 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">使用类型:</label>
+                    <div class="layui-input-inline">
+                        <input type="hidden" name="type" value="0">
+                        <input type="checkbox" lay-verify="required"
+                               lay-filter="sellType"
+                               id="sellType"
+                               value="1"
+                               name="type"
+                               lay-skin="switch"
+                               lay-text="重复使用|一次使用">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 提交 -->
+        <div class="form-group-bottom text-right">
+            <button type="reset" class="layui-btn layui-btn-primary">&emsp;重置&emsp;</button>
+            <button class="layui-btn" lay-filter="formBasSubmit" lay-submit>&emsp;添加优惠券&emsp;</button>
+        </div>
+    </form>
+
+    <div class="layui-card" style="margin-top: 15px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+        <div class="layui-card-body" style="font-size: 13px">
+            <i class="layui-icon layui-icon-notice" style="color: #FF5722"></i> <span
+                style="color: #FF5722">温馨提示:</span> 在重复使用类型下，如果代码券为手动输入的相同商品不允许出现<span
+                style="color: #FF5722">优惠券代码相同的情况</span>,否则会出现互斥的情况提示报错
+        </div>
+    </div>
+</div>
+
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'notice'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var notice = layui.notice;
+
+        /* 监听表单提交 */
+        form.on('submit(formBasSubmit)', function (data) {
+            $.post('${ctxPath}/save', data.field, function (res) {
+                if (0 === res.code) {
+                    notice.msg(res.msg, {icon: 1});
+                } else {
+                    notice.msg(res.msg, {icon: 2});
+                }
+            });
+            return false;
+        });
+
+        /* 面额类型 */
+        form.on('select(discountType)', function (data) {
+            var value = data.value;
+            if (value == 0) {
+                $("#discountVal").html(
+                    '<input name="discountVal" type="number" placeholder="请输入满减" class="layui-input" lay-verify="required" required/>' +
+                    '<div class="layui-word-aux">请输入金额,金额在0.1-20000元之间</div>'
+                );
+            } else if (value == 1) {
+                $("#discountVal").html(
+                    '<input name="discountVal" type="number" placeholder="请输入折扣" class="layui-input" lay-verify="required" required/>' +
+                    '<div class="layui-word-aux">请输入折扣,折扣为1-10之间的数字</div>'
+                );
+            }
+        });
+
+        /* 根据分类id查询商品列表 */
+        form.on('select(classifysid)', function (data) {
+            $("#productId").html(
+                '<option value="" >请选择商品</option>'
+            );
+            $.post('${ctxPath}/products/products/getProductList', {
+                id: data.value
+            }, function (res) {
+                if (0 === res.code) {
+                    var list = res.data;
+                    var productId = document.getElementById("productId");
+                    for (const listElement of list) {
+                        var option = document.createElement("option");
+                        option.setAttribute("value", listElement.id);
+                        option.innerText = listElement.name;
+                        productId.appendChild(option);
+                    }
+                    form.render("select")
+                    notice.msg(res.msg, {icon: 1});
+                } else {
+                    notice.msg(res.msg, {icon: 2});
+                }
+            });
+        });
+
+        //监听指定开关
+        form.on('switch(sellType)', function (data) {
+            // 重复使用
+            if (this.checked == true) {
+                notice.msg("重复使用", {icon: 1});
+                $("#coupon").attr("style", "display:block;");
+                $("#inputCoupon").html(
+                    '<input name="coupon" placeholder="券代码为空则系统生成" class="layui-input" lay-verType="tips"/>'
+                );
+            } else {  // 一次使用
+                notice.msg("一次使用", {icon: 1});
+                $("#coupon").attr("style", "display:none;");
+                $("#inputCoupon").html(null);
+            }
+        });
+
+        // 试题类型切换事件
+        form.on('radio(raQT)', function (data) {
+            var value = data.value;
+            if (value == 0) { // 商品优惠券
+                $('[lay-filter="formBasForm"]')[0].reset();
+                document.getElementById("classifysid").setAttribute("lay-verify", "required");
+                document.getElementById("productId").setAttribute("lay-verify", "required");
+                $("#selectByitem").attr("style", "display:block;");
+                $("#selectClassify").attr("style", "display:block;");
+                $("#selectGoods").attr("style", "display:block;");
+            } else if (value == 1) { // 店铺优惠券
+                $('[lay-filter="formBasForm"]')[0].reset();
+                document.getElementById("classifysid").removeAttribute("lay-verify");
+                document.getElementById("productId").removeAttribute("lay-verify");
+                $("#selectClassify").attr("style", "display:none;");
+                $("#selectGoods").attr("style", "display:none;");
+                $("#selectByitem").attr("style", "display:none;");
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

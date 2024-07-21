@@ -1,0 +1,139 @@
+<div class="layui-card-header">主题设置</div>
+<div class="more-theme-list">
+    <div class="more-theme-item active">
+        <img src="${ctxPath}/assets/module/img/theme-admin.png"/>
+    </div>
+    <div class="more-theme-item" data-theme="theme-cyan">
+        <img src="${ctxPath}/assets/module/img/theme-cyan.png"/>
+    </div>
+    <div class="more-theme-item" data-theme="theme-white">
+        <img src="${ctxPath}/assets/module/img/theme-white.png"/>
+    </div>
+    <div class="more-theme-item" data-theme="theme-pink">
+        <img src="${ctxPath}/assets/module/img/theme-pink.png"/>
+    </div>
+    <div class="more-theme-item" data-theme="theme-colorful">
+        <img src="${ctxPath}/assets/module/img/theme-colorful.png"/>
+    </div>
+    <div class="more-theme-item" data-theme="theme-blue">
+        <img src="${ctxPath}/assets/module/img/theme-blue.png"/>
+    </div>
+    <div class="more-theme-item" data-theme="theme-green">
+        <img src="${ctxPath}/assets/module/img/theme-green.png"/>
+    </div>
+    <div class="more-theme-item" data-theme="theme-purple">
+        <img src="${ctxPath}/assets/module/img/theme-purple.png"/>
+    </div>
+    <div class="more-theme-item" data-theme="theme-red">
+        <img src="${ctxPath}/assets/module/img/theme-red.png"/>
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'admin'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var admin = layui.admin;
+        var setter = admin.setter;
+        var $body = $('body');
+
+        // 切换主题
+        var $themItem = $('.more-theme-item');
+        $themItem.click(function () {
+            $themItem.removeClass('active');
+            $(this).addClass('active');
+            admin.changeTheme($(this).data('theme'));
+        });
+        var theme = $body.data('theme');
+        if (theme) {
+            $themItem.removeClass('active');
+            $themItem.filter('[data-theme="' + theme + '"]').addClass('active');
+        }
+
+    });
+</script>
+
+<style>
+    /* theme */
+    .more-theme-list {
+        padding-left: 15px;
+        padding-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    .more-theme-item {
+        padding: 4px;
+        margin: 0 6px 15px 0;
+        display: inline-block;
+        border: 1px solid transparent;
+    }
+
+    .more-theme-item img {
+        width: 80px;
+        height: 50px;
+        background: #f5f7f9;
+        box-sizing: border-box;
+        border: 1px solid #f5f7f9;
+        cursor: pointer;
+    }
+
+    .more-theme-item:hover, .more-theme-item.active {
+        border-color: #5FB878;
+    }
+
+    .more-menu-item {
+        color: #595959;
+        height: 50px;
+        line-height: 50px;
+        font-size: 16px;
+        padding: 0 25px;
+        border-bottom: 1px solid #e8e8e8;
+        font-style: normal;
+        display: block;
+    }
+
+    /* menu */
+    .more-menu-item:first-child {
+        border-top: 1px solid #e8e8e8;
+    }
+
+    .more-menu-item:hover {
+        color: #595959;
+        background: #f6f6f6;
+    }
+
+    .more-menu-item .layui-icon {
+        font-size: 18px;
+        padding-right: 10px;
+    }
+
+    .more-menu-item:after {
+        color: #8c8c8c;
+        right: 16px;
+        content: "\e602";
+        position: absolute;
+        font-family: layui-icon !important;
+    }
+
+    .more-menu-item.no-icon:after {
+        display: none;
+    }
+
+    /* setting from */
+    .set-item-label {
+        height: 38px;
+        line-height: 38px;
+        padding-left: 20px;
+        display: inline-block;
+    }
+
+    .set-item-ctrl {
+        height: 38px;
+        line-height: 38px;
+        display: inline-block;
+    }
+
+    .set-item-ctrl > * {
+        margin: 0 !important;
+    }
+</style>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="微信通知"/>
+    <style>
+        .layui-upload-img {
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                <div class="layui-card-header">
+                    配置二维码
+                    <button id="otherQRCodeBtn" class="layui-btn layui-btn-primary layui-btn-sm"
+                            style="margin-top: 7px;float: right;"> 刷新
+                    </button>
+                </div>
+                <div class="layui-card-body" style="padding-top: 16px; padding-bottom: 16px; text-align: center">
+                    <div id="imgView" style="padding: 10px; border-radius: 5px;">
+                        <img class="layui-upload-img" id="demo1">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md9">
+            <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                <div class="layui-card-header">
+                    使用说明
+                </div>
+                <div class="layui-card-body">
+                    <div style="padding: 20px 30px 20px 30px;">
+                        <h3>扫码关注公众号</h3><br>
+                        <h4>注意事项一：</h4>
+                        <p>1. 扫码一次性绑定微信公众号、即可收到订单通知</p>
+                        <p>2. 微信公众号上提示绑定成功后，刷新本页面</p>
+                        <br><h4>注意事项二：</h4>
+                        <p>1. 绑定微信后可通过微信获取实时订单信息和交易通知！</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-md12">
+            <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                <div class="layui-card-header">
+                    WxPusher
+                </div>
+                <div class="layui-card-body">
+                    <div style="padding: 20px 30px 20px 30px;">
+                        <p>WxPusher (微信推送服务)是一个使用微信公众号作为通道的，实时信息推送平台，你可以通过调用API的方式，把信息推送到微信上，无需安装额外的软件，即可做到信息实时通知。 你可以使用WxPusher来做服务器报警通知、抢课通知、抢票通知，信息更新提示等。</p>
+                        <br>
+                        <h4>注册并且创建应用</h4>
+                        <p><a href="http://wxpusher.zjiecode.com/admin/" target="_blank">http://wxpusher.zjiecode.com/admin</a> ，使用微信扫码登录，无需注册，新用户首次扫码自动注册。</p>
+                        <p>创建一个应用，如下图：</p>
+                        <br><h4>创建应用</h4>
+                        <p>事件回调地址：[你发卡的域名] 加上 /wxpusher/callback 比如我的就填写 https://shop.zlianpay.cn/wxpusher/callback</p>
+                        <p>设置URL：可以不填写，填写以后，用户在微信端打开「我的订阅」，可以直接跳转到这个地址，并且会携带uid作为参数，方便做定制化页面展示。</p>
+                        <p>联系方式：可以不填写，告诉用户，如何联系到你，给你反馈问题。</p>
+                        <p>关注提示：用户关注或者扫应用码的时候发送给用户的提示，你可以不填写，Wxpusher会提供一个默认文案。你也可以在用户关注回调给你UID的时候，再主动推送一个提示消息给用户。</p>
+                        <p>说明：描述一下，你的应用，推送的是啥内容，用户通过链接关注，或者在微信端查看的时候可以看到。</p>
+                        <p>创建完成后拿到 app_token 在发卡-商店设置-appToken 设置保存</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'admin', 'dropdown', 'notice', 'upload', 'QRCode'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+
+         $.get("/wxpusher/getWxpushCode", function (res) {
+            var mData = res.data;
+            if (res.code == 0) {
+                if (mData.code == 1) {
+                    $('#demo1').attr('src', mData.url); // 显示二维码
+                } else {
+                    $('#demo1').attr('src', mData.headImg); // 显示头像
+                }
+            }
+        })
+
+        // 更换二维码内容
+        $('#otherQRCodeBtn').click(function () {
+            $.get("/wxpusher/getWxpushCode", function (res) {
+                var mData = res.data;
+                if (res.code == 0) {
+                    layer.msg("刷新成功！")
+                    if (mData.code == 1) {
+                        $('#demo1').attr('src', mData.url); // 显示二维码
+                    } else {
+                        $('#demo1').attr('src', mData.headImg); // 显示头像
+                    }
+                }
+            })
+        });
+
+    });
+</script>
+</body>
+</html>

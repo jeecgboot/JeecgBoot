@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="文章管理"/>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            文章管理
+        </div>
+        <div class="layui-card-body">
+            <!-- 数据表格 -->
+            <table id="articleTable" lay-filter="articleTable"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="articleTbBar">
+    <a ew-href="${ctxPath}/content/article/editArticle/{{d.id}}" class="layui-btn layui-btn-primary layui-btn-xs" ew-title="编辑文章">编辑文章</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#articleTbDelDrop{{d.LAY_INDEX}}" no-shade="true">删除</a>
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="articleTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要删除吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="del">确定</a>
+        </div>
+    </div>
+</script>
+
+<!-- 分类状态 -->
+<script type="text/html" id="articleTbStatus">
+    <input type="checkbox" lay-filter="articleTbStatuCk" value="{{d.id}}" lay-skin="switch"
+           lay-text="显示|下架" {{d.enabled==1?'checked':''}}/>
+</script>
+
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var admin = layui.admin;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#articleTable',
+            url: 'article/page',
+            page: true,
+            toolbar: ['<p>',
+                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'title', title: '文章标题', maxWidth: 150},
+                {field: 'excerpt', title: '摘要', maxWidth: 150},
+                {field: 'content', title: '文章内容'},
+                {field: 'likes', title: '点赞数', sort: true, width: 100},
+                {field: 'seeNumber', title: '查看数量', sort: true, width: 120},
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true
+                },
+                {field: 'enabled', title: '前台显示', templet: '#articleTbStatus'},
+                {title: '操作', toolbar: '#articleTbBar', align: 'center', width: 200, minWidth: 200}
+            ]]
+        });
+
+        /* 表格搜索 */
+        form.on('submit(articleTbSearch)', function (data) {
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(articleTable)', function (obj) {
+            if ('edit' === obj.event) { // 修改
+                showEditModel(obj.data);
+            } else if ('del' === obj.event) { // 删除
+                doDel(obj);
+            }
+        });
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(articleTable)', function (obj) {
+            if ('add' === obj.event) { // 添加
+                showEditModel();
+            } else if ('del' === obj.event) { // 删除
+                var checkRows = table.checkStatus('articleTable');
+                if (0 === checkRows.data.length) {
+                    return layer.msg('请选择要删除的数据', {icon: 2, anim: 6});
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.id;
+                });
+                doDel({ids: ids});
+            }
+        });
+
+        /* 删除 */
+        function doDel(obj) {
+            if (obj.ids) {  // 批量删除
+                admin.confirm('确定要删除选中数据吗？', function (i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    admin.req('article/removeBatch', JSON.stringify(obj.ids), function (res) {
+                        layer.close(loadIndex);
+                        if (0 === res.code) {
+                            layer.msg(res.msg, {icon: 1});
+                            insTb.reload({page: {curr: 1}});
+                        } else {
+                            layer.msg(res.msg, {icon: 2, anim: 6});
+                        }
+                    }, 'post');
+                });
+            } else {  // 单个删除
+                var loadIndex = layer.load(2);
+                $.get('article/remove', {id: obj.data.id}, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            }
+        }
+
+        /* 修改状态 */
+        form.on('switch(articleTbStatuCk)', function (obj) {
+            var loadIndex = layer.load(2);
+            $.post('${ctxPath}/article/status/update', {
+                id: obj.elem.value,
+                status: obj.elem.checked ? 1 : 0
+            }, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                    $(obj.elem).prop('checked', !obj.elem.checked);
+                    form.render('checkbox', $('#articleTable').next().attr('lay-filter'));
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

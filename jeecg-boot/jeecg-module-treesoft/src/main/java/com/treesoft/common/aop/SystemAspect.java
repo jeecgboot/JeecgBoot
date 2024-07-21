@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class SystemAspect {
 
-    @Around("within(org.springframework.base.system.web.*)")
+    @Around("within(com.treesoft.system.web.*)")
     public Object around(ProceedingJoinPoint joinPoint)
             throws Throwable {
         String className = joinPoint.getTarget().getClass().getSimpleName();

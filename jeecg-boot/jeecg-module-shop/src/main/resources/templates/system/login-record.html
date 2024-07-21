@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="登录日志"/>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">用户账号:</label>
+                        <div class="layui-input-inline">
+                            <input name="username" class="layui-input" placeholder="输入账号"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">登录日期:</label>
+                        <div class="layui-input-inline">
+                            <input name="loginRecordDateSel" class="layui-input icon-date" placeholder="选择日期范围"
+                                   autocomplete="off"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn" lay-filter="loginRecordTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>&nbsp;
+                        <button id="loginRecordExportBtn" class="layui-btn layui-btn-primary icon-btn" type="button">
+                            <i class="layui-icon">&#xe67d;</i>导出
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="loginRecordTable" lay-filter="loginRecordTable"></table>
+        </div>
+    </div>
+</div>
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'laydate'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var laydate = layui.laydate;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#loginRecordTable',
+            url: 'loginRecord/page',
+            page: true,
+            height: 'full-100',
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'username', title: '账号', sort: true},
+                {field: 'nickName', title: '用户名', sort: true},
+                {field: 'ip', title: 'IP地址', sort: true},
+                {field: 'device', title: '设备型号', sort: true},
+                {field: 'os', title: '操作系统', sort: true},
+                {field: 'browser', title: '浏览器', sort: true},
+                {
+                    field: 'operType', title: '操作类型', templet: function (d) {
+                        if (!d.operType && d.operType !== 0) return '';
+                        var strs = [
+                            '<span class="layui-badge layui-badge-green">登录成功</span>',
+                            '<span class="layui-badge layui-badge-red" >登录失败</span>',
+                            '<span class="layui-badge layui-badge-gray">退出登录</span>',
+                            '<span class="layui-badge layui-badge-yellow">刷新TOKEN</span>'
+                        ];
+                        return strs[d.operType] || '';
+                    }, sort: true, align: 'center', width: 120
+                },
+                {field: 'comments', title: '备注', sort: true},
+                {
+                    field: 'createTime', title: '登录时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true, width: 160, align: 'center'
+                }
+            ]]
+        });
+
+        /* 时间范围 */
+        laydate.render({
+            elem: 'input[name="loginRecordDateSel"]',
+            type: 'date',
+            range: true,
+            trigger: 'click'
+        });
+
+        /* 表格搜索 */
+        form.on('submit(loginRecordTbSearch)', function (data) {
+            if (data.field.loginRecordDateSel) {
+                var searchDate = data.field.loginRecordDateSel.split(' - ');
+                data.field.createTimeStart = searchDate[0] + ' 00:00:00';
+                data.field.createTimeEnd = searchDate[1] + ' 23:59:59';
+            } else {
+                data.field.createTimeStart = '';
+                data.field.createTimeEnd = '';
+            }
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 导出excel */
+        $('#loginRecordExportBtn').click(function () {
+            tableX.exportDataX({
+                cols: insTb.config.cols,
+                data: 'loginRecord/list',
+                fileName: '登录日志'
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

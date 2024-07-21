@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <:include file="./common/title.html" websiteName="等待完成支付 - ${website.websiteName}" keywords="${website.keywords}" description="${website.description}" favicon="${website.favicon}" shop="${shop}"/>
+    <link rel="stylesheet" href="${ctxPath}/default/css/receipt.css"/>
+</head>
+<body class="page-no-scroll">
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- header -->
+<:include file="./common/header.html" websiteName="${website.websiteName}" websiteLogo="${website.websiteLogo}"/>
+
+<div class="layui-container body-card" style="margin-bottom: 15px;">
+    <div class="layui-card order-show" style="height: 350px;text-align: center;font-size: 25px">
+        <img style="width: 120px;height: 120px;padding-top: 90px" src="${ctxPath}/assets/module/img/ic_loading.gif">
+        <h4 style="font-size: 22px; margin-bottom: 70px;">正在查询订单...</h4>
+
+        <div class="pay-card-footer">
+            <a href="${ctxPath}/search/order/${ordersMember!}" style="font-size: 18px; color: cornflowerblue;" class="pay-card-right-btn ew-disable">等待支付（60s）</a>
+        </div>
+    </div>
+</div>
+
+<!-- footer -->
+<:include file="./common/footer.html" websiteName="${website.websiteName}" beianIcp="${website.beianIcp}" shop="${shop}"/>
+
+<!-- js部分 -->
+<:include file="./common/js.html"/>
+
+<script>
+    layui.use(['layer', 'form', 'notice'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var notice = layui.notice;
+
+        // 支付倒计时
+        var syTime = 60;
+        var timer = setInterval(function () {
+            syTime--;
+            if (syTime <= 45) {
+                $('.pay-card-right-btn').text('已完成支付 >');
+                $('.pay-card-right-btn').removeClass('ew-disable');
+                clearInterval(timer);
+            } else {
+                $('.pay-card-right-btn').text('等待支付（' + syTime + 's）');
+            }
+        }, 1000);
+
+        // 获取订单状态
+        var state = setInterval(function () {
+            $.get('${ctxPath}/order/state/${orderId!}', function (res) {
+                if (res.code == 200 && res.data == 1) {
+                    notice.msg("支付成功", {icon: 1});
+                    clearInterval(state);
+                    location.href = '${ctxPath}/search/order/${ordersMember!}';
+                }
+            }, 'json');
+        }, 1500);
+
+    });
+</script>
+</body>
+</html>

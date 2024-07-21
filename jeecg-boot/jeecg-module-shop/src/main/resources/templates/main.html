@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="./common/css.html" title="${website.websiteName} - 后台系统" favicon="${website.favicon}"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!-- 头部 -->
+    <div class="layui-header">
+        <div class="layui-logo">
+            <img src="<:if test="${website.websiteLogo == null || website.websiteLogo == ''}">${ctxPath}/default/images/logo.svg</:if><:if test="${website.websiteLogo != null || website.websiteLogo != ''}">${ctxPath + website.websiteLogo!}</:if>"/>
+            <cite>&nbsp;${website.websiteName}</cite>
+        </div>
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item" lay-unselect>
+                <a ew-event="flexible" title="侧边伸缩"><i class="layui-icon layui-icon-shrink-right"></i></a>
+            </li>
+            <li class="layui-nav-item" lay-unselect>
+                <a ew-event="refresh" title="刷新"><i class="layui-icon layui-icon-refresh-3"></i></a>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item layui-hide-xs" lay-unselect>
+                <a ew-event="fullScreen" title="全屏"><i class="layui-icon layui-icon-screen-full"></i></a>
+            </li>
+            <li class="layui-nav-item" lay-unselect>
+                <a>
+                    <:if test="${so.principal('avatar')!=null}">
+                        <img src="${ctxPath}/file/${so.principal('avatar')}" class="layui-nav-img"/>
+                    </:if>
+                    <:if test="${so.principal('avatar')==null}">
+                        <img src="${ctxPath}/assets/images/head.jpg" class="layui-nav-img"/>
+                    </:if>
+                    <cite> ${so.principal('nickName')!}</cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd lay-unselect><a ew-href="${ctxPath}/sys/user/info">个人信息</a></dd>
+                    <dd lay-unselect><a ew-event="psw" data-url="${ctxPath}/tpl/password">修改密码</a></dd>
+                    <hr>
+                    <dd lay-unselect><a ew-event="logout" data-url="${ctxPath}/logout">退出</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item" lay-unselect>
+                <a ew-event="theme" data-url="${ctxPath}/tpl/theme" title="主题">
+                    <i class="layui-icon layui-icon-more-vertical"></i></a>
+            </li>
+        </ul>
+    </div>
+    <!-- 侧边栏 -->
+    <div class="layui-side">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree arrow2" lay-filter="admin-side-nav" lay-shrink="all">
+                <:for items="${menus}" var="item">
+                    <:if test="${item.hide==0}">
+                        <li class="layui-nav-item">
+                            <a lay-href="${item.path}">
+                                <i class="${item.menuIcon}"></i>&emsp;<cite>${item.menuName}</cite>
+                            </a>
+                            <:include file="./common/side.html" children="${item.children}"/>
+                        </li>
+                    </:if>
+                </:for>
+            </ul>
+        </div>
+    </div>
+    <!-- 主体部分 -->
+    <div class="layui-body"></div>
+    <!-- 底部 -->
+    <div class="layui-footer">
+        小码哥商店版权所有<span class="pull-right">v2.0.4</span>
+    </div>
+</div>
+<:include file="./common/js.html"/>
+<script>
+    layui.use(['index'], function () {
+        var $ = layui.jquery;
+        var index = layui.index;
+
+        // 默认加载主页
+        index.loadHome({
+            menuPath: '${ctxPath}/dashboard/workplace',
+            menuName: '<i class="layui-icon layui-icon-home"></i>',
+            onlyLast: true
+        });
+
+        // 切换table 刷新页面
+        if (layui.admin.setter.pageTabs && layui.admin.setter.tabAutoRefresh == true)
+            $('.layui-layout-admin>.layui-body>.layui-tab').attr('lay-autoRefresh', 'true');
+
+    });
+</script>
+</body>
+</html>

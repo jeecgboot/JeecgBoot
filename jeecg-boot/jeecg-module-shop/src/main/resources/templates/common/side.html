@@ -1,0 +1,12 @@
+<:if test="${children.~size>0}">
+    <dl class="layui-nav-child">
+        <:for items="${children}" var="subItem">
+            <:if test="${subItem.hide==0}">
+                <dd>
+                    <a lay-href="${subItem.path}">${subItem.menuName}</a>
+                    <:include file="./side.html" children="${subItem.children}"/>
+                </dd>
+            </:if>
+        </:for>
+    </dl>
+</:if>

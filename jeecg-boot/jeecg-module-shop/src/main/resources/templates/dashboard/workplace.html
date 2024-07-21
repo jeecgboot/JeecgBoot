@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="网站设置管理"/>
+    <link rel="stylesheet" href="${ctxPath}/assets/css/workplace.css"/>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid ew-console-wrapper">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md9">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                    <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                        <div class="layui-card-header">
+                            今日成交<span class="layui-badge layui-badge-green pull-right">今日</span>
+                        </div>
+                        <div class="layui-card-body">
+                            <p class="lay-big-font"><span style="font-size: 26px;line-height: 1;">¥</span> ${money!}</p>
+                            <p>今日成交订单<span class="pull-right">${count!} 笔</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                    <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                        <div class="layui-card-header">
+                            昨日成交<span class="layui-badge layui-badge-blue pull-right">昨日</span>
+                        </div>
+                        <div class="layui-card-body">
+                            <p class="lay-big-font"><span style="font-size: 26px;line-height: 1;">¥</span>
+                                ${YesterDayMoney!}
+                            </p>
+                            <p>昨日成交订单<span class="pull-right">${YesterDayCount!} 笔</span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs12 layui-col-sm6 layui-col-md4">
+                    <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                        <div class="layui-card-header">
+                            近七天成交<span class="layui-badge layui-badge-red pull-right">七天</span>
+                        </div>
+                        <div class="layui-card-body">
+                            <p class="lay-big-font"><span style="font-size: 26px;line-height: 1;">¥</span>
+                                ${SevenDaysMoney!}
+                            </p>
+                            <p>近七天成交订单<span class="pull-right">${SevenDaysCount!} 笔</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-xs12 layui-col-sm6">
+                    <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                        <div class="layui-card-body">
+                            <div id="hdqkyc1" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-xs12 layui-col-sm6">
+                    <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                        <div class="layui-card-body">
+                            <div id="consoleChartsMonth" style="height: 250px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-col-xs12 layui-col-md12">
+                    <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                        <div class="layui-card-header">最新订单</div>
+                        <div class="layui-card-body dynamic-card-body mini-bar">
+                            <!-- 数据表格 -->
+                            <table id="ordersTable" lay-filter="ordersTable"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md3">
+            <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                <div class="layui-card-header">
+                    总交易金额<span class="layui-badge layui-badge-red pull-right">总</span>
+                </div>
+                <div class="layui-card-body">
+                    <p class="lay-big-font"><span style="font-size: 26px;line-height: 1;">¥</span>
+                        ${total_amount!}
+                    </p>
+                    <p>总成交订单<span class="pull-right">${total_number!} 笔</span></p>
+                </div>
+            </div>
+            <div class="layui-card" style="box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+                <div class="layui-card-body" style="padding: 25px; font-size: 18px">
+                    Hi ${user.nickName}, 欢迎来到后台管理系统！
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<:include file="../common/js.html"/>
+<script type="text/javascript" src="https://lib.baomitu.com/echarts/5.1.0/echarts.min.js"></script>
+<script>
+    layui.use(['layer', 'carousel', 'element', 'notice', 'form', 'table', 'tableX'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var tableX = layui.tableX;
+
+        var dayList = JSON.parse('${dayList!}'); // 天数
+        var wxpayList = JSON.parse('${wxpayList!}');
+        var alipayList = JSON.parse('${alipayList!}');
+        var paypalList = JSON.parse('${paypalList!}');
+        var qqpayList = JSON.parse('${qqpayList!}');
+        var usdtList = JSON.parse('${usdtList!}');
+        var mapList = JSON.parse('${mapList!}');
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#ordersTable',
+            url: '/orders/orders/page',
+            limit: 5,
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'member', title: '订单号'},
+                {field: 'payNo', title: '流水号'},
+                {field: 'productName', title: '商品名称'},
+                {
+                    field: 'payType', title: '支付类型', templet: function (res) {
+                        if (res.payType == 'mqpay_alipay' || res.payType == 'epay_alipay' || res.payType == 'budpay_alipay' || res.payType == 'yungouos_alipay' || res.payType == 'xunhupay_alipay' || res.payType == 'payjs_alipay' || res.payType == 'alipay') {
+                            return '<span class="layui-badge layui-badge-blue">支付宝</span>'
+                        } else if (res.payType == 'mqpay_wxpay' || res.payType == 'epay_wxpay' || res.payType == 'budpay_wechat' || res.payType == 'yungouos_wxpay' || res.payType == 'xunhupay_wxpay' || res.payType == 'payjs_wxpay' || res.payType == 'wxpay' || res.payType == 'wxpay_h5') {
+                            return '<span class="layui-badge layui-badge-green">微信</span>'
+                        } else if (res.payType == 'paypal') {
+                            return '<span class="layui-badge layui-badge-paypal">Paypal</span>'
+                        } else if (res.payType == 'epay_qqpay') {
+                            return '<span class="layui-badge layui-badge-blue">QQ钱包</span>'
+                        } else if (res.payType == 'alipay_pc') {
+                            return '<span class="layui-badge layui-badge-blue">支付宝PC</span>'
+                        } else if (res.payType == 'epusdt') {
+                            return '<span class="layui-badge layui-badge-green">USDT</span>'
+                        }
+                    }
+                },
+                {field: 'price', title: '商品单价'},
+                {
+                    field: 'status', title: '支付状态', templet: function (res) {
+                        switch (res.status) {
+                            case 3 :
+                                return '<span class="layui-badge layui-badge-green">已发货</span>';
+                            case 2 :
+                                return '<span class="layui-badge layui-badge-yellow">待发货</span>';
+                            case 1 :
+                                return '<span class="layui-badge layui-badge-green">已支付</span>';
+                            case 0 :
+                                return '<span class="layui-badge layui-badge-red">未支付</span>';
+                        }
+                    }, width: 100
+                },
+                {field: 'payTime', title: '支付时间', sort: true},
+            ]]
+        });
+
+        var chartDom = document.getElementById('hdqkyc1');
+        var myChart = echarts.init(chartDom);
+        var option;
+
+        option = {
+            color: ['#09BA07', '#4d77ff', '#003087', '#58A1FF', '#27a17b'],
+            title: {
+                text: '近七天交易流水'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#6a7985'
+                    }
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: dayList
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: [
+                {
+                    name: '微信',
+                    type: 'line',
+                    stack: '总量',
+                    smooth: true,
+                    lineStyle: {
+                        width: 0
+                    },
+                    showSymbol: false,
+                    areaStyle: {
+                        opacity: 0.8,
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgb(91,227,87)'
+                        }, {
+                            offset: 1,
+                            color: 'rgb(9,186,7)'
+                        }])
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: wxpayList
+                },
+                {
+                    name: '支付宝',
+                    type: 'line',
+                    stack: '总量',
+                    smooth: true,
+                    lineStyle: {
+                        width: 0
+                    },
+                    showSymbol: false,
+                    areaStyle: {
+                        opacity: 0.8,
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgba(0, 221, 255)'
+                        }, {
+                            offset: 1,
+                            color: 'rgba(77, 119, 255)'
+                        }])
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: alipayList
+                },
+                {
+                    name: 'Paypal',
+                    type: 'line',
+                    stack: '总量',
+                    smooth: true,
+                    lineStyle: {
+                        width: 0
+                    },
+                    showSymbol: false,
+                    areaStyle: {
+                        opacity: 0.8,
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgb(118,169,255)'
+                        }, {
+                            offset: 1,
+                            color: 'rgb(0,48,135)'
+                        }])
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: paypalList
+                },
+                {
+                    name: 'QQ钱包',
+                    type: 'line',
+                    stack: '总量',
+                    smooth: true,
+                    lineStyle: {
+                        width: 0
+                    },
+                    showSymbol: false,
+                    areaStyle: {
+                        opacity: 0.8,
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgb(147,192,255)'
+                        }, {
+                            offset: 1,
+                            color: 'rgb(88,161,255)'
+                        }])
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: qqpayList
+                },
+                {
+                    name: 'USDT',
+                    type: 'line',
+                    stack: '总量',
+                    smooth: true,
+                    lineStyle: {
+                        width: 0
+                    },
+                    showSymbol: false,
+                    areaStyle: {
+                        opacity: 0.8,
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgb(94,169,143)'
+                        }, {
+                            offset: 1,
+                            color: 'rgb(94,169,143)'
+                        }])
+                    },
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: usdtList
+                }
+            ]
+        };
+
+        myChart.resize()
+        option && myChart.setOption(option);
+
+        var chartDom1 = document.getElementById('consoleChartsMonth');
+        var myChart1 = echarts.init(chartDom1);
+        var option1;
+
+        option1 = {
+            color: ['#09BA07', '#0E78FF', '#003087', '#58a1ff', '#27a17b'],
+            title: {
+                text: '近七天收款类型统计'
+            },
+            tooltip: {
+                trigger: 'item'
+            },
+            legend: {
+                right: 'center',
+                bottom: 0,
+                orient: 'horizontal'
+            },
+            series: [
+                {
+                    name: '访问来源',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '20',
+                            fontWeight: 'bold'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: mapList
+                }
+            ]
+        };
+        myChart1.resize()
+        option1 && myChart1.setOption(option1);
+
+    });
+</script>
+</body>
+</html>

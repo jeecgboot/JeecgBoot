@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/title.html"  websiteName="商品详情"/>
+    <:include file="../common/css.html" title="1000"/>
+    <style>
+        .error-page {
+            margin-top: 150px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .error-page .error-page-img {
+            display: inline-block;
+            height: 260px;
+            margin: 10px 15px;
+        }
+
+        .error-page .error-page-info {
+            vertical-align: middle;
+            display: inline-block;
+            margin: 10px 15px;
+        }
+
+        .error-page .error-page-info > h1 {
+            color: #434e59;
+            font-size: 72px;
+            font-weight: 600;
+        }
+
+        .error-page .error-page-info > p {
+            color: #777;
+            font-size: 20px;
+            margin-top: 5px;
+        }
+
+        .error-page .error-page-info > div {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+<!-- header -->
+<:include file="../common/header.html"/>
+
+<div class="error-page">
+    <div class="error-page-info">
+        <img src="/default/images/10001.svg">
+        <h1>1000</h1>
+        <p>监控为离线状态</p>
+    </div>
+</div>
+<!-- footer -->
+<:include file="../common/footer.html"/>
+<:include file="../common/js.html"/>
+</body>
+</html>

@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="发送邮件"/>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <form class="layui-form" lay-filter="emailForm">
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">邮件标题:</label>
+                    <div class="layui-input-block">
+                        <input name="title" class="layui-input" placeholder="输入邮件标题"
+                               lay-verify="required" required/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">收件人:</label>
+                    <div class="layui-input-block">
+                        <input name="email" class="layui-input" placeholder="输入收件人"
+                               lay-verify="email" required/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">邮件正文:</label>
+                    <div class="layui-input-block">
+                        <textarea id="emailEditor"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-filter="emailFormSubmit" lay-submit>&emsp;发&emsp;送&emsp;</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<:include file="../common/js.html"/>
+<script type="text/javascript" src="${ctxPath}/assets/libs/tinymce/tinymce.min.js"></script>
+<script>
+    layui.use(['layer', 'form', 'admin'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+
+        /* 表单提交 */
+        form.on('submit(emailFormSubmit)', function (data) {
+            data.field.html = tinymce.get('emailEditor').getContent();
+            if (layui.admin.util.fullTextIsEmpty(data.field.html)) {
+                return layer.msg('请输入邮件正文', {icon: 2, anim: 6});
+            }
+            var loadIndex = layer.load(2);
+            $.post('${ctxPath}/email/send', data.field, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                    $('[lay-filter="emailForm"]')[0].reset();
+                    tinymce.get('emailEditor').setContent('');
+                } else {
+                    layer.msg(res.msg, {icon: 2, anim: 6});
+                }
+            });
+            return false;
+        });
+
+        /* 渲染富文本编辑器 */
+        tinymce.init({
+            selector: '#emailEditor',
+            height: 480,
+            branding: false,
+            language: 'zh_CN',
+            plugins: 'code print preview fullscreen paste searchreplace save autosave link autolink image imagetools media table codesample lists advlist hr charmap emoticons anchor directionality pagebreak quickbars nonbreaking visualblocks visualchars wordcount',
+            toolbar: 'fullscreen preview code | undo redo | forecolor backcolor | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | outdent indent | numlist bullist | formatselect fontselect fontsizeselect | link image media emoticons charmap anchor pagebreak codesample | ltr rtl',
+            toolbar_drawer: 'sliding',
+            images_upload_url: '${ctxPath}/file/upload',
+            file_picker_types: 'media',
+            file_picker_callback: function (callback, value, meta) {
+                layer.msg('演示环境不允许上传', {anim: 6});
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

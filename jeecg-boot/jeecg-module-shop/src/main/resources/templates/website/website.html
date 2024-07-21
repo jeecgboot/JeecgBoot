@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="发送邮件"/>
+    <style>
+        .layui-upload-img {
+            height: 120px;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid" style="padding-bottom: 65px;">
+
+    <form class="layui-form" lay-filter="websiteForm">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                网站设置
+            </div>
+            <div class="layui-card-body">
+                <input name="id" type="hidden"/>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">Favicon:</label>
+                    <input id="favicon" name="favicon" type="hidden"/>
+                    <div class="layui-input-inline" style="width: auto">
+                        <div class="layui-upload">
+                            <button type="button" class="layui-btn" id="test1">上传图片</button>
+                            <div class="layui-upload-list">
+                                <img class="layui-upload-img" id="demo1">
+                            </div>
+                            <div class="layui-word-aux">推荐图片尺寸为【100x100】</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">网站Logo:</label>
+                    <input id="websiteLogo" name="websiteLogo" type="hidden"/>
+                    <div class="layui-input-inline" style="width: auto">
+                        <div class="layui-upload">
+                            <button type="button" class="layui-btn" id="test2">上传图片</button>
+                            <div class="layui-upload-list">
+                                <img class="layui-upload-img" id="demo2">
+                            </div>
+                            <div class="layui-word-aux">推荐图片尺寸为【100x100】</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">网站名称:</label>
+                    <div class="layui-input-block">
+                        <input name="websiteName" placeholder="请输入网站名称" class="layui-input"
+                               lay-verify="required" required/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">网站域名:</label>
+                    <div class="layui-input-block">
+                        <input name="websiteUrl" placeholder="请输入网站域名" class="layui-input"
+                               lay-verify="required" required/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">联系方式:</label>
+                    <div class="layui-input-block">
+                        <input name="contact" placeholder="请输入联系方式" class="layui-input"
+                               lay-verify="required" required/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">底部文字:</label>
+                    <div class="layui-input-block">
+                        <input name="beianIcp" placeholder="请输入底部文字" class="layui-input"
+                               lay-verify="required" required/>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">关键字:</label>
+                    <div class="layui-input-block">
+                        <textarea name="keywords" placeholder="请输入关键字" class="layui-textarea"
+                                  lay-verType="tips" lay-verify="required" required></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label layui-form-required">网站描述:</label>
+                    <div class="layui-input-block">
+                        <textarea name="description" placeholder="请输入网站描述" class="layui-textarea"
+                                  lay-verType="tips" lay-verify="required" required></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 提交 -->
+        <div class="form-group-bottom text-right">
+            <button type="reset" class="layui-btn layui-btn-primary">&emsp;重置&emsp;</button>
+            <button class="layui-btn" lay-filter="websiteEditSubmit" lay-submit>&emsp;保存设置&emsp;</button>
+        </div>
+    </form>
+</div>
+<:include file="../common/js.html"/>
+<script type="text/javascript" src="${ctxPath}/assets/libs/tinymce/tinymce.min.js"></script>
+<script>
+    layui.use(['layer', 'form', 'admin', 'upload', 'element', 'fileChoose'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var upload = layui.upload;
+        var element = layui.element;
+        var fileChoose = layui.fileChoose;
+        var website = JSON.parse(JSON.stringify(${website!}));
+        form.val('websiteForm', website);
+        $('#demo1').attr('src', '${ctxPath}' + website.favicon);
+        $('#demo2').attr('src', '${ctxPath}' + website.websiteLogo);
+
+        /* 表单提交 */
+        form.on('submit(websiteEditSubmit)', function (data) {
+            var loadIndex = layer.load(2);
+            var field = data.field; //获取提交的字段
+            $.post(getPostType(field), field, function (res) {
+                layer.close(loadIndex);
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1, time: 1000}, function () {
+                        location.reload();
+                    });
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                    location.reload();
+                }
+            });
+            return false;
+        });
+
+        function getPostType(mData) {
+            if (mData == null) {
+                return "website/save";
+            } else {
+                return "website/update";
+            }
+        }
+
+        $('#test1').click(function (res) {
+            fileChoose.open({
+                fileUrl: '${ctxPath}/file',
+                listUrl: '${ctxPath}/file/list',
+                upload: {url: '${ctxPath}/file/upload'},
+                num: 1,
+                onChoose: function (urls) {
+                    var list = urls;
+                    $("#favicon").val("${ctxPath}/file" + list[0].url);
+                    $('#demo1').attr('src', "${ctxPath}/file" + list[0].url); //图片链接（base64）
+                },
+                response: {code: 0}
+            });
+        });
+
+        $('#test2').click(function (res) {
+            fileChoose.open({
+                fileUrl: '${ctxPath}/file',
+                listUrl: '${ctxPath}/file/list',
+                upload: {url: '${ctxPath}/file/upload'},
+                num: 1,
+                onChoose: function (urls) {
+                    var list = urls;
+                    $("#websiteLogo").val("${ctxPath}/file" + list[0].url);
+                    $('#demo2').attr('src', "${ctxPath}/file" + list[0].url); //图片链接（base64）
+                },
+                response: {code: 0}
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

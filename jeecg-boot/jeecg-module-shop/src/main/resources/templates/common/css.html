@@ -1,0 +1,11 @@
+<title>${title!}</title>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link href="<:if test="${favicon! == null || favicon! == ''}">${ctxPath}/assets/images/logo.svg</:if><:if test="${favicon! != null || favicon! != ''}">${favicon!}</:if>" rel="icon">
+<link rel="stylesheet" href="${ctxPath}/assets/libs/layui/css/layui.css"/>
+<link rel="stylesheet" href="${ctxPath}/assets/module/admin.css"/>
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="操作日志"/>
+    <style>
+        .layui-form.layui-form-info .layui-form-item {
+            margin-bottom: 0 !important;
+        }
+
+        .layui-input-block.layui-word-aux {
+            word-break: break-all;
+            padding: 9px 0 !important;
+            box-sizing: border-box !important;
+        }
+
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">用户账号:</label>
+                        <div class="layui-input-inline">
+                            <input name="username" class="layui-input" placeholder="输入账号"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">操作模块:</label>
+                        <div class="layui-input-inline">
+                            <input name="model" class="layui-input" placeholder="输入账号"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">操作日期:</label>
+                        <div class="layui-input-inline">
+                            <input name="operRecordDateSel" class="layui-input icon-date" placeholder="选择日期范围"
+                                   autocomplete="off"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">&nbsp;
+                        <button class="layui-btn icon-btn" lay-filter="operRecordTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>
+                        </button>
+                        <button id="operRecordExportBtn" class="layui-btn layui-btn-primary icon-btn" type="button">
+                            <i class="layui-icon">&#xe67d;</i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="operRecordTable" lay-filter="operRecordTable"></table>
+        </div>
+    </div>
+</div>
+<!-- 表单弹窗 -->
+<script type="text/html" id="operRecordInfoDialog">
+    <div class="layui-form model-form layui-form-info">
+        <div class="layui-row">
+            <div class="layui-col-md6">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">操作人:</label>
+                    <div class="layui-input-block layui-word-aux">{{d.nickName}}({{d.username}})</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">操作模块:</label>
+                    <div class="layui-input-block layui-word-aux">{{d.model}}</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">操作时间:</label>
+                    <div class="layui-input-block layui-word-aux">{{layui.util.toDateString(d.createTime)}}</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">请求方式:</label>
+                    <div class="layui-input-block layui-word-aux">{{d.requestMethod}}</div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">IP地址:</label>
+                    <div class="layui-input-block layui-word-aux">{{d.ip}}</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">操作功能:</label>
+                    <div class="layui-input-block layui-word-aux">{{d.description}}</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">请求耗时:</label>
+                    <div class="layui-input-block layui-word-aux">{{d.spendTime/1000}}s</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">请求状态:</label>
+                    <div class="layui-input-block layui-word-aux">
+                        {{# if(d.state==0){ }}
+                        <span class="layui-badge layui-badge-green">正常</span>
+                        {{# }else{ }}
+                        <span class="layui-badge layui-badge-red">异常</span>
+                        {{# } }}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">请求地址:</label>
+                <div class="layui-input-block layui-word-aux">{{d.url}}</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">调用方法:</label>
+                <div class="layui-input-block layui-word-aux">{{d.operMethod}}</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">请求参数:</label>
+                <div class="layui-input-block layui-word-aux">{{d.param||''}}</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">返回结果:</label>
+                <div class="layui-input-block layui-word-aux">{{d.result||''}}</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注:</label>
+                <div class="layui-input-block layui-word-aux">{{d.comments||''}}</div>
+            </div>
+        </div>
+        <div class="layui-form-item text-right" style="margin-top: 15px;">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog">关闭</button>
+        </div>
+    </div>
+</script>
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'laydate', 'admin'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var laydate = layui.laydate;
+        var admin = layui.admin;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#operRecordTable',
+            url: 'operRecord/page',
+            page: true,
+            height: 'full-100',
+            cellMinWidth: 120,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'username', title: '账号', sort: true, width: 100, minWidth: 100},
+                {field: 'nickName', title: '用户名', sort: true, width: 100, minWidth: 100},
+                {field: 'model', title: '操作模块', sort: true, width: 120, minWidth: 120},
+                {field: 'description', title: '操作功能', sort: true},
+                {field: 'url', title: '请求地址', sort: true},
+                {field: 'requestMethod', title: '方式', sort: true, width: 80, minWidth: 80},
+                {
+                    field: 'state', title: '状态', templet: function (d) {
+                        var strs = [
+                            '<span class="layui-badge layui-badge-green">正常</span>',
+                            '<span class="layui-badge layui-badge-red" >异常</span>'
+                        ];
+                        return strs[d.state] || '';
+                    }, sort: true, align: 'center', width: 80, minWidth: 80
+                },
+                {
+                    field: 'spendTime', title: '耗时', sort: true, width: 80, minWidth: 80,
+                    templet: '<p>{{d.spendTime/1000}}s</p>'
+                },
+                {
+                    field: 'createTime', title: '操作时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true
+                },
+                {
+                    title: '操作', align: 'center', width: 70, minWidth: 70,
+                    toolbar: '<p><a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="info">详情</a></p>'
+                }
+            ]]
+        });
+
+        /* 时间范围 */
+        laydate.render({
+            elem: 'input[name="operRecordDateSel"]',
+            type: 'date',
+            range: true,
+            trigger: 'click'
+        });
+
+        /* 表格搜索 */
+        form.on('submit(operRecordTbSearch)', function (data) {
+            if (data.field.operRecordDateSel) {
+                var searchDate = data.field.operRecordDateSel.split(' - ');
+                data.field.createTimeStart = searchDate[0] + ' 00:00:00';
+                data.field.createTimeEnd = searchDate[1] + ' 23:59:59';
+            } else {
+                data.field.createTimeStart = '';
+                data.field.createTimeEnd = '';
+            }
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(operRecordTable)', function (obj) {
+            if ('info' === obj.event) { // 详情
+                admin.open({
+                    type: 1,
+                    title: '详情',
+                    area: '600px',
+                    content: admin.util.tpl($('#operRecordInfoDialog').html(), obj.data)
+                });
+            }
+        });
+
+        /* 导出excel */
+        $('#operRecordExportBtn').click(function () {
+            tableX.exportDataX({
+                cols: [[
+                    {field: 'username', title: '账号'},
+                    {field: 'nickName', title: '用户名'},
+                    {field: 'model', title: '操作模块'},
+                    {field: 'description', title: '操作功能'},
+                    {field: 'url', title: '请求地址'},
+                    {field: 'requestMethod', title: '请求方式'},
+                    {field: 'operMethod', title: '调用方法'},
+                    {field: 'param', title: '请求参数'},
+                    {field: 'result', title: '返回结果'},
+                    {field: 'ip', title: 'ip地址'},
+                    {field: 'comments', title: '备注'},
+                    {
+                        title: '状态', templet: function (d) {
+                            return ['正常', '异常'][d.state] || '';
+                        }
+                    },
+                    {
+                        title: '耗时', templet: function (d) {
+                            return d.spendTime / 1000 + 's';
+                        }
+                    },
+                    {
+                        title: '操作时间', templet: function (d) {
+                            return util.toDateString(d.createTime);
+                        }
+                    }
+                ]],
+                data: 'operRecord/list',
+                fileName: '操作日志'
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

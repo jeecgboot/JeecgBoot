@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="./common/title.html" websiteName="热门文章 - ${website.websiteName}" keywords="${website.keywords}"
+              description="${website.description}" favicon="${website.favicon}" shop="${shop}"/>
+    <link rel="stylesheet" href="${ctxPath}/default/css/article.css"/>
+</head>
+<body>
+
+<!-- header -->
+<:include file="./common/header-article.html" websiteName="${website.websiteName}"
+          websiteLogo="${website.websiteLogo}"/>
+
+<div class="layui-container body-card">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md8">
+            <div class="layui-card">
+                <div class="box b2-radius post-3 post-item-1 post-list hidden-line">
+                    <ul class="b2_gap" id="demoCardList3">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-xs12 layui-col-sm12 layui-col-md4 sticky">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    热门商品
+                </div>
+                <div class="layui-card-body" style="padding: 15px 15px;">
+                    <div class="layui-row layui-col-space15">
+                        <:for items="${hotProductList}" var="item">
+                            <div class="layui-col-xs6 layui-col-sm6 layui-col-md6">
+                                <div class="b2-widget-post-thumb box-in b2-radius">
+                                    <div class="b2-widget-post-thumb-product-img">
+                                        <img class="lazy loaded" src="<:if test="${item.image == null || item.image == ''}">${ctxPath}/default/images/commodity.svg</:if><:if test="${item.image != null || item.image != ''}">${item.image!}</:if>">
+                                    </div>
+                                    <div class="b2-widget-post-title">
+                                        <h2>${item.name}</h2>
+                                        <div class="products-price red">
+                                            ￥ ${item.price}
+                                        </div>
+                                    </div>
+                                    <a ref="nofollow" class="link-overlay" href="${ctxPath}/product/${item.link}"></a>
+                                </div>
+                            </div>
+                        </:for>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 文章模板 -->
+<script type="text/html" id="demoCardItem3">
+    <li class="post-3-li post-list-item">
+        <div class="item-in ">
+            <div class="post-module-thumb mobile-hidden" style="">
+                <div style="padding-top:70%" class="b2-radius">
+                    <a href="${ctxPath}/article/{{d.id}}" rel="nofollow" class="thumb-link">
+                        <picture class="picture">
+                            <img class="post-thumb lazy loaded"
+                                 src="{{# if(d.picture == null || d.picture == ''){ }}${ctxPath}/default/images/commodity.svg{{# } }}  {{# if(d.picture != null){ }} {{d.picture}} {{# } }}">
+                        </picture>
+                    </a>
+                </div>
+            </div>
+            <div class="post-info">
+                <h2>
+                    <a href="${ctxPath}/article/{{d.id}}">{{d.title}}</a>
+                </h2>
+                <div class="post-excerpt">
+                    {{d.excerpt}}
+                </div>
+                <div class="post-list-meta-box ">
+                    <ul class="post-list-meta">
+                        <li class="post-list-meta-user">
+                            <a class="post-list-meta-avatar">
+                                <span>{{d.userName}}</span>
+                            </a>
+                        </li>
+                        <li class="post-list-meta-show">
+                            <span>
+                                <time class="b2timeago" datetime="{{d.createTime}}" itemprop="datePublished">
+                                    {{d.createTime}}
+                                </time>
+                            </span>
+                        </li>
+                        <li class="post-list-meta-show {{d.isLike?'star-active':''}}" lay-event="like">
+                            <span>
+                                <i class="layui-icon layui-icon-praise" style="vertical-align: middle; font-size: 12px;"></i>&nbsp;
+                                <span style="vertical-align: middle;">{{d.likes}}</span>
+                            </span>
+                        </li>
+                        <li class="post-list-meta-show">
+                            <span>
+                                <i class="layui-icon layui-icon-light" style="vertical-align: middle; font-size: 12px;"></i>&nbsp;
+                                <span style="vertical-align: middle;">{{d.seeNumber}}</span>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </li>
+</script>
+
+<!-- footer -->
+<:include file="./common/footer.html" websiteName="${website.websiteName}" beianIcp="${website.beianIcp}" shop="${shop}"/>
+<!-- footer -->
+<:include file="./common/footer-menu-help.html"/>
+<!-- js部分 -->
+<:include file="./common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'dataGrid', 'element', 'dropdown'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var dataGrid = layui.dataGrid;
+
+        /** 文章 */
+        dataGrid.render({
+            elem: '#demoCardList3',
+            templet: '#demoCardItem3',
+            data: '${ctxPath}/getArticleList',
+            loadMore: {limit: 10}
+        });
+
+        dataGrid.on('tool(demoCardList3)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'like') {
+                data.isLike = !data.isLike;
+                data.isLike ? data.likes++ : data.likes--;
+                obj.update(data);
+                $.post('${ctxPath}/content/article/updateLike', {
+                    articleId: data.id
+                }, function (res) {
+                    if (res.code == 200) {
+                        layer.msg(res.msg);
+                    } else {
+                        layer.msg(res.msg);
+                    }
+                }, 'json');
+            }
+        });
+
+    })
+</script>
+</body>
+</html>

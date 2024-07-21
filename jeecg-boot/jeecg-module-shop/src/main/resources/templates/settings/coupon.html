@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="优惠券管理"/>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">
+            优惠券管理
+        </div>
+        <div class="layui-card-body">
+            <!-- 数据表格 -->
+            <table id="couponTable" lay-filter="couponTable"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="couponTbBar">
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#couponTbDelDrop{{d.LAY_INDEX}}" no-shade="true">删除</a>
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="couponTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要删除吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="del">确定</a>
+        </div>
+    </div>
+</script>
+
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var admin = layui.admin;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#couponTable',
+            url: 'coupon/page',
+            page: true,
+            toolbar: ['<p>',
+                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {field: 'coupon', title: '优惠券'},
+                {field: 'discountVal', title: '面额', templet: function (res) {
+                        switch (res.discountType) {
+                            case 0 :
+                                return '¥ ' + res.discountVal;
+                            case 1 :
+                                return res.discountVal + '%';
+                        }
+                    }
+                },
+                {field: 'productName', title: '适用商品'},
+                {field: 'type', title: '类型', templet: function (res) {
+                        switch (res.type) {
+                            case 0 :
+                                return '<button type="button" class="layui-btn layui-btn-primary layui-btn-xs">一次性</button>';
+                            case 1 :
+                                return '<button type="button" class="layui-btn layui-btn-primary layui-btn-xs">重复使用</button>';
+                        }
+                    }
+                },
+                {field: 'countUsed', title: '使用状态', templet: function (res) {
+                        switch (res.type) {
+                            case 0 :
+                                if (res.countUsed == res.countAll && res.status == 1) { // 已被使用
+                                    return '<button type="button" class="layui-btn layui-btn-xs layui-btn-warm">已使用</button>';
+                                } else if (res.countUsed == 0 && res.countAll == 1 && res.status == 0) {
+                                    return '<button type="button" class="layui-btn layui-btn-xs layui-btn-normal">' + res.countAll + '</button>';
+                                }
+                            case 1 :
+                                if (res.status == 1) {
+                                    return '<button type="button" class="layui-btn layui-btn-xs layui-btn-warm">已使用</button>';
+                                } else if (res.countUsed < res.countAll && res.status == 0) {
+                                    return '<button type="button" class="layui-btn layui-btn-xs layui-btn-normal">' + res.countUsed + '/' + res.countAll + '</button>';
+                                }
+                        }
+                    }
+                },
+                {title: '操作', toolbar: '#couponTbBar', align: 'center', minWidth: 120}
+            ]]
+        });
+
+        /* 表格搜索 */
+        form.on('submit(couponTbSearch)', function (data) {
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(couponTable)', function (obj) {
+            if ('edit' === obj.event) { // 修改
+                showEditModel(obj.data);
+            } else if ('del' === obj.event) { // 删除
+                doDel(obj);
+            }
+        });
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(couponTable)', function (obj) {
+            if ('add' === obj.event) { // 添加
+                showEditModel();
+            } else if ('del' === obj.event) { // 删除
+                var checkRows = table.checkStatus('couponTable');
+                if (0 === checkRows.data.length) {
+                    return layer.msg('请选择要删除的数据', {icon: 2, anim: 6});
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.id;
+                });
+                doDel({ids: ids});
+            }
+        });
+
+        /* 显示表单弹窗 */
+        function showEditModel(mData) {
+            admin.open({
+                type: 1,
+                title: (mData ? '修改' : '添加') + '优惠券',
+                content: $('#couponEditDialog').html(),
+                success: function (layero, dIndex) {
+                    // 回显表单数据
+                    form.val('couponEditForm', mData);
+                    // 表单提交事件
+                    form.on('submit(couponEditSubmit)', function (data) {
+                        var loadIndex = layer.load(2);
+                        $.post(mData ? 'coupon/update' : 'coupon/save', data.field, function (res) {
+                            layer.close(loadIndex);
+                            if (0 === res.code) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, {icon: 1});
+                                insTb.reload({page: {curr: 1}});
+                            } else {
+                                layer.msg(res.msg, {icon: 2, anim: 6});
+                            }
+                        });
+                        return false;
+                    });
+                }
+            });
+        }
+
+        /* 删除 */
+        function doDel(obj) {
+            if (obj.ids) {  // 批量删除
+                admin.confirm('确定要删除选中数据吗？', function (i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    admin.req('coupon/removeBatch', JSON.stringify(obj.ids), function (res) {
+                        layer.close(loadIndex);
+                        if (0 === res.code) {
+                            layer.msg(res.msg, {icon: 1});
+                            insTb.reload({page: {curr: 1}});
+                        } else {
+                            layer.msg(res.msg, {icon: 2, anim: 6});
+                        }
+                    }, 'post');
+                });
+            } else {  // 单个删除
+                var loadIndex = layer.load(2);
+                $.get('coupon/remove', {id: obj.data.id}, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            }
+        }
+
+    });
+</script>
+</body>
+</html>

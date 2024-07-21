@@ -1,0 +1,19 @@
+{
+  "name": "swiper_angular",
+  "version": "0.0.1",
+  "private": "true",
+  "peerDependencies": {
+    "@angular/common": "^12.2.0",
+    "@angular/core": "^12.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "main": "bundles/swiper_angular.umd.js",
+  "module": "fesm2015/swiper_angular.js",
+  "es2015": "fesm2015/swiper_angular.js",
+  "esm2015": "esm2015/swiper_angular.js",
+  "fesm2015": "fesm2015/swiper_angular.js",
+  "typings": "swiper_angular.d.ts",
+  "sideEffects": false
+}

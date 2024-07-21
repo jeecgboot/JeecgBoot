@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="订单表管理"/>
+    <style>
+        .layui-form.layui-form-info .layui-form-item {
+            margin-bottom: 0 !important;
+        }
+
+        .layui-input-block.layui-word-aux {
+            word-break: break-all;
+            padding: 9px 0 !important;
+            box-sizing: border-box !important;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <!-- 表格工具栏 -->
+            <form class="layui-form toolbar">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">订单号:</label>
+                        <div class="layui-input-inline">
+                            <input name="member" class="layui-input" placeholder="输入订单号"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">联系方式:</label>
+                        <div class="layui-input-inline">
+                            <input name="contact" class="layui-input" placeholder="输入买家联系方式"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">流水号:</label>
+                        <div class="layui-input-inline">
+                            <input name="payNo" class="layui-input" placeholder="输入流水号"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">选择日期:</label>
+                        <div class="layui-input-inline">
+                            <input name="ordersDateSel" class="layui-input icon-date" placeholder="选择日期范围"
+                                   autocomplete="off"/>
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">&emsp;
+                        <button class="layui-btn icon-btn" lay-filter="ordersTbSearch" lay-submit>
+                            <i class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <!-- 数据表格 -->
+            <table id="ordersTable" lay-filter="ordersTable"></table>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="ordersTbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="info">更多详情</a>
+    {{# if(d.status == 2){ }}
+    {{# if(d.shipType == 1){ }} <!-- 手动发货模式-->
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="ship">手动发货</a>
+    {{# } }}
+    {{# } }}
+    {{# if(d.status == 0){ }}
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="budan">手动补单</a>
+    {{# }else{ }}
+    {{# if(d.status == 2){ }} <!-- 手动发货模式-->
+
+    {{# }else{ }}
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">查看卡密</a>
+    {{# } }}
+    {{# } }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#ordersTbDelDrop{{d.LAY_INDEX}}" no-shade="true">删除</a>
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="ordersTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要删除吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="del">确定</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="goodsEditDialog">
+    <form id="goodsEditForm" lay-filter="goodsEditForm" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">流水号:</label>
+            <div class="layui-input-block">
+                <input name="payNo" placeholder="请输入流水号..." class="layui-input"
+                       lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="goodsEditSubmit" lay-submit>立即补单</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="shipEditDialog">
+    {{# layui.each(d,function(i,item){ }}
+    <div class="layui-form-item" style="margin-bottom: 0px">
+        <label class="layui-form-label" style="padding-bottom: 0px;">{{item.name}}:</label>
+        <div class="layui-input-block layui-word-aux" style="min-height: auto; padding: 9px 0 0 0 !important;">
+            {{item.value}}
+        </div>
+    </div>
+    {{# }); }}
+    <form id="shipEditForm" lay-filter="shipEditForm" class="layui-form model-form">
+        <input name="id" type="hidden"/>
+        <div class="layui-form-item" style="margin-left: 30px">
+            <textarea name="shipInfo" placeholder="填写要手动发货的卡密！" class="layui-textarea"
+                      style="height: 237px;"></textarea>
+            <div class="layui-word-aux">手动发货要仔细看订单的购买数量、发货对应数量的商品给客户。否则可能产生纠纷。</div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="shipEditSubmit" lay-submit>立即发货</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="ordersInfoDialog">
+    <div class="layui-form model-form layui-form-info">
+        <div class="layui-row">
+            <div class="layui-col-md12">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">订单号:</label>
+                    <div class="layui-input-block layui-word-aux">{{d.member}}</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">流水号:</label>
+                    <div class="layui-input-block layui-word-aux">{{d.payNo}}</div>
+                </div>
+            </div>
+            <div class="layui-col-md12">
+                <div class="layui-row">
+                    <div class="layui-col-md6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">商品单价:</label>
+                            <div class="layui-input-block layui-word-aux">{{d.price}}</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">查询密码:</label>
+                            <div class="layui-input-block layui-word-aux">{{d.password}}</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">IP地址:</label>
+                            <div class="layui-input-block layui-word-aux">{{d.ip}}</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">下单设备:</label>
+                            <div class="layui-input-block layui-word-aux">{{d.device}}</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">下单时间:</label>
+                            <div class="layui-input-block layui-word-aux">{{layui.util.toDateString(d.createTime)}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">付款总价:</label>
+                            <div class="layui-input-block layui-word-aux">{{d.money}}</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">手续费:</label>
+                            <div class="layui-input-block layui-word-aux">{{d.handlingFee}}</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">购买数量:</label>
+                            <div class="layui-input-block layui-word-aux">{{d.number}}</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">付款时间:</label>
+                            <div class="layui-input-block layui-word-aux">{{d.payTime}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md12">
+                {{# layui.each(d.attachInfoList,function(i,item){ }}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{{item.name}}:</label>
+                    <div class="layui-input-block layui-word-aux">{{item.value}}</div>
+                </div>
+                {{# }); }}
+            </div>
+        </div>
+        <div class="layui-form-item text-right" style="margin-top: 15px;">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog">关闭</button>
+        </div>
+    </div>
+</script>
+
+<script id="cardsInfoDialog" type="text/html">
+    <div style="padding: 15px">
+        <form id="editForm" lay-filter="editForm" class="layui-form">
+            <input name="id" type="hidden"/>
+            <textarea placeholder="查看卡密信息" name="cardsInfo" class="layui-textarea" style="height: 237px;"></textarea>
+            <div class="text-right">
+                <button class="layui-btn layui-btn-primary" style="margin-top: 15px" type="button" ew-event="closeDialog">取消</button>
+                <button class="layui-btn" style="margin-top: 15px" lay-filter="editSubmit" lay-submit>保存卡密</button>
+            </div>
+        </form>
+    </div>
+</script>
+
+<:include file="../common/js.html"/>
+<script type="text/javascript" src="${ctxPath}/assets/libs/tinymce/tinymce.min.js"></script>
+<script>
+    layui.use(['layer', 'form', 'table', 'tableX', 'util', 'admin', 'dropdown', 'notice', 'laydate', 'cascader'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var tableX = layui.tableX;
+        var util = layui.util;
+        var laydate = layui.laydate;
+        var admin = layui.admin;
+        var notice = layui.notice;
+        var cascader = layui.cascader;
+
+        /* 渲染表格 */
+        var insTb = tableX.render({
+            elem: '#ordersTable',
+            url: 'orders/page',
+            page: true,
+            toolbar: ['<p>',
+                '<button lay-event="clear" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>清理未支付订单</button>',
+                '<button lay-event="clearAll" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>清理七天前订单</button>',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            totalRow: true,
+            cols: [[
+                {type: 'numbers', unresize: true, totalRowText: '合计'},
+                {field: 'member', title: '订单号', minWidth: 140},
+                {field: 'productName', title: '商品名称', width: 130},
+                {
+                    field: 'contact', title: '联系方式', align: 'center', width: 140, templet: function (res) {
+                        if (res.contact == '' || res.contact == null) {
+                            return res.email;
+                        } else {
+                            return res.contact;
+                        }
+                    }
+                },
+                {
+                    field: 'payType', title: '支付类型', templet: function (res) {
+                        switch (res.payType) {
+                            case 'mqpay_alipay' :
+                                return '<span class="layui-badge layui-badge-blue">支付宝-v免签</span>';
+                            case 'mqpay_wxpay' :
+                                return '<span class="layui-badge layui-badge-green">微信-v免签</span>';
+                            case 'epay_alipay' :
+                                return '<span class="layui-badge layui-badge-blue">支付宝-易支付</span>';
+                            case 'epay_qqpay' :
+                                return '<span class="layui-badge layui-badge-blue">QQ钱包-易支付</span>';
+                            case 'epay_wxpay' :
+                                return '<span class="layui-badge layui-badge-green">微信-易支付</span>';
+                            case 'budpay_alipay' :
+                                return '<span class="layui-badge layui-badge-blue">支付宝-Budpay</span>';
+                            case 'budpay_wechat' :
+                                return '<span class="layui-badge layui-badge-green">微信-Budpay</span>';
+                            case 'yungouos_alipay' :
+                                return '<span class="layui-badge layui-badge-blue">支付宝-YunGouOS</span>';
+                            case 'yungouos_wxpay' :
+                                return '<span class="layui-badge layui-badge-green">微信-YunGouOS</span>';
+                            case 'xunhupay_alipay' :
+                                return '<span class="layui-badge layui-badge-blue">支付宝-虎皮椒</span>';
+                            case 'xunhupay_wxpay' :
+                                return '<span class="layui-badge layui-badge-green">微信-虎皮椒</span>';
+                            case 'payjs_alipay' :
+                                return '<span class="layui-badge layui-badge-blue">支付宝-payjs扫码</span>';
+                            case 'payjs_wxpay' :
+                                return '<span class="layui-badge layui-badge-green">微信-payjs扫码</span>';
+                            case 'wxpay' :
+                                return '<span class="layui-badge layui-badge-green">微信扫码-官方通道</span>';
+                            case 'wxpay_h5' :
+                                return '<span class="layui-badge layui-badge-green">微信H5-官方通道</span>';
+                            case 'alipay' :
+                                return '<span class="layui-badge layui-badge-blue">支付宝-当面付</span>';
+                            case 'alipay_pc' :
+                                return '<span class="layui-badge layui-badge-blue">支付宝-PC端</span>';
+                            case 'paypal' :
+                                return '<span class="layui-badge layui-badge-paypal">Paypal-国际收款</span>';
+                            case 'epusdt' :
+                                return '<span class="layui-badge layui-badge-green">USDT</span>';
+                        }
+                    }, width: 150
+                },
+                {
+                    field: 'shipType', title: '发货模式', align: 'center', templet: function (res) {
+                        if (res.shipType == 0) { // 自动发货模式
+                            return '<span class="layui-badge layui-bg-blue">自动发货</span>';
+                        } else { // 手动发货模式
+                            return '<span class="layui-badge layui-bg-orange">手动发货</span>';
+                        }
+                    }, width: 100
+                },
+                {
+                    field: 'status', title: '状态', align: 'center', templet: function (res) {
+                        switch (res.status) {
+                            case 3 :
+                                return '<span class="layui-badge layui-badge-green">已发货</span>';
+                            case 2 :
+                                return '<span class="layui-badge layui-badge-yellow">待发货</span>';
+                            case 1 :
+                                return '<span class="layui-badge layui-badge-green">已支付</span>';
+                            case 0 :
+                                return '<span class="layui-badge layui-badge-red">未支付</span>';
+                        }
+                    }, width: 90
+                },
+                {field: 'money', title: '金额', align: 'center', width: 90, totalRow: true},
+                {
+                    field: 'createTime', title: '订单创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, width: 180
+                },
+                {title: '操作', toolbar: '#ordersTbBar', align: 'center', width: 230}
+            ]]
+        });
+
+        /* 时间范围 */
+        laydate.render({
+            elem: 'input[name="ordersDateSel"]',
+            type: 'date',
+            range: true,
+            trigger: 'click'
+        });
+
+        /* 表格搜索 */
+        form.on('submit(ordersTbSearch)', function (data) {
+            if (data.field.ordersDateSel) {
+                var searchDate = data.field.ordersDateSel.split(' - ');
+                data.field.createTimeStart = searchDate[0] + ' 00:00:00';
+                data.field.createTimeEnd = searchDate[1] + ' 23:59:59';
+            } else {
+                data.field.createTimeStart = '';
+                data.field.createTimeEnd = '';
+            }
+            insTb.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格工具条点击事件 */
+        table.on('tool(ordersTable)', function (obj) {
+            if ('info' === obj.event) { // 修改
+                showInfoModel(obj.data);
+            } else if ('edit' === obj.event) { // 修改
+                showEditModel(obj.data);
+            } else if ('budan' === obj.event) { // 补单
+                showBudanModel(obj.data)
+            } else if ('ship' === obj.event) { // 补单
+                showShipModel(obj.data)
+            } else if ('del' === obj.event) { // 删除
+                doDel(obj);
+            }
+        });
+
+        function doDel(mData) {
+            admin.confirm('您确定要删除该订单吗？', function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                $.get('orders/deleteById', {id: mData.data.id}, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            })
+        }
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(ordersTable)', function (obj) {
+            if ('clear' === obj.event) { // 清理订单
+                clearDel();
+            } else if ('clearAll' === obj.event) {
+                clearAllDel();
+            }
+        });
+
+        /* 更多详情 */
+        function showInfoModel(mData) {
+            admin.open({
+                type: 1,
+                title: '更多详情',
+                area: '600px',
+                content: admin.util.tpl($('#ordersInfoDialog').html(), mData)
+            });
+        }
+
+        // 手动发货按钮
+        function showShipModel(mData) {
+            admin.open({
+                type: 1,
+                title: '我要发货',
+                content: $('#shipEditDialog').html(),
+                data: mData.attachInfoList,
+                tpl: true,
+                success: function (layero, dIndex) {
+                    form.val('shipEditForm', mData); // 回显数据
+                    form.on('submit(shipEditSubmit)', function (data) {
+                        var loadIndex = layer.load(2);
+                        $.post('${ctxPath}/orders/sendShip', {
+                            id: mData.id,
+                            shipInfo: data.field.shipInfo,
+                        }, function (res) {
+                            layer.close(loadIndex);
+                            if (0 === res.code) {
+                                layer.close(dIndex);
+                                notice.msg(res.msg, {icon: 1});
+                                insTb.reload({page: {curr: 1}});
+                            } else {
+                                notice.msg(res.msg, {icon: 2});
+                            }
+                        });
+                        return false;
+                    })
+                }
+            });
+        }
+
+        /* 补单 */
+        function showBudanModel(mData) {
+            admin.open({
+                type: 1,
+                title: '补充流水号',
+                content: $('#goodsEditDialog').html(),
+                success: function (layero, dIndex) {
+                    form.on('submit(goodsEditSubmit)', function (data) {
+                        var loadIndex = layer.load(2);
+                        $.post('${ctxPath}/orders/status/update', {
+                            id: mData.id,
+                            productId: mData.productId,
+                            payNo: data.field.payNo
+                        }, function (res) {
+                            layer.close(loadIndex);
+                            if (0 === res.code) {
+                                layer.close(dIndex);
+                                notice.msg(res.msg, {icon: 1});
+                                insTb.reload({page: {curr: 1}});
+                            } else {
+                                notice.msg(res.msg, {icon: 2});
+                            }
+                        });
+                        return false;
+                    })
+                }
+            });
+        }
+
+        /* 删除 */
+        function clearDel() {
+            admin.confirm('确定要清理未支付的订单吗？', function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                $.get('orders/clearRemove', function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            })
+        }
+
+        /* 删除七天前订单 */
+        function clearAllDel() {
+            admin.confirm('确定要清理七天前的订单吗？', function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                $.get('orders/clearAllRemove', function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            })
+        }
+
+        /* 显示卡密信息弹窗 */
+        function showEditModel(mData) {
+            admin.open({
+                type: 1,
+                title: '卡密信息',
+                content: $('#cardsInfoDialog').html(),
+                success: function (layero, dIndex) {
+                    form.val('editForm', mData); // 回显数据
+                    form.on('submit(editSubmit)', function (data) {
+                        var loadIndex = layer.load(2);
+                        $.post('${ctxPath}/orders/updateCards', data.field, function (res) {
+                            layer.close(loadIndex);
+                            if (0 === res.code) {
+                                layer.close(dIndex);
+                                notice.msg(res.msg, {icon: 1});
+                                insTb.reload({page: {curr: 1}});
+                            } else {
+                                notice.msg(res.msg, {icon: 2});
+                            }
+                        });
+                        return false;
+                    })
+                }
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

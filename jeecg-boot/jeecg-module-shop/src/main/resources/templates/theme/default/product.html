@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+<:include file="./common/title.html" websiteName="${products.name!} - ${website.websiteName}" keywords="${website.keywords}" description="${website.description}" favicon="${website.favicon}" shop="${shop}"/>
+<link rel="stylesheet" href="${ctxPath}/default/css/product.css"/>
+</head>
+<body class="page-no-scroll">
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- header -->
+<:include file="./common/header.html" websiteName="${website.websiteName}"
+          websiteLogo="${website.websiteLogo}"/>
+
+<!-- banner -->
+<div class="ew-banner" style="top: -55px;">
+    <div class="layui-container" style="text-align: center; padding-bottom: 100px; padding-top: 150px; text-shadow: 0 1px 1px rgb(0 0 0 / 20%); background-size: cover; background-attachment: scroll; background-position: center; box-sizing: border-box; overflow: hidden; background-image: linear-gradient(to top, rgb(0 0 0 / 0%), rgb(0 0 0 / 0%)),url(<:if test="${products.indexLogo == null || products.indexLogo == ''}">'../default/images/info_logo.svg'</:if><:if test="${products.indexLogo != null || products.indexLogo != ''}">${products.indexLogo!}</:if>); filter: blur(1px);">
+    </div>
+    <div class="_avatar">
+        <div class="imgContainer user-info-head" id="userInfoHead">
+            <img src="<:if test="${products.imageLogo == null || products.imageLogo == ''}">${ctxPath}/default/images/commodity.svg</:if><:if test="${products.imageLogo != null || products.imageLogo != ''}">${products.imageLogo!}</:if>" alt="">
+        </div>
+        <i class="i-work-sex-30-0 posa avatar-sex"></i>
+    </div>
+    <div class="cl spaceProfileCard__line">
+        <a style="color: #ffffff; font-size: 17px; text-shadow: 0 1px 1px rgb(0 0 0 / 50%);" title="开心购物每一天！">开心购物每一天！</a>
+    </div>
+</div>
+
+<!-- goods-card -->
+<div class="layui-container body-card" style="margin-bottom: 15px;">
+    <div class="layui-row layui-col-space15">
+        <!-- 左 -->
+        <div class="layui-col-sm12 layui-col-md8">
+            <div class="layui-card zlian-card-bottom" style="border-radius: 5px; box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);">
+                <div class="layui-card-header">
+                    <span class="is-title-text">商品介绍</span>
+                    <:if test="${isCoupon >= 1}">
+                        <span class="el-tag el-tag--warning el-tag--light pull-right"
+                              style="top: 10px; position: relative; font-weight: lighter; margin-left: 10px;">券</span>
+                    </:if>
+                    <:if test="${products.restricts >= 1}">
+                        <span class="el-tag el-tag--info el-tag--light pull-right"
+                              style="top: 10px; position: relative; font-weight: lighter; margin-left: 10px;">限购: ${products.restricts!}</span>
+                    </:if>
+                    <:if test="${products.shipType == 1}">
+                        <span class="el-tag el-tag--danger el-tag--light pull-right"
+                              style="top: 10px; position: relative; font-weight: lighter; margin-left: 10px;">手动发货</span>
+                    </:if>
+                    <:if test="${products.shipType == 0}">
+                        <span class="el-tag el-tag--light pull-right"
+                              style="top: 10px; position: relative; font-weight: lighter; margin-left: 10px;">自动发货</span>
+                    </:if>
+                </div>
+                <div class="layui-card-body" style="padding: 15px 15px; font-size: 17px;">
+                    <div class="layui-row layui-col-space15 goods-info-group">
+                        <div class="layui-col-xs12 layui-col-sm5 layui-col-md4 zlian-col-image">
+                            <div class="zlian-product-image" style="background-image: linear-gradient(to right, rgba(0,0,0,0.05), rgba(0,0,0,0.05)), url(<:if test="${products.imageLogo == null || products.imageLogo == ''}">${ctxPath}/default/images/commodity.svg</:if><:if test="${products.imageLogo != null || products.imageLogo != ''}">${products.imageLogo!}</:if>)"></div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm7 layui-col-md8 goods-info">
+                        <div style="padding: 0px;">
+                            <div class="weui-cells">
+                                <div class="weui-cell">
+                                    <div class="weui-cell__bd">商品名称</div>
+                                    <div class="weui-cell__ft">${products.name!}</div>
+                                </div>
+                                <div class="weui-cell">
+                                    <div class="weui-cell__bd">商品分类</div>
+                                    <div class="weui-cell__ft">${classifyName!}</div>
+                                </div>
+                                <div class="weui-cell">
+                                    <div class="weui-cell__bd">商品单价</div>
+                                    <div class="weui-cell__ft">
+                                        <:if test="${products.price == 0.00}">
+                                            免费
+                                        </:if>
+                                        <:if test="${products.price != 0.00}">
+                                            ${products.price!}
+                                        </:if>
+                                    </div>
+                                </div>
+                                <div class="weui-cell-bottom">
+                                    <div class="weui-cell__bd">商品库存</div>
+                                    <div class="weui-cell__ft">
+                                        <:if test="${cardCount == 0}">缺货</:if>
+                                        <:if test="${cardCount != 0}">${cardCount}</:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <:if test="${products.componentEnabled == 0}">
+                <div class="layui-card-bottom" style="display: flex; align-items: center;">
+                    <div style="display: flex; align-items: center;">
+                        <svg t="1664778624729" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3480" width="18" height="18"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64z m84 343.1l-87 301.4c-4.8 17.2-7.2 28.6-7.2 33.9 0 3.1 1.3 6 3.8 8.7s5.2 4 8.1 4c4.8 0 9.6-2.1 14.4-6.4 12.7-10.5 28-29.4 45.8-56.8l14.4 8.5c-42.7 74.4-88 111.6-136.1 111.6-18.4 0-33-5.2-43.9-15.5-10.9-10.3-16.3-23.4-16.3-39.2 0-10.5 2.4-23.7 7.2-39.9l58.9-202.7c5.7-19.5 8.5-34.2 8.5-44.1 0-6.2-2.7-11.7-8.1-16.5-5.4-4.8-12.7-7.2-22-7.2-4.2 0-9.3 0.1-15.3 0.4l5.5-17L570.4 407H596v0.1z m17.8-88.7c-12.2 12.2-26.9 18.2-44.1 18.2-17 0-31.5-6.1-43.7-18.2-12.2-12.2-18.2-26.9-18.2-44.1s6-31.9 18-44.1c12-12.1 26.6-18.2 43.9-18.2 17.5 0 32.3 6.1 44.3 18.2 12 12.2 18 26.9 18 44.1s-6.1 31.9-18.2 44.1z" p-id="3481" fill="#409EFF"></path></svg>
+                        <span style="font-weight: 400; font-size: 14px; color: #3f9eff; margin-left: 5px; padding-right: 10px; border-right: 1px solid #ebedf0;">提示</span>
+                        <span style="font-weight: 400; font-size: 14px; margin-left: 7px;">${products.componentPoint}</span>
+                    </div>
+                    <:if test="${products.componentType == 2}">
+                        <a class="component-banner-highlights-extra" href="${products.componentUrl}" target="_blank">立即下载</a>
+                    </:if>
+                </div>
+            </:if>
+        </div>
+        <div class="layui-card zlian-card-controller"
+             style="border-radius: 5px; box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);">
+            <div class="layui-card-header">
+                商品详情
+                <span class="pull-right" style="font-weight: 400; font-size: 16px;">请详细阅读如下说明</span>
+            </div>
+            <div class="layui-card-body" style="padding: 15px 15px; min-height: 200px;">
+                <div class="list_info">
+                    ${products.pdInfo!}
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="layui-col-sm12 layui-col-md4 sticky">
+            <:if test="${products.isWholesale == 1}">
+                <div class="layui-card"
+                     style="border-radius: 5px; box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);">
+                    <div class="layui-card-header">
+                        批发价格
+                        <:if test="${products.isWholesale == 1}">
+                            <span class="el-tag el-tag--warning el-tag--light pull-right"
+                                  style="top: 11px; position: relative; font-weight: lighter;">折扣</span>
+                        </:if>
+                    </div>
+                    <div class="layui-card-body" style="padding: 15px 15px;">
+
+                        <div class="weui-collas">
+                            <:for items="${wholesaleList}" var="item">
+                                <:if test="${item.id == '0'}">
+                                    <div class="weui-colla">
+                                        <div class="weui-colla__bd">购买数量满${item.number}个或以上每个</div>
+                                        <div class="weui-colla__ft">
+                                            <span class="el-tag el-tag--success el-tag--light">￥ ${item.money}</span>
+                                        </div>
+                                    </div>
+                                </:if>
+                                <:if test="${item.id != '0'}">
+                                    <div class="weui-colla" style="border-top: 1px solid #e4e4e4;">
+                                        <div class="weui-colla__bd">购买数量满${item.number}个或以上每个</div>
+                                        <div class="weui-colla__ft">
+                                            <span class="el-tag el-tag--success el-tag--light">￥ ${item.money}</span>
+                                        </div>
+                                    </div>
+                                </:if>
+                            </:for>
+                        </div>
+                    </div>
+                </div>
+            </:if>
+            <div class="layui-card zlian-card-pc" style="border-radius: 5px; box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);">
+                <div class="layui-card-header">
+                    购买信息
+                </div>
+                <form class="layui-form" id="formBasForm" lay-filter="formBasForm">
+                    <div class="layui-card-body" style="padding: 15px 15px 5px 15px;">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label layui-form-required">联系方式</label>
+                            <div class="layui-input-block">
+                                <input name="contact" class="layui-input" placeholder="用于查询或邮箱接收卡密"/>
+                            </div>
+                        </div>
+                        <:if test="${products.isPassword == 1}">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-form-required">查询密码</label>
+                                <div class="layui-input-block">
+                                    <input name="password" placeholder="输入用于查询的密码" class="layui-input" lay-verType="tips"/>
+                                </div>
+                            </div>
+                        </:if>
+                        <:if test="${isCustomize == 1}">
+                            <:for items="${customizeList!}" var="item">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label layui-form-required" style="width: auto; margin-right: 1em; min-width: 4em; text-align-last: justify;">${item.name}</label>
+                                    <div class="layui-input-block">
+                                        <input name="${item.field}" id="${item.field}" placeholder="输入${item.name}" class="layui-input" lay-verType="tips"/>
+                                    </div>
+                                </div>
+                            </:for>
+                        </:if>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label layui-form-required">购买数量</label>
+                            <div class="layui-input-block">
+                                <div class="input-group order-number-box">
+                                    <div class="input-group-prepend sub">
+                                        <button class="layui-btn layui-btn-primary" type="button">
+                                            <img src="${ctxPath}/default/images/sub.svg" style="width: 25px">
+                                        </button>
+                                    </div>
+                                    <input type="text" id="orderNumber" name="number" class="layui-input" required="" lay-verify="required|order_number" value="1">
+                                    <div class="input-group-append add">
+                                        <button class="layui-btn layui-btn-primary" type="button">
+                                            <img src="${ctxPath}/default/images/add.svg" style="width: 25px">
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <:if test="${isCoupon >= 1}">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label layui-form-required"
+                                       style="width: auto; margin-right: 1em; min-width: 4em; text-align-last: justify;">优惠券</label>
+                                <div class="layui-input-block">
+                                    <input name="coupon" placeholder="输入优惠券代码" class="layui-input"
+                                           lay-verType="tips"/>
+                                </div>
+                            </div>
+                        </:if>
+                    </div>
+                    <div class="pay-type-group">
+                        <div class="layui-row layui-col-space15">
+                            <:for items="${paysList}" var="item">
+                                <:if test="${item.driver=='mqpay_wxpay' || item.driver=='epay_wxpay' || item.driver=='budpay_wechat' || item.driver=='yungouos_wxpay' || item.driver=='xunhupay_wxpay' || item.driver=='payjs_wxpay' || item.driver=='wxpay_h5' || item.driver=='wxpay'}">
+                                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                        <div class="pay-type-wexin<:if test="${item.andIncrement == 0}"> active</:if>" data-id="${item.driver}">
+                                            <img style="vertical-align: middle;" src="${ctxPath}/default/images/pays/wxpay.svg">
+                                            <span style="vertical-align: middle;">${item.name}</span>
+                                            <:if test="${item.isHandlingFee == 1}">
+                                                <div class="ribbon-two ribbon-two-danger">
+                                                    <span>手续费</span>
+                                                </div>
+                                            </:if>
+                                        </div>
+                                    </div>
+                                </:if>
+                                <:if test="${item.driver=='mqpay_alipay' || item.driver=='budpay_alipay' || item.driver=='epay_alipay' || item.driver=='yungouos_alipay' || item.driver=='xunhupay_alipay' || item.driver=='payjs_alipay' || item.driver=='alipay' || item.driver=='alipay_pc'}">
+                                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                        <div class="pay-type-ali<:if test="${item.andIncrement == 0}"> active</:if>" data-id="${item.driver}">
+                                            <img style="vertical-align: middle;" src="${ctxPath}/default/images/pays/alipay.svg">
+                                            <span style="vertical-align: middle;">${item.name}</span>
+                                            <:if test="${item.isHandlingFee == 1}">
+                                                <div class="ribbon-two ribbon-two-danger">
+                                                    <span>手续费</span>
+                                                </div>
+                                            </:if>
+                                        </div>
+                                    </div>
+                                </:if>
+                                <:if test="${item.driver == 'epay_qqpay'}">
+                                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                        <div class="pay-type-qq<:if test="${item.andIncrement == 0}"> active</:if>" data-id="${item.driver}">
+                                            <img style="vertical-align: middle;" src="${ctxPath}/default/images/pays/qqpay.svg">
+                                            <span style="vertical-align: middle;">${item.name}</span>
+                                            <:if test="${item.isHandlingFee == 1}">
+                                                <div class="ribbon-two ribbon-two-danger">
+                                                    <span>手续费</span>
+                                                </div>
+                                            </:if>
+                                        </div>
+                                    </div>
+                                </:if>
+                                <:if test="${item.driver=='paypal'}">
+                                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                        <div class="pay-type-paypal<:if test="${item.andIncrement == 0}"> active</:if>" data-id="${item.driver}">
+                                            <img style="vertical-align: middle;" src="${ctxPath}/default/images/pays/paypal.svg">
+                                            <span style="vertical-align: middle;">${item.name}</span>
+                                            <:if test="${item.isHandlingFee == 1}">
+                                                <div class="ribbon-two ribbon-two-danger">
+                                                    <span>手续费</span>
+                                                </div>
+                                            </:if>
+                                        </div>
+                                    </div>
+                                </:if>
+                                <:if test="${item.driver=='epusdt'}">
+                                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                        <div class="pay-type-usdt<:if test="${item.andIncrement == 0}"> active</:if>" data-id="${item.driver}">
+                                            <img style="vertical-align: middle;" src="${ctxPath}/default/images/pays/usdt.svg">
+                                            <span style="vertical-align: middle;">${item.name}</span>
+                                            <:if test="${item.isHandlingFee == 1}">
+                                                <div class="ribbon-two ribbon-two-danger">
+                                                    <span>手续费</span>
+                                                </div>
+                                            </:if>
+                                        </div>
+                                    </div>
+                                </:if>
+                            </:for>
+                        </div>
+                    </div>
+
+                    <div class="buy-btn-group">
+                        <span class="price">
+                            <span class="small" id="symbol">￥</span>
+                            <span id="goodsprice2" style="font-size: 29px; font-weight: bold;">
+                                <:if test="${products.price == 0.00}">免费</:if>
+                                <:if test="${products.price != 0.00}">${products.price}</:if>
+                            </span>
+                        </span>
+                        <button class="layui-btn layui-btn-warm layui-btn-lg btn-group-show" lay-filter="btnPaySubmit" lay-submit>
+                            <i class="layui-icon layui-icon-cart"></i> 提交订单
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="layui-card zlian-card-controller-1 card-shows"
+                 style="border-radius: 5px; box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);">
+                <div class="layui-card-header">
+                    商品详情
+                    <span class="pull-right" style="font-weight: 400; font-size: 16px;">请详细阅读如下说明</span>
+                </div>
+                <div class="layui-card-body" style="padding: 15px 15px">
+                    <div class="list_info">
+                        ${products.pdInfo!}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- footer -->
+<:include file="./common/footer.html" websiteName="${website.websiteName}" beianIcp="${website.beianIcp}" shop="${shop}"/>
+<!-- js部分 -->
+<:include file="./common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'notice'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var notice = layui.notice;
+        var product = JSON.parse(JSON.stringify(${productsJson!}));
+
+        //加减商品数量
+        let orderNumber = 1;
+        let numDoc = $("#orderNumber");
+        $('.sub').click(function () {
+            if (orderNumber <= 1) return layer.msg('购买数量不能低于1件', {
+                time: 1000
+            });
+            orderNumber--;
+            if (product.isWholesale == 1) {
+                var wholesale = product.wholesale;
+                var s = wholesale.split("\n");
+
+                var price = orderNumber * product.price;
+                $("#goodsprice2").text(price.toFixed(2));
+
+                for (let i = 0; i < s.length; i++) {
+                    var ss = s[i].split("=");
+                    if (orderNumber >= ss[0]) {
+                        var price = orderNumber * ss[1];
+                        $("#goodsprice2").text(price.toFixed(2));
+                    }
+                }
+            } else {
+                var price = orderNumber * product.price;
+                $("#goodsprice2").text(price.toFixed(2));
+            }
+            numDoc.val(orderNumber);
+        })
+
+        $('.add').click(function () {
+            if (orderNumber >= product.cardsCount) {
+                return layer.msg('购买数量不能多于库存数量', {
+                    time: 1000
+                });
+            }
+            orderNumber++;
+            if (product.isWholesale == 1) {
+                var wholesale = product.wholesale;
+                var s = wholesale.split("\n");
+
+                var price = orderNumber * product.price;
+                $("#goodsprice2").text(price.toFixed(2));
+
+                for (let i = 0; i < s.length; i++) {
+                    var ss = s[i].split("=");
+                    if (orderNumber >= ss[0]) {
+                        var price = orderNumber * ss[1];
+                        $("#goodsprice2").text(price.toFixed(2));
+                    }
+                }
+            } else {
+                var price = orderNumber * product.price;
+                $("#goodsprice2").text(price.toFixed(2));
+            }
+            numDoc.val(orderNumber + '');
+        })
+
+        numDoc.on('input', function (e) {
+            /*自定义处理数字*/
+            let val = parseInt($(this).val());
+            val = zhzs(val + "");
+            $(this).val(val);  // 回复input输入框
+            if (val <= 0) {
+                $(this).val(0);
+                orderNumber = 0;
+                finalAmount(orderNumber);
+                return layer.msg('购买数量不能低于1件', {
+                    time: 1000
+                });
+            }
+            if (val > product.cardsCount) {
+                $(this).val(product.cardsCount);
+                orderNumber = product.cardsCount;
+                finalAmount(orderNumber);
+                return layer.msg('购买数量不能多于库存数量', {
+                    time: 1000
+                });
+            }
+            orderNumber = val;
+            finalAmount(orderNumber);
+        })
+
+        /*自定义处理数字*/
+        function zhzs(value) {
+            value = value.replace(/[^\d]/g, '').replace(/^0{1,}/g, '');
+            if (value != '')
+                value = parseInt(value);
+            else
+                value = parseInt(0);
+            return value;
+        }
+
+        /*最后支付金额计算*/
+        //orderNumber 数量
+        function finalAmount(orderNumber) {
+            if (product.isWholesale == 1) {
+                var wholesale = product.wholesale;
+                var s = wholesale.split("\n");
+
+                var price = orderNumber * product.price;
+                $("#goodsprice2").text(price.toFixed(2));
+
+                for (let i = 0; i < s.length; i++) {
+                    var ss = s[i].split("=");
+                    if (orderNumber >= ss[0]) {
+                        var price = orderNumber * ss[1];
+                        $("#goodsprice2").text(price.toFixed(2));
+                    }
+                }
+            } else {
+                var price = orderNumber * product.price;
+                $("#goodsprice2").text(price.toFixed(2));
+            }
+        }
+
+        // 支付方式点击事件
+        $('.pay-type-group .layui-row .layui-col-md6>div').click(function () {
+            $('.pay-type-group .layui-row .layui-col-md6>div').removeClass('active');
+            $(this).addClass('active');
+        });
+
+        /* 监听表单提交 */
+        form.on('submit(btnPaySubmit)', function (data) {
+            var $inputContact = $('input[name="contact"]');
+            var contact = $inputContact.val();
+            if (!contact) {
+                layer.tips('请输入联系方式', $inputContact, {tips: [1, '#409EFF']});
+                return false;
+            }
+            // 商品ID
+            data.field.goodsId = product.id
+            // 支付方式
+            var payType = $('.pay-type-group .layui-row .layui-col-md6>div.active').data('id');
+            data.field.payType = payType;
+            <:if test="${isCustomize == 1}">
+                <:for items="${customizeList}" var="item">
+                    data.field.${item.field} = $('#${item.field}').val()
+                </:for>
+            </:if>
+            $.post('${ctxPath}/buy', data.field, function (res) {
+                if (200 === res.code) {
+                    layer.confirm(getHtml(res.data), {
+                        title: '订单确认',
+                        btn: ['<span style="color: rgb(255, 104, 104, 0.9)">立即支付</span>', '支付完成'] //按钮
+                    }, function () {
+                        if (payType == 'alipay_pc') {
+                            window.open('${ctxPath}/alipayPc/' + res.data.member)
+                        } else {
+                            window.open('${ctxPath}/pay/' + res.data.member)
+                        }
+                    }, function () {
+                        window.open('${ctxPath}/pay/state/' + res.data.member)
+                    });
+                } else {
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+
+        function getHtml(mData) {
+            var html = '' +
+                '<div class="weui-form-preview__hd">\n' +
+                '    <div class="weui-form-preview__item">\n' +
+                '        <label class="weui-form-preview__label">付款金额</label>\n' +
+                '        <em class="weui-form-preview__value">￥ ' + mData.money + '</em>\n' +
+                '    </div>\n' +
+                '</div>' +
+                '<div class="weui-form-preview__bds">\n' +
+                '    <div class="weui-form-preview__items">\n' +
+                '        <label class="weui-form-preview__labels">订单号</label>\n' +
+                '        <span class="weui-form-preview__values">' + mData.member + '</span>\n' +
+                '    </div>\n' +
+                '    <div class="weui-form-preview__items">\n' +
+                '        <label class="weui-form-preview__labels">商品总价</label>\n' +
+                '        <span class="weui-form-preview__values">' + mData.total_price + '</span>\n' +
+                '    </div>\n' +
+                '    <div class="weui-form-preview__items">\n' +
+                '        <label class="weui-form-preview__labels">手续费</label>\n' +
+                '        <span class="weui-form-preview__values">' + mData.handling_fee + '</span>\n' +
+                '    </div>\n' +
+                '    <div class="weui-form-preview__items">\n' +
+                '        <label class="weui-form-preview__labels">说明</label>\n' +
+                '        <span class="weui-form-preview__values">妥善保存以上订单号用于查询</span>\n' +
+                '    </div>\n' +
+                '</div>' +
+                '<div class="weui-form-preview__buttom"><span class="weui-form-preview__text">订单已提交请尽快完成支付！</span></div>';
+            return html;
+        }
+
+    });
+</script>
+</body>
+</html>

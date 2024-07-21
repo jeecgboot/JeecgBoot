@@ -1,0 +1,409 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="字典管理"/>
+    <style>
+        #dictTable + .layui-table-view .layui-table-tool-temp {
+            padding-right: 0;
+        }
+
+        #dictTable + .layui-table-view .layui-table-body tbody > tr td {
+            cursor: pointer;
+        }
+
+        #dictTable + .layui-table-view .layui-table-body tbody > tr.layui-table-click {
+            background-color: #fff3e0;
+        }
+
+        #dictTable + .layui-table-view .layui-table-body tbody > tr.layui-table-click td:last-child > div:before {
+            position: absolute;
+            right: 6px;
+            content: "\e602";
+            font-size: 12px;
+            font-style: normal;
+            font-family: layui-icon !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid" style="padding-bottom: 0;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding: 10px;">
+                    <!-- 表格工具栏1 -->
+                    <form class="layui-form toolbar">
+                        <div class="layui-form-item" style="margin-bottom: 10px;">
+                            <input name="dictName" class="layui-input" placeholder="输入字典名称"
+                                   style="max-width: 140px;display: inline-block;"/>&emsp;
+                            <button class="layui-btn icon-btn" lay-filter="dictTbSearch" lay-submit>
+                                <i class="layui-icon">&#xe615;</i>搜索
+                            </button>
+                        </div>
+                    </form>
+                    <!-- 数据表格1 -->
+                    <table id="dictTable" lay-filter="dictTable"></table>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md9">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding: 10px;">
+                    <!-- 表格工具栏2 -->
+                    <form class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">字典项名称:</label>
+                                <div class="layui-input-inline">
+                                    <input name="dictDataName" class="layui-input" placeholder="输入字典名称"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">字典项标识:</label>
+                                <div class="layui-input-inline">
+                                    <input name="dictDataCode" class="layui-input" placeholder="输入字典标识"/>
+                                </div>
+                            </div>
+                            <div class="layui-inline">&emsp;
+                                <button class="layui-btn icon-btn" lay-filter="dictDataTbSearch" lay-submit>
+                                    <i class="layui-icon">&#xe615;</i>搜索
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- 数据表格2 -->
+                    <table id="dictDataTable" lay-filter="dictDataTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 表单弹窗1 -->
+<script type="text/html" id="dictEditDialog">
+    <form id="dictEditForm" lay-filter="dictEditForm" class="layui-form model-form">
+        <input name="dictId" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">字典名称:</label>
+            <div class="layui-input-block">
+                <input name="dictName" placeholder="请输入字典名称" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">字典标识:</label>
+            <div class="layui-input-block">
+                <input name="dictCode" placeholder="请输入字典标识" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">排序号:</label>
+            <div class="layui-input-block">
+                <input name="sortNumber" placeholder="请输入排序号" class="layui-input" type="number"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注:</label>
+            <div class="layui-input-block">
+                <textarea name="comments" placeholder="请输入备注" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="dictEditSubmit" lay-submit>保存</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+<!-- 表格操作列 -->
+<script type="text/html" id="dictDataTbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#dictTbDelDrop{{d.LAY_INDEX}}" no-shade="true">删除</a>
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="dictTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要删除{{d.dictDataName}}吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="del">确定</a>
+        </div>
+    </div>
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="dictDataEditDialog">
+    <form id="dictDataEditForm" lay-filter="dictDataEditForm" class="layui-form model-form" style="padding-left: 10px;">
+        <input name="dictDataId" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required" style="padding-left: 0;width: 95px;">字典项名称:</label>
+            <div class="layui-input-block">
+                <input name="dictDataName" placeholder="请输入字典项名称" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required" style="padding-left: 0;width: 95px;">字典项标识:</label>
+            <div class="layui-input-block">
+                <input name="dictDataCode" placeholder="请输入字典标识" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">排序号:</label>
+            <div class="layui-input-block">
+                <input name="sortNumber" placeholder="请输入排序号" class="layui-input" type="number"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">备注:</label>
+            <div class="layui-input-block">
+                <textarea name="comments" placeholder="请输入备注" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn" lay-filter="dictDataEditSubmit" lay-submit>保存</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        </div>
+    </form>
+</script>
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'admin', 'dropdown', 'tableX'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var admin = layui.admin;
+        var tableX = layui.tableX;
+        var selObj;  // 左表选中数据
+
+        /* 渲染表格 */
+        var insTb = table.render({
+            elem: '#dictTable',
+            url: 'dict/list',
+            height: 'full-100',
+            toolbar: ['<p>',
+                '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                '<button lay-event="edit" class="layui-btn layui-btn-sm layui-btn-warm icon-btn"><i class="layui-icon">&#xe642;</i>修改</button>&nbsp;',
+                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>',
+                '</p>'].join(''),
+            defaultToolbar: [],
+            cols: [[
+                {type: 'numbers'},
+                {field: 'dictName', title: '字典名称'}
+            ]],
+            done: function (res, curr, count) {
+                $('#dictTable+.layui-table-view .layui-table-body tbody>tr:first').trigger('click');
+            }
+        });
+
+        /* 表格搜索 */
+        form.on('submit(dictTbSearch)', function (data) {
+            insTb.reload({where: data.field});
+            return false;
+        });
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(dictTable)', function (obj) {
+            if (obj.event === 'add') { // 添加
+                showEditModel();
+            } else if (obj.event === 'edit') { // 修改
+                showEditModel(selObj.data, selObj);
+            } else if (obj.event === 'del') { // 删除
+                doDel(selObj);
+            }
+        });
+
+        /* 监听行单击事件 */
+        table.on('row(dictTable)', function (obj) {
+            selObj = obj;
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+            insTb2.reload({
+                where: {dictId: obj.data.dictId},
+                page: {curr: 1},
+                url: 'dictdata/page'
+            });
+        });
+
+        /* 显示表单弹窗 */
+        function showEditModel(mData, obj) {
+            admin.open({
+                type: 1,
+                title: (mData ? '修改' : '添加') + '字典',
+                content: $('#dictEditDialog').html(),
+                success: function (layero, dIndex) {
+                    // 回显表单数据
+                    form.val('dictEditForm', mData);
+                    // 表单提交事件
+                    form.on('submit(dictEditSubmit)', function (data) {
+                        var loadIndex = layer.load(2);
+                        $.post(mData ? 'dict/update' : 'dict/save', data.field, function (res) {
+                            layer.close(loadIndex);
+                            if (0 === res.code) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, {icon: 1});
+                                if (obj) {
+                                    obj.update(data.field);
+                                } else {
+                                    insTb.reload();
+                                }
+                            } else {
+                                layer.msg(res.msg, {icon: 2, anim: 6});
+                            }
+                        });
+                        return false;
+                    });
+                }
+            });
+        }
+
+        /* 删除 */
+        function doDel(obj) {
+            admin.confirm('确定要删除' + obj.data.dictName + '吗？', function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                $.get('dict/remove', {id: obj.data.dictId}, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        obj.del();
+                        $('#dictTable+.layui-table-view .layui-table-body tbody>tr:first').trigger('click');
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            });
+        }
+
+        /* 渲染表格2 */
+        var insTb2 = tableX.render({
+            elem: '#dictDataTable',
+            data: [],
+            height: 'full-96',
+            page: true,
+            toolbar: ['<p>',
+                '<button lay-event="add" class="layui-btn layui-btn-sm icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>&nbsp;',
+                '<button lay-event="del" class="layui-btn layui-btn-sm layui-btn-danger icon-btn"><i class="layui-icon">&#xe640;</i>删除</button>&nbsp;',
+                '</p>'].join(''),
+            cellMinWidth: 100,
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers'},
+                {field: 'dictDataName', title: '字典项名称', sort: true},
+                {field: 'dictDataCode', title: '字典项标识', sort: true},
+                {field: 'sortNumber', title: '排序号', sort: true, align: 'center', width: 90, minWidth: 90},
+                {field: 'comments', title: '备注', sort: true},
+                {
+                    field: 'createTime', title: '创建时间', templet: function (d) {
+                        return util.toDateString(d.createTime);
+                    }, sort: true, width: 160
+                },
+                {title: '操作', toolbar: '#dictDataTbBar', align: 'center', width: 120, minWidth: 120}
+            ]]
+        });
+
+        /* 表格2搜索 */
+        form.on('submit(dictDataTbSearch)', function (data) {
+            insTb2.reload({where: data.field, page: {curr: 1}});
+            return false;
+        });
+
+        /* 表格2工具条点击事件 */
+        table.on('tool(dictDataTable)', function (obj) {
+            if (obj.event === 'edit') { // 修改
+                showEditModel2(obj.data);
+            } else if (obj.event === 'del') { // 删除
+                doDel2(obj);
+            }
+        });
+
+        /* 表格2头工具栏点击事件 */
+        table.on('toolbar(dictDataTable)', function (obj) {
+            if (obj.event === 'add') { // 添加
+                showEditModel2();
+            } else if (obj.event === 'del') { // 删除
+                var checkRows = table.checkStatus('dictDataTable');
+                if (checkRows.data.length === 0) {
+                    layer.msg('请选择要删除的数据', {icon: 2, anim: 6});
+                    return;
+                }
+                var ids = checkRows.data.map(function (d) {
+                    return d.dictDataId;
+                });
+                doDel2({ids: ids});
+            }
+        });
+
+        /* 显示表单弹窗2 */
+        function showEditModel2(mData) {
+            admin.open({
+                type: 1,
+                title: (mData ? '修改' : '添加') + '数据字典项',
+                content: $('#dictDataEditDialog').html(),
+                success: function (layero, dIndex) {
+                    // 回显表单数据
+                    form.val('dictDataEditForm', mData);
+                    // 表单提交事件
+                    form.on('submit(dictDataEditSubmit)', function (data) {
+                        data.field.dictId = selObj.data.dictId;
+                        var loadIndex = layer.load(2);
+                        $.post(mData ? 'dictdata/update' : 'dictdata/save', data.field, function (res) {
+                            layer.close(loadIndex);
+                            if (0 === res.code) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, {icon: 1});
+                                insTb2.reload({page: {curr: 1}});
+                            } else {
+                                layer.msg(res.msg, {icon: 2, anim: 6});
+                            }
+                        });
+                        return false;
+                    });
+                }
+            });
+        }
+
+        /* 删除2 */
+        function doDel2(obj) {
+            if (obj.ids) {
+                admin.confirm('确定要删除选中数据吗？', function (i) {
+                    layer.close(i);
+                    var loadIndex = layer.load(2);
+                    admin.req('dictdata/removeBatch', JSON.stringify(obj.ids), function (res) {
+                        layer.close(loadIndex);
+                        if (0 === res.code) {
+                            layer.msg(res.msg, {icon: 1});
+                            insTb2.reload({page: {curr: 1}});
+                        } else {
+                            layer.msg(res.msg, {icon: 2, anim: 6});
+                        }
+                    }, 'post');
+                });
+            } else {
+                var loadIndex = layer.load(2);
+                $.get('dictdata/remove', {id: obj.data.dictDataId}, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb2.reload({page: {curr: 1}});
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            }
+        }
+
+    });
+</script>
+</body>
+</html>

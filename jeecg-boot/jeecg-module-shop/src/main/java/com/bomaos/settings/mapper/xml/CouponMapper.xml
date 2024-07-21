@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bomaos.settings.mapper.CouponMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM sys_coupon a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.id != null">
+                    AND a.id = #{page.pageData.id}
+                </if>
+                <if test="page.pageData.classifysId != null">
+                    AND a.classifys_id = #{page.pageData.classifysId}
+                </if>
+                <if test="page.pageData.productId != null">
+                    AND a.product_id = #{page.pageData.productId}
+                </if>
+                <if test="page.pageData.type != null">
+                    AND a.type = #{page.pageData.type}
+                </if>
+                <if test="page.pageData.status != null">
+                    AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.coupon != null">
+                    AND a.coupon LIKE CONCAT('%', #{page.pageData.coupon}, '%')
+                </if>
+                <if test="page.pageData.discountType != null">
+                    AND a.discount_type = #{page.pageData.discountType}
+                </if>
+                <if test="page.pageData.discountVal != null">
+                    AND a.discount_val LIKE CONCAT('%', #{page.pageData.discountVal}, '%')
+                </if>
+                <if test="page.pageData.countUsed != null">
+                    AND a.count_used = #{page.pageData.countUsed}
+                </if>
+                <if test="page.pageData.countAll != null">
+                    AND a.count_all = #{page.pageData.countAll}
+                </if>
+                <if test="page.pageData.remark != null">
+                    AND a.remark LIKE CONCAT('%', #{page.pageData.remark}, '%')
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                <if test="page.pageData.fullReduction != null">
+                    AND a.full_reduction LIKE CONCAT('%', #{page.pageData.fullReduction}, '%')
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.bomaos.settings.entity.Coupon">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.bomaos.settings.entity.Coupon">
+        <include refid="relSelect"></include>
+    </select>
+
+</mapper>

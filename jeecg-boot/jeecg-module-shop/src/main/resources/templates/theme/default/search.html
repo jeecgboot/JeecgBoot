@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <:include file="./common/title.html" websiteName="订单查询 - ${website.websiteName}" keywords="${website.keywords}"
+              description="${website.description}" favicon="${website.favicon}" shop="${shop}"/>
+    <link rel="stylesheet" href="${ctxPath}/default/css/search.css"/>
+    <link rel="stylesheet" href="${ctxPath}/default/css/banner.css"/>
+</head>
+<body>
+<!-- header -->
+<:include file="./common/header.html" websiteName="${website.websiteName}" websiteLogo="${website.websiteLogo}"/>
+<div class="layui-container body-card" style="margin-bottom: 15px;">
+    <div class="search-show">
+        <form class="layui-form toolbar">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-xs12 layui-col-sm8 layui-col-md9">
+                    <input type="text" name="contact" class="layui-input" lay-verify="required"
+                           placeholder="请输入TUD开头订单号/联系方式/流水号" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-col-xs12 layui-col-sm4 layui-col-md3">
+                    <button class="layui-btn layui-btn-show" lay-filter="goodsTbSearch" lay-submit>
+                        查询订单
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="layui-container body-card">
+    <div class="layui-row layui-col-space15" id="search-card">
+        <div class="layui-col-md12">
+            <div class="no-content">
+                <img src="${ctxPath}/default/images/error_ic_empty.png" class="no-content-img">
+                <p class="user-no-contents">暂无记录</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- footer -->
+<:include file="./common/footer.html" websiteName="${website.websiteName}" beianIcp="${website.beianIcp}" shop="${shop}"/>
+<!-- footer -->
+<:include file="./common/footer-menu-search.html"/>
+<!-- 项目模板 -->
+<script type="text/html" id="orderItem">
+    <div class="layui-col-xs12 layui-col-sm4 layui-col-md3">
+        <div class="order-item">
+            <div class="hd">
+                <dl style="position: relative; z-index: 2;">
+                    <dt>{{d.member}}</dt>
+                    <dd>订单时间：{{d.createTime}}</dd>
+                </dl>
+            </div>
+            <div class="bd">
+                <dl style="position: relative; display: block; -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;">
+                    <dt>
+                        {{#  if(d.status == '已支付'){ }}<span style="color: rgb(103, 194, 58)">{{d.status}}</span>{{#  } }}
+                        {{#  if(d.status == '待发货'){ }}<span style="color: rgb(230, 162, 60)">{{d.status}}</span>{{#  } }}
+                        {{#  if(d.status == '已发货'){ }}<span style="color: rgb(103, 194, 58)">{{d.status}}</span>{{#  } }}
+                        {{#  if(d.status == '未付款'){ }}<span style="color: rgb(245, 108, 108)">{{d.status}}</span>{{#  } }}
+                    </dt>
+                    <dd>支付状态</dd>
+                </dl>
+                <dl class="dd-box" style="position: relative; display: block; -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;">
+                    <dt>
+                        {{#  if(d.payType == 'QQ钱包'){ }}<span style="color: rgb(2, 168, 241)">{{d.payType}}</span>{{#  } }}
+                        {{#  if(d.payType == '支付宝'){ }}<span style="color: rgb(2, 168, 241)">{{d.payType}}</span>{{#  } }}
+                        {{#  if(d.payType == '微信'){ }}<span style="color: rgb(63, 183, 72)">{{d.payType}}</span>{{#  } }}
+                        {{#  if(d.payType == 'Paypal'){ }}<span style="color: rgb(0, 48, 135)">{{d.payType}}</span>{{#  } }}
+                        {{#  if(d.payType == 'USDT'){ }}<span style="color: rgb(63, 183, 72)">{{d.payType}}</span>{{#  } }}
+                    </dt>
+                    <dd>付款方式</dd>
+                </dl>
+                <dl class="dd-box"
+                    style="position: relative; display: block; -webkit-box-flex: 1; -webkit-flex: 1; flex: 1;">
+                    <dt>{{d.money}}</dt>
+                    <dd>订单金额</dd>
+                </dl>
+            </div>
+            <div class="ft" style="padding: 15px;">
+                <a class="layui-btn layui-btn-primary layui-border-blue"
+                   style="width: 100%; font-size: 15px; border-radius: 5px;" href="${ctxPath}/search/order/{{d.member}}"
+                   target="_blank">查看卡密</a>
+            </div>
+        </div>
+    </div>
+</script>
+
+<!-- js部分 -->
+<:include file="./common/js.html"/>
+<script type="text/javascript" src="${ctxPath}/default/js/banner.js"></script>
+
+<script>
+    layui.use(['layer', 'form', 'util', 'admin', 'dataGrid'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var dataGrid = layui.dataGrid;
+        var ordersListJson = JSON.parse('${ordersList!}').map(function (d) {
+            return {
+                id: d.id,
+                andIncrement: d.andIncrement,
+                member: d.member,
+                createTime: d.createTime,
+                payType: d.payType,
+                status: d.status,
+                money: d.money
+            }
+        });
+
+        if (ordersListJson.length != 0) {
+            dataGrid.render({
+                elem: '#search-card',
+                templet: '#orderItem',
+                data: ordersListJson
+            });
+        } else {
+            var cardListHtml = '' +
+                '<div class="layui-col-md12">' +
+                '    <div class="no-content">\n' +
+                '        <img src="${ctxPath}/default/images/error_ic_empty.png" class="no-content-img">\n' +
+                '        <p class="user-no-contents">没有查询到该订单</p>\n' +
+                '    </div>' +
+                '</div>';
+
+            $("#search-card").html(cardListHtml);
+        }
+
+
+        /* 表格搜索 */
+        form.on('submit(goodsTbSearch)', function (data) {
+            var mData = data.field; // 拿到用户输入的内容
+            $.post('${ctxPath}/orders/orders/pageAll', {
+                page: 1,
+                limit: 10,
+                contact: mData.contact
+            }, function (res) {
+                if (0 === res.code) {
+                    var list = res.data;
+                    var cardListHtml = '';
+                    if (list.length != 0) {
+                        dataGrid.render({
+                            elem: '#search-card',
+                            templet: '#orderItem',
+                            data: list
+                        });
+                    } else {
+                        cardListHtml = '' +
+                            '<div class="layui-col-md12">' +
+                            '    <div class="no-content">\n' +
+                            '        <img src="${ctxPath}/default/images/error_ic_empty.png" class="no-content-img">\n' +
+                            '        <p class="user-no-contents">没有查询到该订单</p>\n' +
+                            '    </div>' +
+                            '</div>';
+
+                        $("#search-card").html(cardListHtml);
+                    }
+                } else {
+                    layer.msg(res.msg)
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

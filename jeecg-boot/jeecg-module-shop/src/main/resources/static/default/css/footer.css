@@ -1,0 +1,91 @@
+@media screen and (max-width: 991px) {
+    .ew-footer .link-box {
+        display: inline;
+        padding-top: 24px;
+    }
+    .ship-link .left {
+        min-width: 72px;
+    }
+}
+
+.link-box {
+    color: #002059;
+    height: auto;
+}
+
+.grid {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.link-box .other-link {
+    border-bottom: 1px solid #eaeaea;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    -moz-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding-top: 26px;
+    padding-bottom: 22px;
+}
+
+.link-box .ship-link {
+    padding-top: 24px;
+    padding-bottom: 8px;
+    font-size: .8rem;
+    opacity: .4;
+    color: #002059;
+}
+
+.link-box .beian {
+    text-align: center;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    font-size: .8rem;
+    font-weight: 400;
+    font-family: Content-font, Roboto, sans-serif;
+    color: rgb(57, 57, 57, 0.5);
+}
+
+.link-box .other-link .cop {
+    font-size: .8rem;
+    color: #BFC7D5;
+}
+
+.link-box .other-link .other, .map-container {
+    position: relative;
+}
+
+.link-box .other-link .icon {
+    margin-left: 20px;
+}
+
+.link-box .ship-link .left {
+    width: 11%;
+    padding-top: 5px;
+}
+
+.link-box .ship-link .right {
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    display: flex;
+}
+
+.link-box .ship-link .right a {
+    margin-right: 10px;
+    line-height: 24px;
+    white-space: nowrap;
+    color: #002059;
+}
+
+.link-box .beian p {
+    margin: 6px 0;
+}
+
+.link-box .beian a {
+    color: rgba(0, 32, 89, .4);
+}

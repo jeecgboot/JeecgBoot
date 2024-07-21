@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background: #f5f5f5;
+        }
+        .email {
+            width: 100%;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid rgb(212, 218, 223);
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<div class="email">
+    <h2>${title!} 发货提醒</h2>
+    <h3>订单号：${member!}</h3>
+    <h3>付款时间：${date!}</h3>
+    <h3>提取密码：${password!}</h3>
+    <h3>提取卡密：<a href="${url!}" target="_blank">${url!}</a></h3>
+</div>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!-- fileChoose -->
+<div class="file-choose-dialog">
+    <!-- 顶部工具栏 -->
+    <div class="file-choose-top-bar">
+        <div class="file-choose-top-text">当前位置：<span id="fc-current-position">/</span></div>
+        <div class="file-choose-top-btn-group">
+            <button id="fc-btn-back" class="layui-btn layui-btn-sm layui-btn-primary">
+                <i class="layui-icon">&#xe65c;</i>上级
+            </button>
+            <button id="fc-btn-refresh" class="layui-btn layui-btn-sm layui-btn-primary">
+                <i class="layui-icon">&#xe669;</i>刷新
+            </button>
+            <button id="fc-btn-upload" class="layui-btn layui-btn-sm layui-btn-normal" style="margin-right: 0;">
+                <i class="layui-icon">&#xe681;</i>上传
+            </button>
+        </div>
+    </div>
+    <!-- 文件列表 -->
+    <div id="file-choose-list" class="file-choose-list"></div>
+    <!-- 加载动画 -->
+    <div class="file-choose-loading-group">
+        <div class="file-choose-loading">
+            <span></span><span></span><span></span><span></span>
+        </div>
+    </div>
+    <!-- 底部工具栏 -->
+    <div class="file-choose-bottom-bar">
+        <button id="fc-btn-ok-sel" class="layui-btn layui-btn-sm layui-btn-normal">完成选择</button>
+    </div>
+</div>
+
+<style>
+    /** fileChoose */
+    .file-choose-dialog {
+        position: relative;
+        background: #fff;
+        height: 100%;
+    }
+
+    /** 顶部工具栏 */
+    .file-choose-dialog .file-choose-top-bar {
+        position: relative;
+        white-space: nowrap;
+        overflow: auto;
+        text-align: right;
+        padding: 5px 12px;
+        background-color: #fff;
+        z-index: 1;
+    }
+
+    .file-choose-dialog .file-choose-top-bar .layui-btn {
+        padding: 0 6px;
+        margin-left: 5px;
+    }
+
+    .file-choose-dialog .file-choose-top-bar .layui-btn .layui-icon {
+        font-size: 14px !important;
+    }
+
+    .file-choose-dialog .file-choose-top-text {
+        padding: 7px 15px 0 0;
+        display: inline-block;
+        float: left;
+    }
+
+    .file-choose-dialog .file-choose-top-btn-group {
+        display: inline-block;
+    }
+
+    /** 底部工具栏 */
+    .file-choose-dialog .file-choose-bottom-bar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-top: 1px solid #eee;
+        padding: 8px 12px;
+        text-align: right;
+        background-color: #fff;
+    }
+
+    .file-choose-dialog.hide-bottom .file-choose-bottom-bar {
+        display: none;
+    }
+
+    /** 文件列表 */
+    .file-choose-dialog .file-choose-list, .file-choose-loading-group {
+        position: absolute;
+        top: 40px;
+        bottom: 48px;
+        left: 0;
+        right: 0;
+        overflow: auto;
+        padding: 5px 8px;
+    }
+
+    .file-choose-dialog.hide-bottom .file-choose-list, .file-choose-dialog.hide-bottom .file-choose-loading-group {
+        bottom: 0;
+    }
+
+    /* 文件列表item */
+    .file-choose-dialog .file-choose-list-item {
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+        padding: 8px 8px;
+        margin: 5px 0;
+        cursor: pointer;
+    }
+
+    .file-choose-dialog .file-choose-list-item:hover {
+        background-color: #F7F7F7;
+    }
+
+    /* 文件列表图片 */
+    .file-choose-dialog .file-choose-list-item-img {
+        width: 90px;
+        height: 90px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+        border-radius: 3px;
+        overflow: hidden;
+        position: relative;
+        background-color: #eee;
+    }
+
+    .file-choose-dialog .file-choose-list-item-img.img-icon {
+        background-size: inherit;
+        background-color: transparent;
+    }
+
+    .file-choose-dialog .file-choose-list-item.active .file-choose-list-item-img:after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    /* 文件列表名称 */
+    .file-choose-dialog .file-choose-list-item-name {
+        width: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: #333;
+        font-size: 12px;
+        text-align: center;
+        margin-top: 12px;
+    }
+
+    /* 文件列表复选框 */
+    .file-choose-dialog .file-choose-list-item-ck {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+    }
+
+    .file-choose-dialog .file-choose-list-item-ck .layui-form-checkbox {
+        padding: 0;
+    }
+
+    /* 文件列表操作菜单 */
+    .file-choose-dialog .file-choose-oper-menu {
+        background-color: #fff;
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        border-radius: 2px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, .15);
+        transition: all .3s;
+        overflow: hidden;
+        transform: scale(0);
+        transform-origin: left top;
+        visibility: hidden;
+    }
+
+    .file-choose-dialog .file-choose-oper-menu.show {
+        transform: scale(1);
+        visibility: visible;
+    }
+
+    /* 文件列表操作菜单item */
+    .file-choose-dialog .file-choose-oper-menu-item {
+        color: #555;
+        padding: 6px 5px;
+        font-size: 14px;
+        min-width: 70px;
+        text-align: center;
+        cursor: pointer;
+        display: block;
+    }
+
+    .file-choose-dialog .file-choose-oper-menu-item:hover {
+        background-color: #eee;
+    }
+
+    /** 文件列表为空时样式 */
+    .file-choose-dialog .file-choose-empty {
+        text-align: center;
+        color: #999;
+        padding: 50px 0;
+    }
+
+    .file-choose-dialog .file-choose-empty .layui-icon {
+        font-size: 60px;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    /** 加载动画 */
+    .file-choose-dialog .file-choose-loading-group {
+        background-color: #fff;
+    }
+
+    .file-choose-dialog .file-choose-loading {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        -webkit-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+    }
+
+    .file-choose-dialog .file-choose-loading span {
+        display: inline-block;
+        width: 5px;
+        height: 0px;
+        margin: 0 2px;
+        vertical-align: bottom;
+        background-color: #1E9FFF;
+        animation: fcl-signal-load 1s infinite;
+        -webkit-animation: fcl-signal-load 1s infinite;
+    }
+
+    .file-choose-dialog .file-choose-loading span:nth-child(2) {
+        animation-delay: 0.05s;
+        -webkit-animation-delay: 0.05s;
+    }
+
+    .file-choose-dialog .file-choose-loading span:nth-child(3) {
+        animation-delay: 0.1s;
+        -webkit-animation-delay: 0.1s;
+    }
+
+    .file-choose-dialog .file-choose-loading span:nth-child(4) {
+        animation-delay: 0.15s;
+        -webkit-animation-delay: 0.15s;
+    }
+
+    @keyframes fcl-signal-load {
+        0% {
+            height: 0px;
+        }
+        50% {
+            height: 15px;
+        }
+        100% {
+            height: 0px;
+        }
+    }
+
+    @-webkit-keyframes fcl-signal-load {
+        0% {
+            height: 0px;
+        }
+        50% {
+            height: 15px;
+        }
+        100% {
+            height: 0px;
+        }
+    }
+</style>

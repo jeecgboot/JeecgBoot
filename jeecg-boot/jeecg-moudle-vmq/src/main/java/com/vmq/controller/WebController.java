@@ -8,6 +8,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.vmq.config.EmailUtils;
+import com.vmq.dao.PayOrderDao;
 import com.vmq.entity.PayOrder;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.CreateOrderRes;
@@ -53,6 +54,9 @@ public class WebController {
 
     @Autowired
     private AdminService adminService;
+
+    @Autowired
+    private PayOrderDao payOrderDao;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -157,7 +161,7 @@ public class WebController {
      */
     @RequestMapping(value = "/createOrder", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "创建订单")
-    public String createOrder(@RequestBody PayOrder payOrder, HttpServletRequest request) {
+    public String createOrder(PayOrder payOrder, HttpServletRequest request) {
         if (StringUtils.isEmpty(payOrder.getPayId())) {
             return new Gson().toJson(ResUtil.error("请传入商户订单号"));
         }
@@ -206,7 +210,7 @@ public class WebController {
             if (c == null) {
                 return commonRes.getMsg();
             } else {
-                return "<script>window.location.href = '/payPage/pay.html?orderId=" + c.getOrderId() + "'</script>";
+                return "<script>window.location.href = '/vmq/payPage?orderId=" + c.getOrderId() + "'</script>";
             }
         }
     }
@@ -235,20 +239,30 @@ public class WebController {
 
     @RequestMapping(value = "/getOrder", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "查询订单信息")
-    public CommonRes getOrder(String orderId) {
-        if (orderId == null) {
+    public CommonRes getOrder(String orderId,String payId) {
+        PayOrder payOrder = null;
+        if (StringUtils.isNotBlank(orderId)) {
+            payOrder = payOrderDao.findByOrderId(orderId);
+        } else if (StringUtils.isNotBlank(payId)) {
+            payOrder = payOrderDao.findByPayId(payId);
+        } else {
             return ResUtil.error("请传入订单编号");
         }
-        return webService.getOrder(orderId);
+        return webService.getOrder(payOrder.getOrderId());
     }
 
     @RequestMapping(value = "/checkOrder", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "查询订单状态")
-    public CommonRes checkOrder(String orderId) {
-        if (orderId == null) {
+    public CommonRes checkOrder(String orderId,String payId) {
+        PayOrder payOrder = null;
+        if (StringUtils.isNotBlank(orderId)) {
+            payOrder = payOrderDao.findByOrderId(orderId);
+        } else if (StringUtils.isNotBlank(payId)) {
+            payOrder = payOrderDao.findByPayId(payId);
+        } else {
             return ResUtil.error("请传入订单编号");
         }
-        return webService.checkOrder(orderId);
+        return webService.checkOrder(payOrder.getOrderId());
     }
 
     @RequestMapping(value = "/getState", method = {RequestMethod.GET, RequestMethod.POST})

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="./common/title.html" websiteName="调用支付接口错误 - ${website.websiteName}" keywords="${website.keywords}"
+              description="${website.description}" favicon="${website.favicon}" shop="${shop}"/>
+</head>
+<body class="page-no-scroll">
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+<!-- header -->
+<:include file="./common/header.html" websiteName="${website.websiteName}"
+          websiteLogo="${website.websiteLogo}"/>
+
+<div class="layui-container body-card">
+    <div class="layui-card">
+        <div class="layui-card-body ew-state-group">
+            <img src="${ctxPath}/default/images/error_ic_gn.png" style="height: 200px;">
+            <p>【后台填写的 APPID 或 密钥不正确】</p>
+            <div class="btn-group">
+                <a class="layui-btn layui-btn-primary" ew-event="back">返回上级</a>
+                <a class="layui-btn" style="margin-right: 0;" href="${ctxPath}/">返回首页</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- footer -->
+<:include file="./common/footer.html" websiteName="${website.websiteName}" beianIcp="${website.beianIcp}" shop="${shop}"/>
+
+<!-- js部分 -->
+<:include file="./common/js.html"/>
+</body>
+</html>

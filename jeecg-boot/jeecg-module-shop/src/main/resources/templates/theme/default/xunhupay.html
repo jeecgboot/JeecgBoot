@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <:include file="./common/title.html" websiteName="订单付款 - ${website.websiteName}" keywords="${website.keywords}" description="${website.description}" favicon="${website.favicon}" shop="${shop}"/>
+    <link rel="stylesheet" href="${ctxPath}/default/css/pay.css"/>
+    <script src="https://lib.baomitu.com/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body class="page-no-scroll">
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- header -->
+<:include file="./common/header.html" websiteName="${website.websiteName}" websiteLogo="${website.websiteLogo}"/>
+
+<div class="layui-container body-card">
+
+    <div class="top-text">
+        <div class="top-text-tips">订单提交成功，请尽快完成付款！</div>
+        <div class="top-text-main">商品说明：${goodsName!}</div>
+        <div class="top-text-price">
+            应付金额<span class="goods-money">${price!}</span>元
+        </div>
+    </div>
+
+    <div class="pay-card">
+        <div class="pay-header">
+            <div class="ew-container" style="text-align: center; padding: 20px;">
+                <:if test="${type==1}">
+                    <div class="wxpay-logo"></div>
+                </:if>
+                <:if test="${type==2}">
+                    <div class="alipay-logo"></div>
+                </:if>
+            </div>
+        </div>
+        <div class="pay-card-body">
+            <div class="qrcode-group">
+                <div class="qrcode-body" id="orderbody">
+                    <div id="payQrCode" style="width: 260px;height: 260px;">
+                        <img src="${result!}" style="width: 260px;height: 260px;">
+                    </div>
+                    <:if test="${type==2}">
+                        <img src="https://t.alipayobjects.com/tfscom/T1Z5XfXdxmXXXXXXXX.png"/>
+                    </:if>
+                    <:if test="${type==1}">
+                        <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iNDBweCIgaGVpZ2h0PSIzNHB4IiB2aWV3Qm94PSIwIDAgNDAgMzQiIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayI+CiAgICA8cGF0aCBkPSJNMTMuOTg3OTMyNiwyMS40MTU1ODQ0IEMxMy44MTI1MzUzLDIxLjUwMzg5NjEgMTMuNjM3MTM4LDIxLjU0ODA1MTkgMTMuNDE3ODkxNCwyMS41NDgwNTE5IEMxMi45MzU1NDg5LDIxLjU0ODA1MTkgMTIuNTQwOTA1MSwyMS4yODMxMTY5IDEyLjMyMTY1ODUsMjAuODg1NzE0MyBMMTIuMjMzOTU5OCwyMC43MDkwOTA5IEw4Ljc2OTg2MzY4LDEzLjExNDI4NTcgQzguNzI2MDE0MzYsMTMuMDI1OTc0IDguNzI2MDE0MzYsMTIuOTM3NjYyMyA4LjcyNjAxNDM2LDEyLjg0OTM1MDYgQzguNzI2MDE0MzYsMTIuNDk2MTAzOSA4Ljk4OTExMDI3LDEyLjIzMTE2ODggOS4zMzk5MDQ4MiwxMi4yMzExNjg4IEM5LjQ3MTQ1Mjc3LDEyLjIzMTE2ODggOS42MDMwMDA3MywxMi4yNzUzMjQ3IDkuNzM0NTQ4NjgsMTIuMzYzNjM2NCBMMTMuODEyNTM1MywxNS4yNzc5MjIxIEMxNC4xMTk0ODA1LDE1LjQ1NDU0NTUgMTQuNDcwMjc1MSwxNS41ODcwMTMgMTQuODY0OTE4OSwxNS41ODcwMTMgQzE1LjA4NDE2NTUsMTUuNTg3MDEzIDE1LjMwMzQxMjEsMTUuNTQyODU3MSAxNS41MjI2NTg3LDE1LjQ1NDU0NTUgTDM0LjY0MDk2MTUsNi44ODgzMTE2OSBDMzEuMjIwNzE0NywyLjgyNTk3NDAzIDI1LjU2NDE1MjYsMC4xNzY2MjMzNzcgMTkuMTYyMTUyMSwwLjE3NjYyMzM3NyBDOC43MjYwMTQzNiwwLjE3NjYyMzM3NyAwLjIxOTI0NjU5Miw3LjI4NTcxNDI5IDAuMjE5MjQ2NTkyLDE2LjA3MjcyNzMgQzAuMjE5MjQ2NTkyLDIwLjg0MTU1ODQgMi43NjI1MDcwNiwyNS4xNjg4MzEyIDYuNzUyNzk1MDMsMjguMDgzMTE2OSBDNy4wNTk3NDAyNiwyOC4zMDM4OTYxIDcuMjc4OTg2ODUsMjguNzAxMjk4NyA3LjI3ODk4Njg1LDI5LjA5ODcwMTMgQzcuMjc4OTg2ODUsMjkuMjMxMTY4OCA3LjIzNTEzNzUzLDI5LjM2MzYzNjQgNy4xOTEyODgyMSwyOS40OTYxMDM5IEM2Ljg4NDM0Mjk5LDMwLjY4ODMxMTcgNi4zNTgxNTExNywzMi42MzExNjg4IDYuMzU4MTUxMTcsMzIuNzE5NDgwNSBDNi4zMTQzMDE4NSwzMi44NTE5NDgxIDYuMjcwNDUyNTMsMzMuMDI4NTcxNCA2LjI3MDQ1MjUzLDMzLjIwNTE5NDggQzYuMjcwNDUyNTMsMzMuNTU4NDQxNiA2LjUzMzU0ODQ0LDMzLjgyMzM3NjYgNi44ODQzNDI5OSwzMy44MjMzNzY2IEM3LjAxNTg5MDk0LDMzLjgyMzM3NjYgNy4xNDc0Mzg5LDMzLjc3OTIyMDggNy4yMzUxMzc1MywzMy42OTA5MDkxIEwxMS4zNTY5NzM1LDMxLjI2MjMzNzcgQzExLjY2MzkxODcsMzEuMDg1NzE0MyAxMi4wMTQ3MTMyLDMwLjk1MzI0NjggMTIuMzY1NTA3OCwzMC45NTMyNDY4IEMxMi41NDA5MDUxLDMwLjk1MzI0NjggMTIuNzYwMTUxNiwzMC45OTc0MDI2IDEyLjkzNTU0ODksMzEuMDQxNTU4NCBDMTQuODY0OTE4OSwzMS42MTU1ODQ0IDE2Ljk2OTY4NjIsMzEuOTI0Njc1MyAxOS4xMTgzMDI4LDMxLjkyNDY3NTMgQzI5LjU1NDQ0MDYsMzEuOTI0Njc1MyAzOC4wNjEyMDg0LDI0LjgxNTU4NDQgMzguMDYxMjA4NCwxNi4wMjg1NzE0IEMzOC4wNjEyMDg0LDEzLjM3OTIyMDggMzcuMjcxOTIwNiwxMC44NjIzMzc3IDM1LjkxMjU5MTgsOC42NTQ1NDU0NSBMMTQuMTE5NDgwNSwyMS4zMjcyNzI3IEwxMy45ODc5MzI2LDIxLjQxNTU4NDQgWiIgaWQ9IlhNTElEXzgxXyIgZmlsbD0iIzIyQUMzOCI+PC9wYXRoPgo8L3N2Zz4="/>
+                    </:if>
+                </div>
+                <div class="amount" id="timeOut" style="font-size: 20px;color: red;display: none;"><p>
+                    订单已过期，请您返回网站重新发起支付</p><br></div>
+
+                <div class="qrcode-desc">
+                    <img src="https://storage.360buyimg.com/payment-assets/pc/icon/icon-red.png"/>
+                    <div>请使用
+                        <:if test="${type==1}">
+                            微信
+                        </:if>
+                        <:if test="${type==2}">
+                            支付宝
+                        </:if>
+                        扫一扫<br>扫描二维码支付
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pay-card-footer">
+            <a href="${ctxPath}/search/order/${ordersMember!}" class="pay-card-right-btn ew-disable">等待支付（60s）</a>
+        </div>
+    </div>
+
+</div>
+<!-- footer -->
+<:include file="./common/footer.html" websiteName="${website.websiteName}" websiteLogo="${website.websiteLogo}" shop="${shop}"/>
+<!-- js部分 -->
+<:include file="./common/js.html"/>
+<script>
+    layui.config({
+        base: '${ctxPath}/default/module/'
+    }).use(['layer', 'QRCode', 'notice'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var QRCode = layui.QRCode;
+        var notice = layui.notice;
+
+        // 支付倒计时
+        var syTime = 60;
+        var timer = setInterval(function () {
+            syTime--;
+            if (syTime <= 45) {
+                $('.pay-card-right-btn').text('已完成支付 >');
+                $('.pay-card-right-btn').removeClass('ew-disable');
+                clearInterval(timer);
+            } else {
+                $('.pay-card-right-btn').text('等待支付（' + syTime + 's）');
+            }
+        }, 1000);
+
+        // 获取订单状态
+        setInterval(function () {
+            $.get('${ctxPath}/order/state/${orderId!}', function (res) {
+                if (res.code == 200 && res.data == 1) {
+                    notice.msg("支付成功", {icon: 1});
+                    setInterval(function () {
+                        location.href = '${ctxPath}/search/order/${ordersMember!}';
+                    }, 1000);
+                }
+            }, 'json');
+        }, 1500);
+
+        /**
+         * 判断是否是支付宝，如果是则使用
+         */
+        <:if test="${type==2}">
+            // 判断是否是移动设备
+            var device = layui.device();
+            if (device.android || device.ios) {
+                layer.confirm('是否打开支付宝APP支付？', {
+                    title: '温馨提示',
+                    shade: .1
+                }, function () {
+                    window.open(${result!});
+                });
+            }
+        </:if>
+    });
+</script>
+</body>
+</html>

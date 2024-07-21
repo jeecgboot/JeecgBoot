@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <:include file="../common/css.html" title="文件管理"/>
+    <style>
+        #dirTable + .layui-table-view .layui-table-tool-temp {
+            padding-right: 0;
+        }
+
+        #dirTable + .layui-table-view .layui-table-body tbody > tr td {
+            cursor: pointer;
+        }
+
+        #dirTable + .layui-table-view .layui-table-body tbody > tr.layui-table-click {
+            background-color: #fff3e0;
+        }
+
+        #dirTable + .layui-table-view .layui-table-body tbody > tr.layui-table-click td:last-child > div:before {
+            position: absolute;
+            right: 6px;
+            content: "\e602";
+            font-size: 12px;
+            font-style: normal;
+            font-family: layui-icon !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
+</head>
+<body>
+<!-- 正文开始 -->
+<div class="layui-fluid" style="padding-bottom: 0;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md3">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding: 10px;">
+                    <table id="dirTable" lay-filter="dirTable"></table>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md9">
+            <div class="layui-card">
+                <div class="layui-card-body" style="padding: 10px;">
+                    <table id="fileTable" lay-filter="fileTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="fileTbBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" href="${ctxPath}/file/{{d.url}}" target="_blank">预览</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs"
+       data-dropdown="#roleTbDelDrop{{d.LAY_INDEX}}" no-shade="true">删除</a>
+    <div class="dropdown-menu-nav dropdown-popconfirm dropdown-top-right layui-hide"
+         id="roleTbDelDrop{{d.LAY_INDEX}}"
+         style="max-width: 200px;white-space: normal;min-width: auto;margin-left: 10px;">
+        <div class="dropdown-anchor"></div>
+        <div class="dropdown-popconfirm-title">
+            <i class="layui-icon layui-icon-help"></i>
+            确定要删除此文件吗？
+        </div>
+        <div class="dropdown-popconfirm-btn">
+            <a class="layui-btn" btn-cancel>取消</a>
+            <a class="layui-btn layui-btn-normal" lay-event="del">确定</a>
+        </div>
+    </div>
+</script>
+<:include file="../common/js.html"/>
+<script>
+    layui.use(['layer', 'table', 'util', 'dropdown', 'fileChoose', 'upload'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var table = layui.table;
+        var util = layui.util;
+
+        /* 渲染表格 */
+        var insTb = table.render({
+            elem: '#dirTable',
+            url: 'list',
+            height: 'full-50',
+            toolbar: '<p><button lay-event="dialog" class="layui-btn layui-btn-sm icon-btn"> <i class="layui-icon">&#xe634;</i>弹窗选择 </button></p>',
+            defaultToolbar: [],
+            cols: [[
+                {type: 'numbers'},
+                {field: 'name', title: '文件目录'}
+            ]],
+            done: function (res, curr, count) {
+                $('#dirTable+.layui-table-view .layui-table-body tbody>tr:first').trigger('click');
+            }
+        });
+
+        /* 表格头工具栏点击事件 */
+        table.on('toolbar(dirTable)', function (obj) {
+            if (obj.event === 'dialog') { // 弹窗选择
+                layui.fileChoose.open({
+                    fileUrl: '${ctxPath}/file/',
+                    listUrl: 'list',
+                    upload: {url: 'upload'},
+                    num: 3,
+                    onChoose: function (urls) {
+                        layer.msg('你选择了：' + JSON.stringify(urls), {icon: 1});
+                    },
+                    response: {code: 0}
+                });
+            }
+        });
+
+        /* 监听行单击事件 */
+        table.on('row(dirTable)', function (obj) {
+            obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+            insTb2.reload({where: {dir: obj.data.name}, url: 'list'});
+        });
+
+        /* 渲染表格2 */
+        var insTb2 = table.render({
+            elem: '#fileTable',
+            data: [],
+            height: 'full-50',
+            toolbar: '<p><button id="fileUploadBtn" class="layui-btn layui-btn-sm icon-btn"> <i class="layui-icon">&#xe681;</i>上传文件 </button></p>',
+            cellMinWidth: 120,
+            cols: [[
+                {type: 'numbers'},
+                {field: 'name', title: '文件名称', sort: true},
+                {
+                    field: 'size', title: '文件大小', sort: true, width: 120,
+                    templet: '<p>{{(d.size/1024).toFixed(2)}}kb</p>'
+                },
+                {
+                    field: 'updateTime', title: '上传时间', templet: function (d) {
+                        return util.toDateString(d.updateTime);
+                    }, sort: true, width: 160
+                },
+                {title: '操作', toolbar: '#fileTbBar', align: 'center', width: 120, minWidth: 120}
+            ]],
+            done: function () {
+                layui.upload.render({
+                    elem: '#fileUploadBtn',
+                    url: 'upload',
+                    before: function (obj) {
+                        layer.load(2);
+                    },
+                    done: function (res) {
+                        layer.closeAll('loading');
+                        if (0 === res.code) {
+                            layer.msg(res.msg, {icon: 1});
+                            insTb.reload();
+                        } else {
+                            layer.msg(res.msg, {icon: 2, anim: 6});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('上传失败', {icon: 2, anim: 6});
+                        layer.closeAll('loading');
+                    }
+                });
+            }
+        });
+
+        /* 表格2工具条点击事件 */
+        table.on('tool(fileTable)', function (obj) {
+            if (obj.event === 'del') { // 删除
+                var loadIndex = layer.load(2);
+                $.get('remove', {path: obj.data.url}, function (res) {
+                    layer.close(loadIndex);
+                    if (0 === res.code) {
+                        layer.msg(res.msg, {icon: 1});
+                        insTb2.reload();
+                    } else {
+                        layer.msg(res.msg, {icon: 2, anim: 6});
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>

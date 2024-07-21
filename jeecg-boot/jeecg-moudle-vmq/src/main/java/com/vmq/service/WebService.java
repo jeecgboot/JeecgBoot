@@ -73,7 +73,7 @@ public class WebService {
         String orderId = StringUtils.format(new Date(),"yyyyMMddHHmmss") + (int)(1000+Math.random()*(9999-1000+1));
 
         //实际支付价格
-        double reallyPrice = payOrder.getPrice();
+        double reallyPrice = Double.valueOf(payOrder.getPrice());
         int row = 0;
         int payQf = setting.getPayQf();
         while (row == 0){
@@ -124,7 +124,7 @@ public class WebService {
         payOrder.setCreateDate(new Date().getTime());
         payOrder.setPayDate(0);
         payOrder.setCloseDate(0);
-        payOrder.setReallyPrice(reallyPrice);
+        payOrder.setReallyPrice(String.valueOf(reallyPrice));
         payOrder.setState(0);
         payOrder.setIsAuto(isAuto);
         payOrder.setPayUrl(payUrl);
@@ -132,7 +132,7 @@ public class WebService {
         payOrderDao.save(payOrder);
 
         String timeOut = setting.getClose();
-        CreateOrderRes createOrderRes = new CreateOrderRes(payOrder.getPayId(),orderId,payOrder.getType(),payOrder.getPrice(),reallyPrice,payUrl,isAuto,0,Integer.valueOf(timeOut),payOrder.getCreateDate());
+        CreateOrderRes createOrderRes = new CreateOrderRes(payOrder.getPayId(),orderId,payOrder.getType(),payOrder.getPrice(),String.valueOf(reallyPrice),payUrl,isAuto,0,Integer.valueOf(timeOut),payOrder.getCreateDate());
         if (setting.getIsApprove() == 1) {
             PayInfo payInfo = new PayInfo(payOrder);
             String urlParam = "?orderId="+payInfo.getOrderId()+"&sign="+md5(payOrder.getOrderId()+key);
@@ -253,8 +253,8 @@ public class WebService {
             payOrder.setCloseDate(new Date().getTime());
             payOrder.setParam("无订单转账");
             payOrder.setType(type);
-            payOrder.setPrice(Double.valueOf(price));
-            payOrder.setReallyPrice(Double.valueOf(price));
+            payOrder.setPrice(price);
+            payOrder.setReallyPrice(price);
             payOrder.setState(1);
             payOrder.setPayUrl("无订单转账");
             payOrderDao.save(payOrder);
@@ -377,5 +377,17 @@ public class WebService {
         //加密后的字符串
         String encodeStr= DigestUtils.md5DigestAsHex(text.getBytes());
         return encodeStr;
+    }
+
+    public static void main(String args[]) {
+        //md5(payId+param+type+price+通讯密钥)
+        String payId = "TUD20240721193546TIw499";
+        String param = "10";
+        String type = "1";
+        String price = "50.00";
+        String key = "40fd1247932a38d6e3579484faeb5b7a";
+        System.out.println(payId+param+type+price+key);
+        String sign = md5(payId+param+type+price+key);
+        System.out.println(sign);
     }
 }
