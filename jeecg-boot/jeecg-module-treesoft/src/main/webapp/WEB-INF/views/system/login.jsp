@@ -9,8 +9,8 @@
 <meta name="Description" content="IT 数据库管理 V2.3.1 ">
 <meta name="viewport" content="width=device-width, initial-scale=0.85">
 <link rel="stylesheet" type="text/css" href="${ctx}/static/css/bglogin.css" />
-<link rel="icon" href="${ctx}/favicon.ico" mce_href="${ctx}/favicon.ico" type="image/x-icon">
-<link rel="shortcut icon" href="${ctx}/favicon.ico" mce_href="${ctx}/favicon.ico" type="image/x-icon">
+<link rel="icon" href="${ctx}/favicon.png" mce_href="${ctx}/favicon.png" type="image/x-icon">
+<link rel="shortcut icon" href="${ctx}/favicon.png" mce_href="${ctx}/favicon.png" type="image/x-icon">
 <script>
 	var captcha;
 	function refreshCaptcha() {
@@ -40,14 +40,12 @@
 	}
 </script>
 </head>
-<body>
+<body style="background: url('https://tuapi.eees.cc/api.php?category=fengjing&type=302')">
 	<div>
 		<form id="loginForm" action="${ctx}/treesoft/loginVaildate" method="post">
 			<div class="login_top">
 				<div class="login_title">
-					<span style="margin-left: 10px; margin-top: 10px; color: #fff"> <img src="${ctx}/static/images/logo.png">IT 数据库管理
-						 <span style="color: #fffl; font-size: 12px;">V2.3.1</span>
-					</span>
+					<span style="margin-left: 10px; margin-top: 10px;"> IT 数据库管理<span style="font-size: 12px;">V2.3.1</span></span>
 				</div>
 			</div>
 			<div style="float: left; width: 100%;">

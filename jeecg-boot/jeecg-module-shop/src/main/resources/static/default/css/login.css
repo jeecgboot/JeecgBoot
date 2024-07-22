@@ -1,5 +1,6 @@
 body {
-    background-image: url("../images/bg-login.jpg");
+    /*background-image: url("../images/bg-login.jpg");*/
+    background-image: url("https://www.dmoe.cc/random.php");
     background-repeat: no-repeat;
     background-size: cover;
     min-height: 100vh;

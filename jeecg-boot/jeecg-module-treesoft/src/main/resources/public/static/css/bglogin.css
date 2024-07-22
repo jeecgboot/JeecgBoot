@@ -9,7 +9,8 @@ form{margin:0px;padding:0px;}
 	
 	}
 .login_main{
-	background: url('../images/login_bg.png');
+	/*background: url('../images/login_bg.png');*/
+	background-color: rgba(255, 255, 255, 0.5);
 	width:423px;height:366px;display: block;margin:auto;margin-top:30px;
 	}
 .login_main_top{
@@ -41,7 +42,7 @@ form{margin:0px;padding:0px;}
 .login_main_remb span{display: block;float:left;line-height: 20px;}
 .login_main_submit{width:100%;height:45px;float:left;display:blcok;}
 .login_main_submit input{
-	width:150px;height:55px;display:block;background: url("../images/button.png");border: none;
+	width:150px;height:50px;display:block;background: url("../images/button.png");border: none;
 	margin-left: 135px;outline: none; cursor: pointer;
 	}
 

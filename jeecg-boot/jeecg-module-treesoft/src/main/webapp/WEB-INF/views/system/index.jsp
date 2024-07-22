@@ -21,8 +21,8 @@
 <link type="text/css" rel="stylesheet" href="${ctx}/static/css/eclipse.css">  
 <link type="text/css" rel="stylesheet" href="${ctx}/static/css/codemirror.css" />  
 <link type="text/css" rel="stylesheet" href="${ctx}/static/css/show-hint.css" /> 
-<link rel="icon" href="favicon.ico" mce_href="favicon.ico" type="image/x-icon">
-<link rel="shortcut icon" href="favicon.ico" mce_href="favicon.ico" type="image/x-icon">
+<link rel="icon" href="favicon.png" mce_href="favicon.png" type="image/x-icon">
+<link rel="shortcut icon" href="favicon.png" mce_href="favicon.png" type="image/x-icon">
   
 <script type="text/javascript" src="${ctx}/static/js/codemirror.js"> </script> 
 <script type="text/javascript" src="${ctx}/static/js/sql.js"> </script>  

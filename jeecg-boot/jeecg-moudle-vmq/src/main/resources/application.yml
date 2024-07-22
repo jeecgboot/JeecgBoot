@@ -20,7 +20,7 @@ spring:
         show-sql: true
     thymeleaf:
         cache: false
-        mode: LEGACY HTML5
+        mode: HTML
     mail:
         host: smtp.qq.com
         port: 587
