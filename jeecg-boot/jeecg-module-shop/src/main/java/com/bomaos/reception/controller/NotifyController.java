@@ -11,7 +11,7 @@ import com.bomaos.common.core.pays.budpay.BudpayUtil;
 import com.bomaos.common.core.pays.epay.EpayUtil;
 import com.bomaos.common.core.pays.epusdt.entity.EpusdtNotify;
 import com.bomaos.common.core.pays.epusdt.sendPay;
-import com.bomaos.common.core.pays.mqpay.mqPay;
+import com.bomaos.common.core.pays.mqpay.VmqPay;
 import com.bomaos.common.core.pays.payjs.SignUtil;
 import com.bomaos.common.core.pays.paypal.PaypalSend;
 import com.bomaos.common.core.pays.xunhupay.PayUtils;
@@ -201,7 +201,7 @@ public class NotifyController {
             key = mapTypes.get("key").toString();
         }
 
-        String mysign = mqPay.md5(payId + param + type + price + money + key);
+        String mysign = VmqPay.md5(payId + param + type + price + money + key);
 
         if (mysign.equals(sign)) {
             String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -245,7 +245,7 @@ public class NotifyController {
             Map mapTypes = JSON.parseObject(aliPays.getConfig());
             key = mapTypes.get("key").toString();
         }
-        String mysign = mqPay.md5(payId + param + type + price + reallyPrice + key);
+        String mysign = VmqPay.md5(payId + param + type + price + reallyPrice + key);
         if (mysign.equals(sign)) {
             String money = params.get("reallyPrice");
             String payNo = params.get("orderId");

@@ -12,7 +12,7 @@ import com.bomaos.common.core.pays.budpay.BudpayUtil;
 import com.bomaos.common.core.pays.epay.EpayUtil;
 import com.bomaos.common.core.pays.epusdt.entity.EpusdtEntity;
 import com.bomaos.common.core.pays.epusdt.sendPay;
-import com.bomaos.common.core.pays.mqpay.mqPay;
+import com.bomaos.common.core.pays.mqpay.VmqPay;
 import com.bomaos.common.core.pays.payjs.sendPayjs;
 import com.bomaos.common.core.pays.paypal.PaypalSend;
 import com.bomaos.common.core.pays.paypal.config.PaypalPaymentIntent;
@@ -354,7 +354,7 @@ public class OrderController extends BaseController {
         switch (Objects.requireNonNull(PaysEnmu.getByValue(orders.getPayType()))) {
             case MQPAY_ALIPAY: // V免签支付宝接口
             case MQPAY_WXPAY: // V免签微信接口
-                String createMqPay = mqPay.sendCreateMqPay(pays, price, ordersMember, cloudPayid, productDescription);
+                String createMqPay = VmqPay.sendCreateMqPay(pays, price, ordersMember, cloudPayid, productDescription);
                 response.sendRedirect(createMqPay);
                 break;
             case EPAY_ALIPAY: // 易支付支付宝

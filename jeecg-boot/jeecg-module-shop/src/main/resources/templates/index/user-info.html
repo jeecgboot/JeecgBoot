@@ -224,7 +224,7 @@
                     var loadIndex = layer.load(2);
                     $.post('${ctxPath}/file/upload/base64', {base64: data}, function (res) {
                         if (0 === res.code) {
-                            $.post('${ctxPath}/info/update', {avatar: res.url}, function (res) {
+                            $.post('${ctxPath}/sys/user/info/update', {avatar: res.url}, function (res) {
                                 layer.close(loadIndex);
                                 if (0 === res.code) {
                                     layer.msg(res.msg, {icon: 1});
@@ -248,7 +248,7 @@
             admin.confirm('确定要保存修改吗？', function (index) {
                 layer.close(index);
                 var loadIndex = layer.load(2);
-                $.post('${ctxPath}/info/update', data.field, function (res) {
+                $.post('${ctxPath}/sys/user/info/update', data.field, function (res) {
                     layer.close(loadIndex);
                     if (0 === res.code) {
                         layer.msg(res.msg, {icon: 1});

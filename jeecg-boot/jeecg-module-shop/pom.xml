@@ -287,23 +287,5 @@
             </plugin>
         </plugins>
     </build>
-   <!-- <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <fork>true</fork>
-                    <includeSystemScope>true</includeSystemScope>
-                </configuration>
-            </plugin>
-
-            &lt;!&ndash; 发布到外部tomcat需要做的配置 &ndash;&gt;
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>-->
 
 </project>

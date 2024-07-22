@@ -108,8 +108,8 @@
         var fileChoose = layui.fileChoose;
         var website = JSON.parse(JSON.stringify(${website!}));
         form.val('websiteForm', website);
-        $('#demo1').attr('src', '${ctxPath}' + website.favicon);
-        $('#demo2').attr('src', '${ctxPath}' + website.websiteLogo);
+        $('#demo1').attr('src', website.favicon);
+        $('#demo2').attr('src', website.websiteLogo);
 
         /* 表单提交 */
         form.on('submit(websiteEditSubmit)', function (data) {

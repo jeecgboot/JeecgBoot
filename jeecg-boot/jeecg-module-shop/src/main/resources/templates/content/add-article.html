@@ -124,7 +124,7 @@
             if (layui.admin.util.fullTextIsEmpty(data.field.content)) {
                 return layer.msg('请输入商品介绍正文', {icon: 2, anim: 6});
             }
-            $.post('${ctxPath}/save', data.field, function (res) {
+            $.post('${ctxPath}/content/article/save', data.field, function (res) {
                 if (0 === res.code) {
                     notice.msg(res.msg, {icon: 1});
                 } else {

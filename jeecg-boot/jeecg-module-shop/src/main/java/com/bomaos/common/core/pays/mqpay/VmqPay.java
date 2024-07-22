@@ -6,7 +6,7 @@ import org.springframework.util.DigestUtils;
 
 import java.util.Map;
 
-public class mqPay {
+public class VmqPay {
 
     public static String sendCreateMqPay(Pays pays, String price, String payId, String cloudPayid, String param) {
 

@@ -8,7 +8,7 @@
     <!-- 头部 -->
     <div class="layui-header">
         <div class="layui-logo">
-            <img src="<:if test="${website.websiteLogo == null || website.websiteLogo == ''}">${ctxPath}/default/images/logo.svg</:if><:if test="${website.websiteLogo != null || website.websiteLogo != ''}">${ctxPath + website.websiteLogo!}</:if>"/>
+            <img src="<:if test="${website.websiteLogo == null || website.websiteLogo == ''}">${ctxPath}/default/images/logo.svg</:if><:if test="${website.websiteLogo != null || website.websiteLogo != ''}">${website.websiteLogo!}</:if>"/>
             <cite>&nbsp;${website.websiteName}</cite>
         </div>
         <ul class="layui-nav layui-layout-left">
@@ -67,7 +67,7 @@
     <div class="layui-body"></div>
     <!-- 底部 -->
     <div class="layui-footer">
-        小码哥商店版权所有<span class="pull-right">v2.0.4</span>
+        码商城版权所有<span class="pull-right">v2.0.4</span>
     </div>
 </div>
 <:include file="./common/js.html"/>

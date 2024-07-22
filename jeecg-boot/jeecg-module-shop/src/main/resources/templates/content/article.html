@@ -144,7 +144,7 @@
         /* 修改状态 */
         form.on('switch(articleTbStatuCk)', function (obj) {
             var loadIndex = layer.load(2);
-            $.post('${ctxPath}/article/status/update', {
+            $.post('${ctxPath}/content/article/status/update', {
                 id: obj.elem.value,
                 status: obj.elem.checked ? 1 : 0
             }, function (res) {

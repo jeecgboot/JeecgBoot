@@ -11,16 +11,7 @@ import java.io.FileNotFoundException;
 public class Constants {
 
     /* 文件服务器配置 */
-    /*public static final String UPLOAD_DIR = System.getProperty("user.dir") + "/upload/";  // 上传的目录*/
-    public static String UPLOAD_DIR = "";  // 上传的目录
-
-    static {
-        try {
-            UPLOAD_DIR = ResourceUtils.getURL("classpath:").getPath() + "/static/upload/";
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+    public static final String UPLOAD_DIR = System.getProperty("user.dir") + "/upload/shop/";  // 上传的目录*/
 
     public static final boolean UPLOAD_UUID_NAME = false;  // 文件上传是否用uuid命名
     public static final boolean UPLOAD_MD5_NAME = true;  // 文件上传是否用MD5命名
@@ -38,4 +29,8 @@ public class Constants {
      * 支付超时时间(分钟)
      */
     public static Integer PAY_TIMEOUT_MINUTES = 5;
+
+    public static void main(String args[]) {
+        System.out.println(System.getProperty("user.dir"));
+    }
 }

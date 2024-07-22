@@ -79,7 +79,7 @@
         var $ = layui.jquery;
         var layer = layui.layer;
 
-         $.get("/wxpusher/getWxpushCode", function (res) {
+         $.get("${ctxPath}/wxpusher/getWxpushCode", function (res) {
             var mData = res.data;
             if (res.code == 0) {
                 if (mData.code == 1) {
@@ -92,7 +92,7 @@
 
         // 更换二维码内容
         $('#otherQRCodeBtn').click(function () {
-            $.get("/wxpusher/getWxpushCode", function (res) {
+            $.get("${ctxPath}/wxpusher/getWxpushCode", function (res) {
                 var mData = res.data;
                 if (res.code == 0) {
                     layer.msg("刷新成功！")

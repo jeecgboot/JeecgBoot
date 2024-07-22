@@ -1,4 +1,4 @@
-<h1 align="center">小码哥商店</h1>
+<h1 align="center">码商城</h1>
 <p align="center">
 <a href="https://github.com/Panyoujies/zlianpay-faka/releases"><img src="https://img.shields.io/badge/Version-1.0.1-green" alt="License"></a>
 <img alt="Spring Boot from Packagist badge" src="https://img.shields.io/badge/Spring--Boot-2.2.2-green">

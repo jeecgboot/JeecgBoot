@@ -55,7 +55,7 @@
         defaultToolbar: ["filter", "exports", "print"],
         autoSort: !0,
         text: {none: '<div class="no-content" style="padding: 60px 0 60px; text-align: center; color: #999;">' +
-                '            <img src="/default/images/error_ic_empty.png" class="no-content-img" style="width: 150px;margin: 0 auto 20px; display: block;">' +
+                '            <img src="/shop/default/images/error_ic_empty.png" class="no-content-img" style="width: 150px;margin: 0 auto 20px; display: block;">' +
                 '            <p class="user-no-contents" style="margin-bottom: 0; padding-bottom: 15px; text-align: center;font-size: 18px; color: #c8c8c8;">暂无数据</p>' +
                 '        </div>'}
     }, F.prototype.render = function () {
