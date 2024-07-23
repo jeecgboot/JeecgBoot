@@ -71,8 +71,8 @@ spring:
 
 # Mybatis-plus配置
 mybatis-plus:
-  mapper-locations: classpath:com/bomaos/**/*.xml
-  typeAliasesPackage: com.bomaos.**.entity
+  mapper-locations: classpath:com/shop/**/*.xml
+  typeAliasesPackage: com.shop.entity
   global-config:
     id-type: 0
     field-strategy: 1
