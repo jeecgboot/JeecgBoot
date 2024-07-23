@@ -292,8 +292,8 @@ cas:
 #Mybatis输出sql日志
 logging:
   level:
-    org.flywaydb: debug
-    org.jeecg.modules.system.mapper: debug
+    org.flywaydb: info
+    org.jeecg.modules.system.mapper: info
 #swagger
 knife4j:
   #开启增强配置

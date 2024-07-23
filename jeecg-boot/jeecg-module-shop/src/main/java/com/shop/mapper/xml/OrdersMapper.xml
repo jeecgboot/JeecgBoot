@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bomaos.mapper.OrdersMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM sys_orders a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.id != null">
+                    AND a.id = #{page.pageData.id}
+                </if>
+                <if test="page.pageData.member != null">
+                    AND a.member LIKE CONCAT('%', #{page.pageData.member}, '%')
+                </if>
+                <if test="page.pageData.status != null">
+                    AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.payTime != null">
+                    AND a.pay_time LIKE CONCAT('%', #{page.pageData.payTime}, '%')
+                </if>
+                <if test="page.pageData.contact != null">
+                    AND a.contact LIKE CONCAT('%', #{page.pageData.contact}, '%')
+                </if>
+                <if test="page.pageData.ip != null">
+                    AND a.ip LIKE CONCAT('%', #{page.pageData.ip}, '%')
+                </if>
+                <if test="page.pageData.goodsId != null">
+                    AND a.goods_id = #{page.pageData.goodsId}
+                </if>
+                <if test="page.pageData.shipType != null">
+                    AND a.ship_type = #{page.pageData.shipType}
+                </if>
+                <if test="page.pageData.productName != null">
+                    AND a.product_name LIKE CONCAT('%', #{page.pageData.productName}, '%')
+                </if>
+                <if test="page.pageData.payType != null">
+                    AND a.pay_type LIKE CONCAT('%', #{page.pageData.payType}, '%')
+                </if>
+                <if test="page.pageData.guestId != null">
+                    AND a.guest_id = #{page.pageData.guestId}
+                </if>
+                <if test="page.pageData.device != null">
+                    AND a.device LIKE CONCAT('%', #{page.pageData.device}, '%')
+                </if>
+                <if test="page.pageData.payNo != null">
+                    AND a.pay_no LIKE CONCAT('%', #{page.pageData.payNo}, '%')
+                </if>
+                <if test="page.pageData.money != null">
+                    AND a.money LIKE CONCAT('%', #{page.pageData.money}, '%')
+                </if>
+                <if test="page.pageData.price != null">
+                    AND a.price LIKE CONCAT('%', #{page.pageData.price}, '%')
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                <if test="page.pageData.isCoupon != null">
+                    AND a.is_coupon = #{page.pageData.isCoupon}
+                </if>
+                <if test="page.pageData.couponId != null">
+                    AND a.coupon_id = #{page.pageData.couponId}
+                </if>
+                <if test="page.pageData.password != null">
+                    AND a.password LIKE CONCAT('%', #{page.pageData.password}, '%')
+                </if>
+                <if test="page.pageData.cardsInfo != null">
+                    AND a.cards_info LIKE CONCAT('%', #{page.pageData.cardsInfo}, '%')
+                </if>
+                <if test="page.pageData.attachInfo != null">
+                    AND a.attach_info LIKE CONCAT('%', #{page.pageData.attachInfo}, '%')
+                </if>
+                <if test="page.pageData.handlingFee != null">
+                    AND a.handling_fee = #{page.pageData.handlingFee}
+                </if>
+                <if test="page.pageData.username != null">
+                    AND a.username = #{page.pageData.username}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.shop.entity.Orders">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.shop.entity.Orders">
+        <include refid="relSelect"></include>
+    </select>
+
+</mapper>

@@ -26,7 +26,7 @@ public class QuartzService {
     @Scheduled(fixedRate = 60000)
     public void timerToZZP(){
         // 获取超时时间（分钟）
-        Setting setting = settingDao.getSettingByUserName("guest");
+        Setting setting = settingDao.getSettingByUserName("msl");
         if (setting == null) {
             return;
         }

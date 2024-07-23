@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bomaos.mapper.OrganizationMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*, b.nick_name leader_name, b.username leader_account, c.organization_name parent_name,
+        d.dict_data_name organization_type_name
+        FROM sys_organization a
+        LEFT JOIN sys_user b ON a.leader_id = b.user_id
+        LEFT JOIN sys_organization c ON a.parent_id = c.organization_id
+        LEFT JOIN sys_dictionary_data d ON a.organization_type = d.dict_data_id
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.organizationId != null">
+                    AND a.organization_id = #{page.pageData.organizationId}
+                </if>
+                <if test="page.pageData.parentId != null">
+                    AND a.parent_id = #{page.pageData.parentId}
+                </if>
+                <if test="page.pageData.organizationName != null">
+                    AND a.organization_name LIKE CONCAT('%', #{page.pageData.organizationName}, '%')
+                </if>
+                <if test="page.pageData.organizationFullName != null">
+                    AND a.organization_full_name LIKE CONCAT('%', #{page.pageData.organizationFullName}, '%')
+                </if>
+                <if test="page.pageData.organizationType != null">
+                    AND a.organization_type = #{page.pageData.organizationType}
+                </if>
+                <if test="page.pageData.leaderId != null">
+                    AND a.leader_id = #{page.pageData.leaderId}
+                </if>
+                <if test="page.pageData.comments != null">
+                    AND a.comments LIKE CONCAT('%', #{page.pageData.comments}, '%')
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                <if test="page.pageData.leaderName != null">
+                    AND leader_name LIKE CONCAT('%', #{page.pageData.leaderName}, '%')
+                </if>
+                <if test="page.pageData.leaderAccount != null">
+                    AND leader_account LIKE CONCAT('%', #{page.pageData.leaderAccount}, '%')
+                </if>
+                <if test="page.pageData.parentName != null">
+                    AND parent_name LIKE CONCAT('%', #{page.pageData.parentName}, '%')
+                </if>
+                <if test="page.pageData.organizationTypeName != null">
+                    AND organization_type_name LIKE CONCAT('%', #{page.pageData.organizationTypeName}, '%')
+                </if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.shop.entity.Organization">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.shop.entity.Organization">
+        <include refid="relSelect"></include>
+    </select>
+    <!--<if test="page!=null and page.orders!=null">
+        order by
+        <foreach collection="page.orders" item="item" separator=",">
+            #{item.column} ${item.asc?'asc':'desc'}
+        </foreach>
+    </if>-->
+
+</mapper>

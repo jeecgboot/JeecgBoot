@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bomaos.mapper.ProductsMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM sys_products a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.id != null">
+                    AND a.id = #{page.pageData.id}
+                </if>
+                <if test="page.pageData.name != null">
+                    AND a.name LIKE CONCAT('%', #{page.pageData.name}, '%')
+                </if>
+                <if test="page.pageData.price != null">
+                    AND a.price LIKE CONCAT('%', #{page.pageData.price}, '%')
+                </if>
+                <if test="page.pageData.sort != null">
+                    AND a.sort = #{page.pageData.sort}
+                </if>
+                <if test="page.pageData.link != null">
+                    AND a.link LIKE CONCAT('%', #{page.pageData.link}, '%')
+                </if>
+                <if test="page.pageData.status != null">
+                    AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.pdInfo != null">
+                    AND a.pd_info LIKE CONCAT('%', #{page.pageData.pdInfo}, '%')
+                </if>
+                <if test="page.pageData.createdAt != null">
+                    AND a.created_at LIKE CONCAT('%', #{page.pageData.createdAt}, '%')
+                </if>
+                <if test="page.pageData.updatedAt != null">
+                    AND a.updated_at LIKE CONCAT('%', #{page.pageData.updatedAt}, '%')
+                </if>
+                <if test="page.pageData.deletedAt != null">
+                    AND a.deleted_at LIKE CONCAT('%', #{page.pageData.deletedAt}, '%')
+                </if>
+                <if test="page.pageData.indexLogo != null">
+                    AND a.index_logo LIKE CONCAT('%', #{page.pageData.indexLogo}, '%')
+                </if>
+                <if test="page.pageData.imageLogo != null">
+                    AND a.image_logo LIKE CONCAT('%', #{page.pageData.imageLogo}, '%')
+                </if>
+                <if test="page.pageData.isWholesale != null">
+                    AND a.is_wholesale LIKE CONCAT('%', #{page.pageData.isWholesale}, '%')
+                </if>
+                <if test="page.pageData.wholesale != null">
+                    AND a.wholesale LIKE CONCAT('%', #{page.pageData.wholesale}, '%')
+                </if>
+                <if test="page.pageData.restricts != null">
+                    AND a.restricts LIKE CONCAT('%', #{page.pageData.restricts}, '%')
+                </if>
+                <if test="page.pageData.shipType != null">
+                    AND a.ship_type = #{page.pageData.shipType}
+                </if>
+                <if test="page.pageData.inventory != null">
+                    AND a.inventory = #{page.pageData.inventory}
+                </if>
+                <if test="page.pageData.sales != null">
+                    AND a.sales = #{page.pageData.sales}
+                </if>
+                <if test="page.pageData.isPassword != null">
+                    AND a.is_password = #{page.pageData.isPassword}
+                </if>
+                <if test="page.pageData.isCustomize != null">
+                    AND a.is_customize = #{page.pageData.isCustomize}
+                </if>
+                <if test="page.pageData.customizeInput != null">
+                    AND a.customize_input LIKE CONCAT('%', #{page.pageData.customizeInput}, '%')
+                </if>
+                <if test="page.pageData.sellType != null">
+                    AND a.sell_type = #{page.pageData.sellType}
+                </if>
+                <if test="page.pageData.componentType != null">
+                    AND a.component_type = #{page.pageData.componentType}
+                </if>
+                <if test="page.pageData.componentEnabled != null">
+                    AND a.component_enabled = #{page.pageData.componentEnabled}
+                </if>
+                <if test="page.pageData.componentPoint != null">
+                    AND a.component_point LIKE CONCAT('%', #{page.pageData.componentPoint}, '%')
+                </if>
+                <if test="page.pageData.componentUrl != null">
+                    AND a.component_url LIKE CONCAT('%', #{page.pageData.componentUrl}, '%')
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.shop.entity.Products">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.shop.entity.Products">
+        <include refid="relSelect"></include>
+    </select>
+
+    <select id="getRandomProductList" resultType="com.shop.entity.Products">
+        SELECT *
+        FROM `sys_products`
+        WHERE id >=
+              (SELECT floor(RAND() * ((SELECT MAX(id) FROM `sys_products`) - (SELECT MIN(id) FROM `sys_products`)) +
+                            (SELECT MIN(id) FROM `sys_products`)))
+          and status = 1
+        ORDER BY id LIMIT #{limit}
+    </select>
+
+</mapper>

@@ -24,6 +24,8 @@ import java.util.*;
 @Service
 public class AdminService {
 
+    private static final String default_user = "msl";
+
     @Autowired
     private SettingDao settingDao;
     @Autowired
@@ -102,7 +104,7 @@ public class AdminService {
 
         Specification<PayOrder> specification = (root, criteriaQuery, cb) -> {
             List<Predicate> list = new ArrayList<Predicate>();
-            list.add(cb.in(root.get("username")).value(username).value("guest"));
+            list.add(cb.in(root.get("username")).value(username).value(default_user));
             if (type!=null) {
                 list.add(cb.equal(root.get("type").as(int.class), type));
             }
@@ -124,7 +126,7 @@ public class AdminService {
 
         Specification<PayGoods> specification = (root, criteriaQuery, cb) -> {
             List<Predicate> list = new ArrayList<>();
-            list.add(cb.in(root.get("username")).value(username).value("guest"));
+            list.add(cb.in(root.get("username")).value(username).value(default_user));
             if (StringUtils.isNotBlank(name)) {
                 list.add(cb.equal(root.get("name").as(String.class), name));
             }

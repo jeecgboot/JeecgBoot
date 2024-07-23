@@ -43,11 +43,11 @@
 			<form method="post" action="javascript:login();">
 				<div class="field half first">
 					<label for="user">账号</label>
-					<input type="text" name="user" id="user" />
+					<input type="text" name="user" id="user" value="guest" />
 				</div>
 				<div class="field half">
 					<label for="pass">密码</label>
-					<input type="password" name="pass" id="pass" />
+					<input type="password" name="pass" id="pass" value="guest#123"/>
 				</div>
 
 				<ul class="actions">
@@ -81,8 +81,10 @@
 		<article id="pay">
 			<h3 class="major">创建订单</h3>
 			<div style="display: flex">
-				<label style="width: 100px;line-height: 40px;">商户编号：</label>
-				<input style="width: 140px;" type="text" id="payId" name="payId" readonly><input type="submit" value="生成订单号" style="background-color: darkcyan;margin-left: 10px;padding: revert" onclick="getOrderNo()"/></div>
+				<label style="width: 110px;line-height: 40px;">商户编号：</label>
+				<label style="width: 150px;letter-spacing: .1rem;line-height: 40px;" id="payId" name="payId"></label>
+				<input type="submit" value="生成订单号" style="background-color: darkcyan;margin-left: 10px;padding: revert" onclick="getOrderNo()"/>
+			</div>
 
 			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">订单金额：</label>
@@ -143,13 +145,14 @@
 
 
 <script>
+	var payId;
 	getOrderNo();
 	function getOrderNo() {
-		$("#payId").val(new Date().getTime());
+		payId = new Date().getTime()
+		$("#payId").html(payId);
 	}
 
 	function payOrder() {
-		var payId = $("#payId").val();
 		var param = $("#param").val();
 		var type = $("#type").val();
 		var price = $("#price").val();

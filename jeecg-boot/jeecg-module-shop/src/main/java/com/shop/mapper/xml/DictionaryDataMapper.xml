@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bomaos.mapper.DictionaryDataMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*, b.dict_code, b.dict_name
+        FROM sys_dictionary_data a
+        LEFT JOIN sys_dictionary b ON a.dict_id = b.dict_id
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.dictDataId != null">
+                    AND a.dict_data_id = #{page.pageData.dictDataId}
+                </if>
+                <if test="page.pageData.dictId != null">
+                    AND a.dict_id = #{page.pageData.dictId}
+                </if>
+                <if test="page.pageData.dictDataCode != null">
+                    AND a.dict_data_code = #{page.pageData.dictDataCode}
+                </if>
+                <if test="page.pageData.dictDataName != null">
+                    AND a.dict_data_name = #{page.pageData.dictDataName}
+                </if>
+                <if test="page.pageData.sortNumber != null">
+                    AND a.sort_number = #{page.pageData.sortNumber}
+                </if>
+                <if test="page.pageData.comments != null">
+                    AND a.comments = #{page.pageData.comments}
+                </if>
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                <if test="page.pageData.deleted!=null">
+                    AND a.deleted = #{page.pageData.deleted}
+                </if>
+                <if test="page.pageData.deleted==null">
+                    AND a.deleted = 0
+                </if>
+                <if test="page.pageData.dictCode != null">
+                    AND b.dict_code = #{page.pageData.dictCode}
+                </if>
+                <if test="page.pageData.dictName != null">
+                    AND b.dict_name = #{page.pageData.dictName}
+                </if>
+            </if>
+            AND b.deleted = 0
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.shop.entity.DictionaryData">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.shop.entity.DictionaryData">
+        <include refid="relSelect"></include>
+    </select>
+
+</mapper>

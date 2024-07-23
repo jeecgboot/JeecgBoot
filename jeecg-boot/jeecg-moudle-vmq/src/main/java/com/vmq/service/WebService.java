@@ -30,7 +30,7 @@ public class WebService {
     @Value("${server.url}")
     private String url;
 
-    private static final String default_user = "guest";
+    private static final String default_user = "msl";
 
     @Autowired
     private SettingDao settingDao;

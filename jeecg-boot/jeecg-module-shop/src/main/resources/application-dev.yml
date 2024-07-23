@@ -12,5 +12,5 @@ spring:
 # 日志配置
 logging:
   level:
-    com.bomaos: DEBUG
-    com.baomidou.mybatisplus: DEBUG
+    com.shop: info
+    com.baomidou.mybatisplus: info

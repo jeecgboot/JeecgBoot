@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bomaos.mapper.OperRecordMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*, b.nick_name, b.username
+        FROM sys_oper_record a
+        LEFT JOIN sys_user b ON a.user_id = b.user_id
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.createTimeStart!=null">
+                    AND a.create_time &gt;= #{page.pageData.createTimeStart}
+                </if>
+                <if test="page.pageData.createTimeEnd!=null">
+                    AND a.create_time &lt;= #{page.pageData.createTimeEnd}
+                </if>
+                <if test="page.pageData.username != null">
+                    AND b.username LIKE CONCAT('%', #{page.pageData.username}, '%')
+                </if>
+                <if test="page.pageData.nickName != null">
+                    AND b.nick_name LIKE CONCAT('%', #{page.pageData.nickName}, '%')
+                </if>
+                <if test="page.pageData.id != null">
+                    AND a.id = #{page.pageData.id}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.shop.entity.OperRecord">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.shop.entity.OperRecord">
+        <include refid="relSelect"></include>
+    </select>
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bomaos.mapper.ClassifysMapper">
+
+    <!-- 关联查询sql -->
+    <sql id="relSelect">
+        SELECT a.*
+        FROM sys_classifys a
+        <where>
+            <if test="page!=null and page.pageData!=null">
+                <if test="page.pageData.id != null">
+                    AND a.id = #{page.pageData.id}
+                </if>
+                <if test="page.pageData.name != null">
+                    AND a.name LIKE CONCAT('%', #{page.pageData.name}, '%')
+                </if>
+                <if test="page.pageData.status != null">
+                    AND a.status = #{page.pageData.status}
+                </if>
+                <if test="page.pageData.sort != null">
+                    AND a.sort = #{page.pageData.sort}
+                </if>
+                <if test="page.pageData.createdAt != null">
+                    AND a.created_at LIKE CONCAT('%', #{page.pageData.createdAt}, '%')
+                </if>
+                <if test="page.pageData.updatedAt != null">
+                    AND a.updated_at LIKE CONCAT('%', #{page.pageData.updatedAt}, '%')
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 分页查询 -->
+    <select id="listPage" resultType="com.shop.entity.Classifys">
+        <include refid="relSelect"></include>
+    </select>
+
+    <!-- 查询全部 -->
+    <select id="listAll" resultType="com.shop.entity.Classifys">
+        <include refid="relSelect"></include>
+    </select>
+
+</mapper>

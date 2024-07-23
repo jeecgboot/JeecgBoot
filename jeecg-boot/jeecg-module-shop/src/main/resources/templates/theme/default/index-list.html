@@ -96,10 +96,17 @@
     <:for items="${productListDTOList}" var="item">
         <div class="layui-card" style="border-radius: 5px; box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);">
             <div class="layui-card-header" style="border-bottom: 1px solid transparent;">
-                ${item.title}
+                <span>${item.title}</span>
+                <span style="display: inline-block">
+                    <form class="layui-form" id="formBasForm" lay-filter="formBasForm">
+                        <input type="hidden" name="type" value="0">
+                        <input type="checkbox" lay-filter="showType" id="showType" value="1" lay-skin="switch" name="type" lay-text="列表|平铺">
+                    </form>
+                </span>
                 <span class="el-tag el-tag--light pull-right" style="top: 10px; position: relative; font-weight: lighter; height: 26px; padding: 0 8px; line-height: 24px;">
                     商品数量 ${item.productNum} 个
                 </span>
+                <style>.layui-form-switch{margin-top: 0;}</style>
             </div>
         </div>
         <:if test="${item.productDTOList != null}">
@@ -121,6 +128,16 @@
                                 <div class="post-list-meta-box">
                                     <div class="post-list-cat b2-radius">
                                         <span style="color: #F56C6C; font-size: 15px">¥ ${item.price}</span>
+                                    </div>
+                                    <div class="list-footer2" style="display: none">
+                                        <span style="display: flex">
+                                            <a href="${ctxPath}/product/${item.link}" class="post-list-meta-avatar">
+                                                <span>库存: ${item.cardMember}</span>
+                                            </a>
+                                            <:if test="${item.isCoupon >= 1}"><label style="color: #67C23A;margin-left: 10px;">券</label></:if>
+                                            <:if test="${item.restricts >= 1}"><label style="color: #F56C6C;margin-left: 10px;">限购</label></:if>
+                                            <:if test="${item.isWholesale == 1}"><label style="color: #E6A23C;margin-left: 10px;">折扣</label></:if>
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="list-footer">
@@ -176,6 +193,7 @@
     layui.use(['layer', 'form'], function () {
         var $ = layui.jquery;
         var layer = layui.layer;
+        var form = layui.form;
         var shopSettingsJson = JSON.parse(JSON.stringify(${shopSettings!}));
         if (shopSettingsJson.isWindow == 1) {
             if ($.cookie("isWindow") != 'yes') {
@@ -210,6 +228,26 @@
             autoplay:true
         });
 
+        //监听指定开关
+        form.on('switch(showType)', function (data) {
+            if (this.checked == true) {
+                $('#showType').attr('checked', true);
+                $(".post-module-thumb").hide();
+                $(".list-footer").hide();
+                $(".list-footer2").show();
+                $(".layui-col-xs6").css({
+                    "width":"100%"
+                });
+            } else {
+                $('#showType').attr('checked', false);
+                $(".post-module-thumb").show();
+                $(".list-footer").show();
+                $(".list-footer2").hide();
+                $(".layui-col-xs6").css({
+                    "width":"50%"
+                });
+            }
+        });
     });
 </script>
 </body>
