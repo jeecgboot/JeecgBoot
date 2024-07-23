@@ -47,9 +47,9 @@
 			<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jeecgframework.boot3</groupId>
-			<artifactId>jimureport-drag</artifactId>
-			<version>2.0.2</version>
+			<groupId>org.jeecgframework.jimureport</groupId>
+			<artifactId>drag-free-springboot3</artifactId>
+			<version>1.1.2</version>
 		</dependency>
 	<!-- 积木报表 mongo redis 支持包 
 		<dependency>
