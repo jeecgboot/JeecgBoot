@@ -12,7 +12,6 @@ import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectItem;
-import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.statement.select.WithItem;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.jeecg.common.exception.JeecgSqlInjectionException;
@@ -90,20 +89,6 @@ public class InjectionSyntaxObjectAnalyzer extends TablesNamesFinder {
         }
     }
 
-    @Override
-    public void visit(SubSelect subSelect) {
-        try {
-            /** 允许语句中的子查询 */
-            disableSubselect.set(false);
-            super.visit(subSelect);
-        } finally {
-            disableSubselect.set(true);
-        }
-//        if (disableSubselect.get()) {
-//            // 禁用子查询
-//            throw new JeecgSqlInjectionException("DISABLE subselect " + subSelect);
-//        }
-    }
 
     @Override
     public void visit(Column tableColumn) {
@@ -151,9 +136,7 @@ public class InjectionSyntaxObjectAnalyzer extends TablesNamesFinder {
             }
         }
         if (plainSelect.getGroupBy() != null) {
-            for (Expression expression : plainSelect.getGroupBy().getGroupByExpressionList().getExpressions()) {
-                expression.accept(this);
-            }
+            plainSelect.getGroupBy().getGroupByExpressionList().accept(this);
         }
     }
 

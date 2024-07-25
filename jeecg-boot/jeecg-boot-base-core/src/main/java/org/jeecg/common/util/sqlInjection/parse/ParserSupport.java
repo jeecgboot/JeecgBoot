@@ -7,7 +7,6 @@ import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
-import net.sf.jsqlparser.statement.select.SelectBody;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -40,7 +39,7 @@ public class ParserSupport {
         }
         checkArgument(stmt instanceof Select, "%s is not  SELECT statment", sql);
         Select select = (Select) stmt;
-        SelectBody selectBody = select.getSelectBody();
+        Select selectBody = select.getSelectBody();
         // 暂时只支持简单的SELECT xxxx FROM ....语句不支持复杂语句如WITH
         checkArgument(selectBody instanceof PlainSelect, "ONLY SUPPORT plain select statement %s", sql);
         return (Select) stmt;

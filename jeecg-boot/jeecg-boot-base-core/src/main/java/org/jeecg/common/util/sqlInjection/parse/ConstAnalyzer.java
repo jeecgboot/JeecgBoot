@@ -1,57 +1,20 @@
 package org.jeecg.common.util.sqlInjection.parse;
 
 import net.sf.jsqlparser.expression.*;
-import net.sf.jsqlparser.expression.operators.arithmetic.Addition;
-import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseAnd;
-import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseLeftShift;
-import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseOr;
-import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseRightShift;
-import net.sf.jsqlparser.expression.operators.arithmetic.BitwiseXor;
-import net.sf.jsqlparser.expression.operators.arithmetic.Concat;
-import net.sf.jsqlparser.expression.operators.arithmetic.Division;
-import net.sf.jsqlparser.expression.operators.arithmetic.IntegerDivision;
-import net.sf.jsqlparser.expression.operators.arithmetic.Modulo;
-import net.sf.jsqlparser.expression.operators.arithmetic.Multiplication;
-import net.sf.jsqlparser.expression.operators.arithmetic.Subtraction;
+import net.sf.jsqlparser.expression.operators.arithmetic.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.conditional.XorExpression;
-import net.sf.jsqlparser.expression.operators.relational.Between;
-import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
-import net.sf.jsqlparser.expression.operators.relational.ExistsExpression;
-import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
-import net.sf.jsqlparser.expression.operators.relational.FullTextSearch;
-import net.sf.jsqlparser.expression.operators.relational.GeometryDistance;
-import net.sf.jsqlparser.expression.operators.relational.GreaterThan;
-import net.sf.jsqlparser.expression.operators.relational.GreaterThanEquals;
-import net.sf.jsqlparser.expression.operators.relational.InExpression;
-import net.sf.jsqlparser.expression.operators.relational.IsBooleanExpression;
-import net.sf.jsqlparser.expression.operators.relational.IsDistinctExpression;
-import net.sf.jsqlparser.expression.operators.relational.IsNullExpression;
-import net.sf.jsqlparser.expression.operators.relational.ItemsListVisitor;
-import net.sf.jsqlparser.expression.operators.relational.JsonOperator;
-import net.sf.jsqlparser.expression.operators.relational.LikeExpression;
-import net.sf.jsqlparser.expression.operators.relational.Matches;
-import net.sf.jsqlparser.expression.operators.relational.MinorThan;
-import net.sf.jsqlparser.expression.operators.relational.MinorThanEquals;
-import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
-import net.sf.jsqlparser.expression.operators.relational.NamedExpressionList;
-import net.sf.jsqlparser.expression.operators.relational.NotEqualsTo;
-import net.sf.jsqlparser.expression.operators.relational.RegExpMatchOperator;
-import net.sf.jsqlparser.expression.operators.relational.RegExpMySQLOperator;
-import net.sf.jsqlparser.expression.operators.relational.SimilarToExpression;
+import net.sf.jsqlparser.expression.operators.relational.*;
 import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.statement.select.AllColumns;
-import net.sf.jsqlparser.statement.select.AllTableColumns;
-import net.sf.jsqlparser.statement.select.OrderByElement;
-import net.sf.jsqlparser.statement.select.SubSelect;
+import net.sf.jsqlparser.statement.select.*;
 
 /**
  * 判断表达是否为常量的分析器
  *
  * @author guyadong
  */
-public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
+public class ConstAnalyzer implements ExpressionVisitor {
 
     private static ThreadLocal<Boolean> constFlag = new ThreadLocal<Boolean>() {
         @Override
@@ -174,14 +137,6 @@ public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
     public void visit(OverlapsCondition overlapsCondition) {
         constFlag.set(false);
     }
-    /**
-     * 用于处理 SafeCastExpression 类型的表达式。
-     * @param safeCastExpression
-     */
-    @Override
-    public void visit(SafeCastExpression safeCastExpression) {
-        constFlag.set(false);
-    }
 
     @Override
     public void visit(EqualsTo expr) {
@@ -248,11 +203,6 @@ public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
     }
 
     @Override
-    public void visit(SubSelect subSelect) {
-        constFlag.set(false);
-    }
-
-    @Override
     public void visit(CaseExpression expr) {
         constFlag.set(false);
     }
@@ -302,10 +252,6 @@ public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
         expr.getLeftExpression().accept(this);
     }
 
-    @Override
-    public void visit(TryCastExpression expr) {
-        constFlag.set(false);
-    }
 
     @Override
     public void visit(Modulo expr) {
@@ -339,24 +285,9 @@ public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
 
     @Override
     public void visit(ExpressionList expressionList) {
-        for (Expression expr : expressionList.getExpressions()) {
-            expr.accept(this);
-        }
+        expressionList.accept(this);
     }
 
-    @Override
-    public void visit(NamedExpressionList namedExpressionList) {
-        for (Expression expr : namedExpressionList.getExpressions()) {
-            expr.accept(this);
-        }
-    }
-
-    @Override
-    public void visit(MultiExpressionList multiExprList) {
-        for (ExpressionList list : multiExprList.getExpressionLists()) {
-            visit(list);
-        }
-    }
 
     @Override
     public void visit(NotExpression notExpr) {
@@ -388,10 +319,6 @@ public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
         visitBinaryExpression(expr);
     }
 
-    @Override
-    public void visit(RegExpMySQLOperator expr) {
-        visitBinaryExpression(expr);
-    }
 
     @Override
     public void visit(UserVariable var) {
@@ -413,13 +340,6 @@ public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
     @Override
     public void visit(MySQLGroupConcat groupConcat) {
         constFlag.set(false);
-    }
-
-    @Override
-    public void visit(ValueListExpression valueListExpression) {
-        for (Expression expr : valueListExpression.getExpressionList().getExpressions()) {
-            expr.accept(this);
-        }
     }
 
     @Override
@@ -564,6 +484,61 @@ public class ConstAnalyzer implements ExpressionVisitor, ItemsListVisitor {
             return constFlag.get();
         }
         return false;
+    }
+
+    @Override
+    public void visit(DoubleAnd doubleAnd) {
+        doubleAnd.accept(this);
+    }
+
+    @Override
+    public void visit(Contains contains) {
+        contains.accept(this);
+    }
+
+    @Override
+    public void visit(ContainedBy containedBy) {
+        containedBy.accept(this);
+    }
+
+    @Override
+    public void visit(ParenthesedSelect parenthesedSelect) {
+        parenthesedSelect.accept(this);
+    }
+
+    @Override
+    public void visit(MemberOfExpression memberOfExpression) {
+        memberOfExpression.accept(this);
+    }
+
+    @Override
+    public void visit(Select select) {
+        select.accept(this);
+    }
+
+    @Override
+    public void visit(TranscodingFunction transcodingFunction) {
+        transcodingFunction.accept(this);
+    }
+
+    @Override
+    public void visit(TrimFunction trimFunction) {
+        trimFunction.accept(this);
+    }
+
+    @Override
+    public void visit(RangeExpression rangeExpression) {
+        rangeExpression.accept(this);
+    }
+
+    @Override
+    public void visit(TSQLLeftJoin tsqlLeftJoin) {
+        visitBinaryExpression(tsqlLeftJoin);
+    }
+
+    @Override
+    public void visit(TSQLRightJoin tsqlRightJoin) {
+        visitBinaryExpression(tsqlRightJoin);
     }
 }
 

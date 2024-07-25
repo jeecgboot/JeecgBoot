@@ -3,6 +3,7 @@ package org.jeecg.common.util.sqlparse;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.*;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -59,7 +60,7 @@ public class JSqlParserUtils {
         if (stmt instanceof Select) {
             Select selectStatement = (Select) stmt;
             // 3、解析select查询sql的信息
-            return JSqlParserUtils.parseBySelectBody(selectStatement.getSelectBody());
+            return JSqlParserUtils.parseBySelectBody(selectStatement.getPlainSelect());
         } else {
             // 非 select 查询sql，不做处理
             throw new JeecgBootException("非 select 查询sql，不做处理");
@@ -72,49 +73,41 @@ public class JSqlParserUtils {
      * @param selectBody
      * @return
      */
-    private static SelectSqlInfo parseBySelectBody(SelectBody selectBody) {
+    private static SelectSqlInfo parseBySelectBody(PlainSelect selectBody) {
         // 简单的select查询
-        if (selectBody instanceof PlainSelect) {
-            SelectSqlInfo sqlInfo = new SelectSqlInfo(selectBody);
-            PlainSelect plainSelect = (PlainSelect) selectBody;
-            FromItem fromItem = plainSelect.getFromItem();
-            // 解析 aliasName
-            if (fromItem.getAlias() != null) {
-                sqlInfo.setFromTableAliasName(fromItem.getAlias().getName());
-            }
-            // 解析 表名
-            if (fromItem instanceof Table) {
-                // 通过表名的方式from
-                Table fromTable = (Table) fromItem;
-                sqlInfo.setFromTableName(fromTable.getName());
-            } else if (fromItem instanceof SubSelect) {
-                // 通过子查询的方式from
-                SubSelect fromSubSelect = (SubSelect) fromItem;
-                SelectSqlInfo subSqlInfo = JSqlParserUtils.parseBySelectBody(fromSubSelect.getSelectBody());
-                sqlInfo.setFromSubSelect(subSqlInfo);
-            }
-            // 解析 selectFields
-            List<SelectItem> selectItems = plainSelect.getSelectItems();
-            for (SelectItem selectItem : selectItems) {
-                if (selectItem instanceof AllColumns || selectItem instanceof AllTableColumns) {
-                    // 全部字段
-                    sqlInfo.setSelectAll(true);
-                    sqlInfo.setSelectFields(null);
-                    sqlInfo.setRealSelectFields(null);
-                    break;
-                } else if (selectItem instanceof SelectExpressionItem) {
-                    // 获取单个查询字段名
-                    SelectExpressionItem selectExpressionItem = (SelectExpressionItem) selectItem;
-                    Expression expression = selectExpressionItem.getExpression();
-                    Alias alias = selectExpressionItem.getAlias();
-                    JSqlParserUtils.handleExpression(sqlInfo, expression, alias);
-                }
-            }
-            return sqlInfo;
-        } else {
-            log.warn("暂时尚未处理该类型的 SelectBody: {}", selectBody.getClass().getName());
-            throw new JeecgBootException("暂时尚未处理该类型的 SelectBody");
+        SelectSqlInfo sqlInfo = new SelectSqlInfo(selectBody);
+        FromItem fromItem = selectBody.getFromItem();
+        // 解析 aliasName
+        if (fromItem.getAlias() != null) {
+            sqlInfo.setFromTableAliasName(fromItem.getAlias().getName());
         }
+        // 解析 表名
+        if (fromItem instanceof Table) {
+            // 通过表名的方式from
+            Table fromTable = (Table) fromItem;
+            sqlInfo.setFromTableName(fromTable.getName());
+        } else if (fromItem instanceof PlainSelect) {
+            // 通过子查询的方式from
+            PlainSelect fromSubSelect = (PlainSelect) fromItem;
+            SelectSqlInfo subSqlInfo = JSqlParserUtils.parseBySelectBody(fromSubSelect);
+            sqlInfo.setFromSubSelect(subSqlInfo);
+        }
+        // 解析 selectFields
+        for (SelectItem selectItem : selectBody.getSelectItems()) {
+            if (selectItem.getExpression() instanceof AllColumns || selectItem.getExpression() instanceof AllTableColumns) {
+                // 全部字段
+                sqlInfo.setSelectAll(true);
+                sqlInfo.setSelectFields(null);
+                sqlInfo.setRealSelectFields(null);
+                break;
+            } else {
+                // 获取单个查询字段名
+                Expression expression = selectItem.getExpression();
+                Alias alias = selectItem.getAlias();
+                JSqlParserUtils.handleExpression(sqlInfo, expression, alias);
+            }
+        }
+        return sqlInfo;
     }
 
     /**
@@ -131,9 +124,9 @@ public class JSqlParserUtils {
             return;
         }
         // 处理字段上的子查询
-        if (expression instanceof SubSelect) {
-            SubSelect subSelect = (SubSelect) expression;
-            SelectSqlInfo subSqlInfo = JSqlParserUtils.parseBySelectBody(subSelect.getSelectBody());
+        if (expression instanceof PlainSelect) {
+            PlainSelect subSelect = (PlainSelect) expression;
+            SelectSqlInfo subSqlInfo = JSqlParserUtils.parseBySelectBody(subSelect);
             // 注：字段上的子查询，必须只查询一个字段，否则会报错，所以可以放心合并
             sqlInfo.getSelectFields().addAll(subSqlInfo.getSelectFields());
             sqlInfo.getRealSelectFields().addAll(subSqlInfo.getAllRealSelectFields());
@@ -175,10 +168,7 @@ public class JSqlParserUtils {
      * @param sqlInfo
      */
     private static void handleFunctionExpression(Function functionExp, SelectSqlInfo sqlInfo) {
-        List<Expression> expressions = functionExp.getParameters().getExpressions();
-        for (Expression expression : expressions) {
-            JSqlParserUtils.handleExpression(sqlInfo, expression, null);
-        }
+        functionExp.getParameters().forEach(p -> JSqlParserUtils.handleExpression(sqlInfo, p, null));
     }
 
 }

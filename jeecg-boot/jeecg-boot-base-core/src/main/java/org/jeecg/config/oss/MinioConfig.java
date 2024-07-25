@@ -1,5 +1,6 @@
 package org.jeecg.config.oss;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -26,7 +27,7 @@ public class MinioConfig {
     @Value(value = "${jeecg.minio.bucketName}")
     private String bucketName;
 
-    @Bean
+    @PostConstruct
     public void initMinio(){
         if(!minioUrl.startsWith(CommonConstant.STR_HTTP)){
             minioUrl = "http://" + minioUrl;

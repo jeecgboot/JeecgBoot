@@ -1,7 +1,7 @@
 package org.jeecg.common.util.sqlparse.vo;
 
 import lombok.Data;
-import net.sf.jsqlparser.statement.select.SelectBody;
+import net.sf.jsqlparser.statement.select.PlainSelect;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +47,7 @@ public class SelectSqlInfo {
         this.parsedSql = parsedSql;
     }
 
-    public SelectSqlInfo(SelectBody selectBody) {
+    public SelectSqlInfo(PlainSelect selectBody) {
         this.parsedSql = selectBody.toString();
     }
 
