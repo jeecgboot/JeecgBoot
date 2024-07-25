@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * 商品管理
- * Created by Panyoujie on 2021-03-27 20:22:00
+ * 2021-03-27 20:22:00
  */
 @Controller
 @RequestMapping("/products/products")
@@ -123,7 +123,7 @@ public class ProductsController extends BaseController {
     @OperLog(value = "商品管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Products> pageParam = new PageParam<>(request);
         return JsonResult.ok().setData(productsService.list(pageParam.getOrderWrapper()));
     }

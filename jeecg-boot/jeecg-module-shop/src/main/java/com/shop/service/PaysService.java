@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 支付配置服务类
- * Created by Panyoujie on 2021-03-29 11:06:11
+ * 2021-03-29 11:06:11
  */
 public interface PaysService extends IService<Pays> {
 

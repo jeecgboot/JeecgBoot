@@ -51,7 +51,7 @@ public class SearchOrderController extends BaseApiController {
     private WebsiteService websiteService;
 
     @RequestMapping("/order")
-    public String Chat(Model model, HttpServletRequest request) {
+    public String Chat(Model model) {
         Long orderId = getLoginUserId(request);
 
         Orders member = ordersService.getById(orderId);

@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * 菜单服务实现类
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Service
 public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements MenuService {

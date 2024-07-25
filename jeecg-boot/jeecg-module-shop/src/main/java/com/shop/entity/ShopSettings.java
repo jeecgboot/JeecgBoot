@@ -10,10 +10,9 @@ import java.io.Serializable;
 
 /**
  * 商店设置
- * Created by Panyoujie on 2021-07-04 03:54:31
+ * 2021-07-04 03:54:31
  */
 @Data
-@ToString
 @TableName("sys_shop_settings")
 public class ShopSettings implements Serializable {
     private static final long serialVersionUID = 1L;

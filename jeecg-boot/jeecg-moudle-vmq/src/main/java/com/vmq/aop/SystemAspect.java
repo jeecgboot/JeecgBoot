@@ -65,7 +65,7 @@ public class SystemAspect {
                 object instanceof Boolean) {
             return true;
         }
-        if (Objects.nonNull(object) && object.getClass().getName().startsWith("com.mq")) {
+        if (Objects.nonNull(object) && object.getClass().getName().startsWith("com.vmq")) {
             return true;
         }
         return false;

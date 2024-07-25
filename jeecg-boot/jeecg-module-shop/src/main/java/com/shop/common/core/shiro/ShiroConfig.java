@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * shiro框架配置
- * Created by Panyoujie on 2017-04-28 09:45
+ * 2017-04-28 09:45
  */
 @Configuration
 public class ShiroConfig {
@@ -113,6 +113,8 @@ public class ShiroConfig {
         filterChainDefinitions.put("/error", "anon");
         filterChainDefinitions.put("/login", "anon");
         filterChainDefinitions.put("/logout", "logout");
+        filterChainDefinitions.put("/getVerificationCode", "anon");
+        filterChainDefinitions.put("/regist", "anon");
         //filterChainDefinitions.put("/**", "slf,authc");
         filterChainDefinitions.put("/**", "slf,user");  // 记住密码也能访问
         shiroFilter.setFilterChainDefinitionMap(filterChainDefinitions);

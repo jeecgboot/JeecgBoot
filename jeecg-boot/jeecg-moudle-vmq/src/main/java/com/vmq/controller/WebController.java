@@ -97,7 +97,6 @@ public class WebController {
                 //获取读取二维码结果
                 BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
                 Result result = multiFormatReader.decode(binaryBitmap, hints);
-                //stream.print(result.getText());
                 return ResUtil.success(result.getText());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -120,8 +119,6 @@ public class WebController {
                 //获取读取二维码结果
                 BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
                 Result result = multiFormatReader.decode(binaryBitmap, hints);
-
-                log.info(result.getText());
                 return ResUtil.success(result.getText());
             } catch (Exception e) {
                 e.printStackTrace();

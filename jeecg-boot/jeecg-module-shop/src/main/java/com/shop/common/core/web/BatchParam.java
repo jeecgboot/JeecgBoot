@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * 批量修改通用参数
- * Created by Panyoujie on 2020-03-13 0:11
+ * 2020-03-13 0:11
  */
 public class BatchParam<T> implements Serializable {
     private static final long serialVersionUID = 1L;

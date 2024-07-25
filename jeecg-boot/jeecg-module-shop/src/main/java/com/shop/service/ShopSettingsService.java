@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 商店设置服务类
- * Created by Panyoujie on 2021-07-04 03:54:31
+ * 2021-07-04 03:54:31
  */
 public interface ShopSettingsService extends IService<ShopSettings> {
 

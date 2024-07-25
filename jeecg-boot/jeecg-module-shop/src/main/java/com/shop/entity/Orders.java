@@ -12,10 +12,9 @@ import java.util.Date;
 
 /**
  * 订单表
- * Created by Panyoujie on 2021-03-29 16:24:28
+ * 2021-03-29 16:24:28
  */
 @Data
-@ToString
 @TableName("sys_orders")
 public class Orders implements Serializable {
     private static final long serialVersionUID = 1L;

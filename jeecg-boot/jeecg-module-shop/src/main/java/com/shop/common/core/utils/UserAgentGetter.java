@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 
 /**
  * 获取客户端设备信息
- * Created by Panyoujie on 2017-6-10 10:10
+ * 2017-6-10 10:10
  */
 public class UserAgentGetter {
     private final UserAgent userAgent;

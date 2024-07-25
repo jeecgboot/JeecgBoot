@@ -44,7 +44,6 @@ public class BudpayUtil {
         String httpsPost = RequestUtil.getHttpsPost(create_url, paramMap);
         JSONObject jsonObject = JSON.parseObject(httpsPost);
         String url = jsonObject.get("url").toString();
-        System.out.println(url);
         return url;
     }
 

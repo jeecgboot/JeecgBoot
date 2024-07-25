@@ -16,7 +16,7 @@ import java.io.PrintWriter;
 
 /**
  * 全局异常处理器
- * Created by Panyoujie on 2018-02-22 11:29
+ * 2018-02-22 11:29
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {

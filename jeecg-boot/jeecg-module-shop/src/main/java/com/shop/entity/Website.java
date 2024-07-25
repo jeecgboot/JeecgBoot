@@ -10,9 +10,8 @@ import java.io.Serializable;
 
 /**
  * 网站设置
- * Created by Panyoujie on 2021-06-06 02:14:54
+ * 2021-06-06 02:14:54
  */
-@ToString
 @Data
 @TableName("sys_website")
 public class Website implements Serializable {

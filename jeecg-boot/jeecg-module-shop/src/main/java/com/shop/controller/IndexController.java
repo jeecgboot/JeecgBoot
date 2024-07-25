@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.shop.common.core.web.BaseController;
 import com.shop.dto.HotProductDTO;
 import com.shop.dto.ProductDTO;
 import com.shop.dto.ProductListDTO;
@@ -64,6 +65,9 @@ import java.util.stream.Collectors;
 
 @Controller
 public class IndexController {
+
+    @Autowired
+    public HttpServletRequest request;
 
     @Autowired
     private ProductsService productsService;
@@ -248,7 +252,7 @@ public class IndexController {
      */
     @ResponseBody
     @RequestMapping("/getArticleList")
-    public PageResult<ArticleVo> getArticleList(HttpServletRequest request) {
+    public PageResult<ArticleVo> getArticleList() {
         PageParam<Article> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         pageParam.put("enabled", 1);
@@ -290,7 +294,7 @@ public class IndexController {
      * @return
      */
     @RequestMapping("/product/{link}")
-    public String product(Model model, @PathVariable("link") String link, HttpServletRequest request) {
+    public String product(Model model, @PathVariable("link") String link) {
         Website website = websiteService.getById(1);
         model.addAttribute("website", website);
         ShopSettings shopSettings = shopSettingsService.getById(1);

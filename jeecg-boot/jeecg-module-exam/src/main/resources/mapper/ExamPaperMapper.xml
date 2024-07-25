@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.repository.ExamPaperMapper">
+  <resultMap id="BaseResultMap" type="com.exam.domain.ExamPaper">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
+    <result column="paper_type" jdbcType="INTEGER" property="paperType" />
+    <result column="grade_level" jdbcType="INTEGER" property="gradeLevel" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="question_count" jdbcType="INTEGER" property="questionCount" />
+    <result column="suggest_time" jdbcType="INTEGER" property="suggestTime" />
+    <result column="limit_start_time" jdbcType="TIMESTAMP" property="limitStartTime" />
+    <result column="limit_end_time" jdbcType="TIMESTAMP" property="limitEndTime" />
+    <result column="frame_text_content_id" jdbcType="INTEGER" property="frameTextContentId" />
+    <result column="create_user" jdbcType="INTEGER" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+    <result column="task_exam_id" jdbcType="INTEGER" property="taskExamId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, subject_id, paper_type, grade_level, score, question_count, suggest_time,
+    limit_start_time, limit_end_time, frame_text_content_id, create_user, create_time,
+    deleted, task_exam_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_exam_paper
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_exam_paper
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.exam.domain.ExamPaper" useGeneratedKeys="true" keyProperty="id">
+    insert into t_exam_paper (id, name, subject_id,
+      paper_type, grade_level, score,
+      question_count, suggest_time, limit_start_time,
+      limit_end_time, frame_text_content_id, create_user,
+      create_time, deleted, task_exam_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{subjectId,jdbcType=INTEGER},
+      #{paperType,jdbcType=INTEGER}, #{gradeLevel,jdbcType=INTEGER}, #{score,jdbcType=INTEGER},
+      #{questionCount,jdbcType=INTEGER}, #{suggestTime,jdbcType=INTEGER}, #{limitStartTime,jdbcType=TIMESTAMP},
+      #{limitEndTime,jdbcType=TIMESTAMP}, #{frameTextContentId,jdbcType=INTEGER}, #{createUser,jdbcType=INTEGER},
+      #{createTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=BIT}, #{taskExamId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.exam.domain.ExamPaper" useGeneratedKeys="true" keyProperty="id">
+    insert into t_exam_paper
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="subjectId != null">
+        subject_id,
+      </if>
+      <if test="paperType != null">
+        paper_type,
+      </if>
+      <if test="gradeLevel != null">
+        grade_level,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="questionCount != null">
+        question_count,
+      </if>
+      <if test="suggestTime != null">
+        suggest_time,
+      </if>
+      <if test="limitStartTime != null">
+        limit_start_time,
+      </if>
+      <if test="limitEndTime != null">
+        limit_end_time,
+      </if>
+      <if test="frameTextContentId != null">
+        frame_text_content_id,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+      <if test="taskExamId != null">
+        task_exam_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="subjectId != null">
+        #{subjectId,jdbcType=INTEGER},
+      </if>
+      <if test="paperType != null">
+        #{paperType,jdbcType=INTEGER},
+      </if>
+      <if test="gradeLevel != null">
+        #{gradeLevel,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="questionCount != null">
+        #{questionCount,jdbcType=INTEGER},
+      </if>
+      <if test="suggestTime != null">
+        #{suggestTime,jdbcType=INTEGER},
+      </if>
+      <if test="limitStartTime != null">
+        #{limitStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="limitEndTime != null">
+        #{limitEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="frameTextContentId != null">
+        #{frameTextContentId,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+      <if test="taskExamId != null">
+        #{taskExamId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exam.domain.ExamPaper">
+    update t_exam_paper
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="subjectId != null">
+        subject_id = #{subjectId,jdbcType=INTEGER},
+      </if>
+      <if test="paperType != null">
+        paper_type = #{paperType,jdbcType=INTEGER},
+      </if>
+      <if test="gradeLevel != null">
+        grade_level = #{gradeLevel,jdbcType=INTEGER},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="questionCount != null">
+        question_count = #{questionCount,jdbcType=INTEGER},
+      </if>
+      <if test="suggestTime != null">
+        suggest_time = #{suggestTime,jdbcType=INTEGER},
+      </if>
+      <if test="limitStartTime != null">
+        limit_start_time = #{limitStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="limitEndTime != null">
+        limit_end_time = #{limitEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="frameTextContentId != null">
+        frame_text_content_id = #{frameTextContentId,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+      <if test="taskExamId != null">
+        task_exam_id = #{taskExamId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exam.domain.ExamPaper">
+    update t_exam_paper
+    set name = #{name,jdbcType=VARCHAR},
+      subject_id = #{subjectId,jdbcType=INTEGER},
+      paper_type = #{paperType,jdbcType=INTEGER},
+      grade_level = #{gradeLevel,jdbcType=INTEGER},
+      score = #{score,jdbcType=INTEGER},
+      question_count = #{questionCount,jdbcType=INTEGER},
+      suggest_time = #{suggestTime,jdbcType=INTEGER},
+      limit_start_time = #{limitStartTime,jdbcType=TIMESTAMP},
+      limit_end_time = #{limitEndTime,jdbcType=TIMESTAMP},
+      frame_text_content_id = #{frameTextContentId,jdbcType=INTEGER},
+      create_user = #{createUser,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=BIT},
+      task_exam_id = #{taskExamId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+
+
+
+  <resultMap id="PaperInfoResultMap" type="com.exam.viewmodel.student.dashboard.PaperInfo">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="limit_start_time" jdbcType="TIMESTAMP" property="limitStartTime" />
+    <result column="limit_end_time" jdbcType="TIMESTAMP" property="limitEndTime" />
+  </resultMap>
+
+
+  <select id="page" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.admin.exam.ExamPaperPageRequestVM">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_exam_paper
+    <where>
+        and deleted=0
+      <if test="id != null ">
+        and id= #{id}
+      </if>
+      <if test="level != null ">
+        and grade_level= #{level}
+      </if>
+      <if test="subjectId != null ">
+        and subject_id= #{subjectId}
+      </if>
+      <if test="paperType != null ">
+        and paper_type= #{paperType}
+      </if>
+    </where>
+  </select>
+
+
+
+
+
+  <select id="taskExamPage" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.admin.exam.ExamPaperPageRequestVM">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_exam_paper
+    <where>
+      and deleted=0
+      and task_exam_id is null
+      and grade_level= #{level}
+      and paper_type=#{paperType}
+    </where>
+  </select>
+
+  <select id="studentPage" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.student.exam.ExamPaperPageVM">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_exam_paper
+    <where>
+       and deleted=0
+      <if test="subjectId != null ">
+        and subject_id=#{subjectId}
+      </if>
+      <if test="levelId != null ">
+        and grade_level=#{levelId}
+      </if>
+       and paper_type=#{paperType}
+    </where>
+  </select>
+
+
+  <select id="indexPaper" resultMap="PaperInfoResultMap" parameterType="com.exam.viewmodel.student.dashboard.PaperFilter">
+    SELECT id,name,limit_start_time,limit_end_time
+    FROM t_exam_paper
+    <where>
+      and deleted=0
+      and paper_type= #{examPaperType}
+      and grade_level=#{gradeLevel}
+      <if test="examPaperType == 3 ">
+      </if>
+      <if test="examPaperType == 4 ">
+        and  #{dateTime} between limit_start_time  and limit_end_time
+      </if>
+    </where>
+    ORDER BY id  desc limit 5
+  </select>
+
+
+  <select id="selectAllCount"  resultType="java.lang.Integer">
+		SELECT count(*) from t_exam_paper where deleted=0
+	</select>
+
+  <select id="selectCountByDate"  resultType="com.exam.domain.other.KeyValue">
+		SELECT create_time as name,COUNT(create_time) as value from
+		        (
+				  SELECT DATE_FORMAT(create_time,'%Y-%m-%d') as create_time from t_exam_paper
+					WHERE  deleted=0  and create_time  between  #{startTime}  and  #{endTime}
+				) a
+		GROUP BY create_time
+	</select>
+
+
+  <update id="updateTaskPaper">
+    update t_exam_paper set task_exam_id = #{taskId} where id in
+    <foreach item="id" collection="paperIds" open="(" separator=","
+             close=")">
+      #{id}
+    </foreach>
+  </update>
+
+
+  <update id="clearTaskPaper" parameterType="java.util.List">
+    update t_exam_paper set task_exam_id = null where id in
+    <foreach item="id" collection="paperIds" open="(" separator=","
+             close=")">
+      #{id}
+    </foreach>
+  </update>
+
+</mapper>

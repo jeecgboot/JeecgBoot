@@ -101,7 +101,7 @@ public class OrderController extends BaseController {
      */
     @ResponseBody
     @RequestMapping("/buy")
-    public JsonResult save(HttpServletResponse response, HttpServletRequest request) {
+    public JsonResult save(HttpServletResponse response) {
 
         // 记得 map 第二个泛型是数组 要取 第一个元素 即[0]
         Map<String, String> params = RequestParamsUtil.getParameterMap(request);
@@ -126,12 +126,12 @@ public class OrderController extends BaseController {
         if (isMobile) {
             Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", payType).eq("is_mobile", 1));
             if (ObjectUtils.isEmpty(pays)) {
-                return JsonResult.error("不要搞我啦！！");
+                return JsonResult.error("不支持该支付类型");
             }
         } else {
             Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", payType).eq("is_pc", 1));
             if (ObjectUtils.isEmpty(pays)) {
-                return JsonResult.error("不要搞我啦！！");
+                return JsonResult.error("不支持该支付类型");
             }
         }
 
@@ -312,7 +312,7 @@ public class OrderController extends BaseController {
 
     @OperLog(value = "支付", desc = "提交支付")
     @RequestMapping(value = "/pay/{member}", produces = "text/html")
-    public String pay(Model model, @PathVariable("member") String member, HttpServletResponse response, HttpServletRequest request) throws IOException, NoSuchAlgorithmException {
+    public String pay(Model model, @PathVariable("member") String member, HttpServletResponse response) throws IOException, NoSuchAlgorithmException {
         Orders orders = ordersService.selectByMember(member);
         Products products = productsService.getById(orders.getProductId());
 

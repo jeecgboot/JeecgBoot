@@ -11,6 +11,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,11 +31,14 @@ import java.util.zip.ZipInputStream;
 
 /**
  * 文件服务器
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Controller
 @RequestMapping("/file")
 public class FileController {
+
+    @Autowired
+    public HttpServletRequest request;
 
     @RequiresPermissions("sys:file:view")
     @RequestMapping("/manage")
@@ -48,7 +52,7 @@ public class FileController {
     @OperLog(value = "文件管理", desc = "上传文件", param = false, result = true)
     @ResponseBody
     @PostMapping("/upload")
-    public JsonResult upload(@RequestParam MultipartFile file, HttpServletRequest request) {
+    public JsonResult upload(@RequestParam MultipartFile file) {
         return FileUploadUtil.upload(file, request);
     }
 
@@ -58,7 +62,7 @@ public class FileController {
     @OperLog(value = "文件管理", desc = "上传base64文件", param = false, result = true)
     @ResponseBody
     @PostMapping("/upload/base64")
-    public JsonResult uploadBase64(String base64, HttpServletRequest request) {
+    public JsonResult uploadBase64(String base64) {
         return FileUploadUtil.upload(base64, request);
     }
 
@@ -116,11 +120,9 @@ public class FileController {
                         baos.write(bytes);
                     }
                     baos.close();
-                    System.out.println(baos.toString());
                 } else {
                     byte[] bytes = new byte[(int) zipEntry.getSize()];
                     zipInputStream.read(bytes, 0, (int) zipEntry.getSize());
-                    System.out.println(new String(bytes));
                 }
             }
         }

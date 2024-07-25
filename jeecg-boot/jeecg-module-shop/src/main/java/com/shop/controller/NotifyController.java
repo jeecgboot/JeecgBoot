@@ -70,6 +70,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class NotifyController {
 
     @Autowired
+    public HttpServletRequest request;
+
+    @Autowired
     private PaysService paysService;
 
     @Autowired
@@ -118,7 +121,7 @@ public class NotifyController {
         Orders orders = ordersService.getOne(new QueryWrapper<Orders>().eq("member", budpay.getOut_trade_no()));
         Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", driver).eq("username",orders.getUsername()));
         if (!orders.getPayType().equals(pays.getDriver())) {
-            return "不要搞我啦！！";
+            return "不支持该支付类型";
         }
 
         Map mapTypes = JSON.parseObject(pays.getConfig());
@@ -129,8 +132,6 @@ public class NotifyController {
         Map<String, Object> map = JSON.parseObject(json, new TypeReference<Map<String, Object>>() {});
 
         String sign1 = BudpayUtil.createSign(map, secret_key).toUpperCase();
-        System.out.println(sign1);
-        System.out.println(budpay.getSign());
         if (sign1.equals(budpay.getSign())) {
             AtomicReference<String> notifyText = new AtomicReference<>();
             synchronizedByKeyService.exec(budpay.getOut_trade_no(), () -> {
@@ -146,12 +147,12 @@ public class NotifyController {
     /**
      * 虎皮椒支付通知
      *
-     * @param request
+     * @param response
      * @return
      */
     @RequestMapping("/budpay/returnUrl")
     @ResponseBody
-    public void budpayReturnUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void budpayReturnUrl(HttpServletResponse response) throws IOException {
         // 记得 map 第二个泛型是数组 要取 第一个元素 即[0]
         String contextPath = request.getContextPath();
         Map<String, String> params = RequestParamsUtil.getParameterMap(request);
@@ -161,7 +162,7 @@ public class NotifyController {
 
     @RequestMapping("/mqpay/notifyUrl")
     @ResponseBody
-    public String notifyUrl(HttpServletRequest request) {
+    public String notifyUrl() {
         Map<String, String> params = RequestParamsUtil.getParameterMap(request);
         String param = params.get("param");
         String price = params.get("price");
@@ -178,7 +179,7 @@ public class NotifyController {
              * 防止破解
              */
             if (!orders.getPayType().equals(wxPays.getDriver())) {
-                return "不要搞我啦！！";
+                return "不支持该支付类型";
             }
 
             Map mapTypes = JSON.parseObject(wxPays.getConfig());
@@ -190,7 +191,7 @@ public class NotifyController {
              * 防止破解
              */
             if (!orders.getPayType().equals(aliPays.getDriver())) {
-                return "不要搞我啦！！";
+                return "不支持该支付类型";
             }
 
             Map mapTypes = JSON.parseObject(aliPays.getConfig());
@@ -218,7 +219,7 @@ public class NotifyController {
     }
 
     @RequestMapping("/mqpay/returnUrl")
-    public void returnUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void returnUrl(HttpServletResponse response) throws IOException {
         /**
          *验证通知 处理自己的业务
          */
@@ -253,7 +254,7 @@ public class NotifyController {
 
     @RequestMapping("/epay/notifyUrl")
     @ResponseBody
-    public String zlianpNotify(HttpServletRequest request) {
+    public String zlianpNotify() {
         Map<String, String> parameterMap = RequestParamsUtil.getParameterMap(request);
 
         String pid = parameterMap.get("pid");
@@ -275,7 +276,7 @@ public class NotifyController {
         Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", driver).eq("username",orders.getUsername()));
 
         if (!orders.getPayType().equals(pays.getDriver())) {
-            return "不要搞我啦！！";
+            return "不支持该支付类型";
         }
 
         Map mapTypes = JSON.parseObject(pays.getConfig());
@@ -318,7 +319,7 @@ public class NotifyController {
 
     @RequestMapping("/epay/returnUrl")
     @ResponseBody
-    public void zlianpReturnUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void zlianpReturnUrl(HttpServletResponse response) throws IOException {
 
         /**
          *验证通知 处理自己的业务
@@ -374,7 +375,6 @@ public class NotifyController {
     }
 
     /**
-     * @param request
      * @return
      */
     @ResponseBody
@@ -410,7 +410,7 @@ public class NotifyController {
                  * 防止恶意回调
                  */
                 if (!orders.getPayType().equals(wxPays.getDriver())) {
-                    return "不要搞我啦！！";
+                    return "不支持该支付类型";
                 }
 
                 Map wxMap = JSON.parseObject(wxPays.getConfig());
@@ -423,7 +423,7 @@ public class NotifyController {
                  * 防止恶意回调
                  */
                 if (!orders.getPayType().equals(alipays.getDriver())) {
-                    return "不要搞我啦！！";
+                    return "不支持该支付类型";
                 }
 
                 Map aliMap = JSON.parseObject(alipays.getConfig());
@@ -464,7 +464,7 @@ public class NotifyController {
              * 防止恶意回调
              */
             if (!orders.getPayType().equals(xunhuwxPays.getDriver())) {
-                return "不要搞我啦！！";
+                return "不支持该支付类型";
             }
 
             Map xunhuwxMap = JSON.parseObject(xunhuwxPays.getConfig());
@@ -476,7 +476,7 @@ public class NotifyController {
              * 防止恶意回调
              */
             if (!orders.getPayType().equals(xunhualiPays.getDriver())) {
-                return "不要搞我啦！！";
+                return "不支持该支付类型";
             }
 
             Map xunhualiMap = JSON.parseObject(xunhualiPays.getConfig());
@@ -506,7 +506,7 @@ public class NotifyController {
      */
     @RequestMapping("/xunhupay/returnUrl")
     @ResponseBody
-    public void xunhuReturnUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void xunhuReturnUrl(HttpServletResponse response) throws IOException {
         // 记得 map 第二个泛型是数组 要取 第一个元素 即[0]
         String contextPath = request.getContextPath();
         Map<String, String> params = RequestParamsUtil.getParameterMap(request);
@@ -549,7 +549,7 @@ public class NotifyController {
              * 防止恶意回调
              */
             if (!orders.getPayType().equals(aliPays.getDriver())) {
-                return "不要搞我啦！！";
+                return "不支持该支付类型";
             }
 
             Map wxMap = JSON.parseObject(aliPays.getConfig());
@@ -561,7 +561,7 @@ public class NotifyController {
              * 防止恶意回调
              */
             if (!orders.getPayType().equals(wxPays.getDriver())) {
-                return "不要搞我啦！！";
+                return "不支持该支付类型";
             }
 
             Map wxMap = JSON.parseObject(wxPays.getConfig());
@@ -590,7 +590,7 @@ public class NotifyController {
      */
     @RequestMapping("/wxpay/notify")
     @ResponseBody
-    public String wxPayNotify(HttpServletRequest request, HttpServletResponse response) {
+    public String wxPayNotify(HttpServletResponse response) {
         String resXml = "";
         InputStream inStream;
         try {
@@ -622,7 +622,7 @@ public class NotifyController {
                 Orders orders1 = ordersService.getOne(new QueryWrapper<Orders>().eq("member", out_trade_no));
                 Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", "wxpay").eq("username",orders1.getUsername()));
                 if (!orders1.getPayType().equals(pays.getDriver())) {
-                    return "不要搞我啦！！";
+                    return "不支持该支付类型";
                 }
 
                 Map mapTypes = JSON.parseObject(pays.getConfig());
@@ -685,7 +685,7 @@ public class NotifyController {
     @RequestMapping("/alipay/notify")
     @ResponseBody
     @SneakyThrows(Exception.class)
-    public String alipayNotifyUrl(HttpServletRequest request) {
+    public String alipayNotifyUrl() {
         Map<String, String> params = Maps.newHashMap();
         Map<String, String[]> requestParams = request.getParameterMap();
         for (String name : requestParams.keySet()) {
@@ -709,7 +709,7 @@ public class NotifyController {
              * 防止恶意回调
              */
             if (!orders.getPayType().equals(pays.getDriver())) {
-                return "不要搞我啦！！";
+                return "不支持该支付类型";
             }
         } else if ("alipay_pc".equals(orders.getPayType())) {
             Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", "alipay_pc").eq("username",orders.getUsername()));
@@ -717,7 +717,7 @@ public class NotifyController {
              * 防止恶意回调
              */
             if (!orders.getPayType().equals(pays.getDriver())) {
-                return "不要搞我啦！！";
+                return "不支持该支付类型";
             }
         }
 
@@ -748,7 +748,7 @@ public class NotifyController {
      */
     @RequestMapping("/alipay/return_url")
     @SneakyThrows(Exception.class)
-    public void alipayReturnUrl(HttpServletRequest request, HttpServletResponse response) {
+    public void alipayReturnUrl(HttpServletResponse response) {
         Map<String, String> params = Maps.newHashMap();
         Map<String, String[]> requestParams = request.getParameterMap();
         for (String name : requestParams.keySet()) {
@@ -818,7 +818,7 @@ public class NotifyController {
                  * 防止恶意回调
                  */
                 if (!orders.getPayType().equals(pays.getDriver())) {
-                    return "不要搞我啦！！";
+                    return "不支持该支付类型";
                 }
                 String returnBig = returnBig(total, orders.getPrice().toString(), member, pay_no, orders.getProductId().toString(), "success", "failure");
                 if (returnBig.equals("success")) {
@@ -865,7 +865,7 @@ public class NotifyController {
 
     @RequestMapping("/epusdt/returnUrl")
     @ResponseBody
-    public void epusdtReturnUrl(HttpServletRequest request, String order_id, HttpServletResponse response) throws IOException {
+    public void epusdtReturnUrl(String order_id, HttpServletResponse response) throws IOException {
         String contextPath = request.getContextPath();
         String url = contextPath + "/pay/state/" + order_id;
         response.sendRedirect(url);

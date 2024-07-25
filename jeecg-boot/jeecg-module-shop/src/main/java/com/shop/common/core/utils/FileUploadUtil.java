@@ -18,7 +18,7 @@ import java.util.*;
 
 /**
  * 文件上传下载工具类
- * Created by Panyoujie on 2018-12-14 08:38
+ * 2018-12-14 08:38
  */
 public class FileUploadUtil {
     // 文件上传的目录

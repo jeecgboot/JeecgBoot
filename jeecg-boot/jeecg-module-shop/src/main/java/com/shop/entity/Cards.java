@@ -11,10 +11,9 @@ import java.util.Date;
 
 /**
  * 卡密
- * Created by Panyoujie on 2021-03-28 00:33:15
+ * 2021-03-28 00:33:15
  */
 @Data
-@ToString
 @TableName("sys_cards")
 public class Cards implements Serializable {
     private static final long serialVersionUID = 1L;

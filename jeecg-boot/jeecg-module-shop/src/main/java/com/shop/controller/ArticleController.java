@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * 文章表管理
- * Created by Panyoujie on 2021-11-08 04:44:45
+ * 2021-11-08 04:44:45
  */
 @Controller
 @RequestMapping("/content/article")
@@ -47,7 +47,7 @@ public class ArticleController extends BaseController {
     @OperLog(value = "文章表管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<Article> page(HttpServletRequest request) {
+    public PageResult<Article> page() {
         PageParam<Article> pageParam = new PageParam<>(request);
         return new PageResult<>(articleService.page(pageParam, pageParam.getWrapper()).getRecords(), pageParam.getTotal());
     }
@@ -59,7 +59,7 @@ public class ArticleController extends BaseController {
     @OperLog(value = "文章表管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Article> pageParam = new PageParam<>(request);
         return JsonResult.ok().setData(articleService.list(pageParam.getOrderWrapper()));
     }

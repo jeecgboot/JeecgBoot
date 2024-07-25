@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 /**
  * 常用工具方法
- * Created by Panyoujie on 2017-6-10 10:10
+ * 2017-6-10 10:10
  */
 public class CoreUtil {
     private static final String[] chars = new String[]{"a", "b", "c", "d", "e", "f",

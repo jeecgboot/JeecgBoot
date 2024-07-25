@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 
 /**
  * 自定义shiro过滤器
- * Created by Panyoujie on 2017-04-28 09:45
+ * 2017-04-28 09:45
  */
 public class ShiroLoginFilter extends AccessControlFilter {
 

@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * 字典管理
- * Created by Panyoujie on 2020-03-14 11:29:03
+ * 2020-03-14 11:29:03
  */
 @Controller
 @RequestMapping("/sys/dict")
@@ -43,7 +43,7 @@ public class DictionaryController extends BaseController {
     @RequiresPermissions("sys:dict:list")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<Dictionary> page(HttpServletRequest request) {
+    public PageResult<Dictionary> page() {
         PageParam<Dictionary> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return new PageResult<>(dictionaryService.page(pageParam, pageParam.getWrapper()).getRecords(), pageParam.getTotal());
@@ -56,7 +56,7 @@ public class DictionaryController extends BaseController {
     @RequiresPermissions("sys:dict:list")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Dictionary> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return JsonResult.ok().setData(dictionaryService.list(pageParam.getOrderWrapper()));

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.repository.TaskExamMapper">
+  <resultMap id="BaseResultMap" type="com.exam.domain.TaskExam">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="grade_level" jdbcType="INTEGER" property="gradeLevel" />
+    <result column="frame_text_content_id" jdbcType="INTEGER" property="frameTextContentId" />
+    <result column="create_user" jdbcType="INTEGER" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+    <result column="create_user_name" jdbcType="VARCHAR" property="createUserName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, title, grade_level, frame_text_content_id, create_user, create_time, deleted,
+    create_user_name
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_task_exam
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_task_exam
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.exam.domain.TaskExam" useGeneratedKeys="true" keyProperty="id">
+    insert into t_task_exam (id, title, grade_level,
+      frame_text_content_id, create_user, create_time,
+      deleted, create_user_name)
+    values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{gradeLevel,jdbcType=INTEGER},
+      #{frameTextContentId,jdbcType=INTEGER}, #{createUser,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+      #{deleted,jdbcType=BIT}, #{createUserName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.exam.domain.TaskExam" useGeneratedKeys="true" keyProperty="id">
+    insert into t_task_exam
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="gradeLevel != null">
+        grade_level,
+      </if>
+      <if test="frameTextContentId != null">
+        frame_text_content_id,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+      <if test="createUserName != null">
+        create_user_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="gradeLevel != null">
+        #{gradeLevel,jdbcType=INTEGER},
+      </if>
+      <if test="frameTextContentId != null">
+        #{frameTextContentId,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+      <if test="createUserName != null">
+        #{createUserName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exam.domain.TaskExam">
+    update t_task_exam
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="gradeLevel != null">
+        grade_level = #{gradeLevel,jdbcType=INTEGER},
+      </if>
+      <if test="frameTextContentId != null">
+        frame_text_content_id = #{frameTextContentId,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+      <if test="createUserName != null">
+        create_user_name = #{createUserName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exam.domain.TaskExam">
+    update t_task_exam
+    set title = #{title,jdbcType=VARCHAR},
+      grade_level = #{gradeLevel,jdbcType=INTEGER},
+      frame_text_content_id = #{frameTextContentId,jdbcType=INTEGER},
+      create_user = #{createUser,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=BIT},
+      create_user_name = #{createUserName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+
+
+
+  <select id="page" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.admin.task.TaskPageRequestVM">
+    select
+    <include refid="Base_Column_List" />
+    from t_task_exam
+    <where>
+        and deleted=0
+      <if test="gradeLevel != null">
+        and grade_level = #{gradeLevel}
+      </if>
+    </where>
+  </select>
+
+
+  <select id="getByGradeLevel" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+    select
+    <include refid="Base_Column_List" />
+    from t_task_exam
+    where deleted=0
+    and grade_level = #{gradeLevel,jdbcType=INTEGER}
+  </select>
+
+</mapper>

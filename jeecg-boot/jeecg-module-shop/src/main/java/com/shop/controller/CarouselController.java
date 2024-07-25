@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * 轮播图管理管理
- * Created by Panyoujie on 2021-11-10 02:54:31
+ * 2021-11-10 02:54:31
  */
 @Controller
 @RequestMapping("/content/carousel")
@@ -38,7 +38,7 @@ public class CarouselController extends BaseController {
     @OperLog(value = "轮播图管理管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<Carousel> page(HttpServletRequest request) {
+    public PageResult<Carousel> page() {
         PageParam<Carousel> pageParam = new PageParam<>(request);
         return new PageResult<>(carouselService.page(pageParam, pageParam.getWrapper()).getRecords(), pageParam.getTotal());
     }
@@ -50,7 +50,7 @@ public class CarouselController extends BaseController {
     @OperLog(value = "轮播图管理管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Carousel> pageParam = new PageParam<>(request);
         return JsonResult.ok().setData(carouselService.list(pageParam.getOrderWrapper()));
     }

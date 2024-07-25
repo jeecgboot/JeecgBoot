@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * 分页查询通用返回结果
- * Created by Panyoujie on 2017-06-10 10:10
+ * 2017-06-10 10:10
  */
 public class PageResult<T> implements Serializable {
     private static final long serialVersionUID = 1L;

@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * 用户管理
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Controller
 @RequestMapping("/sys/user")
@@ -77,7 +77,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("sys:user:list")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<User> page(HttpServletRequest request) {
+    public PageResult<User> page() {
         PageParam<User> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         pageParam.setDefaultOrder(null, new String[]{"create_time"});
@@ -91,7 +91,7 @@ public class UserController extends BaseController {
     @RequiresPermissions("sys:user:list")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<User> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         List<User> records = userService.listAll(pageParam.getNoPageParam());

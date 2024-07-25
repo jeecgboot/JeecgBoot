@@ -11,10 +11,9 @@ import java.util.Date;
 
 /**
  * 轮播图管理
- * Created by Panyoujie on 2021-11-10 02:54:31
+ * 2021-11-10 02:54:31
  */
 @Data
-@ToString
 @TableName("sys_carousel")
 public class Carousel implements Serializable {
     private static final long serialVersionUID = 1L;

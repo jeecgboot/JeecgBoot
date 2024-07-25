@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.repository.MessageUserMapper">
+  <resultMap id="BaseResultMap" type="com.exam.domain.MessageUser">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="message_id" jdbcType="INTEGER" property="messageId" />
+    <result column="receive_user_id" jdbcType="INTEGER" property="receiveUserId" />
+    <result column="receive_user_name" jdbcType="VARCHAR" property="receiveUserName" />
+    <result column="receive_real_name" jdbcType="VARCHAR" property="receiveRealName" />
+    <result column="readed" jdbcType="BIT" property="readed" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="read_time" jdbcType="TIMESTAMP" property="readTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, message_id, receive_user_id, receive_user_name, receive_real_name, readed, create_time,
+    read_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_message_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_message_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.exam.domain.MessageUser" useGeneratedKeys="true" keyProperty="id">
+    insert into t_message_user (id, message_id, receive_user_id,
+      receive_user_name, receive_real_name, readed,
+      create_time, read_time)
+    values (#{id,jdbcType=INTEGER}, #{messageId,jdbcType=INTEGER}, #{receiveUserId,jdbcType=INTEGER},
+      #{receiveUserName,jdbcType=VARCHAR}, #{receiveRealName,jdbcType=VARCHAR}, #{readed,jdbcType=BIT},
+      #{createTime,jdbcType=TIMESTAMP}, #{readTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.exam.domain.MessageUser" useGeneratedKeys="true" keyProperty="id">
+    insert into t_message_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="messageId != null">
+        message_id,
+      </if>
+      <if test="receiveUserId != null">
+        receive_user_id,
+      </if>
+      <if test="receiveUserName != null">
+        receive_user_name,
+      </if>
+      <if test="receiveRealName != null">
+        receive_real_name,
+      </if>
+      <if test="readed != null">
+        readed,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="readTime != null">
+        read_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="messageId != null">
+        #{messageId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveUserId != null">
+        #{receiveUserId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveUserName != null">
+        #{receiveUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveRealName != null">
+        #{receiveRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="readed != null">
+        #{readed,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="readTime != null">
+        #{readTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exam.domain.MessageUser" >
+    update t_message_user
+    <set>
+      <if test="messageId != null">
+        message_id = #{messageId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveUserId != null">
+        receive_user_id = #{receiveUserId,jdbcType=INTEGER},
+      </if>
+      <if test="receiveUserName != null">
+        receive_user_name = #{receiveUserName,jdbcType=VARCHAR},
+      </if>
+      <if test="receiveRealName != null">
+        receive_real_name = #{receiveRealName,jdbcType=VARCHAR},
+      </if>
+      <if test="readed != null">
+        readed = #{readed,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="readTime != null">
+        read_time = #{readTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exam.domain.MessageUser">
+    update t_message_user
+    set message_id = #{messageId,jdbcType=INTEGER},
+      receive_user_id = #{receiveUserId,jdbcType=INTEGER},
+      receive_user_name = #{receiveUserName,jdbcType=VARCHAR},
+      receive_real_name = #{receiveRealName,jdbcType=VARCHAR},
+      readed = #{readed,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      read_time = #{readTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+
+
+  <select id="selectByMessageIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_message_user
+    where  message_id  in
+    <foreach item="id" collection="list" open="(" separator=","  close=")">
+      #{id}
+    </foreach>
+  </select>
+
+
+  <insert id="inserts" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+    insert into t_message_user (message_id, receive_user_id,
+    receive_user_name, receive_real_name, readed,
+    create_time)
+    values
+    <foreach collection="list" item="item" index="index"
+             separator=",">
+      (#{item.messageId,jdbcType=INTEGER}, #{item.receiveUserId,jdbcType=INTEGER},
+      #{item.receiveUserName,jdbcType=VARCHAR}, #{item.receiveRealName,jdbcType=VARCHAR}, #{item.readed,jdbcType=BIT},
+      #{item.createTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+
+
+  <select id="studentPage" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.student.user.MessageRequestVM">
+    select
+    <include refid="Base_Column_List" />
+    from t_message_user
+    where  receive_user_id = #{receiveUserId}
+  </select>
+
+
+  <select id="unReadCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+    select count(*)
+    from t_message_user
+    where  readed='f' and  receive_user_id = #{userId}
+  </select>
+</mapper>

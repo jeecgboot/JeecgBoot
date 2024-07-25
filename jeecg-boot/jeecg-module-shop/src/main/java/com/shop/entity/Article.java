@@ -11,9 +11,8 @@ import java.util.Date;
 
 /**
  * 文章表
- * Created by Panyoujie on 2021-11-08 04:44:45
+ * 2021-11-08 04:44:45
  */
-@ToString
 @Data
 @TableName("sys_article")
 public class Article implements Serializable {

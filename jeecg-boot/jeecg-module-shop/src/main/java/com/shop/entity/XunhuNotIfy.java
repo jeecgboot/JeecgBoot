@@ -6,7 +6,6 @@ import lombok.ToString;
 import java.math.BigDecimal;
 
 @Data
-@ToString
 public class XunhuNotIfy {
     /**
      * 商户订单号

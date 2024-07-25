@@ -20,6 +20,14 @@ public class ResUtil {
         return commonRes;
     }
 
+    public static CommonRes success(String msg){
+        CommonRes commonRes = new CommonRes();
+        commonRes.setCode(1);
+        commonRes.setMsg(msg);
+        commonRes.setData(msg);
+        return commonRes;
+    }
+
     public static CommonRes error(String msg){
         CommonRes commonRes = new CommonRes();
         commonRes.setCode(-1);

@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 支付配置Mapper接口
- * Created by Panyoujie on 2021-03-29 11:06:11
+ * 2021-03-29 11:06:11
  */
 public interface PaysMapper extends BaseMapper<Pays> {
 

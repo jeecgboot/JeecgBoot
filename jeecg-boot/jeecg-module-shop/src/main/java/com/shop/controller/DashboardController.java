@@ -130,7 +130,7 @@ public class DashboardController extends BaseController {
         map4.put("name", "USDT ");
         mapList.add(map4);
 
-        List<Orders> ordersList = ordersService.list(new QueryWrapper<Orders>().ge("status", 1));
+        List<Orders> ordersList = ordersService.list(new QueryWrapper<Orders>().ge("status", 1).eq("username",getLoginUsername()));
         BigDecimal total_amount = new BigDecimal(0.00); // 获取今天成功交易的订单交易额
         for (Orders orders : ordersList) {
             total_amount = total_amount.add(new BigDecimal(orders.getMoney().toString())); // 统计今天的交易额
@@ -296,7 +296,7 @@ public class DashboardController extends BaseController {
      */
     public static QueryWrapper getQueryWrapper(Date StartTime, Date EndTime) {
         QueryWrapper<Orders> queryWrapper = new QueryWrapper<>();
-        queryWrapper.ge("username", getLoginUsername());
+        queryWrapper.eq("username", getLoginUsername());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String DayStartTime = formatter.format(StartTime);
         String DayEndTime = formatter.format(EndTime);

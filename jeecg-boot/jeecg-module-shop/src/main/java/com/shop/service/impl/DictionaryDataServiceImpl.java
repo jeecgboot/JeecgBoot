@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * 字典项服务实现类
- * Created by Panyoujie on 2020-03-14 11:29:04
+ * 2020-03-14 11:29:04
  */
 @Service
 public class DictionaryDataServiceImpl extends ServiceImpl<DictionaryDataMapper, DictionaryData> implements DictionaryDataService {

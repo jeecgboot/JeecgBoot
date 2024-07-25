@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * 优惠券管理
- * Created by Panyoujie on 2021-06-23 07:43:23
+ * 2021-06-23 07:43:23
  */
 @Controller
 @RequestMapping("/settings/coupon")
@@ -60,7 +60,7 @@ public class CouponController extends BaseController {
     @OperLog(value = "优惠券管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<CouponVo> page(HttpServletRequest request) {
+    public PageResult<CouponVo> page() {
         PageParam<Coupon> pageParam = new PageParam<>(request);
         pageParam.addOrderDesc("create_time");
         List<Coupon> records = couponService.page(pageParam, pageParam.getWrapper()).getRecords();
@@ -81,7 +81,7 @@ public class CouponController extends BaseController {
     @OperLog(value = "优惠券管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Coupon> pageParam = new PageParam<>(request);
         return JsonResult.ok().setData(couponService.list(pageParam.getOrderWrapper()));
     }

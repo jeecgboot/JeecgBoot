@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * 用户角色Mapper接口
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 public interface UserRoleMapper extends BaseMapper<UserRole> {
 

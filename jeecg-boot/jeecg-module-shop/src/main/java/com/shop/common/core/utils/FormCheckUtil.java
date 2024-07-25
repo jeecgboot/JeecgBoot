@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * 格式校验工具类
- * Created by Panyoujie on 2018-12-14 8:38
+ * 2018-12-14 8:38
  */
 public class FormCheckUtil {
 

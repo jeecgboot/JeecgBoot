@@ -188,4 +188,14 @@ public class PasswordUtil {
         return sb.toString();
     }
 
+    public static String randomNum(int place) {
+        String base = "0123456789";
+        StringBuffer sb = new StringBuffer();
+        Random rd = new Random();
+        for(int i=0;i<place;i++) {
+            sb.append(base.charAt(rd.nextInt(base.length())));
+        }
+        return sb.toString();
+    }
+
 }

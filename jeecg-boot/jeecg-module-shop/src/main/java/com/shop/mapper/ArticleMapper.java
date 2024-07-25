@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 文章表Mapper接口
- * Created by Panyoujie on 2021-11-08 04:44:45
+ * 2021-11-08 04:44:45
  */
 public interface ArticleMapper extends BaseMapper<Article> {
 

@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 /**
  * 分类管理
- * Created by Panyoujie on 2021-03-27 20:22:00
+ * 2021-03-27 20:22:00
  */
 @Controller
 @RequestMapping("/products/classifys")
@@ -47,7 +47,7 @@ public class ClassifysController extends BaseController {
     @OperLog(value = "分类管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<ClassifysVo> page(HttpServletRequest request) {
+    public PageResult<ClassifysVo> page() {
         PageParam<Classifys> pageParam = new PageParam<>(request);
         pageParam.addOrderAsc("sort");
 
@@ -71,7 +71,7 @@ public class ClassifysController extends BaseController {
     @OperLog(value = "分类管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Classifys> pageParam = new PageParam<>(request);
         return JsonResult.ok().setData(classifysService.list(pageParam.getOrderWrapper()));
     }

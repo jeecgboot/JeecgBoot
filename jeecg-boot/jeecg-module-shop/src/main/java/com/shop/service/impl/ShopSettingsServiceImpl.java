@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * 商店设置服务实现类
- * Created by Panyoujie on 2021-07-04 03:54:31
+ * 2021-07-04 03:54:31
  */
 @Service
 public class ShopSettingsServiceImpl extends ServiceImpl<ShopSettingsMapper, ShopSettings> implements ShopSettingsService {

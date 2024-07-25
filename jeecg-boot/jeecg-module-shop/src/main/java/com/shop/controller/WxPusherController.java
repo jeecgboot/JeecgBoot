@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * 微信订单通知
- * Created by Panyoujie on 2021-07-04 16:31:11
+ * 2021-07-04 16:31:11
  */
 @Controller
 @RequestMapping("/wxpusher")

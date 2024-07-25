@@ -1,6 +1,7 @@
 package com.shop.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.List;
  * 菜单
  * Created by AutoGenerator on 2018-12-24 16:10
  */
+@Data
 @TableName("sys_menu")
 public class Menu implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -90,170 +92,5 @@ public class Menu implements Serializable {
     private Boolean checked;
     @TableField(exist = false)
     private Boolean open;
-
-    public Integer getMenuId() {
-        return menuId;
-    }
-
-    public void setMenuId(Integer menuId) {
-        this.menuId = menuId;
-    }
-
-    public Integer getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Integer parentId) {
-        this.parentId = parentId;
-    }
-
-    public String getMenuName() {
-        return menuName;
-    }
-
-    public void setMenuName(String menuName) {
-        this.menuName = menuName;
-    }
-
-    public String getIconColor() {
-        return iconColor;
-    }
-
-    public void setIconColor(String iconColor) {
-        this.iconColor = iconColor;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getMenuIcon() {
-        return menuIcon;
-    }
-
-    public void setMenuIcon(String menuIcon) {
-        this.menuIcon = menuIcon;
-    }
-
-    public Integer getSortNumber() {
-        return sortNumber;
-    }
-
-    public void setSortNumber(Integer sortNumber) {
-        this.sortNumber = sortNumber;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public Integer getHide() {
-        return hide;
-    }
-
-    public void setHide(Integer hide) {
-        this.hide = hide;
-    }
-
-    public String getAuthority() {
-        return authority;
-    }
-
-    public void setAuthority(String authority) {
-        this.authority = authority;
-    }
-
-    public Integer getMenuType() {
-        return menuType;
-    }
-
-    public void setMenuType(Integer menuType) {
-        this.menuType = menuType;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public Integer getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Integer deleted) {
-        this.deleted = deleted;
-    }
-
-    public String getParentName() {
-        return parentName;
-    }
-
-    public void setParentName(String parentName) {
-        this.parentName = parentName;
-    }
-
-    public List<Menu> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<Menu> children) {
-        this.children = children;
-    }
-
-    public Boolean getChecked() {
-        return checked;
-    }
-
-    public void setChecked(Boolean checked) {
-        this.checked = checked;
-    }
-
-    public Boolean getOpen() {
-        return open;
-    }
-
-    public void setOpen(Boolean open) {
-        this.open = open;
-    }
-
-    @Override
-    public String toString() {
-        return "Menu{" +
-                ", menuId=" + menuId +
-                ", parentId=" + parentId +
-                ", menuName=" + menuName +
-                ", path=" + path +
-                ", menuIcon=" + menuIcon +
-                ", iconColor=" + iconColor +
-                ", sortNumber=" + sortNumber +
-                ", target=" + target +
-                ", hide=" + hide +
-                ", authority=" + authority +
-                ", menuType=" + menuType +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", deleted=" + deleted +
-                ", parentName=" + parentName +
-                "}";
-    }
 
 }

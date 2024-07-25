@@ -46,12 +46,4 @@ public class MD5Utils {
         int d2 = n % 16;
         return hexDigIts[d1] + hexDigIts[d2];
     }
-
-    public static void main(String[] args) throws Exception {
-        String personNumber = "e96281f222072f8bf6e730d41b42cb30";
-        String company = "福州青格软件有限公司";
-        String validToken = MD5Encode(personNumber + company + "treesoft");
-        System.out.println("用户名=" + company);
-        System.out.println("CODE=" + validToken);
-    }
 }

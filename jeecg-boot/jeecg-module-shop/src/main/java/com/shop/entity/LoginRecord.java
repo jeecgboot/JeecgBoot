@@ -4,14 +4,16 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * 登录日志
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
+@Data
 @TableName("sys_login_record")
 public class LoginRecord implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -66,108 +68,4 @@ public class LoginRecord implements Serializable {
     @TableField(exist = false)
     private String nickName;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getOs() {
-        return os;
-    }
-
-    public void setOs(String os) {
-        this.os = os;
-    }
-
-    public String getDevice() {
-        return device;
-    }
-
-    public void setDevice(String device) {
-        this.device = device;
-    }
-
-    public String getBrowser() {
-        return browser;
-    }
-
-    public void setBrowser(String browser) {
-        this.browser = browser;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
-
-    public Integer getOperType() {
-        return operType;
-    }
-
-    public void setOperType(Integer operType) {
-        this.operType = operType;
-    }
-
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getNickName() {
-        return nickName;
-    }
-
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-    @Override
-    public String toString() {
-        return "LoginRecord{" +
-                ", id=" + id +
-                ", os=" + os +
-                ", device=" + device +
-                ", browser=" + browser +
-                ", ip=" + ip +
-                ", operType=" + operType +
-                ", comments=" + comments +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                ", username=" + username +
-                ", nickName=" + nickName +
-                "}";
-    }
 }

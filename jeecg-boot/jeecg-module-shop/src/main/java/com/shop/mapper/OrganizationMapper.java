@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 组织机构Mapper接口
- * Created by Panyoujie on 2020-03-14 11:29:04
+ * 2020-03-14 11:29:04
  */
 public interface OrganizationMapper extends BaseMapper<Organization> {
 

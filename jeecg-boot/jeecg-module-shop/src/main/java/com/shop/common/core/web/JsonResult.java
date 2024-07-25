@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 /**
  * 接口返回结果对象
- * Created by Panyoujie on 2017-06-10 10:10
+ * 2017-06-10 10:10
  */
 public class JsonResult extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;

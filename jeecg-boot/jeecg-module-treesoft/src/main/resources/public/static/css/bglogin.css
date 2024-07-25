@@ -1,16 +1,16 @@
 body{margin:0px;padding:0px; background-color: #ededed}
 form{margin:0px;padding:0px;}
-.login_top{width: 100%;height: 150px;background: #0060A9 url("../images/mosaic-pattern.png") repeat; display: block;float:left;}
+.login_top{width: 100%;height: 150px;
+	background-color: rgba(255, 255, 255, 0.7);
+	display: block;float:left;}
 .login_title{
 	width: 450px;height: 50px;display:block;margin: auto;
 	text-align: center;
-	color:#fff;
+	color: #0060A9;
 	margin-top: 100px;line-height: 50px;font-family:"微软雅黑";font-size: 24px;
-	
 	}
 .login_main{
-	/*background: url('../images/login_bg.png');*/
-	background-color: rgba(255, 255, 255, 0.5);
+	background-color: rgba(255, 255, 255, 0.3);
 	width:423px;height:366px;display: block;margin:auto;margin-top:30px;
 	}
 .login_main_top{

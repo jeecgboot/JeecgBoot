@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="login-wrapper layui-anim layui-anim-scale layui-hide">
-    <form class="layui-form">
+    <form class="layui-form" id="loginForm">
         <h2>用户登录</h2>
         <div class="layui-form-item layui-input-icon-group">
             <i class="layui-icon layui-icon-username"></i>
@@ -33,6 +33,35 @@
         <div class="layui-form-item" style="margin-bottom: 15px;">
             <button class="layui-btn layui-btn-fluid" lay-filter="loginSubmit" lay-submit>登录</button>
         </div>
+        <div class="layui-form-item" style="margin-bottom: 15px;">
+            <button class="layui-btn layui-btn-fluid" style="background-color: cornflowerblue" id="regist">注册</button>
+        </div>
+    </form>
+    <form class="layui-form" id="registForm" style="display: none">
+        <h2>用户注册</h2>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-username"></i>
+            <input class="layui-input" name="username" placeholder="请输入登录账号" autocomplete="off"
+                   lay-verType="tips" lay-verify="required"  required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-password"></i>
+            <input class="layui-input" name="password" placeholder="请输入登录密码" type="password"
+                   lay-verType="tips" lay-verify="required" required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group">
+            <i class="layui-icon layui-icon-email"></i>
+            <input class="layui-input" id="email" name="email" type="email" placeholder="请输入邮箱" lay-verify="email" required/>
+        </div>
+        <div class="layui-form-item layui-input-icon-group login-captcha-group" style="display: flex">
+            <i class="layui-icon layui-icon-auz"></i>
+            <input class="layui-input" style="width: 200px;" name="code" placeholder="请输入验证码" autocomplete="off"
+                   lay-verType="tips" lay-verify="required" required/>
+            <button class="layui-btn layui-btn-fluid" style="background-color: #1ca27a;margin-left: 10px" id="verificationCode">获取验证码</button>
+        </div>
+        <div class="layui-form-item" style="margin-bottom: 15px;">
+            <button class="layui-btn layui-btn-fluid" style="background-color: cornflowerblue" lay-filter="registSubmit" lay-submit>注册</button>
+        </div>
     </form>
 </div>
 <div class="login-copyright">${website.websiteName}</div>
@@ -44,6 +73,39 @@
         var layer = layui.layer;
         var form = layui.form;
         $('.login-wrapper').removeClass('layui-hide');
+
+        $('#regist').click(function () {
+            $("#loginForm").hide();
+            $("#registForm").show();
+        })
+
+        $('#verificationCode').click(function () {
+            var email = $("#email").val();
+            if (email=="") {
+                layer.msg("请输入邮箱");
+                return false;
+            }
+            $.post('${ctxPath}/getVerificationCode', {email:email}, function (res) {
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                } else {
+                    layer.msg(res.msg, {icon: 2, anim: 6});
+                }
+            });
+        })
+
+        form.on('submit(registSubmit)', function (data) {
+            $.post('${ctxPath}/regist', data.field, function (res) {
+                if (0 === res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                    $("#loginForm").show();
+                    $("#registForm").hide();
+                } else {
+                    layer.msg(res.msg, {icon: 2, anim: 6});
+                }
+            });
+            return false;
+        });
 
         /* 表单提交 */
         form.on('submit(loginSubmit)', function (data) {

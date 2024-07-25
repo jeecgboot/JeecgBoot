@@ -217,7 +217,7 @@
     function check() {
         $.get("checkOrder","orderId="+getQueryString("orderId"),function (data) {
             console.log("checkOrder",data.data);
-            if (data.code == 1){
+            if (data.code == 1) {
                 window.location.href = data.data;
             } else{
                 if (data.data == "订单已过期") {

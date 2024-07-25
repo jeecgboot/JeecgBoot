@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class SystemAspect {
 
     @SneakyThrows
-    @Around("within(com.baomidou.*.controller.*)")
+    @Around("within(com.shop.controller.*)")
     public Object around(ProceedingJoinPoint joinPoint) {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
@@ -65,7 +65,7 @@ public class SystemAspect {
                 object instanceof Boolean) {
             return true;
         }
-        if (Objects.nonNull(object) && object.getClass().getName().startsWith("com.mq")) {
+        if (Objects.nonNull(object) && object.getClass().getName().startsWith("com.shop")) {
             return true;
         }
         return false;

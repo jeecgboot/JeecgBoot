@@ -5,7 +5,7 @@ import com.shop.entity.Role;
 
 /**
  * 角色Mapper接口
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 public interface RoleMapper extends BaseMapper<Role> {
 

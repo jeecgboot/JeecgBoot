@@ -12,10 +12,9 @@ import java.util.Date;
 
 /**
  * 商品
- * Created by Panyoujie on 2021-03-27 20:22:00
+ * 2021-03-27 20:22:00
  */
 @Data
-@ToString
 @TableName("sys_products")
 public class Products implements Serializable {
     private static final long serialVersionUID = 1L;

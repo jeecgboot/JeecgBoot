@@ -20,14 +20,6 @@ public class PicUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(PicUtils.class);
 
-    /*public static void main(String[] args) throws IOException {
-        byte[] bytes = FileUtils.readFileToByteArray(new File("D:/a.png"));
-        long l = System.currentTimeMillis();
-        bytes = PicUtils.compressPicForScale(bytes, 30, "x");// 图片小于300kb
-        System.out.println(System.currentTimeMillis() - l);
-        FileUtils.writeByteArrayToFile(new File("D:/aa.png"), bytes);
-    }*/
-
     /**
      * 根据指定大小压缩图片
      *

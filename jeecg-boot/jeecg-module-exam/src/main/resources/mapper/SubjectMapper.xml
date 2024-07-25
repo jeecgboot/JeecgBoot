@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.repository.SubjectMapper">
+  <resultMap id="BaseResultMap" type="com.exam.domain.Subject">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="level_name" jdbcType="VARCHAR" property="levelName" />
+    <result column="item_order" jdbcType="INTEGER" property="itemOrder" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, name, level, level_name, item_order, deleted
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_subject
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_subject
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.exam.domain.Subject" useGeneratedKeys="true" keyProperty="id">
+    insert into t_subject (id, name, level, 
+      level_name, item_order, deleted
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{level,jdbcType=INTEGER}, 
+      #{levelName,jdbcType=VARCHAR}, #{itemOrder,jdbcType=INTEGER}, #{deleted,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.exam.domain.Subject" useGeneratedKeys="true" keyProperty="id">
+    insert into t_subject
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="levelName != null">
+        level_name,
+      </if>
+      <if test="itemOrder != null">
+        item_order,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="levelName != null">
+        #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemOrder != null">
+        #{itemOrder,jdbcType=INTEGER},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exam.domain.Subject">
+    update t_subject
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="levelName != null">
+        level_name = #{levelName,jdbcType=VARCHAR},
+      </if>
+      <if test="itemOrder != null">
+        item_order = #{itemOrder,jdbcType=INTEGER},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exam.domain.Subject">
+    update t_subject
+    set name = #{name,jdbcType=VARCHAR},
+      level = #{level,jdbcType=INTEGER},
+      level_name = #{levelName,jdbcType=VARCHAR},
+      item_order = #{itemOrder,jdbcType=INTEGER},
+      deleted = #{deleted,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+  <select id="getSubjectByLevel" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_subject where level= #{level}
+    order by item_order
+  </select>
+
+
+  <select id="allSubject" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_subject
+  </select>
+
+  <select id="page" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.admin.education.SubjectPageRequestVM">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_subject
+    <where>
+        and deleted=0
+      <if test="id != null ">
+        and id= #{id}
+      </if>
+      <if test="level != null ">
+        and level= #{level}
+      </if>
+    </where>
+  </select>
+
+</mapper>

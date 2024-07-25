@@ -2,7 +2,7 @@ package com.shop.common.core;
 
 /**
  * 系统常量
- * Created by Panyoujie on 2019-10-29 15:55
+ * 2019-10-29 15:55
  */
 public class Constants {
 

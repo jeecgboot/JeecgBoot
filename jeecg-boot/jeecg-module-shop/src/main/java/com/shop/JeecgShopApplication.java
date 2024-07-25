@@ -10,7 +10,7 @@ import org.wf.jwtp.configuration.EnableJwtPermission;
 
 @EnableJwtPermission
 @EnableAsync
-@MapperScan("com.shop.**.mapper")
+@MapperScan("com.shop.mapper")
 @SpringBootApplication
 public class JeecgShopApplication extends SpringBootServletInitializer {
 

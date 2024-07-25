@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * 操作日志
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Controller
 @RequestMapping("/sys/operRecord")
@@ -39,7 +39,7 @@ public class OperRecordController extends BaseController {
     @RequiresPermissions("sys:oper_record:view")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<OperRecord> page(HttpServletRequest request) {
+    public PageResult<OperRecord> page() {
         PageParam<OperRecord> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         pageParam.setDefaultOrder(null, new String[]{"create_time"});
@@ -53,7 +53,7 @@ public class OperRecordController extends BaseController {
     @RequiresPermissions("sys:oper_record:view")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<OperRecord> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         List<OperRecord> records = operLogService.listAll(pageParam.getNoPageParam());

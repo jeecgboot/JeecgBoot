@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 网站设置Mapper接口
- * Created by Panyoujie on 2021-06-06 02:14:54
+ * 2021-06-06 02:14:54
  */
 public interface WebsiteMapper extends BaseMapper<Website> {
 

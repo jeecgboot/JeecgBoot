@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 用户Mapper接口
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 public interface UserMapper extends BaseMapper<User> {
 

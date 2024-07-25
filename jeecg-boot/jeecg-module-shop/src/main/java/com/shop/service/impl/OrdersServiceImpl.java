@@ -30,7 +30,7 @@ import java.util.*;
 
 /**
  * 订单表服务实现类
- * Created by Panyoujie on 2021-03-29 16:24:28
+ * 2021-03-29 16:24:28
  */
 @Service
 @Transactional
@@ -192,10 +192,6 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders> impleme
         } else {
             orders.setHandlingFee(new BigDecimal(0.00));
         }
-
-        logger.info("订单数：{}", number);
-        logger.info("总价：{}", multiply);
-        logger.info("实际支付价格：{}", orders.getMoney());
 
         /**
          * 判断下是不是电子邮件

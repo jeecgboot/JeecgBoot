@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 网站设置服务类
- * Created by Panyoujie on 2021-06-06 02:14:54
+ * 2021-06-06 02:14:54
  */
 public interface WebsiteService extends IService<Website> {
 

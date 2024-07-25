@@ -24,7 +24,7 @@ import java.util.List;
 
 /**
  * 角色菜单管理
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Controller
 @RequestMapping("/sys/role/menu")

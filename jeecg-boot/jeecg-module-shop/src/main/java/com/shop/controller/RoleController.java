@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * 角色管理
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Controller
 @RequestMapping("/sys/role")
@@ -43,7 +43,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions("sys:role:list")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<Role> page(HttpServletRequest request) {
+    public PageResult<Role> page() {
         PageParam<Role> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return new PageResult<>(roleService.page(pageParam, pageParam.getWrapper()).getRecords(), pageParam.getTotal());
@@ -56,7 +56,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions("sys:role:list")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Role> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return JsonResult.ok().setData(roleService.list(pageParam.getOrderWrapper()));

@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * 用户角色服务实现类
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Service
 public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements UserRoleService {

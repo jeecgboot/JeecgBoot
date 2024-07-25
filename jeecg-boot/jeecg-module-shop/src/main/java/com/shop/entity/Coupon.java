@@ -12,10 +12,9 @@ import java.util.Date;
 
 /**
  * 优惠券
- * Created by Panyoujie on 2021-06-23 07:43:23
+ * 2021-06-23 07:43:23
  */
 @Data
-@ToString
 @TableName("sys_coupon")
 public class Coupon implements Serializable {
     private static final long serialVersionUID = 1L;

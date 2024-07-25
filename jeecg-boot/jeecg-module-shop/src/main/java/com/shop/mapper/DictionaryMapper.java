@@ -5,7 +5,7 @@ import com.shop.entity.Dictionary;
 
 /**
  * 字典Mapper接口
- * Created by Panyoujie on 2020-03-14 11:29:03
+ * 2020-03-14 11:29:03
  */
 public interface DictionaryMapper extends BaseMapper<Dictionary> {
 

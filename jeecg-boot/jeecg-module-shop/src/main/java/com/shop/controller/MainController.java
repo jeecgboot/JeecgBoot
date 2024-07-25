@@ -2,21 +2,18 @@ package com.shop.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.shop.common.core.utils.StringUtil;
 import com.shop.common.core.web.BaseController;
 import com.shop.common.core.web.JsonResult;
-import com.shop.entity.LoginRecord;
-import com.shop.entity.Menu;
-import com.shop.service.LoginRecordService;
-import com.shop.service.MenuService;
-import com.shop.entity.Pays;
-import com.shop.service.PaysService;
-import com.shop.entity.Website;
-import com.shop.service.WebsiteService;
+import com.shop.entity.*;
+import com.shop.service.*;
 import com.wf.captcha.utils.CaptchaUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -25,14 +22,13 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * 首页、登录、验证码等
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Controller
 public class MainController extends BaseController implements ErrorController {
@@ -49,12 +45,31 @@ public class MainController extends BaseController implements ErrorController {
     @Autowired
     private PaysService paysService;
 
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private RoleService roleService;
+
+    private static Map<String, String> emailMap = new LinkedHashMap<String, String>(){
+        @Override
+        protected boolean removeEldestEntry(Map.Entry e) {
+            return size()>100;
+        }
+    };
+
     /**
      * 用户登录
      */
     @ResponseBody
     @PostMapping("/login")
-    public JsonResult login(String username, String password, String code, Boolean remember, HttpServletRequest request) {
+    public JsonResult login(String username, String password, String code, Boolean remember) {
         if (username == null || username.trim().isEmpty()) return JsonResult.error("请输入账号");
         if (!CaptchaUtil.ver(code, request)) {
             CaptchaUtil.clear(request);  // 清除session中的验证码
@@ -157,7 +172,7 @@ public class MainController extends BaseController implements ErrorController {
      * 图形验证码
      */
     @RequestMapping("/assets/captcha")
-    public void captcha(HttpServletRequest request, HttpServletResponse response) {
+    public void captcha(HttpServletResponse response) {
         try {
             CaptchaUtil.out(5, request, response);
         } catch (IOException e) {
@@ -180,5 +195,66 @@ public class MainController extends BaseController implements ErrorController {
     public String error() {
         return "error/404.html";
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/getVerificationCode",method = {RequestMethod.GET,RequestMethod.POST})
+    public JsonResult getVerificationCode(String email){
+        if (StringUtils.isBlank(email) || !email.contains("@")) {
+            return JsonResult.error("请输入正确邮箱");
+        }
+        String temp = redisTemplate.opsForValue().get(email);
+        if (StringUtils.isNotBlank(temp)) {
+            return JsonResult.error("2分钟内已发送过验证码，请前往邮箱确认");
+        }
+        String code = StringUtil.getRandomNumber(6);
+        try {
+            emailService.sendTextEmail("【码商城】- 验证码", "您的验证码为：" + code + "，有效期2分钟。", new String[]{email});
+            //记录缓存
+            emailMap.put(email,code);
+            redisTemplate.opsForValue().set(email, "added", 2, TimeUnit.MINUTES);
+        } catch (Exception e) {
+            return JsonResult.error("发送失败");
+        }
+        return JsonResult.ok("发送成功");
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/regist",method = {RequestMethod.GET,RequestMethod.POST})
+    public JsonResult regist(String username, String password,String email,String code){
+        if (username==null){
+            return JsonResult.error("请输入账号");
+        }
+        if (username.length() < 4) {
+            return JsonResult.error("用户名长度不能小于4位");
+        }
+        if (password==null){
+            return JsonResult.error("请输入密码");
+        }
+        if (password.length() < 4) {
+            return JsonResult.error("密码长度不能小于4位");
+        }
+        String temp = redisTemplate.opsForValue().get(email);
+        if (StringUtils.isBlank(temp)) {
+            return JsonResult.error("验证码已失效");
+        }
+        String validCode = emailMap.get(email);
+        if (!(StringUtils.isNotBlank(validCode) && validCode.equals(code))) {
+            return JsonResult.error("邮箱验证码不正确");
+        }
+        redisTemplate.opsForValue().getAndDelete(email);
+
+        User user = new User();
+        user.setNickName(username);
+        user.setUsername(username);
+        user.setState(0);
+        user.setPassword(userService.encodePsw(password));
+        user.setEmail(email);
+        List<Role> roles = roleService.list(new QueryWrapper<Role>().eq("role_code", "merchant"));
+        user.setRoleIds(roles.stream().map(role -> role.getRoleId()).collect(Collectors.toList()));
+        userService.saveUser(user);
+        return JsonResult.ok("注册成功");
+    }
+
+
 
 }

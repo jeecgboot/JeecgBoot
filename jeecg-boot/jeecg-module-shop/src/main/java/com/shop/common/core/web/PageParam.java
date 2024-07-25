@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  * 列表分页、排序、搜索通用接收参数封装
- * Created by Panyoujie on 2019-04-26 10:34
+ * 2019-04-26 10:34
  */
 public class PageParam<T> extends Page<T> {
     private static final String FILED_PAGE = "page";  // 第几页参数名称

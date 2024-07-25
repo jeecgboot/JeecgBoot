@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 /**
  * 卡密服务实现类
- * Created by Panyoujie on 2021-03-28 00:33:15
+ * 2021-03-28 00:33:15
  */
 @Service
 @Transactional
@@ -82,6 +82,7 @@ public class CardsServiceImpl extends ServiceImpl<CardsMapper, Cards> implements
                 cards.setSellNumber(0);
                 cards.setCreatedAt(new Date());
                 cards.setUpdatedAt(new Date());
+                cards.setUsername(cardsDts.getUsername());
                 cardsArrayList.add(cards);
             }
 
@@ -106,6 +107,7 @@ public class CardsServiceImpl extends ServiceImpl<CardsMapper, Cards> implements
             cards.setSellNumber(0);
             cards.setCreatedAt(new Date());
             cards.setUpdatedAt(new Date());
+            cards.setUsername(cardsDts.getUsername());
             boolean save = this.save(cards);
             if (save) {
                 return JsonResult.ok("重复销售卡密添加成功！");
@@ -142,11 +144,6 @@ public class CardsServiceImpl extends ServiceImpl<CardsMapper, Cards> implements
             return cardsDto;
         })).collect(Collectors.toList());
 
-
-        for (CardsDto cardsDto : cardsDtoList) {
-
-            System.out.println(cardsDto);
-        }
         Excel excel = CardsDto.class.getAnnotation(Excel.class);
         List<Field> fields = ExcelSxssFUtil.getExcelList(CardsDto.class, ExcelType.EXPORT);
         String sheetTitle = excel.value();

@@ -28,8 +28,7 @@ import java.util.stream.Collectors;
 public class SystemAspect {
 
     @Around("within(com.treesoft.system.web.*)")
-    public Object around(ProceedingJoinPoint joinPoint)
-            throws Throwable {
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         String className = joinPoint.getTarget().getClass().getSimpleName();
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
@@ -60,7 +59,7 @@ public class SystemAspect {
                 object instanceof Boolean) {
             return true;
         }
-        if (Objects.nonNull(object) && object.getClass().getName().startsWith("org.springframework.base")) {
+        if (Objects.nonNull(object) && object.getClass().getName().startsWith("com.treesoft")) {
             return true;
         }
         return false;

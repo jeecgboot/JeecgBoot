@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * 网站设置管理
- * Created by Panyoujie on 2021-06-06 02:14:54
+ * 2021-06-06 02:14:54
  */
 @Controller
 @RequestMapping("/website/website")
@@ -42,7 +42,7 @@ public class WebsiteController extends BaseController {
     @OperLog(value = "网站设置管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<Website> page(HttpServletRequest request) {
+    public PageResult<Website> page() {
         PageParam<Website> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return new PageResult<>(websiteService.page(pageParam, pageParam.getWrapper()).getRecords(), pageParam.getTotal());
@@ -55,7 +55,7 @@ public class WebsiteController extends BaseController {
     @OperLog(value = "网站设置管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Website> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return JsonResult.ok().setData(websiteService.list(pageParam.getOrderWrapper()));

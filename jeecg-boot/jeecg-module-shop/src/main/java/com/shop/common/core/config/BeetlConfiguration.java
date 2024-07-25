@@ -13,7 +13,7 @@ import java.util.Properties;
 
 /**
  * Beetl配置
- * Created by Panyoujie on 2018-02-22 11:29
+ * 2018-02-22 11:29
  */
 @Configuration
 public class BeetlConfiguration {

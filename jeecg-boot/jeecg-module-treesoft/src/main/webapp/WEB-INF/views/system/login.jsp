@@ -64,10 +64,13 @@
 					</div>
 					<div class="login_main_remb">
 						<input id="rm" name="rememberMe" type="hidden" />
-						<!-- <label for="rm"><span>记住我</span></label> -->
 					</div>
-					<div class="login_main_submit">
+					<div class="login_main_submit" style="margin-top: 10px;">
 						<input type="submit" value="" onclick="return check()" />
+					</div>
+					<div class="login_main_remb" style="text-align: center;font-size: smaller;color: honeydew;margin-top: 40px;">
+						<script src="https://v1.hitokoto.cn/?encode=js&select=%23hitokoto" defer></script>
+						<p id="hitokoto"><a href="#" id="hitokoto_text">&nbsp;</a></p>
 					</div>
 				</div>
 			</div>

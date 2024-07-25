@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * 操作日志记录注解
- * Created by Panyoujie on 2020-03-21 17:03
+ * 2020-03-21 17:03
  */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)

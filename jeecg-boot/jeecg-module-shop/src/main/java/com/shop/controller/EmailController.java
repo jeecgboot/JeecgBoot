@@ -13,7 +13,7 @@ import javax.mail.MessagingException;
 
 /**
  * 邮件功能
- * Created by Panyoujie on 2020-03-21 0:37
+ * 2020-03-21 0:37
  */
 @Controller
 @RequestMapping("/sys/email")

@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * 主题配置服务实现类
- * Created by Panyoujie on 2021-06-28 00:36:29
+ * 2021-06-28 00:36:29
  */
 @Service
 public class ThemeServiceImpl extends ServiceImpl<ThemeMapper, Theme> implements ThemeService {

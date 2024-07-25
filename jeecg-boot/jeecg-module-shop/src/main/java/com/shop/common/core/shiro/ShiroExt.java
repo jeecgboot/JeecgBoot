@@ -10,7 +10,7 @@ import java.beans.PropertyDescriptor;
 
 /**
  * shiro常用方法
- * Created by Panyoujie on 2017-04-28 09:45
+ * 2017-04-28 09:45
  */
 public class ShiroExt {
 

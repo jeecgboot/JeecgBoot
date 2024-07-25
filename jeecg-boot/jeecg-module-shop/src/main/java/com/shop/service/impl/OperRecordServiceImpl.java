@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * 操作日志服务实现类
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Service
 public class OperRecordServiceImpl extends ServiceImpl<OperRecordMapper, OperRecord> implements OperRecordService {

@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 优惠券Mapper接口
- * Created by Panyoujie on 2021-06-23 07:43:23
+ * 2021-06-23 07:43:23
  */
 public interface CouponMapper extends BaseMapper<Coupon> {
 

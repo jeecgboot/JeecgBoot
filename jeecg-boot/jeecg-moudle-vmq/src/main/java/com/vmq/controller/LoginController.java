@@ -1,16 +1,16 @@
 package com.vmq.controller;
 
 import com.vmq.config.EmailUtils;
-import com.vmq.dto.CommonRes;
-import com.vmq.dto.CreateOrderRes;
-import com.vmq.entity.PayOrder;
-import com.vmq.entity.Setting;
 import com.vmq.dao.PayOrderDao;
 import com.vmq.dao.TmpPriceDao;
+import com.vmq.dto.CommonRes;
 import com.vmq.entity.PayInfo;
+import com.vmq.entity.PayOrder;
+import com.vmq.entity.Setting;
 import com.vmq.service.AdminService;
 import com.vmq.service.WebService;
 import com.vmq.utils.JWTUtil;
+import com.vmq.utils.PasswordUtil;
 import com.vmq.utils.ResUtil;
 import com.vmq.utils.StringUtils;
 import io.swagger.annotations.Api;
@@ -18,6 +18,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Controller
@@ -59,22 +62,22 @@ public class LoginController {
     @Autowired
     HttpServletRequest request;
 
-    @GetMapping("/login")
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    private static Map<String, String> emailMap = new LinkedHashMap<String, String>(){
+        @Override
+        protected boolean removeEldestEntry(Map.Entry e) {
+            return size()>100;
+        }
+    };
+
+    @GetMapping({"/","/login"})
     public String login(){
         return "login";
     }
 
-    @GetMapping("/")
-    public String defaultPage(){
-        return "login";
-    }
-
-    @GetMapping("/index")
-    public String index(){
-        return "menu";
-    }
-
-    @GetMapping("/menu")
+    @GetMapping({"/index","/menu"})
     public String menu() {
         HttpSession session = request.getSession(true);
         request.setAttribute("username", session.getAttribute("username"));
@@ -112,8 +115,26 @@ public class LoginController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/getVerificationCode",method = {RequestMethod.GET,RequestMethod.POST})
+    public CommonRes getVerificationCode(String email){
+        if (!EmailUtils.checkEmail(email)){
+            return ResUtil.error("邮箱格式不正确");
+        }
+        String temp = redisTemplate.opsForValue().get(email);
+        if (StringUtils.isNotBlank(temp)) {
+            return ResUtil.error("2分钟内已发送过验证码，请前往邮箱确认");
+        }
+        String code = PasswordUtil.randomNum(6);
+        emailUtils.sendMail(sender, email,"【码支付】- 验证码", "您的验证码为："+code+"，有效期2分钟。");
+        //记录缓存
+        emailMap.put(email,code);
+        redisTemplate.opsForValue().set(email, "added", 2, TimeUnit.MINUTES);
+        return ResUtil.success("发送成功");
+    }
+
+    @ResponseBody
     @RequestMapping("/regist")
-    public CommonRes regist(HttpSession session,String username, String password){
+    public CommonRes regist(HttpSession session,String username, String password,String email,String code){
         if (username==null){
             return ResUtil.error("请输入账号");
         }
@@ -126,6 +147,15 @@ public class LoginController {
         if (password.length() < 4) {
             return ResUtil.error("密码长度不能小于4位");
         }
+        String temp = redisTemplate.opsForValue().get(email);
+        if (StringUtils.isBlank(temp)) {
+            return ResUtil.error("验证码已失效");
+        }
+        String validCode = emailMap.get(email);
+        if (!(StringUtils.isNotBlank(validCode) && validCode.equals(code))) {
+            return ResUtil.error("邮箱验证码不正确");
+        }
+        redisTemplate.opsForValue().getAndDelete(email);
         CommonRes r = adminService.regist(username, password);
         return r;
     }

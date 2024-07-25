@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 主题配置服务类
- * Created by Panyoujie on 2021-06-28 00:36:29
+ * 2021-06-28 00:36:29
  */
 public interface ThemeService extends IService<Theme> {
 

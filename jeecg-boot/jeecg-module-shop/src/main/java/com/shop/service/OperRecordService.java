@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 操作日志服务类
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 public interface OperRecordService extends IService<OperRecord> {
 

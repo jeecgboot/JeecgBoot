@@ -20,9 +20,11 @@
 			<span class="icon fa-rmb"></span>
 		</div>
 		<div class="content">
+			<script src="https://v1.hitokoto.cn/?encode=js&select=%23hitokoto" defer></script>
 			<div class="inner">
 				<h1>码支付</h1>
 				<p>个人用户收款解决方案</p>
+				<p id="hitokoto" style="font-size: small"><a href="#" id="hitokoto_text">&nbsp;</a></p>
 			</div>
 		</div>
 		<nav>
@@ -63,16 +65,25 @@
 		<article id="regist">
 			<h2 class="major">注册</h2>
 				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">邮箱</label>
+					<input style="width: 250px;" type="email" name="email_r" id="email_r" />
+				</div>
+				<div style="display: flex">
 					<label style="width: 150px;line-height: 40px;">账号</label>
-					<input style="width: 200px;" type="text" name="username_r" id="username_r" />
+					<input style="width: 250px;" type="text" name="username_r" id="username_r" />
 				</div>
 				<div style="display: flex">
 					<label style="width: 150px;line-height: 40px;">密码</label>
-					<input style="width: 200px;" type="password" name="password_r" id="password_r" />
+					<input style="width: 250px;" type="password" name="password_r" id="password_r" />
 				</div>
 				<div style="display: flex">
 					<label style="width: 150px;line-height: 40px;">密码确认</label>
-					<input style="width: 200px;" type="password" name="password_r2" id="password_r2" />
+					<input style="width: 250px;" type="password" name="password_r2" id="password_r2" />
+				</div>
+				<div style="display: flex">
+					<label style="width: 150px;line-height: 40px;">验证码</label>
+					<input style="width: 150px;" type="text" name="verificationCode" id="verificationCode" />
+					<input type="submit" value="获取验证码" style="background-color: darkcyan;margin-left: 10px;padding: revert" onclick="getVerificationCode()"/>
 				</div>
 				<ul class="actions">
 					<li><input id="regist2" type="submit" value="注册" class="special" onclick="regist()" /></li>
@@ -82,33 +93,33 @@
 			<h3 class="major">创建订单</h3>
 			<div style="display: flex">
 				<label style="width: 110px;line-height: 40px;">商户编号：</label>
-				<label style="width: 150px;letter-spacing: .1rem;line-height: 40px;" id="payId" name="payId"></label>
+				<span style="width: 180px;line-height: 40px;letter-spacing: 0.2rem" id="payId" name="payId"></span>
 				<input type="submit" value="生成订单号" style="background-color: darkcyan;margin-left: 10px;padding: revert" onclick="getOrderNo()"/>
 			</div>
 
 			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">订单金额：</label>
-				<input style="width: 200px;" type="text" id="price" name="price" value="0.1" />
+				<input style="width: 250px;" type="text" id="price" name="price" value="0.1" />
 			</div>
 			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">支付方式：</label>
-				<select style="width: 200px" id="type" name="type" lay-verify="required" lay-filter="type">
+				<select style="width: 250px" id="type" name="type" lay-verify="required" lay-filter="type">
 					<option value="1" selected>微信</option><option value="2">支付宝</option>
 				</select>
 			</div>
 			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">通知邮箱：</label>
-				<input style="width: 200px;" type="email" id="email" name="email" value="" />
+				<input style="width: 250px;" type="email" id="email" name="email" value="" />
 			</div>
 			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">返回类型：</label>
-				<select style="width: 200px" id="isHtml" name="isHtml" lay-verify="required" lay-filter="isHtml">
+				<select style="width: 250px" id="isHtml" name="isHtml" lay-verify="required" lay-filter="isHtml">
 					<option value="0">JSON</option><option value="1" selected>页面</option>
 				</select>
 			</div>
 			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">自定义参数：</label>
-				<input style="width: 200px;" type="text" id="param" name="param" value="" />
+				<input style="width: 250px;" type="text" id="param" name="param" value="" />
 			</div>
 			<ul class="actions">
 				<li><input type="submit" value="支付" class="special" style="background-color: forestgreen;margin-right: 50px" onclick="payOrder()" /></li>
@@ -170,10 +181,27 @@
 		});
 	}
 
+	function getVerificationCode() {
+		var email = $("#email_r").val();
+		if (email < 4 || email.indexOf("@") < 0) {
+			layer.msg("邮箱格式不正确");
+			return;
+		}
+		$.get("getVerificationCode","email="+email,function (data) {
+			layer.msg(data.msg);
+		});
+	}
+
 	function regist() {
+		var email = $("#email_r").val();
 		var name = $("#username_r").val();
 		var pass = $("#password_r").val();
 		var pass2 = $("#password_r2").val();
+		var code = $("#verificationCode").val();
+		if (email < 4 || email.indexOf("@") < 0) {
+			layer.msg("邮箱格式不正确");
+			return;
+		}
 		if (name.length < 4 || pass.length < 4) {
 			layer.msg("用户名和密码长度均不能小于4位");
 			return;
@@ -182,7 +210,11 @@
 			layer.msg("两次输入密码不一致，请确认");
 			return;
 		}
-		$.post("regist","username="+name+"&password="+pass,function (data) {
+		if (code=="") {
+			layer.msg("验证码不能为空");
+			return;
+		}
+		$.post("regist","email="+email+"&username="+name+"&password="+pass+"&code="+code,function (data) {
 			layer.msg(data.msg);
 			if (data.code==1){
 				window.location.href = "login";

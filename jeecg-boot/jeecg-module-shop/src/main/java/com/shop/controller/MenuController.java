@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * 菜单管理
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Controller
 @RequestMapping("/sys/menu")
@@ -37,7 +37,7 @@ public class MenuController extends BaseController {
     @RequiresPermissions("sys:menu:list")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<Menu> page(HttpServletRequest request) {
+    public PageResult<Menu> page() {
         PageParam<Menu> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         pageParam.setDefaultOrder(new String[]{"sort_number"}, null);
@@ -51,7 +51,7 @@ public class MenuController extends BaseController {
     @RequiresPermissions("sys:menu:list")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Menu> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         pageParam.setDefaultOrder(new String[]{"sort_number"}, null);

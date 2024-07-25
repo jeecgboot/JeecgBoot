@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  * Shiro认证和授权
- * Created by Panyoujie on 2017-04-28 09:45
+ * 2017-04-28 09:45
  */
 public class UserRealm extends AuthorizingRealm {
 

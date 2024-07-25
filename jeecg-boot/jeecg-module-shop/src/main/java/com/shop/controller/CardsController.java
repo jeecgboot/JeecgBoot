@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 /**
  * 卡密管理
- * Created by Panyoujie on 2021-03-28 00:33:15
+ * 2021-03-28 00:33:15
  */
 @Controller
 @RequestMapping("/carmi/cards")
@@ -66,7 +66,7 @@ public class CardsController extends BaseController {
     @OperLog(value = "卡密管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<CardsVo> page(HttpServletRequest request) {
+    public PageResult<CardsVo> page() {
         PageParam<Cards> pageParam = new PageParam<>(request);
         List<Cards> records = cardsService.page(pageParam, pageParam.getWrapper()).getRecords();
         List<CardsVo> cardsVoList = records.stream().map((cards) -> {
@@ -87,7 +87,7 @@ public class CardsController extends BaseController {
     @OperLog(value = "卡密管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Cards> pageParam = new PageParam<>(request);
         return JsonResult.ok().setData(cardsService.list(pageParam.getOrderWrapper()));
     }
@@ -201,7 +201,7 @@ public class CardsController extends BaseController {
     @RequiresPermissions("carmi:cards:list")
     @OperLog(value = "卡密管理", desc = "导出指定的数据")
     @RequestMapping(value = "/export", method = RequestMethod.GET)
-    public void exportCardSecret(HttpServletRequest request) throws Exception {
+    public void exportCardSecret() throws Exception {
         cardsService.export(request);
     }
 

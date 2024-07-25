@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * 分类
- * Created by Panyoujie on 2021-03-27 20:22:00
+ * 2021-03-27 20:22:00
  */
 @Data
 @TableName("sys_classifys")
@@ -52,17 +52,5 @@ public class Classifys implements Serializable {
      * 用户名
      */
     private String username;
-
-    @Override
-    public String toString() {
-        return "Classifys{" +
-                ", id=" + id +
-                ", name=" + name +
-                ", status=" + status +
-                ", sort=" + sort +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                "}";
-    }
 
 }

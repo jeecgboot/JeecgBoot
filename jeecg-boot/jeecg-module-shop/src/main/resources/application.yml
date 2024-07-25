@@ -8,7 +8,11 @@ server:
 spring:
   profiles:
     active: dev
-
+  redis:
+    database: 6
+    host: 172.18.26.81
+    port: 6379
+    timeout: 1000
   # 连接池配置
   datasource:
     druid:

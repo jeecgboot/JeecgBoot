@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.repository.ExamPaperAnswerMapper">
+  <resultMap id="BaseResultMap" type="com.exam.domain.ExamPaperAnswer">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="exam_paper_id" jdbcType="INTEGER" property="examPaperId" />
+    <result column="paper_name" jdbcType="VARCHAR" property="paperName" />
+    <result column="paper_type" jdbcType="INTEGER" property="paperType" />
+    <result column="subject_id" jdbcType="INTEGER" property="subjectId" />
+    <result column="system_score" jdbcType="INTEGER" property="systemScore" />
+    <result column="user_score" jdbcType="INTEGER" property="userScore" />
+    <result column="paper_score" jdbcType="INTEGER" property="paperScore" />
+    <result column="question_correct" jdbcType="INTEGER" property="questionCorrect" />
+    <result column="question_count" jdbcType="INTEGER" property="questionCount" />
+    <result column="do_time" jdbcType="INTEGER" property="doTime" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="create_user" jdbcType="INTEGER" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="task_exam_id" jdbcType="INTEGER" property="taskExamId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, exam_paper_id, paper_name, paper_type, subject_id, system_score, user_score,
+    paper_score, question_correct, question_count, do_time, status, create_user, create_time,
+    task_exam_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_exam_paper_answer
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_exam_paper_answer
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.exam.domain.ExamPaperAnswer" useGeneratedKeys="true" keyProperty="id">
+    insert into t_exam_paper_answer (id, exam_paper_id, paper_name,
+      paper_type, subject_id, system_score,
+      user_score, paper_score, question_correct,
+      question_count, do_time, status,
+      create_user, create_time, task_exam_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{examPaperId,jdbcType=INTEGER}, #{paperName,jdbcType=VARCHAR},
+      #{paperType,jdbcType=INTEGER}, #{subjectId,jdbcType=INTEGER}, #{systemScore,jdbcType=INTEGER},
+      #{userScore,jdbcType=INTEGER}, #{paperScore,jdbcType=INTEGER}, #{questionCorrect,jdbcType=INTEGER},
+      #{questionCount,jdbcType=INTEGER}, #{doTime,jdbcType=INTEGER}, #{status,jdbcType=INTEGER},
+      #{createUser,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{taskExamId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.exam.domain.ExamPaperAnswer" useGeneratedKeys="true" keyProperty="id">
+    insert into t_exam_paper_answer
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="examPaperId != null">
+        exam_paper_id,
+      </if>
+      <if test="paperName != null">
+        paper_name,
+      </if>
+      <if test="paperType != null">
+        paper_type,
+      </if>
+      <if test="subjectId != null">
+        subject_id,
+      </if>
+      <if test="systemScore != null">
+        system_score,
+      </if>
+      <if test="userScore != null">
+        user_score,
+      </if>
+      <if test="paperScore != null">
+        paper_score,
+      </if>
+      <if test="questionCorrect != null">
+        question_correct,
+      </if>
+      <if test="questionCount != null">
+        question_count,
+      </if>
+      <if test="doTime != null">
+        do_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="taskExamId != null">
+        task_exam_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="examPaperId != null">
+        #{examPaperId,jdbcType=INTEGER},
+      </if>
+      <if test="paperName != null">
+        #{paperName,jdbcType=VARCHAR},
+      </if>
+      <if test="paperType != null">
+        #{paperType,jdbcType=INTEGER},
+      </if>
+      <if test="subjectId != null">
+        #{subjectId,jdbcType=INTEGER},
+      </if>
+      <if test="systemScore != null">
+        #{systemScore,jdbcType=INTEGER},
+      </if>
+      <if test="userScore != null">
+        #{userScore,jdbcType=INTEGER},
+      </if>
+      <if test="paperScore != null">
+        #{paperScore,jdbcType=INTEGER},
+      </if>
+      <if test="questionCorrect != null">
+        #{questionCorrect,jdbcType=INTEGER},
+      </if>
+      <if test="questionCount != null">
+        #{questionCount,jdbcType=INTEGER},
+      </if>
+      <if test="doTime != null">
+        #{doTime,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="taskExamId != null">
+        #{taskExamId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exam.domain.ExamPaperAnswer">
+    update t_exam_paper_answer
+    <set>
+      <if test="examPaperId != null">
+        exam_paper_id = #{examPaperId,jdbcType=INTEGER},
+      </if>
+      <if test="paperName != null">
+        paper_name = #{paperName,jdbcType=VARCHAR},
+      </if>
+      <if test="paperType != null">
+        paper_type = #{paperType,jdbcType=INTEGER},
+      </if>
+      <if test="subjectId != null">
+        subject_id = #{subjectId,jdbcType=INTEGER},
+      </if>
+      <if test="systemScore != null">
+        system_score = #{systemScore,jdbcType=INTEGER},
+      </if>
+      <if test="userScore != null">
+        user_score = #{userScore,jdbcType=INTEGER},
+      </if>
+      <if test="paperScore != null">
+        paper_score = #{paperScore,jdbcType=INTEGER},
+      </if>
+      <if test="questionCorrect != null">
+        question_correct = #{questionCorrect,jdbcType=INTEGER},
+      </if>
+      <if test="questionCount != null">
+        question_count = #{questionCount,jdbcType=INTEGER},
+      </if>
+      <if test="doTime != null">
+        do_time = #{doTime,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="taskExamId != null">
+        task_exam_id = #{taskExamId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exam.domain.ExamPaperAnswer">
+    update t_exam_paper_answer
+    set exam_paper_id = #{examPaperId,jdbcType=INTEGER},
+      paper_name = #{paperName,jdbcType=VARCHAR},
+      paper_type = #{paperType,jdbcType=INTEGER},
+      subject_id = #{subjectId,jdbcType=INTEGER},
+      system_score = #{systemScore,jdbcType=INTEGER},
+      user_score = #{userScore,jdbcType=INTEGER},
+      paper_score = #{paperScore,jdbcType=INTEGER},
+      question_correct = #{questionCorrect,jdbcType=INTEGER},
+      question_count = #{questionCount,jdbcType=INTEGER},
+      do_time = #{doTime,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      create_user = #{createUser,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      task_exam_id = #{taskExamId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+
+
+  <select id="studentPage" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.student.exampaper.ExamPaperAnswerPageVM">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_exam_paper_answer
+    <where>
+        and create_user = #{createUser}
+     <if test="subjectId != null">
+         and subject_id = #{subjectId}
+     </if>
+    </where>
+  </select>
+
+
+  <select id="selectAllCount"  resultType="java.lang.Integer">
+		SELECT count(*) from t_exam_paper_answer
+  </select>
+
+
+  <select id="selectCountByDate"  resultType="com.exam.domain.other.KeyValue">
+		SELECT create_time as name,COUNT(create_time) as value from
+		        (
+				  SELECT DATE_FORMAT(create_time,'%Y-%m-%d') as create_time from t_exam_paper_answer
+					WHERE  create_time  between  #{startTime}  and  #{endTime}
+				) a
+		GROUP BY create_time
+	</select>
+
+
+  <select id="getByPidUid" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_exam_paper_answer
+    where exam_paper_id = #{pid} and create_user=#{uid}
+    limit 1
+  </select>
+
+
+  <select id="adminPage" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.admin.paper.ExamPaperAnswerPageRequestVM">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_exam_paper_answer
+    <where>
+      <if test="subjectId != null">
+        and subject_id = #{subjectId}
+      </if>
+    </where>
+  </select>
+
+</mapper>

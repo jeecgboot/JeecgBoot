@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 
 /**
  * 订单表管理
- * Created by Panyoujie on 2021-03-29 16:24:28
+ * 2021-03-29 16:24:28
  */
 @Controller
 @Transactional
@@ -80,7 +80,7 @@ public class OrdersController extends BaseController {
     @OperLog(value = "订单表管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public JsonResult page(HttpServletRequest request) {
+    public JsonResult page() {
         PageParam<Orders> pageParam = new PageParam<>(request);
         pageParam.setDefaultOrder(null, new String[]{"create_time"});
         PageResult<Orders> ordersPageResult = ordersService.listPage(pageParam);
@@ -149,7 +149,7 @@ public class OrdersController extends BaseController {
     @OperLog(value = "管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/pageAll")
-    public JsonResult pageall(HttpServletRequest request) {
+    public JsonResult pageall() {
         PageParam<Orders> pageParam = new PageParam<>(request);
 
         Map parameterMap = RequestParamsUtil.getParameterMap(request);
@@ -211,7 +211,7 @@ public class OrdersController extends BaseController {
     @OperLog(value = "订单表管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Orders> pageParam = new PageParam<>(request);
         return JsonResult.ok().setData(ordersService.list(pageParam.getOrderWrapper()));
     }

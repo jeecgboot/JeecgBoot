@@ -379,15 +379,4 @@ public class WebService {
         return encodeStr;
     }
 
-    public static void main(String args[]) {
-        //md5(payId+param+type+price+通讯密钥)
-        String payId = "TUD20240721193546TIw499";
-        String param = "10";
-        String type = "1";
-        String price = "50.00";
-        String key = "40fd1247932a38d6e3579484faeb5b7a";
-        System.out.println(payId+param+type+price+key);
-        String sign = md5(payId+param+type+price+key);
-        System.out.println(sign);
-    }
 }

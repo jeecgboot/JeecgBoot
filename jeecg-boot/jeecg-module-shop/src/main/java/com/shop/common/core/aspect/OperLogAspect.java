@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 
 /**
  * 操作日志记录
- * Created by Panyoujie on 2020-03-21 16:58
+ * 2020-03-21 16:58
  */
 @Aspect
 @Component

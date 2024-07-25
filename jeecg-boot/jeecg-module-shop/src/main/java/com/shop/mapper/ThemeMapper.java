@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 主题配置Mapper接口
- * Created by Panyoujie on 2021-06-28 00:36:29
+ * 2021-06-28 00:36:29
  */
 public interface ThemeMapper extends BaseMapper<Theme> {
 

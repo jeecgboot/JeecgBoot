@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * 登录日志
- * Created by Panyoujie on 2018-12-24 16:10
+ * 2018-12-24 16:10
  */
 @Controller
 @RequestMapping("/sys/loginRecord")
@@ -39,7 +39,7 @@ public class LoginRecordController extends BaseController {
     @RequiresPermissions("sys:login_record:view")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<LoginRecord> page(HttpServletRequest request) {
+    public PageResult<LoginRecord> page() {
         PageParam<LoginRecord> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         pageParam.setDefaultOrder(null, new String[]{"create_time"});
@@ -53,7 +53,7 @@ public class LoginRecordController extends BaseController {
     @RequiresPermissions("sys:login_record:view")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<LoginRecord> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         List<LoginRecord> records = loginRecordService.listAll(pageParam.getNoPageParam());

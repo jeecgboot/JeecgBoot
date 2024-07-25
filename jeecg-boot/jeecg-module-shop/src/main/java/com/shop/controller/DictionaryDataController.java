@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * 字典项管理
- * Created by Panyoujie on 2020-03-14 11:29:04
+ * 2020-03-14 11:29:04
  */
 @Controller
 @RequestMapping("/sys/dictdata")
@@ -35,7 +35,7 @@ public class DictionaryDataController extends BaseController {
     @RequiresPermissions("sys:dict:list")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<DictionaryData> page(HttpServletRequest request) {
+    public PageResult<DictionaryData> page() {
         PageParam<DictionaryData> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return dictionaryDataService.listPage(pageParam);
@@ -48,7 +48,7 @@ public class DictionaryDataController extends BaseController {
     @RequiresPermissions("sys:dict:list")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<DictionaryData> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         List<DictionaryData> records = dictionaryDataService.listAll(pageParam.getNoPageParam());

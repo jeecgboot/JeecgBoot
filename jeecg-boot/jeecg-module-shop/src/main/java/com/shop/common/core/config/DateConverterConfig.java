@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * 日期类型转换器
- * Created by Panyoujie on 2018-08-17 08:43
+ * 2018-08-17 08:43
  */
 @Component
 public class DateConverterConfig implements Converter<String, Date> {

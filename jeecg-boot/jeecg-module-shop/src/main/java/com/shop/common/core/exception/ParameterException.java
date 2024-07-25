@@ -2,7 +2,7 @@ package com.shop.common.core.exception;
 
 /**
  * 参数异常
- * Created by Panyoujie on 2018-02-22 11:29
+ * 2018-02-22 11:29
  */
 public class ParameterException extends IException {
     private static final long serialVersionUID = 7993671808524980055L;

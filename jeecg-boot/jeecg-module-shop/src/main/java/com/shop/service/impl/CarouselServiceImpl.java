@@ -13,7 +13,7 @@ import java.util.Map;
 
 /**
  * 轮播图管理服务实现类
- * Created by Panyoujie on 2021-11-10 02:54:31
+ * 2021-11-10 02:54:31
  */
 @Service
 public class CarouselServiceImpl extends ServiceImpl<CarouselMapper, Carousel> implements CarouselService {

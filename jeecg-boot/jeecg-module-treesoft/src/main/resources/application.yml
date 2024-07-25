@@ -9,6 +9,11 @@ spring:
          suffix: .jsp
    profiles:
       active: dev
+   redis:
+      database: 5
+      host: 172.18.26.81
+      port: 6379
+      timeout: 1000
    datasource:
       driverClassName: com.mysql.cj.jdbc.Driver
       initialSize: 5

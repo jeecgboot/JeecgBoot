@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,6 +62,24 @@ public class EmailUtils {
             log.info("给"+sendto+"发送邮件失败");
         }
     }
+
+    public void sendMail(String sender, String sendto,String title,String content) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setFrom(sender);
+            helper.setTo(sendto);
+            helper.setSubject(title);
+            // 发送邮件
+            helper.setText(content, false);
+            mailSender.send(mimeMessage);
+            log.info("给"+sendto+"发送邮件成功");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            log.info("给"+sendto+"发送邮件失败");
+        }
+    }
+
 
     /**
      * 验证邮箱

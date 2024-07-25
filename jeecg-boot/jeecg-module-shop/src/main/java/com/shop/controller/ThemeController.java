@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 /**
  * 主题配置管理
- * Created by Panyoujie on 2021-06-28 00:36:29
+ * 2021-06-28 00:36:29
  */
 @Controller
 @RequestMapping("/theme/theme")
@@ -38,7 +38,7 @@ public class ThemeController extends BaseController {
     @OperLog(value = "主题配置管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<Theme> page(HttpServletRequest request) {
+    public PageResult<Theme> page() {
         PageParam<Theme> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return new PageResult<>(themeService.page(pageParam, pageParam.getWrapper()).getRecords(), pageParam.getTotal());
@@ -51,7 +51,7 @@ public class ThemeController extends BaseController {
     @OperLog(value = "主题配置管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Theme> pageParam = new PageParam<>(request);
         pageParam.remove("username");
         return JsonResult.ok().setData(themeService.list(pageParam.getOrderWrapper()));

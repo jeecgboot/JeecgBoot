@@ -1,0 +1,1 @@
+.kf-editor{width:100%;height:100%;border:1px solid #e0e0e0;position:relative;top:0;left:0;overflow:hidden;z-index:2;background-color:#f6f5ee}.kf-editor-edit-area{position:relative;top:0;left:0;z-index:1;height:0;background-color:white}.kf-editor-canvas-container{width:100%;height:100%}.kf-editor-input-box{position:fixed;top:0;left:-99999999px;z-index:999999}

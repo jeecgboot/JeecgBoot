@@ -11,10 +11,9 @@ import java.util.Date;
 
 /**
  * 支付配置
- * Created by Panyoujie on 2021-03-29 11:06:11
+ * 2021-03-29 11:06:11
  */
 @Data
-@ToString
 @TableName("sys_pays")
 public class Pays implements Serializable {
     private static final long serialVersionUID = 1L;

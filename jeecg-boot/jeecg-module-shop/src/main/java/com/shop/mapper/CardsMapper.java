@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 卡密Mapper接口
- * Created by Panyoujie on 2021-03-28 00:33:15
+ * 2021-03-28 00:33:15
  */
 public interface CardsMapper extends BaseMapper<Cards> {
 

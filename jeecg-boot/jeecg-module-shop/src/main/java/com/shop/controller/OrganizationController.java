@@ -49,7 +49,7 @@ public class OrganizationController extends BaseController {
     @RequiresPermissions("sys:org:list")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<Organization> page(HttpServletRequest request) {
+    public PageResult<Organization> page() {
         PageParam<Organization> pageParam = new PageParam<>(request);
         return organizationService.listPage(pageParam);
     }
@@ -61,7 +61,7 @@ public class OrganizationController extends BaseController {
     @RequiresPermissions("sys:org:list")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Organization> pageParam = new PageParam<>(request);
         List<Organization> records = organizationService.listAll(pageParam.getNoPageParam());
         return JsonResult.ok().setData(pageParam.sortRecords(records));

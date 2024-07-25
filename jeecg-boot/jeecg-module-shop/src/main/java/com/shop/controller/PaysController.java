@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 /**
  * 支付配置管理
- * Created by Panyoujie on 2021-03-29 11:06:11
+ * 2021-03-29 11:06:11
  */
 @Controller
 @RequestMapping("/settings/pays")
@@ -47,7 +47,7 @@ public class PaysController extends BaseController {
     @OperLog(value = "支付配置管理", desc = "分页查询")
     @ResponseBody
     @RequestMapping("/page")
-    public PageResult<PaysVo> page(HttpServletRequest request) {
+    public PageResult<PaysVo> page() {
         PageParam<Pays> pageParam = new PageParam<>(request);
         pageParam.addOrderDesc("created_at");
 
@@ -153,7 +153,7 @@ public class PaysController extends BaseController {
     @OperLog(value = "支付配置管理", desc = "查询全部")
     @ResponseBody
     @RequestMapping("/list")
-    public JsonResult list(HttpServletRequest request) {
+    public JsonResult list() {
         PageParam<Pays> pageParam = new PageParam<>(request);
         return JsonResult.ok().setData(paysService.list(pageParam.getOrderWrapper()));
     }

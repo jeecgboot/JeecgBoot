@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * 轮播图管理服务类
- * Created by Panyoujie on 2021-11-10 02:54:31
+ * 2021-11-10 02:54:31
  */
 public interface CarouselService extends IService<Carousel> {
 

@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.exam.repository.UserMapper">
+  <resultMap id="BaseResultMap" type="com.exam.domain.User">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="user_uuid" jdbcType="VARCHAR" property="userUuid" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="real_name" jdbcType="VARCHAR" property="realName" />
+    <result column="age" jdbcType="INTEGER" property="age" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="birth_day" jdbcType="TIMESTAMP" property="birthDay" />
+    <result column="user_level" jdbcType="INTEGER" property="userLevel" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="role" jdbcType="INTEGER" property="role" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="image_path" jdbcType="VARCHAR" property="imagePath" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="modify_time" jdbcType="TIMESTAMP" property="modifyTime" />
+    <result column="last_active_time" jdbcType="TIMESTAMP" property="lastActiveTime" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+    <result column="wx_open_id" jdbcType="VARCHAR" property="wxOpenId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_uuid, user_name, password, real_name, age, sex, birth_day, user_level, phone,
+    role, status, image_path, create_time, modify_time, last_active_time, deleted, wx_open_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_user
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from t_user
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.exam.domain.User" useGeneratedKeys="true" keyProperty="id">
+    insert into t_user (id, user_uuid, user_name,
+      password, real_name, age,
+      sex, birth_day, user_level,
+      phone, role, status,
+      image_path, create_time, modify_time,
+      last_active_time, deleted, wx_open_id
+      )
+    values (#{id,jdbcType=INTEGER}, #{userUuid,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR},
+      #{password,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER},
+      #{sex,jdbcType=INTEGER}, #{birthDay,jdbcType=TIMESTAMP}, #{userLevel,jdbcType=INTEGER},
+      #{phone,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, #{status,jdbcType=INTEGER},
+      #{imagePath,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{modifyTime,jdbcType=TIMESTAMP},
+      #{lastActiveTime,jdbcType=TIMESTAMP}, #{deleted,jdbcType=BIT}, #{wxOpenId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.exam.domain.User" useGeneratedKeys="true" keyProperty="id">
+    insert into t_user
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userUuid != null">
+        user_uuid,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="password != null">
+        password,
+      </if>
+      <if test="realName != null">
+        real_name,
+      </if>
+      <if test="age != null">
+        age,
+      </if>
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="birthDay != null">
+        birth_day,
+      </if>
+      <if test="userLevel != null">
+        user_level,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="role != null">
+        role,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="imagePath != null">
+        image_path,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="modifyTime != null">
+        modify_time,
+      </if>
+      <if test="lastActiveTime != null">
+        last_active_time,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+      <if test="wxOpenId != null">
+        wx_open_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="userUuid != null">
+        #{userUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null">
+        #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="sex != null">
+        #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="birthDay != null">
+        #{birthDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userLevel != null">
+        #{userLevel,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null">
+        #{role,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="imagePath != null">
+        #{imagePath,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastActiveTime != null">
+        #{lastActiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+      <if test="wxOpenId != null">
+        #{wxOpenId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.exam.domain.User">
+    update t_user
+    <set>
+      <if test="userUuid != null">
+        user_uuid = #{userUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="password != null">
+        password = #{password,jdbcType=VARCHAR},
+      </if>
+      <if test="realName != null">
+        real_name = #{realName,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        age = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=INTEGER},
+      </if>
+      <if test="birthDay != null">
+        birth_day = #{birthDay,jdbcType=TIMESTAMP},
+      </if>
+      <if test="userLevel != null">
+        user_level = #{userLevel,jdbcType=INTEGER},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null">
+        role = #{role,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="imagePath != null">
+        image_path = #{imagePath,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyTime != null">
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastActiveTime != null">
+        last_active_time = #{lastActiveTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+      <if test="wxOpenId != null">
+        wx_open_id = #{wxOpenId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.exam.domain.User">
+    update t_user
+    set user_uuid = #{userUuid,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      real_name = #{realName,jdbcType=VARCHAR},
+      age = #{age,jdbcType=INTEGER},
+      sex = #{sex,jdbcType=INTEGER},
+      birth_day = #{birthDay,jdbcType=TIMESTAMP},
+      user_level = #{userLevel,jdbcType=INTEGER},
+      phone = #{phone,jdbcType=VARCHAR},
+      role = #{role,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      image_path = #{imagePath,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      last_active_time = #{lastActiveTime,jdbcType=TIMESTAMP},
+      deleted = #{deleted,jdbcType=BIT},
+      wx_open_id = #{wxOpenId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+
+
+  <select id="getAllUser" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user where deleted=0
+  </select>
+
+  <select id="getUserById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user
+    where id=#{value}
+  </select>
+
+  <select id="getUserByUserName" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user
+    where deleted=0  and user_name=#{value} limit 1
+  </select>
+
+  <select id="getUserByUserNamePwd" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user
+    where deleted=0  and user_name=#{username} and password=#{pwd} limit 1
+  </select>
+
+  <select id="getUserByUuid" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from t_user
+    where deleted=0  and user_uuid=#{value,jdbcType=VARCHAR}
+  </select>
+
+
+  <select id="userPageList" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_user
+    <where>
+        and deleted=0
+      <if test="name != null and name != ''">
+        and  real_name like concat('%',#{name},'%')
+      </if>
+    </where>
+    ORDER BY id
+    <if test="offset != null and limit != null ">
+      <bind name="patternAdd" value="limit*offset"/>
+      limit #{limit} OFFSET #{offset}
+    </if>
+  </select>
+
+
+  <select id="userPageCount" resultType="java.lang.Integer">
+    select count(*) from t_user
+    <where>
+        and deleted=0
+      <if test="name != null and name != ''">
+        and real_name like concat('%', #{name}, '%')
+      </if>
+    </where>
+  </select>
+
+
+  <select id="userPage" resultMap="BaseResultMap" parameterType="com.exam.viewmodel.admin.user.UserPageRequestVM">
+    SELECT
+    <include refid="Base_Column_List"/>
+    FROM t_user
+    <where>
+        and deleted=0
+      <if test="userName != null and userName != ''">
+        and user_name like concat('%',#{userName},'%')
+      </if>
+      <if test="role != null ">
+        and role= #{role}
+      </if>
+    </where>
+  </select>
+
+
+
+  <insert id="insertUser" parameterType="com.exam.domain.User"
+          useGeneratedKeys="true" keyProperty="id">
+		insert into t_user
+		(user_uuid,user_name,password,real_name,age, last_active_time)
+		values
+		(#{userUuid,jdbcType=VARCHAR},#{userName},#{password},#{realName},#{age},#{lastActiveTime})
+	</insert>
+
+  <insert id="insertUsers" parameterType="java.util.List"
+          useGeneratedKeys="true" keyProperty="id">
+    insert into t_user
+    (user_uuid,user_name,password,real_name,age,last_active_time)
+    values
+    <foreach collection="list" item="item" index="index"
+             separator=",">
+      (#{item.userUuid},#{item.userName},#{item.password},#{item.realName},#{item.age},
+      #{item.lastActiveTime})
+    </foreach>
+  </insert>
+
+
+  <update id="updateUser" parameterType="com.exam.domain.User">
+    update t_user
+    <set>
+      <if test="realName != null">real_name = #{realName},</if>
+      <if test="age != null">age = #{age},</if>
+      <if test="lastActiveTime != null">last_active_time = #{lastActiveTime},</if>
+    </set>
+    where id = #{id}
+  </update>
+
+
+  <update id="updateUsersAge">
+    update t_user set age = #{age} where id in
+    <foreach item="id" collection="idslist" open="(" separator=","
+             close=")">
+      #{id}
+    </foreach>
+  </update>
+
+
+  <delete id="deleteUsersByIds">
+    delete from t_user where id in
+    <foreach item="id" collection="list" open="(" separator=","
+             close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <select id="selectAllCount"  resultType="java.lang.Integer">
+		SELECT count(*) from t_user where deleted=0
+  </select>
+
+
+  <select id="selectByUserName"  resultType="com.exam.domain.other.KeyValue">
+		SELECT  id as value,user_name as name
+		from t_user
+		where deleted=0  and user_name like concat('%',#{value},'%')
+		limit 5
+  </select>
+
+
+  <select id="selectByIds" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+     from t_user
+     where id in
+    <foreach item="id" collection="list" open="(" separator=","
+             close=")">
+      #{id}
+    </foreach>
+  </select>
+
+
+  <select id="selectByWxOpenId" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from t_user
+    where deleted=0  and  wx_open_id = #{wxOpenId}
+    limit 1
+  </select>
+
+
+</mapper>

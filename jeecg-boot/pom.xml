@@ -79,6 +79,7 @@
 		<module>jeecg-module-treesoft</module>
 		<module>jeecg-moudle-vmq</module>
         <module>jeecg-module-shop</module>
+        <module>jeecg-module-exam</module>
     </modules>
 
 	<repositories>
