@@ -182,6 +182,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 * 39.支持菜单动态路由
 * 40.权限控制采用 RBAC（Role-Based Access Control，基于角色的访问控制）
 * 41.提供新行编辑表格JVXETable，轻松满足各种复杂ERP布局，拥有更高的性能、更灵活的扩展、更强大的功能
+* 42.提供仪表盘设计器，类大屏设计支持移动端，免费的数据可视化设计工具，支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表和门户设计；目前支持多种图表类型：柱形图、折线图、散点图、饼图、环形图、面积图、漏斗图、进度图、仪表盘、雷达图、地图等等；
 
 
 ### Jeecg Boot 产品功能蓝图
@@ -369,9 +370,19 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 
 
 #####  仪表盘设计器
-![](https://oscimg.oschina.net/oscnet/up-9c9d41288c31398d76b390bdd400f13a582.png)
+
+![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/darg20240726105556.png)
+
+![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/drag20240724135626.png)
+
+![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/drag20240724135619.png)
+
+![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/drag20240724135630.png)
+
+![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/drag20240726105547.png)
 
 ![](https://oscimg.oschina.net/oscnet/up-fad98d42b2cf92f92a903c9cff7579f18ec.png)
+
 
 ##### 报表设计器
 ![](https://oscimg.oschina.net/oscnet/up-64648de000851f15f6c7b9573d107ebb5f8.png)
