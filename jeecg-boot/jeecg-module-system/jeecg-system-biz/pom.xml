@@ -30,7 +30,7 @@
 			<artifactId>jeewx-api</artifactId>
 		</dependency>
 		<!-- 积木报表 -->
-		<dependency>
+<!--		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
 		</dependency>
@@ -38,7 +38,7 @@
 			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>jimureport-drag</artifactId>
 			<version>2.0.2</version>
-		</dependency>
+		</dependency>-->
 	<!-- 积木报表 mongo redis 支持包 
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
