@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +44,21 @@ public class AdminController {
     }
 
     @RequestMapping("/getSettings")
-    public CommonRes getSettings(HttpSession session){
+    public CommonRes getSettings(HttpServletRequest request, HttpSession session){
         String username = (String) session.getAttribute("username");
         CommonRes res = adminService.getSettings(username);
-        if (res.getData() == null) {
-            Setting setting = new Setting();
+        Setting setting = (Setting) res.getData();
+        if (setting == null) {
+            setting = new Setting();
             setting.setUsername(username);
             res.setData(setting);
+        }
+        String path = request.getRequestURL().toString().replace("/admin/getSettings","");
+        if (StringUtils.isBlank(setting.getNotifyUrl())) {
+            setting.setNotifyUrl(path + "/notify");
+        }
+        if (StringUtils.isBlank(setting.getReturnUrl())) {
+            setting.setReturnUrl(path + "/notify");
         }
         return res;
     }

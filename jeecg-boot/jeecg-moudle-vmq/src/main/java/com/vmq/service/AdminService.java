@@ -67,7 +67,7 @@ public class AdminService {
     }
 
     @SneakyThrows
-    public CommonRes regist(String user,String pass){
+    public CommonRes regist(String user,String pass,String email){
         Map<String,Object> map = settingDao.getUserInfo(user);
         if (!map.isEmpty()) {
             log.info("{}",map);
@@ -75,7 +75,7 @@ public class AdminService {
         }
         String salt = PasswordUtil.randomGen(8);
         String password = PasswordUtil.encrypt(user,pass,salt);
-        settingDao.regist(user,password,salt);
+        settingDao.regist(user,password,email,salt);
         CommonRes res = ResUtil.success();
         res.setMsg("注册成功");
         return res;

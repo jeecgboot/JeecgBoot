@@ -142,6 +142,15 @@ public class FileController {
         }
     }
 
+    @GetMapping("/{dir1}/{dir2}/{name:.+}")
+    public void file(@PathVariable("dir1") String dir1, @PathVariable("dir2") String dir2,@PathVariable("name") String name, Integer width, Integer height, HttpServletResponse response) {
+        if (width != null && width > 0 && height != null && height > 0) {
+            PicUtils.changeSize(dir1 + "/" + dir2 + "/" + name, width, height, response);
+        } else {
+            FileUploadUtil.preview(dir1 + "/" + dir2 + "/" + name, response);
+        }
+    }
+
     /**
      * 下载文件
      */
@@ -150,12 +159,22 @@ public class FileController {
         FileUploadUtil.download(dir + "/" + name, response);
     }
 
+    @GetMapping("/download/{dir1}/{dir2}/{name:.+}")
+    public void downloadFile(@PathVariable("dir1") String dir1, @PathVariable("dir2") String dir2, @PathVariable("name") String name, HttpServletResponse response) {
+        FileUploadUtil.download(dir1 + "/" + dir2 + "/" + name, response);
+    }
+
     /**
      * 查看缩略图
      */
     @GetMapping("/thumbnail/{dir}/{name:.+}")
     public void smFile(@PathVariable("dir") String dir, @PathVariable("name") String name, HttpServletResponse response) {
         FileUploadUtil.thumbnail(dir + "/" + name, response);
+    }
+
+    @GetMapping("/thumbnail/{dir1}/{dir2}/{name:.+}")
+    public void smFile(@PathVariable("dir1") String dir1,@PathVariable("dir2") String dir2, @PathVariable("name") String name, HttpServletResponse response) {
+        FileUploadUtil.thumbnail(dir1 + "/" + dir2 + "/" + name, response);
     }
 
     /**
@@ -184,12 +203,7 @@ public class FileController {
     @RequestMapping("/list")
     public JsonResult list(String dir) {
         List<Map<String, Object>> list = FileUploadUtil.list(dir);
-        list.sort(new Comparator<Map<String, Object>>() {
-            @Override
-            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-                return ((Long) o2.get("updateTime")).compareTo((Long) o1.get("updateTime"));
-            }
-        });
+        list.sort((o1, o2) -> ((Long) o2.get("updateTime")).compareTo((Long) o1.get("updateTime")));
         return JsonResult.ok().setData(list);
     }
 

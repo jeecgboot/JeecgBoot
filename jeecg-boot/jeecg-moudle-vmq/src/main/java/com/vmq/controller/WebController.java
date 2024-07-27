@@ -272,4 +272,19 @@ public class WebController {
         }
         return webService.getState(t, sign);
     }
+
+    @ApiOperation(value = "默认回调接口")
+    @RequestMapping(value = "/notify", method = {RequestMethod.GET, RequestMethod.POST})
+    public String notify(PayOrder payOrder) {
+        PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
+        if (order == null) {
+            return "订单不存在";
+        }
+        String sign = webService.getMd5(order.getUsername(),payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice());
+        if (!sign.equals(payOrder.getSign())) {
+            return "签名校验失败";
+        }
+        return "success";
+    }
+
 }

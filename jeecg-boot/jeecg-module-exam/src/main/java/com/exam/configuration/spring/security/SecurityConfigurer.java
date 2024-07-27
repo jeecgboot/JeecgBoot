@@ -32,8 +32,6 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfigurer {
 
-    private static String contextPath = "";
-
     /**
      * The type Form login web security configurer adapter.
      */
@@ -80,7 +78,6 @@ public class SecurityConfigurer {
          */
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-            log.info("contextPath: {}",contextPath);
             http.headers().frameOptions().disable();
             List<String> securityIgnoreUrls = systemConfig.getSecurityIgnoreUrls();
             String[] ignores = new String[securityIgnoreUrls.size()];
@@ -90,12 +87,12 @@ public class SecurityConfigurer {
                     .and().authenticationProvider(restAuthenticationProvider)
                     .authorizeRequests()
                     .antMatchers(securityIgnoreUrls.toArray(ignores)).permitAll()
-                    .antMatchers(contextPath+"/api/admin/**").hasRole(RoleEnum.ADMIN.getName())
-                    .antMatchers(contextPath+"/api/student/**").hasRole(RoleEnum.STUDENT.getName())
+                    .antMatchers("/exam/api/admin/**").hasRole(RoleEnum.ADMIN.getName())
+                    .antMatchers("/exam/api/student/**").hasRole(RoleEnum.STUDENT.getName())
                     .anyRequest().permitAll()
                     .and().exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)
                     .and().formLogin().successHandler(restAuthenticationSuccessHandler).failureHandler(restAuthenticationFailureHandler)
-                    .and().logout().logoutUrl(contextPath+"/api/user/logout").logoutSuccessHandler(restLogoutSuccessHandler).invalidateHttpSession(true)
+                    .and().logout().logoutUrl("/exam/api/user/logout").logoutSuccessHandler(restLogoutSuccessHandler).invalidateHttpSession(true)
                     .and().rememberMe().key(CookieConfig.getName()).tokenValiditySeconds(CookieConfig.getInterval()).userDetailsService(formDetailsService)
                     .and().csrf().disable()
                     .cors();
@@ -116,7 +113,7 @@ public class SecurityConfigurer {
             configuration.setAllowCredentials(true);
             configuration.setAllowedHeaders(Collections.singletonList("*"));
             final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-            source.registerCorsConfiguration("/api/**", configuration);
+            source.registerCorsConfiguration("/exam/api/**", configuration);
             return source;
         }
 

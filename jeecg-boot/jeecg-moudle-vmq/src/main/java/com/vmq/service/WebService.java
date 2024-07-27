@@ -124,7 +124,7 @@ public class WebService {
         payOrder.setCreateDate(new Date().getTime());
         payOrder.setPayDate(0);
         payOrder.setCloseDate(0);
-        payOrder.setReallyPrice(String.valueOf(reallyPrice));
+        payOrder.setReallyPrice(reallyPrice);
         payOrder.setState(0);
         payOrder.setIsAuto(isAuto);
         payOrder.setPayUrl(payUrl);
@@ -132,7 +132,7 @@ public class WebService {
         payOrderDao.save(payOrder);
 
         String timeOut = setting.getClose();
-        CreateOrderRes createOrderRes = new CreateOrderRes(payOrder.getPayId(),orderId,payOrder.getType(),payOrder.getPrice(),String.valueOf(reallyPrice),payUrl,isAuto,0,Integer.valueOf(timeOut),payOrder.getCreateDate());
+        CreateOrderRes createOrderRes = new CreateOrderRes(payOrder.getPayId(),orderId,payOrder.getType(),payOrder.getPrice(),reallyPrice,payUrl,isAuto,0,Integer.valueOf(timeOut),payOrder.getCreateDate());
         if (setting.getIsApprove() == 1) {
             PayInfo payInfo = new PayInfo(payOrder);
             String urlParam = "?orderId="+payInfo.getOrderId()+"&sign="+md5(payOrder.getOrderId()+key);
@@ -253,8 +253,8 @@ public class WebService {
             payOrder.setCloseDate(new Date().getTime());
             payOrder.setParam("无订单转账");
             payOrder.setType(type);
-            payOrder.setPrice(price);
-            payOrder.setReallyPrice(price);
+            payOrder.setPrice(Double.valueOf(price));
+            payOrder.setReallyPrice(Double.valueOf(price));
             payOrder.setState(1);
             payOrder.setPayUrl("无订单转账");
             payOrderDao.save(payOrder);
@@ -283,7 +283,7 @@ public class WebService {
                 if (!(res!=null && res.equals("success"))){
                     //通知失败，设置状态为2
                     payOrderDao.setState(2,payOrder.getId());
-                    errorMsg = "通知异步地址失败";
+                    errorMsg = "通知异步地址失败: " + res;
                 }
             }
         }
@@ -291,6 +291,7 @@ public class WebService {
             PayInfo payInfo = new PayInfo(payOrder);
             emailUtils.sendTemplateMail(sender, payOrder.getEmail(),"【码支付】支付成功通知","pay-success", payInfo);
         }
+        log.info("appPush end: {}",errorMsg);
         return StringUtils.isEmpty(errorMsg)?ResUtil.success():ResUtil.error(errorMsg);
     }
 

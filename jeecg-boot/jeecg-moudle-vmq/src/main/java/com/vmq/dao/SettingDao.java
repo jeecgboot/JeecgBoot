@@ -18,6 +18,6 @@ public interface SettingDao extends JpaRepository<Setting,String> {
 
     @Transactional
     @Modifying
-    @Query(value = "insert into sys_user(id, username, realname, password, salt, status, del_flag) values (TRUNCATE(unix_timestamp(now(3))*1000,0),?1,?1,?2,?3,true,false)",nativeQuery = true)
-    void regist(String user, String password, String salt);
+    @Query(value = "insert into sys_user(id, username, realname, password, email, salt, status, del_flag) values (TRUNCATE(unix_timestamp(now(3))*1000,0),?1,?1,?2,?3,?4,true,false)",nativeQuery = true)
+    void regist(String user, String password, String email, String salt);
 }

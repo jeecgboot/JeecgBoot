@@ -32,11 +32,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Controller
 @Api(tags = "登录接口")
 public class LoginController {
+
+    private static final Pattern namePatt = Pattern.compile("^\\w{4,20}$");
 
     @Value("${token.expire.link}")
     private int expireHour;
@@ -138,8 +141,8 @@ public class LoginController {
         if (username==null){
             return ResUtil.error("请输入账号");
         }
-        if (username.length() < 4) {
-            return ResUtil.error("用户名长度不能小于4位");
+        if (!namePatt.matcher(username).matches()) {
+            return ResUtil.error("用户名只能由数据、字母、下划线组成，且长度不能小于4位");
         }
         if (password==null){
             return ResUtil.error("请输入密码");
@@ -156,7 +159,7 @@ public class LoginController {
             return ResUtil.error("邮箱验证码不正确");
         }
         redisTemplate.opsForValue().getAndDelete(email);
-        CommonRes r = adminService.regist(username, password);
+        CommonRes r = adminService.regist(username, password, email);
         return r;
     }
 

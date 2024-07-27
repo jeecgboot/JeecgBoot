@@ -198,7 +198,7 @@ public class NotifyController {
             key = mapTypes.get("key").toString();
         }
 
-        String mysign = VmqPay.md5(payId + param + type + price + money + key);
+        String mysign = VmqPay.md5(payId + param + type + Double.valueOf(price) + Double.valueOf(money) + key);
 
         if (mysign.equals(sign)) {
             String date = new SimpleDateFormat("yyyyMMdd").format(new Date());
@@ -244,9 +244,6 @@ public class NotifyController {
         }
         String mysign = VmqPay.md5(payId + param + type + price + reallyPrice + key);
         if (mysign.equals(sign)) {
-            String money = params.get("reallyPrice");
-            String payNo = params.get("orderId");
-            returnBig(money, price, payId, payNo, param, "success", "fiald");
             String url = contextPath + "/pay/state/" + payId;
             response.sendRedirect(url);
         }

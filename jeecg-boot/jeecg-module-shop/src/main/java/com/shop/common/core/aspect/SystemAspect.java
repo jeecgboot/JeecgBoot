@@ -49,7 +49,7 @@ public class SystemAspect {
         clock.start(methodName);
         Object object = joinPoint.proceed();
         clock.stop();
-        log.info("running {} ms, method = {} {}", clock.getTotalTimeMillis(), clock.getLastTaskName(), args);
+        log.info("[{} ms] method = {} {}", clock.getTotalTimeMillis(), clock.getLastTaskName(), args);
         return object;
     }
 

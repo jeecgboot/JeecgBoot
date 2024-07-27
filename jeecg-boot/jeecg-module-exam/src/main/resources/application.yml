@@ -8,6 +8,8 @@ server:
   compression:
     enabled: true
     min-response-size: 1
+  servlet:
+    context-path: /exam
 
 #logging logback
 logging:
@@ -24,6 +26,9 @@ mybatis:
 
 system:
   security-ignore-urls:
+    - /
+    - /student
+    - /admin
     - /api/wx/**
     - /api/admin/upload/configAndUpload
     - /api/admin/upload/auth
@@ -59,7 +64,6 @@ spring:
     hikari:
       idle-timeout: 600000  #10 min
       max-lifetime: 1800000 #30 min
-
 
   #runningtime environment
   profiles:

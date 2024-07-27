@@ -45,15 +45,17 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
                 .setCachePeriod(31556926);
+        super.addResourceHandlers(registry);
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         List<String> securityIgnoreUrls = systemConfig.getWx().getSecurityIgnoreUrls();
+        securityIgnoreUrls.addAll(systemConfig.getSecurityIgnoreUrls());
         String[] ignores = new String[securityIgnoreUrls.size()];
         registry.addInterceptor(tokenHandlerInterceptor)
-                .addPathPatterns("/api/wx/**")
-                .excludePathPatterns(securityIgnoreUrls.toArray(ignores));
+                .excludePathPatterns(securityIgnoreUrls.toArray(ignores))
+                .addPathPatterns("/**");
         super.addInterceptors(registry);
     }
 

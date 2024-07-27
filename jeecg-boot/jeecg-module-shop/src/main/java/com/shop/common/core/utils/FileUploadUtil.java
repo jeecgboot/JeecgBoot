@@ -6,6 +6,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.shop.common.core.Constants;
 import com.shop.common.core.web.JsonResult;
+import com.shop.entity.User;
+import org.apache.shiro.SecurityUtils;
 import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -117,8 +119,13 @@ public class FileUploadUtil {
      * 按照日期分存放目录
      */
     public static String getDateDir() {
+        String dir = "";
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        if (user != null) {
+            dir = user.getUsername() + "/";
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd/");
-        return sdf.format(new Date());
+        return dir  + sdf.format(new Date());
     }
 
     /**
@@ -244,8 +251,13 @@ public class FileUploadUtil {
      */
     public static List<Map<String, Object>> list(String dir) {
         dir = dir == null ? "" : dir;
+        String path = UPLOAD_FILE_DIR;
+        User user = (User) SecurityUtils.getSubject().getPrincipal();
+        if (user != null) {
+            path += user.getUsername() + "/";
+        }
         List<Map<String, Object>> list = new ArrayList<>();
-        File file = new File(UPLOAD_FILE_DIR + dir);
+        File file = new File(path + dir);
         File[] files = file.listFiles();
         if (files == null) return list;
         for (File f : files) {

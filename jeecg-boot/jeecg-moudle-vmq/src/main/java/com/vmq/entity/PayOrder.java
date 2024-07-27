@@ -35,10 +35,10 @@ public class PayOrder {
     private int type;
 
     @ApiModelProperty("订单价格")
-    private String price;
+    private double price;
 
     @ApiModelProperty("实际支付价格")
-    private String reallyPrice;
+    private double reallyPrice;
 
     @ApiModelProperty("异步通知地址")
     private String notifyUrl;

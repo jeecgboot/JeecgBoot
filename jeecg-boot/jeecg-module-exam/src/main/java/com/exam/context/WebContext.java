@@ -2,8 +2,10 @@ package com.exam.context;
 
 import com.exam.domain.User;
 import com.exam.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -14,6 +16,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  * Copyright (C), 2020-2024
  * @date 2021/5/25 10:45
  */
+@Slf4j
 @Component
 public class WebContext {
     private static final String USER_ATTRIBUTES = "USER_ATTRIBUTES";
@@ -49,13 +52,20 @@ public class WebContext {
         if (null != user) {
             return user;
         } else {
-            org.springframework.security.core.userdetails.User springUser = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Object springUser = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (null == springUser) {
                 return null;
             }
-            user = userService.getUserByUserName(springUser.getUsername());
-            if (null != user) {
-                setCurrentUser(user);
+            log.info("getCurrentUser: {}",springUser);
+            try {
+                if (springUser instanceof UserDetails) {
+                    user = userService.getUserByUserName(((org.springframework.security.core.userdetails.User) springUser).getUsername());
+                    if (null != user) {
+                        setCurrentUser(user);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("获取登录用户失败：",e);
             }
             return user;
         }

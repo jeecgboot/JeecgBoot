@@ -354,7 +354,7 @@ public class OrderController extends BaseController {
         switch (Objects.requireNonNull(PaysEnmu.getByValue(orders.getPayType()))) {
             case MQPAY_ALIPAY: // V免签支付宝接口
             case MQPAY_WXPAY: // V免签微信接口
-                String createMqPay = VmqPay.sendCreateMqPay(pays, price, ordersMember, cloudPayid, productDescription);
+                String createMqPay = VmqPay.sendCreateMqPay(pays, Double.valueOf(price), ordersMember, cloudPayid, productDescription);
                 response.sendRedirect(createMqPay);
                 break;
             case EPAY_ALIPAY: // 易支付支付宝

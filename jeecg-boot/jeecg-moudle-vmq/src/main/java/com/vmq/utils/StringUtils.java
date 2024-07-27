@@ -111,4 +111,8 @@ public class StringUtils extends org.springframework.util.StringUtils {
         SimpleDateFormat dateFormat =  new SimpleDateFormat(format);
         return dateFormat.format(time);
     }
+
+    public static String getPriceStr(double price) {
+        return String.format("%.2f",price);
+    }
 }

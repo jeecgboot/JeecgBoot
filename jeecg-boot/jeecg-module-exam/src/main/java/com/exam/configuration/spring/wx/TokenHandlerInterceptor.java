@@ -33,11 +33,6 @@ public class TokenHandlerInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String token = request.getHeader("token");
-        if (StringUtils.isEmpty(token)) {
-            RestUtil.response(response, SystemCode.UNAUTHORIZED);
-            return false;
-        }
-
         if (StringUtils.isBlank(token)) {
             RestUtil.response(response, SystemCode.UNAUTHORIZED);
             return false;

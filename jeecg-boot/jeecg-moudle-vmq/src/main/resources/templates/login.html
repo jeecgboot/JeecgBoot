@@ -10,6 +10,7 @@
 	<link rel="bookmark" href="favicon.png" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<link rel="stylesheet" href="assets/css/main.css" />
+	<link rel="stylesheet" href="layui/css/layui.css" media="all">
 	<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 </head>
 <body>
@@ -75,10 +76,6 @@
 				<div style="display: flex">
 					<label style="width: 150px;line-height: 40px;">密码</label>
 					<input style="width: 250px;" type="password" name="password_r" id="password_r" />
-				</div>
-				<div style="display: flex">
-					<label style="width: 150px;line-height: 40px;">密码确认</label>
-					<input style="width: 250px;" type="password" name="password_r2" id="password_r2" />
 				</div>
 				<div style="display: flex">
 					<label style="width: 150px;line-height: 40px;">验证码</label>
@@ -151,8 +148,7 @@
 <script src="assets/js/util.js"></script>
 <script src="assets/js/main.js"></script>
 <script src="assets/js/function.js"></script>
-
-<script src="https://lib.baomitu.com/layer/3.3.0/layer.js"></script>
+<script src="assets/js/layer.js"></script>
 
 
 <script>
@@ -196,7 +192,6 @@
 		var email = $("#email_r").val();
 		var name = $("#username_r").val();
 		var pass = $("#password_r").val();
-		var pass2 = $("#password_r2").val();
 		var code = $("#verificationCode").val();
 		if (email < 4 || email.indexOf("@") < 0) {
 			layer.msg("邮箱格式不正确");
@@ -204,10 +199,6 @@
 		}
 		if (name.length < 4 || pass.length < 4) {
 			layer.msg("用户名和密码长度均不能小于4位");
-			return;
-		}
-		if (pass2 != pass) {
-			layer.msg("两次输入密码不一致，请确认");
 			return;
 		}
 		if (code=="") {

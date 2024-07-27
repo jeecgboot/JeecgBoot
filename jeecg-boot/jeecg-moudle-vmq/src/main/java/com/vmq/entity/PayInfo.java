@@ -40,8 +40,8 @@ public class PayInfo {
         this.orderId = order.getOrderId();
         this.payId = order.getPayId();
         this.type = order.getType() == 2 ? "支付宝" : "微信";
-        this.price = order.getPrice();
-        this.reallyPrice = order.getReallyPrice();
+        this.price = StringUtils.getPriceStr(order.getPrice());
+        this.reallyPrice = StringUtils.getPriceStr(order.getReallyPrice());
         this.createDate = StringUtils.format(order.getCreateDate(), "yyyy-MM-dd HH:mm:ss");
         this.payDate = StringUtils.format(order.getPayDate(), "yyyy-MM-dd HH:mm:ss");
     }

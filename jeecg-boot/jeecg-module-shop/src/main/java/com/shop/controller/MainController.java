@@ -19,11 +19,11 @@ import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
  */
 @Controller
 public class MainController extends BaseController implements ErrorController {
+
+    private static final Pattern namePatt = Pattern.compile("^\\w{4,20}$");
 
     @Autowired
     private MenuService menuService;
@@ -224,8 +226,8 @@ public class MainController extends BaseController implements ErrorController {
         if (username==null){
             return JsonResult.error("请输入账号");
         }
-        if (username.length() < 4) {
-            return JsonResult.error("用户名长度不能小于4位");
+        if (!namePatt.matcher(username).matches()) {
+            return JsonResult.error("用户名只能由数据、字母、下划线组成，且长度不能小于4位");
         }
         if (password==null){
             return JsonResult.error("请输入密码");
@@ -254,7 +256,4 @@ public class MainController extends BaseController implements ErrorController {
         userService.saveUser(user);
         return JsonResult.ok("注册成功");
     }
-
-
-
 }
