@@ -23,7 +23,6 @@ import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysRoleIndex;
-import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.*;
@@ -38,7 +37,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Author scott

@@ -254,7 +254,7 @@ public class FileUploadUtil {
         String path = UPLOAD_FILE_DIR;
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         if (user != null) {
-            path += user.getUsername() + "/";
+            dir = "/" + user.getUsername() + dir;
         }
         List<Map<String, Object>> list = new ArrayList<>();
         File file = new File(path + dir);

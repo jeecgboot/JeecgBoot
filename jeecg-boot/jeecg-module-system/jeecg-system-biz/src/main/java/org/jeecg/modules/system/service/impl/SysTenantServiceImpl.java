@@ -31,11 +31,8 @@ import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.jeecg.modules.system.service.ISysTenantService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.tenant.*;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;

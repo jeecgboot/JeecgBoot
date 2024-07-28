@@ -107,7 +107,8 @@ public class UpdateAListStorageJob implements Job {
                             param.add(new Object[]{((Long) map.get("id")).intValue()});
                             cancelMap.put(String.valueOf(map.get("id")), "");
                             removeList.add(map);
-                        } else if (errMsg.contains("用户验证失败") || errMsg.contains("IP登录异常,请稍候再登录！")) {
+                        } else if (errMsg.contains("用户验证失败") || errMsg.contains("IP登录异常,请稍候再登录！")
+                                || errMsg.contains("token is expired")) {
                             break;
                         } else if (errMsg.contains("no mount path for an storage is")) {
                             enableStorageMap.put("id",map.get("id"));

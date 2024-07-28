@@ -1,15 +1,17 @@
 package com.shop.controller;
 
-import com.shop.common.core.annotation.OperLog;
-import com.shop.common.core.utils.FileUploadUtil;
-import com.shop.common.core.utils.PicUtils;
-import com.shop.common.core.web.JsonResult;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.shop.common.core.annotation.OperLog;
+import com.shop.common.core.utils.FileUploadUtil;
+import com.shop.common.core.utils.PicUtils;
+import com.shop.common.core.web.BaseController;
+import com.shop.common.core.web.JsonResult;
+import com.shop.common.util.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ import java.util.zip.ZipInputStream;
  */
 @Controller
 @RequestMapping("/file")
-public class FileController {
+public class FileController extends BaseController {
 
     @Autowired
     public HttpServletRequest request;
@@ -135,6 +136,10 @@ public class FileController {
      */
     @GetMapping("/{dir}/{name:.+}")
     public void file(@PathVariable("dir") String dir, @PathVariable("name") String name, Integer width, Integer height, HttpServletResponse response) {
+        String username = getLoginUsername();
+        if (StringUtils.isNotBlank(username)) {
+            dir = username + "/" + dir;
+        }
         if (width != null && width > 0 && height != null && height > 0) {
             PicUtils.changeSize(dir + "/" + name, width, height, response);
         } else {
@@ -156,6 +161,10 @@ public class FileController {
      */
     @GetMapping("/download/{dir}/{name:.+}")
     public void downloadFile(@PathVariable("dir") String dir, @PathVariable("name") String name, HttpServletResponse response) {
+        String username = getLoginUsername();
+        if (StringUtils.isNotBlank(username)) {
+            dir = username + "/" + dir;
+        }
         FileUploadUtil.download(dir + "/" + name, response);
     }
 
@@ -169,6 +178,10 @@ public class FileController {
      */
     @GetMapping("/thumbnail/{dir}/{name:.+}")
     public void smFile(@PathVariable("dir") String dir, @PathVariable("name") String name, HttpServletResponse response) {
+        String username = getLoginUsername();
+        if (StringUtils.isNotBlank(username)) {
+            dir = username + "/" + dir;
+        }
         FileUploadUtil.thumbnail(dir + "/" + name, response);
     }
 

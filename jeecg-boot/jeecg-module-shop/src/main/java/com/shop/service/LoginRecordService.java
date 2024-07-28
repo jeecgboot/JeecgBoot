@@ -1,46 +1,54 @@
 package com.shop.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.shop.common.core.utils.UserAgentGetter;
 import com.shop.common.core.web.PageParam;
 import com.shop.common.core.web.PageResult;
 import com.shop.entity.LoginRecord;
+import com.shop.mapper.LoginRecordMapper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
 /**
- * 登录日志服务类
+ * 登录日志服务实现类
  * 2018-12-24 16:10
  */
-public interface LoginRecordService extends IService<LoginRecord> {
+@Service
+public class LoginRecordService extends ServiceImpl<LoginRecordMapper, LoginRecord> {
 
-    /**
-     * 关联分页查询
-     */
-    PageResult<LoginRecord> listPage(PageParam<LoginRecord> page);
+    public PageResult<LoginRecord> listPage(PageParam<LoginRecord> page) {
+        List<LoginRecord> records = baseMapper.listPage(page);
+        return new PageResult<>(records, page.getTotal());
+    }
 
-    /**
-     * 关联查询所有
-     */
-    List<LoginRecord> listAll(Map<String, Object> page);
+    public List<LoginRecord> listAll(Map<String, Object> page) {
+        return baseMapper.listAll(page);
+    }
 
-    /**
-     * 添加登录日志
-     *
-     * @param username 用户账号
-     * @param type     操作类型
-     * @param comments 备注
-     * @param request  HttpServletRequest
-     */
-    void saveAsync(String username, Integer type, String comments, HttpServletRequest request);
+    public void saveAsync(String username, Integer type, String comments, HttpServletRequest request) {
+        LoginRecord loginRecord = new LoginRecord();
+        loginRecord.setUsername(username);
+        loginRecord.setOperType(type);
+        loginRecord.setComments(comments);
+        UserAgentGetter agentGetter = new UserAgentGetter(request);
+        loginRecord.setOs(agentGetter.getOS());
+        loginRecord.setDevice(agentGetter.getDevice());
+        loginRecord.setBrowser(agentGetter.getBrowser());
+        loginRecord.setIp(agentGetter.getIp());
+        saveAsync(loginRecord);
+    }
 
-    /**
-     * 添加登录成功的登录日志
-     *
-     * @param username 用户账号
-     * @param request  HttpServletRequest
-     */
-    void saveAsync(String username, HttpServletRequest request);
+    public void saveAsync(String username, HttpServletRequest request) {
+        saveAsync(username, LoginRecord.TYPE_LOGIN, null, request);
+    }
+
+    @Async
+    public void saveAsync(LoginRecord loginRecord) {
+        baseMapper.insert(loginRecord);
+    }
 
 }

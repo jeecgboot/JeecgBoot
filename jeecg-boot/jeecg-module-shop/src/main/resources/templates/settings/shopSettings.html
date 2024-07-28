@@ -69,19 +69,6 @@
                     </div>
                 </div>
 
-                <!--<div class="layui-form-item">
-                    <label class="layui-form-label layui-form-required">QQ群二维码:</label>
-                    <div class="layui-input-block">
-                        <input id="qqGroupQrcode" name="qqGroupQrcode" placeholder="请输入QQ群二维码" class="layui-input"/>
-                        <div class="layui-upload" style="margin-top: 10px">
-                            <button type="button" class="layui-btn" id="test2">上传二维码</button>
-                            <div class="layui-upload-list">
-                                <img class="layui-upload-img" id="demo2">
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
-
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-form-required">首页模版:</label>
                     <div class="layui-input-block">
@@ -91,7 +78,7 @@
                     </div>
                 </div>
 
-                <!--<div class="layui-form-item">
+                <div class="layui-form-item">
                     <label class="layui-form-label layui-form-required">商店背景:</label>
                     <div class="layui-input-block">
                         <input id="isBackground" name="isBackground" placeholder="请输入全局背景图"
@@ -103,7 +90,7 @@
                             </div>
                         </div>
                     </div>
-                </div>-->
+                </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label layui-form-required">购物须知:</label>
                     <div class="layui-input-block">
@@ -143,8 +130,8 @@
         var fileChoose = layui.fileChoose;
         var shopSettings = JSON.parse(JSON.stringify(${shopSettings!}));
         form.val('shopSettingsForm', shopSettings);
-        $('#demo1').attr('src', '${ctxPath}' + shopSettings.isBackground);
-        $('#demo2').attr('src', '${ctxPath}' + shopSettings.qqGroupQrcode);
+        $('#demo1').attr('src', shopSettings.isBackground);
+        $('#demo2').attr('src', shopSettings.qqGroupQrcode);
 
         /* 渲染富文本编辑器 */
         tinymce.init({
@@ -180,21 +167,6 @@
             init_instance_callback: function (editor) {
                 tinymce.get('windowText').setContent(shopSettings.windowText);
             }
-        });
-
-        $('#test2').click(function (res) {
-            fileChoose.open({
-                fileUrl: '${ctxPath}/file',
-                listUrl: '${ctxPath}/file/list',
-                upload: {url: '${ctxPath}/file/upload'},
-                num: 1,
-                onChoose: function (urls) {
-                    var list = urls;
-                    $("#qqGroupQrcode").val("${ctxPath}/file" + list[0].url);
-                    $('#demo2').attr('src', "${ctxPath}/file" + list[0].url); //图片链接（base64）
-                },
-                response: {code: 0}
-            });
         });
 
         $('#test1').click(function (res) {

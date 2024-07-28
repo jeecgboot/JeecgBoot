@@ -1,37 +1,43 @@
 package com.shop.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shop.common.core.web.PageParam;
 import com.shop.common.core.web.PageResult;
 import com.shop.entity.DictionaryData;
+import com.shop.mapper.DictionaryDataMapper;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * 字典项服务类
+ * 字典项服务实现类
  * 2020-03-14 11:29:04
  */
-public interface DictionaryDataService extends IService<DictionaryData> {
+@Service
+public class DictionaryDataService extends ServiceImpl<DictionaryDataMapper, DictionaryData> {
 
-    /**
-     * 关联分页查询
-     */
-    PageResult<DictionaryData> listPage(PageParam<DictionaryData> page);
+    public PageResult<DictionaryData> listPage(PageParam<DictionaryData> page) {
+        List<DictionaryData> records = baseMapper.listPage(page);
+        return new PageResult<>(records, page.getTotal());
+    }
 
-    /**
-     * 关联查询所有
-     */
-    List<DictionaryData> listAll(Map<String, Object> page);
+    public List<DictionaryData> listAll(Map<String, Object> page) {
+        return baseMapper.listAll(page);
+    }
 
-    /**
-     * 根据字典代码查询字典项
-     */
-    List<DictionaryData> listByDictCode(String dictCode);
+    public List<DictionaryData> listByDictCode(String dictCode) {
+        PageParam<DictionaryData> pageParam = new PageParam<>();
+        pageParam.put("dictCode", dictCode).setDefaultOrder(new String[]{"sort_number"}, null);
+        List<DictionaryData> records = baseMapper.listAll(pageParam.getNoPageParam());
+        return pageParam.sortRecords(records);
+    }
 
-    /**
-     * 根据字典代码和字典项名称查询字典项
-     */
-    DictionaryData listByDictCodeAndName(String dictCode, String name);
+    public DictionaryData listByDictCodeAndName(String dictCode, String dictDataName) {
+        PageParam<DictionaryData> pageParam = new PageParam<>();
+        pageParam.put("dictCode", dictCode).put("dictDataName", dictDataName);
+        List<DictionaryData> records = baseMapper.listAll(pageParam.getNoPageParam());
+        return pageParam.getOne(records);
+    }
 
 }

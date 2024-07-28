@@ -9,7 +9,6 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.aop.TenantLog;
 import org.jeecg.modules.system.entity.SysPackPermission;
-import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysTenantPack;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
 import org.jeecg.modules.system.mapper.SysPackPermissionMapper;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

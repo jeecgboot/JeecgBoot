@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
-import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.GlobalConstants;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysGatewayRoute;
@@ -19,9 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description: gateway路由管理

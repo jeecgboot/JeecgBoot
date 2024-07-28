@@ -1,39 +1,38 @@
 package com.shop.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shop.common.core.web.PageParam;
 import com.shop.common.core.web.PageResult;
 import com.shop.entity.Menu;
+import com.shop.mapper.MenuMapper;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 菜单服务类
+ * 菜单服务实现类
  * 2018-12-24 16:10
  */
-public interface MenuService extends IService<Menu> {
+@Service
+public class MenuService extends ServiceImpl<MenuMapper, Menu> {
+    public PageResult<Menu> listPage(PageParam<Menu> pageParam) {
+        return new PageResult<>(baseMapper.listPage(pageParam), pageParam.getTotal());
+    }
 
-    /**
-     * 关联分页查询菜单
-     */
-    PageResult<Menu> listPage(PageParam<Menu> pageParam);
+    public List<Menu> getUserMenu(Integer userId, Integer menuType) {
+        return baseMapper.listByUserId(userId, menuType);
+    }
 
-    /**
-     * 根据用户id查询菜单列表
-     *
-     * @param userId   用户id
-     * @param menuType 菜单类型，为null不筛选
-     * @return List<Menu>
-     */
-    List<Menu> getUserMenu(Integer userId, Integer menuType);
-
-    /**
-     * 转化为树形结构
-     *
-     * @param menus    菜单list
-     * @param parentId 最顶级id
-     * @return List<Menu>
-     */
-    List<Menu> toMenuTree(List<Menu> menus, Integer parentId);
+    public List<Menu> toMenuTree(List<Menu> menus, Integer parentId) {
+        List<Menu> list = new ArrayList<>();
+        for (Menu menu : menus) {
+            if (parentId.equals(menu.getParentId())) {
+                menu.setChildren(toMenuTree(menus, menu.getMenuId()));
+                list.add(menu);
+            }
+        }
+        return list;
+    }
 
 }

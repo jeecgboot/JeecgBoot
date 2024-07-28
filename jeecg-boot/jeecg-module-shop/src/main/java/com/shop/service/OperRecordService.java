@@ -1,32 +1,35 @@
 package com.shop.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shop.common.core.web.PageParam;
 import com.shop.common.core.web.PageResult;
 import com.shop.entity.OperRecord;
+import com.shop.mapper.OperRecordMapper;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * 操作日志服务类
+ * 操作日志服务实现类
  * 2018-12-24 16:10
  */
-public interface OperRecordService extends IService<OperRecord> {
+@Service
+public class OperRecordService extends ServiceImpl<OperRecordMapper, OperRecord> {
 
-    /**
-     * 关联分页查询
-     */
-    PageResult<OperRecord> listPage(PageParam<OperRecord> page);
+    public PageResult<OperRecord> listPage(PageParam<OperRecord> page) {
+        List<OperRecord> records = baseMapper.listPage(page);
+        return new PageResult<>(records, page.getTotal());
+    }
 
-    /**
-     * 关联查询所有
-     */
-    List<OperRecord> listAll(Map<String, Object> page);
+    public List<OperRecord> listAll(Map<String, Object> page) {
+        return baseMapper.listAll(page);
+    }
 
-    /**
-     * 异步添加
-     */
-    void saveAsync(OperRecord operRecord);
+    @Async
+    public void saveAsync(OperRecord operRecord) {
+        baseMapper.insert(operRecord);
+    }
 
 }

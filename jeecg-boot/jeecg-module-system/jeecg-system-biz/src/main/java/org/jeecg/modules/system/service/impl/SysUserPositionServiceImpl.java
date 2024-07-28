@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.system.entity.SysPosition;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserPosition;
 import org.jeecg.modules.system.mapper.SysUserMapper;

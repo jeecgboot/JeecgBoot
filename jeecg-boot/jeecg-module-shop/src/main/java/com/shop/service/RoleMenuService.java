@@ -1,12 +1,15 @@
 package com.shop.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.shop.entity.RoleMenu;
+import com.shop.mapper.RoleMenuMapper;
+import org.springframework.stereotype.Service;
 
 /**
- * 角色菜单服务类
+ * 角色菜单服务实现类
  * 2018-12-24 16:10
  */
-public interface RoleMenuService extends IService<RoleMenu> {
+@Service
+public class RoleMenuService extends ServiceImpl<RoleMenuMapper, RoleMenu> {
 
 }

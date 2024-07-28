@@ -421,7 +421,7 @@ public class OrdersController extends BaseController {
                         map.put("date", DateUtil.getDate());
                         map.put("password", orders.getPassword());
                         map.put("url", website.getWebsiteUrl() + "/search/order/" + orders.getMember());
-                        emailService.sendHtmlEmail(website.getWebsiteName() + "发货提醒", "email/sendShip.html", map, new String[]{orders.getEmail()});
+                        emailService.sendHtmlEmail(String.format("【%s】发货提醒", website.getWebsiteName()), "email/sendShip.html", map, new String[]{orders.getEmail()});
                     } catch (Exception e) {
                         e.printStackTrace();
                         return JsonResult.error("发货成功、邮箱提醒用户失败、请检查邮箱系统配置。");
@@ -599,7 +599,7 @@ public class OrdersController extends BaseController {
                         map.put("password", member.getPassword());
                         map.put("url", website.getWebsiteUrl() + "/search/order/" + member.getMember());
                         try {
-                            emailService.sendHtmlEmail(website.getWebsiteName() + "发货提醒", "email/sendShip.html", map, new String[]{member.getEmail()});
+                            emailService.sendHtmlEmail(String.format("【%s】发货提醒", website.getWebsiteName()), "email/sendShip.html", map, new String[]{member.getEmail()});
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

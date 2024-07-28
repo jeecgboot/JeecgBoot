@@ -35,6 +35,12 @@ public class JsonResult extends HashMap<String, Object> {
         return ok(DEFAULT_OK_CODE, message);
     }
 
+    public static JsonResult ok(Object map) {
+        JsonResult jsonResult = ok(DEFAULT_OK_CODE,DEFAULT_OK_MSG);
+        jsonResult.put(DATA_NAME,map);
+        return jsonResult;
+    }
+
     /**
      * 返回成功
      */
@@ -43,6 +49,7 @@ public class JsonResult extends HashMap<String, Object> {
         JsonResult jsonResult = new JsonResult();
         jsonResult.put(CODE_NAME, code);
         jsonResult.put(MSG_NAME, message);
+        jsonResult.put(DATA_NAME, message);
         return jsonResult;
     }
 

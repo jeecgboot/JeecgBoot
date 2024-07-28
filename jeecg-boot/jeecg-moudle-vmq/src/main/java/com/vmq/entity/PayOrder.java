@@ -13,32 +13,23 @@ public class PayOrder {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @ApiModelProperty("主键")
+    @ApiModelProperty(hidden = true)
     private Long id;
 
-    @ApiModelProperty("账号")
-    private String username;
-
-    @ApiModelProperty("云端订单号")
-    private String orderId;
-
-    @ApiModelProperty("商户订单号")
+    @ApiModelProperty(value = "商户订单号",required = true)
     private String payId;
 
-    @ApiModelProperty("自定义参数")
+    @ApiModelProperty(value = "自定义参数",required = true)
     private String param;
 
     @ApiModelProperty("通知邮箱")
     private String email;
 
-    @ApiModelProperty("支付类型：1微信 2支付宝")
+    @ApiModelProperty(value = "支付类型：1微信，2支付宝",required = true)
     private int type;
 
-    @ApiModelProperty("订单价格")
+    @ApiModelProperty(value = "订单价格",required = true)
     private double price;
-
-    @ApiModelProperty("实际支付价格")
-    private double reallyPrice;
 
     @ApiModelProperty("异步通知地址")
     private String notifyUrl;
@@ -46,28 +37,39 @@ public class PayOrder {
     @ApiModelProperty("同步通知地址")
     private String returnUrl;
 
-    // -1：订单过期 0：等待支付 1：支付成功
-    @ApiModelProperty("订单状态")
-    private int state;
-
-    @ApiModelProperty("二维码类型：1手动输入金额 0固定金额")
-    private int isAuto;
-
-    @ApiModelProperty("支付跳转链接")
-    private String payUrl;
-
-    @ApiModelProperty("创建时间")
-    private long createDate;
-
-    @ApiModelProperty("支付时间")
-    private long payDate;
-
-    @ApiModelProperty("关闭时间")
-    private long closeDate;
-
     @Transient
+    @ApiModelProperty(value = "md5签名",required = true)
     private String sign;
 
     @Transient
+    @ApiModelProperty("返回类型：0JSON，1页面")
     private int isHtml = 1;
+
+    @ApiModelProperty(value = "商户账号",hidden = true)
+    private String username;
+
+    @ApiModelProperty(hidden = true)
+    private String orderId;
+
+    @ApiModelProperty(hidden = true)
+    private double reallyPrice;
+
+    // -1：订单过期 0：等待支付 1：支付成功
+    @ApiModelProperty(value = "订单状态",hidden = true)
+    private int state;
+
+    @ApiModelProperty(value = "二维码类型：1手动输入金额 0固定金额",hidden = true)
+    private int isAuto;
+
+    @ApiModelProperty(hidden = true)
+    private String payUrl;
+
+    @ApiModelProperty(hidden = true)
+    private long createDate;
+
+    @ApiModelProperty(hidden = true)
+    private long payDate;
+
+    @ApiModelProperty(hidden = true)
+    private long closeDate;
 }
