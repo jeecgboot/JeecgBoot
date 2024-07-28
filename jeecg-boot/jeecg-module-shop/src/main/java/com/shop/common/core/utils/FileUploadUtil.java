@@ -7,6 +7,7 @@ import cn.hutool.crypto.SecureUtil;
 import com.shop.common.core.Constants;
 import com.shop.common.core.web.JsonResult;
 import com.shop.entity.User;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +23,7 @@ import java.util.*;
  * 文件上传下载工具类
  * 2018-12-14 08:38
  */
+@Slf4j
 public class FileUploadUtil {
     // 文件上传的目录
     public static final String UPLOAD_FILE_DIR = Constants.UPLOAD_DIR + "file/";
@@ -254,7 +256,7 @@ public class FileUploadUtil {
         String path = UPLOAD_FILE_DIR;
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         if (user != null) {
-            dir = "/" + user.getUsername() + dir;
+            dir = user.getUsername() + "/" + dir;
         }
         List<Map<String, Object>> list = new ArrayList<>();
         File file = new File(path + dir);

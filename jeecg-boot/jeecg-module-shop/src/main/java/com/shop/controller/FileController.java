@@ -11,7 +11,8 @@ import com.shop.common.core.utils.FileUploadUtil;
 import com.shop.common.core.utils.PicUtils;
 import com.shop.common.core.web.BaseController;
 import com.shop.common.core.web.JsonResult;
-import com.shop.common.util.StringUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,7 @@ import java.util.zip.ZipInputStream;
  * 文件服务器
  * 2018-12-24 16:10
  */
+@Slf4j
 @Controller
 @RequestMapping("/file")
 public class FileController extends BaseController {
