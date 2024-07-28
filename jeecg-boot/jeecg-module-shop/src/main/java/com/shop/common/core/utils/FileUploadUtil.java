@@ -256,7 +256,10 @@ public class FileUploadUtil {
         String path = UPLOAD_FILE_DIR;
         User user = (User) SecurityUtils.getSubject().getPrincipal();
         if (user != null) {
-            dir = user.getUsername() + "/" + dir;
+            if (dir.length()>0 && !dir.startsWith("/")) {
+                dir = "/" + dir;
+            }
+            dir = user.getUsername() + dir;
         }
         List<Map<String, Object>> list = new ArrayList<>();
         File file = new File(path + dir);
@@ -268,8 +271,8 @@ public class FileUploadUtil {
             map.put("size", f.length());
             map.put("isDir", f.isDirectory());
             if (!f.isDirectory()) {
-                map.put("url", dir + "/" + f.getName());
-                map.put("smUrl", "thumbnail" + dir + "/" + f.getName());
+                map.put("url", "/" + dir + "/" + f.getName());
+                map.put("smUrl", "thumbnail"  + "/" + dir + "/" + f.getName());
             }
             map.put("updateTime", f.lastModified());
             list.add(map);
