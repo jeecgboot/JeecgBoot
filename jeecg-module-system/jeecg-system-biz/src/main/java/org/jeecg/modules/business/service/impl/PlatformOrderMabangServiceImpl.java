@@ -17,6 +17,7 @@ import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.mapper.PlatformOrderMabangMapper;
 import org.jeecg.modules.business.service.IPlatformOrderMabangService;
+import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
 import org.jeecg.modules.business.vo.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,8 @@ import static java.util.stream.Collectors.toList;
 public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMabangMapper, Order> implements IPlatformOrderMabangService {
     @Autowired
     private PlatformOrderMabangMapper platformOrderMabangMapper;
+    @Autowired
+    private IPlatformOrderService orderservice;
     @Autowired
     private ISysBaseAPI ISysBaseApi;
 
@@ -99,6 +102,9 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                     ) {
                         // If order wasn't invoiced pre-shipping, we can remove and re-insert contents
                         if (orderInDatabase.getShippingInvoiceNumber() == null) {
+                            boolean hasInvoiceNumber = orderservice.getById(orderInDatabase.getId()).getShippingInvoiceNumber() != null;
+                            if(hasInvoiceNumber)
+                                continue;
                             oldOrders.add(retrievedOrder);
                         } else {
                             invoicedShippedOrders.add(retrievedOrder);
@@ -123,11 +129,11 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         /* for new orders, insert them to DB and their children */
         List<OrderItem> allNewItems = prepareItems(newOrders);
         try {
-            if (newOrders.size() != 0) {
+            if (!newOrders.isEmpty()) {
                 log.info("{} orders to be inserted/updated.", newOrders.size());
                 platformOrderMabangMapper.insertOrdersFromMabang(newOrders);
             }
-            if (allNewItems.size() != 0) {
+            if (!allNewItems.isEmpty()) {
                 platformOrderMabangMapper.insertOrderItemsFromMabang(allNewItems);
                 log.info("{} order items to be inserted/updated.", allNewItems.size());
             }
@@ -138,12 +144,12 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         // for old orders, update themselves and delete and reinsert their content.
         List<OrderItem> allNewItemsOfOldItems = prepareItems(oldOrders);
         try {
-            if (oldOrders.size() != 0) {
+            if (!oldOrders.isEmpty()) {
                 log.info("{} orders to be inserted/updated.", oldOrders.size());
                 platformOrderMabangMapper.batchUpdateById(oldOrders);
                 platformOrderMabangMapper.batchDeleteByMainID(oldOrders.stream().map(Order::getId).collect(toList()));
             }
-            if (ordersFromShippedToCompleted.size() != 0) {
+            if (!ordersFromShippedToCompleted.isEmpty()) {
                 log.info("{} orders to be updated from Shipped to Completed.", ordersFromShippedToCompleted.size());
                 platformOrderMabangMapper.batchUpdateById(ordersFromShippedToCompleted);
                 log.info("Contents of {} orders to be updated from Shipped to Completed.", ordersFromShippedToCompleted.size());
@@ -151,7 +157,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         ordersFromShippedToCompleted.stream().map(Order::getId).collect(toList()),
                         OrderStatus.Completed.getCode());
             }
-            if (invoicedShippedOrders.size() != 0) {
+            if (!invoicedShippedOrders.isEmpty()) {
                 log.info("{} orders to be updated from Pending/Preparing to Shipped.", invoicedShippedOrders.size());
                 platformOrderMabangMapper.batchUpdateById(invoicedShippedOrders);
                 log.info("Contents of {} orders to be updated from Pending/Preparing to Shipped.", invoicedShippedOrders.size());
@@ -159,7 +165,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         invoicedShippedOrders.stream().map(Order::getId).collect(toList()),
                         OrderStatus.Shipped.getCode());
             }
-            if (obsoleteOrders.size() != 0) {
+            if (!obsoleteOrders.isEmpty()) {
                 log.info("{} orders to become obsolete.", obsoleteOrders.size());
                 platformOrderMabangMapper.batchUpdateById(obsoleteOrders);
                 log.info("Contents of {} orders to be updated to Obsolete.", obsoleteOrders.size());
@@ -167,7 +173,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         obsoleteOrders.stream().map(Order::getId).collect(toList()),
                         OrderStatus.Obsolete.getCode());
             }
-            if (allNewItemsOfOldItems.size() != 0) {
+            if (!allNewItemsOfOldItems.isEmpty()) {
                 log.info("{} order items to be inserted/updated.", allNewItemsOfOldItems.size());
                 platformOrderMabangMapper.insertOrderItemsFromMabang(allNewItemsOfOldItems);
             }
