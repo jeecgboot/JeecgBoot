@@ -7,6 +7,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ArchiveOrderRequest;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ArchiveOrderRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderResponse;
+import org.jeecg.modules.business.service.IPlatformOrderMabangService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -36,6 +37,8 @@ public class ArchiveOrderJob implements Job {
 
     @Autowired
     private IPlatformOrderService platformOrderService;
+    @Autowired
+    private IPlatformOrderMabangService platformOrderMabangService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -86,7 +89,7 @@ public class ArchiveOrderJob implements Job {
         platformOrderIds.forEach(s -> archiveOrderRequestBodies.add(new ArchiveOrderRequestBody(s)));
 
         log.info("{} order archiving requests to be sent to MabangAPI", archiveOrderRequestBodies.size());
-
+        List<String> platformOrderIdsArchived = new ArrayList<>();
         List<CompletableFuture<Boolean>> changeOrderFutures = archiveOrderRequestBodies.stream()
                 .map(archiveOrderRequestBody -> CompletableFuture.supplyAsync(() -> {
                     boolean success = false;
@@ -94,7 +97,9 @@ public class ArchiveOrderJob implements Job {
                         ArchiveOrderRequest archiveOrderRequest = new ArchiveOrderRequest(archiveOrderRequestBody);
                         ChangeOrderResponse response = archiveOrderRequest.send();
                         success = response.success();
-                    } catch (RuntimeException e) {
+                        if(success)
+                            platformOrderIdsArchived.add(archiveOrderRequestBody.getPlatformOrderId());
+                    } catch (RuntimeException e) { 
                         log.error("Error communicating with MabangAPI", e);
                     }
                     return success;
@@ -103,5 +108,11 @@ public class ArchiveOrderJob implements Job {
         List<Boolean> results = changeOrderFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
         long nbSuccesses = results.stream().filter(b -> b).count();
         log.info("{}/{} order archiving requests have succeeded.", nbSuccesses, archiveOrderRequestBodies.size());
+
+        try {
+            platformOrderMabangService.syncOrdersFromMabang(platformOrderIdsArchived);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.codehaus.jettison.json.JSONException;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderResponse;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeWarehouseRequest;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeWarehouseRequestBody;
@@ -385,7 +386,7 @@ public class PlatformOrderController {
     }
 
     @PostMapping("/orderManagement")
-    public Result<?> orderManagement(@RequestBody List<PlatformOrderOperation> orderOperations) throws IOException {
+    public Result<?> orderManagement(@RequestBody List<PlatformOrderOperation> orderOperations) throws IOException, JSONException {
         boolean isEmployee = securityService.checkIsEmployee();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         Client client;
@@ -469,6 +470,9 @@ public class PlatformOrderController {
         }
         List<Order> mabangOrders = platformOrderMabangService.getOrdersFromMabang(requests, executor);
         for(Order mabangOrder : mabangOrders) {
+            if(mabangOrder.getTrackingNumber() == null) {
+                continue;
+            }
             if(!mabangOrder.getTrackingNumber().isEmpty()) {
                 ordersWithTrackingNumber.add(mabangOrder);
             }
@@ -511,14 +515,17 @@ public class PlatformOrderController {
         templateModel.put("lastname", client.getSurname());
         if(cancelCount > 0) {
             templateModel.put("cancelSuccessCount", cancelResponses.getSuccesses().size() + "/" + cancelCount);
+            templateModel.put("cancelSuccesses", cancelResponses.getSuccesses());
             templateModel.put("cancelFailures", cancelResponses.getFailures());
         }
         if(suspendCount > 0) {
             templateModel.put("suspendSuccessCount", suspendResponses.getSuccesses().size() + "/" + suspendCount);
+            templateModel.put("suspendSuccesses", suspendResponses.getSuccesses());
             templateModel.put("suspendFailures", suspendResponses.getFailures());
         }
         if(editCount > 0) {
             templateModel.put("editSuccessCount", editResponses.getSuccesses().size() + "/" + editCount);
+            templateModel.put("editSuccesses", editResponses.getSuccesses());
             templateModel.put("editFailures", editResponses.getFailures());
         }
 
@@ -538,6 +545,13 @@ public class PlatformOrderController {
         } catch (TemplateException | MessagingException e) {
             throw new RuntimeException(e);
         }
+
+        // sync orders from Mabang
+        List<String> poIdsSuccesses = new ArrayList<>();
+        poIdsSuccesses.addAll(cancelResponses.getSuccesses());
+        poIdsSuccesses.addAll(suspendResponses.getSuccesses());
+        poIdsSuccesses.addAll(editResponses.getSuccesses());
+        platformOrderMabangService.syncOrdersFromMabang(poIdsSuccesses);
 
         return Result.OK(result);
     }

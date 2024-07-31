@@ -98,4 +98,12 @@ public class Sku implements Serializable {
     @Excel(name = "服务费", width = 15)
     @ApiModelProperty(value = "服务费")
     private java.math.BigDecimal serviceFee;
+    /**
+     * Status
+     * 1:自动创建;2:待开发;3:正常;4:清仓;5:停止销售"
+     * default : 3
+     */
+    @Excel(name = "Status", width = 15)
+    @ApiModelProperty(value = "Status")
+    private java.lang.Integer status;
 }

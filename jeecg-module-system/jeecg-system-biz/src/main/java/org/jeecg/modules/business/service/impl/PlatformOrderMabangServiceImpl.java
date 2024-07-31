@@ -1,8 +1,12 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.*;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
@@ -13,6 +17,7 @@ import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.mapper.PlatformOrderMabangMapper;
 import org.jeecg.modules.business.service.IPlatformOrderMabangService;
+import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
 import org.jeecg.modules.business.vo.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -40,6 +46,10 @@ import static java.util.stream.Collectors.toList;
 public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMabangMapper, Order> implements IPlatformOrderMabangService {
     @Autowired
     private PlatformOrderMabangMapper platformOrderMabangMapper;
+    @Autowired
+    private IPlatformOrderService orderservice;
+    @Autowired
+    private ISysBaseAPI ISysBaseApi;
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
@@ -92,6 +102,9 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                     ) {
                         // If order wasn't invoiced pre-shipping, we can remove and re-insert contents
                         if (orderInDatabase.getShippingInvoiceNumber() == null) {
+                            boolean hasInvoiceNumber = orderservice.getById(orderInDatabase.getId()).getShippingInvoiceNumber() != null;
+                            if(hasInvoiceNumber)
+                                continue;
                             oldOrders.add(retrievedOrder);
                         } else {
                             invoicedShippedOrders.add(retrievedOrder);
@@ -116,11 +129,11 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         /* for new orders, insert them to DB and their children */
         List<OrderItem> allNewItems = prepareItems(newOrders);
         try {
-            if (newOrders.size() != 0) {
+            if (!newOrders.isEmpty()) {
                 log.info("{} orders to be inserted/updated.", newOrders.size());
                 platformOrderMabangMapper.insertOrdersFromMabang(newOrders);
             }
-            if (allNewItems.size() != 0) {
+            if (!allNewItems.isEmpty()) {
                 platformOrderMabangMapper.insertOrderItemsFromMabang(allNewItems);
                 log.info("{} order items to be inserted/updated.", allNewItems.size());
             }
@@ -131,12 +144,12 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         // for old orders, update themselves and delete and reinsert their content.
         List<OrderItem> allNewItemsOfOldItems = prepareItems(oldOrders);
         try {
-            if (oldOrders.size() != 0) {
+            if (!oldOrders.isEmpty()) {
                 log.info("{} orders to be inserted/updated.", oldOrders.size());
                 platformOrderMabangMapper.batchUpdateById(oldOrders);
                 platformOrderMabangMapper.batchDeleteByMainID(oldOrders.stream().map(Order::getId).collect(toList()));
             }
-            if (ordersFromShippedToCompleted.size() != 0) {
+            if (!ordersFromShippedToCompleted.isEmpty()) {
                 log.info("{} orders to be updated from Shipped to Completed.", ordersFromShippedToCompleted.size());
                 platformOrderMabangMapper.batchUpdateById(ordersFromShippedToCompleted);
                 log.info("Contents of {} orders to be updated from Shipped to Completed.", ordersFromShippedToCompleted.size());
@@ -144,7 +157,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         ordersFromShippedToCompleted.stream().map(Order::getId).collect(toList()),
                         OrderStatus.Completed.getCode());
             }
-            if (invoicedShippedOrders.size() != 0) {
+            if (!invoicedShippedOrders.isEmpty()) {
                 log.info("{} orders to be updated from Pending/Preparing to Shipped.", invoicedShippedOrders.size());
                 platformOrderMabangMapper.batchUpdateById(invoicedShippedOrders);
                 log.info("Contents of {} orders to be updated from Pending/Preparing to Shipped.", invoicedShippedOrders.size());
@@ -152,7 +165,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         invoicedShippedOrders.stream().map(Order::getId).collect(toList()),
                         OrderStatus.Shipped.getCode());
             }
-            if (obsoleteOrders.size() != 0) {
+            if (!obsoleteOrders.isEmpty()) {
                 log.info("{} orders to become obsolete.", obsoleteOrders.size());
                 platformOrderMabangMapper.batchUpdateById(obsoleteOrders);
                 log.info("Contents of {} orders to be updated to Obsolete.", obsoleteOrders.size());
@@ -160,7 +173,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         obsoleteOrders.stream().map(Order::getId).collect(toList()),
                         OrderStatus.Obsolete.getCode());
             }
-            if (allNewItemsOfOldItems.size() != 0) {
+            if (!allNewItemsOfOldItems.isEmpty()) {
                 log.info("{} order items to be inserted/updated.", allNewItemsOfOldItems.size());
                 platformOrderMabangMapper.insertOrderItemsFromMabang(allNewItemsOfOldItems);
             }
@@ -324,4 +337,46 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         input = input.replaceAll("[^\\p{ASCII}]", "");
         return input;
     }
+    @Transactional
+    @Override
+    public JSONObject syncOrdersFromMabang(List<String> platformOrderIds) throws JSONException {
+        log.info("Syncing following orders {}", platformOrderIds);
+        List<List<String>> platformOrderIdLists = Lists.partition(platformOrderIds, 10);
+        List<OrderListRequestBody> requests = new ArrayList<>();
+        for (List<String> platformOrderIdList : platformOrderIdLists) {
+            requests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
+        }
+        List<Order> mabangOrders = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+        List<CompletableFuture<Boolean>> futures = requests.stream()
+                .map(request -> CompletableFuture.supplyAsync(() -> {
+                    boolean success = false;
+                    try {
+                        OrderListRawStream rawStream = new OrderListRawStream(request);
+                        OrderListStream stream = new OrderListStream(rawStream);
+                        List<Order> orders = stream.all();
+                        mabangOrders.addAll(orders);
+                        success = !orders.isEmpty();
+                    } catch (RuntimeException e) {
+                        log.error("Error communicating with MabangAPI", e);
+                    }
+                    return success;
+                }, executor))
+                .collect(Collectors.toList());
+        List<Boolean> results = futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} requests have succeeded.", nbSuccesses, requests.size());
+        int syncedOrderNumber = mabangOrders.size();
+        List<String> syncedOrderIds = mabangOrders.stream().map(Order::getPlatformOrderId).collect(Collectors.toList());
+        log.info("{}/{} mabang orders have been retrieved.", syncedOrderNumber, platformOrderIds.size());
+
+        log.info("{} orders to be updated.", syncedOrderNumber);
+        saveOrderFromMabang(mabangOrders);
+
+        JSONObject res = new JSONObject();
+        res.put("synced_order_number", syncedOrderNumber);
+        res.put("synced_order_ids", syncedOrderIds);
+        return res;
+    }
+
 }

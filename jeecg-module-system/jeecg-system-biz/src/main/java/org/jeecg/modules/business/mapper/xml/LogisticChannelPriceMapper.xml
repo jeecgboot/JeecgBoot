@@ -33,7 +33,7 @@
           AND effective_date &lt;= #{date}
           AND active = 1
         ORDER BY effective_date DESC
-        LIMIT 1    </select>
+        LIMIT 2    </select>
 
     <select id="findPricesBy" resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
         SELECT lcp.id, lcp.create_by, lcp.create_time, lcp.update_by, lcp.update_time,
