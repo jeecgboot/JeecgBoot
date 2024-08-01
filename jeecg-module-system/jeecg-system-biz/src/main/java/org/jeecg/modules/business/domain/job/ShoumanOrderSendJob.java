@@ -5,26 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.domain.api.shouman.JsonOrderCreationRequestBody;
 import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequest;
-import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequestBody;
-import org.jeecg.modules.business.domain.api.shouman.Request;
-import org.jeecg.modules.business.entity.Country;
 import org.jeecg.modules.business.entity.Shouman.ShoumanOrder;
-import org.jeecg.modules.business.entity.ShoumanOrderContent;
-import org.jeecg.modules.business.mapper.CountryMapper;
-import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.service.IShoumanOrderService;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toMap;
 
 @Slf4j
 public class ShoumanOrderSendJob implements Job {

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
 import org.jeecg.modules.business.entity.Country;
 import org.jeecg.modules.business.entity.ShoumanOrderContent;
+import org.jeecg.modules.business.entity.ShoumanRegex;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -20,7 +21,6 @@ public class OrderCreationRequestBody implements RequestBody {
 
     private final static String DEFAULT_SPLIT = ";";
     private final static String LINE_BREAK = "\n";
-    private final static String CUSTOM = "定制";
     private final static String QUOTE = ":";
     private final static String WIA = "维亚智通";
     private final static String TRANSACTION_NUMBER = "交易号";
@@ -61,8 +61,7 @@ public class OrderCreationRequestBody implements RequestBody {
             totalPrice = totalPrice.add(price);
             putNonNull(contentJson, "theImagePath", content.getImageUrl());
             putNonNull(contentJson, "comment", generateRemark(content.getRemark(), content.getCustomizationData(),
-                    content.getContentRecRegex(), content.getContentExtRegex(), content.getShopErpCode(),
-                    content.getPlatformOrderNumber()));
+                    content.getRegexList(), content.getShopErpCode(), content.getPlatformOrderNumber()));
             putNonNull(contentJson, "sku", content.getSku());
             putNonNull(contentJson, "outboundNumder", content.getQuantity()); // Typo intended
             outboundInfos.add(contentJson);
@@ -72,7 +71,7 @@ public class OrderCreationRequestBody implements RequestBody {
         return json;
     }
 
-    private String generateRemark(String baseRemark, String customizationData, String contentRecRegex, String contentExtRegex,
+    private String generateRemark(String baseRemark, String customizationData, List<ShoumanRegex> regexList,
                                   String shopErpCode, String platformOrderNumber) {
         StringBuilder sb = new StringBuilder();
         String[] baseRemarks = baseRemark.split(DEFAULT_SPLIT);
@@ -81,17 +80,26 @@ public class OrderCreationRequestBody implements RequestBody {
                     .append(LINE_BREAK);
         }
 
-        String[] strings = customizationData.split(DEFAULT_SPLIT);
-        for (int i = 0; i < strings.length; i++) {
-            String string = strings[i];
-            if (string.matches(contentRecRegex)) {
-                String trimmed = string.trim();
-                String content = trimmed.split(contentExtRegex)[1];
-                sb.append(CUSTOM)
-                        .append(i + 1)
-                        .append(QUOTE)
-                        .append(content)
-                        .append(LINE_BREAK);
+        for (ShoumanRegex regex : regexList) {
+            String[] strings = customizationData.split(DEFAULT_SPLIT);
+            for (int i = 0; i < strings.length; i++) {
+                String string = strings[i];
+                if (string.matches(regex.getContentRecRegex())) {
+                    String trimmed = string.trim();
+                    String content = trimmed.split(regex.getContentExtRegex())[1];
+                    if (regex.getIsSizeRegex().equalsIgnoreCase("1")) {
+                        RingSize ringSize = RingSize.getBySize(Integer.valueOf(content));
+                        if (ringSize != null) {
+                            sb.append(ringSize.getText());
+                        }
+                    } else {
+                        sb.append(regex.getPrefix())
+                                .append(i + 1)
+                                .append(QUOTE)
+                                .append(content)
+                                .append(LINE_BREAK);
+                    }
+                }
             }
         }
         sb.append(SHOP_CODE)
