@@ -88,6 +88,12 @@
                 FROM current_price
                 WHERE effective_country = lcp.effective_country
                 )
+                OR
+                lcp.picking_fee_per_item != (
+                SELECT picking_fee_per_item
+                FROM current_price
+                WHERE effective_country = lcp.effective_country
+                )
             )
         ORDER BY effective_date DESC
         LIMIT 1;
