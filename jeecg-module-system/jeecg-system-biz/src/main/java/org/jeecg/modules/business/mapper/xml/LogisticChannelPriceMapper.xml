@@ -33,8 +33,65 @@
           AND effective_date &lt;= #{date}
           AND active = 1
         ORDER BY effective_date DESC
-        LIMIT 2    </select>
-
+        LIMIT 1
+    </select>
+    <select id="findPrevious" resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
+        WITH current_price AS
+            (
+            SELECT lcp.*
+            FROM logistic_channel_price lcp
+            JOIN logistic_channel lc ON lc.id = lcp.channel_id
+            WHERE zh_name = #{channelName}
+            AND weight_range_start &lt;= #{trueWeight}
+            AND weight_range_end &gt;= #{trueWeight}
+            AND effective_country IN
+            <foreach collection="countryList"
+                     separator=","
+                     open="("
+                     close=")"
+                     index="index"
+                     item="country"
+            >
+                #{country}
+            </foreach>
+            AND effective_date &lt;= #{date}
+            AND active = 1
+            ORDER BY effective_date DESC
+            LIMIT 1
+            )
+        SELECT lcp.*
+        FROM logistic_channel_price lcp
+        JOIN logistic_channel lc ON lc.id = lcp.channel_id
+        WHERE lc.zh_name = #{channelName}
+        AND weight_range_start &lt;= #{trueWeight}
+        AND weight_range_end &gt;= #{trueWeight}
+        AND effective_country IN
+        <foreach collection="countryList"
+                 separator=","
+                 open="("
+                 close=")"
+                 index="index"
+                 item="country"
+        >#{country}
+        </foreach>
+        AND effective_date &lt;= #{date}
+        AND active = 1
+        AND (
+                lcp.cal_unit_price != (
+                SELECT cal_unit_price
+                FROM current_price
+                WHERE effective_country = lcp.effective_country
+                )
+                OR
+                lcp.registration_fee != (
+                SELECT registration_fee
+                FROM current_price
+                WHERE effective_country = lcp.effective_country
+                )
+            )
+        ORDER BY effective_date DESC
+        LIMIT 1;
+    </select>
     <select id="findPricesBy" resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
         SELECT lcp.id, lcp.create_by, lcp.create_time, lcp.update_by, lcp.update_time,
         lc.id AS channel_id, effective_date, effective_country,

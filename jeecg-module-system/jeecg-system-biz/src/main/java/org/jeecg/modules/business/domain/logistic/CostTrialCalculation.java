@@ -24,6 +24,9 @@ public class CostTrialCalculation {
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private final Date effectiveDate;
 
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
+    private final Date previousEffectiveDate;
+
     private final BigDecimal unitPrice;
 
     private final BigDecimal shippingCost;
@@ -44,7 +47,7 @@ public class CostTrialCalculation {
 
     private CostTrialCalculation(String countryCode, String logisticsChannelName, String logisticChannelCode,
                                  BigDecimal unitPrice, BigDecimal shippingCost, BigDecimal registrationCost, BigDecimal additionalCost, Date effectiveDate,
-                                 BigDecimal previousUnitPrice,BigDecimal previousShippingCost, BigDecimal previousRegistrationCost, BigDecimal previousAdditionalCost) {
+                                 BigDecimal previousUnitPrice,BigDecimal previousShippingCost, BigDecimal previousRegistrationCost, BigDecimal previousAdditionalCost, Date previousEffectiveDate) {
         this.countryCode = countryCode;
         this.logisticsChannelName = logisticsChannelName;
         this.logisticChannelCode = logisticChannelCode;
@@ -57,12 +60,13 @@ public class CostTrialCalculation {
         this.previousShippingCost = previousShippingCost;
         this.previousRegistrationCost = previousRegistrationCost;
         this.previousAdditionalCost = previousAdditionalCost;
+        this.previousEffectiveDate = previousEffectiveDate;
     }
 
     public CostTrialCalculation(LogisticChannelPrice price, LogisticChannelPrice previousPrice,int weight, String logisticsChannelName, String code) {
         this(price.getEffectiveCountry(), logisticsChannelName, code, price.getCalUnitPrice(), price.calculateShippingPrice(BigDecimal.valueOf(weight)),
                 price.getRegistrationFee(), price.getAdditionalCost(), price.getEffectiveDate(),
-                previousPrice.getCalUnitPrice(), previousPrice.calculateShippingPrice(BigDecimal.valueOf(weight)), previousPrice.getRegistrationFee(), previousPrice.getAdditionalCost()
+                previousPrice.getCalUnitPrice(), previousPrice.calculateShippingPrice(BigDecimal.valueOf(weight)), previousPrice.getRegistrationFee(), previousPrice.getAdditionalCost(), previousPrice.getEffectiveDate()
         );
     }
 
