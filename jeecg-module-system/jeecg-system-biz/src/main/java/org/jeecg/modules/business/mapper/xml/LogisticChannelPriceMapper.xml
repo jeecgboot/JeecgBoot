@@ -33,7 +33,7 @@
           AND effective_date &lt;= #{date}
           AND active = 1
         ORDER BY effective_date DESC
-        LIMIT 1
+        LIMIT 2
     </select>
     <select id="findPrevious" resultType="org.jeecg.modules.business.entity.LogisticChannelPrice">
         WITH current_price AS

@@ -80,12 +80,18 @@ public class LogisticChannelServiceImpl extends ServiceImpl<LogisticChannelMappe
     @Override
     public List<LogisticChannelPrice> findLogisticsChannelPrice(String channelName, Date date, int trueWeight, List<String> countryList) {
         List<LogisticChannelPrice> priceList = new ArrayList<>();
-        LogisticChannelPrice currentPrice = logisticChannelPriceMapper.findBy(channelName, new java.util.Date(), BigDecimal.valueOf(trueWeight), countryList);
+        List<LogisticChannelPrice> currentPriceList = logisticChannelPriceMapper.findBy(channelName, new java.util.Date(), BigDecimal.valueOf(trueWeight), countryList);
+        LogisticChannelPrice currentPrice = currentPriceList.stream()
+                .max(Comparator.comparing(LogisticChannelPrice::getEffectiveDate))
+                .orElse(null);
         if(currentPrice != null) {
             priceList.add(currentPrice);
             LogisticChannelPrice previousPrice = logisticChannelPriceMapper.findPrevious(channelName, new java.util.Date(), BigDecimal.valueOf(trueWeight), countryList);
             if(previousPrice != null) {
                 priceList.add(previousPrice);
+            } else {
+                currentPriceList.stream()
+                        .min(Comparator.comparing(LogisticChannelPrice::getEffectiveDate)).ifPresent(priceList::add);
             }
         }
         return priceList;

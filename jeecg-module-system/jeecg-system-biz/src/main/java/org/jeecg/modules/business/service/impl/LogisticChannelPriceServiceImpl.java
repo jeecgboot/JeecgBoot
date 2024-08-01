@@ -90,12 +90,16 @@ public class LogisticChannelPriceServiceImpl extends ServiceImpl<LogisticChannel
 
         String countryCode = countryService.findByEnName(order.getCountry()).getCode();
 
-        LogisticChannelPrice price = logisticChannelPriceMapper.findBy(
+        List<LogisticChannelPrice> priceList = logisticChannelPriceMapper.findBy(
                 logisticChannelName,
                 order.getShippingTime(),
                 weight,
                 Collections.singletonList(countryCode)
         );
+        // find the one with latest effective date
+        LogisticChannelPrice price = priceList.stream()
+                .max(Comparator.comparing(LogisticChannelPrice::getEffectiveDate))
+                .orElse(null);
         if (price == null) {
             throw new UserException("Can't find price for channel {}, shipped at {}, weight {}, country {}",
                     logisticChannelName,
