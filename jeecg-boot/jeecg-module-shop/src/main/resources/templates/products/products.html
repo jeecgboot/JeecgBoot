@@ -162,7 +162,7 @@
         /* 修改商品状态 */
         form.on('switch(productsTbStatuCk)', function (obj) {
             var loadIndex = layer.load(2);
-            $.post('${ctxPath}/products/status/update', {
+            $.post('products/status/update', {
                 id: obj.elem.value,
                 status: obj.elem.checked ? 1 : 0
             }, function (res) {

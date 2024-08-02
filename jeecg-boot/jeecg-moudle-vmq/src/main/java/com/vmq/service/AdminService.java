@@ -3,10 +3,10 @@ package com.vmq.service;
 import com.vmq.dao.*;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.PageRes;
-import com.vmq.entity.PayGoods;
+import com.vmq.entity.OtherSetting;
 import com.vmq.entity.PayOrder;
 import com.vmq.entity.PayQrcode;
-import com.vmq.entity.Setting;
+import com.vmq.entity.VmqSetting;
 import com.vmq.utils.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -28,12 +28,16 @@ public class AdminService {
 
     @Autowired
     private SettingDao settingDao;
+
     @Autowired
-    private PayGoodsDao payGoodsDao;
+    private OtherSettingDao otherSettingDao;
+
     @Autowired
     private PayOrderDao payOrderDao;
+
     @Autowired
     private TmpPriceDao tmpPriceDao;
+
     @Autowired
     private PayQrcodeDao payQrcodeDao;
 
@@ -82,16 +86,65 @@ public class AdminService {
     }
 
 
-    public CommonRes saveSetting(Setting setting){
-        settingDao.save(setting);
+    public CommonRes saveSetting(VmqSetting vmqSetting){
+        settingDao.save(vmqSetting);
+        // 微信
+        PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,1);
+        if (payQrcode == null) {
+            payQrcode = new PayQrcode();
+            payQrcode.setPrice(0);
+            payQrcode.setType(1);
+            payQrcode.setUsername(vmqSetting.getUsername());
+        }
+        payQrcode.setPayUrl(vmqSetting.getWxpay());
+        payQrcodeDao.save(payQrcode);
+        // 支付宝
+        payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,2);
+        if (payQrcode == null) {
+            payQrcode = new PayQrcode();
+            payQrcode.setPrice(0);
+            payQrcode.setType(2);
+            payQrcode.setUsername(vmqSetting.getUsername());
+        }
+        payQrcode.setPayUrl(vmqSetting.getZfbpay());
+        payQrcodeDao.save(payQrcode);
+        // 赞赏码
+        if (StringUtils.isNotBlank(vmqSetting.getWxzspay())) {
+            payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,3);
+            if (payQrcode == null) {
+                payQrcode = new PayQrcode();
+                payQrcode.setPrice(0);
+                payQrcode.setType(3);
+                payQrcode.setUsername(vmqSetting.getUsername());
+            }
+            payQrcode.setPayUrl(vmqSetting.getWxzspay());
+            payQrcodeDao.save(payQrcode);
+        }
+        return ResUtil.success();
+    }
+
+    public CommonRes saveOtherSetting(OtherSetting setting) {
+        otherSettingDao.save(setting);
         return ResUtil.success();
     }
 
     public CommonRes getSettings(String username){
-        Setting query = new Setting();
+        VmqSetting query = new VmqSetting();
         query.setUsername(username);
-        Example<Setting> example = Example.of(query);
-        Optional<Setting> settings = settingDao.findOne(example);
+        Example<VmqSetting> example = Example.of(query);
+        Optional<VmqSetting> settings = settingDao.findOne(example);
+        if (!settings.isEmpty()) {
+            return ResUtil.success(settings.get());
+        }
+        return ResUtil.success(null);
+    }
+
+    public CommonRes getOtherSettings(String username,String type) {
+        OtherSetting query = new OtherSetting();
+        query.setUsername(username);
+        query.setType(type);
+        Example<OtherSetting> example = Example.of(query);
+        Optional<OtherSetting> settings = otherSettingDao.findOne(example);
         if (!settings.isEmpty()) {
             return ResUtil.success(settings.get());
         }
@@ -120,27 +173,6 @@ public class AdminService {
         return list;
     }
 
-    public PageRes getGoods(String username,Integer page, Integer limit, String name, Integer state){
-
-        Pageable pageable = PageRequest.of(page-1, limit, Sort.Direction.DESC, "id");
-
-        Specification<PayGoods> specification = (root, criteriaQuery, cb) -> {
-            List<Predicate> list = new ArrayList<>();
-            list.add(cb.in(root.get("username")).value(username).value(default_user));
-            if (StringUtils.isNotBlank(name)) {
-                list.add(cb.equal(root.get("name").as(String.class), name));
-            }
-            if (state!=null) {
-                list.add(cb.equal(root.get("state").as(int.class), state));
-            }
-            return cb.and(list.toArray(new Predicate[list.size()]));
-        };
-        Page<PayGoods> goodsPage = payGoodsDao.findAll(specification, pageable);
-
-        PageRes list = PageRes.success(goodsPage.getTotalElements(),goodsPage.getContent());
-        return list;
-    }
-
 
     public CommonRes setBd(Integer id,String username){
         PayOrder payOrder = payOrderDao.getById(id);
@@ -150,7 +182,7 @@ public class AdminService {
         if (!validUserPermission(username,payOrder.getUsername())) {
             return ResUtil.error("抱歉，您无权操作其它商家订单");
         }
-        Setting setting = webService.getDefaultSetting(username);
+        VmqSetting vmqSetting = webService.getDefaultSetting(username);
         String key = webService.getDefaultMd5Key(username);
         String p = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
         String sign = payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key;
@@ -158,7 +190,7 @@ public class AdminService {
 
         String url = payOrder.getNotifyUrl();
         if (url==null || url.equals("")){
-            url = setting.getNotifyUrl();
+            url = vmqSetting.getNotifyUrl();
             if (url==null || url.equals("")){
                 return ResUtil.error("您还未配置异步通知地址，请现在系统配置中配置");
             }
@@ -328,4 +360,5 @@ public class AdminService {
         String encodeStr= DigestUtils.md5DigestAsHex(text.getBytes());
         return encodeStr;
     }
+
 }

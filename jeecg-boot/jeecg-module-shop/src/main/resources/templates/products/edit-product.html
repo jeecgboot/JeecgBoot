@@ -14,7 +14,8 @@
     <form class="layui-form" lay-filter="productForm">
         <div class="layui-card">
             <div class="layui-card-header">
-                编辑商品
+                <:if test="${productId == null}">新增商品</:if>
+                <:if test="${productId != null}">编辑商品</:if>
             </div>
             <div class="layui-card-body">
                 <input name="id" type="hidden"/>

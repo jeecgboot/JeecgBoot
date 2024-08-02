@@ -3,7 +3,7 @@ package com.vmq.service;
 import com.vmq.dao.PayOrderDao;
 import com.vmq.dao.SettingDao;
 import com.vmq.dao.TmpPriceDao;
-import com.vmq.entity.Setting;
+import com.vmq.entity.VmqSetting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,12 +26,12 @@ public class QuartzService {
     @Scheduled(fixedRate = 60000)
     public void timerToZZP(){
         // 获取超时时间（分钟）
-        Setting setting = settingDao.getSettingByUserName("msl");
-        if (setting == null) {
+        VmqSetting vmqSetting = settingDao.getSettingByUserName("msl");
+        if (vmqSetting == null) {
             return;
         }
         try {
-            String timeout = setting.getClose();
+            String timeout = vmqSetting.getClose();
             int timeoutMS = Integer.valueOf(timeout)*60*1000;
 
             String closeTime = String.valueOf(new Date().getTime());
@@ -51,11 +51,11 @@ public class QuartzService {
             e.printStackTrace();
             log.info("清理订单失败: {}",e.getMessage());
         }
-        String lastheart = setting.getLastheart();
-        String state = setting.getJkstate();
+        String lastheart = vmqSetting.getLastheart();
+        String state = vmqSetting.getJkstate();
         if ("1".equals(state) && new Date().getTime() - Long.valueOf(lastheart) > 60*1000){
-            setting.setJkstate("0");
-            settingDao.save(setting);
+            vmqSetting.setJkstate("0");
+            settingDao.save(vmqSetting);
         }
     }
 }

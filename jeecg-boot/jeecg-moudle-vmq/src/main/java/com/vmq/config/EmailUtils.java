@@ -17,7 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Exrickx
+ * @author mctz
  */
 @Component
 public class EmailUtils {

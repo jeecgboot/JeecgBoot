@@ -26,15 +26,15 @@
             ,height: 'full-130'
             ,url: 'admin/getPayQrcodes'
             ,where: {
-                type:2,
+                type:3,
             }
             ,cols: [[ //表头
                 {title:"操作", width: 100, align:'center', toolbar: '#barDemo'},
                 {field: 'state', width: 200, title: '二维码',templet: function(d){
-                        return '<img style="width: 80%" src="enQrcode?url='+d.payUrl+'"/>';
+                        return '<img style="width: 80%;" src="'+d.payUrl+'"/>';
                     }
                 },
-                {field: 'price',width: 150, title: '金额(元)'},
+                {field: 'price', width: 150, title: '金额(元)'},
                 {field:'payUrl', title: '内容'}
             ]]
             ,page:true
@@ -46,28 +46,22 @@
                 ,layEvent = obj.event; //获得 lay-event 对应的值
             if(layEvent === 'del'){
                 if (data.price == 0) {
-                    layer.msg("不允许删除无金额收款码");
+                    layer.msg("不允许删除无金额赞赏码");
                     return;
                 }
                 layer.confirm('要删除该二维码么？', function(index){
-
                     layer.close(index);
                     //向服务端发送删除指令
                     $.post("admin/delPayQrcode","id="+data.id,function (data) {
                         if (data.code==1){
                             obj.del(); //删除对应行（tr）的DOM结构
                         }
-
                         layer.msg(data.msg);
                     });
-
                     console.log(data.id);
                 });
             }
         });
-
-
-
 
         form.render();
 

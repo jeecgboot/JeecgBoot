@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 public interface PayQrcodeDao  extends JpaRepository<PayQrcode,Long>, JpaSpecificationExecutor {
 
-    PayQrcode findByPriceAndType(double price,int type);
+    PayQrcode findByUsernameAndPriceAndType(String username,double price,int type);
 }

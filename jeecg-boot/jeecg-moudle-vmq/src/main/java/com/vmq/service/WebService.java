@@ -10,7 +10,7 @@ import com.vmq.dto.CreateOrderRes;
 import com.vmq.entity.PayInfo;
 import com.vmq.entity.PayOrder;
 import com.vmq.entity.PayQrcode;
-import com.vmq.entity.Setting;
+import com.vmq.entity.VmqSetting;
 import com.vmq.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class WebService {
             username = default_user;
             msg = "使用";
         }
-        Setting setting = getDefaultSetting(username);
+        VmqSetting vmqSetting = getDefaultSetting(username);
         log.info("{}【{}】密钥创建订单{}",msg,username,payOrder.getPayId());
         String key = getDefaultMd5Key(username);
         String content = payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice();
@@ -75,7 +75,7 @@ public class WebService {
         //实际支付价格
         double reallyPrice = Double.valueOf(payOrder.getPrice());
         int row = 0;
-        int payQf = setting.getPayQf();
+        int payQf = vmqSetting.getPayQf();
         while (row == 0){
             try {
                 row = tmpPriceDao.checkPrice(username,payOrder.getType()+"-"+reallyPrice);
@@ -97,18 +97,25 @@ public class WebService {
         }
 
         String payUrl = "";
+        Long payCodeId = null;
         if (payOrder.getType() == 1){
-            payUrl = setting.getWxpay();
+            payUrl = vmqSetting.getWxpay();
         }else if (payOrder.getType() == 2){
-            payUrl = setting.getZfbpay();
+            payUrl = vmqSetting.getZfbpay();
+        }else if (payOrder.getType() == 3){
+            payUrl = vmqSetting.getWxzspay();
         }
         if (payUrl==""){
             return ResUtil.error("请您先进入后台配置程序");
         }
 
         int isAuto = 1;
-        PayQrcode payQrcode = payQrcodeDao.findByPriceAndType(reallyPrice,payOrder.getType());
+        PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,reallyPrice,payOrder.getType());
+        if (payQrcode == null && payOrder.getType() == 3) {
+            payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,0,3);
+        }
         if (payQrcode!=null){
+            payCodeId = payQrcode.getId();
             payUrl = payQrcode.getPayUrl();
             isAuto = 0;
         }
@@ -127,19 +134,17 @@ public class WebService {
         payOrder.setReallyPrice(reallyPrice);
         payOrder.setState(0);
         payOrder.setIsAuto(isAuto);
-        payOrder.setPayUrl(payUrl);
-
+        payOrder.setPayCodeId(payCodeId);
         payOrderDao.save(payOrder);
-
-        String timeOut = setting.getClose();
+        String timeOut = vmqSetting.getClose();
         CreateOrderRes createOrderRes = new CreateOrderRes(payOrder.getPayId(),orderId,payOrder.getType(),payOrder.getPrice(),reallyPrice,payUrl,isAuto,0,Integer.valueOf(timeOut),payOrder.getCreateDate());
-        if (setting.getIsApprove() == 1) {
+        if (vmqSetting.getIsApprove() == 1) {
             PayInfo payInfo = new PayInfo(payOrder);
             String urlParam = "?orderId="+payInfo.getOrderId()+"&sign="+md5(payOrder.getOrderId()+key);
             payInfo.setPassUrl(url + "/passOrder" + urlParam);
             payInfo.setBackUrl(url + "/backOrder" + urlParam);
             payInfo.setDelUrl(url + "/delOrder" + urlParam);
-            emailUtils.sendTemplateMail(sender,setting.getEmail(),"【码支付】待审核处理","pay-audit",payInfo);
+            emailUtils.sendTemplateMail(sender, vmqSetting.getEmail(),"【码支付】待审核处理","pay-audit",payInfo);
         }
         return ResUtil.success(createOrderRes);
     }
@@ -169,33 +174,32 @@ public class WebService {
 
     public CommonRes appHeart(String t,String sign){
         log.info("appHeart...");
-        String jssign = "";
-        Setting setting = null;
-        List<Setting> settingList = settingDao.findAll();
-        for (Setting set : settingList) {
-            jssign = md5(t + set.getMd5key());
-            if (jssign.equals(sign)) {
-                setting = set;
-                break;
-            }
-        }
         if (StringUtils.isEmpty(sign)){
             return ResUtil.error("签名校验错误");
         }
-        if (Objects.isNull(setting)){
-            return ResUtil.error("服务端未配置密钥");
-        }
         long cz = Long.valueOf(t)-new Date().getTime();
-
         if (cz<0){
             cz = cz*-1;
         }
         if (cz>50*1000){
             return ResUtil.error("客户端时间错误");
         }
-        setting.setLastheart(t);
-        setting.setJkstate("1");
-        settingDao.save(setting);
+        String jssign = "";
+        VmqSetting vmqSetting = null;
+        List<VmqSetting> vmqSettingList = settingDao.findAll();
+        for (VmqSetting set : vmqSettingList) {
+            jssign = md5(t + set.getMd5key());
+            if (jssign.equals(sign)) {
+                vmqSetting = set;
+                break;
+            }
+        }
+        if (Objects.isNull(vmqSetting)){
+            return ResUtil.error("服务端未配置密钥");
+        }
+        vmqSetting.setLastheart(t);
+        vmqSetting.setJkstate("1");
+        settingDao.save(vmqSetting);
         return ResUtil.success();
     }
 
@@ -209,7 +213,9 @@ public class WebService {
      */
     public CommonRes appPush(Integer type,String price,String t,String sign){
         log.info("appPush...");
-        List<Setting> settingList = settingDao.findAll();
+        if (StringUtils.isEmpty(sign)) {
+            return ResUtil.error("签名校验错误");
+        }
         long cz = Long.valueOf(t)-new Date().getTime();
         if (cz<0){
             cz = cz*-1;
@@ -217,26 +223,25 @@ public class WebService {
         if (cz>50*1000){
             return ResUtil.error("客户端时间错误");
         }
-        if (StringUtils.isEmpty(sign)) {
-            return ResUtil.error("签名校验错误");
-        }
-        Setting setting = null;
-        for (Setting set : settingList) {
+        String jssign = "";
+        VmqSetting vmqSetting = null;
+        List<VmqSetting> vmqSettingList = settingDao.findAll();
+        for (VmqSetting set : vmqSettingList) {
             String key = set.getMd5key();
             if (!StringUtils.isEmpty(key)) {
-                String jssign = md5(type + price + t + key);
+                jssign = md5(type + price + t + key);
                 if (jssign.equals(sign)){
-                    setting = set;
+                    vmqSetting = set;
                     break;
                 }
             }
         }
-        if (setting == null) {
+        if (vmqSetting == null) {
             return ResUtil.error("签名校验失败");
         }
-        String key = setting.getMd5key();
-        setting.setLastpay(t);
-        settingDao.save(setting);
+        String key = vmqSetting.getMd5key();
+        vmqSetting.setLastpay(t);
+        settingDao.save(vmqSetting);
         PayOrder tmp = payOrderDao.findByPayDate(Long.valueOf(t));
         if (tmp!=null){
             return ResUtil.error("重复推送");
@@ -256,7 +261,6 @@ public class WebService {
             payOrder.setPrice(Double.valueOf(price));
             payOrder.setReallyPrice(Double.valueOf(price));
             payOrder.setState(1);
-            payOrder.setPayUrl("无订单转账");
             payOrderDao.save(payOrder);
         }else{
             tmpPriceDao.delprice(payOrder.getUsername(),type+"-"+price);
@@ -271,10 +275,10 @@ public class WebService {
             p = p+"&sign="+sign;
             String url = payOrder.getNotifyUrl();
             if (url==null || url.equals("")){
-                url = setting.getNotifyUrl();
+                url = vmqSetting.getNotifyUrl();
                 if (url==null || url.equals("")){
                     payOrderDao.setState(2,payOrder.getId());
-                    errorMsg = "您还未配置异步通知地址，请现在系统配置中配置";
+                    errorMsg = "您还未配置异步通知地址，请先在系统配置中配置";
                 }
             }
 
@@ -287,7 +291,7 @@ public class WebService {
                 }
             }
         }
-        if (setting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
+        if (vmqSetting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
             PayInfo payInfo = new PayInfo(payOrder);
             emailUtils.sendTemplateMail(sender, payOrder.getEmail(),"【码支付】支付成功通知","pay-success", payInfo);
         }
@@ -301,11 +305,17 @@ public class WebService {
         if (payOrder==null){
             return ResUtil.error("云端订单编号不存在");
         }
-        Setting setting = getDefaultSetting(payOrder.getUsername());
-        String timeOut = setting.getClose();
+        VmqSetting vmqSetting = getDefaultSetting(payOrder.getUsername());
+        String timeOut = vmqSetting.getClose();
         CreateOrderRes createOrderRes = new CreateOrderRes(
                 payOrder.getPayId(),payOrder.getOrderId(),payOrder.getType(),payOrder.getPrice(),payOrder.getReallyPrice()
                 ,payOrder.getPayUrl(),payOrder.getIsAuto(),payOrder.getState(),Integer.valueOf(timeOut),payOrder.getCreateDate());
+        if (payOrder.getPayCodeId() != null) {
+            PayQrcode qrcode = payQrcodeDao.getById(payOrder.getPayCodeId());
+            if (qrcode != null) {
+                createOrderRes.setPayUrl(qrcode.getPayUrl());
+            }
+        }
         return ResUtil.success(createOrderRes);
     }
 
@@ -322,7 +332,7 @@ public class WebService {
             return ResUtil.error("订单已过期");
         }
         String username = payOrder.getUsername();
-        Setting setting = getDefaultSetting(username);
+        VmqSetting vmqSetting = getDefaultSetting(username);
         String key = getDefaultMd5Key(username);
         //执行通知
         String p = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
@@ -330,7 +340,7 @@ public class WebService {
         p = p+"&sign="+sign;
         String url = payOrder.getReturnUrl();
         if (url==null){
-            url = setting.getReturnUrl();
+            url = vmqSetting.getReturnUrl();
         }
         return ResUtil.success(url+"?"+p);
     }
@@ -342,13 +352,13 @@ public class WebService {
      */
     public String getDefaultMd5Key(String username) {
         String key = "";
-        Setting setting = getDefaultSetting(username);
-        if (setting != null) {
-            if (StringUtils.isEmpty(setting.getMd5key()) && !setting.getUsername().equals(default_user)) {
+        VmqSetting vmqSetting = getDefaultSetting(username);
+        if (vmqSetting != null) {
+            if (StringUtils.isEmpty(vmqSetting.getMd5key()) && !vmqSetting.getUsername().equals(default_user)) {
                 log.debug("【{}】用户未配置密钥，使用【{}】密钥...",username,default_user);
-                setting = settingDao.getSettingByUserName(default_user);
+                vmqSetting = settingDao.getSettingByUserName(default_user);
             }
-            key = setting.getMd5key();
+            key = vmqSetting.getMd5key();
         }
         return key;
     }
@@ -358,15 +368,15 @@ public class WebService {
      * @param username
      * @return
      */
-    public Setting getDefaultSetting(String username) {
+    public VmqSetting getDefaultSetting(String username) {
         if (StringUtils.isEmpty(username)) {
             username = default_user;
         }
-        Setting setting = settingDao.getSettingByUserName(username);
-        if (setting == null && !username.equals(default_user)) {
-            setting = settingDao.getSettingByUserName(default_user);
+        VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
+        if (vmqSetting == null && !username.equals(default_user)) {
+            vmqSetting = settingDao.getSettingByUserName(default_user);
         }
-        return setting;
+        return vmqSetting;
     }
 
     public CommonRes getState(String t,String sign){

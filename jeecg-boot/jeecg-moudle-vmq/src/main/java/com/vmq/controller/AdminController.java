@@ -2,7 +2,8 @@ package com.vmq.controller;
 
 import com.vmq.config.EmailUtils;
 import com.vmq.dto.CommonRes;
-import com.vmq.entity.Setting;
+import com.vmq.entity.OtherSetting;
+import com.vmq.entity.VmqSetting;
 import com.vmq.dto.PageRes;
 import com.vmq.entity.PayQrcode;
 import com.vmq.service.AdminService;
@@ -35,30 +36,60 @@ public class AdminController {
     }
 
     @RequestMapping("/saveSetting")
-    public CommonRes saveSetting(@RequestBody Setting setting){
+    public CommonRes saveSetting(@RequestBody VmqSetting vmqSetting){
+        String email = vmqSetting.getEmail();
+        if (!StringUtils.isEmpty(email) && !EmailUtils.checkEmail(email)) {
+            return ResUtil.error("请填写正确的邮箱地址");
+        }
+        return adminService.saveSetting(vmqSetting);
+    }
+
+    @RequestMapping("/saveOtherSetting")
+    public CommonRes saveOtherSetting(@RequestBody OtherSetting setting){
         String email = setting.getEmail();
         if (!StringUtils.isEmpty(email) && !EmailUtils.checkEmail(email)) {
             return ResUtil.error("请填写正确的邮箱地址");
         }
-        return adminService.saveSetting(setting);
+        return adminService.saveOtherSetting(setting);
     }
 
     @RequestMapping("/getSettings")
     public CommonRes getSettings(HttpServletRequest request, HttpSession session){
         String username = (String) session.getAttribute("username");
         CommonRes res = adminService.getSettings(username);
-        Setting setting = (Setting) res.getData();
-        if (setting == null) {
-            setting = new Setting();
-            setting.setUsername(username);
-            res.setData(setting);
+        VmqSetting vmqSetting = (VmqSetting) res.getData();
+        if (vmqSetting == null) {
+            vmqSetting = new VmqSetting();
+            vmqSetting.setUsername(username);
+            res.setData(vmqSetting);
         }
         String path = request.getRequestURL().toString().replace("/admin/getSettings","");
-        if (StringUtils.isBlank(setting.getNotifyUrl())) {
-            setting.setNotifyUrl(path + "/notify");
+        if (StringUtils.isBlank(vmqSetting.getNotifyUrl())) {
+            vmqSetting.setNotifyUrl(path + "/notify");
         }
-        if (StringUtils.isBlank(setting.getReturnUrl())) {
-            setting.setReturnUrl(path + "/notify");
+        if (StringUtils.isBlank(vmqSetting.getReturnUrl())) {
+            vmqSetting.setReturnUrl(path + "/notify");
+        }
+        return res;
+    }
+
+    @RequestMapping("/getOtherSettings")
+    public CommonRes getOtherSettings(HttpServletRequest request, HttpSession session){
+        String username = (String) session.getAttribute("username");
+        String type = request.getParameter("type");
+        CommonRes res = adminService.getOtherSettings(username,type);
+        OtherSetting otherSetting  = (OtherSetting) res.getData();
+        if (otherSetting == null) {
+            otherSetting = new OtherSetting();
+            if ("epusdt".equals(type)) {
+                otherSetting.setNotifyUrl("http://127.0.0.1:8090/epusdt");
+                otherSetting.setCreateUrl("http://127.0.0.1:8090/epusdt/api/v1/order/create-transaction");
+            } else if ("epay".equals(type)) {
+                otherSetting.setNotifyUrl("https://yi-pay.com");
+                otherSetting.setCreateUrl("https://yi-pay.com");
+            }
+            otherSetting.setUsername(username);
+            res.setData(otherSetting);
         }
         return res;
     }
@@ -67,12 +98,6 @@ public class AdminController {
     public PageRes getOrders(HttpSession session,Integer page, Integer limit, Integer type, Integer state){
         String username = (String) session.getAttribute("username");
         return adminService.getOrders(username,page, limit, type,state);
-    }
-
-    @RequestMapping("/getGoods")
-    public PageRes getGoods(HttpSession session,Integer page, Integer limit, String name, Integer state){
-        String username = (String) session.getAttribute("username");
-        return adminService.getGoods(username, page, limit, name, state);
     }
 
     @RequestMapping("/setBd")

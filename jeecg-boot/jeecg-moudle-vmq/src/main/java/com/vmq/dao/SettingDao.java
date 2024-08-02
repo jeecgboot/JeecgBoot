@@ -1,6 +1,6 @@
 package com.vmq.dao;
 
-import com.vmq.entity.Setting;
+import com.vmq.entity.VmqSetting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
-public interface SettingDao extends JpaRepository<Setting,String> {
+public interface SettingDao extends JpaRepository<VmqSetting,String> {
 
     @Query(value = "select u.username,u.realname,u.password,u.salt,u.status from sys_user u where u.del_flag=0 and u.username=?1", nativeQuery = true)
     Map<String, Object> getUserInfo(String username);
 
-    @Query(value = "select s from Setting s where s.username=?1")
-    Setting getSettingByUserName(String userName);
+    @Query(value = "select s from VmqSetting s where s.username=?1")
+    VmqSetting getSettingByUserName(String userName);
 
     @Transactional
     @Modifying

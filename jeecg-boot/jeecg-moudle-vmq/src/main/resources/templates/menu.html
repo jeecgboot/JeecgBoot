@@ -42,8 +42,13 @@
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <ul class="layui-nav layui-nav-tree site-demo-nav" id="v_menu">
-                <li class="layui-nav-item">
-                    <a onclick="$('#LAY_preview').load('admin/setting.html');">系统设置</a>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:">系统设置<span class="layui-nav-more"></span></a>
+                    <dl class="layui-nav-child">
+                        <dd><a onclick="$('#LAY_preview').load('admin/vmqSetting.html');">V免签</a></dd>
+                        <dd><a onclick="$('#LAY_preview').load('admin/epusdtSetting.html');">USDT</a></dd>
+                        <dd><a onclick="$('#LAY_preview').load('admin/epaySetting.html');">易支付</a></dd>
+                    </dl>
                 </li>
                 <li class="layui-nav-item">
                     <a onclick="$('#LAY_preview').load('admin/jk.html');">监控端设置</a>
@@ -56,14 +61,19 @@
                     </dl>
                 </li>
                 <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:">微信赞赏码<span class="layui-nav-more"></span></a>
+                    <dl class="layui-nav-child">
+                        <dd><a onclick="$('#LAY_preview').load('admin/addwxzsm.html');">添加</a></dd>
+                        <dd><a onclick="$('#LAY_preview').load('admin/wxzsmlist.html');">管理</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
                     <a class="" href="javascript:">支付宝二维码<span class="layui-nav-more"></span></a>
                     <dl class="layui-nav-child">
                         <dd><a onclick="$('#LAY_preview').load('admin/addzfbqrcode.html');">添加</a></dd>
                         <dd><a onclick="$('#LAY_preview').load('admin/zfbqrcodelist.html');">管理</a></dd>
                     </dl>
                 </li>
-                <!--<li class="layui-nav-item"><a
-                        onclick="$('#LAY_preview').load('admin/goodslist.html');">商品列表</a></li>-->
                 <li class="layui-nav-item"><a
                         onclick="$('#LAY_preview').load('admin/orderlist.html');">订单列表</a></li>
                 <li class="layui-nav-item"><a
@@ -95,7 +105,7 @@
     var token = userMap.token;
     console.log(token);
     if (token == "" || token == null || token == undefined) {
-        window.location.href = "login";
+        window.location.href = "/vmq/login";
     }
     $("#username").html(userMap.username);
     $("#token").val(token);

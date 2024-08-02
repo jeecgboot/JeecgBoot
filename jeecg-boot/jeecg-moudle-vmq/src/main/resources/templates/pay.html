@@ -29,6 +29,7 @@
 
         <span class="ico_log ico-1" v-if="payType == 1"></span>
         <span class="ico_log ico-2" v-if="payType == 2"></span>
+        <span class="ico_log ico-1" v-if="payType == 3"></span>
 
     </h1>
 
@@ -42,7 +43,8 @@
                 <div data-role="qrPayImg" class="qrcode-img-area">
                     <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
                     <div style="position: relative;display: inline-block;">
-                        <img  id='show_qrcode' alt="加载中..." :src="'enQrcode?url='+payUrl" width="210" height="210" style="display: block;">
+                        <img v-if="payType<3" id='show_qrcode' alt="加载中..." :src="'enQrcode?url='+payUrl" width="210" height="210" style="display: block;">
+                        <img v-if="payType==3" id='show_qrcode' alt="加载中..." :src="payUrl" width="210" height="210" style="display: block;">
                     </div>
                 </div>
             </div>
@@ -50,7 +52,6 @@
                 <div class="time-item" id="msg">
                     <h1  v-if="price != reallyPrice">
                         <span style="color:red">为了您正常支付 请务必付款 {{ reallyPrice }} 元 <br>备注说明无需填写</span><br>
-
                     </h1>
                 </div>
 
@@ -202,6 +203,8 @@
                 data.data.payType1 = "微信";
             }else if (data.data.payType == 2) {
                 data.data.payType1 = "支付宝";
+            }else if (data.data.payType == 3) {
+                data.data.payType1 = "赞赏码";
             }
             new Vue({
                 el: '#body',

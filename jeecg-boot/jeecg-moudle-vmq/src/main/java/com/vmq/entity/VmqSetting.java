@@ -8,7 +8,7 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(name = "pay_setting")
-public class Setting implements Serializable {
+public class VmqSetting implements Serializable {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -56,6 +56,10 @@ public class Setting implements Serializable {
 
     /** 微信二维码 */
     private String wxpay;
+
+    /** 微信赞赏码 */
+    @Column(columnDefinition = "text")
+    private String wxzspay;
 
     /** 支付宝二维码 */
     private String zfbpay;

@@ -18,8 +18,7 @@ import java.util.stream.Collectors;
 /**
  * AOP 打印日志
  *
- * @author 00fly
- * @version [版本号, 2019年1月12日]
+ * @author mctz
  * @see [相关类/方法]
  * @since [产品/模块版本]
  */

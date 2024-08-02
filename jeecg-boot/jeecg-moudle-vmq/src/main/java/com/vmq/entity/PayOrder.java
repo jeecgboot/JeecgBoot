@@ -25,7 +25,7 @@ public class PayOrder {
     @ApiModelProperty("通知邮箱")
     private String email;
 
-    @ApiModelProperty(value = "支付类型：1微信，2支付宝",required = true)
+    @ApiModelProperty(value = "支付类型：1微信，2支付宝，3赞赏码",required = true)
     private int type;
 
     @ApiModelProperty(value = "订单价格",required = true)
@@ -60,6 +60,9 @@ public class PayOrder {
 
     @ApiModelProperty(value = "二维码类型：1手动输入金额 0固定金额",hidden = true)
     private int isAuto;
+
+    @ApiModelProperty(hidden = true)
+    private Long payCodeId;
 
     @ApiModelProperty(hidden = true)
     private String payUrl;

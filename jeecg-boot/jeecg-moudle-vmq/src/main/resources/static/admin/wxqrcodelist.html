@@ -45,8 +45,11 @@
             var data = obj.data //获得当前行数据
                 ,layEvent = obj.event; //获得 lay-event 对应的值
             if(layEvent === 'del'){
+                if (data.price == 0) {
+                    layer.msg("不允许删除无金额收款码");
+                    return;
+                }
                 layer.confirm('要删除该二维码么？', function(index){
-
                     layer.close(index);
                     //向服务端发送删除指令
                     $.post("admin/delPayQrcode","id="+data.id,function (data) {

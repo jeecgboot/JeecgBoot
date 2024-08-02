@@ -1,7 +1,14 @@
 package com.vmq.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.vmq.dto.usdt.EpusdtEntity;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
@@ -111,6 +118,15 @@ public class HttpRequest {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public static EpusdtEntity sendPost(String url, Map<String, Object> params) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> requestEntity = new HttpEntity<>(JSONObject.toJSONString(params), headers);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<EpusdtEntity> exchange = restTemplate.postForEntity(url, requestEntity, EpusdtEntity.class);
+        return exchange.getBody();
     }
 
     /**

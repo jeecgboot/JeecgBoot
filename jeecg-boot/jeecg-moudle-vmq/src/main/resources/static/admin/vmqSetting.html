@@ -88,6 +88,13 @@
                     <p id="zfbcs"></p>
                 </div>
             </div>
+            <div class="layui-upload" style="text-align: center;">
+                <button type="button" class="layui-btn" id="wxzsup">上传微信赞赏码</button><br>
+                <div class="layui-upload-list">
+                    <img class="layui-upload-img" id="wxzsimg" width="200px">
+                    <p id="wxzscs"></p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -171,7 +178,21 @@
                 });
             }
         });
-        form.render();
+
+        var uploadInst3 = upload.render({
+            elem: '#wxzsup'
+            ,url: 'upload/'
+            ,accept: 'file'
+            ,multiple: false
+            ,auto: false
+            ,bindAction: '#testListAction'
+            ,choose: function(obj){
+                imgs = [];
+                obj.preview(function(index, file, result){
+                    $('#wxzsimg').attr('src', result);
+                });
+            }
+        });
 
     });
 
@@ -207,6 +228,7 @@
             layer.msg("请上传微信无金额的收款二维码");
             return;
         }
+        var wxzsimg = $("#wxzsimg").attr("src");
         var zfbimg = $("#zfbimg").attr("src");
         if (zfbimg=="" || !zfbimg){
             layer.msg("请上传支付宝无金额的收款二维码");
@@ -220,7 +242,7 @@
             contentType: "application/json",
             async: false,
             data: JSON.stringify( { 'id':id ,'username':user ,'email':email,'isApprove':isApprove,'isNotice':isNotice,
-                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':key ,'wxpay':wximg ,'zfbpay':zfbimg ,'close':close,'payQf':payQf} ),
+                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':key ,'wxpay':wximg ,'wxzspay':wxzsimg,'zfbpay':zfbimg ,'close':close,'payQf':payQf} ),
             datatype: "json",
             success: function (data) {
                 if (data.code==1){
@@ -251,6 +273,10 @@
                 if (data.data.zfbpay!=""){
                     $('#zfbimg').attr('src', "enQrcode?url="+data.data.zfbpay);
                 }
+                if (data.data.wxzspay!=""){
+                    $('#wxzsimg').attr('src', data.data.wxzspay);
+                }
+
                 layui.form.render();
             }
         });

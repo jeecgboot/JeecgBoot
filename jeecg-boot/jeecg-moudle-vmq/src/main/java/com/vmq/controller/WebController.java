@@ -20,6 +20,7 @@ import com.vmq.utils.ResUtil;
 import com.vmq.utils.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,6 +90,7 @@ public class WebController {
             try {
                 MultiFormatReader multiFormatReader = new MultiFormatReader();
                 byte[] bytes1 = Base64.getDecoder().decode(base64);
+                @Cleanup
                 ByteArrayInputStream bais = new ByteArrayInputStream(bytes1);
                 BufferedImage image = ImageIO.read(bais);
                 //定义二维码参数
@@ -110,8 +112,8 @@ public class WebController {
         if (file != null) {
             try {
                 MultiFormatReader multiFormatReader = new MultiFormatReader();
-                byte[] bytes1 = file.getBytes();
-                ByteArrayInputStream bais = new ByteArrayInputStream(bytes1);
+                @Cleanup
+                ByteArrayInputStream bais = new ByteArrayInputStream(file.getBytes());
                 BufferedImage image = ImageIO.read(bais);
                 //定义二维码参数
                 Map hints = new HashMap();
@@ -162,11 +164,8 @@ public class WebController {
         if (StringUtils.isEmpty(payOrder.getPayId())) {
             return new Gson().toJson(ResUtil.error("请传入商户订单号"));
         }
-        if (StringUtils.isEmpty(payOrder.getType())) {
-            return new Gson().toJson(ResUtil.error("请传入支付方式=>1|微信 2|支付宝"));
-        }
-        if (payOrder.getType() < 1 || payOrder.getType() > 2) {
-            return new Gson().toJson(ResUtil.error("支付方式错误=>1|微信 2|支付宝"));
+        if (payOrder.getType() < 1 || payOrder.getType() > 3) {
+            return new Gson().toJson(ResUtil.error("支付方式错误=>1|微信 2|支付宝 3|赞赏码"));
         }
         if (!StringUtils.isEmpty(payOrder.getEmail()) && !EmailUtils.checkEmail(payOrder.getEmail())) {
             return new Gson().toJson(ResUtil.error("请填写正确的邮箱地址"));
@@ -245,6 +244,9 @@ public class WebController {
         } else {
             return ResUtil.error("请传入订单编号");
         }
+        if (payOrder == null) {
+            return ResUtil.error("订单不存在");
+        }
         return webService.getOrder(payOrder.getOrderId());
     }
 
@@ -286,5 +288,34 @@ public class WebController {
         }
         return "success";
     }
+
+    @ApiOperation(value = "易支付回调接口")
+    @RequestMapping(value = "/epay/notifyUrl", method = {RequestMethod.GET, RequestMethod.POST})
+    public String epayNotify(PayOrder payOrder) {
+        PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
+        if (order == null) {
+            return "订单不存在";
+        }
+        String sign = webService.getMd5(order.getUsername(),payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice());
+        if (!sign.equals(payOrder.getSign())) {
+            return "签名校验失败";
+        }
+        return "success";
+    }
+
+    @ApiOperation(value = "USDT回调接口")
+    @RequestMapping(value = "/epusdt/notifyUrl", method = {RequestMethod.GET, RequestMethod.POST})
+    public String epusdtNotify(PayOrder payOrder) {
+        PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
+        if (order == null) {
+            return "订单不存在";
+        }
+        String sign = webService.getMd5(order.getUsername(),payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice());
+        if (!sign.equals(payOrder.getSign())) {
+            return "签名校验失败";
+        }
+        return "success";
+    }
+
 
 }

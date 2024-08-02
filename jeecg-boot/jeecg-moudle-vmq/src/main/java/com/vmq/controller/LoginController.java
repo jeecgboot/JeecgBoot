@@ -6,7 +6,7 @@ import com.vmq.dao.TmpPriceDao;
 import com.vmq.dto.CommonRes;
 import com.vmq.entity.PayInfo;
 import com.vmq.entity.PayOrder;
-import com.vmq.entity.Setting;
+import com.vmq.entity.VmqSetting;
 import com.vmq.service.AdminService;
 import com.vmq.service.WebService;
 import com.vmq.utils.JWTUtil;
@@ -41,9 +41,11 @@ public class LoginController {
 
     private static final Pattern namePatt = Pattern.compile("^\\w{4,20}$");
 
+    /** 审批链接有效时间 */
     @Value("${token.expire.link}")
     private int expireHour;
 
+    /** 邮箱发送者账号 */
     @Value("${spring.mail.username}")
     private String sender;
 
@@ -68,10 +70,10 @@ public class LoginController {
     @Autowired
     private StringRedisTemplate redisTemplate;
 
-    private static Map<String, String> emailMap = new LinkedHashMap<String, String>(){
+    private static Map<String, String> emailMap = new LinkedHashMap<>() {
         @Override
         protected boolean removeEldestEntry(Map.Entry e) {
-            return size()>100;
+            return size() > 100;
         }
     };
 
@@ -97,14 +99,13 @@ public class LoginController {
         if (pass==null){
             return ResUtil.error("请输入密码");
         }
-        CommonRes r = adminService.login(user, pass);
-        if (r.getCode()==1){
-            Map<String,Object> userMap = (Map<String, Object>) r.getData();
+        CommonRes res = adminService.login(user, pass);
+        if (res.getCode()==1){
+            Map<String,Object> userMap = (Map<String, Object>) res.getData();
             session.setAttribute("username",user);
             session.setAttribute("token", JWTUtil.getToken(user,pass));
-            r.setData(userMap.get("realname"));
         }
-        return r;
+        return res;
     }
 
     @ResponseBody
@@ -183,8 +184,8 @@ public class LoginController {
         PayOrder payOrder = auditOrder(orderId, sign, model);
         log.info("{}",model.getAttribute("errorMsg"));
         if (payOrder == null) return "500";
-        Setting setting = webService.getDefaultSetting(payOrder.getUsername());
-        if (setting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
+        VmqSetting vmqSetting = webService.getDefaultSetting(payOrder.getUsername());
+        if (vmqSetting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
             PayInfo payInfo = new PayInfo(payOrder);
             if (payOrder.getPayDate() < 1) {
                 payInfo.setPayDate(StringUtils.format(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss"));
@@ -205,8 +206,8 @@ public class LoginController {
             model.addAttribute("errorMsg","订单已过期");
             return "500";
         }
-        Setting setting = webService.getDefaultSetting(payOrder.getUsername());
-        if (setting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
+        VmqSetting vmqSetting = webService.getDefaultSetting(payOrder.getUsername());
+        if (vmqSetting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
             PayInfo payInfo = new PayInfo(payOrder);
             if (payOrder.getPayDate() < 1) {
                 payInfo.setPayDate(StringUtils.format(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss"));

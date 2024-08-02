@@ -423,7 +423,7 @@
                     form.val('shipEditForm', mData); // 回显数据
                     form.on('submit(shipEditSubmit)', function (data) {
                         var loadIndex = layer.load(2);
-                        $.post('${ctxPath}/orders/sendShip', {
+                        $.post('orders/sendShip', {
                             id: mData.id,
                             shipInfo: data.field.shipInfo,
                         }, function (res) {
@@ -451,7 +451,7 @@
                 success: function (layero, dIndex) {
                     form.on('submit(goodsEditSubmit)', function (data) {
                         var loadIndex = layer.load(2);
-                        $.post('${ctxPath}/orders/status/update', {
+                        $.post('orders/status/update', {
                             id: mData.id,
                             productId: mData.productId,
                             payNo: data.field.payNo
@@ -515,7 +515,7 @@
                     form.val('editForm', mData); // 回显数据
                     form.on('submit(editSubmit)', function (data) {
                         var loadIndex = layer.load(2);
-                        $.post('${ctxPath}/orders/updateCards', data.field, function (res) {
+                        $.post('orders/updateCards', data.field, function (res) {
                             layer.close(loadIndex);
                             if (0 === res.code) {
                                 layer.close(dIndex);

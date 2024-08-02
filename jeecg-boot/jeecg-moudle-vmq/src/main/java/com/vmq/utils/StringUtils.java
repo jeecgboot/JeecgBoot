@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * @author Exrickx
+ * @author mctz
  */
 public class StringUtils extends org.springframework.util.StringUtils {
 
