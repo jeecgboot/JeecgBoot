@@ -2112,6 +2112,7 @@ CREATE TABLE `onl_cgform_field`  (
 
 -- 修改字段名长度
 ALTER TABLE onl_cgform_field MODIFY db_field_name VARCHAR(64);
+ALTER TABLE db_field_name_old MODIFY db_field_name VARCHAR(64);
 -- ----------------------------
 -- Records of onl_cgform_field
 -- ----------------------------
