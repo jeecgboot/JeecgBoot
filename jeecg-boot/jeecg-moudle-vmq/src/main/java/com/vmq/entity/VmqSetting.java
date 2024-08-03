@@ -58,10 +58,12 @@ public class VmqSetting implements Serializable {
     private String wxpay;
 
     /** 微信赞赏码 */
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "mediumtext")
     private String wxzspay;
 
     /** 支付宝二维码 */
     private String zfbpay;
+
+    private String qqpay;
 
 }

@@ -1,12 +1,20 @@
 package com.vmq.utils;
 
+import org.apache.tomcat.util.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
+import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
@@ -16,6 +24,7 @@ import java.util.Random;
  */
 public class PasswordUtil {
 
+    private static final String secret = "abc123";
     /**
      * JAVA6支持以下任意一种算法 PBEWITHMD5ANDDES PBEWITHMD5ANDTRIPLEDES
      * PBEWITHSHAANDDESEDE PBEWITHSHA1ANDRC2_40 PBKDF2WITHHMACSHA1
@@ -37,6 +46,7 @@ public class PasswordUtil {
      * 定义迭代次数为1000次
      */
     private static final int ITERATIONCOUNT = 1000;
+    private static final Logger log = LoggerFactory.getLogger(PasswordUtil.class);
 
     /**
      * 获取加密算法中使用的盐值,解密中使用的盐值必须与加密中使用的相同才能完成操作. 盐长度必须为8字节
@@ -186,6 +196,20 @@ public class PasswordUtil {
             sb.append(base.charAt(rd.nextInt(base.length())));
         }
         return sb.toString();
+    }
+
+    public static String smsSign(String timestamp) {
+        String sign = "";
+        try {
+            String stringToSign = timestamp + "\n" + secret;
+            Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
+            sign = URLEncoder.encode(new String(Base64.encodeBase64(signData)), "UTF-8");
+        } catch (Exception e) {
+            log.error("签名失败",e);
+        }
+        return sign;
     }
 
     public static String randomNum(int place) {

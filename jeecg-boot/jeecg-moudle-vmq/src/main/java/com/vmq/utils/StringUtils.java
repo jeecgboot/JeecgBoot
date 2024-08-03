@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author mctz
@@ -114,5 +116,14 @@ public class StringUtils extends org.springframework.util.StringUtils {
 
     public static String getPriceStr(double price) {
         return String.format("%.2f",price);
+    }
+
+    public static String getAmount(String text) {
+        Pattern p = Pattern.compile("(\\d+\\.\\d+)");
+        Matcher m = p.matcher(text);
+        if(m.find()) {
+            return m.group();
+        }
+        return "";
     }
 }

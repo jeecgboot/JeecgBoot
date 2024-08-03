@@ -71,7 +71,6 @@
                 //读取本地文件
                 obj.preview(function(index, file, result){
                     $.post("deQrcode","base64="+encodeURIComponent(result.split(",")[1]),function (data) {
-                        console.log(data)
                         imgs.push({"index":imgs.length,"money":"","b64":result,"url":data.data});
                         mytable.reload({
                             data: imgs

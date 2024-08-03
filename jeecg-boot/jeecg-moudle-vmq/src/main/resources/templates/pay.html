@@ -30,6 +30,7 @@
         <span class="ico_log ico-1" v-if="payType == 1"></span>
         <span class="ico_log ico-2" v-if="payType == 2"></span>
         <span class="ico_log ico-1" v-if="payType == 3"></span>
+        <span class="ico_log ico-4" v-if="payType == 4"></span>
 
     </h1>
 
@@ -43,8 +44,10 @@
                 <div data-role="qrPayImg" class="qrcode-img-area">
                     <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
                     <div style="position: relative;display: inline-block;">
-                        <img v-if="payType<3" id='show_qrcode' alt="加载中..." :src="'enQrcode?url='+payUrl" width="210" height="210" style="display: block;">
-                        <img v-if="payType==3" id='show_qrcode' alt="加载中..." :src="payUrl" width="210" height="210" style="display: block;">
+                        <img v-if="payType != 3" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: block;">
+                        <div v-if="payType == 3" style="width: 300px;height: 200px;overflow: hidden">
+                            <img id="img_id" alt="加载中..." :src="payUrl" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -50px;">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -63,7 +66,7 @@
             <div class="tip">
                 <div class="ico-scan"></div>
                 <div class="tip-text">
-                    <p>请使用{{payType1}}扫一扫</p>
+                    <p>请使用{{payName}}扫一扫</p>
 
                     <p v-if="isAuto == 0">扫描二维码完成支付</p>
                     <p v-if="isAuto == 1">扫码后输入金额支付</p>
@@ -97,7 +100,7 @@
     <div class="foot">
         <div class="inner">
             <p>手机用户可保存上方二维码到手机中</p>
-            <p>在{{payType1}}扫一扫中选择“相册”即可</p>
+            <p>在{{payName}}扫一扫中选择“相册”即可</p>
         </div>
     </div>
 
@@ -174,13 +177,10 @@
         }, 1000);
     }
 
-
-
     function qrcode_timeout(){
         document.getElementById("orderbody").style.display = "none";
         document.getElementById("timeOut").style.display = "";
     }
-
 
     function getQueryString(name) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
@@ -199,17 +199,10 @@
                 time = 0;
             }
             timer(time);
-            if (data.data.payType == 1) {
-                data.data.payType1 = "微信";
-            }else if (data.data.payType == 2) {
-                data.data.payType1 = "支付宝";
-            }else if (data.data.payType == 3) {
-                data.data.payType1 = "赞赏码";
-            }
             new Vue({
                 el: '#body',
                 data: data.data
-            })
+            });
             document.getElementById("body").style.display = "block";
             check();
         }else{

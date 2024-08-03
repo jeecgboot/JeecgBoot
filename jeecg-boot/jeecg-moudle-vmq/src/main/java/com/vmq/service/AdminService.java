@@ -24,7 +24,7 @@ import java.util.*;
 @Service
 public class AdminService {
 
-    private static final String default_user = "msl";
+    private static final String default_user = "mctz";
 
     @Autowired
     private SettingDao settingDao;
@@ -110,14 +110,35 @@ public class AdminService {
         payQrcodeDao.save(payQrcode);
         // 赞赏码
         if (StringUtils.isNotBlank(vmqSetting.getWxzspay())) {
-            payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,3);
+            List<PayQrcode> qrcodeList =  payQrcodeDao.findByUsernameAndType(vmqSetting.getUsername(),3);
+            payQrcodeDao.deleteAll(qrcodeList);
+            qrcodeList.clear();
+            for (int price=0;price<=100;price+=10) {
+                payQrcode = new PayQrcode();
+                payQrcode.setPayUrl(vmqSetting.getWxzspay());
+                payQrcode.setType(3);
+                payQrcode.setUsername(vmqSetting.getUsername());
+                payQrcode.setPrice(price);
+                qrcodeList.add(payQrcode);
+            }
+            payQrcode = new PayQrcode();
+            payQrcode.setPayUrl(vmqSetting.getWxzspay());
+            payQrcode.setType(3);
+            payQrcode.setUsername(vmqSetting.getUsername());
+            payQrcode.setPrice(0.1);
+            qrcodeList.add(payQrcode);
+            payQrcodeDao.saveAll(qrcodeList);
+        }
+        // QQ
+        if (StringUtils.isNotBlank(vmqSetting.getQqpay())) {
+            payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,4);
             if (payQrcode == null) {
                 payQrcode = new PayQrcode();
                 payQrcode.setPrice(0);
-                payQrcode.setType(3);
+                payQrcode.setType(4);
                 payQrcode.setUsername(vmqSetting.getUsername());
             }
-            payQrcode.setPayUrl(vmqSetting.getWxzspay());
+            payQrcode.setPayUrl(vmqSetting.getQqpay());
             payQrcodeDao.save(payQrcode);
         }
         return ResUtil.success();

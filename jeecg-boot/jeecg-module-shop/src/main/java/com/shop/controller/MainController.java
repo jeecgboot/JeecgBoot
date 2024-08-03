@@ -107,7 +107,7 @@ public class MainController extends BaseController implements ErrorController {
         Website website = websiteService.getById(1);
         model.addAttribute("website", website);
 
-        if (getLoginUser() != null) return "redirect:index";
+        if (getLoginUser() != null) return "redirect:admin";
         return "login.html";
     }
 

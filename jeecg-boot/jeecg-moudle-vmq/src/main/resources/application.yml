@@ -6,18 +6,21 @@ server:
 
 spring:
     redis:
-        database: 5
+        database: 4
         host: 127.0.0.1
         port: 6379
         timeout: 1000
     datasource:
         url: jdbc:mysql://127.0.0.1:3306/jeecg-boot
-        username: username
-        password: password
+        username: jeecg-boot
+        password: 552200
     jpa:
         hibernate:
             ddl-auto: update
         show-sql: false
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQL5Dialect
     thymeleaf:
         cache: false
         mode: HTML

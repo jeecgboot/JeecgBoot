@@ -1,6 +1,7 @@
 package com.vmq.service;
 
 import com.vmq.config.EmailUtils;
+import com.vmq.constant.PayTypeEnum;
 import com.vmq.dao.PayOrderDao;
 import com.vmq.dao.PayQrcodeDao;
 import com.vmq.dao.SettingDao;
@@ -30,7 +31,7 @@ public class WebService {
     @Value("${server.url}")
     private String url;
 
-    private static final String default_user = "msl";
+    private static final String default_user = "mctz";
 
     @Autowired
     private SettingDao settingDao;
@@ -98,12 +99,14 @@ public class WebService {
 
         String payUrl = "";
         Long payCodeId = null;
-        if (payOrder.getType() == 1){
+        if (payOrder.getType() == PayTypeEnum.WX.getCode()){
             payUrl = vmqSetting.getWxpay();
-        }else if (payOrder.getType() == 2){
+        }else if (payOrder.getType() == PayTypeEnum.ZFB.getCode()){
             payUrl = vmqSetting.getZfbpay();
-        }else if (payOrder.getType() == 3){
+        }else if (payOrder.getType() == PayTypeEnum.ZSM.getCode()){
             payUrl = vmqSetting.getWxzspay();
+        }else if (payOrder.getType() == PayTypeEnum.QQ.getCode()){
+            payUrl = vmqSetting.getQqpay();
         }
         if (payUrl==""){
             return ResUtil.error("请您先进入后台配置程序");
@@ -111,10 +114,10 @@ public class WebService {
 
         int isAuto = 1;
         PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,reallyPrice,payOrder.getType());
-        if (payQrcode == null && payOrder.getType() == 3) {
-            payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,0,3);
+        if (payQrcode == null) {
+            payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,0,payOrder.getType());
         }
-        if (payQrcode!=null){
+        if (payQrcode != null){
             payCodeId = payQrcode.getId();
             payUrl = payQrcode.getPayUrl();
             isAuto = 0;

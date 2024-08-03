@@ -89,6 +89,13 @@
                 </div>
             </div>
             <div class="layui-upload" style="text-align: center;">
+                <button type="button" class="layui-btn" id="qqup">上传QQ收款码</button><br>
+                <div class="layui-upload-list">
+                    <img class="layui-upload-img" id="qqimg">
+                    <p id="qqcs"></p>
+                </div>
+            </div>
+            <div class="layui-upload" style="text-align: center;">
                 <button type="button" class="layui-btn" id="wxzsup">上传微信赞赏码</button><br>
                 <div class="layui-upload-list">
                     <img class="layui-upload-img" id="wxzsimg" width="200px">
@@ -180,6 +187,32 @@
         });
 
         var uploadInst3 = upload.render({
+            elem: '#qqup'
+            , url: 'deQrcode2'
+            , before: function (obj) {
+
+            }
+            , done: function (res) {
+                //如果上传失败
+                if (res.code == -1) {
+                    return layer.msg('上传失败');
+                }
+                if (res.data==""){
+                    return layer.msg('请上传QQ无金额收款二维码');
+                }
+                $('#qqimg').attr('src', "enQrcode?url="+res.data);
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#qqcs');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs qqcs">重试</a>');
+                demoText.find('.qqcs').on('click', function () {
+                    uploadInst3.upload();
+                });
+            }
+        });
+
+        upload.render({
             elem: '#wxzsup'
             ,url: 'upload/'
             ,accept: 'file'
@@ -230,19 +263,21 @@
         }
         var wxzsimg = $("#wxzsimg").attr("src");
         var zfbimg = $("#zfbimg").attr("src");
+        var qqimg = $("#qqimg").attr("src");
         if (zfbimg=="" || !zfbimg){
             layer.msg("请上传支付宝无金额的收款二维码");
             return;
         }
         wximg = wximg.replace(/enQrcode\?url=/g,"");
         zfbimg = zfbimg.replace(/enQrcode\?url=/g,"");
+        qqimg = qqimg.replace(/enQrcode\?url=/g,"");
         $.ajax({
             type: 'POST',
             url: "admin/saveSetting",
             contentType: "application/json",
             async: false,
             data: JSON.stringify( { 'id':id ,'username':user ,'email':email,'isApprove':isApprove,'isNotice':isNotice,
-                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':key ,'wxpay':wximg ,'wxzspay':wxzsimg,'zfbpay':zfbimg ,'close':close,'payQf':payQf} ),
+                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':key ,'wxpay':wximg ,'wxzspay':wxzsimg,'zfbpay':zfbimg ,'qqpay':qqimg,'close':close,'payQf':payQf} ),
             datatype: "json",
             success: function (data) {
                 if (data.code==1){
@@ -272,6 +307,9 @@
                 }
                 if (data.data.zfbpay!=""){
                     $('#zfbimg').attr('src', "enQrcode?url="+data.data.zfbpay);
+                }
+                if (data.data.qqpay!=""){
+                    $('#qqimg').attr('src', "enQrcode?url="+data.data.qqpay);
                 }
                 if (data.data.wxzspay!=""){
                     $('#wxzsimg').attr('src', data.data.wxzspay);

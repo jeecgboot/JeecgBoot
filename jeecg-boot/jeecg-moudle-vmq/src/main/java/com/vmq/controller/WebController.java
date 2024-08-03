@@ -1,5 +1,6 @@
 package com.vmq.controller;
 
+import cn.hutool.core.date.DateUtil;
 import com.google.gson.Gson;
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -8,16 +9,15 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.vmq.config.EmailUtils;
+import com.vmq.constant.PayTypeEnum;
+import com.vmq.constant.SmsTypeEnum;
 import com.vmq.dao.PayOrderDao;
 import com.vmq.entity.PayOrder;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.CreateOrderRes;
 import com.vmq.service.AdminService;
 import com.vmq.service.WebService;
-import com.vmq.utils.HttpRequest;
-import com.vmq.utils.JWTUtil;
-import com.vmq.utils.ResUtil;
-import com.vmq.utils.StringUtils;
+import com.vmq.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.Cleanup;
@@ -164,8 +164,8 @@ public class WebController {
         if (StringUtils.isEmpty(payOrder.getPayId())) {
             return new Gson().toJson(ResUtil.error("请传入商户订单号"));
         }
-        if (payOrder.getType() < 1 || payOrder.getType() > 3) {
-            return new Gson().toJson(ResUtil.error("支付方式错误=>1|微信 2|支付宝 3|赞赏码"));
+        if (!PayTypeEnum.isContainsCode(payOrder.getType())) {
+            return new Gson().toJson(ResUtil.error("不支持的支付方式"));
         }
         if (!StringUtils.isEmpty(payOrder.getEmail()) && !EmailUtils.checkEmail(payOrder.getEmail())) {
             return new Gson().toJson(ResUtil.error("请填写正确的邮箱地址"));
@@ -287,6 +287,42 @@ public class WebController {
             return "签名校验失败";
         }
         return "success";
+    }
+
+    @ApiOperation(value = "sms回调接口")
+    @RequestMapping(value = "/sms/notify", method = {RequestMethod.GET, RequestMethod.POST})
+    public String smsNotify(String msg, String username, String timestamp, String sign) {
+        String[] msgArray = msg.split("\r?\n");
+        if (msgArray.length < 1) {
+            return "error";
+        }
+        int payType = 0;
+        String price = "";
+        if (msgArray[0].equals(SmsTypeEnum.WX.getSource())) {
+            if (msgArray[2].contains("个人收款码")) {
+                payType = PayTypeEnum.WX.getCode();
+            } else if (msgArray[2].contains("二维码赞赏")) {
+                payType = PayTypeEnum.ZSM.getCode();
+            }
+            price = StringUtils.getAmount(msgArray[2]);
+        } else if (msgArray[0].equals(SmsTypeEnum.ZFB.getSource())) {
+            payType = PayTypeEnum.ZFB.getCode();
+            price = StringUtils.getAmount(msgArray[1]);
+
+        } else if (msgArray[0].equals(SmsTypeEnum.QQ.getSource())) {
+            payType = PayTypeEnum.QQ.getCode();
+            price = StringUtils.getAmount(msgArray[1]);
+        }
+        if (!PasswordUtil.smsSign(timestamp).equals(sign)) {
+            return "error";
+        }
+        if (StringUtils.isBlank(price)) {
+            return "error";
+        }
+        Long payTime = DateUtil.parseDateTime(msgArray[3]).getTime();
+        CommonRes res = webService.appPush(payType, price, String.valueOf(payTime), webService.getMd5(username,payType + price + payTime));
+        log.info(res.getMsg());
+        return res.getCode() == 1 ? "success" : "error";
     }
 
     @ApiOperation(value = "易支付回调接口")

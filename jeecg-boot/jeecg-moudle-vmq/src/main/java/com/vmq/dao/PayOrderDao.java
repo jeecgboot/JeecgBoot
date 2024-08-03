@@ -17,8 +17,8 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
     
     @Transactional
     @Modifying
-    @Query(value = "update pay_order p set p.close_date=?2,p.state=-1 where p.create_date<?1 and p.state=0", nativeQuery = true)
-    int setTimeout(String timeout,String closeTime);
+    @Query(value = "update pay_order p set p.close_date=?3,p.state=-1 where username=?1 and p.create_date<?2 and p.state=0", nativeQuery = true)
+    int setTimeout(String username,String timeout,String closeTime);
 
     @Transactional
     @Modifying
@@ -29,8 +29,8 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
      * 查询关闭前的订单
      * @return
      */
-    @Query(value = "select distinct username,type,really_price from pay_order where close_date between ?1-1 and ?2+1 ", nativeQuery = true)
-    List<Map<String,Object>> findAllByCloseDate(long beginTime, long endTime);
+    @Query(value = "select distinct username,type,really_price from pay_order where username=?1 and close_date between ?2-1 and ?3+1 ", nativeQuery = true)
+    List<Map<String,Object>> findAllByCloseDate(String username, long beginTime, long endTime);
 
     @Query(value = "select * from pay_order where id = ?1", nativeQuery = true)
     PayOrder getById(Integer id);

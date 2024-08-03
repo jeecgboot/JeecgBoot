@@ -11,7 +11,7 @@ public class PayQrcode {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     private String username;
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "mediumtext")
     private String payUrl;
     private double price;
     private int type;

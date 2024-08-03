@@ -26,36 +26,37 @@ public class QuartzService {
     @Scheduled(fixedRate = 60000)
     public void timerToZZP(){
         // 获取超时时间（分钟）
-        VmqSetting vmqSetting = settingDao.getSettingByUserName("msl");
-        if (vmqSetting == null) {
-            return;
-        }
-        try {
-            String timeout = vmqSetting.getClose();
-            int timeoutMS = Integer.valueOf(timeout)*60*1000;
+        List<VmqSetting> vmqSettingList = settingDao.findAll();
+        for (VmqSetting vmqSetting : vmqSettingList) {
+            String username = vmqSetting.getUsername();
+            try {
+                String timeout = vmqSetting.getClose();
+                int timeoutMS = Integer.valueOf(timeout)*60*1000;
 
-            String closeTime = String.valueOf(new Date().getTime());
-            timeout = String.valueOf(new Date().getTime() - timeoutMS);
+                String closeTime = String.valueOf(new Date().getTime());
+                timeout = String.valueOf(new Date().getTime() - timeoutMS);
 
-            // 更改过期订单关闭时间和状态
-            int row = payOrderDao.setTimeout(timeout,closeTime);
+                // 更改过期订单关闭时间和状态
+                int row = payOrderDao.setTimeout(username,timeout,closeTime);
 
-            long beginTime = Long.valueOf(closeTime) - timeoutMS * 10;
+                long beginTime = Long.valueOf(closeTime) - timeoutMS * 10;
 
-            List<Map<String,Object>> payOrders = payOrderDao.findAllByCloseDate(beginTime, Long.valueOf(closeTime));
-            for (Map payOrder: payOrders) {
-                tmpPriceDao.delprice((String) payOrder.get("username"),payOrder.get("type")+"-"+payOrder.get("really_price"));
+                List<Map<String,Object>> payOrders = payOrderDao.findAllByCloseDate(username,beginTime, Long.valueOf(closeTime));
+                for (Map payOrder: payOrders) {
+                    tmpPriceDao.delprice(username,payOrder.get("type")+"-"+payOrder.get("really_price"));
+                }
+                tmpPriceDao.delpriceByUsername(username);
+                log.info("成功清理" + row + "个订单");
+            }catch (Exception e){
+                e.printStackTrace();
+                log.info("清理订单失败: {}",e.getMessage());
             }
-            log.info("成功清理" + row + "个订单");
-        }catch (Exception e){
-            e.printStackTrace();
-            log.info("清理订单失败: {}",e.getMessage());
-        }
-        String lastheart = vmqSetting.getLastheart();
-        String state = vmqSetting.getJkstate();
-        if ("1".equals(state) && new Date().getTime() - Long.valueOf(lastheart) > 60*1000){
-            vmqSetting.setJkstate("0");
-            settingDao.save(vmqSetting);
+            String lastheart = vmqSetting.getLastheart();
+            String state = vmqSetting.getJkstate();
+            if ("1".equals(state) && new Date().getTime() - Long.valueOf(lastheart) > 60*1000){
+                vmqSetting.setJkstate("0");
+                settingDao.save(vmqSetting);
+            }
         }
     }
 }

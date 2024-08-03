@@ -1,5 +1,6 @@
 package com.vmq.dto;
 
+import com.vmq.constant.PayTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,8 +12,10 @@ public class CreateOrderRes {
     private String payId;
     @ApiModelProperty("云端订单号")
     private String orderId;
-    @ApiModelProperty("支付类型：1微信，2支付宝，3赞赏码")
+    @ApiModelProperty("支付类型：1微信，2支付宝，3赞赏码，4QQ")
     private int payType;
+    @ApiModelProperty(hidden = true)
+    private String payName;
     @ApiModelProperty("订单价格")
     private double price;
     @ApiModelProperty("实际支付价格")
@@ -32,6 +35,7 @@ public class CreateOrderRes {
         this.payId = payId;
         this.orderId = orderId;
         this.payType = payType;
+        this.payName = PayTypeEnum.getNameByCode(payType);
         this.price = price;
         this.reallyPrice = reallyPrice;
         this.payUrl = payUrl;

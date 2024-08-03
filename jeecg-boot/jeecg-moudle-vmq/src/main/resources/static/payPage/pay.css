@@ -143,6 +143,10 @@ body, .body {
     background: url("weixin.jpg") no-repeat;
 }
 
+.ico-4 {
+    background: url("qqpay.jpg") no-repeat;
+}
+
 .mod-title .text {
     font-size: 20px;
     color: #333;
