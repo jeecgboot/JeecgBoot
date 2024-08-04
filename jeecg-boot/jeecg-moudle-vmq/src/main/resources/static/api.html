@@ -25,34 +25,22 @@
                     <div class="layui-inline">
                         <p>参数说明:</p>
                     </div>
-
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>user</td>
-                            <td>字符串</td>
-                            <td>【必传】账号</td>
+                            <td>user</td><td>字符串</td><td>【必传】账号</td>
                         </tr>
                         <tr>
-                            <td>pass</td>
-                            <td>字符串</td>
-                            <td>【必传】密码</td>
+                            <td>pass</td><td>字符串</td><td>【必传】密码</td>
                         </tr>
                         </tbody>
                     </table>
-
-
                 </blockquote>
 
                 <blockquote class="layui-elem-quote news_search">
@@ -62,22 +50,15 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>返回参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>token</td>
-                            <td>字符串</td>
-                            <td>根据用户名和密码获取token。调用订单创建接口时需要传递token</td>
+                            <td>token</td><td>字符串</td><td>根据用户名和密码获取token。调用订单创建接口时需要传递token</td>
                         </tr>
                         </tbody>
                     </table>
@@ -112,47 +93,30 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>payId</td>
-                            <td>字符串</td>
-                            <td>【必传】商户订单号，可以是时间戳，不可重复</td>
+                            <td>payId</td><td>字符串</td><td>【必传】商户订单号，可以是时间戳，不可重复</td>
                         </tr>
                         <tr>
-                            <td>type</td>
-                            <td>整数</td>
-                            <td>【必传】1微信支付，2支付宝支付，3赞赏码支付，4QQ钱包</td>
+                            <td>type</td><td>整数</td><td>【必传】1微信支付，2支付宝支付，3赞赏码支付，4QQ钱包</td>
                         </tr>
                         <tr>
-                            <td>price</td>
-                            <td>小数</td>
-                            <td>【必传】订单金额</td>
+                            <td>price</td><td>小数</td><td>【必传】订单金额</td>
                         </tr>
                         <tr>
-                            <td>sign</td>
-                            <td>字符串</td>
-                            <td>【必传】签名，计算方式为 md5(payId+param+type+price+通讯密钥)</td>
+                            <td>sign</td><td>字符串</td><td>【必传】签名，计算方式为 md5(payId+param+type+price+通讯密钥)</td>
                         </tr>
                         <tr>
-                            <td>param</td>
-                            <td>字符串</td>
-                            <td>【必传】只能传输token。（如果不传token，数据则会关联到默认用户）</td>
+                            <td>param</td><td>字符串</td><td>【必传】只能传输token。（如果不传token，数据则会关联到默认用户）</td>
                         </tr>
                         <tr>
-                            <td>isHtml</td>
-                            <td>整数</td>
-                            <td>【可选】传入1则自动跳转到支付页面，否则返回创建结果的json数据</td>
+                            <td>isHtml</td><td>整数</td><td>【可选】传入1则自动跳转到支付页面，否则返回创建结果的json数据</td>
                         </tr>
                         </tbody>
                     </table>
@@ -166,104 +130,66 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>返回参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>code</td>
-                            <td>整数</td>
-                            <td>返回代码（1：成功，-1：调用失败）</td>
+                            <td>code</td><td>整数</td><td>返回代码（1：成功，-1：调用失败）</td>
                         </tr>
                         <tr>
-                            <td>msg</td>
-                            <td>字符串</td>
-                            <td>api调用结果说明</td>
+                            <td>msg</td><td>字符串</td><td>api调用结果说明</td>
                         </tr>
                         <tr>
-                            <td>data</td>
-                            <td>数组</td>
+                            <td>data</td><td>数组</td>
                             <td>api调用结果（如果code为-1，则data为null）
-
                                 <table class="layui-table">
-                                    <colgroup>
-                                        <col>
-                                        <col>
-                                    </colgroup>
+                                    <colgroup><col><col></colgroup>
                                     <thead>
                                     <tr>
-                                        <th>返回参数</th>
-                                        <th>参数类型</th>
-                                        <th>参数说明</th>
+                                        <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td>payId</td>
-                                        <td>字符串</td>
-                                        <td>商户订单号</td>
+                                        <td>payId</td><td>字符串</td><td>商户订单号</td>
                                     </tr>
                                     <tr>
-                                        <td>orderId</td>
-                                        <td>字符串</td>
-                                        <td>云端订单号，可用于查询订单是否支付成功</td>
+                                        <td>orderId</td><td>字符串</td><td>云端订单号，可用于查询订单是否支付成功</td>
                                     </tr>
                                     <tr>
-                                        <td>payType</td>
-                                        <td>整数</td>
-                                        <td>微信支付为1 支付宝支付为2</td>
+                                        <td>payType</td><td>整数</td><td>微信支付为1 支付宝支付为2</td>
                                     </tr>
                                     <tr>
-                                        <td>price</td>
-                                        <td>小数</td>
-                                        <td>订单金额</td>
+                                        <td>price</td><td>小数</td><td>订单金额</td>
                                     </tr>
                                     <tr>
-                                        <td>reallyPrice</td>
-                                        <td>小数</td>
-                                        <td>实际需付金额</td>
+                                        <td>reallyPrice</td><td>小数</td><td>实际需付金额</td>
                                     </tr>
                                     <tr>
-                                        <td>payUrl</td>
-                                        <td>字符串</td>
-                                        <td>支付二维码内容</td>
+                                        <td>payUrl</td><td>字符串</td><td>支付二维码内容</td>
                                     </tr>
                                     <tr>
-                                        <td>isAuto</td>
-                                        <td>整数</td>
-                                        <td>1需要手动输入金额 0扫码后自动输入金额</td>
+                                        <td>isAuto</td><td>整数</td><td>1需要手动输入金额 0扫码后自动输入金额</td>
                                     </tr>
                                     <tr>
-                                        <td>state</td>
-                                        <td>整数</td>
-                                        <td>订单状态：-1|订单过期 0|等待支付 1|完成 2|支付完成但通知失败</td>
+                                        <td>state</td><td>整数</td><td>订单状态：-1|订单过期 0|等待支付 1|完成 2|支付完成但通知失败</td>
                                     </tr>
                                     <tr>
-                                        <td>timeOut</td>
-                                        <td>整数</td>
-                                        <td>订单有效时间（分钟）</td>
+                                        <td>timeOut</td><td>整数</td><td>订单有效时间（分钟）</td>
                                     </tr>
                                     <tr>
-                                        <td>date</td>
-                                        <td>长整数</td>
-                                        <td>订单创建时间时间戳（13位）</td>
+                                        <td>date</td><td>长整数</td><td>订单创建时间时间戳（13位）</td>
                                     </tr>
                                     </tbody>
                                 </table>
-
                             </td>
                         </tr>
                         </tbody>
                     </table>
-
                 </blockquote>
 
             </div>
@@ -296,26 +222,18 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>orderId</td>
-                            <td>字符串</td>
-                            <td>【必传】云端订单号，创建订单返回的</td>
+                            <td>orderId</td><td>字符串</td><td>【必传】云端订单号，创建订单返回的</td>
                         </tr>
                         </tbody>
                     </table>
-
 
                 </blockquote>
 
@@ -326,95 +244,60 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>返回参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>code</td>
-                            <td>整数</td>
-                            <td>返回代码（1：成功，-1：调用失败）</td>
+                            <td>code</td><td>整数</td><td>返回代码（1：成功，-1：调用失败）</td>
                         </tr>
                         <tr>
-                            <td>msg</td>
-                            <td>字符串</td>
-                            <td>api调用结果说明</td>
+                            <td>msg</td><td>字符串</td><td>api调用结果说明</td>
                         </tr>
                         <tr>
-                            <td>data</td>
-                            <td>数组</td>
+                            <td>data</td><td>数组</td>
                             <td>api调用结果（如果code为-1，则data为null）
 
                                 <table class="layui-table">
-                                    <colgroup>
-                                        <col>
-                                        <col>
-                                    </colgroup>
+                                    <colgroup><col><col></colgroup>
                                     <thead>
                                     <tr>
-                                        <th>返回参数</th>
-                                        <th>参数类型</th>
-                                        <th>参数说明</th>
+                                        <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td>payId</td>
-                                        <td>字符串</td>
-                                        <td>商户订单号</td>
+                                        <td>payId</td><td>字符串</td><td>商户订单号</td>
                                     </tr>
                                     <tr>
-                                        <td>orderId</td>
-                                        <td>字符串</td>
-                                        <td>云端订单号，可用于查询订单是否支付成功</td>
+                                        <td>orderId</td><td>字符串</td><td>云端订单号，可用于查询订单是否支付成功</td>
                                     </tr>
                                     <tr>
-                                        <td>payType</td>
-                                        <td>整数</td>
-                                        <td>微信支付为1 支付宝支付为2</td>
+                                        <td>payType</td><td>整数</td><td>微信支付为1 支付宝支付为2</td>
                                     </tr>
                                     <tr>
-                                        <td>price</td>
-                                        <td>小数</td>
-                                        <td>订单金额</td>
+                                        <td>price</td><td>小数</td><td>订单金额</td>
                                     </tr>
                                     <tr>
-                                        <td>reallyPrice</td>
-                                        <td>小数</td>
-                                        <td>实际需付金额</td>
+                                        <td>reallyPrice</td><td>小数</td><td>实际需付金额</td>
                                     </tr>
                                     <tr>
-                                        <td>payUrl</td>
-                                        <td>字符串</td>
-                                        <td>支付二维码内容</td>
+                                        <td>payUrl</td><td>字符串</td><td>支付二维码内容</td>
                                     </tr>
                                     <tr>
-                                        <td>isAuto</td>
-                                        <td>整数</td>
-                                        <td>1需要手动输入金额 0扫码后自动输入金额</td>
+                                        <td>isAuto</td><td>整数</td><td>1需要手动输入金额 0扫码后自动输入金额</td>
                                     </tr>
                                     <tr>
-                                        <td>state</td>
-                                        <td>整数</td>
-                                        <td>订单状态：-1|订单过期 0|等待支付 1|完成 2|支付完成但通知失败</td>
+                                        <td>state</td><td>整数</td><td>订单状态：-1|订单过期 0|等待支付 1|完成 2|支付完成但通知失败</td>
                                     </tr>
                                     <tr>
-                                        <td>timeOut</td>
-                                        <td>整数</td>
-                                        <td>订单有效时间（分钟）</td>
+                                        <td>timeOut</td><td>整数</td><td>订单有效时间（分钟）</td>
                                     </tr>
                                     <tr>
-                                        <td>date</td>
-                                        <td>长整数</td>
-                                        <td>订单创建时间时间戳（13位）</td>
+                                        <td>date</td><td>长整数</td><td>订单创建时间时间戳（13位）</td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -435,8 +318,6 @@
         <h2 class="layui-colla-title">查询订单状态</h2>
         <div class="layui-colla-content">
             <div>
-
-
                 <blockquote class="layui-elem-quote news_search">
                     <div class="layui-inline">
                         请求地址：http://msl1214.gnway.cc/vmq/checkOrder
@@ -450,36 +331,24 @@
                 </blockquote>
 
                 <blockquote class="layui-elem-quote news_search">
-
                     <p>参数示例（示例）：orderId=201901102225513177</p>
-
-
                     <div class="layui-inline">
                         <p>参数说明:</p>
                     </div>
-
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>orderId</td>
-                            <td>字符串</td>
-                            <td>【必传】云端订单号，创建订单返回的</td>
+                            <td>orderId</td><td>字符串</td><td>【必传】云端订单号，创建订单返回的</td>
                         </tr>
 
                         </tbody>
                     </table>
-
 
                 </blockquote>
 
@@ -490,34 +359,21 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>返回参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>code</td>
-                            <td>整数</td>
-                            <td>返回代码（1：订单已被支付，-1：支付失败或还未支付，具体查看msg字段）</td>
+                            <td>code</td><td>整数</td><td>返回代码（1：订单已被支付，-1：支付失败或还未支付，具体查看msg字段）</td>
                         </tr>
                         <tr>
-                            <td>msg</td>
-                            <td>字符串</td>
-                            <td>调用结果说明</td>
+                            <td>msg</td><td>字符串</td><td>调用结果说明</td>
                         </tr>
                         <tr>
-                            <td>data</td>
-                            <td>字符串</td>
-                            <td>
-                                如果code为-1，则data为null，否则为该订单支付完成后的跳转地址（带回调参数）
-                            </td>
+                            <td>data</td><td>字符串</td><td>如果code为-1，则data为null，否则为该订单支付完成后的跳转地址（带回调参数）</td>
                         </tr>
                         </tbody>
                     </table>
@@ -531,7 +387,6 @@
         <h2 class="layui-colla-title">关闭订单</h2>
         <div class="layui-colla-content">
             <div>
-
 
                 <blockquote class="layui-elem-quote news_search">
                     <div class="layui-inline">
@@ -555,27 +410,18 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>orderId</td>
-                            <td>字符串</td>
-                            <td>【必传】云端订单号，创建订单返回的</td>
+                            <td>orderId</td><td>字符串</td><td>【必传】云端订单号，创建订单返回的</td>
                         </tr>
                         <tr>
-                            <td>sign</td>
-                            <td>字符串</td>
-                            <td>【必传】md5(云端订单号+通讯密钥)</td>
+                            <td>sign</td><td>字符串</td><td>【必传】md5(云端订单号+通讯密钥)</td>
                         </tr>
                         </tbody>
                     </table>
@@ -590,34 +436,21 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>返回参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>code</td>
-                            <td>整数</td>
-                            <td>返回代码（1：订单关闭成功，-1：订单关闭失败，具体原因查看msg字段）</td>
+                            <td>code</td><td>整数</td><td>返回代码（1：订单关闭成功，-1：订单关闭失败，具体原因查看msg字段）</td>
                         </tr>
                         <tr>
-                            <td>msg</td>
-                            <td>字符串</td>
-                            <td>调用结果说明</td>
+                            <td>msg</td><td>字符串</td><td>调用结果说明</td>
                         </tr>
                         <tr>
-                            <td>data</td>
-                            <td>字符串</td>
-                            <td>
-                                无用字段，请忽略
-                            </td>
+                            <td>data</td><td>字符串</td><td>无用字段，请忽略</td>
                         </tr>
                         </tbody>
                     </table>
@@ -631,8 +464,6 @@
         <h2 class="layui-colla-title">查询服务端状态</h2>
         <div class="layui-colla-content">
             <div>
-
-
                 <blockquote class="layui-elem-quote news_search">
                     <div class="layui-inline">
                         请求地址：http://msl1214.gnway.cc/vmq/getState
@@ -655,32 +486,21 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>t</td>
-                            <td>长整数</td>
-                            <td>【必传】现行时间戳</td>
+                            <td>t</td><td>长整数</td><td>【必传】现行时间戳</td>
                         </tr>
                         <tr>
-                            <td>sign</td>
-                            <td>字符串</td>
-                            <td>【必传】md5(现行时间戳+通讯密钥)</td>
+                            <td>sign</td><td>字符串</td><td>【必传】md5(现行时间戳+通讯密钥)</td>
                         </tr>
                         </tbody>
                     </table>
-
-
                 </blockquote>
 
                 <blockquote class="layui-elem-quote news_search">
@@ -690,27 +510,18 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>返回参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>code</td>
-                            <td>整数</td>
-                            <td>返回代码（1：成功，-1：失败，具体原因查看msg字段）</td>
+                            <td>code</td><td>整数</td><td>返回代码（1：成功，-1：失败，具体原因查看msg字段）</td>
                         </tr>
                         <tr>
-                            <td>msg</td>
-                            <td>字符串</td>
-                            <td>调用结果说明</td>
+                            <td>msg</td><td>字符串</td><td>调用结果说明</td>
                         </tr>
                         <tr>
                             <td>data</td>
@@ -718,36 +529,24 @@
                             <td>api调用结果（如果code为-1，则data为null）
 
                                 <table class="layui-table">
-                                    <colgroup>
-                                        <col>
-                                        <col>
-                                    </colgroup>
+                                    <colgroup><col><col></colgroup>
                                     <thead>
                                     <tr>
-                                        <th>返回参数</th>
-                                        <th>参数类型</th>
-                                        <th>参数说明</th>
+                                        <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <tr>
-                                        <td>lastpay</td>
-                                        <td>长整数</td>
-                                        <td>最后一次监控到支付的时间戳（13位）</td>
+                                        <td>lastpay</td><td>长整数</td><td>最后一次监控到支付的时间戳（13位）</td>
                                     </tr>
                                     <tr>
-                                        <td>lastheart</td>
-                                        <td>长整数</td>
-                                        <td>最后一次监控端向服务器发送心跳的时间戳（13位）</td>
+                                        <td>lastheart</td><td>长整数</td><td>最后一次监控端向服务器发送心跳的时间戳（13位）</td>
                                     </tr>
                                     <tr>
-                                        <td>state</td>
-                                        <td>整数</td>
-                                        <td>监控端状态 1|在线 0|掉线 -1|还未绑定监控端</td>
+                                        <td>state</td><td>整数</td><td>监控端状态 1|在线 0|掉线 -1|还未绑定监控端</td>
                                     </tr>
                                     </tbody>
                                 </table>
-
                             </td>
                         </tr>
                         </tbody>
@@ -777,52 +576,33 @@
                     </div>
 
                     <table class="layui-table">
-                        <colgroup>
-                            <col>
-                            <col>
-                        </colgroup>
+                        <colgroup><col><col></colgroup>
                         <thead>
                         <tr>
-                            <th>返回参数</th>
-                            <th>参数类型</th>
-                            <th>参数说明</th>
+                            <th>返回参数</th><th>参数类型</th><th>参数说明</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td>payId</td>
-                            <td>字符串</td>
-                            <td>商户订单号</td>
+                            <td>payId</td><td>字符串</td><td>商户订单号</td>
                         </tr>
                         <tr>
-                            <td>orderId</td>
-                            <td>字符串</td>
-                            <td>云端订单编号</td>
+                            <td>orderId</td><td>字符串</td><td>云端订单编号</td>
                         </tr>
                         <tr>
-                            <td>param</td>
-                            <td>字符串</td>
-                            <td>创建订单的时候传入的参数</td>
+                            <td>param</td><td>字符串</td><td>创建订单的时候传入的参数</td>
                         </tr>
                         <tr>
-                            <td>type</td>
-                            <td>整数</td>
-                            <td>支付方式 ：微信支付为1 支付宝支付为2</td>
+                            <td>type</td><td>整数</td><td>支付方式 ：微信支付为1 支付宝支付为2</td>
                         </tr>
                         <tr>
-                            <td>price</td>
-                            <td>小数</td>
-                            <td>订单金额</td>
+                            <td>price</td><td>小数</td><td>订单金额</td>
                         </tr>
                         <tr>
-                            <td>reallyPrice</td>
-                            <td>小数</td>
-                            <td>实际支付金额</td>
+                            <td>reallyPrice</td><td>小数</td><td>实际支付金额</td>
                         </tr>
                         <tr>
-                            <td>sign</td>
-                            <td>字符串</td>
-                            <td>校验签名，计算方式 = md5(payId + param + type + price + reallyPrice + 通讯密钥)</td>
+                            <td>sign</td><td>字符串</td><td>校验签名，计算方式 = md5(payId + param + type + price + reallyPrice + 通讯密钥)</td>
                         </tr>
                         </tbody>
                     </table>

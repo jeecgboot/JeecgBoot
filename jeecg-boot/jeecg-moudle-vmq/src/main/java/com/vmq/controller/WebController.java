@@ -12,9 +12,11 @@ import com.vmq.config.EmailUtils;
 import com.vmq.constant.PayTypeEnum;
 import com.vmq.constant.SmsTypeEnum;
 import com.vmq.dao.PayOrderDao;
+import com.vmq.dao.SettingDao;
 import com.vmq.entity.PayOrder;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.CreateOrderRes;
+import com.vmq.entity.VmqSetting;
 import com.vmq.service.AdminService;
 import com.vmq.service.WebService;
 import com.vmq.utils.*;
@@ -61,6 +63,8 @@ public class WebController {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+    @Autowired
+    private SettingDao settingDao;
 
     @RequestMapping("/enQrcode")
     public void enQrcode(HttpServletResponse resp, String url) throws IOException {
@@ -275,7 +279,7 @@ public class WebController {
         return webService.getState(t, sign);
     }
 
-    @ApiOperation(value = "默认回调接口")
+    @ApiOperation(value = "默认通知接口，付款成功后调用")
     @RequestMapping(value = "/notify", method = {RequestMethod.GET, RequestMethod.POST})
     public String notify(PayOrder payOrder) {
         PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
@@ -289,40 +293,62 @@ public class WebController {
         return "success";
     }
 
-    @ApiOperation(value = "sms回调接口")
+    /**
+     * 短信转发器回调
+     * @param msg 内容
+     * @param username 商户
+     * @param timestamp 当前时间戳
+     * @param receive_time 通知时间
+     * @param sign 签名
+     * @return
+     */
+    @ApiOperation(value = "监控端回调接口")
     @RequestMapping(value = "/sms/notify", method = {RequestMethod.GET, RequestMethod.POST})
-    public String smsNotify(String msg, String username, String timestamp, String sign) {
-        String[] msgArray = msg.split("\r?\n");
-        if (msgArray.length < 1) {
-            return "error";
-        }
+    public String smsNotify(String msg, String username,String timestamp, String receive_time, String sign) {
         int payType = 0;
         String price = "";
-        if (msgArray[0].equals(SmsTypeEnum.WX.getSource())) {
-            if (msgArray[2].contains("个人收款码")) {
-                payType = PayTypeEnum.WX.getCode();
-            } else if (msgArray[2].contains("二维码赞赏")) {
-                payType = PayTypeEnum.ZSM.getCode();
+        String result = "success";
+        String[] msgArray = msg.split("\r?\n");
+        if (msgArray.length < 3) {
+            result = "消息格式有误";
+        } else {
+            VmqSetting setting = settingDao.getSettingByUserName(username);
+            if (setting == null) {
+                result = "未配置V免签";
+            }else if (!PasswordUtil.smsSign(timestamp,setting.getSecret()).equals(sign)) {
+                result = "签名失败";
             }
-            price = StringUtils.getAmount(msgArray[2]);
-        } else if (msgArray[0].equals(SmsTypeEnum.ZFB.getSource())) {
-            payType = PayTypeEnum.ZFB.getCode();
-            price = StringUtils.getAmount(msgArray[1]);
-
-        } else if (msgArray[0].equals(SmsTypeEnum.QQ.getSource())) {
-            payType = PayTypeEnum.QQ.getCode();
-            price = StringUtils.getAmount(msgArray[1]);
         }
-        if (!PasswordUtil.smsSign(timestamp).equals(sign)) {
-            return "error";
+        if ("success".equals(result)) {
+            if (msgArray[0].equals(SmsTypeEnum.WX.getSource()) && msgArray[1].equals("微信支付")) {
+                if (msgArray[2].contains("个人收款码")) {
+                    payType = PayTypeEnum.WX.getCode();
+                } else if (msgArray[2].contains("二维码赞赏")) {
+                    payType = PayTypeEnum.ZSM.getCode();
+                }
+                price = StringUtils.getAmount(msgArray[2]);
+            } else if (msgArray[0].equals(SmsTypeEnum.ZFB.getSource()) && msgArray[1].startsWith("你已成功收款")) {
+                payType = PayTypeEnum.ZFB.getCode();
+                price = StringUtils.getAmount(msgArray[1]);
+            } else if (msgArray[0].equals(SmsTypeEnum.QQ.getSource())) {
+                payType = PayTypeEnum.QQ.getCode();
+                price = StringUtils.getAmount(msgArray[1]);
+            }
+            if (payType == 0) {
+                result = "不是支付通知";
+            }else if (StringUtils.isBlank(price)) {
+                result = "未匹配到金额";
+            }
         }
-        if (StringUtils.isBlank(price)) {
-            return "error";
+        if ("success".equals(result)) {
+            Long payTime = DateUtil.parseDateTime(receive_time).getTime();
+            CommonRes res = webService.appPush(payType, price, String.valueOf(payTime), webService.getMd5(username,payType + price + payTime));
+            if (res.getCode() != 1) {
+                result = res.getMsg();
+            }
         }
-        Long payTime = DateUtil.parseDateTime(msgArray[3]).getTime();
-        CommonRes res = webService.appPush(payType, price, String.valueOf(payTime), webService.getMd5(username,payType + price + payTime));
-        log.info(res.getMsg());
-        return res.getCode() == 1 ? "success" : "error";
+        log.info("smsNotify: {}",result);
+        return result;
     }
 
     @ApiOperation(value = "易支付回调接口")

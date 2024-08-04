@@ -55,7 +55,14 @@
     <div class="layui-form-item">
         <label class="layui-form-label">通讯密钥</label>
         <div class="layui-input-block">
-            <input type="text" id="key" lay-verify="required" placeholder="请输入通讯密钥" autocomplete="off" class="layui-input">
+            <input type="text" id="md5key" lay-verify="required" placeholder="请输入通讯密钥" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">监控端回调密钥</label>
+        <div class="layui-input-block">
+            <input type="text" id="secret" lay-verify="required" placeholder="请输入监控端回调密钥" autocomplete="off" class="layui-input">
         </div>
     </div>
 
@@ -97,8 +104,8 @@
             </div>
             <div class="layui-upload" style="text-align: center;">
                 <button type="button" class="layui-btn" id="wxzsup">上传微信赞赏码</button><br>
-                <div class="layui-upload-list">
-                    <img class="layui-upload-img" id="wxzsimg" width="200px">
+                <div class="layui-upload-list" style="width: 200px;height: 200px;overflow: hidden">
+                    <img class="layui-upload-img" id="wxzsimg" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -100px;">
                     <p id="wxzscs"></p>
                 </div>
             </div>
@@ -236,7 +243,8 @@
         var email = $("#email").val();
         var notifyUrl = $("#notifyUrl").val();
         var returnUrl = $("#returnUrl").val();
-        var key = $("#key").val();
+        var md5key = $("#md5key").val();
+        var secret = $("#secret").val();
         var close = $("#close").val();
         var payQf = $("#payQf").val();
         var isApprove = $("#isApprove").val();
@@ -277,7 +285,7 @@
             contentType: "application/json",
             async: false,
             data: JSON.stringify( { 'id':id ,'username':user ,'email':email,'isApprove':isApprove,'isNotice':isNotice,
-                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':key ,'wxpay':wximg ,'wxzspay':wxzsimg,'zfbpay':zfbimg ,'qqpay':qqimg,'close':close,'payQf':payQf} ),
+                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':md5key ,'secret':secret,'wxpay':wximg ,'wxzspay':wxzsimg,'zfbpay':zfbimg ,'qqpay':qqimg,'close':close,'payQf':payQf} ),
             datatype: "json",
             success: function (data) {
                 if (data.code==1){
@@ -296,7 +304,8 @@
                 $("#email").val(data.data.email);
                 $("#notifyUrl").val(data.data.notifyUrl);
                 $("#returnUrl").val(data.data.returnUrl);
-                $("#key").val(data.data.md5key);
+                $("#md5key").val(data.data.md5key);
+                $("#secret").val(data.data.secret);
                 $("#close").val(data.data.close);
                 $("#payQf").val(data.data.payQf);
                 $("#isApprove").val(data.data.isApprove);

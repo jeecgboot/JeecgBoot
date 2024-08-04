@@ -33,6 +33,9 @@ public class VmqSetting implements Serializable {
      */
     private String md5key;
 
+    /** 回调密钥 */
+    private String secret;
+
     /** 是否发送付款审核 */
     private Integer isApprove;
 

@@ -70,6 +70,9 @@ public class AdminController {
         if (StringUtils.isBlank(vmqSetting.getReturnUrl())) {
             vmqSetting.setReturnUrl(path + "/notify");
         }
+        if (StringUtils.isBlank(vmqSetting.getSecret())) {
+            vmqSetting.setSecret(vmqSetting.getMd5key());
+        }
         return res;
     }
 

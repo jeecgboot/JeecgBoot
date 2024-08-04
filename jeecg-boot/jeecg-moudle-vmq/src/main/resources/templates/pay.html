@@ -53,8 +53,11 @@
             </div>
             <div class="time-item">
                 <div class="time-item" id="msg">
-                    <h1  v-if="price != reallyPrice">
-                        <span style="color:red">为了您正常支付 请务必付款 {{ reallyPrice }} 元 <br>备注说明无需填写</span><br>
+                    <h1  v-if="price != reallyPrice || payType == 3">
+                        <span style="color:red">为了您正常支付 请务必付款 {{ reallyPrice }} 元</span><br>
+                    </h1>
+                    <h1  v-if="payType == 3">
+                        <span style="color:red">请选择{{reallyPrice}}元，或点击<span style="color: dodgerblue;font-size: smaller;letter-spacing: 0">其他金额 </span>输入{{reallyPrice}}元</span><br>
                     </h1>
                 </div>
 

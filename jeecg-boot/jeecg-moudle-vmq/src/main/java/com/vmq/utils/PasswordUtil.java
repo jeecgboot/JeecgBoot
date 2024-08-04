@@ -24,7 +24,6 @@ import java.util.Random;
  */
 public class PasswordUtil {
 
-    private static final String secret = "abc123";
     /**
      * JAVA6支持以下任意一种算法 PBEWITHMD5ANDDES PBEWITHMD5ANDTRIPLEDES
      * PBEWITHSHAANDDESEDE PBEWITHSHA1ANDRC2_40 PBKDF2WITHHMACSHA1
@@ -198,7 +197,7 @@ public class PasswordUtil {
         return sb.toString();
     }
 
-    public static String smsSign(String timestamp) {
+    public static String smsSign(String timestamp,String secret) {
         String sign = "";
         try {
             String stringToSign = timestamp + "\n" + secret;
