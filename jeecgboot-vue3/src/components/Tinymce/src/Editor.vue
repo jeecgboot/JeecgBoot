@@ -17,6 +17,7 @@
 </template>
 
 <script lang="ts">
+  import type { RawEditorOptions } from 'tinymce';
   import tinymce from 'tinymce/tinymce';
   import Editor from '@tinymce/tinymce-vue'
   import 'tinymce/themes/silver';
@@ -45,7 +46,7 @@
   import { ThemeEnum } from '/@/enums/appEnum';
   const tinymceProps = {
     options: {
-      type: Object as PropType<Partial<RawEditorSettings>>,
+      type: Object as PropType<Partial<RawEditorOptions>>,
       default: {},
     },
     value: {
@@ -81,6 +82,11 @@
       type: Boolean,
       default: true,
     },
+    //是否聚焦
+    autoFocus:{
+      type: Boolean,
+      default: true,
+    }
   };
 
   export default defineComponent({
@@ -91,7 +97,7 @@
     emits: ['change', 'update:modelValue', 'inited', 'init-error'],
     setup(props, { emit, attrs }) {
       console.log("---Tinymce---初始化---")
-      
+
       const editorRef = ref<Nullable<any>>(null);
       const fullscreen = ref(false);
       const tinymceId = ref<string>(buildShortUUID('tiny-vue'));
@@ -144,7 +150,9 @@
           link_title: false,
           object_resizing: true,
           toolbar_mode: 'sliding',
-          auto_focus: true,
+          //update-begin---author:wangshuai---date:2024-08-01---for:【TV360X-416】单表代码生成，表单打开时，会先聚焦富文本组件，并滚动到富文本组件所在的位置---
+          auto_focus: props.autoFocus,
+          //update-end---author:wangshuai---date:2024-08-01---for:【TV360X-416】单表代码生成，表单打开时，会先聚焦富文本组件，并滚动到富文本组件所在的位置---
           // toolbar_groups: true,
           skin: skinName.value,
           skin_url: publicPath + 'resource/tinymce/skins/ui/' + skinName.value,
