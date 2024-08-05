@@ -1,8 +1,6 @@
 package org.jeecg.modules.business.service;
 
-import com.aspose.cells.PdfSaveOptions;
-import com.aspose.cells.SaveFormat;
-import com.aspose.cells.Workbook;
+import com.aspose.cells.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -786,6 +784,19 @@ public class PlatformOrderShippingInvoiceService {
             saveOptions.setDefaultFont("Arial");
             saveOptions.setCheckWorkbookDefaultFont(false);
             Workbook workbook = new Workbook(excelFilePath);
+            Worksheet sheet = workbook.getWorksheets().get(0);
+            // get number of lines
+            Cells cells = sheet.getCells();
+            int maxRow = cells.getMaxDataRow();
+            PageSetup pageSetup = sheet.getPageSetup();
+            // Setting the number of pages to which the length of the worksheet will
+            if(maxRow < 63) {
+                // be spanned
+                pageSetup.setFitToPagesTall(1);
+
+                // Setting the number of pages to which the width of the worksheet will be spanned
+                pageSetup.setFitToPagesWide(1);
+            }
             // On enregistre le document au format PDF
             workbook.save(pdfFilePath, saveOptions);
             return pdfFilePath;
