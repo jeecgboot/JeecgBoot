@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.HashMap;
@@ -171,6 +170,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
             
             // si le nombre de lignes de data rentre dans 1 page A4
              if(data.size() < 44) {
+                // Fit in A4 page"
                 if(TOTAL_ROW > LAST_ROW + 3) { // s'il ne reste pas assez de place pour le footer
                     // on shift le footer à la page suivante (total + signature etc..)
                     sheet.shiftRows(startRow, fileLastRow, PAGE_ROW_MAX - LAST_ROW - 1, true, false);
@@ -186,12 +186,14 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
             }
             else {// on dépasse forcément le format A4 d'un PDF
                 if(((TOTAL_ROW - 44) % 63) < 13) {
+                    // Not enough space for footer
                     sheet.shiftRows(startRow, fileLastRow, TOTAL_ROW - LAST_ROW + ((TOTAL_ROW-44)%63), true, false);
                     footerRow = additionalRowNum + ((TOTAL_ROW-44)%63) + 1;
                     imgShift = TOTAL_ROW-44 + ((TOTAL_ROW-44)%63) -1;
                     TOTAL_ROW += ((TOTAL_ROW-44)%63) + 1;
                 }
                 else {
+                    // Enough space for footer
                     sheet.shiftRows(startRow, fileLastRow, TOTAL_ROW - LAST_ROW, true, false);
                     footerRow = TOTAL_ROW - LAST_ROW +1;
                 }
@@ -254,6 +256,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
         if(data.size() > dataRowNumber)
         {
             org.apache.poi.ss.usermodel.Row totalRow;
+            // Si ça pète c'est surement ici
             if(additionalRowNum%PAGE_ROW_MAX <= 13)
                 totalRow = sheet.getRow(TOTAL_ROW-1);
             else
@@ -322,18 +325,11 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
             totalDueCellStyle.setBorderTop(BorderStyle.THIN);
             totalDueCellStyle.setFont(arialBold);
 
-            if(((LAST_ROW+additionalRowNum - 44) % 63) < 13 && ((LAST_ROW+additionalRowNum - 44) % 63) > 0) {
-                totalDueRow = sheet.getRow( data.size() < 44 ? PAGE_ROW_MAX + 1 : TOTAL_ROW + 1);
-                Cell totalDueCell = totalDueRow.createCell(7);
-                totalDueCell.setCellFormula("H" + (TOTAL_ROW) + "-G" + (TOTAL_ROW));
-                totalDueCell.setCellStyle(totalDueCellStyle);
-            }
-            else {
-                totalDueRow = sheet.getRow(data.size() < 44 ? TOTAL_ROW + 1 : TOTAL_ROW + 2);
-                Cell totalDueCell = totalDueRow.createCell(7);
-                totalDueCell.setCellFormula("H" + (data.size() < 44 ? TOTAL_ROW : TOTAL_ROW + 1) + "-G" + (data.size() < 44 ? TOTAL_ROW : TOTAL_ROW + 1));
-                totalDueCell.setCellStyle(totalDueCellStyle);
-            }
+            // Si ça pète c'est pas là
+            totalDueRow = sheet.getRow( totalRow.getRowNum() + 2);
+            Cell totalDueCell = totalDueRow.createCell(7);
+            totalDueCell.setCellFormula("H" + (totalRow.getRowNum() + 1) + "-G" + (totalRow.getRowNum()) + 1);
+            totalDueCell.setCellStyle(totalDueCellStyle);
         }
 
         if (targetClient.getCurrency().equals("USD")) {

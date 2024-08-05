@@ -79,7 +79,22 @@ public class LogisticChannelServiceImpl extends ServiceImpl<LogisticChannelMappe
 
     @Override
     public List<LogisticChannelPrice> findLogisticsChannelPrice(String channelName, Date date, int trueWeight, List<String> countryList) {
-        return logisticChannelPriceMapper.findBy(channelName, new java.util.Date(), BigDecimal.valueOf(trueWeight), countryList);
+        List<LogisticChannelPrice> priceList = new ArrayList<>();
+        List<LogisticChannelPrice> currentPriceList = logisticChannelPriceMapper.findBy(channelName, new java.util.Date(), BigDecimal.valueOf(trueWeight), countryList);
+        LogisticChannelPrice currentPrice = currentPriceList.stream()
+                .max(Comparator.comparing(LogisticChannelPrice::getEffectiveDate))
+                .orElse(null);
+        if(currentPrice != null) {
+            priceList.add(currentPrice);
+            LogisticChannelPrice previousPrice = logisticChannelPriceMapper.findPrevious(channelName, new java.util.Date(), BigDecimal.valueOf(trueWeight), countryList);
+            if(previousPrice != null) {
+                priceList.add(previousPrice);
+            } else {
+                currentPriceList.stream()
+                        .min(Comparator.comparing(LogisticChannelPrice::getEffectiveDate)).ifPresent(priceList::add);
+            }
+        }
+        return priceList;
     }
 
     @Override
@@ -99,6 +114,8 @@ public class LogisticChannelServiceImpl extends ServiceImpl<LogisticChannelMappe
                         trueWeight = weight;
                     }
                     List<LogisticChannelPrice> priceList = findLogisticsChannelPrice(channelName, new Date(), trueWeight, countryList);
+                    System.out.println("Price list for " + channelName + " is : ");
+                    System.out.println(priceList);
                     LogisticChannelPrice price = priceList.stream()
                             .max(Comparator.comparing(LogisticChannelPrice::getEffectiveDate))
                             .orElse(null);

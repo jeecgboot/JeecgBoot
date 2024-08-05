@@ -39,6 +39,11 @@ public interface LogisticChannelPriceMapper extends BaseMapper<LogisticChannelPr
             @Param("date") Date shippingTime,
             @Param("trueWeight") BigDecimal weight,
             @Param("countryList") List<String> countryList);
+    LogisticChannelPrice findPrevious(
+            @Param("channelName") String channelName,
+            @Param("date") Date shippingTime,
+            @Param("trueWeight") BigDecimal weight,
+            @Param("countryList") List<String> countryList);
 
     /**
      * Find logistic channel price by indicating platform order's shipping time

@@ -7,7 +7,7 @@
         FROM client c
             JOIN shop s ON c.id = s.owner_id
             JOIN platform_order po on s.id = po.shop_id
-        WHERE po.shipping_invoice_number = #{invoiceNumber}
+        WHERE po.shipping_invoice_number = #{invoiceNumber} OR po.purchase_invoice_number = #{invoiceNumber};
     </select>
     <select id="fetchShippingInvoiceId" resultType="java.lang.String">
         SELECT id
