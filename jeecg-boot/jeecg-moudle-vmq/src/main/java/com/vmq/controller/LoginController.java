@@ -1,10 +1,11 @@
 package com.vmq.controller;
 
 import com.vmq.config.EmailUtils;
+import com.vmq.constant.Constant;
 import com.vmq.dao.PayOrderDao;
 import com.vmq.dao.TmpPriceDao;
 import com.vmq.dto.CommonRes;
-import com.vmq.entity.PayInfo;
+import com.vmq.dto.PayInfo;
 import com.vmq.entity.PayOrder;
 import com.vmq.entity.VmqSetting;
 import com.vmq.service.AdminService;
@@ -190,7 +191,7 @@ public class LoginController {
             if (payOrder.getPayDate() < 1) {
                 payInfo.setPayDate(StringUtils.format(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss"));
             }
-            emailUtils.sendTemplateMail(sender, payOrder.getEmail(),"【码支付】支付成功通知","pay-success", payInfo);
+            emailUtils.sendTemplateMail(sender, payOrder.getEmail(), Constant.PAY_SUCCESS_EMAIL_TITLE,Constant.PAY_SUCCESS_EMAIL_TEMPLATE, payInfo);
         }
         payOrderDao.setState(1,payOrder.getId());
         return "success";

@@ -8,8 +8,9 @@ import javax.persistence.Id;
 import java.util.Date;
 
 @Data
-//@Entity
+@Entity
 public class SysUser {
+
     @Id
     @GeneratedValue
     private String id;
@@ -23,6 +24,8 @@ public class SysUser {
     private String salt;
 
     private String email;
+
+    private String phone;
 
     private boolean status;
 

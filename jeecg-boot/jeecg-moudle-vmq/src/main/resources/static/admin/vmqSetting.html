@@ -1,23 +1,23 @@
-<div class="layui-form" action="">
+<div class="layui-form" action="" id="vmqSetting">
 
     <div class="layui-form-item" >
         <label class="layui-form-label">后台账号</label>
         <div class="layui-input-block">
             <input type="hidden" id="id" name="id">
-            <input type="text" id="user" lay-verify="required" autocomplete="off" class="layui-input" readonly>
+            <input type="text" id="username" name="username" lay-verify="required" autocomplete="off" class="layui-input" readonly>
         </div>
     </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label">订单有效期(分钟)</label>
         <div class="layui-input-block">
-            <input type="number" id="close" lay-verify="required" placeholder="请输入创建的订单几分钟后失效" autocomplete="off" class="layui-input">
+            <input type="number" id="close" name="close" lay-verify="required" placeholder="请输入创建的订单几分钟后失效" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">通知邮箱</label>
         <div class="layui-input-block">
-            <input type="email" id="email" lay-verify="required" placeholder="请输入通知邮箱" autocomplete="off" class="layui-input">
+            <input type="email" id="email" name="email" lay-verify="required" placeholder="请输入通知邮箱" autocomplete="off" class="layui-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -41,30 +41,45 @@
     <div class="layui-form-item">
         <label class="layui-form-label">异步回调</label>
         <div class="layui-input-block">
-            <input type="text" id="notifyUrl" lay-verify="required" placeholder="请输入异步回调地址" autocomplete="off" class="layui-input">
+            <input type="text" id="notifyUrl" name="notifyUrl" lay-verify="required" placeholder="请输入异步回调地址" autocomplete="off" class="layui-input">
         </div>
     </div>
 
-    <div class="layui-form-item">
+    <!--<div class="layui-form-item">
         <label class="layui-form-label">同步回调</label>
         <div class="layui-input-block">
-            <input type="text" id="returnUrl" lay-verify="required" placeholder="请输入支付完成后跳转地址" autocomplete="off" class="layui-input">
+            <input type="text" id="returnUrl" name="returnUrl" lay-verify="required" placeholder="请输入支付完成后跳转地址" autocomplete="off" class="layui-input">
         </div>
-    </div>
+    </div>-->
 
     <div class="layui-form-item">
         <label class="layui-form-label">通讯密钥</label>
         <div class="layui-input-block">
-            <input type="text" id="md5key" lay-verify="required" placeholder="请输入通讯密钥" autocomplete="off" class="layui-input">
+            <input type="text" id="md5key" name="md5key" lay-verify="required" placeholder="请输入通讯密钥" autocomplete="off" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
         <label class="layui-form-label">监控端回调密钥</label>
         <div class="layui-input-block">
-            <input type="text" id="secret" lay-verify="required" placeholder="请输入监控端回调密钥" autocomplete="off" class="layui-input">
+            <input type="text" id="secret" name="secret" lay-verify="required" placeholder="请输入监控端回调密钥" autocomplete="off" class="layui-input">
         </div>
     </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">支付宝UserId</label>
+        <div class="layui-input-block">
+            <input type="text" id="aliUserId" name="aliUserId" lay-verify="required" placeholder="请输入支付宝UserId" autocomplete="off" class="layui-input">
+            <button type="button" class="layui-btn" onclick="getAliUserID()">获取UserId</button>
+        </div>
+    </div>
+
+    <!--<div class="layui-form-item">
+        <label class="layui-form-label">支付宝Cookie</label>
+        <div class="layui-input-block">
+            <input type="text" id="aliCookie" name="aliCookie" lay-verify="required" placeholder="请输入支付宝Cookie" autocomplete="off" class="layui-input">
+        </div>
+    </div>-->
 
     <div class="layui-form-item">
         <label class="layui-form-label">区分方式</label>
@@ -117,7 +132,6 @@
     </div>
 
 </div>
-
 <style>
     .layui-form-item {
         display: flex;
@@ -132,7 +146,8 @@
     }
 </style>
 <script>
-    var useLocalUser = false;
+
+var useLocalUser = false;
     $(".useLocalUser").hide();
     if (useLocalUser) {
         $(".useLocalUser").show();
@@ -236,20 +251,27 @@
 
     });
 
+    function getAliUserID() {
+        layer.confirm("<div style='width: 300px;text-align: center'>请使用支付宝扫一扫<img src='assets/images/aliUserId.jpg' style='width: 200px'></div>"
+            ,function (index) {layer.close(index);}
+        );
+    }
 
     function save() {
         var id = $("#id").val();
-        var user = $("#user").val();
+        var username = $("#username").val();
         var email = $("#email").val();
         var notifyUrl = $("#notifyUrl").val();
         var returnUrl = $("#returnUrl").val();
         var md5key = $("#md5key").val();
         var secret = $("#secret").val();
+        var aliUserId = $("#aliUserId").val();
+        var aliCookie = $("#aliCookie").val();
         var close = $("#close").val();
         var payQf = $("#payQf").val();
         var isApprove = $("#isApprove").val();
         var isNotice = $("#isNotice").val();
-        if (user == ""){
+        if (username == ""){
             layer.msg("请输入管理员账号");
             return;
         }
@@ -263,6 +285,14 @@
                 layer.msg("请输入邮箱地址");
                 return;
             }
+        }
+        if (md5key == ""){
+            layer.msg("请输入通讯密钥");
+            return;
+        }
+        if (secret == ""){
+            layer.msg("请输入监控端回调密钥");
+            return;
         }
         var wximg = $("#wximg").attr("src");
         if (wximg=="" || !wximg){
@@ -284,8 +314,9 @@
             url: "admin/saveSetting",
             contentType: "application/json",
             async: false,
-            data: JSON.stringify( { 'id':id ,'username':user ,'email':email,'isApprove':isApprove,'isNotice':isNotice,
-                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':md5key ,'secret':secret,'wxpay':wximg ,'wxzspay':wxzsimg,'zfbpay':zfbimg ,'qqpay':qqimg,'close':close,'payQf':payQf} ),
+            data: JSON.stringify( { 'id':id ,'username':username ,'email':email,'isApprove':isApprove,'isNotice':isNotice,
+                'notifyUrl':notifyUrl ,'returnUrl':returnUrl ,'md5key':md5key ,'secret':secret,'aliUserId':aliUserId,'aliCookie':aliCookie,
+                'wxpay':wximg ,'wxzspay':wxzsimg,'zfbpay':zfbimg ,'qqpay':qqimg,'close':close,'payQf':payQf} ),
             datatype: "json",
             success: function (data) {
                 if (data.code==1){
@@ -300,12 +331,14 @@
         $.post("admin/getSettings",function (data) {
             if (data.code==1){
                 $("#id").val(data.data.id);
-                $("#user").val(data.data.username);
+                $("#username").val(data.data.username);
                 $("#email").val(data.data.email);
                 $("#notifyUrl").val(data.data.notifyUrl);
                 $("#returnUrl").val(data.data.returnUrl);
                 $("#md5key").val(data.data.md5key);
                 $("#secret").val(data.data.secret);
+                $("#aliUserId").val(data.data.aliUserId);
+                $("#aliCookie").val(data.data.aliCookie);
                 $("#close").val(data.data.close);
                 $("#payQf").val(data.data.payQf);
                 $("#isApprove").val(data.data.isApprove);

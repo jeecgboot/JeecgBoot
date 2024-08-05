@@ -126,4 +126,9 @@ public class StringUtils extends org.springframework.util.StringUtils {
         }
         return "";
     }
+
+    public static String getValueBetweenKey(String text, String k1, String k2) {
+        int endIndex = text.indexOf(k2, text.indexOf(k1)+k1.length());
+        return text.substring(text.indexOf(k1)+k1.length(), endIndex);
+    }
 }

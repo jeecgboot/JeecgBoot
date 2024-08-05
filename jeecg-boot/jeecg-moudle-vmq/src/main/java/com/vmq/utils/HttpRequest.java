@@ -4,10 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.vmq.dto.usdt.EpusdtEntity;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,12 +49,6 @@ public class HttpRequest {
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             // 建立实际的连接
             connection.connect();
-            // 获取所有响应头字段
-            Map<String, List<String>> map = connection.getHeaderFields();
-            // 遍历所有的响应头字段
-            for (String key : map.keySet()) {
-                log.info(key + "--->" + map.get(key));
-            }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(
                     connection.getInputStream()));
@@ -120,12 +113,24 @@ public class HttpRequest {
         return result;
     }
 
-    public static EpusdtEntity sendPost(String url, Map<String, Object> params) {
+    public static <T> T sendPost(String url, Map<String, Object> params,Class<T> cla) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> requestEntity = new HttpEntity<>(JSONObject.toJSONString(params), headers);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<EpusdtEntity> exchange = restTemplate.postForEntity(url, requestEntity, EpusdtEntity.class);
+        ResponseEntity<T> exchange = restTemplate.postForEntity(url, requestEntity,cla);
+        return exchange.getBody();
+    }
+
+    public static <T> T sendPost(String url, Map<String, Object> params,HttpHeaders headers,Class<T> cla) {
+        MultiValueMap<String, Object> multiValueMap = new LinkedMultiValueMap<>();
+        for (Map.Entry<String, Object> stringObjectEntry : params.entrySet()) {
+            multiValueMap.add(stringObjectEntry.getKey(), stringObjectEntry.getValue());
+        }
+        RestTemplate restTemplate = new RestTemplate();
+        //将请求头部和参数合成一个请求
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(multiValueMap, headers);
+        ResponseEntity<T> exchange = restTemplate.exchange(url, HttpMethod.POST, requestEntity,cla);
         return exchange.getBody();
     }
 

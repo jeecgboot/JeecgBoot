@@ -12,7 +12,7 @@ public class CreateOrderRes {
     private String payId;
     @ApiModelProperty("云端订单号")
     private String orderId;
-    @ApiModelProperty("支付类型：1微信，2支付宝，3赞赏码，4QQ")
+    @ApiModelProperty("支付类型：1微信，2支付宝，3微信赞赏码，4QQ，5支付宝转账")
     private int payType;
     @ApiModelProperty(hidden = true)
     private String payName;

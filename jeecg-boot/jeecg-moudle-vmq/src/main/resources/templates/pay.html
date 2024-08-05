@@ -26,12 +26,9 @@
 <body>
 <div class="body" id="body" style="display: none">
     <h1 class="mod-title">
-
-        <span class="ico_log ico-1" v-if="payType == 1"></span>
-        <span class="ico_log ico-2" v-if="payType == 2"></span>
-        <span class="ico_log ico-1" v-if="payType == 3"></span>
+        <span class="ico_log ico-1" v-if="payType == 1 || payType == 3"></span>
+        <span class="ico_log ico-2" v-if="payType == 2 || payType == 5"></span>
         <span class="ico_log ico-4" v-if="payType == 4"></span>
-
     </h1>
 
     <div class="mod-ct">
@@ -44,9 +41,18 @@
                 <div data-role="qrPayImg" class="qrcode-img-area">
                     <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
                     <div style="position: relative;display: inline-block;">
-                        <img v-if="payType != 3" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: block;">
+                        <img v-if="payType != 3 && payType != 5 && payType != 6" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: block;">
+                        <!-- 赞赏码 -->
                         <div v-if="payType == 3" style="width: 300px;height: 200px;overflow: hidden">
                             <img id="img_id" alt="加载中..." :src="payUrl" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -50px;">
+                        </div>
+                        <!-- 支付宝转账 -->
+                        <div v-if="payType == 5">
+                            <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="210" height="210" style="display: none;">
+                            <img class="APPPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: none;">
+                        </div>
+                        <div class="APPPage" style="display: none">
+                            <label  style="font-size: medium">长按图片识别二维码</label>
                         </div>
                     </div>
                 </div>
@@ -93,11 +99,7 @@
             </div>
         </div>
 
-
-        <div class="tip-text">
-
-        </div>
-
+        <div class="tip-text"></div>
 
     </div>
     <div class="foot">
@@ -116,7 +118,14 @@
 <script src="assets/js/vue.min.js"></script>
 <script src="assets/js/function.js"></script>
 <script>
-
+    var userAgent = navigator.userAgent.toLowerCase();
+    if(userAgent.match(/Alipay/i) == "alipay") {
+        $(".APPPage").attr("style", "display:block;")
+    } else if(userAgent.match(/MicroMessenger/i) == "micromessenger") {
+        $(".APPPage").attr("style", "display:block;")
+    } else {
+        $(".PCPage").attr("style", "display:block;")
+    }
     function aaa() {
         if ($('#orderDetail').hasClass('detail-open')) {
             $('#orderDetail .detail-ct').slideUp(500, function () {
@@ -127,6 +136,7 @@
                 $('#orderDetail').addClass('detail-open');
             });
         }
+
     }
     var myTimer;
     function timer(intDiff) {

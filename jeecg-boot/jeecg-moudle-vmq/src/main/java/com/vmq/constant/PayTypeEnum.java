@@ -1,15 +1,18 @@
 package com.vmq.constant;
 
+import com.vmq.entity.PayOrder;
+import com.vmq.entity.VmqSetting;
+import com.vmq.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 
 
 public enum PayTypeEnum {
-
     WX(1, "微信"),
     ZFB(2, "支付宝"),
-    ZSM(3, "赞赏码"),
-    QQ(4, "QQ");
+    ZSM(3, "微信赞赏码"),
+    QQ(4, "QQ"),
+    ZFBTR(5, "支付宝转账");
 
     @Getter
     @Setter
@@ -40,5 +43,27 @@ public enum PayTypeEnum {
             }
         }
         return "";
+    }
+
+    public static String getPayUrlByOrder(VmqSetting vmqSetting, PayOrder payOrder) {
+        int type = payOrder.getType();
+        String payUrl = "";
+        if (type == PayTypeEnum.WX.getCode()){
+            payUrl = vmqSetting.getWxpay();
+        }else if (type == PayTypeEnum.ZFB.getCode()){
+            payUrl = vmqSetting.getZfbpay();
+        }else if (type == PayTypeEnum.ZSM.getCode()){
+            payUrl = vmqSetting.getWxzspay();
+        }else if (type == PayTypeEnum.QQ.getCode()){
+            payUrl = vmqSetting.getQqpay();
+        }else if (type == PayTypeEnum.ZFBTR.getCode()){
+            double reallyPrice = payOrder.getReallyPrice();
+            String userId = vmqSetting.getAliUserId();
+            if (StringUtils.isBlank(userId)) {
+                return "";
+            }
+            payUrl = String.format(Constant.ALI_TRANS_URL, userId, reallyPrice, "VMQ");
+        }
+        return payUrl;
     }
 }

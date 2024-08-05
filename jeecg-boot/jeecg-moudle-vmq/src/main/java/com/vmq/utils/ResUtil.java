@@ -1,6 +1,7 @@
 package com.vmq.utils;
 
 
+import com.vmq.constant.Constant;
 import com.vmq.dto.CommonRes;
 
 public class ResUtil {
@@ -8,7 +9,7 @@ public class ResUtil {
     public static CommonRes success(Object o){
         CommonRes commonRes = new CommonRes();
         commonRes.setCode(1);
-        commonRes.setMsg("成功");
+        commonRes.setMsg(Constant.SUCCESS);
         commonRes.setData(o);
         return commonRes;
     }
@@ -16,7 +17,7 @@ public class ResUtil {
     public static CommonRes success(){
         CommonRes commonRes = new CommonRes();
         commonRes.setCode(1);
-        commonRes.setMsg("成功");
+        commonRes.setMsg(Constant.SUCCESS);
         return commonRes;
     }
 
@@ -38,7 +39,7 @@ public class ResUtil {
     public static CommonRes error(int code,Object data){
         CommonRes commonRes = new CommonRes();
         commonRes.setCode(code);
-        commonRes.setMsg("失败");
+        commonRes.setMsg(Constant.ERROR);
         commonRes.setData(data);
         return commonRes;
     }
@@ -46,7 +47,7 @@ public class ResUtil {
     public static CommonRes error(){
         CommonRes commonRes = new CommonRes();
         commonRes.setCode(-1);
-        commonRes.setMsg("失败");
+        commonRes.setMsg(Constant.ERROR);
         return commonRes;
     }
 }

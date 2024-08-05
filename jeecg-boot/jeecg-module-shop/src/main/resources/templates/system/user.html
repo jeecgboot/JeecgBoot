@@ -193,7 +193,7 @@
                 admin.prompt({formType: 1, title: '请输入密码'}, function (value, i) {
                     layer.close(i);
                     var loadIndex = layer.load(2);
-                    $.post('${ctxPath}/user/psw/reset', {id: obj.data.userId, password: value}, function (res) {
+                    $.post('user/psw/reset', {id: obj.data.userId, password: value}, function (res) {
                         layer.close(loadIndex);
                         if (0 === res.code) {
                             layer.msg(res.msg, {icon: 1});
@@ -302,7 +302,7 @@
         /* 修改用户状态 */
         form.on('switch(userTbStateCk)', function (obj) {
             var loadIndex = layer.load(2);
-            $.post('${ctxPath}/user/state/update', {
+            $.post('user/state/update', {
                 id: obj.elem.value,
                 state: obj.elem.checked ? 0 : 1
             }, function (res) {

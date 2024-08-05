@@ -35,9 +35,9 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
     @Query(value = "select * from pay_order where id = ?1", nativeQuery = true)
     PayOrder getById(Integer id);
 
-    PayOrder findByReallyPriceAndStateAndType(double reallyPrice,int state,int type);
+    PayOrder findByUsernameAndReallyPriceAndStateAndType(String username, double reallyPrice,int state,int type);
 
-    PayOrder findByPayDate(Long payDate);
+    PayOrder findByUsernameAndPayDate(String username, Long payDate);
 
     @Query(value = "select count(*) from pay_order where create_date >= ?1 and create_date <= ?2 and username=?3", nativeQuery = true)
     int getTodayCount(String startDate,String endDate,String username);
@@ -67,4 +67,5 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
     @Query(value = "delete from pay_order where username=?1 and create_date<?2", nativeQuery = true)
     int deleteByAfterCreateDate(String username,String date);
 
+    PayOrder findByUsernameAndPayId(String username, String outTradeNo);
 }

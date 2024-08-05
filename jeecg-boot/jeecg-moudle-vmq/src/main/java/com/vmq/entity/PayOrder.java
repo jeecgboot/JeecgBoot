@@ -25,7 +25,7 @@ public class PayOrder {
     @ApiModelProperty("通知邮箱")
     private String email;
 
-    @ApiModelProperty(value = "支付类型：1微信，2支付宝，3赞赏码，4QQ",required = true)
+    @ApiModelProperty(value = "支付类型：1微信，2支付宝，3微信赞赏码，4QQ，5支付宝转账",required = true)
     private int type;
 
     @ApiModelProperty(value = "订单价格",required = true)
@@ -75,4 +75,8 @@ public class PayOrder {
 
     @ApiModelProperty(hidden = true)
     private long closeDate;
+
+    public String getUnitCode() {
+        return username + type + reallyPrice;
+    }
 }

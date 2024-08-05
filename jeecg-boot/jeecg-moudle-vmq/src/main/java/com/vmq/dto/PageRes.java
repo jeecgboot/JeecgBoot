@@ -1,5 +1,6 @@
 package com.vmq.dto;
 
+import com.vmq.constant.Constant;
 import lombok.Data;
 
 @Data
@@ -19,7 +20,7 @@ public class PageRes {
     public static PageRes success(long recount,Object obj){
         PageRes p = new PageRes();
         p.setCode(0);
-        p.setMsg("成功");
+        p.setMsg(Constant.SUCCESS);
         p.setCount(recount);
         p.setData(obj);
         return p;

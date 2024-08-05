@@ -104,7 +104,7 @@
                             <td>payId</td><td>字符串</td><td>【必传】商户订单号，可以是时间戳，不可重复</td>
                         </tr>
                         <tr>
-                            <td>type</td><td>整数</td><td>【必传】1微信支付，2支付宝支付，3赞赏码支付，4QQ钱包</td>
+                            <td>type</td><td>整数</td><td>【必传】1微信支付，2支付宝支付，3赞赏码支付，4QQ钱包，5支付宝转账</td>
                         </tr>
                         <tr>
                             <td>price</td><td>小数</td><td>【必传】订单金额</td>
@@ -608,6 +608,83 @@
                     </table>
 
                 </blockquote>
+
+        </div>
+    </div>
+    <div class="layui-colla-item">
+        <h2 class="layui-colla-title">监控端回调配置</h2>
+        <div class="layui-colla-content">
+            <blockquote class="layui-elem-quote news_search">
+                <div class="layui-inline">
+                    当监控端检测到收款后，将会向监控端配置的这个地址发送POST请求，通知服务端用户已付款。具体可参考如下配置：
+                </div>
+            </blockquote>
+            <blockquote class="layui-elem-quote news_search">
+                <div class="layui-inline">
+                    1、发送通道配置:
+                </div>
+                <table class="layui-table">
+                    <colgroup><col><col></colgroup>
+                    <thead>
+                    <tr>
+                        <th>参数名称</th><th>示例参数</th><th>参数说明</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>请求方式</td><td>GET、POST(推荐)</td><td></td>
+                    </tr>
+                    <tr>
+                        <td>Webhook Server</td><td>http://msl1214.gnway.cc/vmq/sms/notify</td><td>无需更改</td>
+                    </tr>
+                    <tr>
+                        <td>消息模板</td><td>msg=[msg]&receive_time=[receive_time]&amp;timestamp=[timestamp]&sign=[sign]&username=mctz</td><td>只需更改username</td>
+                    </tr>
+                    <tr>
+                        <td>Secret</td><td>回调密钥</td><td>在V免签页面配置，保持一致即可</td>
+                    </tr>
+                    <tr>
+                        <td>代理设置</td><td>选择无代理</td><td></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="layui-inline">
+                    2、转发规则配置:
+                </div>
+                <table class="layui-table">
+                    <colgroup><col><col></colgroup>
+                    <thead>
+                    <tr>
+                        <th>参数名称</th><th>示例参数</th><th>参数说明</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>匹配字段</td><td>选择多重匹配</td><td></td>
+                    </tr>
+                    <tr>
+                        <td>匹配的值</td><td>
+                        并且 是 APP包名 相等 com.eg.android.AlipayGphone<br>
+                        &nbsp;或者 是 APP包名 相等 com.tencent.mobileqq<br>
+                        &nbsp;或者 是 APP包名 相等 com.tencent.mm<br>
+                        并且 是 通知标题 包含 到账<br>
+                        &nbsp;或者 是 通知标题 包含 转账<br>
+                        &nbsp;或者 是 通知标题 包含 收款<br>
+                        &nbsp;或者 是 通知标题 包含 付款<br>
+                        &nbsp;或者 是 通知标题 包含 支付<br>
+                        &nbsp;或者 是 通知标题 包含 转入</td><td>无需修改</td>
+                    </tr>
+                    <tr>
+                        <td>自定义模块</td><td>
+                        {{PACKAGE_NAME}}<br>
+                        {{TITLE}}<br>
+                        {{MSG}}<br>
+                        {{RECEIVE_TIME}}</td><td>无需修改</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </blockquote>
 
         </div>
     </div>

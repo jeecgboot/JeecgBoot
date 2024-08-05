@@ -1,6 +1,5 @@
 package com.vmq.utils;
 
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +13,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Random;
 
 /**
@@ -204,7 +203,7 @@ public class PasswordUtil {
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
             byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
-            sign = URLEncoder.encode(new String(Base64.encodeBase64(signData)), "UTF-8");
+            sign = URLEncoder.encode(new String(Base64.getEncoder().encode(signData)), "UTF-8");
         } catch (Exception e) {
             log.error("签名失败",e);
         }

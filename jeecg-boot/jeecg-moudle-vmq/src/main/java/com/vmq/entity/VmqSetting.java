@@ -36,6 +36,12 @@ public class VmqSetting implements Serializable {
     /** 回调密钥 */
     private String secret;
 
+    private String aliUserId;
+
+    /** 支付宝cookie */
+    @Column(columnDefinition = "text")
+    private String aliCookie;
+
     /** 是否发送付款审核 */
     private Integer isApprove;
 

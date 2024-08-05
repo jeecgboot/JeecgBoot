@@ -69,9 +69,13 @@
                         }else if (d.type=="2"){
                             return '支付宝';
                         }else if (d.type=="3"){
-                            return '赞赏码';
+                            return '微信赞赏码';
                         }else if (d.type=="4"){
                             return 'QQ';
+                        }else if (d.type=="5"){
+                            return '支付宝转账';
+                        }else {
+                            return d.type;
                         }
                     }
                 },
@@ -182,7 +186,7 @@
         table.on('toolbar(test)', function(obj){
             var payId = new Date().getTime();
             var typeHtml = "<select id=\"typeOpt\" lay-verify=\"required\" lay-filter=\"type\">" +
-                "               <option value=\"1\">微信</option><option value=\"2\">支付宝</option><option value=\"3\">赞赏码</option><option value=\"4\">QQ</option>" +
+                "               <option value=\"1\">微信</option><option value=\"2\">支付宝</option><option value=\"3\">微信赞赏码</option><option value=\"4\">QQ</option><option value=\"5\">支付宝转账</option>" +
                 "           </select>";
             var isHtmlStr = "<select id=\"isHtmlOpt\" lay-verify=\"required\" lay-filter=\"isHtml\">" +
                 "               <option value=\"0\">json</option><option value=\"1\">页面</option>" +

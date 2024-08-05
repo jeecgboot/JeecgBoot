@@ -25,8 +25,8 @@
 
             <ul class="layui-nav layui-layout-right">
                 <li class="layui-nav-item">
-                    <input id="token" name="token" type="hidden" value="${token}">
-                    <a id="username" href="javascript:">${username}</a>
+                    <input id="userToken" type="hidden" value="${token}">
+                    <a id="userName" href="javascript:">${username}</a>
                     <dl class="layui-nav-child">
                         <dd><a onclick="logout()">退出</a></dd>
                     </dl>
@@ -106,16 +106,16 @@
 <script src="layui/layui.js?t=1531663423583" charset="utf-8"></script>
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/function.js"></script>
+<script src="assets/js/vue.min.js"></script>
 <script type="text/javascript" src="https://unpkg.com/wangeditor@3.1.1/release/wangEditor.min.js"></script>
 <script>
     var userMap = getUserInfo();
     var token = userMap.token;
-    console.log(token);
     if (token == "" || token == null || token == undefined) {
         window.location.href = "/vmq/login";
     }
-    $("#username").html(userMap.username);
-    $("#token").val(token);
+    $("#userName").html(userMap.username);
+    $("#userToken").val(token);
     window.global = {
         pageType: 'demo'
         , preview: function () {

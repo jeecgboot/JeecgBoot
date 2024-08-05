@@ -9,6 +9,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.vmq.config.EmailUtils;
+import com.vmq.constant.Constant;
 import com.vmq.constant.PayTypeEnum;
 import com.vmq.constant.SmsTypeEnum;
 import com.vmq.dao.PayOrderDao;
@@ -63,6 +64,7 @@ public class WebController {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
     @Autowired
     private SettingDao settingDao;
 
@@ -234,7 +236,11 @@ public class WebController {
 
     @RequestMapping(value = "/appPush", method = {RequestMethod.GET, RequestMethod.POST})
     public CommonRes appPush(Integer type, String price, String t, String sign) {
-        return webService.appPush(type, price, t, sign);
+        String username = webService.getUsernameBySign(type,price,t,sign);
+        if (webService.checkRepeatPush(username,type,price,Long.valueOf(t))) {
+            return ResUtil.error("重复推送");
+        }
+        return webService.appPush(username,type, price, t, sign);
     }
 
     @RequestMapping(value = "/getOrder", method = {RequestMethod.GET, RequestMethod.POST})
@@ -307,7 +313,7 @@ public class WebController {
     public String smsNotify(String msg, String username,String timestamp, String receive_time, String sign) {
         int payType = 0;
         String price = "";
-        String result = "success";
+        String result = Constant.SUCCESS;
         String[] msgArray = msg.split("\r?\n");
         if (msgArray.length < 3) {
             result = "消息格式有误";
@@ -319,7 +325,7 @@ public class WebController {
                 result = "签名失败";
             }
         }
-        if ("success".equals(result)) {
+        if (Constant.SUCCESS.equals(result)) {
             if (msgArray[0].equals(SmsTypeEnum.WX.getSource()) && msgArray[1].equals("微信支付")) {
                 if (msgArray[2].contains("个人收款码")) {
                     payType = PayTypeEnum.WX.getCode();
@@ -327,22 +333,33 @@ public class WebController {
                     payType = PayTypeEnum.ZSM.getCode();
                 }
                 price = StringUtils.getAmount(msgArray[2]);
-            } else if (msgArray[0].equals(SmsTypeEnum.ZFB.getSource()) && msgArray[1].startsWith("你已成功收款")) {
-                payType = PayTypeEnum.ZFB.getCode();
-                price = StringUtils.getAmount(msgArray[1]);
+            } else if (msgArray[0].equals(SmsTypeEnum.ZFB.getSource())) {
+                if(msgArray[1].startsWith("你已成功收款")) {
+                    payType = PayTypeEnum.ZFB.getCode();
+                    price = StringUtils.getAmount(msgArray[1]);
+                } else if (msgArray[1].startsWith("收款通知")) {
+                    payType = PayTypeEnum.ZFBTR.getCode();
+                    price = StringUtils.getAmount(msgArray[2]);
+                } else if (msgArray[1].startsWith("你收到1笔转账")) { // 无法获取价格
+                    //payType = PayTypeEnum.ZFBTR.getCode();
+                    //price = StringUtils.getAmount(msgArray[2]);
+                }
             } else if (msgArray[0].equals(SmsTypeEnum.QQ.getSource())) {
                 payType = PayTypeEnum.QQ.getCode();
                 price = StringUtils.getAmount(msgArray[1]);
             }
             if (payType == 0) {
-                result = "不是支付通知";
+                result = "不支持的支付通知";
             }else if (StringUtils.isBlank(price)) {
                 result = "未匹配到金额";
             }
         }
-        if ("success".equals(result)) {
+        if (Constant.SUCCESS.equals(result)) {
             Long payTime = DateUtil.parseDateTime(receive_time).getTime();
-            CommonRes res = webService.appPush(payType, price, String.valueOf(payTime), webService.getMd5(username,payType + price + payTime));
+            if (webService.checkRepeatPush(username,payType,price,payTime)) {
+                return "重复推送";
+            }
+            CommonRes res = webService.appPush(username, payType, price, String.valueOf(payTime), webService.getMd5(username,payType + price + payTime));
             if (res.getCode() != 1) {
                 result = res.getMsg();
             }

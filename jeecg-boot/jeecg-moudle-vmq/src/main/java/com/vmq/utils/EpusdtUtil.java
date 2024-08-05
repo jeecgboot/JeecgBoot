@@ -43,7 +43,7 @@ public class EpusdtUtil {
         String sign = createSign(dujiao, key);
         dujiao.setSignature(sign);
 
-        EpusdtEntity curl = HttpRequest.sendPost(create_url, JSON.parseObject(JSON.toJSONString(dujiao), Map.class));
+        EpusdtEntity curl = HttpRequest.sendPost(create_url, JSON.parseObject(JSON.toJSONString(dujiao), Map.class),EpusdtEntity.class);
         return curl;
     }
 
