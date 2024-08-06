@@ -9,29 +9,18 @@
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">订单有效期(分钟)</label>
-        <div class="layui-input-block">
-            <input type="number" id="close" name="close" lay-verify="required" placeholder="请输入创建的订单几分钟后失效" autocomplete="off" class="layui-input">
-        </div>
-    </div>
-    <div class="layui-form-item">
         <label class="layui-form-label">通知邮箱</label>
-        <div class="layui-input-block">
+        <div class="layui-input-block" style="width: 200px">
             <input type="email" id="email" name="email" lay-verify="required" placeholder="请输入通知邮箱" autocomplete="off" class="layui-input">
         </div>
-    </div>
-    <div class="layui-form-item">
         <label class="layui-form-label">付款审核通知</label>
-        <div class="layui-input-block">
+        <div class="layui-input-block" style="width: 100px">
             <select id="isApprove">
                 <option value="1">是</option><option value="0">否</option>
             </select>
         </div>
-    </div>
-
-    <div class="layui-form-item">
         <label class="layui-form-label">付款成功通知</label>
-        <div class="layui-input-block">
+        <div class="layui-input-block" style="width: 100px">
             <select id="isNotice">
                 <option value="1">是</option><option value="0">否</option>
             </select>
@@ -67,9 +56,23 @@
     </div>
 
     <div class="layui-form-item">
+        <label class="layui-form-label">订单有效期(分钟)</label>
+        <div class="layui-input-block" style="width: 100px">
+            <input type="number" id="close" name="close" lay-verify="required" placeholder="请输入创建的订单几分钟后失效" autocomplete="off" class="layui-input">
+        </div>
+        <label class="layui-form-label">区分方式</label>
+        <div class="layui-input-block" style="width: 200px">
+            <select id="payQf">
+                <option value="1">金额递增</option>
+                <option value="2">金额递减</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
         <label class="layui-form-label">支付宝UserId</label>
         <div class="layui-input-block">
-            <input type="text" id="aliUserId" name="aliUserId" lay-verify="required" placeholder="请输入支付宝UserId" autocomplete="off" class="layui-input">
+            <input type="text" id="aliUserId" name="aliUserId" lay-verify="required" placeholder="请输入支付宝UserId，个人转账使用" autocomplete="off" class="layui-input">
             <button type="button" class="layui-btn" onclick="getAliUserID()">获取UserId</button>
         </div>
     </div>
@@ -80,18 +83,6 @@
             <input type="text" id="aliCookie" name="aliCookie" lay-verify="required" placeholder="请输入支付宝Cookie" autocomplete="off" class="layui-input">
         </div>
     </div>-->
-
-    <div class="layui-form-item">
-        <label class="layui-form-label">区分方式</label>
-        <div class="layui-input-block">
-            <div class="layui-upload">
-                <select id="payQf">
-                    <option value="1">金额递增</option>
-                    <option value="2">金额递减</option>
-                </select>
-            </div>
-        </div>
-    </div>
 
     <div class="layui-form-item" style="display: flex;">
         <label class="layui-form-label">无金额收款二维码</label>

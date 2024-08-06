@@ -45,6 +45,12 @@ public enum PayTypeEnum {
         return "";
     }
 
+    /**
+     * 获取支付链接
+     * @param vmqSetting
+     * @param payOrder
+     * @return
+     */
     public static String getPayUrlByOrder(VmqSetting vmqSetting, PayOrder payOrder) {
         int type = payOrder.getType();
         String payUrl = "";

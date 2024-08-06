@@ -63,12 +63,13 @@ public class QuartzService {
                 // 更改过期订单关闭时间和状态
                 int row = payOrderDao.setTimeout(username,timeout,closeTime);
 
-                long beginTime = Long.valueOf(closeTime) - timeoutMS * 10;
+                long beginTime = Long.valueOf(closeTime) - timeoutMS;
 
                 List<Map<String,Object>> payOrders = payOrderDao.findAllByCloseDate(username,beginTime, Long.valueOf(closeTime));
                 for (Map payOrder: payOrders) {
                     tmpPriceDao.delprice(username,payOrder.get("type")+"-"+payOrder.get("really_price"));
                 }
+                // 补偿机制，删除异常数据
                 tmpPriceDao.delpriceByUsername(username);
                 msg += String.format("[%s]成功清理%d个订单 ", username, row);
             }catch (Exception e){

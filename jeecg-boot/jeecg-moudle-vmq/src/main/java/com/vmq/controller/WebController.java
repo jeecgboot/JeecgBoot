@@ -167,6 +167,12 @@ public class WebController {
     @RequestMapping(value = "/createOrder", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "创建订单")
     public String createOrder(PayOrder payOrder, HttpServletRequest request) {
+        String ip = HttpRequest.getIpAddr(request);
+        String temp = redisTemplate.opsForValue().get(ip);
+        Long expire = redisTemplate.getExpire(ip, TimeUnit.SECONDS);
+        if (StringUtils.isNotBlank(temp)) {
+            return new Gson().toJson(ResUtil.error("您提交的订单未完成支付，请确认支付状态。请在" + expire + "秒后再试"));
+        }
         if (StringUtils.isEmpty(payOrder.getPayId())) {
             return new Gson().toJson(ResUtil.error("请传入商户订单号"));
         }
@@ -175,13 +181,6 @@ public class WebController {
         }
         if (!StringUtils.isEmpty(payOrder.getEmail()) && !EmailUtils.checkEmail(payOrder.getEmail())) {
             return new Gson().toJson(ResUtil.error("请填写正确的邮箱地址"));
-        }
-
-        String ip = HttpRequest.getIpAddr(request);
-        String temp = redisTemplate.opsForValue().get(ip);
-        Long expire = redisTemplate.getExpire(ip, TimeUnit.SECONDS);
-        if (StringUtils.isNotBlank(temp)) {
-            return new Gson().toJson(ResUtil.error("您提交的订单未完成支付，请确认支付状态。请在" + expire + "秒后再试"));
         }
         Double priceD;
         try {
@@ -202,8 +201,10 @@ public class WebController {
         }
         int isHtml = payOrder.getIsHtml();
         CommonRes commonRes = webService.createOrder(payOrder);
-        //记录缓存
-        redisTemplate.opsForValue().set(ip, "added", expireCount, TimeUnit.SECONDS);
+        if (commonRes.getCode() == 1) {
+            //记录缓存
+            redisTemplate.opsForValue().set(ip, "added", expireCount, TimeUnit.SECONDS);
+        }
         if (isHtml == 0) {
             String res = new Gson().toJson(commonRes);
             return res;
@@ -341,8 +342,7 @@ public class WebController {
                     payType = PayTypeEnum.ZFBTR.getCode();
                     price = StringUtils.getAmount(msgArray[2]);
                 } else if (msgArray[1].startsWith("你收到1笔转账")) { // 无法获取价格
-                    //payType = PayTypeEnum.ZFBTR.getCode();
-                    //price = StringUtils.getAmount(msgArray[2]);
+
                 }
             } else if (msgArray[0].equals(SmsTypeEnum.QQ.getSource())) {
                 payType = PayTypeEnum.QQ.getCode();

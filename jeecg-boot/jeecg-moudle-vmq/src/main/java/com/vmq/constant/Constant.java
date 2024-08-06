@@ -28,9 +28,10 @@ public interface Constant {
     long MIN120 = NUMBER_120 * 60 * 1000;
 
     // API接口
-    //String aliTrans = "https://render.alipay.com/p/s/i?scheme=";
-    //String aliOpenUrl = "alipays://platformapi/startapp?appId=20000067&url=";
-    //String transURL = "alipays://platformapi/startapp?appId=09999988&actionType=toAccount&userId=%s&amount=%s&memo=%s&goBack=NO";
+    // String aliTransScheme= "https://render.alipay.com/p/s/i?scheme=";
+    String aliOpenUrl = "alipays://platformapi/startapp?appId=20000067&url=";
+    @Deprecated // 无法从通知内容中获取金额，不推荐使用
+    String aliTransURL = "alipays://platformapi/startapp?appId=09999988&actionType=toAccount&userId=%s&amount=%s&memo=%s&goBack=NO";
     String ALI_TRANS_URL = "alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={\"s\": \"money\",\"u\": \"%s\",\"a\": \"%s\",\"m\": \"%s\"}";
     String ALI_ORDER_QUERY_URL = "https://mbillexprod.alipay.com/enterprise/tradeListQuery.json?_output_charset=utf-8&ctoken=";
 }

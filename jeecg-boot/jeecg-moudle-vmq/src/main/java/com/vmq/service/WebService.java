@@ -93,19 +93,21 @@ public class WebService {
         payOrder.setReallyPrice(reallyPrice);
 
         String payUrl = PayTypeEnum.getPayUrlByOrder(vmqSetting,payOrder);
-        Long payCodeId = null;
         if (payUrl == "") {
             return ResUtil.error("请您先进入后台配置程序");
         }
-        int isAuto = 1;
+
+        int isAuto = 0;
         PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,reallyPrice,payOrder.getType());
         if (payQrcode == null) {
+            isAuto = 1;
             payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,0,payOrder.getType());
         }
+
+        Long payCodeId = null;
         if (payQrcode != null){
             payCodeId = payQrcode.getId();
             payUrl = payQrcode.getPayUrl();
-            isAuto = 0;
         }
 
         PayOrder tmp = payOrderDao.findByPayId(payOrder.getPayId());
@@ -140,6 +142,14 @@ public class WebService {
         return ResUtil.success(createOrderRes);
     }
 
+    /**
+     * 获取实际付款差额
+     * @param username
+     * @param payQf
+     * @param type
+     * @param price
+     * @return
+     */
     private Double getAddAmount(String username, Integer payQf, int type, double price) {
         int row = 0;
         double addPrice = 0D;

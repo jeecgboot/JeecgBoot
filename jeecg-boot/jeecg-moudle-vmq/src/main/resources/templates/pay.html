@@ -35,24 +35,27 @@
         <div class="order"></div>
         <div class="amount" id="timeOut" style="font-size: 20px;color: red;display: none;"><p>订单已过期，请您返回网站重新发起支付</p><br></div>
         <div id="orderbody">
-            <div id="orderId" name="orderId" value="${orderId}"></div>
             <div class="amount" id="money">￥{{ reallyPrice }}</div>
             <div class="qrcode-img-wrapper" data-role="qrPayImgWrapper">
                 <div data-role="qrPayImg" class="qrcode-img-area">
                     <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
                     <div style="position: relative;display: inline-block;">
-                        <img v-if="payType != 3 && payType != 5 && payType != 6" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: block;">
+                        <!-- 收款码 -->
+                        <div v-if="payType != 3 && payType != 5">
+                            <a class="payHref">
+                                <img alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: block;">
+                            </a>
+                        </div>
                         <!-- 赞赏码 -->
                         <div v-if="payType == 3" style="width: 300px;height: 200px;overflow: hidden">
                             <img id="img_id" alt="加载中..." :src="payUrl" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -50px;">
                         </div>
                         <!-- 支付宝转账 -->
                         <div v-if="payType == 5">
-                            <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="210" height="210" style="display: none;">
-                            <img class="APPPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: none;">
-                        </div>
-                        <div class="APPPage" style="display: none">
-                            <label  style="font-size: medium">长按图片识别二维码</label>
+                            <a class="payHref">
+                                <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="210" height="210" style="display: none;">
+                                <img class="APPPage MobilePage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: none;">
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -63,23 +66,26 @@
                         <span style="color:red">为了您正常支付 请务必付款 {{ reallyPrice }} 元</span><br>
                     </h1>
                     <h1  v-if="payType == 3">
-                        <span style="color:red">请选择{{reallyPrice}}元，或点击<span style="color: dodgerblue;font-size: smaller;letter-spacing: 0">其他金额 </span>输入{{reallyPrice}}元</span><br>
+                        <span style="color:red">您可以通过选择<span style="color: dodgerblue;font-size: smaller;letter-spacing: 0">其他金额 </span>输入{{reallyPrice}}元</span><br>
                     </h1>
                 </div>
-
-                <strong id="hour_show">0时</strong>
-                <strong id="minute_show">0分</strong>
-                <strong id="second_show">0秒</strong>
+                <strong id="hour_show">0时</strong><strong id="minute_show">0分</strong><strong id="second_show">0秒</strong>
             </div>
 
             <div class="tip">
                 <div class="ico-scan"></div>
                 <div class="tip-text">
-                    <p>请使用{{payName}}扫一扫</p>
-
-                    <p v-if="isAuto == 0">扫描二维码完成支付</p>
-                    <p v-if="isAuto == 1">扫码后输入金额支付</p>
-
+                    <div class="PCPage" style="display: none">
+                        <label  style="font-size: medium">请使用{{payName}}进行支付</label>
+                    </div>
+                    <div class="MobilePage" style="display: none">
+                        <label  style="font-size: medium">请先保存图片，再使用{{payName}}进行支付</label>
+                    </div>
+                    <div class="APPPage" style="display: none">
+                        <label  style="font-size: medium">请长按图片识别二维码</label>
+                    </div>
+                    <!--<p v-if="isAuto == 0">扫描二维码完成支付</p>
+                    <p v-if="isAuto == 1">扫码后输入金额支付</p>-->
                 </div>
             </div>
 
@@ -95,18 +101,13 @@
                     <dd>等待支付</dd>
                 </dl>
 
-                <a href="javascript:void(0)" class="arrow" onclick="aaa()"><i class="ico-arrow"></i></a>
+                <a href="javascript:void(0)" class="arrow" onclick="showOrderDetail()"><i class="ico-arrow"></i></a>
             </div>
         </div>
-
         <div class="tip-text"></div>
-
     </div>
     <div class="foot">
-        <div class="inner">
-            <p>手机用户可保存上方二维码到手机中</p>
-            <p>在{{payName}}扫一扫中选择“相册”即可</p>
-        </div>
+        <div class="inner"><p>码支付版权所有Copyright © 2024 by 小码哥</p></div>
     </div>
 
 </div>
@@ -118,15 +119,7 @@
 <script src="assets/js/vue.min.js"></script>
 <script src="assets/js/function.js"></script>
 <script>
-    var userAgent = navigator.userAgent.toLowerCase();
-    if(userAgent.match(/Alipay/i) == "alipay") {
-        $(".APPPage").attr("style", "display:block;")
-    } else if(userAgent.match(/MicroMessenger/i) == "micromessenger") {
-        $(".APPPage").attr("style", "display:block;")
-    } else {
-        $(".PCPage").attr("style", "display:block;")
-    }
-    function aaa() {
+    function showOrderDetail() {
         if ($('#orderDetail').hasClass('detail-open')) {
             $('#orderDetail .detail-ct').slideUp(500, function () {
                 $('#orderDetail').removeClass('detail-open');
@@ -204,25 +197,54 @@
     }
 
     $.get("getOrder","orderId="+getQueryString("orderId"),function (data) {
+        var time = 0;
         if (data.code==1){
-            var time = new Date().getTime()-data.data.date;
-            time = time/1000;
-            time = data.data.timeOut*60 - time;
-            if (data.data.state == -1){
-                time = 0;
-            }
-            timer(time);
             new Vue({
                 el: '#body',
                 data: data.data
             });
+            if (data.data.state != -1) {
+                time = new Date().getTime()-data.data.date;
+                time = time/1000;
+                time = data.data.timeOut*60 - time;
+                check();
+            }
+            appOpenPayUrl(data.data.payType,data.data.payUrl);
             document.getElementById("body").style.display = "block";
-            check();
-        }else{
-            timer(0)
         }
+        timer(time);
     });
 
+    // app扫码后自动跳转支付链接，目前仅支付宝可以自动跳转
+    function appOpenPayUrl(payType,payUrl) {
+        if (payType == 1) {
+            payUrl = "weixin://" + payUrl;
+        } else if (payType == 5) {
+            payUrl = "https://render.alipay.com/p/s/i?scheme="+encodeURIComponent(payUrl);
+        }
+        var userAgent = navigator.userAgent.toLowerCase();
+        $(".APPPage").attr("style", "display:block;");
+        if (userAgent.match(/Alipay/i) == "alipay") { // 支付宝
+            window.open(payUrl, '_blank');
+        } else if (userAgent.match(/MicroMessenger/i) == "micromessenger") { // 微信
+            window.open(payUrl, '_blank');
+        } else if (userAgent.match(/QQ/i) == "qq") { // qq
+            window.open(payUrl, '_blank');
+        } else if (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)) { // 手机浏览器
+            $(".APPPage").attr("style", "display:none;");
+            $(".MobilePage").attr("style", "display:block;");
+            $(".payHref").each(function () { // 点击图片唤起app
+                this.href = payUrl;
+                this.target = "_blank";
+            });
+        } else { // PC浏览器
+            $(".APPPage").attr("style", "display:none;");
+            $(".PCPage").attr("style", "display:block;");
+        }
+        return payUrl;
+    }
+
+    // 判断是否支付成功
     function check() {
         $.get("checkOrder","orderId="+getQueryString("orderId"),function (data) {
             console.log("checkOrder",data.data);
@@ -235,7 +257,7 @@
                     setTimeout("check()",1500);
                 }
             }
-        })
+        });
     }
 
 </script>
