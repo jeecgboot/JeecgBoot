@@ -210,9 +210,9 @@ public class AdminService {
         p = p+"&sign="+md5(sign);
 
         String url = payOrder.getNotifyUrl();
-        if (url==null || url.equals("")){
+        if (StringUtils.isBlank(url)){
             url = vmqSetting.getNotifyUrl();
-            if (url==null || url.equals("")){
+            if (StringUtils.isBlank(url)){
                 return ResUtil.error("您还未配置异步通知地址，请现在系统配置中配置");
             }
         }

@@ -205,10 +205,10 @@ public class WebController {
             //记录缓存
             redisTemplate.opsForValue().set(ip, "added", expireCount, TimeUnit.SECONDS);
         }
-        if (isHtml == 0) {
+        if (isHtml == 0) { // JSON
             String res = new Gson().toJson(commonRes);
             return res;
-        } else {
+        } else { // HTML
             CreateOrderRes c = (CreateOrderRes) commonRes.getData();
             if (c == null) {
                 return commonRes.getMsg();
@@ -286,9 +286,9 @@ public class WebController {
         return webService.getState(t, sign);
     }
 
-    @ApiOperation(value = "默认通知接口，付款成功后调用")
+    @ApiOperation(value = "异步通知接口，付款成功后返回success")
     @RequestMapping(value = "/notify", method = {RequestMethod.GET, RequestMethod.POST})
-    public String notify(PayOrder payOrder) {
+    public String notifyUrl(PayOrder payOrder) {
         PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
         if (order == null) {
             return "订单不存在";
@@ -327,11 +327,15 @@ public class WebController {
             }
         }
         if (Constant.SUCCESS.equals(result)) {
-            if (msgArray[0].equals(SmsTypeEnum.WX.getSource()) && msgArray[1].equals("微信支付")) {
-                if (msgArray[2].contains("个人收款码")) {
+            if (msgArray[0].equals(SmsTypeEnum.WX.getSource())) {
+                if (msgArray[1].equals("微信支付")) {
+                    if (msgArray[2].contains("个人收款码")) {
+                        payType = PayTypeEnum.WX.getCode();
+                    } else if (msgArray[2].contains("二维码赞赏")) {
+                        payType = PayTypeEnum.ZSM.getCode();
+                    }
+                } else if (msgArray[1].equals("微信收款商业版")) {
                     payType = PayTypeEnum.WX.getCode();
-                } else if (msgArray[2].contains("二维码赞赏")) {
-                    payType = PayTypeEnum.ZSM.getCode();
                 }
                 price = StringUtils.getAmount(msgArray[2]);
             } else if (msgArray[0].equals(SmsTypeEnum.ZFB.getSource())) {

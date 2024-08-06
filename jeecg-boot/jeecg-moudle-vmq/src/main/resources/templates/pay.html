@@ -43,7 +43,7 @@
                         <!-- 收款码 -->
                         <div v-if="payType != 3 && payType != 5">
                             <a class="payHref">
-                                <img alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: block;">
+                                <img alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: block;">
                             </a>
                         </div>
                         <!-- 赞赏码 -->
@@ -53,8 +53,8 @@
                         <!-- 支付宝转账 -->
                         <div v-if="payType == 5">
                             <a class="payHref">
-                                <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="210" height="210" style="display: none;">
-                                <img class="APPPage MobilePage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="210" height="210" style="display: none;">
+                                <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="240" height="240" style="display: none;">
+                                <img class="APPPage MobilePage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: none;">
                             </a>
                         </div>
                     </div>
@@ -198,19 +198,21 @@
 
     $.get("getOrder","orderId="+getQueryString("orderId"),function (data) {
         var time = 0;
-        if (data.code==1){
+        if (data.code == 1) {
             new Vue({
                 el: '#body',
                 data: data.data
             });
             if (data.data.state != -1) {
-                time = new Date().getTime()-data.data.date;
-                time = time/1000;
-                time = data.data.timeOut*60 - time;
+                time = new Date().getTime() - data.data.date;
+                time = time / 1000;
+                time = data.data.timeOut * 60 - time;
                 check();
             }
-            appOpenPayUrl(data.data.payType,data.data.payUrl);
+            appOpenPayUrl(data.data.payType, data.data.payUrl);
             document.getElementById("body").style.display = "block";
+        } else {
+            alert(data.msg);
         }
         timer(time);
     });
@@ -247,7 +249,6 @@
     // 判断是否支付成功
     function check() {
         $.get("checkOrder","orderId="+getQueryString("orderId"),function (data) {
-            console.log("checkOrder",data.data);
             if (data.code == 1) {
                 window.location.href = data.data;
             } else{

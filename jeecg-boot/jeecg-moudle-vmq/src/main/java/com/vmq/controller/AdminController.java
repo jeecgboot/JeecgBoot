@@ -11,6 +11,7 @@ import com.vmq.utils.ResUtil;
 import com.vmq.utils.StringUtils;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,9 @@ import java.util.Map;
 @RequestMapping("/admin")
 @Api(tags = "系统内部接口",description = "用户登录后才能操作")
 public class AdminController {
+
+    @Value("${server.url}")
+    private String url;
 
     @Autowired
     private AdminService adminService;
@@ -63,12 +67,11 @@ public class AdminController {
             vmqSetting.setUsername(username);
             res.setData(vmqSetting);
         }
-        String path = request.getRequestURL().toString().replace("/admin/getSettings","");
         if (StringUtils.isBlank(vmqSetting.getNotifyUrl())) {
-            vmqSetting.setNotifyUrl(path + "/notify");
+            vmqSetting.setNotifyUrl(url + "/notify");
         }
         if (StringUtils.isBlank(vmqSetting.getReturnUrl())) {
-            vmqSetting.setReturnUrl(path + "/notify");
+            vmqSetting.setReturnUrl(url + "/return");
         }
         if (StringUtils.isBlank(vmqSetting.getSecret())) {
             vmqSetting.setSecret(vmqSetting.getMd5key());

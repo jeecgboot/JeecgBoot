@@ -262,4 +262,27 @@ public class LoginController {
         return payOrder;
     }
 
+    @ApiOperation(value = "同步通知接口，付款成功后调用")
+    @RequestMapping(value = "/return", method = {RequestMethod.GET, RequestMethod.POST})
+    public String returnUrl(PayOrder payOrder,Model model) {
+        PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
+        if (order == null) {
+            model.addAttribute("errorMsg","订单不存在");
+            return "500";
+        }
+        String sign = webService.getMd5(order.getUsername(),payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice());
+        if (!sign.equals(payOrder.getSign())) {
+            model.addAttribute("errorMsg","签名校验失败");
+            return "500";
+        }
+        PayInfo payInfo = new PayInfo(order);
+        model.addAttribute("orderId",payInfo.getOrderId());
+        model.addAttribute("type", payInfo.getType());
+        model.addAttribute("price",payInfo.getPrice());
+        model.addAttribute("reallyPrice",payInfo.getReallyPrice());
+        model.addAttribute("createDate",payInfo.getCreateDate());
+        model.addAttribute("payDate",payInfo.getPayDate());
+        return "pay-success";
+    }
+
 }

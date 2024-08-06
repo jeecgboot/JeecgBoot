@@ -289,9 +289,9 @@ public class WebService {
             sign = md5(payOrder.getPayId() + payOrder.getParam() + payOrder.getType() + payOrder.getPrice() + payOrder.getReallyPrice() + key);
             p = p + "&sign=" + sign;
             String url = payOrder.getNotifyUrl();
-            if (url == null || url.equals("")) {
+            if (StringUtils.isBlank(url)) {
                 url = vmqSetting.getNotifyUrl();
-                if (url == null || url.equals("")) {
+                if (StringUtils.isBlank(url)) {
                     payOrderDao.setState(2, payOrder.getId());
                     errorMsg = "您还未配置异步通知地址，请先在系统配置中配置";
                 }
@@ -363,9 +363,9 @@ public class WebService {
             String sign = md5(payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key);
             p = p+"&sign="+sign;
             String url = payOrder.getNotifyUrl();
-            if (url==null || url.equals("")){
+            if (StringUtils.isBlank(url)){
                 url = vmqSetting.getNotifyUrl();
-                if (url==null || url.equals("")){
+                if (StringUtils.isBlank(url)){
                     payOrderDao.setState(2,payOrder.getId());
                     message = "您还未配置异步通知地址，请先在系统配置中配置";
                 }
@@ -427,8 +427,8 @@ public class WebService {
         String p = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
         String sign = md5(payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key);
         p = p+"&sign="+sign;
-        String url = payOrder.getNotifyUrl();
-        if (url==null){
+        String url = payOrder.getReturnUrl();
+        if (StringUtils.isBlank(url)){
             url = vmqSetting.getReturnUrl();
         }
         return ResUtil.success(url+"?"+p);

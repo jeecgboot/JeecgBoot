@@ -1,5 +1,6 @@
 package com.vmq.dto;
 
+import com.vmq.constant.PayTypeEnum;
 import com.vmq.entity.PayOrder;
 import com.vmq.utils.StringUtils;
 import lombok.Data;
@@ -40,7 +41,7 @@ public class PayInfo {
         this.username = order.getUsername();
         this.orderId = order.getOrderId();
         this.payId = order.getPayId();
-        this.type = order.getType() == 2 ? "支付宝" : "微信";
+        this.type = PayTypeEnum.getNameByCode(order.getType());
         this.price = StringUtils.getPriceStr(order.getPrice());
         this.reallyPrice = StringUtils.getPriceStr(order.getReallyPrice());
         this.createDate = StringUtils.format(order.getCreateDate(), "yyyy-MM-dd HH:mm:ss");
