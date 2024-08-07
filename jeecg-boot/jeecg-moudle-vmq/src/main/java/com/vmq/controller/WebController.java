@@ -334,7 +334,7 @@ public class WebController {
                     } else if (msgArray[2].contains("二维码赞赏")) {
                         payType = PayTypeEnum.ZSM.getCode();
                     }
-                } else if (msgArray[1].equals("微信收款商业版")) {
+                } else if (msgArray[1].equals("微信收款商业版")) {  // 门店收款
                     payType = PayTypeEnum.WX.getCode();
                 }
                 price = StringUtils.getAmount(msgArray[2]);
@@ -342,10 +342,13 @@ public class WebController {
                 if(msgArray[1].startsWith("你已成功收款")) {
                     payType = PayTypeEnum.ZFB.getCode();
                     price = StringUtils.getAmount(msgArray[1]);
-                } else if (msgArray[1].startsWith("收款通知")) {
+                } else if (msgArray[1].equals("收款通知")) {
                     payType = PayTypeEnum.ZFBTR.getCode();
                     price = StringUtils.getAmount(msgArray[2]);
-                } else if (msgArray[1].startsWith("你收到1笔转账")) { // 无法获取价格
+                } else if (msgArray[1].equals("店员通")) { // 门店收款
+                    payType = PayTypeEnum.ZFB.getCode();
+                    price = StringUtils.getAmount(msgArray[2]);
+                } else if (msgArray[1].startsWith("你收到1笔转账")) { // 无法获取金额
 
                 }
             } else if (msgArray[0].equals(SmsTypeEnum.QQ.getSource())) {

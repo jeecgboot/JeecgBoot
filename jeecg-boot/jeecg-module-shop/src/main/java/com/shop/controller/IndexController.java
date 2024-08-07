@@ -319,10 +319,10 @@ public class IndexController {
         boolean isMobile = DeviceUtils.isMobileDevice(request);
         AtomicInteger index = new AtomicInteger(0);
         if (isMobile) {
-            List<PaysVo> paysVoList = getPaysVoList(paysService.list(new QueryWrapper<Pays>().eq("is_mobile", 1)), index);
+            List<PaysVo> paysVoList = getPaysVoList(paysService.list(new QueryWrapper<Pays>().eq("is_mobile", 1).eq("username",products.getUsername())), index);
             model.addAttribute("paysList", paysVoList);
         } else {
-            List<PaysVo> paysVoList = getPaysVoList(paysService.list(new QueryWrapper<Pays>().eq("is_pc", 1)), index);
+            List<PaysVo> paysVoList = getPaysVoList(paysService.list(new QueryWrapper<Pays>().eq("is_pc", 1).eq("username",products.getUsername())), index);
             model.addAttribute("paysList", paysVoList);
         }
 
