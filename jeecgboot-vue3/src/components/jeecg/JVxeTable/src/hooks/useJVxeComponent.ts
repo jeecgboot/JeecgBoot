@@ -44,6 +44,17 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
   const fullDataLength = computed(() => props.params.$table.internalData.tableFullData.length);
   // 是否正在滚动中
   const scrolling = computed(() => !!props.renderOptions.scrolling);
+  // 当有formatter时，优先使用formatter
+  const innerLabel = computed(() => {
+    if(typeof column.value?.formatter === 'function'){
+      return column.value.formatter({
+        cellValue: innerValue.value,
+        row: row.value,
+        column: column.value,
+      });
+    }
+    return innerValue.value
+  });
   const cellProps = computed(() => {
     let renderOptions = props.renderOptions;
     let col = originColumn.value;
@@ -111,6 +122,7 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
     return listeners;
   });
   const context = {
+    innerLabel,
     innerValue,
     row,
     rows,
