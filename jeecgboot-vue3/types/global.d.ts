@@ -80,6 +80,11 @@ declare global {
       [elem: string]: any;
     }
   }
+
+  interface Navigator {
+    // fix:msSaveBlob dose exist on type Navigator
+    msSaveBlob?: (blob: any, defaultName?: string) => boolean;
+  }
 }
 
 declare module 'vue' {
