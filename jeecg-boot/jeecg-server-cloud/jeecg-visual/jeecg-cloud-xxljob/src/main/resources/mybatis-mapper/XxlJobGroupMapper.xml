@@ -9,6 +9,7 @@
 	    <result column="title" property="title" />
 		<result column="address_type" property="addressType" />
 		<result column="address_list" property="addressList" />
+		<result column="update_time" property="updateTime" />
 	</resultMap>
 
 	<sql id="Base_Column_List">
@@ -16,7 +17,8 @@
 		t.app_name,
 		t.title,
 		t.address_type,
-		t.address_list
+		t.address_list,
+		t.update_time
 	</sql>
 
 	<select id="findAll" resultMap="XxlJobGroup">
@@ -33,8 +35,8 @@
 	</select>
 
 	<insert id="save" parameterType="com.xxl.job.admin.core.model.XxlJobGroup" useGeneratedKeys="true" keyProperty="id" >
-		INSERT INTO xxl_job_group ( `app_name`, `title`, `address_type`, `address_list`)
-		values ( #{appname}, #{title}, #{addressType}, #{addressList});
+		INSERT INTO xxl_job_group ( `app_name`, `title`, `address_type`, `address_list`, `update_time`)
+		values ( #{appname}, #{title}, #{addressType}, #{addressList}, #{updateTime} );
 	</insert>
 
 	<update id="update" parameterType="com.xxl.job.admin.core.model.XxlJobGroup" >
@@ -42,7 +44,8 @@
 		SET `app_name` = #{appname},
 			`title` = #{title},
 			`address_type` = #{addressType},
-			`address_list` = #{addressList}
+			`address_list` = #{addressList},
+			`update_time` = #{updateTime}
 		WHERE id = #{id}
 	</update>
 

@@ -265,7 +265,7 @@ public final class CronExpression implements Serializable, Cloneable {
      * 
      * @param cronExpression String representation of the cron expression the
      *                       new object should represent
-     * @throws java.text.ParseException
+     * @throws ParseException
      *         if the string expression cannot be parsed into a valid 
      *         <CODE>CronExpression</CODE>
      */
@@ -363,9 +363,8 @@ public final class CronExpression implements Serializable, Cloneable {
         // the second immediately following it.
         while (difference == 1000) {
             newDate = getTimeAfter(lastDate);
-            if(newDate == null) {
+            if(newDate == null)
                 break;
-            }
             
             difference = newDate.getTime() - lastDate.getTime();
             
@@ -533,7 +532,7 @@ public final class CronExpression implements Serializable, Cloneable {
             return i;
         }
         char c = s.charAt(i);
-        if ((c >= 'A') && (c <= 'Z') && (!"L".equals(s)) && (!"LW".equals(s)) && (!s.matches("^L-[0-9]*[W]?"))) {
+        if ((c >= 'A') && (c <= 'Z') && (!s.equals("L")) && (!s.equals("LW")) && (!s.matches("^L-[0-9]*[W]?"))) {
             String sub = s.substring(i, i + 3);
             int sval = -1;
             int eval = -1;
@@ -669,9 +668,8 @@ public final class CronExpression implements Serializable, Cloneable {
                 if(c == '-') {
                     ValueSet vs = getValue(0, s, i+1);
                     lastdayOffset = vs.value;
-                    if(lastdayOffset > 30) {
+                    if(lastdayOffset > 30)
                         throw new ParseException("Offset from last day must be <= 30", i+1);
-                    }
                     i = vs.pos;
                 }                        
                 if(s.length() > i) {
@@ -734,9 +732,8 @@ public final class CronExpression implements Serializable, Cloneable {
 
         if (c == 'L') {
             if (type == DAY_OF_WEEK) {
-                if(val < 1 || val > 7) {
+                if(val < 1 || val > 7)
                     throw new ParseException("Day-of-Week values must be between 1 and 7", -1);
-                }
                 lastdayOfWeek = true;
             } else {
                 throw new ParseException("'L' option is not valid here. (pos=" + i + ")", i);
@@ -753,9 +750,8 @@ public final class CronExpression implements Serializable, Cloneable {
             } else {
                 throw new ParseException("'W' option is not valid here. (pos=" + i + ")", i);
             }
-            if(val > 31) {
-                throw new ParseException("The 'W' option does not make sense with values larger than 31 (max number of days in a month)", i);
-            }
+            if(val > 31)
+                throw new ParseException("The 'W' option does not make sense with values larger than 31 (max number of days in a month)", i); 
             TreeSet<Integer> set = getSet(type);
             set.add(val);
             i++;
@@ -1284,7 +1280,7 @@ public final class CronExpression implements Serializable, Cloneable {
                         day = getLastDayOfMonth(mon, cl.get(Calendar.YEAR));
                         day -= lastdayOffset;
                         
-                        java.util.Calendar tcal = java.util.Calendar.getInstance(getTimeZone());
+                        Calendar tcal = Calendar.getInstance(getTimeZone());
                         tcal.set(Calendar.SECOND, 0);
                         tcal.set(Calendar.MINUTE, 0);
                         tcal.set(Calendar.HOUR_OF_DAY, 0);
@@ -1320,7 +1316,7 @@ public final class CronExpression implements Serializable, Cloneable {
                     t = day;
                     day = daysOfMonth.first();
 
-                    java.util.Calendar tcal = java.util.Calendar.getInstance(getTimeZone());
+                    Calendar tcal = Calendar.getInstance(getTimeZone());
                     tcal.set(Calendar.SECOND, 0);
                     tcal.set(Calendar.MINUTE, 0);
                     tcal.set(Calendar.HOUR_OF_DAY, 0);
@@ -1584,9 +1580,9 @@ public final class CronExpression implements Serializable, Cloneable {
      * @param hour the hour to set
      */
     protected void setCalendarHour(Calendar cal, int hour) {
-        cal.set(java.util.Calendar.HOUR_OF_DAY, hour);
-        if (cal.get(java.util.Calendar.HOUR_OF_DAY) != hour && hour != 24) {
-            cal.set(java.util.Calendar.HOUR_OF_DAY, hour + 1);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        if (cal.get(Calendar.HOUR_OF_DAY) != hour && hour != 24) {
+            cal.set(Calendar.HOUR_OF_DAY, hour + 1);
         }
     }
 

@@ -6,7 +6,7 @@ import com.xxl.job.admin.core.util.I18nUtil;
 import com.xxl.job.admin.service.LoginService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.AsyncHandlerInterceptor;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author xuxueli 2015-12-12 18:09:04
  */
 @Component
-public class PermissionInterceptor extends HandlerInterceptorAdapter {
+public class PermissionInterceptor implements AsyncHandlerInterceptor {
 
 	@Resource
 	private LoginService loginService;
@@ -27,7 +27,7 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		
 		if (!(handler instanceof HandlerMethod)) {
-			return super.preHandle(request, response, handler);
+			return true;	// proceed with the next interceptor
 		}
 
 		// if need login
@@ -43,8 +43,8 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
 		if (needLogin) {
 			XxlJobUser loginUser = loginService.ifLogin(request, response);
 			if (loginUser == null) {
-				response.sendRedirect(request.getContextPath() + "/toLogin");
-				//request.getRequestDispatcher("/toLogin").forward(request, response);
+				response.setStatus(302);
+				response.setHeader("location", request.getContextPath()+"/toLogin");
 				return false;
 			}
 			if (needAdminuser && loginUser.getRole()!=1) {
@@ -53,7 +53,7 @@ public class PermissionInterceptor extends HandlerInterceptorAdapter {
 			request.setAttribute(LoginService.LOGIN_IDENTITY_KEY, loginUser);
 		}
 
-		return super.preHandle(request, response, handler);
+		return true;	// proceed with the next interceptor
 	}
 	
 }
