@@ -247,15 +247,27 @@
 	</update>
 
 	<select id="findLostJobIds" resultType="long" >
-		SELECT t.id
-		FROM xxl_job_log AS t
-		WHERE t.trigger_code = 200
-			and t.handle_code = 0
-			and t.trigger_time <![CDATA[ <= ]]> #{losedTime}
-			and t.executor_address not in (
-				SELECT t2.registry_value
-				FROM xxl_job_registry AS t2
-			)
+		SELECT
+			t.id
+		FROM
+			xxl_job_log t
+			LEFT JOIN xxl_job_registry t2 ON t.executor_address = t2.registry_value
+		WHERE
+			t.trigger_code = 200
+				AND t.handle_code = 0
+				AND t.trigger_time <![CDATA[ <= ]]> #{losedTime}
+				AND t2.id IS NULL;
 	</select>
+	<!--
+	SELECT t.id
+	FROM xxl_job_log AS t
+	WHERE t.trigger_code = 200
+		and t.handle_code = 0
+		and t.trigger_time <![CDATA[ <= ]]> #{losedTime}
+		and t.executor_address not in (
+			SELECT t2.registry_value
+			FROM xxl_job_registry AS t2
+		)
+	-->
 
 </mapper>
