@@ -6,6 +6,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 
+/**
+ * 登录拦截配置
+ */
 @Configuration
 public class InterceptorConfig implements WebMvcConfigurer {
 

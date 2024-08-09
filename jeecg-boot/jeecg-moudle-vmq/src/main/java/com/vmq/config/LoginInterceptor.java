@@ -14,6 +14,9 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 登录拦截器
+ */
 @Slf4j
 @Component
 public class LoginInterceptor extends HandlerInterceptorAdapter {

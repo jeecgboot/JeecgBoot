@@ -16,7 +16,7 @@ public class PayInfo {
     //支付商户订单号
     private String payId;
 
-    //支付类型 1微信，2支付宝，3微信赞赏码，4QQ，5支付宝转账
+    //支付类型 1微信，2支付宝，3QQ，4微信赞赏码，5支付宝转账
     private String type;
 
     //订单价格

@@ -26,9 +26,9 @@
 <body>
 <div class="body" id="body" style="display: none">
     <h1 class="mod-title">
-        <span class="ico_log ico-1" v-if="payType == 1 || payType == 3"></span>
+        <span class="ico_log ico-1" v-if="payType == 1 || payType == 4"></span>
         <span class="ico_log ico-2" v-if="payType == 2 || payType == 5"></span>
-        <span class="ico_log ico-4" v-if="payType == 4"></span>
+        <span class="ico_log ico-3" v-if="payType == 3"></span>
     </h1>
 
     <div class="mod-ct">
@@ -41,15 +41,18 @@
                     <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
                     <div style="position: relative;display: inline-block;">
                         <!-- 收款码 -->
-                        <div v-if="payType != 3 && payType != 5">
-                            <a class="payHref">
+                        <div v-if="payType != 5">
+                            <!-- 二维码 -->
+                            <a class="payHref" v-if="payUrlType == 'url'">
                                 <img alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: block;">
                             </a>
+                            <!-- 太阳码：收款单、赞赏码 -->
+                            <div v-if="payUrlType == 'image'" style="width: 300px;height: 200px;overflow: hidden">
+                                <img v-if="payType == 1" alt="加载中..." :src="payUrl" style="width: 400px;height: 500px;margin-top: -150px;margin-left: -50px;">
+                                <img v-if="payType == 4" alt="加载中..." :src="payUrl" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -50px;">
+                            </div>
                         </div>
-                        <!-- 赞赏码 -->
-                        <div v-if="payType == 3" style="width: 300px;height: 200px;overflow: hidden">
-                            <img id="img_id" alt="加载中..." :src="payUrl" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -50px;">
-                        </div>
+
                         <!-- 支付宝转账 -->
                         <div v-if="payType == 5">
                             <a class="payHref">
@@ -62,10 +65,10 @@
             </div>
             <div class="time-item">
                 <div class="time-item" id="msg">
-                    <h1  v-if="price != reallyPrice || payType == 3">
+                    <h1  v-if="price != reallyPrice || payType == 4">
                         <span style="color:red">为了您正常支付 请务必付款 {{ reallyPrice }} 元</span><br>
                     </h1>
-                    <h1  v-if="payType == 3">
+                    <h1  v-if="payType == 4">
                         <span style="color:red">您可以通过选择<span style="color: dodgerblue;font-size: smaller;letter-spacing: 0">其他金额 </span>输入{{reallyPrice}}元</span><br>
                     </h1>
                 </div>
@@ -107,7 +110,7 @@
         <div class="tip-text"></div>
     </div>
     <div class="foot">
-        <div class="inner"><p>码支付版权所有Copyright &copy;2024 by 小码哥</p></div>
+        <div class="inner"><p>码支付Copyright &copy;2024 by 小码哥</p></div>
     </div>
 
 </div>

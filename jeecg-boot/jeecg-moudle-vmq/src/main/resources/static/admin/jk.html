@@ -32,12 +32,42 @@
         </div>
     </div>
 
+    <div class="layui-form-item" style="display: flex;">
+        <label class="layui-form-label">云端扫码登录</label>
+        <div class="layui-input-block">
+            <div class="layui-upload" style="text-align: center;">
+                <button type="button" class="layui-btn" style="background: darkseagreen">支付宝免挂</button><br>
+                <div class="layui-upload-list">
+                    <img class="layui-upload-img" style="width: 200px" src="assets/images/zfbLogin.png">
+                </div>
+            </div>
+            <div class="layui-upload" style="text-align: center;">
+                <button type="button" class="layui-btn" style="background: darkseagreen">QQ免挂</button><br>
+                <div class="layui-upload-list">
+                    <img class="layui-upload-img" style="width: 200px" src="assets/images/qqLogin.png">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="layui-form-item" style="text-align: right">
-        <button class="layui-btn" onclick="window.open('SmsF_3.3.1.240418.apk')">下载安卓监控端(推荐)</button>
-        <button class="layui-btn" onclick="window.open('Vmq_Pro_V2.7.exe')">下载电脑监控端</button>
+        <button class="layui-btn" onclick="window.open('SmsF_3.3.1.240418.apk')">下载安卓监控端</button>
+        <button class="layui-btn" onclick="window.open('Vmq_PC_2408.ZIP')">下载电脑监控端</button>
     </div>
 </div>
-
+<style>
+    .layui-form-item {
+        display: flex;
+    }
+    .layui-form-label {
+        width: 120px;
+    }
+    .layui-input-block {
+        margin-left: 20px;
+        width: 500px;
+        display: flex;
+    }
+</style>
 <script>
     layui.use(['form','layer'], function(){
         var table = layui.table,form = layui.form;

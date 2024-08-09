@@ -6,6 +6,7 @@ import org.springframework.cglib.beans.BeanMap;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * @author mctz
  */
-public class StringUtils extends org.springframework.util.StringUtils {
+public class StringUtils extends org.apache.commons.lang3.StringUtils {
 
     private static SimpleDateFormat dateFormat =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -131,4 +132,5 @@ public class StringUtils extends org.springframework.util.StringUtils {
         int endIndex = text.indexOf(k2, text.indexOf(k1)+k1.length());
         return text.substring(text.indexOf(k1)+k1.length(), endIndex);
     }
+
 }

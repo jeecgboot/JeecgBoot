@@ -6,12 +6,14 @@ import com.vmq.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Random;
+
 
 public enum PayTypeEnum {
     WX(1, "微信"),
     ZFB(2, "支付宝"),
-    ZSM(3, "微信赞赏码"),
-    QQ(4, "QQ"),
+    QQ(3, "QQ"),
+    ZSM(4, "微信赞赏码"),
     ZFBTR(5, "支付宝转账");
 
     @Getter

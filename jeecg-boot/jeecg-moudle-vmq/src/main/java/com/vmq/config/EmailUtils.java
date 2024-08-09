@@ -1,8 +1,7 @@
 package com.vmq.config;
 
 import com.vmq.utils.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,12 +16,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author mctz
+ * 邮箱工具类
  */
+@Slf4j
 @Component
 public class EmailUtils {
-
-    private static final Logger log = LoggerFactory.getLogger(EmailUtils.class);
 
     @Autowired
     private JavaMailSender mailSender;

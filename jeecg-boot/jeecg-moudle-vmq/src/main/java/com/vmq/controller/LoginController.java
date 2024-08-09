@@ -1,5 +1,6 @@
 package com.vmq.controller;
 
+import com.vmq.annotation.AutoLog;
 import com.vmq.config.EmailUtils;
 import com.vmq.constant.Constant;
 import com.vmq.dao.PayOrderDao;
@@ -92,8 +93,9 @@ public class LoginController {
     }
 
     @ResponseBody
+    @AutoLog(value = "login-用户登录",logType = 1)
     @RequestMapping(value = "/loginValid", method = {RequestMethod.GET, RequestMethod.POST})
-    public CommonRes loginValid(HttpSession session, String user, String pass){
+    public CommonRes loginValid(String user, String pass,HttpSession session){
         if (user==null){
             return ResUtil.error("请输入账号");
         }
@@ -102,7 +104,6 @@ public class LoginController {
         }
         CommonRes res = adminService.login(user, pass);
         if (res.getCode()==1){
-            Map<String,Object> userMap = (Map<String, Object>) res.getData();
             session.setAttribute("username",user);
             session.setAttribute("token", JWTUtil.getToken(user,pass));
         }
@@ -138,8 +139,9 @@ public class LoginController {
     }
 
     @ResponseBody
+    @AutoLog(value = "login-用户注册",logType = 1)
     @RequestMapping("/regist")
-    public CommonRes regist(HttpSession session,String username, String password,String email,String code){
+    public CommonRes regist(String username, String password, String email, String code){
         if (username==null){
             return ResUtil.error("请输入账号");
         }
@@ -166,6 +168,7 @@ public class LoginController {
     }
 
     @ResponseBody
+    @AutoLog(value = "login-用户登出",logType = 1)
     @RequestMapping("/logout")
     public String logout(HttpSession session){
         session.removeAttribute("token");
@@ -179,6 +182,7 @@ public class LoginController {
         return "pay";
     }
 
+    @AutoLog(value = "email-订单审核")
     @RequestMapping(value = "/passOrder",method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "订单审核通过")
     public String passOrder(String orderId,String sign,Model model) {
@@ -196,7 +200,8 @@ public class LoginController {
         payOrderDao.setState(1,payOrder.getId());
         return "success";
     }
-    
+
+    @AutoLog(value = "email-订单驳回")
     @RequestMapping(value = "/backOrder",method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "订单驳回")
     public String backOrder(String orderId, String sign, Model model) {
@@ -219,6 +224,7 @@ public class LoginController {
         return "success";
     }
 
+    @AutoLog(value = "email-订单删除")
     @RequestMapping(value = "/delOrder",method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "订单删除")
     public String delOrder(String orderId,String sign,Model model) {
@@ -256,12 +262,10 @@ public class LoginController {
             model.addAttribute("errorMsg","签名校验失败");
             return null;
         }
-        if (payOrder.getState()==0){
-            tmpPriceDao.delprice(payOrder.getUsername(),payOrder.getType()+"-"+payOrder.getReallyPrice());
-        }
         return payOrder;
     }
 
+    @AutoLog(value = "web-同步通知")
     @ApiOperation(value = "同步通知接口，付款成功后调用")
     @RequestMapping(value = "/return", method = {RequestMethod.GET, RequestMethod.POST})
     public String returnUrl(PayOrder payOrder,Model model) {

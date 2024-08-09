@@ -284,7 +284,7 @@ public class AdminService {
             todayMoney2 = 0;
         }
 
-        todayMoney = Arith.add(todayMoney,todayMoney2);
+        todayMoney = ArithUtil.add(todayMoney,todayMoney2);
 
         int countOrder = payOrderDao.getCount(1,username);
         double countMoney;
@@ -299,7 +299,7 @@ public class AdminService {
         }catch (Exception e){
             countMoney2 = 0;
         }
-        countMoney = Arith.add(countMoney,countMoney2);
+        countMoney = ArithUtil.add(countMoney,countMoney2);
 
         Map<String,String> map = new HashMap<>();
         map.put("todayOrder", String.valueOf(todayOrder));
@@ -350,9 +350,6 @@ public class AdminService {
         }
         if (!validUserPermission(username,payOrder.getUsername())) {
             return ResUtil.error("抱歉，您无权删除其它商家订单");
-        }
-        if (payOrder.getState()==0){
-            tmpPriceDao.delprice(payOrder.getUsername(),payOrder.getType()+"-"+payOrder.getReallyPrice());
         }
         payOrderDao.deleteById(id);
         return ResUtil.success();

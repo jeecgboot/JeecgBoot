@@ -1,5 +1,6 @@
 package com.vmq.aop;
 
+import com.vmq.utils.LogUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,17 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
- * AOP 打印日志
- *
- * @author mctz
- * @see [相关类/方法]
- * @since [产品/模块版本]
+ * 控制台打印日志
  */
 @Slf4j
 @Aspect
@@ -34,40 +27,20 @@ public class SystemAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         String methodName = className + "." + method.getName();
-        List args = Arrays.stream(joinPoint.getArgs()).map(e -> {
-            if (Objects.isNull(e)) {
-                return null;
-            }
-            String paramName = e.getClass().getSimpleName();
-            if (isBaseType(e)) {
-                return (e.toString().length() > 100 ? e.toString().substring(0, 100) + "......" : e) + "(" + paramName + ")";
-            }
-            return paramName + ".class";
-        }).collect(Collectors.toList());
         StopWatch clock = new StopWatch();
         clock.start(methodName);
         Object object = joinPoint.proceed();
         clock.stop();
-        log.info("[{} ms] method = {} {}", clock.getTotalTimeMillis(), clock.getLastTaskName(), args);
+        String param = "";
+        if (!"loginValid".equals(method.getName()) && !"regist".equals(method.getName())) {
+            param = LogUtil.getResquestParam(joinPoint);
+        } else {
+            param = String.valueOf(joinPoint.getArgs()[0]);
+        }
+        log.info("[{} ms] method = {} {}", clock.getTotalTimeMillis(), clock.getLastTaskName(), param);
         return object;
     }
 
-    private boolean isBaseType(Object object) {
-        if (object instanceof String ||
-                object instanceof Integer ||
-                object instanceof Byte ||
-                object instanceof Long ||
-                object instanceof Double ||
-                object instanceof Float ||
-                object instanceof Character ||
-                object instanceof Short ||
-                object instanceof Boolean) {
-            return true;
-        }
-        if (Objects.nonNull(object) && object.getClass().getName().startsWith("com.vmq")) {
-            return true;
-        }
-        return false;
-    }
+
 
 }

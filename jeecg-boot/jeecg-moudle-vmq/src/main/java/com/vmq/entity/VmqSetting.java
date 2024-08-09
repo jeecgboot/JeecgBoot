@@ -1,9 +1,13 @@
 package com.vmq.entity;
 
+import com.vmq.constant.PayTypeEnum;
+import com.vmq.utils.StringUtils;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -42,6 +46,9 @@ public class VmqSetting implements Serializable {
     @Column(columnDefinition = "text")
     private String aliCookie;
 
+    /** 多合一轮询扫码 */
+    private Integer allInOneQr;
+
     /** 是否发送付款审核 */
     private Integer isApprove;
 
@@ -75,4 +82,23 @@ public class VmqSetting implements Serializable {
 
     private String qqpay;
 
+    public Integer[] getUsableTypes() {
+        List<Integer> types = new ArrayList<>();
+        if (StringUtils.isNotBlank(wxpay)){
+            types.add(PayTypeEnum.WX.getCode());
+        }
+        if (StringUtils.isNotBlank(zfbpay)){
+            types.add(PayTypeEnum.ZFB.getCode());
+        }
+        if (StringUtils.isNotBlank(wxzspay)){
+            types.add(PayTypeEnum.ZSM.getCode());
+        }
+        if (StringUtils.isNotBlank(qqpay)){
+            types.add(PayTypeEnum.QQ.getCode());
+        }
+        if (StringUtils.isNotBlank(aliUserId)){
+            types.add(PayTypeEnum.ZFBTR.getCode());
+        }
+        return types.stream().toArray(Integer[]::new);
+    }
 }

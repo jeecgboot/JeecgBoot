@@ -27,14 +27,19 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class QuartzService {
+
     @Autowired
     private SettingDao settingDao;
+
     @Autowired
     private PayOrderDao payOrderDao;
+
     @Autowired
     private TmpPriceDao tmpPriceDao;
+
     @Autowired
     private WebService webService;
+
     @Autowired
     private StringRedisTemplate redisTemplate;
 
@@ -55,7 +60,7 @@ public class QuartzService {
             String username = vmqSetting.getUsername();
             try {
                 String timeout = vmqSetting.getClose();
-                int timeoutMS = Integer.valueOf(timeout)*60*1000;
+                long timeoutMS = Integer.valueOf(timeout)*Constant.MIN_UNIT;
 
                 String closeTime = String.valueOf(new Date().getTime());
                 timeout = String.valueOf(new Date().getTime() - timeoutMS);
@@ -70,8 +75,8 @@ public class QuartzService {
                     tmpPriceDao.delprice(username,payOrder.get("type")+"-"+payOrder.get("really_price"));
                 }
                 // 补偿机制，删除异常数据
-                tmpPriceDao.delpriceByUsername(username);
-                msg += String.format("[%s]成功清理%d个订单 ", username, row);
+                int delCount = tmpPriceDao.delpriceByUsername(username);
+                msg += String.format("[%s]成功清理%d个订单 ", username, row+delCount);
             }catch (Exception e){
                 e.printStackTrace();
                 log.info("清理订单失败: {}",e.getMessage());
@@ -90,7 +95,7 @@ public class QuartzService {
     /**
      * 支付宝云端监控
      */
-    @Scheduled(fixedRate = 5000)
+    //@Scheduled(fixedRate = 5000)
     public void queryAliPayAndPush(){
         String method = "queryAliPayAndPush";
         String temp = redisTemplate.opsForValue().get(method);

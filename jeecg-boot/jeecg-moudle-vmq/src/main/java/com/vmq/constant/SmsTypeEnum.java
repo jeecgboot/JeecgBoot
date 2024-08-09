@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+/**
+ * app监控端包名类型
+ */
 public enum SmsTypeEnum {
 
     WX("com.tencent.mm", "微信"),

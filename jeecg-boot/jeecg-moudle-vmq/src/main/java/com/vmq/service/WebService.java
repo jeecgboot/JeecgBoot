@@ -1,5 +1,6 @@
 package com.vmq.service;
 
+import cn.hutool.core.date.DateUtil;
 import com.vmq.config.EmailUtils;
 import com.vmq.constant.Constant;
 import com.vmq.constant.PayTypeEnum;
@@ -81,47 +82,39 @@ public class WebService {
             return ResUtil.error("签名校验不通过");
         }
 
-        String orderId = StringUtils.format(new Date(),"yyyyMMddHHmmss") + (int)(1000+Math.random()*(9999-1000+1));
+        if (payOrderDao.findByPayId(payOrder.getPayId()) != null) {
+            return ResUtil.error("商户订单号已存在！");
+        }
 
-        //实际支付价格
-        double reallyPrice = Double.valueOf(payOrder.getPrice());
-        Double addAmount = getAddAmount(username,vmqSetting.getPayQf(),payOrder.getType(),reallyPrice);
-        if (addAmount == null) {
+        // 保存实际支付价格
+        if (!checkAddAmount(username,vmqSetting,payOrder)) {
             return ResUtil.error("所有金额均被占用");
         }
-        reallyPrice = Arith.add(reallyPrice,addAmount);
-        payOrder.setReallyPrice(reallyPrice);
-
+        // 获取支付链接
         String payUrl = PayTypeEnum.getPayUrlByOrder(vmqSetting,payOrder);
         if (payUrl == "") {
+            tmpPriceDao.delprice(username,payOrder.getType() + "-" + payOrder.getReallyPrice());
             return ResUtil.error("请您先进入后台配置程序");
         }
 
         int isAuto = 0;
-        PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,reallyPrice,payOrder.getType());
+        Long payCodeId = null;
+        PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,payOrder.getReallyPrice(),payOrder.getType());
         if (payQrcode == null) {
             isAuto = 1;
             payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,0,payOrder.getType());
         }
-
-        Long payCodeId = null;
         if (payQrcode != null){
             payCodeId = payQrcode.getId();
             payUrl = payQrcode.getPayUrl();
         }
-
-        PayOrder tmp = payOrderDao.findByPayId(payOrder.getPayId());
-        if (tmp!=null){
-            tmpPriceDao.delprice(username,payOrder.getType()+"-"+reallyPrice);
-            return ResUtil.error("商户订单号已存在！");
-        }
-
+        String orderId = StringUtils.format(new Date(),"yyyyMMddHHmmss") + (int)(1000+Math.random()*(9999-1000+1));
         payOrder.setUsername(username);
         payOrder.setOrderId(orderId);
         payOrder.setCreateDate(new Date().getTime());
         payOrder.setPayDate(0);
         payOrder.setCloseDate(0);
-        payOrder.setReallyPrice(reallyPrice);
+        payOrder.setReallyPrice(payOrder.getReallyPrice());
         payOrder.setState(0);
         payOrder.setIsAuto(isAuto);
         payOrder.setPayCodeId(payCodeId);
@@ -130,7 +123,7 @@ public class WebService {
         }
         payOrderDao.save(payOrder);
         String timeOut = vmqSetting.getClose();
-        CreateOrderRes createOrderRes = new CreateOrderRes(payOrder.getPayId(),orderId,payOrder.getType(),payOrder.getPrice(),reallyPrice,payUrl,isAuto,0,Integer.valueOf(timeOut),payOrder.getCreateDate());
+        CreateOrderRes createOrderRes = new CreateOrderRes(payOrder.getPayId(),orderId,payOrder.getType(),payOrder.getPrice(),payOrder.getReallyPrice(),payUrl,isAuto,0,Integer.valueOf(timeOut),payOrder.getCreateDate());
         if (vmqSetting.getIsApprove() == 1) {
             PayInfo payInfo = new PayInfo(payOrder);
             String urlParam = "?orderId="+payInfo.getOrderId()+"&sign="+md5(payOrder.getOrderId()+key);
@@ -145,34 +138,41 @@ public class WebService {
     /**
      * 获取实际付款差额
      * @param username
-     * @param payQf
-     * @param type
-     * @param price
-     * @return
+     * @param vmqSetting
+     * @param payOrder
+     * @return boolean
      */
-    private Double getAddAmount(String username, Integer payQf, int type, double price) {
+    private boolean checkAddAmount(String username, VmqSetting vmqSetting, PayOrder payOrder) {
+        int type = payOrder.getType();
+        if (type == 0) {
+            Integer[] types = vmqSetting.getUsableTypes();
+            type = types[new Random().nextInt(types.length)];
+            payOrder.setType(type);
+        }
         int row = 0;
+        int payQf = vmqSetting.getPayQf();
         double addPrice = 0D;
         while (row == 0){
             try {
-                row = tmpPriceDao.checkPrice(username,type+"-"+(price + addPrice));
+                row = tmpPriceDao.checkPrice(username,type+"-"+(payOrder.getPrice() + addPrice));
             }catch (Exception e){
                 row = 0;
             }
             if (row == 0){
                 if (payQf==1){
-                    addPrice = Arith.add(addPrice,0.01);
+                    addPrice = ArithUtil.add(addPrice,0.01);
                 }else{
-                    addPrice = Arith.sub(addPrice,0.01);
+                    addPrice = ArithUtil.sub(addPrice,0.01);
                 }
             }else{
                 break;
             }
-            if (price + addPrice<=0){
-                return null;
+            if (payOrder.getPrice() + addPrice <= 0){
+                return false;
             }
         }
-        return addPrice;
+        payOrder.setReallyPrice(ArithUtil.add(payOrder.getPrice(),addPrice));
+        return true;
     }
 
     public CommonRes closeOrder(String orderId,String sign){
@@ -191,7 +191,6 @@ public class WebService {
         if (payOrder.getState()==1){
             return ResUtil.error("订单状态不允许关闭");
         }
-        tmpPriceDao.delprice(payOrder.getUsername(),payOrder.getType()+"-"+payOrder.getReallyPrice());
         payOrder.setCloseDate(new Date().getTime());
         payOrder.setState(-1);
         payOrderDao.save(payOrder);
@@ -203,11 +202,7 @@ public class WebService {
         if (StringUtils.isEmpty(sign)){
             return ResUtil.error("签名校验错误");
         }
-        long cz = Long.valueOf(t)-new Date().getTime();
-        if (cz<0){
-            cz = cz*-1;
-        }
-        if (cz>50*1000){
+        if (!validateTime(t)) {
             return ResUtil.error("客户端时间错误");
         }
         String jssign = "";
@@ -242,12 +237,8 @@ public class WebService {
         if (StringUtils.isEmpty(sign)) {
             return ResUtil.error("签名校验错误");
         }
-        long cz = Long.valueOf(t)-new Date().getTime();
-        if (cz<0){
-            cz = cz*-1;
-        }
-        if (cz>Constant.MIN2){
-            return ResUtil.error("客户端时间错误");
+        if (!validateTime(t)) {
+            ResUtil.error("客户端时间错误");
         }
         VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
 
@@ -312,6 +303,26 @@ public class WebService {
         }
         log.info("appPush end: {}",errorMsg);
         return StringUtils.isEmpty(errorMsg)?ResUtil.success():ResUtil.error(errorMsg);
+    }
+
+    /**
+     * 校验客户端时间
+     * @param t
+     * @return
+     */
+    private static boolean validateTime(String t) {
+        int timeLen = t.length();
+        if (timeLen == 10) {
+            t += "000";
+        }
+        long cz = Long.valueOf(t)- DateUtil.current();
+        if (cz<0){
+            cz = cz*-1;
+        }
+        if (cz>Constant.MIN_UNIT){
+            return false;
+        }
+        return true;
     }
 
     /**

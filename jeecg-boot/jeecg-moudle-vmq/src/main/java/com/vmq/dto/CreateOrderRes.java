@@ -12,7 +12,7 @@ public class CreateOrderRes {
     private String payId;
     @ApiModelProperty("云端订单号")
     private String orderId;
-    @ApiModelProperty("支付类型：1微信，2支付宝，3微信赞赏码，4QQ，5支付宝转账")
+    @ApiModelProperty("支付类型：1微信，2支付宝，3QQ，4微信赞赏码，5支付宝转账")
     private int payType;
     @ApiModelProperty(hidden = true)
     private String payName;
@@ -22,6 +22,8 @@ public class CreateOrderRes {
     private double reallyPrice;
     @ApiModelProperty("支付跳转链接")
     private String payUrl;
+    @ApiModelProperty("图片类型：image、url")
+    private String payUrlType;
     @ApiModelProperty("二维码类型：1手动输入金额，0固定金额")
     private int isAuto;
     @ApiModelProperty("订单状态")
@@ -43,5 +45,13 @@ public class CreateOrderRes {
         this.state = state;
         this.timeOut = timeOut;
         this.date = date;
+    }
+
+    /**
+     * 构造方法执行后调用
+     * @return
+     */
+    public String getPayUrlType() {
+        return payUrl.startsWith("data:image") ? "image" : "url";
     }
 }

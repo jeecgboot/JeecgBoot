@@ -8,6 +8,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.vmq.annotation.AutoLog;
 import com.vmq.config.EmailUtils;
 import com.vmq.constant.Constant;
 import com.vmq.constant.PayTypeEnum;
@@ -135,6 +136,7 @@ public class WebController {
         return ResUtil.error();
     }
 
+    @AutoLog(value = "web-获取token")
     @RequestMapping(value = "/getToken", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "获取token")
     public String getToken(@ApiIgnore HttpSession session, @RequestParam(required = false) String user, @RequestParam(required = false) String pass) {
@@ -151,6 +153,7 @@ public class WebController {
         return token;
     }
 
+    @AutoLog(value = "web-添加订单")
     @RequestMapping(value = "/addOrder",method = {RequestMethod.GET, RequestMethod.POST})
     public String addOrder(@RequestBody PayOrder payOrder, HttpServletRequest request) {
         String sign = webService.getMd5("",payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice());
@@ -164,6 +167,7 @@ public class WebController {
      * @param payOrder 0返回json数据 1跳转到支付页面
      * @return
      */
+    @AutoLog(value = "web-创建订单")
     @RequestMapping(value = "/createOrder", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "创建订单")
     public String createOrder(PayOrder payOrder, HttpServletRequest request) {
@@ -176,7 +180,7 @@ public class WebController {
         if (StringUtils.isEmpty(payOrder.getPayId())) {
             return new Gson().toJson(ResUtil.error("请传入商户订单号"));
         }
-        if (!PayTypeEnum.isContainsCode(payOrder.getType())) {
+        if (!PayTypeEnum.isContainsCode(payOrder.getType()) && payOrder.getType() != 0) {
             return new Gson().toJson(ResUtil.error("不支持的支付方式"));
         }
         if (!StringUtils.isEmpty(payOrder.getEmail()) && !EmailUtils.checkEmail(payOrder.getEmail())) {
@@ -218,6 +222,7 @@ public class WebController {
         }
     }
 
+    @AutoLog(value = "web-关闭订单")
     @ApiOperation(value = "关闭订单")
     @RequestMapping(value = "/closeOrder", method = {RequestMethod.GET, RequestMethod.POST})
     public CommonRes closeOrder(String orderId, String sign) {
@@ -230,11 +235,13 @@ public class WebController {
         return webService.closeOrder(orderId, sign);
     }
 
+    @AutoLog(value = "api-监控心跳")
     @RequestMapping(value = "/appHeart", method = {RequestMethod.GET, RequestMethod.POST})
     public CommonRes appHeart(String t, String sign) {
         return webService.appHeart(t, sign);
     }
 
+    @AutoLog(value = "api-推送订单")
     @RequestMapping(value = "/appPush", method = {RequestMethod.GET, RequestMethod.POST})
     public CommonRes appPush(Integer type, String price, String t, String sign) {
         String username = webService.getUsernameBySign(type,price,t,sign);
@@ -244,6 +251,7 @@ public class WebController {
         return webService.appPush(username,type, price, t, sign);
     }
 
+    @AutoLog(value = "web-查询订单")
     @RequestMapping(value = "/getOrder", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "查询订单信息")
     public CommonRes getOrder(String orderId,String payId) {
@@ -286,6 +294,7 @@ public class WebController {
         return webService.getState(t, sign);
     }
 
+    @AutoLog(value = "web-异步通知")
     @ApiOperation(value = "异步通知接口，付款成功后返回success")
     @RequestMapping(value = "/notify", method = {RequestMethod.GET, RequestMethod.POST})
     public String notifyUrl(PayOrder payOrder) {
@@ -309,6 +318,7 @@ public class WebController {
      * @param sign 签名
      * @return
      */
+    @AutoLog(value = "api-监控端回调")
     @ApiOperation(value = "监控端回调接口")
     @RequestMapping(value = "/sms/notify", method = {RequestMethod.GET, RequestMethod.POST})
     public String smsNotify(String msg, String username,String timestamp, String receive_time, String sign) {
@@ -375,6 +385,7 @@ public class WebController {
         return result;
     }
 
+    @AutoLog(value = "web-易支付异步通知")
     @ApiOperation(value = "易支付回调接口")
     @RequestMapping(value = "/epay/notifyUrl", method = {RequestMethod.GET, RequestMethod.POST})
     public String epayNotify(PayOrder payOrder) {
@@ -389,6 +400,7 @@ public class WebController {
         return "success";
     }
 
+    @AutoLog(value = "web-epusdt异步通知")
     @ApiOperation(value = "USDT回调接口")
     @RequestMapping(value = "/epusdt/notifyUrl", method = {RequestMethod.GET, RequestMethod.POST})
     public String epusdtNotify(PayOrder payOrder) {
@@ -402,6 +414,5 @@ public class WebController {
         }
         return "success";
     }
-
 
 }

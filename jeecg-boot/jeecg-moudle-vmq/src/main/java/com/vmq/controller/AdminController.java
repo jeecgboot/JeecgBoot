@@ -1,5 +1,6 @@
 package com.vmq.controller;
 
+import com.vmq.annotation.AutoLog;
 import com.vmq.config.EmailUtils;
 import com.vmq.dto.CommonRes;
 import com.vmq.entity.OtherSetting;
@@ -39,6 +40,7 @@ public class AdminController {
         return menu;
     }
 
+    @AutoLog(value = "admin-保存系统设置")
     @RequestMapping("/saveSetting")
     public CommonRes saveSetting(@RequestBody VmqSetting vmqSetting){
         String email = vmqSetting.getEmail();
@@ -48,6 +50,7 @@ public class AdminController {
         return adminService.saveSetting(vmqSetting);
     }
 
+    @AutoLog(value = "admin-保存其它设置")
     @RequestMapping("/saveOtherSetting")
     public CommonRes saveOtherSetting(@RequestBody OtherSetting setting){
         String email = setting.getEmail();
@@ -106,6 +109,7 @@ public class AdminController {
         return adminService.getOrders(username,page, limit, type,state);
     }
 
+    @AutoLog(value = "admin-手动补单")
     @RequestMapping("/setBd")
     public CommonRes setBd(HttpSession session,Integer id){
         if (id==null){
@@ -124,12 +128,14 @@ public class AdminController {
         return adminService.getPayQrcodes(username,page, limit, type);
     }
 
+    @AutoLog(value = "admin-删除二维码")
     @RequestMapping("/delPayQrcode")
     public CommonRes delPayQrcode(HttpSession session,Long id){
         String username = (String) session.getAttribute("username");
         return adminService.delPayQrcode(id,username);
     }
 
+    @AutoLog(value = "admin-添加二维码")
     @RequestMapping("/addPayQrcode")
     public CommonRes addPayQrcode(HttpSession session,PayQrcode payQrcode){
         String username = (String) session.getAttribute("username");
@@ -143,18 +149,21 @@ public class AdminController {
         return adminService.getMain(username);
     }
 
+    @AutoLog(value = "admin-删除订单")
     @RequestMapping("/delOrder")
     public CommonRes delOrder(HttpSession session,Long id){
         String username = (String) session.getAttribute("username");
         return adminService.delOrder(id,username);
     }
 
+    @AutoLog(value = "admin-删除过期订单")
     @RequestMapping("/delGqOrder")
     public CommonRes delGqOrder(HttpSession session){
         String username = (String) session.getAttribute("username");
         return adminService.delGqOrder(username);
     }
 
+    @AutoLog(value = "admin-删除七天前订单")
     @RequestMapping("/delLastOrder")
     public CommonRes delLastOrder(HttpSession session){
         String username = (String) session.getAttribute("username");

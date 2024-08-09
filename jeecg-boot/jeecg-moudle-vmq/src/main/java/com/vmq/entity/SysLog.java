@@ -18,8 +18,7 @@ import java.util.Date;
 public class SysLog {
 
 	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)
-	private String id;
+	private Long id;
 
 	/**
 	 * 创建人
@@ -89,5 +88,10 @@ public class SysLog {
 	 * 客户终端类型 pc:电脑端 app:手机端 h5:移动网页端
 	 */
 	private String clientType;
+
+	/**
+	 * 租户ID
+	 */
+	private Integer tenantId = 1001;
 
 }

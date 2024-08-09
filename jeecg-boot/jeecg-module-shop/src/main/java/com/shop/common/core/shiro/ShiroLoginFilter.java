@@ -1,5 +1,6 @@
 package com.shop.common.core.shiro;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
 
@@ -12,6 +13,7 @@ import java.io.PrintWriter;
  * 自定义shiro过滤器
  * 2017-04-28 09:45
  */
+@Slf4j
 public class ShiroLoginFilter extends AccessControlFilter {
 
     @Override

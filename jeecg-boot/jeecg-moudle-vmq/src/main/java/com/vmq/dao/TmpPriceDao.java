@@ -21,6 +21,6 @@ public interface TmpPriceDao  extends JpaRepository<TmpPrice,String> {
 
     @Transactional
     @Modifying
-    @Query(value = "delete from pay_price_tmp where username=?1 and price not in(select concat(type,'-',really_price) from pay_order o where o.state=0 and o.username=?1)", nativeQuery = true)
+    @Query(value = "delete from pay_price_tmp p where id<TRUNCATE(unix_timestamp(now(3)-1)*1000,0) and username=?1 and price not in(select concat(type,'-',really_price) from pay_order o where o.state=0 and o.username=p.username)", nativeQuery = true)
     int delpriceByUsername(String username);
 }
