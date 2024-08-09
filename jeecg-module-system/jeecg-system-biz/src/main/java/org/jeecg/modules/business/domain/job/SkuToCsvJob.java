@@ -29,7 +29,7 @@ public class SkuToCsvJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         log.info("SkuToCsv Job is running ...");
-        List<Sku> skus = new ArrayList();
+        List<Sku> skus = new ArrayList<>();
         Sku firstLine = new Sku();
         firstLine.setId("#");
         firstLine.setErpCode("erp_code");
