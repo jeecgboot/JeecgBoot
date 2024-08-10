@@ -123,19 +123,18 @@ public class OrderController extends BaseController {
         }
 
         boolean isMobile = DeviceUtils.isMobileDevice(request);
+        Products products = productsService.getById(goodsId);
         if (isMobile) {
-            Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", payType).eq("is_mobile", 1));
+            Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("username", products.getUsername()).eq("driver", payType).eq("is_mobile", 1));
             if (ObjectUtils.isEmpty(pays)) {
                 return JsonResult.error("不支持该支付类型");
             }
         } else {
-            Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", payType).eq("is_pc", 1));
+            Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("username", products.getUsername()).eq("driver", payType).eq("is_pc", 1));
             if (ObjectUtils.isEmpty(pays)) {
                 return JsonResult.error("不支持该支付类型");
             }
         }
-
-        Products products = productsService.getById(goodsId);
 
         /**
          * 检查附加内容是否为已填写
@@ -352,7 +351,9 @@ public class OrderController extends BaseController {
          * 使用枚举加switch
          */
         switch (Objects.requireNonNull(PaysEnmu.getByValue(orders.getPayType()))) {
+            case VMQPAY: // V免签-码支付
             case MQPAY_ALIPAY: // V免签支付宝接口
+            case MQPAY_QQPAY:  // V免签QQ钱包接口
             case MQPAY_WXPAY: // V免签微信接口
                 String createMqPay = VmqPay.sendCreateMqPay(pays, Double.valueOf(price), ordersMember, cloudPayid, productDescription);
                 response.sendRedirect(createMqPay);

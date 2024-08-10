@@ -14,10 +14,12 @@ import com.vmq.constant.Constant;
 import com.vmq.constant.PayTypeEnum;
 import com.vmq.constant.SmsTypeEnum;
 import com.vmq.dao.PayOrderDao;
+import com.vmq.dao.PayQrcodeDao;
 import com.vmq.dao.SettingDao;
 import com.vmq.entity.PayOrder;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.CreateOrderRes;
+import com.vmq.entity.PayQrcode;
 import com.vmq.entity.VmqSetting;
 import com.vmq.service.AdminService;
 import com.vmq.service.WebService;
@@ -235,7 +237,6 @@ public class WebController {
         return webService.closeOrder(orderId, sign);
     }
 
-    @AutoLog(value = "api-监控心跳")
     @RequestMapping(value = "/appHeart", method = {RequestMethod.GET, RequestMethod.POST})
     public CommonRes appHeart(String t, String sign) {
         return webService.appHeart(t, sign);
@@ -248,13 +249,13 @@ public class WebController {
         if (webService.checkRepeatPush(username,type,price,Long.valueOf(t))) {
             return ResUtil.error("重复推送");
         }
-        return webService.appPush(username,type, price, t, sign);
+        return webService.appPush(username, type, price, t, sign);
     }
 
     @AutoLog(value = "web-查询订单")
     @RequestMapping(value = "/getOrder", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "查询订单信息")
-    public CommonRes getOrder(String orderId,String payId) {
+    public CommonRes getOrder(String orderId,String payId,Integer payType) {
         PayOrder payOrder = null;
         if (StringUtils.isNotBlank(orderId)) {
             payOrder = payOrderDao.findByOrderId(orderId);
@@ -266,7 +267,29 @@ public class WebController {
         if (payOrder == null) {
             return ResUtil.error("订单不存在");
         }
-        return webService.getOrder(payOrder.getOrderId());
+        String username = payOrder.getUsername();
+        CommonRes res  = webService.getOrder(payOrder.getOrderId());
+        CreateOrderRes createOrderRes = (CreateOrderRes) res.getData();
+        VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
+        if (payType != 0) { // 手机app扫码
+            payOrder.setType(payType);
+            createOrderRes.setPayType(payType);
+            createOrderRes.setPayName(vmqSetting.getEnableTypeName());
+            if (!webService.checkAddAmount(username, vmqSetting, payOrder)) {
+                return ResUtil.error("所有金额均被占用");
+            }
+            String payUrl = webService.getPayUrl(vmqSetting, payOrder);
+            if (payUrl == "") {
+                return ResUtil.error("请您先进入后台配置程序");
+            }
+            createOrderRes.setReallyPrice(payOrder.getReallyPrice());
+            if (payOrder.getPayCodeId() != null) {
+                payOrder.setPayUrl("");
+            }
+            payOrderDao.save(payOrder);
+            createOrderRes.setPayUrl(payUrl);
+        }
+        return res;
     }
 
     @RequestMapping(value = "/checkOrder", method = {RequestMethod.GET, RequestMethod.POST})
@@ -332,7 +355,7 @@ public class WebController {
             VmqSetting setting = settingDao.getSettingByUserName(username);
             if (setting == null) {
                 result = "未配置V免签";
-            }else if (!PasswordUtil.smsSign(timestamp,setting.getSecret()).equals(sign)) {
+            }else if (!PasswordUtil.smsSign(timestamp,setting.getMd5key()).equals(sign)) {
                 result = "签名失败";
             }
         }
@@ -376,7 +399,8 @@ public class WebController {
             if (webService.checkRepeatPush(username,payType,price,payTime)) {
                 return "重复推送";
             }
-            CommonRes res = webService.appPush(username, payType, price, String.valueOf(payTime), webService.getMd5(username,payType + price + payTime));
+            sign = webService.getMd5(username,payType + price + payTime);
+            CommonRes res = webService.appPush(username, payType, price, String.valueOf(payTime), sign);
             if (res.getCode() != 1) {
                 result = res.getMsg();
             }

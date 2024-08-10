@@ -616,6 +616,7 @@
         <div class="layui-colla-content">
             <blockquote class="layui-elem-quote news_search">
                 <div class="layui-inline">
+                    *由于QQ钱包收款没有通知栏消息提醒，因此暂不支持QQ回调
                     当监控端检测到收款后，将会向监控端配置的这个地址发送POST请求，通知服务端用户已付款。具体可参考如下配置：
                 </div>
             </blockquote>
@@ -641,7 +642,7 @@
                         <td>消息模板</td><td>msg=[msg]&receive_time=[receive_time]&amp;timestamp=[timestamp]&sign=[sign]&username=mctz</td><td>只需更改username</td>
                     </tr>
                     <tr>
-                        <td>Secret</td><td>回调密钥</td><td>在V免签页面配置，保持一致即可</td>
+                        <td>Secret</td><td>通讯密钥</td><td>在V免签页面配置，保持一致即可</td>
                     </tr>
                     <tr>
                         <td>代理设置</td><td>选择无代理</td><td></td>
@@ -672,14 +673,18 @@
                         &nbsp;或者 是 通知标题 包含 收款<br>
                         &nbsp;或者 是 通知标题 包含 付款<br>
                         &nbsp;或者 是 通知标题 包含 支付<br>
-                        &nbsp;或者 是 通知标题 包含 转入</td><td>无需修改</td>
+                        &nbsp;或者 是 通知标题 包含 转入<br>
+                        &nbsp;或者 是 通知标题 包含 钱包<br>
+                        &nbsp;或者 是 通知标题 包含 店员
+                        </td><td>无需修改</td>
                     </tr>
                     <tr>
                         <td>自定义模块</td><td>
                         {{PACKAGE_NAME}}<br>
                         {{TITLE}}<br>
                         {{MSG}}<br>
-                        {{RECEIVE_TIME}}</td><td>无需修改</td>
+                        {{RECEIVE_TIME}}<br>
+                        {{DEVICE_NAME}}</td><td>无需修改</td>
                     </tr>
                     </tbody>
                 </table>

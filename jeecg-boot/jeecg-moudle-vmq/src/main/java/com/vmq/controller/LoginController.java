@@ -4,6 +4,7 @@ import com.vmq.annotation.AutoLog;
 import com.vmq.config.EmailUtils;
 import com.vmq.constant.Constant;
 import com.vmq.dao.PayOrderDao;
+import com.vmq.dao.SettingDao;
 import com.vmq.dao.TmpPriceDao;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.PayInfo;
@@ -62,6 +63,9 @@ public class LoginController {
 
     @Autowired
     private WebService webService;
+
+    @Autowired
+    private SettingDao settingDao;
 
     @Autowired
     private EmailUtils emailUtils;
@@ -189,7 +193,7 @@ public class LoginController {
         PayOrder payOrder = auditOrder(orderId, sign, model);
         log.info("{}",model.getAttribute("errorMsg"));
         if (payOrder == null) return "500";
-        VmqSetting vmqSetting = webService.getDefaultSetting(payOrder.getUsername());
+        VmqSetting vmqSetting = settingDao.getSettingByUserName(payOrder.getUsername());
         if (vmqSetting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
             PayInfo payInfo = new PayInfo(payOrder);
             if (payOrder.getPayDate() < 1) {
@@ -212,7 +216,7 @@ public class LoginController {
             model.addAttribute("errorMsg","订单已过期");
             return "500";
         }
-        VmqSetting vmqSetting = webService.getDefaultSetting(payOrder.getUsername());
+        VmqSetting vmqSetting = settingDao.getSettingByUserName(payOrder.getUsername());
         if (vmqSetting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
             PayInfo payInfo = new PayInfo(payOrder);
             if (payOrder.getPayDate() < 1) {

@@ -101,7 +101,7 @@
 			<div style="display: flex">
 				<label style="width: 150px;line-height: 40px;">支付方式：</label>
 				<select style="width: 250px" id="type" name="type" lay-verify="required" lay-filter="type">
-					<option value="0" selected>随机</option><option value="1">微信</option><option value="2">支付宝</option>
+					<option value="0" selected>聚合码</option><option value="1">微信</option><option value="2">支付宝</option>
 					<option value="3">QQ</option><option value="4">微信赞赏码</option><option value="5">支付宝转账</option>
 				</select>
 			</div>
@@ -116,8 +116,8 @@
 				</select>
 			</div>
 			<div style="display: flex">
-				<label style="width: 200px;line-height: 40px;">自定义参数：</label>
-				<input style="width: 200px;" type="text" id="param" name="param" value="" />
+				<label style="width: 150px;line-height: 40px;">自定义参数</label>
+				<input style="width: 250px;" type="text" id="param" name="param" value="" />
 			</div>
 			<ul class="actions">
 				<li><input type="submit" value="支付" class="special" style="background-color: forestgreen;margin-right: 50px" onclick="payOrder()" /></li>

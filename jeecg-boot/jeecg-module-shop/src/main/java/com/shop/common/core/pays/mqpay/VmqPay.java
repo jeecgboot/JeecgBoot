@@ -18,11 +18,13 @@ public class VmqPay {
         String create_url = mapTypes.get("create_url").toString();
         String notify_url = mapTypes.get("notify_url").toString();
 
-        Integer type = 2; // 默认支付宝
-        if (pays.getDriver().equals("mqpay_alipay")) {
-            type = 2;
-        } else if (pays.getDriver().equals("mqpay_wxpay")) {
+        Integer type = 0;
+        if (pays.getDriver().equals("mqpay_wxpay")) {
             type = 1;
+        } else if (pays.getDriver().equals("mqpay_alipay")) {
+            type = 2;
+        } else if (pays.getDriver().equals("mqpay_qqpay")) {
+            type = 3;
         }
 
         String notifyUrl = notify_url + "/mqpay/notifyUrl";

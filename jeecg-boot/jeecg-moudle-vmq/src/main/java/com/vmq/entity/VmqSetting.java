@@ -32,22 +32,18 @@ public class VmqSetting implements Serializable {
     private String jkstate;
 
     /**
-     * 密钥（仅限于已登录用户在PC端的操作）：创建订单、补单、关闭订单
-     * 接口调用不落地保存：回调（不支持，去掉了key，）、sign校验（定时任务）
+     * md5通讯密钥，订单相关接口会用到
      */
     private String md5key;
 
-    /** 回调密钥 */
-    private String secret;
-
+    /**
+     * 支付宝转账
+     */
     private String aliUserId;
 
     /** 支付宝cookie */
     @Column(columnDefinition = "text")
     private String aliCookie;
-
-    /** 多合一轮询扫码 */
-    private Integer allInOneQr;
 
     /** 是否发送付款审核 */
     private Integer isApprove;
@@ -82,7 +78,7 @@ public class VmqSetting implements Serializable {
 
     private String qqpay;
 
-    public Integer[] getUsableTypes() {
+    public Integer[] getEnableTypes() {
         List<Integer> types = new ArrayList<>();
         if (StringUtils.isNotBlank(wxpay)){
             types.add(PayTypeEnum.WX.getCode());
@@ -100,5 +96,24 @@ public class VmqSetting implements Serializable {
             types.add(PayTypeEnum.ZFBTR.getCode());
         }
         return types.stream().toArray(Integer[]::new);
+    }
+
+    public String getEnableTypeName() {
+        StringBuilder builder = new StringBuilder();
+        if (StringUtils.isNotBlank(wxpay)){
+            builder.append(PayTypeEnum.WX.getName()).append("、");
+        }else if (StringUtils.isNotBlank(wxzspay)){
+            builder.append(PayTypeEnum.WX.getName()).append("、");
+        }
+        if (StringUtils.isNotBlank(zfbpay)){
+            builder.append(PayTypeEnum.ZFB.getName()).append("、");
+        }else if (StringUtils.isNotBlank(aliUserId)){
+            builder.append(PayTypeEnum.ZFB.getName()).append("、");
+        }
+        if (StringUtils.isNotBlank(qqpay)){
+            builder.append(PayTypeEnum.QQ.getName()).append("、");
+        }
+        builder.setLength(builder.length() - 1);
+        return builder.toString();
     }
 }

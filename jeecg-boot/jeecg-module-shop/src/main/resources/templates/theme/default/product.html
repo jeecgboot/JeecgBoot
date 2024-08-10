@@ -218,6 +218,19 @@
                     <div class="pay-type-group">
                         <div class="layui-row layui-col-space15">
                             <:for items="${paysList}" var="item">
+                                <:if test="${item.driver=='vmqpay'}">
+                                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
+                                        <div class="pay-type-wexin<:if test="${item.andIncrement == 0}"> active</:if>" data-id="${item.driver}">
+                                            <img style="vertical-align: middle;width: 25px" src="${ctxPath}/default/images/pays/vmq.png">
+                                            <span style="vertical-align: middle;">${item.name}</span>
+                                            <:if test="${item.isHandlingFee == 1}">
+                                                <div class="ribbon-two ribbon-two-danger">
+                                                    <span>手续费</span>
+                                                </div>
+                                            </:if>
+                                        </div>
+                                    </div>
+                                </:if>
                                 <:if test="${item.driver=='mqpay_wxpay' || item.driver=='epay_wxpay' || item.driver=='budpay_wechat' || item.driver=='yungouos_wxpay' || item.driver=='xunhupay_wxpay' || item.driver=='payjs_wxpay' || item.driver=='wxpay_h5' || item.driver=='wxpay'}">
                                     <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
                                         <div class="pay-type-wexin<:if test="${item.andIncrement == 0}"> active</:if>" data-id="${item.driver}">
@@ -244,7 +257,7 @@
                                         </div>
                                     </div>
                                 </:if>
-                                <:if test="${item.driver == 'epay_qqpay'}">
+                                <:if test="${item.driver == 'mqpay_qqpay' || item.driver == 'epay_qqpay'}">
                                     <div class="layui-col-xs12 layui-col-sm6 layui-col-md6">
                                         <div class="pay-type-qq<:if test="${item.andIncrement == 0}"> active</:if>" data-id="${item.driver}">
                                             <img style="vertical-align: middle;" src="${ctxPath}/default/images/pays/qqpay.svg">

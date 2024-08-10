@@ -23,7 +23,7 @@
 </div>
 <!-- 表格操作列 -->
 <script type="text/html" id="paysTbBar">
-    {{# if(d.driver=='mqpay_alipay' || d.driver=='mqpay_wxpay'){ }}
+    {{# if(d.driver=='vmqpay' || d.driver=='mqpay_qqpay' || d.driver=='mqpay_alipay' || d.driver=='mqpay_wxpay'){ }}
     <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="mqpay">配置修改</a>
     {{# } }}
     {{# if(d.driver=='epay_alipay' || d.driver=='epay_wxpay' || d.driver=='epay_qqpay'){ }}
@@ -799,7 +799,9 @@
                         return '<span class="layui-badge layui-badge-paypal">Paypal</span>'
                     } else if (res.name == 'QQ钱包'){
                         return '<span class="layui-badge layui-badge-blue">QQ钱包</span>'
-                    } else if (res.name == 'USDT') {
+                    } else if (res.name == '码支付'){
+                        return '<span class="layui-badge layui-badge-yellow">码支付</span>'
+                    } else {
                         return '<span class="layui-badge layui-badge-green">' + res.name + '</span>'
                     }
                 }
@@ -863,7 +865,7 @@
 
         /* 显示表单弹窗 */
         function showEditModel(mData) {
-            if (mData.driver == 'mqpay_alipay' || mData.driver == 'mqpay_wxpay') {
+            if (mData.driver == 'vmqpay' || mData.driver == 'mqpay_qqpay' || mData.driver == 'mqpay_alipay' || mData.driver == 'mqpay_wxpay') {
                 var html = $('#mqpayEditDialog').html();
                 var forms = 'mqpayEditForm';
                 var submit = 'mqpayEditSubmit';

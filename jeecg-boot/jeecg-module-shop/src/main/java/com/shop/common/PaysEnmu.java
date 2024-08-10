@@ -5,8 +5,10 @@ package com.shop.common;
  * 2021-10-23 00:11:08
  */
 public enum PaysEnmu {
+    VMQPAY("vmqpay"),
     MQPAY_ALIPAY("mqpay_alipay"),
     MQPAY_WXPAY("mqpay_wxpay"),
+    MQPAY_QQPAY("mqpay_qqpay"),
     EPAY_ALIPAY("epay_alipay"),
     EPAY_WXPAY("epay_wxpay"),
     EPAY_QQPAY("epay_qqpay"),

@@ -68,6 +68,8 @@ public class PaysController extends BaseController {
             JSONObject configs = JSONObject.parseObject(pays.getConfig());
 
             switch (Objects.requireNonNull(PaysEnmu.getByValue(pays.getDriver()))) {
+                case VMQPAY:
+                case MQPAY_QQPAY:
                 case MQPAY_ALIPAY:
                 case MQPAY_WXPAY:
                     paysVo.setKey(configs.get("key").toString());
@@ -194,6 +196,8 @@ public class PaysController extends BaseController {
     public JsonResult update(PaysVo paysVo) {
         Map<String, String> map = new HashMap<>();
         switch (Objects.requireNonNull(PaysEnmu.getByValue(paysVo.getDriver()))) {
+            case VMQPAY:
+            case MQPAY_QQPAY:
             case MQPAY_ALIPAY:
             case MQPAY_WXPAY:
                 map.put("key", paysVo.getKey());

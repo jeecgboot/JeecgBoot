@@ -72,7 +72,7 @@ public class QuartzService {
 
                 List<Map<String,Object>> payOrders = payOrderDao.findAllByCloseDate(username,beginTime, Long.valueOf(closeTime));
                 for (Map payOrder: payOrders) {
-                    tmpPriceDao.delprice(username,payOrder.get("type")+"-"+payOrder.get("really_price"));
+                    tmpPriceDao.deleteByPayId((String) payOrder.get("pay_id"));
                 }
                 // 补偿机制，删除异常数据
                 int delCount = tmpPriceDao.delpriceByUsername(username);

@@ -33,6 +33,7 @@ public class ResUtil {
         CommonRes commonRes = new CommonRes();
         commonRes.setCode(-1);
         commonRes.setMsg(msg);
+        commonRes.setData(msg);
         return commonRes;
     }
 

@@ -76,9 +76,6 @@ public class AdminController {
         if (StringUtils.isBlank(vmqSetting.getReturnUrl())) {
             vmqSetting.setReturnUrl(url + "/return");
         }
-        if (StringUtils.isBlank(vmqSetting.getSecret())) {
-            vmqSetting.setSecret(vmqSetting.getMd5key());
-        }
         return res;
     }
 

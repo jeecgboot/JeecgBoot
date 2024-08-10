@@ -203,8 +203,8 @@ public class AdminService {
         if (!validUserPermission(username,payOrder.getUsername())) {
             return ResUtil.error("抱歉，您无权操作其它商家订单");
         }
-        VmqSetting vmqSetting = webService.getDefaultSetting(username);
-        String key = webService.getDefaultMd5Key(username);
+        VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
+        String key = vmqSetting.getMd5key();
         String p = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
         String sign = payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key;
         p = p+"&sign="+md5(sign);
@@ -221,7 +221,7 @@ public class AdminService {
 
         if (res!=null && res.equals("success")){
             if (payOrder.getState()==0){
-                tmpPriceDao.delprice(username,payOrder.getType()+"-"+payOrder.getReallyPrice());
+                tmpPriceDao.deleteByPayId(payOrder.getPayId());
             }
             payOrderDao.setState(1,payOrder.getId());
             return ResUtil.success();

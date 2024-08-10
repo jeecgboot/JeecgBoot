@@ -26,6 +26,7 @@
 <body>
 <div class="body" id="body" style="display: none">
     <h1 class="mod-title">
+        <span id="title" v-if="payType == 0">请使用手机App进行扫码</span>
         <span class="ico_log ico-1" v-if="payType == 1 || payType == 4"></span>
         <span class="ico_log ico-2" v-if="payType == 2 || payType == 5"></span>
         <span class="ico_log ico-3" v-if="payType == 3"></span>
@@ -35,13 +36,20 @@
         <div class="order"></div>
         <div class="amount" id="timeOut" style="font-size: 20px;color: red;display: none;"><p>订单已过期，请您返回网站重新发起支付</p><br></div>
         <div id="orderbody">
+            <input type="hidden" id="payType" value="{{payType}}">
             <div class="amount" id="money">￥{{ reallyPrice }}</div>
             <div class="qrcode-img-wrapper" data-role="qrPayImgWrapper">
                 <div data-role="qrPayImg" class="qrcode-img-area">
                     <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
                     <div style="position: relative;display: inline-block;">
-                        <!-- 收款码 -->
-                        <div v-if="payType != 5">
+                        <!-- 根据用户使用的app类型自动选择收款码、支付宝转账-->
+                        <div v-if="payType == 0 || payType == 5">
+                            <a class="payHref">
+                                <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="240" height="240" style="display: none;">
+                                <img class="APPPage MobilePage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: none;">
+                            </a>
+                        </div>
+                        <div v-if="payType==1 || payType==2 || payType==3 || payType==4">
                             <!-- 二维码 -->
                             <a class="payHref" v-if="payUrlType == 'url'">
                                 <img alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: block;">
@@ -79,7 +87,7 @@
                 <div class="ico-scan"></div>
                 <div class="tip-text">
                     <div class="PCPage" style="display: none">
-                        <label  style="font-size: medium">请使用{{payName}}进行支付</label>
+                        <label style="font-size: medium">请使用{{payName}}进行支付</label>
                     </div>
                     <div class="MobilePage" style="display: none">
                         <label  style="font-size: medium">请先保存图片，再使用{{payName}}进行支付</label>
@@ -87,8 +95,6 @@
                     <div class="APPPage" style="display: none">
                         <label  style="font-size: medium">请长按图片识别二维码</label>
                     </div>
-                    <!--<p v-if="isAuto == 0">扫描二维码完成支付</p>
-                    <p v-if="isAuto == 1">扫码后输入金额支付</p>-->
                 </div>
             </div>
 
@@ -198,21 +204,30 @@
             return decodeURI(r[2]);
         return null;
     }
-
-    $.get("getOrder","orderId="+getQueryString("orderId"),function (data) {
+    var appType = getAppType();
+    var defaultPayType = 0;
+    if (appType=="wx") {
+        defaultPayType = 1;
+    }else if (appType=="zfb") {
+        defaultPayType = 2;
+    }else if (appType=="qq") {
+        defaultPayType = 3;
+    }
+    $.get("getOrder","orderId="+getQueryString("orderId")+"&payType="+defaultPayType,function (data) {
         var time = 0;
         if (data.code == 1) {
-            new Vue({
-                el: '#body',
-                data: data.data
-            });
             if (data.data.state != -1) {
                 time = new Date().getTime() - data.data.date;
                 time = time / 1000;
                 time = data.data.timeOut * 60 - time;
                 check();
             }
-            appOpenPayUrl(data.data.payType, data.data.payUrl);
+            var payUrl = appOpenPayUrl(data.data.payType, data.data.payUrl, data.data.payUrlType);
+            data.data.payUrl = payUrl;
+            new Vue({
+                el: '#body',
+                data: data.data
+            });
             document.getElementById("body").style.display = "block";
         } else {
             alert(data.msg);
@@ -221,21 +236,19 @@
     });
 
     // app扫码后自动跳转支付链接，目前仅支付宝可以自动跳转
-    function appOpenPayUrl(payType,payUrl) {
+    function appOpenPayUrl(payType,payUrl,payUrlType) {
+        $(".APPPage").attr("style", "display:block;");
+        if (payUrlType=="image" || appType=="qq") {
+            return payUrl
+        }
         if (payType == 1) {
             payUrl = "weixin://" + payUrl;
         } else if (payType == 5) {
             payUrl = "https://render.alipay.com/p/s/i?scheme="+encodeURIComponent(payUrl);
         }
-        var userAgent = navigator.userAgent.toLowerCase();
-        $(".APPPage").attr("style", "display:block;");
-        if (userAgent.match(/Alipay/i) == "alipay") { // 支付宝
-            window.open(payUrl, '_blank');
-        } else if (userAgent.match(/MicroMessenger/i) == "micromessenger") { // 微信
-            window.open(payUrl, '_blank');
-        } else if (userAgent.match(/QQ/i) == "qq") { // qq
-            window.open(payUrl, '_blank');
-        } else if (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)) { // 手机浏览器
+        if (appType=="wx" || appType=="zfb") { // 支付宝
+            window.location.href = payUrl;
+        } else if (appType=="app") { // 手机浏览器
             $(".APPPage").attr("style", "display:none;");
             $(".MobilePage").attr("style", "display:block;");
             $(".payHref").each(function () { // 点击图片唤起app
@@ -248,7 +261,7 @@
         }
         return payUrl;
     }
-
+    var hasScan = true;
     // 判断是否支付成功
     function check() {
         $.get("checkOrder","orderId="+getQueryString("orderId"),function (data) {
@@ -258,10 +271,32 @@
                 if (data.data == "订单已过期") {
                     intDiff = 0;
                 }else{
+                    if (data.data == "手机未扫码") {
+                        hasScan = false;
+                    }
+                    if (data.data == "订单未支付" && !hasScan) {
+                        hasScan = true;
+                        location.reload();
+                    }
                     setTimeout("check()",1000);
                 }
             }
         });
+    }
+
+    function getAppType() {
+        var userAgent = navigator.userAgent.toLowerCase();
+        if (userAgent.match(/Alipay/i) == "alipay") { // 支付宝
+            return "zfb";
+        } else if (userAgent.match(/MicroMessenger/i) == "micromessenger") { // 微信
+            return "wx";
+        } else if (userAgent.match(/QQ/i) == "qq") { // qq
+            return "qq";
+        } else if (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)) { // 手机浏览器
+            return "app";
+        } else { // PC浏览器
+            return "pc";
+        }
     }
 
 </script>

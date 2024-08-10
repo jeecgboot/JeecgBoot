@@ -13,6 +13,8 @@ public class TmpPrice {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
+    private String payId;
+
     private String username;
 
     private String price;

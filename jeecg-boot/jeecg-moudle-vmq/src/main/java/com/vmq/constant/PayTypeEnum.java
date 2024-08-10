@@ -56,22 +56,35 @@ public enum PayTypeEnum {
     public static String getPayUrlByOrder(VmqSetting vmqSetting, PayOrder payOrder) {
         int type = payOrder.getType();
         String payUrl = "";
+        if (type == 0) {
+            return "payPage?orderId="+payOrder.getOrderId();
+        }
         if (type == PayTypeEnum.WX.getCode()){
             payUrl = vmqSetting.getWxpay();
+            if (StringUtils.isBlank(payUrl)) {
+                payUrl = vmqSetting.getWxzspay();
+            }
         }else if (type == PayTypeEnum.ZFB.getCode()){
             payUrl = vmqSetting.getZfbpay();
+            if (StringUtils.isBlank(payUrl)) {
+                payUrl = getAliTransUrl(payOrder, vmqSetting);
+            }
         }else if (type == PayTypeEnum.ZSM.getCode()){
             payUrl = vmqSetting.getWxzspay();
         }else if (type == PayTypeEnum.QQ.getCode()){
             payUrl = vmqSetting.getQqpay();
         }else if (type == PayTypeEnum.ZFBTR.getCode()){
-            double reallyPrice = payOrder.getReallyPrice();
-            String userId = vmqSetting.getAliUserId();
-            if (StringUtils.isBlank(userId)) {
-                return "";
-            }
-            payUrl = String.format(Constant.ALI_TRANS_URL, userId, reallyPrice, "VMQ");
+            payUrl = getAliTransUrl(payOrder, vmqSetting);
         }
         return payUrl;
+    }
+
+    private static String getAliTransUrl(PayOrder payOrder, VmqSetting vmqSetting) {
+        String userId = vmqSetting.getAliUserId();
+        if (StringUtils.isBlank(userId)) {
+            return "";
+        }
+        double reallyPrice = payOrder.getReallyPrice();
+        return String.format(Constant.ALI_TRANS_URL, userId, reallyPrice, "VMQ");
     }
 }

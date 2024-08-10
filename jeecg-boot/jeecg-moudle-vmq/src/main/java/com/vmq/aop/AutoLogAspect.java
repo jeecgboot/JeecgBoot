@@ -1,5 +1,6 @@
 package com.vmq.aop;
 
+import com.alibaba.fastjson2.JSON;
 import com.vmq.annotation.AutoLog;
 import com.vmq.constant.Constant;
 import com.vmq.constant.OperateTypeEnum;
@@ -47,11 +48,11 @@ public class AutoLogAspect {
         //执行时长(毫秒)
         long time = System.currentTimeMillis() - beginTime;
         //保存日志
-        saveSysLog(point, time);
+        saveSysLog(point, time, result);
         return result;
     }
 
-    private void saveSysLog(ProceedingJoinPoint joinPoint, long time) {
+    private void saveSysLog(ProceedingJoinPoint joinPoint, long time, Object result) {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         // 获取reques对象
@@ -63,8 +64,9 @@ public class AutoLogAspect {
             String content = syslog.value();
             //注解上的描述,操作日志内容
             dto.setLogType(syslog.logType());
-            dto.setLogContent(content);
+            dto.setRequestUrl(content);
         }
+        dto.setLogContent(JSON.toJSONString(result));
 
         //请求的方法名
         String className = joinPoint.getTarget().getClass().getName();

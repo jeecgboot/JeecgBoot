@@ -43,6 +43,7 @@ import com.paypal.base.rest.PayPalRESTException;
 import com.zjiecode.wxpusher.client.WxPusher;
 import com.zjiecode.wxpusher.client.bean.Message;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.Charsets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -65,6 +66,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+@Slf4j
 @Controller
 @Transactional
 public class NotifyController {
@@ -140,7 +142,7 @@ public class NotifyController {
             });
             return notifyText.get();
         } else {
-            return "签名错误！！";
+            return "签名错误！";
         }
     }
 
@@ -214,7 +216,7 @@ public class NotifyController {
             return notifyText.get();
 
         } else {
-            return "fiald";
+            return "签名错误！";
         }
     }
 
@@ -246,6 +248,8 @@ public class NotifyController {
         if (mysign.equals(sign)) {
             String url = contextPath + "/pay/state/" + payId;
             response.sendRedirect(url);
+        } else {
+            log.info("签名校验不通过");
         }
     }
 
