@@ -422,16 +422,15 @@ public class WebService {
         PayOrder payOrder = payOrderDao.findByOrderId(orderId);
         if (payOrder==null){
             return ResUtil.error("云端订单编号不存在");
-        }
-        if (payOrder.getState()==-1){
-            return ResUtil.error("订单已过期");
-        }
-        TmpPrice tmpPrice = tmpPriceDao.findByPayId(payOrder.getPayId());
-        if (tmpPrice == null) {
-            return ResUtil.error("手机未扫码");
-        }
-        if (payOrder.getState()==0){
-            return ResUtil.error("订单未支付");
+        } else if (payOrder.getState() != 1) {
+            TmpPrice tmpPrice = tmpPriceDao.findByPayId(payOrder.getPayId());
+            if (payOrder.getState() == -1) {
+                return ResUtil.error("订单已过期");
+            } else if (tmpPrice == null) {
+                return ResUtil.error("手机未扫码");
+            } else if (payOrder.getState()==0){
+                return ResUtil.error("订单未支付");
+            }
         }
         String username = payOrder.getUsername();
         VmqSetting vmqSetting = settingDao.getSettingByUserName(username);

@@ -25,13 +25,14 @@ public class VmqPay {
             type = 2;
         } else if (pays.getDriver().equals("mqpay_qqpay")) {
             type = 3;
+        } else if (pays.getDriver().equals("vmqpay")) {
+            type = 0;
         }
 
         String notifyUrl = notify_url + "/mqpay/notifyUrl";
         String returnUrl = notify_url + "/mqpay/returnUrl";
         String content = payId + param + type + price;
         String jsSign = md5(content + key);
-        log.info("md5({})",content);
         return create_url + "/createOrder?payId=" + payId + "&type=" + type + "&price=" + price + "&notifyUrl=" + notifyUrl + "&returnUrl=" + returnUrl + "&sign=" + jsSign + "&param=" + param + "&isHtml=1";
     }
 

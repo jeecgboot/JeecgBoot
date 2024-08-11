@@ -173,33 +173,24 @@ public class NotifyController {
         String payId = params.get("payId");
         String type = params.get("type");
         String key = null;
-        Orders orders = ordersService.getOne(new QueryWrapper<Orders>().eq("member", payId));
-        if (Integer.parseInt(type) == 1) { // wxpay
-            Pays wxPays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", "mqpay_wxpay").eq("username",orders.getUsername()));
-
-            /**
-             * 防止破解
-             */
-            if (!orders.getPayType().equals(wxPays.getDriver())) {
-                return "不支持该支付类型";
-            }
-
-            Map mapTypes = JSON.parseObject(wxPays.getConfig());
-            key = mapTypes.get("key").toString();
+        String driver = "";
+        Orders orders = ordersService.selectByMember(payId);
+        if (orders.getPayType().equals("vmqpay")) { // 码支付
+            driver = "vmqpay";
+        } else if (Integer.parseInt(type) == 1) { // wxpay
+            driver = "mqpay_wxpay";
         } else if (Integer.parseInt(type) == 2) { // alipay
-            Pays aliPays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", "mqpay_alipay").eq("username",orders.getUsername()));
-
-            /**
-             * 防止破解
-             */
-            if (!orders.getPayType().equals(aliPays.getDriver())) {
-                return "不支持该支付类型";
-            }
-
-            Map mapTypes = JSON.parseObject(aliPays.getConfig());
-            key = mapTypes.get("key").toString();
+            driver = "mqpay_alipay";
+        } else if (Integer.parseInt(type) == 3) { // qqpay
+            driver = "mqpay_alipay";
+        }
+        Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", driver).eq("username",orders.getUsername()));
+        if (!orders.getPayType().equals(pays.getDriver())) {
+            return "不支持该支付类型";
         }
 
+        Map mapTypes = JSON.parseObject(pays.getConfig());
+        key = mapTypes.get("key").toString();
         String mysign = VmqPay.md5(payId + param + type + Double.valueOf(price) + Double.valueOf(money) + key);
 
         if (mysign.equals(sign)) {
@@ -233,17 +224,21 @@ public class NotifyController {
         String sign = params.get("sign");
         String payId = params.get("payId");
         String type = params.get("type");
-        Orders orders = ordersService.selectByMember(payId);
         String key = null;
-        if (Integer.parseInt(type) == 1) { // wxpay
-            Pays wxPays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", "mqpay_wxpay").eq("username",orders.getUsername()));
-            Map mapTypes = JSON.parseObject(wxPays.getConfig());
-            key = mapTypes.get("key").toString();
+        String driver = "";
+        Orders orders = ordersService.selectByMember(payId);
+        if (orders.getPayType().equals("vmqpay")) { // 码支付
+            driver = "vmqpay";
+        } else if (Integer.parseInt(type) == 1) { // wxpay
+            driver = "mqpay_wxpay";
         } else if (Integer.parseInt(type) == 2) { // alipay
-            Pays aliPays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", "mqpay_alipay").eq("username",orders.getUsername()));
-            Map mapTypes = JSON.parseObject(aliPays.getConfig());
-            key = mapTypes.get("key").toString();
+            driver = "mqpay_alipay";
+        } else if (Integer.parseInt(type) == 3) { // qqpay
+            driver = "mqpay_alipay";
         }
+        Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", driver).eq("username",orders.getUsername()));
+        Map mapTypes = JSON.parseObject(pays.getConfig());
+        key = mapTypes.get("key").toString();
         String mysign = VmqPay.md5(payId + param + type + price + reallyPrice + key);
         if (mysign.equals(sign)) {
             String url = contextPath + "/pay/state/" + payId;

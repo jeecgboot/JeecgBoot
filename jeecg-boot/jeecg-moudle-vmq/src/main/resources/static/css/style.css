@@ -2485,7 +2485,7 @@ table.dataTable thead .sorting:after {
     display: block;
     margin: 5px 0;
     padding: 5px 10px;
-    color: #333;
+    color: #bbb;
     text-decoration: none;
     border: 1px solid #e7eaec;
     background: #f5f5f5;
@@ -4045,7 +4045,7 @@ code {
     height: 41px;
     border-color: #edf1f2;
     background-color: #f6f8f8;
-    color: #333;
+    color: #bbb;
     font-weight: 700;
     border-radius: 2px 2px 0 0;
     padding: 15px 15px 3px 15px;
@@ -7952,7 +7952,7 @@ body.skin-3 {
     from {
         color: #fff;
         background-color: #749a02;
-        -webkit-box-shadow: 0 0 25px #333;
+        -webkit-box-shadow: 0 0 25px #bbb;
     }
 
     50% {
@@ -7962,7 +7962,7 @@ body.skin-3 {
 
     to {
         background-color: #749a02;
-        -webkit-box-shadow: 0 0 25px #333;
+        -webkit-box-shadow: 0 0 25px #bbb;
     }
 }
 
@@ -7970,7 +7970,7 @@ body.skin-3 {
     from {
         color: #fff;
         background-color: #749a02;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 
     50% {
@@ -7980,7 +7980,7 @@ body.skin-3 {
 
     to {
         background-color: #749a02;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 }
 
@@ -7988,7 +7988,7 @@ body.skin-3 {
     from {
         color: #fff;
         background-color: #007d9a;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 
     50% {
@@ -7998,7 +7998,7 @@ body.skin-3 {
 
     to {
         background-color: #007d9a;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 }
 
@@ -8006,7 +8006,7 @@ body.skin-3 {
     from {
         color:#fff;
         background-color: #bc330d;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 
     50% {
@@ -8016,7 +8016,7 @@ body.skin-3 {
 
     to {
         background-color: #bc330d;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 }
 
@@ -8024,7 +8024,7 @@ body.skin-3 {
     from {
         color: #fff;
         background-color: #630030;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 
     50% {
@@ -8034,7 +8034,7 @@ body.skin-3 {
 
     to {
         background-color: #630030;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 }
 
@@ -8042,7 +8042,7 @@ body.skin-3 {
     from {
         color: #fff;
         background-color: #d45500;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 
     50% {
@@ -8052,7 +8052,7 @@ body.skin-3 {
 
     to {
         background-color: #d45500;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 }
 
@@ -8060,7 +8060,7 @@ body.skin-3 {
     from {
         color: #fff;
         background-color: #fc9200;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 
     50% {
@@ -8070,7 +8070,7 @@ body.skin-3 {
 
     to {
         background-color: #fc9200;
-        -webkit-box-shadow: 0 0 9px #333;
+        -webkit-box-shadow: 0 0 9px #bbb;
     }
 }
 
@@ -8115,9 +8115,6 @@ body.skin-3 {
 
 
 /*自定义*/
-body {
-    color: #333;
-}
 table td {
     white-space: nowrap;
 }

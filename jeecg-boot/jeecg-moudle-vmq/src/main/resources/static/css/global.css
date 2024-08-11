@@ -197,7 +197,7 @@ body .layui-layer-dir .layui-layer-content{padding: 10px;}
 .site-tree .layui-tree li ul{margin-left: 27px; line-height: 28px;}
 .site-tree .layui-tree li ul a,
 .site-tree .layui-tree li ul a i{color: #777;}
-.site-tree .layui-tree li ul a:hover{color: #333;}
+.site-tree .layui-tree li ul a:hover{color: #bbb;}
 .site-tree .layui-tree li ul li{margin-left: 25px; overflow: visible; list-style-type: disc; /*list-style-position: inside;*/}
 .site-tree .layui-tree li ul li cite,
 .site-tree .layui-tree .site-tree-noicon ul li cite{padding-left: 0;}
@@ -252,7 +252,7 @@ body .layui-layer-dir .layui-layer-content{padding: 10px;}
 
 .site-doc-icon li .doc-icon-name,
 .site-doc-icon li .doc-icon-code{color: #c2c2c2;}
-.site-doc-icon li .doc-icon-fontclass{height: 40px; line-height: 20px; padding: 0 5px; font-size: 13px; color: #333; }
+.site-doc-icon li .doc-icon-fontclass{height: 40px; line-height: 20px; padding: 0 5px; font-size: 13px; color: #bbb; }
 .site-doc-icon li:hover{background-color: #f2f2f2; color: #000;}
 
 /* 栅格示例 */
@@ -306,7 +306,7 @@ body .site-demo-nav .layui-nav-item{line-height: 40px}
 
 .site-demo-util{position: relative; width: 300px;}
 .site-demo-util img{width: 300px; border-radius: 100%;}
-.site-demo-util span{position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: #333; cursor: pointer;}
+.site-demo-util span{position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: #bbb; cursor: pointer;}
 @-webkit-keyframes demo-fengjie {
   0% {-webkit-filter: blur(0); opacity: 1; background: #fff; height: 300px; border-radius: 100%;}
   80% {-webkit-filter: blur(50px);  opacity: 0.95;}

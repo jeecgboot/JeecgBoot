@@ -238,12 +238,10 @@
     // app扫码后自动跳转支付链接，目前仅支付宝可以自动跳转
     function appOpenPayUrl(payType,payUrl,payUrlType) {
         $(".APPPage").attr("style", "display:block;");
-        if (payUrlType=="image" || appType=="qq") {
+        if (payUrlType=="image" || appType=="qq" || appType=="wx") {
             return payUrl
         }
-        if (payType == 1) {
-            payUrl = "weixin://" + payUrl;
-        } else if (payType == 5) {
+        if (payType == 5) {
             payUrl = "https://render.alipay.com/p/s/i?scheme="+encodeURIComponent(payUrl);
         }
         if (appType=="wx" || appType=="zfb") { // 支付宝

@@ -215,12 +215,12 @@ public class WebController {
             String res = new Gson().toJson(commonRes);
             return res;
         } else { // HTML
-            CreateOrderRes c = (CreateOrderRes) commonRes.getData();
-            if (c == null) {
-                return commonRes.getMsg();
-            } else {
+            if (commonRes.getCode() == 1) {
+                CreateOrderRes c = (CreateOrderRes) commonRes.getData();
                 return "<script>window.location.href = '/vmq/payPage?orderId=" + c.getOrderId() + "'</script>";
             }
+            return commonRes.getMsg();
+
         }
     }
 
@@ -271,10 +271,11 @@ public class WebController {
         CommonRes res  = webService.getOrder(payOrder.getOrderId());
         CreateOrderRes createOrderRes = (CreateOrderRes) res.getData();
         VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
-        if (payType != 0) { // 手机app扫码
+        if (payType == 0) {
+            createOrderRes.setPayName(vmqSetting.getEnableTypeName());
+        } else if (payType != 0) { // 手机app扫码
             payOrder.setType(payType);
             createOrderRes.setPayType(payType);
-            createOrderRes.setPayName(vmqSetting.getEnableTypeName());
             if (!webService.checkAddAmount(username, vmqSetting, payOrder)) {
                 return ResUtil.error("所有金额均被占用");
             }

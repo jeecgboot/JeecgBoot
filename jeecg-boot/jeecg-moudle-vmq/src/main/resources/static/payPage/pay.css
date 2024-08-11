@@ -145,7 +145,6 @@ body, .body {
 
 .mod-title .text {
     font-size: 20px;
-    color: #333;
     font-weight: normal;
     vertical-align: middle
 }
@@ -157,7 +156,6 @@ body, .body {
     margin-top: 15px;
     background: #fff url("wave.png") top center repeat-x;
     text-align: center;
-    color: #333;
     border: 1px solid #e5e5e5;
     border-top: none
 }
