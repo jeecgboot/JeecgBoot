@@ -1,0 +1,121 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="Content-Language" content="zh-cn">
+    <meta name="apple-mobile-web-app-capable" content="no"/>
+    <meta name="apple-touch-fullscreen" content="yes"/>
+    <meta name="format-detection" content="telephone=no,email=no"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="white">
+    <meta name="renderer" content="webkit"/>
+    <meta name="force-rendering" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>扫码支付</title>
+    <link href="payPage/pay.css" rel="stylesheet" media="screen">
+    <script src="assets/js/jquery.min.js"></script>
+</head>
+
+<body>
+<div class="body" id="body">
+    <h1 class="mod-title">
+        <img style="vertical-align: middle;width: 30px;margin-right: 5px" src="assets/images/IT.png">
+        <span th:text="${username}"></span>@码支付
+    </h1>
+
+    <div class="mod-ct">
+        <div class="order"></div>
+        <div id="orderbody">
+            <div class="amount" style="font-size: 16px">请使用手机App进行扫码</div>
+            <div class="qrcode-img-wrapper" data-role="qrPayImgWrapper">
+                <div data-role="qrPayImg" class="qrcode-img-area">
+
+                    <div style="position: relative;display: inline-block;">
+                        <!-- 根据用户使用的app类型自动选择收款码、支付宝转账-->
+                        <a class="payHref">
+                            <img th:src="@{'enQrcode?url='+${payUrl}}" width="240" height="240">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="tip">
+                <div class="ico-scan"></div>
+                <div class="tip-text">
+                    支持<span th:text="${payName}"></span>
+                </div>
+            </div>
+            <div class="detail" id="orderDetail">
+                <dl class="detail-ct" id="desc"></dl>
+                <a href="javascript:void(0)" class="arrow" onclick="showOrderDetail()"><i class="ico-arrow"></i></a>
+            </div>
+        </div>
+
+        <div class="tip-text"></div>
+    </div>
+    <div class="foot">
+        <div class="inner"><p>码支付Copyright &copy;2024 by 小码哥</p></div>
+    </div>
+
+</div>
+<div class="copyRight">
+
+</div>
+
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/js/vue.min.js"></script>
+<script src="assets/js/function.js"></script>
+<script>
+    function showOrderDetail() {
+        if ($('#orderDetail').hasClass('detail-open')) {
+            $('#orderDetail .detail-ct').slideUp(500, function () {
+                $('#orderDetail').removeClass('detail-open');
+            });
+        } else {
+            $('#orderDetail .detail-ct').slideDown(500, function () {
+                $('#orderDetail').addClass('detail-open');
+            });
+        }
+    }
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null)
+            return decodeURI(r[2]);
+        return null;
+    }
+
+    queryOrder();
+    // 判断是否支付成功
+    var isShowDetail = true;
+    function queryOrder() {
+        $.get("getUnpaidOrders","username="+getQueryString("username"),function (data) {
+            if (data.code == 1) {
+                var orderList = "";
+                var time = new Date().getTime();
+                data.data.forEach((e) => {
+                    var timeCount = ((e.timeOut*60000)-(time-e.date))/1000;
+                    if (timeCount >= 0) {
+                        orderList += "<dt>"+e.payName+"订单："+e.orderId+"</dt><dd>剩余支付时间："+Math.floor(timeCount)+"秒</dd>";
+                    }
+                })
+                $("#desc").html(orderList);
+                if (isShowDetail) {
+                    isShowDetail = false;
+                    showOrderDetail();
+                }
+            }
+            setTimeout("queryOrder()",10000);
+        });
+    }
+
+</script>
+</body>
+</html>

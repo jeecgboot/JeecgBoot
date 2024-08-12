@@ -52,6 +52,9 @@ public class LoginController {
     @Value("${spring.mail.username}")
     private String sender;
 
+    @Value("${server.url}")
+    private String url;
+
     @Autowired
     private AdminService adminService;
 
@@ -180,10 +183,42 @@ public class LoginController {
     }
 
     @GetMapping("/payPage")
-    public String payPage(String orderId){
-        HttpSession session = request.getSession(true);
-        session.setAttribute("orderId",orderId);
+    public String payPage(String orderId,Model model){
+        model.addAttribute("orderId",orderId);
         return "pay";
+    }
+
+    @GetMapping("/staticPay")
+    public String staticPayPage(String username,Model model){
+        VmqSetting setting = settingDao.getSettingByUserName(username);
+        String errorMsg = "";
+        if (setting == null) {
+            errorMsg = "商户["+username+"]不存在，请核对商户名称是否正确";
+        } else {
+            model.addAttribute("payName",setting.getEnableTypeName());
+            model.addAttribute("payUrl",url+"/creatOrderByApp?username="+username);
+        }
+        model.addAttribute("errorMsg",errorMsg);
+        model.addAttribute("username",username);
+        return "staticPay";
+    }
+
+    @ResponseBody
+    @GetMapping("/creatOrderByApp")
+    public String creatOrderByApp(String username,Model model){
+        PayOrder payOrder = new PayOrder();
+        payOrder.setType(0);
+        payOrder.setIsHtml(1);
+        payOrder.setPayId(String.valueOf(System.currentTimeMillis()));
+        payOrder.setParam("static");
+        payOrder.setPrice(0);
+        String sign = webService.getMd5("",payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice());
+        payOrder.setSign(sign);
+        CommonRes commonRes = webService.createOrder(payOrder);
+        if (commonRes.getCode() == -1) {
+            return commonRes.getMsg();
+        }
+        return "<script>window.location.href = '/vmq/payPage?orderId=" + payOrder.getOrderId() + "'</script>";
     }
 
     @AutoLog(value = "email-订单审核")

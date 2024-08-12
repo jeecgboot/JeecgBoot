@@ -59,12 +59,12 @@ public enum PayTypeEnum {
         if (type == 0) {
             return "payPage?orderId="+payOrder.getOrderId();
         }
-        if (type == PayTypeEnum.WX.getCode()){
+        if (type == PayTypeEnum.WX.getCode()){ // 收款码>赞赏码
             payUrl = vmqSetting.getWxpay();
             if (StringUtils.isBlank(payUrl)) {
                 payUrl = vmqSetting.getWxzspay();
             }
-        }else if (type == PayTypeEnum.ZFB.getCode()){
+        }else if (type == PayTypeEnum.ZFB.getCode()){ // 收款码>转账
             payUrl = vmqSetting.getZfbpay();
             if (StringUtils.isBlank(payUrl)) {
                 payUrl = getAliTransUrl(payOrder, vmqSetting);

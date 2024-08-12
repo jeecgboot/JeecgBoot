@@ -16,4 +16,8 @@ public class PayQrcode {
     private double price;
     private int type;
 
+    public String getPayUrlType() {
+        return payUrl.startsWith("data:image") ? "image" : "url";
+    }
+
 }

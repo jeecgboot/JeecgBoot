@@ -1,5 +1,6 @@
 package com.vmq.dao;
 
+import com.vmq.dto.CreateOrderRes;
 import com.vmq.entity.PayOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -68,4 +69,6 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
     int deleteByAfterCreateDate(String username,String date);
 
     PayOrder findByUsernameAndPayId(String username, String outTradeNo);
+
+    List<PayOrder> findByUsernameAndState(String username, int state);
 }

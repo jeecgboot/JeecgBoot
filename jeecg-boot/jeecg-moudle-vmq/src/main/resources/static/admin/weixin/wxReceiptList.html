@@ -31,7 +31,10 @@
             ,cols: [[ //表头
                 {title:"操作", width: 100, align:'center', toolbar: '#barDemo'},
                 {field: 'state', width: 200, title: '二维码',templet: function(d){
-                        return '<div style="height: 150px"><img style="max-width: 280px;margin-top: -100px;margin-left: -55px;" src="'+d.payUrl+'"/></div>';
+                        if (d.payUrlType=="image") {
+                            return '<div style="height: 150px"><img style="max-width: 280px;margin-top: -100px;margin-left: -55px;" src="'+d.payUrl+'"/></div>';
+                        }
+                        return "";
                     }
                 },
                 {field: 'price', width: 150, title: '金额(元)'},
@@ -62,9 +65,7 @@
                 });
             }
         });
-
         form.render();
-
     });
 
 </script>

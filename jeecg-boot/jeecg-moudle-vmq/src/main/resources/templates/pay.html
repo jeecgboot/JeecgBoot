@@ -26,7 +26,7 @@
 <body>
 <div class="body" id="body" style="display: none">
     <h1 class="mod-title">
-        <span id="title" v-if="payType == 0">请使用手机App进行扫码</span>
+        <span v-if="payType == 0">请使用手机App进行扫码</span>
         <span class="ico_log ico-1" v-if="payType == 1 || payType == 4"></span>
         <span class="ico_log ico-2" v-if="payType == 2 || payType == 5"></span>
         <span class="ico_log ico-3" v-if="payType == 3"></span>
@@ -36,8 +36,8 @@
         <div class="order"></div>
         <div class="amount" id="timeOut" style="font-size: 20px;color: red;display: none;"><p>订单已过期，请您返回网站重新发起支付</p><br></div>
         <div id="orderbody">
-            <input type="hidden" id="payType" value="{{payType}}">
-            <div class="amount" id="money">￥{{ reallyPrice }}</div>
+            <div class="amount" style="font-size: 16px" v-if="reallyPrice == 0">扫码后请手动输入付款金额</div>
+            <div class="amount" v-if="reallyPrice > 0">￥{{ reallyPrice }}</div>
             <div class="qrcode-img-wrapper" data-role="qrPayImgWrapper">
                 <div data-role="qrPayImg" class="qrcode-img-area">
                     <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
@@ -87,7 +87,7 @@
                 <div class="ico-scan"></div>
                 <div class="tip-text">
                     <div class="PCPage" style="display: none">
-                        <label style="font-size: medium">请使用{{payName}}进行支付</label>
+                        <label id="title" style="font-size: medium">请使用{{payName}}进行支付</label>
                     </div>
                     <div class="MobilePage" style="display: none">
                         <label  style="font-size: medium">请先保存图片，再使用{{payName}}进行支付</label>
@@ -241,12 +241,10 @@
         if (payUrlType=="image" || appType=="qq" || appType=="wx") {
             return payUrl
         }
-        if (payType == 5) {
+        if (payType == 5) { // 目前仅支付宝转账可以自动跳转付款页面
             payUrl = "https://render.alipay.com/p/s/i?scheme="+encodeURIComponent(payUrl);
-        }
-        if (appType=="wx" || appType=="zfb") { // 支付宝
             window.location.href = payUrl;
-        } else if (appType=="app") { // 手机浏览器
+        } if (appType=="app") { // 手机浏览器
             $(".APPPage").attr("style", "display:none;");
             $(".MobilePage").attr("style", "display:block;");
             $(".payHref").each(function () { // 点击图片唤起app
@@ -274,7 +272,9 @@
                     }
                     if (data.data == "订单未支付" && !hasScan) {
                         hasScan = true;
-                        location.reload();
+                        $("#title").html("您已扫码，建议您尽快完成支付");
+                        $("#title").css("color","red");
+                        //location.reload();
                     }
                     setTimeout("check()",1000);
                 }

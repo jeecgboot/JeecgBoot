@@ -14,7 +14,7 @@ public class CreateOrderRes {
     private String orderId;
     @ApiModelProperty("支付类型：1微信，2支付宝，3QQ，4微信赞赏码，5支付宝转账")
     private int payType;
-    @ApiModelProperty(hidden = true)
+    @ApiModelProperty(value = "支付类型",hidden = true)
     private String payName;
     @ApiModelProperty("订单价格")
     private double price;
@@ -37,7 +37,6 @@ public class CreateOrderRes {
         this.payId = payId;
         this.orderId = orderId;
         this.payType = payType;
-        this.payName = PayTypeEnum.getNameByCode(payType);
         this.price = price;
         this.reallyPrice = reallyPrice;
         this.payUrl = payUrl;
@@ -53,5 +52,12 @@ public class CreateOrderRes {
      */
     public String getPayUrlType() {
         return payUrl.startsWith("data:image") ? "image" : "url";
+    }
+
+    public String getPayName() {
+        if (this.payName == null) {
+            this.payName = PayTypeEnum.getNameByCode(payType);
+        }
+        return payName;
     }
 }

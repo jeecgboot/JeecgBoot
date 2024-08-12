@@ -43,9 +43,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -198,7 +196,7 @@ public class WebController {
         if (priceD == null) {
             return new Gson().toJson(ResUtil.error("请传入订单金额"));
         }
-        if (priceD < 0) {
+        if (priceD <= 0) {
             return new Gson().toJson(ResUtil.error("订单金额必须大于0"));
         }
 
@@ -271,9 +269,9 @@ public class WebController {
         CommonRes res  = webService.getOrder(payOrder.getOrderId());
         CreateOrderRes createOrderRes = (CreateOrderRes) res.getData();
         VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
-        if (payType == 0) {
+        if (payType == 0 && createOrderRes.getPayType() == 0) { // 如果已经扫过码，则无法更换付款方式
             createOrderRes.setPayName(vmqSetting.getEnableTypeName());
-        } else if (payType != 0) { // 手机app扫码
+        } else if (payType != 0) { // 手机app扫码，自动识别付款方式
             payOrder.setType(payType);
             createOrderRes.setPayType(payType);
             if (!webService.checkAddAmount(username, vmqSetting, payOrder)) {
@@ -305,6 +303,32 @@ public class WebController {
             return ResUtil.error("请传入订单编号");
         }
         return webService.checkOrder(payOrder.getOrderId());
+    }
+
+    @RequestMapping(value = "/getUnpaidOrders", method = {RequestMethod.GET, RequestMethod.POST})
+    public CommonRes getUnpaidOrders(String username) {
+        if (StringUtils.isBlank(username)) {
+            return ResUtil.error("商户名称不能为空");
+        }
+        VmqSetting setting = settingDao.getSettingByUserName(username);
+        if (setting == null) {
+            return ResUtil.error("该商户未上传收款码");
+        }
+        List<Map<String,Object>> result = new ArrayList<>();
+        List<PayOrder> orderList = payOrderDao.findByUsernameAndState(username,0);
+        if (orderList == null || orderList.isEmpty()) {
+            return ResUtil.error("无待支付订单");
+        }
+        for (PayOrder order : orderList) {
+            Map map = new HashMap();
+            map.put("payId", order.getPayId());
+            map.put("orderId", order.getOrderId());
+            map.put("date", order.getCreateDate());
+            map.put("timeOut", setting.getClose());
+            map.put("payName", PayTypeEnum.getNameByCode(order.getType()));
+            result.add(map);
+        }
+        return ResUtil.success(result);
     }
 
     @RequestMapping(value = "/getState", method = {RequestMethod.GET, RequestMethod.POST})

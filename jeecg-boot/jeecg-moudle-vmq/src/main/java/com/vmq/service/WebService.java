@@ -1,5 +1,6 @@
 package com.vmq.service;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.vmq.config.EmailUtils;
 import com.vmq.constant.Constant;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
 import java.util.*;
@@ -72,14 +74,14 @@ public class WebService {
      */
     public CommonRes createOrder(PayOrder payOrder){
         log.info("createOrder...");
-        String username = JWTUtil.getUsername(payOrder.getParam());
-        String msg = "自定义";
-        if (StringUtils.isEmpty(username)) {
-            username = default_user;
-            msg = "使用";
+        String username = default_user;
+        if (StringUtils.isNotBlank(payOrder.getUsername())) {
+            username = payOrder.getUsername();
+        } else if (StringUtils.isNotBlank(JWTUtil.getUsername(payOrder.getParam()))) {
+            username = JWTUtil.getUsername(payOrder.getParam());
         }
-        VmqSetting vmqSetting = getDefaultSetting(username);
-        log.info("{}【{}】密钥创建订单{}",msg,username,payOrder.getPayId());
+        VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
+        log.info("使用【{}】密钥创建订单{}",username,payOrder.getPayId());
         String key = vmqSetting.getMd5key();
         String content = payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice();
         if (!payOrder.getSign().equals(md5(content + key))){
@@ -137,7 +139,7 @@ public class WebService {
      */
     public boolean checkAddAmount(String username, VmqSetting vmqSetting, PayOrder payOrder) {
         int type = payOrder.getType();
-        if (type == 0) { // 手机app扫码后再处理(第二次根据app类型传值)
+        if (type == 0 || payOrder.getPrice() == 0) { // 手机app扫码后再处理(第二次根据app类型传值)
             payOrder.setReallyPrice(payOrder.getPrice());
             return true;
         }
@@ -509,10 +511,13 @@ public class WebService {
         Long payCodeId = null;
         String username = payOrder.getUsername();
         String payUrl = PayTypeEnum.getPayUrlByOrder(vmqSetting, payOrder);
-        PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username, payOrder.getReallyPrice(), payOrder.getType());
-        if (payQrcode == null) {
+        PayQrcode payQrcode = null;
+        List<PayQrcode> qrcodeList = payQrcodeDao.findByPriceAndType(username, payOrder.getReallyPrice(), payOrder.getType());
+        if (CollectionUtil.isEmpty(qrcodeList)) {
             isAuto = 1;
             payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(username,0, payOrder.getType());
+        }else { // 有多个收款时，随机获取其中一个
+            payQrcode = qrcodeList.get(new Random().nextInt(qrcodeList.size()));
         }
         if (payQrcode != null){
             payCodeId = payQrcode.getId();

@@ -13,7 +13,6 @@
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
-
 <script>
     var myTable,table,form;
     layui.use(['form','table','laydate'], function(){
@@ -31,7 +30,10 @@
             ,cols: [[ //表头
                 {title:"操作", width: 100, align:'center', toolbar: '#barDemo'},
                 {field: 'state', width: 200, title: '二维码',templet: function(d){
-                        return '<div style="height: 150px"><img style="max-width: 300px;margin-top: -30px;margin-left: -60px;" src="'+d.payUrl+'"/></div>';
+                        if (d.payUrlType=="image") {
+                            return '<div style="height: 150px"><img style="max-width: 300px;margin-top: -30px;margin-left: -60px;" src="'+d.payUrl+'"/></div>';
+                        }
+                        return "";
                     }
                 },
                 {field: 'price', width: 150, title: '金额(元)'},
@@ -62,10 +64,6 @@
                 });
             }
         });
-
         form.render();
-
     });
-
-
 </script>

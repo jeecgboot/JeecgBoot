@@ -3,9 +3,11 @@ package com.vmq.dto;
 import com.vmq.constant.PayTypeEnum;
 import com.vmq.entity.PayOrder;
 import com.vmq.utils.StringUtils;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
 @Data
+@ApiModel("邮件通知VO")
 public class PayInfo {
 
     private String username;

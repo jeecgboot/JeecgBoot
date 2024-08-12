@@ -31,7 +31,10 @@
             ,cols: [[ //表头
                 {title:"操作", width: 100, align:'center', toolbar: '#barDemo'},
                 {field: 'state', width: 200, title: '二维码',templet: function(d){
-                        return '<img style="width: 80%;" src="enQrcode?url='+d.payUrl+'"/>';
+                        if (d.payUrlType == "url") {
+                            return '<img style="width: 80%;" src="enQrcode?url=' + d.payUrl + '"/>';
+                        }
+                        return "";
                     }
                 },
                 {field: 'price', width: 150, title: '金额(元)'},
@@ -64,13 +67,6 @@
                 });
             }
         });
-
-
-
-
         form.render();
-
     });
-
-
 </script>
