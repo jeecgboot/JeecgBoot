@@ -69,14 +69,4 @@ public class EpusdtUtil {
         String signValue = DigestUtils.md5DigestAsHex(builder.toString().getBytes());
         return signValue;
     }
-
-    public static void main(String args[]) {
-        OtherSetting setting = new OtherSetting();
-        setting.setCreateUrl("http://127.0.0.1:0890/vmq");
-        setting.setNotifyUrl("http://127.0.0.1:0890/vmq");
-        setting.setAppId("1002");
-        setting.setAppKey("Cw6cx1o8d7wefA0D487cO80Hf74h1dh");
-        EpusdtEntity entity = createPayment(setting,"0.01",String.valueOf(System.currentTimeMillis()),"");
-        System.out.println(entity);
-    }
 }

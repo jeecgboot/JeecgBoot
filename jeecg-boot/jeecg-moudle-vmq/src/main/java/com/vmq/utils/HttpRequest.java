@@ -37,7 +37,7 @@ public class HttpRequest {
         try {
             @Cleanup
             BufferedReader in = null;
-            String urlNameString = url + "?" + param;
+            String urlNameString = url + (StringUtils.isBlank(param) ? "" : ("?" + param));
             log.info("url: " + urlNameString);
             URL realUrl = new URL(urlNameString);
             // 打开和URL之间的连接

@@ -162,6 +162,10 @@ public class NotifyController {
         response.sendRedirect(url);
     }
 
+    /**
+     * V免签异步通知接口
+     * @return
+     */
     @RequestMapping("/mqpay/notifyUrl")
     @ResponseBody
     public String notifyUrl() {
@@ -211,11 +215,13 @@ public class NotifyController {
         }
     }
 
+    /**
+     * V免签同步回调接口
+     * @param response
+     * @throws IOException
+     */
     @RequestMapping("/mqpay/returnUrl")
     public void returnUrl(HttpServletResponse response) throws IOException {
-        /**
-         *验证通知 处理自己的业务
-         */
         String contextPath = request.getContextPath();
         Map<String, String> params = RequestParamsUtil.getParameterMap(request);
         String param = params.get("param");
@@ -248,6 +254,10 @@ public class NotifyController {
         }
     }
 
+    /**
+     * 易支付异步通知接口
+     * @return
+     */
     @RequestMapping("/epay/notifyUrl")
     @ResponseBody
     public String zlianpNotify() {
@@ -313,18 +323,19 @@ public class NotifyController {
         }
     }
 
+    /**
+     * 易支付同步回调接口
+     * @param response
+     * @throws IOException
+     */
     @RequestMapping("/epay/returnUrl")
     @ResponseBody
     public void zlianpReturnUrl(HttpServletResponse response) throws IOException {
-
-        /**
-         *验证通知 处理自己的业务
-         */
         String contextPath = request.getContextPath();
         Map<String, String> parameterMap = RequestParamsUtil.getParameterMap(request);
 
-        String pid = parameterMap.get("pid");
         String type = parameterMap.get("type");
+        String out_trade_no = parameterMap.get("out_trade_no");
 
         String driver = "";
         if (type.equals("wxpay")) {
@@ -335,32 +346,25 @@ public class NotifyController {
             driver = "epay_qqpay";
         }
 
-        Orders orders = ordersService.selectByMember(parameterMap.get("out_trade_no"));
+        Orders orders = ordersService.selectByMember(out_trade_no);
         Pays pays = paysService.getOne(new QueryWrapper<Pays>().eq("driver", driver).eq("username",orders.getUsername()));
         Map mapTypes = JSON.parseObject(pays.getConfig());
 
         // 你的key 在后台获取
         String secret_key = mapTypes.get("key").toString();
-        String trade_no = parameterMap.get("trade_no");
-        String out_trade_no = parameterMap.get("out_trade_no");
-        String name = parameterMap.get("name");
-        String money = parameterMap.get("money");
-        String trade_status = parameterMap.get("trade_status");
-        String return_url = parameterMap.get("return_url");
-        String notify_url = parameterMap.get("notify_url");
         String sign = parameterMap.get("sign");
         String sign_type = parameterMap.get("sign_type");
 
         Map<String, Object> params = new HashMap<>();
-        params.put("pid", pid);
-        params.put("trade_no", trade_no);
+        params.put("pid", parameterMap.get("pid"));
+        params.put("trade_no", parameterMap.get("trade_no"));
         params.put("out_trade_no", out_trade_no);
         params.put("type", type);
-        params.put("name", name);
-        params.put("money", money);
-        params.put("return_url", return_url);
-        params.put("notify_url", notify_url);
-        params.put("trade_status", trade_status);
+        params.put("name", parameterMap.get("name"));
+        params.put("money", parameterMap.get("money"));
+        params.put("return_url", parameterMap.get("return_url"));
+        params.put("notify_url", parameterMap.get("notify_url"));
+        params.put("trade_status", parameterMap.get("trade_status"));
 
         String sign1 = EpayUtil.createSign(params, secret_key);
 

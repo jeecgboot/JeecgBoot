@@ -30,7 +30,7 @@ public class EpayUtil {
         String notifyUrl = notify_url + "/epay/notifyUrl";
         String returnUrl = notify_url + "/epay/returnUrl";
 
-        Map<String, Object> paramMap = new HashMap<>();
+        Map<String, String> paramMap = new HashMap<>();
         paramMap.put("pid", pid);
         paramMap.put("type", "alipay");
         paramMap.put("out_trade_no", payId);
@@ -48,7 +48,6 @@ public class EpayUtil {
                 + "&notify_url=" + notifyUrl + "&return_url=" + returnUrl
                 + "&name=" + param + "&money=" + price + "&sign=" + sign
                 + "&sign_type=" + sign_type;
-
         return urls;
     }
 
@@ -59,13 +58,13 @@ public class EpayUtil {
      * @param privateKey
      * @return
      */
-    public static String createSign(Map<String, Object> params, String privateKey) {
+    public static String createSign(Map<String, String> params, String privateKey) {
         // 生成签名前先去除sign
         params.remove("sign");
         params.remove("sign_type");
 
         Map<String, String> newmap = new HashMap<>();
-        for (Map.Entry<String, Object> param : params.entrySet()) {
+        for (Map.Entry<String, String> param : params.entrySet()) {
             String value = (String) param.getValue();
             if (StringUtils.isBlank(value)) {
                 continue;

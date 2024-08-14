@@ -10,7 +10,7 @@ import com.vmq.dao.PayOrderDao;
 import com.vmq.dao.SettingDao;
 import com.vmq.dao.TmpPriceDao;
 import com.vmq.entity.VmqSetting;
-import com.vmq.utils.PayQueryUtil;
+import com.vmq.utils.AliPayUtil;
 import com.vmq.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class QuartzService {
     /**
      * 处理过期订单：更新订单状态并删除临时金额
      */
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 30000)
     public void autoUpdatePayOrderStatus(){
         String method = "autoUpdatePayOrderStatus";
         String temp = redisTemplate.opsForValue().get(method);
@@ -89,13 +89,13 @@ public class QuartzService {
             }
         }
         log.info(msg);
-        redisTemplate.opsForValue().set(method, method, Constant.NUMBER_30, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(method, method, Constant.NUMBER_20, TimeUnit.SECONDS);
     }
 
     /**
-     * 支付宝云端监控
+     * 查询支付宝账单
      */
-    //@Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 10000)
     public void queryAliPayAndPush(){
         String method = "queryAliPayAndPush";
         String temp = redisTemplate.opsForValue().get(method);
@@ -106,14 +106,42 @@ public class QuartzService {
         List<VmqSetting> vmqSettingList = settingDao.findAll();
         for (VmqSetting vmqSetting : vmqSettingList) {
             String username = vmqSetting.getUsername();
-            if (StringUtils.isBlank(vmqSetting.getAliCookie())) {
+            if (StringUtils.isBlank(vmqSetting.getAppId())
+            || StringUtils.isBlank(vmqSetting.getPrivateKey())
+            || StringUtils.isBlank(vmqSetting.getAlipayPublicKey())) {
                 continue;
             }
-            String cookie = vmqSetting.getAliCookie();
-            JSONArray array = PayQueryUtil.getAliPayPage(120,cookie);
-            array.stream().forEach(detail -> validAliPayInfo(username,(LinkedHashMap) detail));
+            JSONArray array = AliPayUtil.getAlipayBillSell(Integer.parseInt(vmqSetting.getClose()),vmqSetting);
+            if (array != null && array.size() > 0) {
+                array.stream().forEach(detail -> validAlipayBillSell(username,(LinkedHashMap) detail));
+            }
         }
+        log.info("queryAliPayAndPush success");
         redisTemplate.opsForValue().set(method, method, Constant.NUMBER_2, TimeUnit.SECONDS);
+    }
+
+    private void validAlipayBillSell(String username, LinkedHashMap detailMap) {
+        int payType = PayTypeEnum.ZFB.getCode();
+        JSONObject detail = JSON.parseObject(JSON.toJSONString(detailMap));
+        String gmtCreate = detail.getString("gmt_create");
+        String goodsTitle = detail.getString("goods_title");
+        String outTradeNo = detail.getString("merchant_order_no");
+        String otherAccount = detail.getString("other_account");
+        String totalAmount = detail.getString("total_amount");
+        String tradeRefundAmount = detail.getString("refund_amount");
+        String tradeStatus = detail.getString("trade_status");
+        long payTime = DateUtil.parseDateTime(gmtCreate).getTime();
+        if (Constant.SUCCESS.equals(tradeStatus)) {
+            if (System.currentTimeMillis() - payTime > Constant.MIN5) {
+                return;
+            }
+            log.debug("创建时间：{}\t名称：{}\t商户订单号：{}\t买家信息：{}\t订单金额：{}\t退款金额：{}\t交易状态：{}",gmtCreate,goodsTitle,outTradeNo,otherAccount,totalAmount,tradeRefundAmount,tradeStatus);
+            if (webService.checkRepeatPush(username,payType,totalAmount,Long.valueOf(payTime))) {
+                return;
+            }
+            String result = webService.webPush(username, payType, totalAmount, outTradeNo);
+            log.info("validAliPayInfo: {}",result);
+        }
     }
 
     private void validAliPayInfo(String username, LinkedHashMap detailMap) {
@@ -122,6 +150,7 @@ public class QuartzService {
         String gmtCreate = detail.getString("gmtCreate");
         String goodsTitle = detail.getString("goodsTitle");
         String outTradeNo = detail.getString("outTradeNo");
+        String consumerName = detail.getString("consumerName");
         String totalAmount = detail.getString("totalAmount");
         String tradeRefundAmount = detail.getString("tradeRefundAmount");
         String tradeStatus = detail.getString("tradeStatus");
@@ -130,7 +159,7 @@ public class QuartzService {
             if (System.currentTimeMillis() - payTime > Constant.MIN5) {
                 return;
             }
-            log.info("创建时间：{}\t名称：{}\t商户订单号：{}\t订单金额：{}\t退款金额：{}\t交易状态：{}",gmtCreate,goodsTitle,outTradeNo,totalAmount,tradeRefundAmount,tradeStatus);
+            log.debug("创建时间：{}\t名称：{}\t商户订单号：{}\t买家信息：{}\t订单金额：{}\t退款金额：{}\t交易状态：{}",gmtCreate,goodsTitle,outTradeNo,consumerName,totalAmount,tradeRefundAmount,tradeStatus);
             if (webService.checkRepeatPush(username,payType,totalAmount,Long.valueOf(payTime))) {
                 return;
             }

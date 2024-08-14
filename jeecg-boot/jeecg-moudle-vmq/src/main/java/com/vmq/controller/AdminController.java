@@ -4,6 +4,7 @@ import com.vmq.annotation.AutoLog;
 import com.vmq.config.EmailUtils;
 import com.vmq.dto.CommonRes;
 import com.vmq.entity.OtherSetting;
+import com.vmq.entity.PayOrder;
 import com.vmq.entity.VmqSetting;
 import com.vmq.dto.PageRes;
 import com.vmq.entity.PayQrcode;
@@ -61,13 +62,14 @@ public class AdminController {
     }
 
     @RequestMapping("/getSettings")
-    public CommonRes getSettings(HttpServletRequest request, HttpSession session){
+    public CommonRes getSettings(HttpSession session){
         String username = (String) session.getAttribute("username");
         CommonRes res = adminService.getSettings(username);
         VmqSetting vmqSetting = (VmqSetting) res.getData();
         if (vmqSetting == null) {
             vmqSetting = new VmqSetting();
             vmqSetting.setUsername(username);
+            vmqSetting.setClose("5");
             res.setData(vmqSetting);
         }
         if (StringUtils.isBlank(vmqSetting.getNotifyUrl())) {
@@ -91,8 +93,9 @@ public class AdminController {
                 otherSetting.setNotifyUrl("http://127.0.0.1:8090/epusdt");
                 otherSetting.setCreateUrl("http://127.0.0.1:8090/epusdt/api/v1/order/create-transaction");
             } else if ("epay".equals(type)) {
-                otherSetting.setNotifyUrl("https://yi-pay.com");
-                otherSetting.setCreateUrl("https://yi-pay.com");
+                otherSetting.setReturnUrl(url + "/epay/returnUrl");
+                otherSetting.setNotifyUrl(url + "/epay/notifyUrl");
+                otherSetting.setCreateUrl(url);
             }
             otherSetting.setUsername(username);
             res.setData(otherSetting);
@@ -101,9 +104,9 @@ public class AdminController {
     }
 
     @RequestMapping("/getOrders")
-    public PageRes getOrders(HttpSession session,Integer page, Integer limit, Integer type, Integer state){
+    public PageRes getOrders(HttpSession session, Integer page, Integer limit, PayOrder payOrder){
         String username = (String) session.getAttribute("username");
-        return adminService.getOrders(username,page, limit, type,state);
+        return adminService.getOrders(username,page, limit, payOrder);
     }
 
     @AutoLog(value = "admin-手动补单")

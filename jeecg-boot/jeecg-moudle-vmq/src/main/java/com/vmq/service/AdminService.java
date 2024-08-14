@@ -172,19 +172,27 @@ public class AdminService {
         return ResUtil.success(null);
     }
 
-    public PageRes getOrders(String username, Integer page, Integer limit, Integer type, Integer state){
+    public PageRes getOrders(String username, Integer page, Integer limit, PayOrder payOrder){
 
         Pageable pageable = PageRequest.of(page-1, limit, Sort.Direction.DESC, "id");
 
         Specification<PayOrder> specification = (root, criteriaQuery, cb) -> {
             List<Predicate> list = new ArrayList<Predicate>();
             list.add(cb.in(root.get("username")).value(username).value(default_user));
-            if (type!=null) {
-                list.add(cb.equal(root.get("type").as(int.class), type));
+            if (StringUtils.isNotBlank(payOrder.getPayId())) {
+                list.add(cb.equal(root.get("payId"), payOrder.getPayId()));
             }
-
-            if (state!=null) {
-                list.add(cb.equal(root.get("state").as(int.class), state));
+            if (StringUtils.isNotBlank(payOrder.getOrderId())) {
+                list.add(cb.equal(root.get("orderId"), payOrder.getOrderId()));
+            }
+            if (payOrder.getType() != null) {
+                list.add(cb.equal(root.get("type").as(int.class), payOrder.getType()));
+            }
+            if (payOrder.getState() != null) {
+                list.add(cb.equal(root.get("state").as(int.class), payOrder.getState()));
+            }
+            if (StringUtils.isNotBlank(payOrder.getPayChannel())) {
+                list.add(cb.equal(root.get("payChannel"), payOrder.getPayChannel()));
             }
             return cb.and(list.toArray(new Predicate[list.size()]));
         };

@@ -8,20 +8,6 @@
         </div>
     </div>
 
-    <div class="layui-form-item" style="display: none">
-        <label class="layui-form-label">异步回调</label>
-        <div class="layui-input-block">
-            <input type="text" id="notifyUrl" name="notifyUrl" lay-verify="required" placeholder="请输入异步回调地址" autocomplete="off" class="layui-input">
-        </div>
-    </div>
-
-    <div class="layui-form-item" style="display: none">
-        <label class="layui-form-label">同步回调</label>
-        <div class="layui-input-block">
-            <input type="text" id="returnUrl" name="returnUrl" lay-verify="required" placeholder="请输入支付完成后跳转地址" autocomplete="off" class="layui-input">
-        </div>
-    </div>
-
     <div class="layui-form-item">
         <label class="layui-form-label">通讯密钥</label>
         <div class="layui-input-block">
@@ -30,14 +16,24 @@
     </div>
 
     <div class="layui-form-item">
+        <label class="layui-form-label">异步回调</label>
+        <div class="layui-input-block">
+            <input type="text" id="notifyUrl" name="notifyUrl" lay-verify="required" placeholder="请输入异步回调地址" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">同步回调</label>
+        <div class="layui-input-block">
+            <input type="text" id="returnUrl" name="returnUrl" lay-verify="required" placeholder="请输入支付完成后跳转地址" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
         <label class="layui-form-label">订单有效期(分钟)</label>
         <div class="layui-input-block" style="width: 200px">
             <input type="number" id="close" name="close" lay-verify="required" placeholder="请输入创建的订单几分钟后失效" autocomplete="off" class="layui-input">
         </div>
-
-    </div>
-
-    <div class="layui-form-item">
         <label class="layui-form-label">区分方式</label>
         <div class="layui-input-block" style="width: 200px">
             <select id="payQf">
@@ -45,13 +41,6 @@
                 <option value="2">金额递减</option>
             </select>
         </div>
-        <!--<label class="layui-form-label">付款码生成方式</label>
-        <div class="layui-input-block" style="width: 100px">
-            <select id="allInOneQr">
-                <option value="1">随机</option>
-                <option value="0">轮询</option>
-            </select>
-        </div>-->
     </div>
 
     <div class="layui-form-item">

@@ -41,10 +41,6 @@ public class VmqSetting implements Serializable {
      */
     private String aliUserId;
 
-    /** 支付宝cookie */
-    @Column(columnDefinition = "text")
-    private String aliCookie;
-
     /** 是否发送付款审核 */
     private Integer isApprove;
 
@@ -65,6 +61,15 @@ public class VmqSetting implements Serializable {
 
     /** 最后收款时间 */
     private String lastpay;
+
+    /** 支付宝密钥 */
+    private String appId;
+
+    @Column(length = 2000)
+    private String privateKey;
+
+    @Column(length = 500)
+    private String alipayPublicKey;
 
     /** 微信二维码 */
     private String wxpay;
@@ -113,7 +118,9 @@ public class VmqSetting implements Serializable {
         if (StringUtils.isNotBlank(qqpay)){
             builder.append(PayTypeEnum.QQ.getName()).append("、");
         }
-        builder.setLength(builder.length() - 1);
+        if (builder.length()>0) {
+            builder.setLength(builder.length() - 1);
+        }
         return builder.toString();
     }
 }

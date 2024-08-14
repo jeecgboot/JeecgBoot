@@ -12,7 +12,10 @@ public interface Constant {
     String HTTP_PUT = "PUT";
     String HTTP_PATCH = "PATCH";
     String UNKNOWN = "unknown";
-    String STR_HTTP = "http";
+    String HTTP = "http";
+    String UTF8 = "UTF-8";
+    String GBK = "GBK";
+    String JSON = "json";
 
     // 字符窜常量
     String SUCCESS = "成功";
@@ -30,6 +33,7 @@ public interface Constant {
     int NUMBER_5 = 5;
     int NUMBER_6 = 6;
     int NUMBER_10 = 10;
+    long NUMBER_20 = 20;
     int NUMBER_30 = 30;
     int NUMBER_60 = 60;
     int NUMBER_120 = 120;
@@ -48,6 +52,10 @@ public interface Constant {
     String aliTransURL = "alipays://platformapi/startapp?appId=09999988&actionType=toAccount&userId=%s&amount=%s&memo=%s&goBack=NO";
     String ALI_TRANS_URL = "alipays://platformapi/startapp?appId=20000123&actionType=scan&biz_data={\"s\": \"money\",\"u\": \"%s\",\"a\": \"%s\",\"m\": \"%s\"}";
     String ALI_ORDER_QUERY_URL = "https://mbillexprod.alipay.com/enterprise/tradeListQuery.json?_output_charset=utf-8&ctoken=";
+    String ALI_GATEWAY_URL = "https://openapi.alipay.com/gateway.do";
 
+    // 加解密
+    String RSA2 = "RSA2";
+    String MD5 = "MD5";
 
 }

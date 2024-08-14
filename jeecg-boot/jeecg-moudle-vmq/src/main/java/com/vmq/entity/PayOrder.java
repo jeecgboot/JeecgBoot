@@ -25,8 +25,8 @@ public class PayOrder {
     @ApiModelProperty("通知邮箱")
     private String email;
 
-    @ApiModelProperty(value = "支付类型：1微信，2支付宝，3QQ，4微信赞赏码，5支付宝转账",required = true)
-    private int type;
+    @ApiModelProperty(value = "支付类型：0聚合码，1微信，2支付宝，3QQ，4微信赞赏码，5支付宝转账",required = true)
+    private Integer type;
 
     @ApiModelProperty(value = "订单价格",required = true)
     private double price;
@@ -56,10 +56,13 @@ public class PayOrder {
 
     // -1：订单过期 0：等待支付 1：支付成功
     @ApiModelProperty(value = "订单状态",hidden = true)
-    private int state;
+    private Integer state;
 
     @ApiModelProperty(value = "二维码类型：1手动输入金额 0固定金额",hidden = true)
     private int isAuto;
+
+    @ApiModelProperty(value = "付款通道:vmq、epay、epusdt")
+    private String payChannel = "vmq";
 
     @ApiModelProperty(hidden = true)
     private Long payCodeId;
@@ -79,4 +82,13 @@ public class PayOrder {
     public String getUnitCode() {
         return username + type + reallyPrice;
     }
+
+    public String getMd5ForCreate() {
+        return payId + param + type + price;
+    }
+
+    public String getMd5ForNotify() {
+        return payId + param + type + price + reallyPrice;
+    }
+
 }

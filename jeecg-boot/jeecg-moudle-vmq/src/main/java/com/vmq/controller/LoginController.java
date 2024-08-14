@@ -48,6 +48,9 @@ public class LoginController {
     @Value("${token.expire.link}")
     private int expireHour;
 
+    @Value("${token.regist.email}")
+    private boolean emailRegist;
+
     /** 邮箱发送者账号 */
     @Value("${spring.mail.username}")
     private String sender;
@@ -128,6 +131,7 @@ public class LoginController {
     }
 
     @ResponseBody
+    @AutoLog(value = "login-获取验证码",logType = 1)
     @RequestMapping(value = "/getVerificationCode",method = {RequestMethod.GET,RequestMethod.POST})
     public CommonRes getVerificationCode(String email){
         if (!EmailUtils.checkEmail(email)){
@@ -161,15 +165,17 @@ public class LoginController {
         if (password.length() < 4) {
             return ResUtil.error("密码长度不能小于4位");
         }
-        String temp = redisTemplate.opsForValue().get(email);
-        if (StringUtils.isBlank(temp)) {
-            return ResUtil.error("验证码已失效");
+        if (emailRegist) {
+            String temp = redisTemplate.opsForValue().get(email);
+            if (StringUtils.isBlank(temp)) {
+                return ResUtil.error("验证码已失效");
+            }
+            String validCode = emailMap.get(email);
+            if (!(StringUtils.isNotBlank(validCode) && validCode.equals(code))) {
+                return ResUtil.error("邮箱验证码不正确");
+            }
+            redisTemplate.opsForValue().getAndDelete(email);
         }
-        String validCode = emailMap.get(email);
-        if (!(StringUtils.isNotBlank(validCode) && validCode.equals(code))) {
-            return ResUtil.error("邮箱验证码不正确");
-        }
-        redisTemplate.opsForValue().getAndDelete(email);
         CommonRes r = adminService.regist(username, password, email);
         return r;
     }
@@ -206,13 +212,17 @@ public class LoginController {
     @ResponseBody
     @GetMapping("/creatOrderByApp")
     public String creatOrderByApp(String username,Model model){
+        if (StringUtils.isBlank(username)) {
+            return "未识别到商户名";
+        }
         PayOrder payOrder = new PayOrder();
         payOrder.setType(0);
         payOrder.setIsHtml(1);
         payOrder.setPayId(String.valueOf(System.currentTimeMillis()));
         payOrder.setParam("static");
         payOrder.setPrice(0);
-        String sign = webService.getMd5("",payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice());
+        payOrder.setUsername(username);
+        String sign = webService.getMd5(username,payOrder.getMd5ForCreate());
         payOrder.setSign(sign);
         CommonRes commonRes = webService.createOrder(payOrder);
         if (commonRes.getCode() == -1) {
@@ -306,14 +316,14 @@ public class LoginController {
 
     @AutoLog(value = "web-同步通知")
     @ApiOperation(value = "同步通知接口，付款成功后调用")
-    @RequestMapping(value = "/return", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = {"/return","/epay/returnUrl","/epusdt/returnUrl"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String returnUrl(PayOrder payOrder,Model model) {
         PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
         if (order == null) {
             model.addAttribute("errorMsg","订单不存在");
             return "500";
         }
-        String sign = webService.getMd5(order.getUsername(),payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice());
+        String sign = webService.getMd5(order.getUsername(),payOrder.getMd5ForNotify());
         if (!sign.equals(payOrder.getSign())) {
             model.addAttribute("errorMsg","签名校验失败");
             return "500";

@@ -33,15 +33,22 @@
     <div class="layui-form-item">
         <label class="layui-form-label">支付网关</label>
         <div class="layui-input-block">
-            <input type="email" id="createUrl" lay-verify="required" placeholder="请输入官网地址" autocomplete="off" class="layui-input">
+            <input type="email" id="createUrl" lay-verify="required" placeholder="请输入支付网关" autocomplete="off" class="layui-input">
         </div>
     </div>
 
 
     <div class="layui-form-item">
-        <label class="layui-form-label">通知地址</label>
+        <label class="layui-form-label">异步通知地址</label>
         <div class="layui-input-block">
             <input type="text" id="notifyUrl" lay-verify="required" placeholder="请输入通知地址" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">同步通知地址</label>
+        <div class="layui-input-block">
+            <input type="text" id="returnUrl" lay-verify="required" placeholder="请输入通知地址" autocomplete="off" class="layui-input">
         </div>
     </div>
 
@@ -86,7 +93,7 @@
         var appKey = $("#appKey").val();
         var createUrl = $("#createUrl").val();
         var notifyUrl = $("#notifyUrl").val();
-
+        var returnUrl = $("#returnUrl").val();
         if (user == ""){
             layer.msg("请输入管理员账号");
             return;
@@ -100,7 +107,7 @@
             return;
         }
         if (createUrl == ""){
-            layer.msg("请输入官网地址");
+            layer.msg("请输入支付网关");
             return;
         }
         if (notifyUrl == ""){
@@ -113,7 +120,7 @@
             url: "admin/saveOtherSetting?type=epay",
             contentType: "application/json",
             async: false,
-            data: JSON.stringify( { 'id':id ,'username':user ,'type':type,'email':email,'appId':appId,'appKey':appKey, 'notifyUrl':notifyUrl ,'createUrl':createUrl} ),
+            data: JSON.stringify( { 'id':id ,'username':user ,'type':type,'email':email,'appId':appId,'appKey':appKey, 'notifyUrl':notifyUrl ,'returnUrl':returnUrl,'createUrl':createUrl} ),
             datatype: "json",
             success: function (data) {
                 if (data.code==1){
@@ -131,6 +138,7 @@
                 $("#user").val(data.data.username);
                 $("#email").val(data.data.email);
                 $("#notifyUrl").val(data.data.notifyUrl);
+                $("#returnUrl").val(data.data.returnUrl);
                 $("#createUrl").val(data.data.createUrl);
                 $("#appId").val(data.data.appId);
                 $("#appKey").val(data.data.appKey);

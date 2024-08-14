@@ -11,15 +11,16 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.vmq.annotation.AutoLog;
 import com.vmq.config.EmailUtils;
 import com.vmq.constant.Constant;
+import com.vmq.constant.PayChannelEnum;
 import com.vmq.constant.PayTypeEnum;
 import com.vmq.constant.SmsTypeEnum;
+import com.vmq.dao.OtherSettingDao;
 import com.vmq.dao.PayOrderDao;
-import com.vmq.dao.PayQrcodeDao;
 import com.vmq.dao.SettingDao;
+import com.vmq.entity.OtherSetting;
 import com.vmq.entity.PayOrder;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.CreateOrderRes;
-import com.vmq.entity.PayQrcode;
 import com.vmq.entity.VmqSetting;
 import com.vmq.service.AdminService;
 import com.vmq.service.WebService;
@@ -45,6 +46,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 @Slf4j
 @RestController
@@ -68,6 +70,9 @@ public class WebController {
 
     @Autowired
     private SettingDao settingDao;
+
+    @Autowired
+    private OtherSettingDao otherSettingDao;
 
     @RequestMapping("/enQrcode")
     public void enQrcode(HttpServletResponse resp, String url) throws IOException {
@@ -156,15 +161,92 @@ public class WebController {
     @AutoLog(value = "web-添加订单")
     @RequestMapping(value = "/addOrder",method = {RequestMethod.GET, RequestMethod.POST})
     public String addOrder(@RequestBody PayOrder payOrder, HttpServletRequest request) {
-        String sign = webService.getMd5("",payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice());
+        String sign = webService.getMd5("",payOrder.getMd5ForCreate());
         payOrder.setSign(sign);
         return createOrder(payOrder,request);
     }
 
     /**
-     * 创建订单
+     * 易支付创建订单
      *
-     * @param payOrder 0返回json数据 1跳转到支付页面
+     * @param request
+     * @return
+     */
+    @AutoLog(value = "web-创建订单")
+    @RequestMapping(value = "/submit.php", method = {RequestMethod.GET, RequestMethod.POST})
+    @ApiOperation(value = "创建订单")
+    public String epaySubmit(HttpServletRequest request) {
+        PayOrder payOrder = new PayOrder();
+        String pid = request.getParameter("pid");
+        String type = request.getParameter("type");
+        String money = request.getParameter("money");
+        if (StringUtils.isBlank(pid)) {
+            return new Gson().toJson(ResUtil.error("商户不存在"));
+        }
+        OtherSetting otherSetting = otherSettingDao.findByAppIdAndType(pid,"epay");
+        if (otherSetting == null) {
+            return new Gson().toJson(ResUtil.error("该商户不存在"));
+        } else if (StringUtils.isBlank(otherSetting.getAppKey())) {
+            return new Gson().toJson(ResUtil.error("该商户未配置"));
+        }
+        String ip = HttpRequest.getIpAddr(request);
+        String temp = redisTemplate.opsForValue().get(ip);
+        Long expire = redisTemplate.getExpire(ip, TimeUnit.SECONDS);
+        if (StringUtils.isNotBlank(temp)) {
+            return new Gson().toJson(ResUtil.error("您提交的订单未完成支付，请确认支付状态。请在" + expire + "秒后再试"));
+        }
+        payOrder.setPayChannel(PayChannelEnum.EPAY.getCode());
+        payOrder.setUsername(otherSetting.getUsername());
+        payOrder.setPayId(request.getParameter("out_trade_no"));
+        payOrder.setNotifyUrl(request.getParameter("notify_url"));
+        if (StringUtils.isBlank(payOrder.getNotifyUrl())) {
+            payOrder.setNotifyUrl(otherSetting.getNotifyUrl());
+        }
+        payOrder.setReturnUrl(request.getParameter("return_url"));
+        if (StringUtils.isBlank(payOrder.getReturnUrl())) {
+            payOrder.setReturnUrl(otherSetting.getReturnUrl());
+        }
+        payOrder.setParam(request.getParameter("name"));
+        payOrder.setPrice(Double.valueOf(money));
+        payOrder.setSign(request.getParameter("sign"));
+        if (type.equals("wxpay")) {
+            payOrder.setType(PayTypeEnum.WX.getCode());
+        } else if (type.equals("alipay")) {
+            payOrder.setType(PayTypeEnum.ZFB.getCode());
+        } else if (type.equals("qqpay")) {
+            payOrder.setType(PayTypeEnum.QQ.getCode());
+        }
+        String errorMsg = validOrder(payOrder);
+        if (StringUtils.isNotBlank(errorMsg)) {
+            return errorMsg;
+        }
+        // 校验签名
+        Map<String, String> paramMap = new HashMap<>();
+        paramMap.put("pid", pid);
+        paramMap.put("type", "alipay");
+        paramMap.put("out_trade_no", payOrder.getPayId());
+        paramMap.put("notify_url", payOrder.getNotifyUrl());
+        paramMap.put("return_url", payOrder.getReturnUrl());
+        paramMap.put("name", payOrder.getParam());
+        paramMap.put("money", money);
+        String sign = EpayUtil.createSign(paramMap, otherSetting.getAppKey());
+        if (sign.equals(payOrder.getSign())) {
+            payOrder.setSign(webService.getMd5(payOrder.getUsername(),payOrder.getMd5ForCreate()));
+        }
+        CommonRes commonRes = webService.createOrder(payOrder);
+        if (commonRes.getCode() == 1) {
+            //记录缓存
+            redisTemplate.opsForValue().set(ip, "added", expireCount, TimeUnit.SECONDS);
+            CreateOrderRes c = (CreateOrderRes) commonRes.getData();
+            return "<script>window.location.href = '/vmq/payPage?orderId=" + c.getOrderId() + "'</script>";
+        }
+        return commonRes.getMsg();
+
+    }
+
+    /**
+     * 创建订单
+     * @param payOrder
      * @return
      */
     @AutoLog(value = "web-创建订单")
@@ -177,6 +259,30 @@ public class WebController {
         if (StringUtils.isNotBlank(temp)) {
             return new Gson().toJson(ResUtil.error("您提交的订单未完成支付，请确认支付状态。请在" + expire + "秒后再试"));
         }
+        String errorMsg = validOrder(payOrder);
+        if (StringUtils.isNotBlank(errorMsg)) {
+            return errorMsg;
+        }
+        int isHtml = payOrder.getIsHtml();
+        CommonRes commonRes = webService.createOrder(payOrder);
+        if (commonRes.getCode() == 1) {
+            //记录缓存
+            redisTemplate.opsForValue().set(ip, "added", expireCount, TimeUnit.SECONDS);
+        }
+        if (isHtml == 0) { // JSON
+            String res = new Gson().toJson(commonRes);
+            return res;
+        } else { // HTML
+            if (commonRes.getCode() == 1) {
+                CreateOrderRes c = (CreateOrderRes) commonRes.getData();
+                return "<script>window.location.href = '/vmq/payPage?orderId=" + c.getOrderId() + "'</script>";
+            }
+            return commonRes.getMsg();
+
+        }
+    }
+
+    private String validOrder(PayOrder payOrder) {
         if (StringUtils.isEmpty(payOrder.getPayId())) {
             return new Gson().toJson(ResUtil.error("请传入商户订单号"));
         }
@@ -203,23 +309,7 @@ public class WebController {
         if (StringUtils.isEmpty(payOrder.getSign())) {
             return new Gson().toJson(ResUtil.error("请传入签名"));
         }
-        int isHtml = payOrder.getIsHtml();
-        CommonRes commonRes = webService.createOrder(payOrder);
-        if (commonRes.getCode() == 1) {
-            //记录缓存
-            redisTemplate.opsForValue().set(ip, "added", expireCount, TimeUnit.SECONDS);
-        }
-        if (isHtml == 0) { // JSON
-            String res = new Gson().toJson(commonRes);
-            return res;
-        } else { // HTML
-            if (commonRes.getCode() == 1) {
-                CreateOrderRes c = (CreateOrderRes) commonRes.getData();
-                return "<script>window.location.href = '/vmq/payPage?orderId=" + c.getOrderId() + "'</script>";
-            }
-            return commonRes.getMsg();
-
-        }
+        return "";
     }
 
     @AutoLog(value = "web-关闭订单")
@@ -314,10 +404,24 @@ public class WebController {
         if (setting == null) {
             return ResUtil.error("该商户未上传收款码");
         }
+        String key = "getUnpaidOrders_"+username;
         List<Map<String,Object>> result = new ArrayList<>();
-        List<PayOrder> orderList = payOrderDao.findByUsernameAndState(username,0);
+        List<PayOrder> orderList = payOrderDao.getUnPaidOrder(username);
+
         if (orderList == null || orderList.isEmpty()) {
             return ResUtil.error("无待支付订单");
+        }
+        StringBuilder builder = new StringBuilder();
+        String ids = StringUtils.trimToEmpty(redisTemplate.opsForValue().get(key));
+        for (PayOrder order : orderList) { // 保存本次查到的订单
+            if (ids.contains(order.getOrderId()+ ",")) {
+                ids = ids.replace(order.getOrderId() + ",", "");
+            }
+            builder.append(order.getOrderId()).append(",");
+        }
+        if (StringUtils.isNotBlank(ids)) { // 添加上次查到的订单
+            List<PayOrder> oldOrderList = payOrderDao.findByOrderIdIn(ids.split(","));
+            orderList.addAll(0,oldOrderList);
         }
         for (PayOrder order : orderList) {
             Map map = new HashMap();
@@ -325,9 +429,12 @@ public class WebController {
             map.put("orderId", order.getOrderId());
             map.put("date", order.getCreateDate());
             map.put("timeOut", setting.getClose());
+            map.put("state", order.getState());
+            map.put("price", order.getPrice());
             map.put("payName", PayTypeEnum.getNameByCode(order.getType()));
             result.add(map);
         }
+        redisTemplate.opsForValue().set(key, builder.toString(), 30, TimeUnit.SECONDS);
         return ResUtil.success(result);
     }
 
@@ -344,16 +451,8 @@ public class WebController {
 
     @AutoLog(value = "web-异步通知")
     @ApiOperation(value = "异步通知接口，付款成功后返回success")
-    @RequestMapping(value = "/notify", method = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = {"/notify","/epay/notifyUrl","/epusdt/notifyUrl"}, method = {RequestMethod.GET, RequestMethod.POST})
     public String notifyUrl(PayOrder payOrder) {
-        PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
-        if (order == null) {
-            return "订单不存在";
-        }
-        String sign = webService.getMd5(order.getUsername(),payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice());
-        if (!sign.equals(payOrder.getSign())) {
-            return "签名校验失败";
-        }
         return "success";
     }
 
@@ -432,36 +531,6 @@ public class WebController {
         }
         log.info("smsNotify: {}",result);
         return result;
-    }
-
-    @AutoLog(value = "web-易支付异步通知")
-    @ApiOperation(value = "易支付回调接口")
-    @RequestMapping(value = "/epay/notifyUrl", method = {RequestMethod.GET, RequestMethod.POST})
-    public String epayNotify(PayOrder payOrder) {
-        PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
-        if (order == null) {
-            return "订单不存在";
-        }
-        String sign = webService.getMd5(order.getUsername(),payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice());
-        if (!sign.equals(payOrder.getSign())) {
-            return "签名校验失败";
-        }
-        return "success";
-    }
-
-    @AutoLog(value = "web-epusdt异步通知")
-    @ApiOperation(value = "USDT回调接口")
-    @RequestMapping(value = "/epusdt/notifyUrl", method = {RequestMethod.GET, RequestMethod.POST})
-    public String epusdtNotify(PayOrder payOrder) {
-        PayOrder order = payOrderDao.findByPayId(payOrder.getPayId());
-        if (order == null) {
-            return "订单不存在";
-        }
-        String sign = webService.getMd5(order.getUsername(),payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice());
-        if (!sign.equals(payOrder.getSign())) {
-            return "签名校验失败";
-        }
-        return "success";
     }
 
 }

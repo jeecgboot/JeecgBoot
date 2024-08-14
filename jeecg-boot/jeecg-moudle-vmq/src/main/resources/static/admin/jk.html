@@ -8,14 +8,11 @@
     </div>
     <div class="layui-form-item">
         <label class="layui-form-label">最后心跳</label>
-        <div class="layui-input-block">
+        <div class="layui-input-block" style="width: 200px">
             <input type="text" id="lastheart" lay-verify="required" placeholder="最后心跳时间" autocomplete="off" readonly class="layui-input">
         </div>
-    </div>
-
-    <div class="layui-form-item">
         <label class="layui-form-label">最后收款</label>
-        <div class="layui-input-block">
+        <div class="layui-input-block" style="width: 200px">
             <input type="text" id="lastpay" lay-verify="required" placeholder="最后收款时间" autocomplete="off" readonly class="layui-input">
         </div>
     </div>
@@ -25,15 +22,16 @@
             <input type="text" id="input" lay-verify="required" placeholder="手动配置数据" autocomplete="off" readonly class="layui-input">
         </div>
     </div>
-    <div class="layui-form-item">
+    <!--<div class="layui-form-item">
         <label class="layui-form-label">配置二维码</label>
         <div class="layui-input-block">
             <img id="pzqrcode">
         </div>
-    </div>
+    </div>-->
 
+    <label class="layui-form-label" style="width: fit-content;background-color: darkkhaki">方式一：云端登录</label>
     <div class="layui-form-item" style="display: flex;">
-        <label class="layui-form-label">云端扫码登录</label>
+        <label class="layui-form-label"></label>
         <div class="layui-input-block">
             <div class="layui-upload" style="text-align: center;">
                 <button type="button" class="layui-btn" style="background: darkseagreen">支付宝免挂</button><br>
@@ -49,10 +47,44 @@
             </div>
         </div>
     </div>
-
+    <label class="layui-form-label" style="width: fit-content;background-color: darkkhaki">方式二：调用官方API</label>
+    <div class="layui-form-item" style="display: flex;">
+        <label class="layui-form-label"></label>
+        <div class="layui-form-item">
+            <label class="layui-form-label">应用ID</label>
+            <div class="layui-input-block">
+                <input type="text" id="appId" name="appId" lay-verify="required" placeholder="请输入应用ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="display: flex;">
+        <label class="layui-form-label"></label>
+        <div class="layui-form-item">
+            <label class="layui-form-label">应用私钥</label>
+            <div class="layui-input-block">
+                <input type="password" id="privateKey" name="privateKey" lay-verify="required" placeholder="请输入应用私钥" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="display: flex;">
+        <label class="layui-form-label"></label>
+        <div class="layui-form-item">
+            <label class="layui-form-label">支付宝公钥</label>
+            <div class="layui-input-block">
+                <input type="password" id="alipayPublicKey" name="alipayPublicKey" lay-verify="required" placeholder="请输入支付宝公钥" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <label class="layui-form-label" style="width: fit-content;background-color: darkkhaki">方式三：安装监控端</label>
     <div class="layui-form-item" style="text-align: right">
-        <button class="layui-btn" onclick="window.open('SmsF_3.3.1.240418.apk')">下载安卓监控端</button>
-        <button class="layui-btn" onclick="window.open('Vmq_PC_2408.ZIP')">下载电脑监控端</button>
+        <label class="layui-form-label"></label>
+        <div class="layui-input-block">
+            <button class="layui-btn" onclick="window.open('SmsF_3.3.1.240418.apk')">下载安卓监控端</button>
+            <button class="layui-btn" onclick="window.open('Vmq_PC_2408.ZIP')">下载电脑监控端</button>
+        </div>
+    </div>
+    <div class="layui-form-item" style="text-align: right; display: block">
+        <button class="layui-btn" onclick="save()">保存</button>
     </div>
 </div>
 <style>
@@ -76,7 +108,9 @@
 
     });
 
+    var setting;
     $.post("admin/getSettings",function (data) {
+        setting = data.data;
         if (data.code==1){
             if (data.data.jkstate == -1){
                 $("#jkstate").val("监控端未绑定，请您扫码绑定");
@@ -88,6 +122,9 @@
 
             $("#lastheart").val(formatDate(data.data.lastheart*1));
             $("#lastpay").val(formatDate(data.data.lastpay*1));
+            $("#appId").val(data.data.appId);
+            $("#privateKey").val(data.data.privateKey);
+            $("#alipayPublicKey").val(data.data.alipayPublicKey);
 
             var img = window.location.host + window.location.pathname.replace("menu","") + data.data.md5key;
 
@@ -95,4 +132,21 @@
             $("#pzqrcode").attr("src","enQrcode?url="+img);
         }
     });
+
+    function save() {
+        setting.appId = $("#appId").val();
+        setting.privateKey = $("#privateKey").val();
+        setting.alipayPublicKey = $("#alipayPublicKey").val();
+        $.ajax({
+            type: 'POST',
+            url: "admin/saveSetting",
+            contentType: "application/json",
+            async: false,
+            data: JSON.stringify(setting),
+            datatype: "json",
+            success: function (data) {
+                layer.msg(data.msg);
+            }
+        });
+    }
 </script>

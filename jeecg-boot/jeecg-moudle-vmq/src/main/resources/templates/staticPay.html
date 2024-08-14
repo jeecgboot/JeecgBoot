@@ -95,15 +95,31 @@
     queryOrder();
     // 判断是否支付成功
     var isShowDetail = true;
+
+    // 定时器 每隔一秒变化一次（1000ms = 1s）
+    let t = setInterval(countDown, 1000);
+    function countDown() {
+        $(".countDown").each((e)=> {
+            var timeOut = $("#countDown"+e).html()>0?$("#countDown"+e).html()-1:0;
+            $("#countDown"+e).html(timeOut);
+        });
+    }
     function queryOrder() {
         $.get("getUnpaidOrders","username="+getQueryString("username"),function (data) {
+            $("#desc").html("");
             if (data.code == 1) {
-                var orderList = "";
                 var time = new Date().getTime();
+                var index = 0;
+                var orderList = "";
                 data.data.forEach((e) => {
                     var timeCount = ((e.timeOut*60000)-(time-e.date))/1000;
-                    if (timeCount >= 0) {
-                        orderList += "<dt>"+e.payName+"订单："+e.orderId+"</dt><dd>剩余支付时间："+Math.floor(timeCount)+"秒</dd>";
+                    if (e.state == -1) {
+                        orderList += "<dt>"+e.payName+"订单："+e.orderId+"</dt><dd><span style='color: darkred'>已过期</span></dd>";
+                    } else if (e.state == 1) {
+                        orderList += "<dt>"+e.payName+"订单："+e.orderId+"</dt><dd><span style='color: darkgreen'>已支付"+e.price+"元</span></dd>";
+                    } else if (e.state == 0) {
+                        orderList += "<dt>"+e.payName+"订单："+e.orderId+"</dt><dd>剩余支付时间：<span class='countDown' id='countDown"+index+"'>"+Math.floor(timeCount)+"</span>秒</dd>";
+                        index++;
                     }
                 })
                 $("#desc").html(orderList);

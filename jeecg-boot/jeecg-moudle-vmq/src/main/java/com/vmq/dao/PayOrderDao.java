@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -70,5 +71,11 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
 
     PayOrder findByUsernameAndPayId(String username, String outTradeNo);
 
-    List<PayOrder> findByUsernameAndState(String username, int state);
+    @Query("select o from PayOrder o where o.username=?1 and o.state=0 and o.param='static'")
+    List<PayOrder> getUnPaidOrder(String username);
+
+    @Query(value = "select pay_id from pay_order o where o.state=0 and o.param='static' and o.username=?1 and o.type=?2 order by o.create_date limit 1",nativeQuery = true)
+    String getFirstUnPaidOrder(String username, Integer type);
+
+    List<PayOrder> findByOrderIdIn(String[] payId);
 }

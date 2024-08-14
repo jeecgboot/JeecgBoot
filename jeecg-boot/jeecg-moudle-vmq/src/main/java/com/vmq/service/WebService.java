@@ -4,18 +4,13 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.vmq.config.EmailUtils;
 import com.vmq.constant.Constant;
+import com.vmq.constant.PayChannelEnum;
 import com.vmq.constant.PayTypeEnum;
-import com.vmq.dao.PayOrderDao;
-import com.vmq.dao.PayQrcodeDao;
-import com.vmq.dao.SettingDao;
-import com.vmq.dao.TmpPriceDao;
+import com.vmq.dao.*;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.CreateOrderRes;
 import com.vmq.dto.PayInfo;
-import com.vmq.entity.PayOrder;
-import com.vmq.entity.PayQrcode;
-import com.vmq.entity.TmpPrice;
-import com.vmq.entity.VmqSetting;
+import com.vmq.entity.*;
 import com.vmq.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +37,9 @@ public class WebService {
 
     @Autowired
     private SettingDao settingDao;
+
+    @Autowired
+    private OtherSettingDao otherSettingDao;
 
     @Autowired
     private PayOrderDao payOrderDao;
@@ -257,6 +255,14 @@ public class WebService {
 
         PayOrder payOrder = payOrderDao.findByUsernameAndReallyPriceAndStateAndType(username,Double.valueOf(price),0,type);
         String errorMsg = "";
+        if (payOrder==null) { // 查询最近未付款的聚合码订单
+            String payId = payOrderDao.getFirstUnPaidOrder(username,type);
+            if (StringUtils.isNotBlank(payId)) {
+                payOrder = payOrderDao.findByPayId(payId);
+                payOrder.setPrice(Double.valueOf(price));
+                payOrder.setReallyPrice(Double.valueOf(price));
+            }
+        }
         if (payOrder == null) {
             payOrder = new PayOrder();
             payOrder.setPayId("无订单转账");
@@ -278,20 +284,15 @@ public class WebService {
             payOrderDao.save(payOrder);
 
             //执行通知
-            String p = "payId=" + payOrder.getPayId() + "&orderId=" + payOrder.getOrderId() + "&param=" + payOrder.getParam() + "&type=" + payOrder.getType() + "&price=" + payOrder.getPrice() + "&reallyPrice=" + payOrder.getReallyPrice();
-            sign = md5(payOrder.getPayId() + payOrder.getParam() + payOrder.getType() + payOrder.getPrice() + payOrder.getReallyPrice() + key);
-            p = p + "&sign=" + sign;
-            String url = payOrder.getNotifyUrl();
+            payOrder.setSign(sign);
+            String url = getNotifyUrlByOrder(payOrder);
             if (StringUtils.isBlank(url)) {
-                url = vmqSetting.getNotifyUrl();
-                if (StringUtils.isBlank(url)) {
-                    payOrderDao.setState(2, payOrder.getId());
-                    errorMsg = "您还未配置异步通知地址，请先在系统配置中配置";
-                }
+                payOrderDao.setState(2, payOrder.getId());
+                errorMsg = "您还未配置异步通知地址，请先在系统配置中配置";
             }
 
             if (StringUtils.isEmpty(errorMsg)) {
-                String res = HttpRequest.sendGet(url, p);
+                String res = HttpRequest.sendGet(url, "");
                 if (!(res != null && res.equals("success"))) {
                     //通知失败，设置状态为2
                     payOrderDao.setState(2, payOrder.getId());
@@ -305,6 +306,54 @@ public class WebService {
         }
         log.info("appPush end: {}",errorMsg);
         return StringUtils.isEmpty(errorMsg)?ResUtil.success():ResUtil.error(errorMsg);
+    }
+
+    private String getNotifyUrlByOrder(PayOrder payOrder) {
+        String param = "";
+        String sign = "";
+        String url = payOrder.getNotifyUrl();
+        if (PayChannelEnum.VMQ.getCode().equals(payOrder.getPayChannel())) {
+            VmqSetting vmqSetting = settingDao.getSettingByUserName(payOrder.getUsername());
+            if (StringUtils.isBlank(url)) {
+                url = vmqSetting.getNotifyUrl();
+            }
+            param= "payId=" + payOrder.getPayId() + "&orderId=" + payOrder.getOrderId() + "&param=" + payOrder.getParam() + "&type=" + payOrder.getType() + "&price=" + payOrder.getPrice() + "&reallyPrice=" + payOrder.getReallyPrice();
+            sign = md5(payOrder.getPayId() + payOrder.getParam() + payOrder.getType() + payOrder.getPrice() + payOrder.getReallyPrice() + vmqSetting.getMd5key());
+            param = param + "&sign=" + sign;
+        } else if (PayChannelEnum.EPAY.getCode().equals(payOrder.getPayChannel())) {
+            OtherSetting setting = otherSettingDao.getSettingByUserName(payOrder.getUsername());
+            if (StringUtils.isBlank(url)){
+                url = setting.getNotifyUrl();
+            }
+            Map<String, String> params = new HashMap<>();
+            String type = "";
+            if (payOrder.getType() == PayTypeEnum.WX.getCode()) {
+                type = "wxpay";
+            } else if (payOrder.getType() == PayTypeEnum.ZFB.getCode()) {
+                type = "alipay";
+            } else if (payOrder.getType() == PayTypeEnum.QQ.getCode()) {
+                type = "qqpay";
+            }
+            params.put("pid", setting.getAppId());
+            params.put("trade_no", payOrder.getOrderId());
+            params.put("out_trade_no", payOrder.getPayId());
+            params.put("type", type);
+            params.put("name", payOrder.getParam());
+            params.put("money", String.valueOf(payOrder.getReallyPrice()));
+            params.put("return_url", payOrder.getReturnUrl());
+            params.put("notify_url", payOrder.getNotifyUrl());
+            params.put("trade_status", String.valueOf(payOrder.getState()));
+            sign = EpayUtil.createSign(params, setting.getAppKey());
+            param = "pid="+params.get("pid")+"&trade_no="+params.get("trade_no")+"&out_trade_no="+params.get("out_trade_no")+"&type="+params.get("type")
+                    +"&name="+params.get("name")+"&money="+params.get("money")+"&return_url="+params.get("return_url")+"&notify_url="+params.get("notify_url")+"&trade_status="+params.get("trade_status");
+            param = param+"&sign="+sign;
+        } else if (PayChannelEnum.EPUSDT.getCode().equals(payOrder.getPayChannel())) {
+
+        }
+        if (StringUtils.isBlank(url)) {
+            return "";
+        }
+        return url + "?" + param;
     }
 
     /**
@@ -434,18 +483,55 @@ public class WebService {
                 return ResUtil.error("订单未支付");
             }
         }
-        String username = payOrder.getUsername();
-        VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
-        String key = vmqSetting.getMd5key();
         //执行通知
-        String p = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
-        String sign = md5(payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key);
-        p = p+"&sign="+sign;
+        String url = getReturnUrlByOrder(payOrder);
+        return ResUtil.success(url);
+    }
+
+    private String getReturnUrlByOrder(PayOrder payOrder) {
         String url = payOrder.getReturnUrl();
-        if (StringUtils.isBlank(url)){
-            url = vmqSetting.getReturnUrl();
+        String param = "";
+        String username = payOrder.getUsername();
+        if (PayChannelEnum.VMQ.getCode().equals(payOrder.getPayChannel())) {
+            VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
+            String key = vmqSetting.getMd5key();
+            param = "payId="+payOrder.getPayId()+"&orderId="+payOrder.getOrderId()+"&param="+payOrder.getParam()+"&type="+payOrder.getType()+"&price="+payOrder.getPrice()+"&reallyPrice="+payOrder.getReallyPrice();
+            String sign = md5(payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice()+payOrder.getReallyPrice()+key);
+            param = param+"&sign="+sign;
+            if (StringUtils.isBlank(url)){
+                url = vmqSetting.getReturnUrl();
+            }
+        } else if (PayChannelEnum.EPAY.getCode().equals(payOrder.getPayChannel())) {
+            OtherSetting setting = otherSettingDao.getSettingByUserName(username);
+            Map<String, String> params = new HashMap<>();
+            String type = "";
+            if (payOrder.getType() == PayTypeEnum.WX.getCode()) {
+                type = "wxpay";
+            } else if (payOrder.getType() == PayTypeEnum.ZFB.getCode()) {
+                type = "alipay";
+            } else if (payOrder.getType() == PayTypeEnum.QQ.getCode()) {
+                type = "qqpay";
+            }
+            params.put("pid", setting.getAppId());
+            params.put("trade_no", payOrder.getOrderId());
+            params.put("out_trade_no", payOrder.getPayId());
+            params.put("type", type);
+            params.put("name", payOrder.getParam());
+            params.put("money", String.valueOf(payOrder.getReallyPrice()));
+            params.put("return_url", payOrder.getReturnUrl());
+            params.put("notify_url", payOrder.getNotifyUrl());
+            params.put("trade_status", String.valueOf(payOrder.getState()));
+            String sign = EpayUtil.createSign(params, setting.getAppKey());
+            param = "pid="+params.get("pid")+"&trade_no="+params.get("trade_no")+"&out_trade_no="+params.get("out_trade_no")+"&type="+params.get("type")
+                    +"&name="+params.get("name")+"&money="+params.get("money")+"&return_url="+params.get("return_url")+"&notify_url="+params.get("notify_url")+"&trade_status="+params.get("trade_status");
+            param = param+"&sign="+sign;
+            if (StringUtils.isBlank(url)){
+                url = setting.getReturnUrl();
+            }
+        } else if (PayChannelEnum.EPUSDT.getCode().equals(payOrder.getPayChannel())) {
+
         }
-        return ResUtil.success(url+"?"+p);
+        return url+"?"+param;
     }
 
     /**

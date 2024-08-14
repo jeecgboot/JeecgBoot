@@ -1,6 +1,17 @@
 <div class="layui-form layui-form-pane" action="">
 <div class="layui-form-item">
     <div class="layui-inline">
+        <label class="layui-form-label">付款通道</label>
+        <div class="layui-input-inline">
+            <select id="payChannel" lay-verify="required" lay-filter="payChannel">
+                <option value="">不限制</option>
+                <option value="vmq">码支付</option>
+                <option value="epay">易支付</option>
+                <option value="epusdt">USDT</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-inline">
         <label class="layui-form-label">支付方式</label>
         <div class="layui-input-inline">
             <select id="type" lay-verify="required" lay-filter="type">
@@ -57,14 +68,29 @@
             ,toolbar: '#toolbarDemo'
             ,where: {
                 state:$("#state").val(),
-                type:$("#type").val()
+                type:$("#type").val(),
+                payChannel:$("#payChannel").val()
             }
             ,cols: [[ //表头
-                {field: 'username', title: '商家',minWidth:150},
-                {field: 'payId', title: '商户编号',minWidth:180},
-                {field: 'orderId', title: '云端订单编号',minWidth:180},
-                {field: 'type', title: '支付方式',minWidth:80,templet: function(d){
-                        if (d.type=="1"){
+                {field: 'username', title: '商户名称',width:120},
+                {field: 'payId', title: '交易号',minWidth:150},
+                {field: 'orderId', title: '云端订单编号',minWidth:150},
+                {field: 'payChannel', title: '付款通道',width:100,templet: function(d){
+                        if (d.payChannel=="vmq"){
+                            return '码支付';
+                        }if (d.payChannel=="epay"){
+                            return '易支付';
+                        }else if (d.payChannel=="epusdt"){
+                            return 'usdt';
+                        }else {
+                            return d.payChannel;
+                        }
+                    }
+                },
+                {field: 'type', title: '支付方式',width:100,templet: function(d){
+                        if (d.type=="0"){
+                            return '未扫码';
+                        }if (d.type=="1"){
                             return '微信';
                         }else if (d.type=="2"){
                             return '支付宝';
@@ -79,9 +105,9 @@
                         }
                     }
                 },
-                {field: 'price', title: '订单金额',minWidth:80, align:'center'},
-                {field: 'reallyPrice', title: '实际金额',minWidth:80, align:'center'},
-                {field: 'state', title: '状态',minWidth:80,templet: function(d){
+                {field: 'price', title: '订单金额',width:100, align:'center'},
+                {field: 'reallyPrice', title: '实际金额',width:100, align:'center'},
+                {field: 'state', title: '状态',width:100,align:'center',templet: function(d){
                         if (d.state=="2"){
                             return '<span style="color: orange">通知失败</span>';
                         }else if (d.state=="1"){
@@ -93,14 +119,24 @@
                         }
                     }
                 },
-                {field: 'createDate', title: '创建时间',minWidth:160,templet: function(d){
+                {field: 'createDate', title: '创建时间',minWidth:120,templet: function(d){
                         return formatDate(d.createDate);
                     }
                 },
-                {title: '操作', minWidth: 120, align:'center', toolbar: '#barDemo'}
+                {title: '操作', minWidth: 150, align:'center', toolbar: '#barDemo'}
             ]]
             ,page:true
         });
+
+        function reloadPage(){
+            myTable.reload({
+                where: {
+                    state:$("#state").val(),
+                    type:$("#type").val(),
+                    payChannel:$("#payChannel").val()
+                }
+            });
+        }
 
         //监听行工具事件
         table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
@@ -122,12 +158,7 @@
                     $.post("admin/setBd","id="+data.id,function (data) {
                         if (data.code==1){
                             layer.msg("操作成功！");
-                            myTable.reload({
-                                where: {
-                                    state:$("#state").val(),
-                                    type:$("#type").val()
-                                }
-                            });
+                            reloadPage();
                         }else if(data.code==-2){
                             layer.confirm('补单失败，异步通知返回错误，是否查看通知返回数据？', {
                                 btn: ['查看','取消'] //按钮
@@ -150,12 +181,7 @@
                     $.post("admin/delOrder","id="+data.id,function (data) {
                         if (data.code==1){
                             layer.msg("操作成功！");
-                            myTable.reload({
-                                where: {
-                                    state:$("#state").val(),
-                                    type:$("#type").val()
-                                }
-                            });
+                            reloadPage();
                         }else{
                             layer.msg(data.msg);
                         }
@@ -165,28 +191,20 @@
             }
         });
         form.on('select(state)', function(data){
-            myTable.reload({
-                where: {
-                    state:$("#state").val(),
-                    type:$("#type").val()
-                }
-            });
+            reloadPage();
         });
-
         form.on('select(type)', function(data){
-            myTable.reload({
-                where: {
-                    state:$("#state").val(),
-                    type:$("#type").val()
-                }
-            });
+            reloadPage();
+        });
+        form.on('select(payChannel)', function(data){
+            reloadPage();
         });
 
         //头工具栏事件
         table.on('toolbar(test)', function(obj){
             var payId = new Date().getTime();
             var typeHtml = "<select id=\"typeOpt\" lay-verify=\"required\" lay-filter=\"type\">" +
-                "               <option value=\"1\">微信</option><option value=\"2\">支付宝</option><option value=\"3\" selected></option>QQ<option value=\"4\">微信赞赏码</option><option value=\"5\">支付宝转账</option>" +
+                "               <option value=\"0\" selected>聚合码</option><option value=\"1\">微信</option><option value=\"2\">支付宝</option><option value=\"3\">QQ</option><option value=\"4\">微信赞赏码</option><option value=\"5\">支付宝转账</option>" +
                 "           </select>";
             var isHtmlStr = "<select id=\"isHtmlOpt\" lay-verify=\"required\" lay-filter=\"isHtml\">" +
                 "               <option value=\"0\">json</option><option value=\"1\" selected>页面</option>" +
@@ -203,12 +221,7 @@
                         var isHtml = $("#isHtmlOpt").val();
                         var code = creatOrder(payId,param,type,price,isHtml);
                         if (code==1){
-                            myTable.reload({
-                                where: {
-                                    state:$("#state").val(),
-                                    type:$("#type").val()
-                                }
-                            });
+                            reloadPage();
                         }
                     });
                     break;
@@ -222,12 +235,7 @@
                         $.post("admin/delGqOrder",function (data) {
                             if (data.code==1){
                                 layer.msg("操作成功！");
-                                myTable.reload({
-                                    where: {
-                                        state:$("#state").val(),
-                                        type:$("#type").val()
-                                    }
-                                });
+                                reloadPage();
                             }else{
                                 layer.msg(data.msg);
                             }
@@ -245,12 +253,7 @@
                         $.post("admin/delLastOrder",function (data) {
                             if (data.code==1){
                                 layer.msg("操作成功！");
-                                myTable.reload({
-                                    where: {
-                                        state:$("#state").val(),
-                                        type:$("#type").val()
-                                    }
-                                });
+                                reloadPage();
                             }else{
                                 layer.msg(data.msg);
                             }
