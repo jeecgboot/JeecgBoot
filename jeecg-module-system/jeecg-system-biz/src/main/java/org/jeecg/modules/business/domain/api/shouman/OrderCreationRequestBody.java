@@ -8,9 +8,11 @@ import org.jeecg.modules.business.entity.ShoumanOrderContent;
 import org.jeecg.modules.business.entity.ShoumanRegex;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 public class OrderCreationRequestBody implements RequestBody {
@@ -25,6 +27,8 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String WIA = "维亚智通";
     private final static String TRANSACTION_NUMBER = "交易号";
     private final static String SHOP_CODE = "店铺名称";
+    private final static String PRODUCT_GROUP_KEY = "_gpo_product_group";
+    private final static String PARENT_PRODUCT_GROUP_KEY = "_gpo_parent_product_group";
 
     public OrderCreationRequestBody(List<ShoumanOrderContent> orderContents, Map<String, Country> countryMap) {
         this.orderContents = orderContents;
@@ -52,7 +56,9 @@ public class OrderCreationRequestBody implements RequestBody {
         putNonNull(json, "orderId", anyContent.getPlatformOrderId());
         JSONArray outboundInfos = new JSONArray();
         BigDecimal totalPrice = BigDecimal.ZERO;
-        for (ShoumanOrderContent content : orderContents) {
+        // Merge contents in case of necklaces with gems
+        List<ShoumanOrderContent> reducedContents = mergeContentsForNecklaceWithGems(orderContents);
+        for (ShoumanOrderContent content : reducedContents.isEmpty() ? orderContents : reducedContents) {
             JSONObject contentJson = new JSONObject();
             putNonNull(contentJson, "productName", content.getProductName());
             putNonNull(contentJson, "customerId", content.getPlatformOrderNumber());
@@ -82,19 +88,19 @@ public class OrderCreationRequestBody implements RequestBody {
 
         for (ShoumanRegex regex : regexList) {
             String[] strings = customizationData.split(DEFAULT_SPLIT);
-            for (int i = 0; i < strings.length; i++) {
-                String string = strings[i];
-                if (string.matches(regex.getContentRecRegex())) {
-                    String trimmed = string.trim();
+            int customCounter = 1;
+            for (String s : strings) {
+                if (s.matches(regex.getContentRecRegex())) {
+                    String trimmed = s.trim();
                     String content = trimmed.split(regex.getContentExtRegex())[1];
                     if (regex.getIsSizeRegex().equalsIgnoreCase("1")) {
-                        RingSize ringSize = RingSize.getBySize(Integer.valueOf(content));
+                        RingSize ringSize = RingSize.getBySize(Integer.parseInt(content));
                         if (ringSize != null) {
                             sb.append(ringSize.getText());
                         }
                     } else {
                         sb.append(regex.getPrefix())
-                                .append(i + 1)
+                                .append(customCounter++)
                                 .append(QUOTE)
                                 .append(content)
                                 .append(LINE_BREAK);
@@ -123,5 +129,46 @@ public class OrderCreationRequestBody implements RequestBody {
         if (value != null) {
             json.put(key, value);
         }
+    }
+
+    /**
+     * In case of necklaces with gems, merging two contents into one :
+     * First find two matching contents by comparing _gpo_product_group and _gpo_parent_product_group field values in
+     * customization data
+     * Then merge the necklace content into the gem's by simply replacing gem's custom data & base remark by the necklace's
+     * So the resulting content will have the gem's SKU, and the necklace's custom data and base remark
+     *
+     * @param contents Original contents
+     * @return Reduced contents
+     */
+    private List<ShoumanOrderContent> mergeContentsForNecklaceWithGems(List<ShoumanOrderContent> contents) {
+        List<ShoumanOrderContent> reducedContents = new ArrayList<>();
+        List<ShoumanOrderContent> necklaces = contents.stream().filter(ShoumanOrderContent::getIsNecklace).collect(Collectors.toList());
+        List<ShoumanOrderContent> gems = contents.stream().filter(ShoumanOrderContent::getIsGem).collect(Collectors.toList());
+        for (ShoumanOrderContent necklace : necklaces) {
+            String necklacePgValue = extractProductGroupValue(necklace.getCustomizationData().split(DEFAULT_SPLIT), PRODUCT_GROUP_KEY);
+            for (ShoumanOrderContent gem : gems) {
+                    String gemPgValue = extractProductGroupValue(gem.getCustomizationData().split(DEFAULT_SPLIT), PARENT_PRODUCT_GROUP_KEY);
+                    if (necklacePgValue != null && necklacePgValue.equalsIgnoreCase(gemPgValue)) {
+                        // We need the remark from necklace for colour/material/month/font AND we need remark from
+                        // gem for the mention of its presence
+                        gem.setRemark(necklace.getRemark().concat(gem.getRemark()));
+                        // We need the custom data from necklace to parse the name
+                        gem.setCustomizationData(necklace.getCustomizationData());
+                        reducedContents.add(gem);
+                        break;
+                    }
+            }
+        }
+        return reducedContents;
+    }
+
+    private String extractProductGroupValue(String[] strings, String key) {
+        for (String string : strings) {
+            if (string.startsWith(key)) {
+                return string.split(QUOTE)[1];
+            }
+        }
+        return null;
     }
 }
