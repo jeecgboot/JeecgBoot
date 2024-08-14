@@ -344,6 +344,8 @@
                sc.price,
                sc.image_url,
                sc.sku,
+               sc.is_necklace,
+               sc.is_gem,
                sr.content_rec_regex,
                sr.content_ext_regex,
                sr.prefix,
@@ -376,6 +378,8 @@
         <result property="price" column="price"/>
         <result property="imageUrl" column="image_url" javaType="string"/>
         <result property="sku" column="sku" javaType="string"/>
+        <result property="isNecklace" column="is_necklace" javaType="boolean"/>
+        <result property="isGem" column="is_gem" javaType="boolean"/>
         <collection property="regexList" ofType="org.jeecg.modules.business.entity.ShoumanRegex">
             <result property="contentRecRegex" column="content_rec_regex" javaType="string"/>
             <result property="contentExtRegex" column="content_ext_regex" javaType="string"/>

@@ -23,6 +23,8 @@ public class ShoumanOrderContent {
     private BigDecimal price;
     private String imageUrl;
     private String sku;
+    private Boolean isNecklace;
+    private Boolean isGem;
     private List<ShoumanRegex> regexList;
 
     public ShoumanOrderContent() {
@@ -46,6 +48,8 @@ public class ShoumanOrderContent {
                 ", price=" + price +
                 ", imageUrl='" + imageUrl + '\'' +
                 ", sku='" + sku + '\'' +
+                ", isNecklace='" + isNecklace + '\'' +
+                ", isGem='" + isGem + '\'' +
                 ", regexList='" + regexList + '\'' +
                 '}';
     }
