@@ -109,39 +109,6 @@
         </constructor>
     </resultMap>
 
-    <select id="findUninvoicedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
-        SELECT poc.*
-        FROM platform_order_content poc
-        JOIN platform_order po ON poc.platform_order_id = po.id
-        WHERE po.shop_id IN
-        <foreach
-                collection="shopIDs"
-                index="index"
-                item="item"
-                open="("
-                close=")"
-                separator=",">
-            #{item}
-        </foreach>
-        AND po.shipping_time >= #{begin}
-        AND #{end} >= po.shipping_time
-        AND po.shipping_invoice_number IS NULL
-        AND poc.erp_status = 3
-    </select>
-    <select id="findUninvoicedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
-        SELECT poc.*
-        FROM platform_order_content poc
-        WHERE platform_order_id IN
-        <foreach
-                collection="orderIds"
-                index="index"
-                item="orderId"
-                open="("
-                close=")"
-                separator=",">
-            #{orderId}
-        </foreach>
-    </select>
     <select id="findUninvoicedOrderContentsForShopsAndStatus" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
         SELECT poc.*
         FROM platform_order_content poc
