@@ -1,9 +1,11 @@
 package com.vmq.service;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.alipay.api.domain.TradeItemResult;
 import com.vmq.constant.Constant;
 import com.vmq.constant.PayTypeEnum;
 import com.vmq.dao.PayOrderDao;
@@ -18,10 +20,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -95,7 +94,7 @@ public class QuartzService {
     /**
      * 查询支付宝账单
      */
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 5000)
     public void queryAliPayAndPush(){
         String method = "queryAliPayAndPush";
         String temp = redisTemplate.opsForValue().get(method);
@@ -111,60 +110,35 @@ public class QuartzService {
             || StringUtils.isBlank(vmqSetting.getAlipayPublicKey())) {
                 continue;
             }
-            JSONArray array = AliPayUtil.getAlipayBillSell(Integer.parseInt(vmqSetting.getClose()),vmqSetting);
-            if (array != null && array.size() > 0) {
-                array.stream().forEach(detail -> validAlipayBillSell(username,(LinkedHashMap) detail));
+            List<TradeItemResult> billSells = AliPayUtil.getAlipayBillSell(Integer.parseInt(vmqSetting.getClose()),vmqSetting);
+            if (CollectionUtil.isNotEmpty(billSells)) {
+                billSells.stream().forEach(detail -> validAlipayBillSell(username,detail));
             }
         }
         log.info("queryAliPayAndPush success");
-        redisTemplate.opsForValue().set(method, method, Constant.NUMBER_2, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(method, method, Constant.NUMBER_8, TimeUnit.SECONDS);
     }
 
-    private void validAlipayBillSell(String username, LinkedHashMap detailMap) {
+    private void validAlipayBillSell(String username, TradeItemResult detail) {
         int payType = PayTypeEnum.ZFB.getCode();
-        JSONObject detail = JSON.parseObject(JSON.toJSONString(detailMap));
-        String gmtCreate = detail.getString("gmt_create");
-        String goodsTitle = detail.getString("goods_title");
-        String outTradeNo = detail.getString("merchant_order_no");
-        String otherAccount = detail.getString("other_account");
-        String totalAmount = detail.getString("total_amount");
-        String tradeRefundAmount = detail.getString("refund_amount");
-        String tradeStatus = detail.getString("trade_status");
-        long payTime = DateUtil.parseDateTime(gmtCreate).getTime();
+        String gmtCreate = detail.getGmtCreate();
+        String outTradeNo = detail.getMerchantOrderNo();
+        String totalAmount = detail.getTotalAmount();
+        String gmtPay = detail.getGmtPay();
+        String tradeStatus = detail.getTradeStatus();
+        long payTime = DateUtil.parseDateTime(gmtPay).getTime();
+        long createTime = DateUtil.parseDateTime(gmtCreate).getTime();
         if (Constant.SUCCESS.equals(tradeStatus)) {
             if (System.currentTimeMillis() - payTime > Constant.MIN5) {
                 return;
             }
-            log.debug("创建时间：{}\t名称：{}\t商户订单号：{}\t买家信息：{}\t订单金额：{}\t退款金额：{}\t交易状态：{}",gmtCreate,goodsTitle,outTradeNo,otherAccount,totalAmount,tradeRefundAmount,tradeStatus);
+            log.debug("创建时间：{}\t名称：{}\t商户订单号：{}\t买家信息：{}\t订单金额：{}\t退款金额：{}\t交易状态：{}",gmtCreate,detail.getGoodsTitle(),outTradeNo,detail.getOtherAccount(),totalAmount,detail.getRefundAmount(),tradeStatus);
             if (webService.checkRepeatPush(username,payType,totalAmount,Long.valueOf(payTime))) {
                 return;
             }
-            String result = webService.webPush(username, payType, totalAmount, outTradeNo);
+            String result = webService.webPush(username, payType, totalAmount, outTradeNo,createTime,payTime);
             log.info("validAliPayInfo: {}",result);
         }
     }
 
-    private void validAliPayInfo(String username, LinkedHashMap detailMap) {
-        int payType = PayTypeEnum.ZFB.getCode();
-        JSONObject detail = JSON.parseObject(JSON.toJSONString(detailMap));
-        String gmtCreate = detail.getString("gmtCreate");
-        String goodsTitle = detail.getString("goodsTitle");
-        String outTradeNo = detail.getString("outTradeNo");
-        String consumerName = detail.getString("consumerName");
-        String totalAmount = detail.getString("totalAmount");
-        String tradeRefundAmount = detail.getString("tradeRefundAmount");
-        String tradeStatus = detail.getString("tradeStatus");
-        long payTime = DateUtil.parseDateTime(gmtCreate).getTime();
-        if (Constant.SUCCESS.equals(tradeStatus)) {
-            if (System.currentTimeMillis() - payTime > Constant.MIN5) {
-                return;
-            }
-            log.debug("创建时间：{}\t名称：{}\t商户订单号：{}\t买家信息：{}\t订单金额：{}\t退款金额：{}\t交易状态：{}",gmtCreate,goodsTitle,outTradeNo,consumerName,totalAmount,tradeRefundAmount,tradeStatus);
-            if (webService.checkRepeatPush(username,payType,totalAmount,Long.valueOf(payTime))) {
-                return;
-            }
-            String result = webService.webPush(username, payType, totalAmount, outTradeNo);
-            log.info("validAliPayInfo: {}",result);
-        }
-    }
 }

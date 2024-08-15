@@ -30,6 +30,7 @@
     </div>-->
 
     <label class="layui-form-label" style="width: fit-content;background-color: darkkhaki">方式一：云端登录</label>
+    <label class="layui-form-label" style="width: fit-content">远程访问网页登录账号，其它地方再登录监控端就会掉线</label>
     <div class="layui-form-item" style="display: flex;">
         <label class="layui-form-label"></label>
         <div class="layui-input-block">
@@ -47,35 +48,8 @@
             </div>
         </div>
     </div>
-    <label class="layui-form-label" style="width: fit-content;background-color: darkkhaki">方式二：调用官方API</label>
-    <div class="layui-form-item" style="display: flex;">
-        <label class="layui-form-label"></label>
-        <div class="layui-form-item">
-            <label class="layui-form-label">应用ID</label>
-            <div class="layui-input-block">
-                <input type="text" id="appId" name="appId" lay-verify="required" placeholder="请输入应用ID" autocomplete="off" class="layui-input">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item" style="display: flex;">
-        <label class="layui-form-label"></label>
-        <div class="layui-form-item">
-            <label class="layui-form-label">应用私钥</label>
-            <div class="layui-input-block">
-                <input type="password" id="privateKey" name="privateKey" lay-verify="required" placeholder="请输入应用私钥" autocomplete="off" class="layui-input">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item" style="display: flex;">
-        <label class="layui-form-label"></label>
-        <div class="layui-form-item">
-            <label class="layui-form-label">支付宝公钥</label>
-            <div class="layui-input-block">
-                <input type="password" id="alipayPublicKey" name="alipayPublicKey" lay-verify="required" placeholder="请输入支付宝公钥" autocomplete="off" class="layui-input">
-            </div>
-        </div>
-    </div>
-    <label class="layui-form-label" style="width: fit-content;background-color: darkkhaki">方式三：安装监控端</label>
+    <label class="layui-form-label" style="width: fit-content;background-color: darkkhaki">方式二：安装监控端</label>
+    <label class="layui-form-label" style="width: fit-content">监听手机消息栏通知，安卓端不支持QQ监控</label>
     <div class="layui-form-item" style="text-align: right">
         <label class="layui-form-label"></label>
         <div class="layui-input-block">
@@ -83,6 +57,42 @@
             <button class="layui-btn" onclick="window.open('Vmq_PC_2408.ZIP')">下载电脑监控端</button>
         </div>
     </div>
+    <label class="layui-form-label" style="width: fit-content;background-color: darkkhaki">方式三：免挂</label>
+    <label class="layui-form-label" style="width: fit-content">支付宝需要商家号，微信需要商家门店并添加店员</label>
+    <div class="layui-form-item" style="display: flex;margin-bottom: 5px">
+        <label class="layui-form-label"></label>
+        <div class="layui-form-item" style="margin-bottom: 5px">
+            <label class="layui-form-label">应用ID</label>
+            <div class="layui-input-block">
+                <input type="text" id="appId" name="appId" lay-verify="required" placeholder="请输入应用ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="display: flex;;margin-bottom: 5px">
+        <label class="layui-form-label">支付宝</label>
+        <div class="layui-form-item" style="margin-bottom: 5px">
+            <label class="layui-form-label">应用私钥</label>
+            <div class="layui-input-block">
+                <input type="password" id="privateKey" name="privateKey" lay-verify="required" placeholder="请输入应用私钥" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="display: flex;;margin-bottom: 5px">
+        <label class="layui-form-label"></label>
+        <div class="layui-form-item" style="margin-bottom: 5px">
+            <label class="layui-form-label">支付宝公钥</label>
+            <div class="layui-input-block">
+                <input type="password" id="alipayPublicKey" name="alipayPublicKey" lay-verify="required" placeholder="请输入支付宝公钥" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" style="display: flex;">
+        <label class="layui-form-label">微信</label>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: fit-content">需要添加店员，代为监控</label>
+        </div>
+    </div>
+
     <div class="layui-form-item" style="text-align: right; display: block">
         <button class="layui-btn" onclick="save()">保存</button>
     </div>

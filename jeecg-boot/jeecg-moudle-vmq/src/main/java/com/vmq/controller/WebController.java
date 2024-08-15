@@ -335,7 +335,7 @@ public class WebController {
     public CommonRes appPush(Integer type, String price, String t, String sign) {
         String username = webService.getUsernameBySign(type,price,t,sign);
         if (webService.checkRepeatPush(username,type,price,Long.valueOf(t))) {
-            return ResUtil.error("重复推送");
+            return ResUtil.error(Constant.REPEAT_PUSH);
         }
         return webService.appPush(username, type, price, t, sign);
     }
@@ -395,6 +395,11 @@ public class WebController {
         return webService.checkOrder(payOrder.getOrderId());
     }
 
+    /**
+     * 获取待支付的静态码订单
+     * @param username
+     * @return
+     */
     @RequestMapping(value = "/getUnpaidOrders", method = {RequestMethod.GET, RequestMethod.POST})
     public CommonRes getUnpaidOrders(String username) {
         if (StringUtils.isBlank(username)) {
@@ -406,7 +411,7 @@ public class WebController {
         }
         String key = "getUnpaidOrders_"+username;
         List<Map<String,Object>> result = new ArrayList<>();
-        List<PayOrder> orderList = payOrderDao.getUnPaidOrder(username);
+        List<PayOrder> orderList = payOrderDao.getUnPaidStaticOrder(username);
 
         if (orderList == null || orderList.isEmpty()) {
             return ResUtil.error("无待支付订单");
@@ -520,10 +525,10 @@ public class WebController {
         }
         if (Constant.SUCCESS.equals(result)) {
             Long payTime = DateUtil.parseDateTime(receive_time).getTime();
-            if (webService.checkRepeatPush(username,payType,price,payTime)) {
-                return "重复推送";
-            }
             sign = webService.getMd5(username,payType + price + payTime);
+            if (webService.checkRepeatPush(username,payType,price,Long.valueOf(payTime))) {
+                return Constant.REPEAT_PUSH;
+            }
             CommonRes res = webService.appPush(username, payType, price, String.valueOf(payTime), sign);
             if (res.getCode() != 1) {
                 result = res.getMsg();

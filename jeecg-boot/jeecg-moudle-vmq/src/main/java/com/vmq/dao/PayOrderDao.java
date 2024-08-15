@@ -1,6 +1,5 @@
 package com.vmq.dao;
 
-import com.vmq.dto.CreateOrderRes;
 import com.vmq.entity.PayOrder;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -8,7 +7,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +35,11 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
     @Query(value = "select * from pay_order where id = ?1", nativeQuery = true)
     PayOrder getById(Integer id);
 
+    @Query("select o from PayOrder o where o.username=?1 and o.reallyPrice=?2 and o.state=?3 and o.type=?4 and o.param!='static'")
     PayOrder findByUsernameAndReallyPriceAndStateAndType(String username, double reallyPrice,int state,int type);
+
+    @Query("select o from PayOrder o where o.username=?1 and o.reallyPrice=?2 and o.type=?3 and o.createDate<?4 and o.payDate>?5 and o.param!='static'")
+    List<PayOrder> getRecentPaidOrder(String username, double reallyPrice,int type,long createTime,long payDate);
 
     PayOrder findByUsernameAndPayDate(String username, Long payDate);
 
@@ -49,9 +51,6 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
 
     @Query(value = "select sum(price) from pay_order where create_date >= ?1 and create_date <= ?2 and state = ?3 and username=?4", nativeQuery = true)
     double getTodayCountMoney(String startDate,String endDate,int state,String username);
-
-    @Query(value = "select count(*) from pay_order", nativeQuery = true)
-    int getCount();
 
     @Query(value = "select count(*) from pay_order where state = ?1 and username = ?2", nativeQuery = true)
     int getCount(int state,String username);
@@ -72,10 +71,10 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
     PayOrder findByUsernameAndPayId(String username, String outTradeNo);
 
     @Query("select o from PayOrder o where o.username=?1 and o.state=0 and o.param='static'")
-    List<PayOrder> getUnPaidOrder(String username);
+    List<PayOrder> getUnPaidStaticOrder(String username);
 
     @Query(value = "select pay_id from pay_order o where o.state=0 and o.param='static' and o.username=?1 and o.type=?2 order by o.create_date limit 1",nativeQuery = true)
-    String getFirstUnPaidOrder(String username, Integer type);
+    String getFirstUnPaidStaticOrder(String username, Integer type);
 
     List<PayOrder> findByOrderIdIn(String[] payId);
 }

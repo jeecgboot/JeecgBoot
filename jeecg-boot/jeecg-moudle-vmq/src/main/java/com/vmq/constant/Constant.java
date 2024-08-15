@@ -20,6 +20,7 @@ public interface Constant {
     // 字符窜常量
     String SUCCESS = "成功";
     String ERROR = "失败";
+    String REPEAT_PUSH = "重复推送";
     String ORDER_PUSH = "ORDER_PUSH";
     String PAY_SUCCESS_EMAIL_TITLE = "【码支付】支付成功通知";
     String PAY_SUCCESS_EMAIL_TEMPLATE = "pay-success";
@@ -32,6 +33,7 @@ public interface Constant {
     int NUMBER_4 = 4;
     int NUMBER_5 = 5;
     int NUMBER_6 = 6;
+    long NUMBER_8 = 8;
     int NUMBER_10 = 10;
     long NUMBER_20 = 20;
     int NUMBER_30 = 30;
@@ -42,6 +44,8 @@ public interface Constant {
     long SEC_UNIT = 1000;
     long MIN_UNIT = 60 * 1000;
     long HOUR_UNIT = 60 * 60 * 1000;
+    long SEC5 = NUMBER_5 * SEC_UNIT;
+    long SEC10 = NUMBER_10 * SEC_UNIT;
     long MIN2 = NUMBER_2 * MIN_UNIT;
     long MIN5 = NUMBER_5 * MIN_UNIT;
 

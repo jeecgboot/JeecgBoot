@@ -1,5 +1,6 @@
 package com.vmq.service;
 
+import com.vmq.constant.PayTypeEnum;
 import com.vmq.dao.*;
 import com.vmq.dto.CommonRes;
 import com.vmq.dto.PageRes;
@@ -89,7 +90,7 @@ public class AdminService {
     public CommonRes saveSetting(VmqSetting vmqSetting){
         settingDao.save(vmqSetting);
         // 微信
-        PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,1);
+        PayQrcode payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,PayTypeEnum.WX.getCode());
         if (payQrcode == null) {
             payQrcode = new PayQrcode();
             payQrcode.setPrice(0);
@@ -99,7 +100,7 @@ public class AdminService {
         payQrcode.setPayUrl(vmqSetting.getWxpay());
         payQrcodeDao.save(payQrcode);
         // 支付宝
-        payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,2);
+        payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,PayTypeEnum.ZFB.getCode());
         if (payQrcode == null) {
             payQrcode = new PayQrcode();
             payQrcode.setPrice(0);
@@ -108,15 +109,27 @@ public class AdminService {
         }
         payQrcode.setPayUrl(vmqSetting.getZfbpay());
         payQrcodeDao.save(payQrcode);
+        // QQ
+        if (StringUtils.isNotBlank(vmqSetting.getQqpay())) {
+            payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0, PayTypeEnum.QQ.getCode());
+            if (payQrcode == null) {
+                payQrcode = new PayQrcode();
+                payQrcode.setPrice(0);
+                payQrcode.setType(PayTypeEnum.QQ.getCode());
+                payQrcode.setUsername(vmqSetting.getUsername());
+            }
+            payQrcode.setPayUrl(vmqSetting.getQqpay());
+            payQrcodeDao.save(payQrcode);
+        }
         // 赞赏码
         if (StringUtils.isNotBlank(vmqSetting.getWxzspay())) {
-            List<PayQrcode> qrcodeList =  payQrcodeDao.findByUsernameAndType(vmqSetting.getUsername(),3);
+            List<PayQrcode> qrcodeList =  payQrcodeDao.findByUsernameAndType(vmqSetting.getUsername(),PayTypeEnum.ZSM.getCode());
             payQrcodeDao.deleteAll(qrcodeList);
             qrcodeList.clear();
             for (int price=0;price<=100;price+=10) {
                 payQrcode = new PayQrcode();
                 payQrcode.setPayUrl(vmqSetting.getWxzspay());
-                payQrcode.setType(3);
+                payQrcode.setType(PayTypeEnum.ZSM.getCode());
                 payQrcode.setUsername(vmqSetting.getUsername());
                 payQrcode.setPrice(price);
                 qrcodeList.add(payQrcode);
@@ -128,18 +141,6 @@ public class AdminService {
             payQrcode.setPrice(0.1);
             qrcodeList.add(payQrcode);
             payQrcodeDao.saveAll(qrcodeList);
-        }
-        // QQ
-        if (StringUtils.isNotBlank(vmqSetting.getQqpay())) {
-            payQrcode = payQrcodeDao.findByUsernameAndPriceAndType(vmqSetting.getUsername(),0,4);
-            if (payQrcode == null) {
-                payQrcode = new PayQrcode();
-                payQrcode.setPrice(0);
-                payQrcode.setType(4);
-                payQrcode.setUsername(vmqSetting.getUsername());
-            }
-            payQrcode.setPayUrl(vmqSetting.getQqpay());
-            payQrcodeDao.save(payQrcode);
         }
         return ResUtil.success();
     }

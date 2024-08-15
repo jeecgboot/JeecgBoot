@@ -245,18 +245,17 @@ public class WebService {
         if (vmqSetting == null) {
             return ResUtil.error("签名校验失败");
         }
-        String key = vmqSetting.getMd5key();
         vmqSetting.setLastpay(String.valueOf(System.currentTimeMillis()));
         settingDao.save(vmqSetting);
-        PayOrder tmp = payOrderDao.findByUsernameAndPayDate(username,Long.valueOf(t));
-        if (tmp!=null){
-            return ResUtil.error("重复推送");
+        Object obj = redisTemplate.opsForValue().get(sign);
+        if (obj != null) {
+            return ResUtil.error(Constant.REPEAT_PUSH);
         }
-
+        redisTemplate.opsForValue().set(sign,Constant.ORDER_PUSH,10, TimeUnit.SECONDS);
         PayOrder payOrder = payOrderDao.findByUsernameAndReallyPriceAndStateAndType(username,Double.valueOf(price),0,type);
         String errorMsg = "";
-        if (payOrder==null) { // 查询最近未付款的聚合码订单
-            String payId = payOrderDao.getFirstUnPaidOrder(username,type);
+        if (payOrder==null) { // 查询最近未付款的静态码订单
+            String payId = payOrderDao.getFirstUnPaidStaticOrder(username,type);
             if (StringUtils.isNotBlank(payId)) {
                 payOrder = payOrderDao.findByPayId(payId);
                 payOrder.setPrice(Double.valueOf(price));
@@ -267,8 +266,8 @@ public class WebService {
             payOrder = new PayOrder();
             payOrder.setPayId("无订单转账");
             payOrder.setOrderId("无订单转账");
-            payOrder.setCreateDate(new Date().getTime());
-            payOrder.setPayDate(new Date().getTime());
+            payOrder.setCreateDate(Long.valueOf(t));
+            payOrder.setPayDate(Long.valueOf(t));
             payOrder.setCloseDate(new Date().getTime());
             payOrder.setParam("无订单转账");
             payOrder.setType(type);
@@ -277,9 +276,13 @@ public class WebService {
             payOrder.setState(1);
             payOrderDao.save(payOrder);
         } else {
+            Object orderPush = redisTemplate.opsForValue().get(payOrder.getOrderId());
+            if (orderPush != null) {
+                return ResUtil.error("重复推送");
+            }
             tmpPriceDao.deleteByPayId(payOrder.getPayId());
             payOrder.setState(1);
-            payOrder.setPayDate(new Date().getTime());
+            payOrder.setPayDate(Long.valueOf(t));
             payOrder.setCloseDate(new Date().getTime());
             payOrderDao.save(payOrder);
 
@@ -299,11 +302,13 @@ public class WebService {
                     errorMsg = "通知异步地址失败: " + res;
                 }
             }
+
         }
         if (vmqSetting.getIsNotice() == 1 && EmailUtils.checkEmail(payOrder.getEmail())) {
             PayInfo payInfo = new PayInfo(payOrder);
             emailUtils.sendTemplateMail(sender, payOrder.getEmail(),Constant.PAY_SUCCESS_EMAIL_TITLE,Constant.PAY_SUCCESS_EMAIL_TEMPLATE, payInfo);
         }
+        redisTemplate.opsForValue().set(payOrder.getOrderId(),Constant.ORDER_PUSH,10, TimeUnit.SECONDS);
         log.info("appPush end: {}",errorMsg);
         return StringUtils.isEmpty(errorMsg)?ResUtil.success():ResUtil.error(errorMsg);
     }
@@ -376,14 +381,14 @@ public class WebService {
     }
 
     /**
-     * 云端监控回调
+     * 云端/官方接口回调
      * @param username
      * @param type
      * @param price
      * @param outTradeNo
      * @return String
      */
-    public String webPush(String username, int type, String price, String outTradeNo) {
+    public String webPush(String username, int type, String price, String outTradeNo,long createTime,long payTime) {
         log.info("webPush...");
         PayOrder tmp = payOrderDao.findByUsernameAndPayId(username,outTradeNo);
         if (tmp!=null){
@@ -392,6 +397,13 @@ public class WebService {
         VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
         String key = vmqSetting.getMd5key();
         PayOrder payOrder = payOrderDao.findByUsernameAndReallyPriceAndStateAndType(username,Double.valueOf(price),0,type);
+        if (payOrder == null) { // 判断是否已被其他监控端推送过，支付前5秒内只有一个同价格的支付订单则认为已推送
+            List<PayOrder> payOrderList = payOrderDao.getRecentPaidOrder(username,Double.valueOf(price),type,createTime,payTime-Constant.SEC5);
+            if (payOrderList.size() == 1) {
+                payOrder = payOrderList.get(0);
+                payOrder.setPayId(outTradeNo);
+            }
+        }
         String message = Constant.SUCCESS;
         if (payOrder == null){
             payOrder = new PayOrder();
@@ -399,7 +411,7 @@ public class WebService {
             payOrder.setUsername(username);
             payOrder.setOrderId("无订单转账");
             payOrder.setCreateDate(new Date().getTime());
-            payOrder.setPayDate(new Date().getTime());
+            payOrder.setPayDate(payTime);
             payOrder.setCloseDate(new Date().getTime());
             payOrder.setType(type);
             payOrder.setPrice(Double.valueOf(price));
@@ -407,13 +419,13 @@ public class WebService {
             payOrder.setState(1);
             payOrderDao.save(payOrder);
         }else{
-            Object orderPush = redisTemplate.opsForValue().get(payOrder.getUnitCode());
+            Object orderPush = redisTemplate.opsForValue().get(payOrder.getOrderId());
             if (orderPush != null) {
                 return "重复推送";
             }
             tmpPriceDao.deleteByPayId(payOrder.getPayId());
             payOrder.setState(1);
-            payOrder.setPayDate(new Date().getTime());
+            payOrder.setPayDate(payTime);
             payOrder.setCloseDate(new Date().getTime());
             payOrder.setPayId(outTradeNo);
             payOrderDao.save(payOrder);
@@ -445,6 +457,7 @@ public class WebService {
             emailUtils.sendTemplateMail(sender, payOrder.getEmail(),Constant.PAY_SUCCESS_EMAIL_TITLE,Constant.PAY_SUCCESS_EMAIL_TEMPLATE, payInfo);
         }
         log.info("webPush end: {}",message);
+        redisTemplate.opsForValue().set(payOrder.getOrderId(),Constant.ORDER_PUSH,10, TimeUnit.SECONDS);
         return message;
     }
 
@@ -562,12 +575,12 @@ public class WebService {
     }
 
     public boolean checkRepeatPush(String username, int payType, String reallyPrice, Long payTime) {
-        String unionKey = username + payType + reallyPrice;
+        String unionKey = username + payType + reallyPrice + payTime;
         if (redisTemplate.opsForValue().get(unionKey) != null) {
             // 还需要校验该时间段是否只有一个临时价格
             return true;
         }
-        redisTemplate.opsForValue().set(unionKey, Constant.ORDER_PUSH, Constant.NUMBER_2, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(unionKey, Constant.ORDER_PUSH, Constant.NUMBER_30, TimeUnit.SECONDS);
         return false;
     }
 

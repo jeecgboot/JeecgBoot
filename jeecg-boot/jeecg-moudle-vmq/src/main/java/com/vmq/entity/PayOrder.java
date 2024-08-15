@@ -20,7 +20,7 @@ public class PayOrder {
     private String payId;
 
     @ApiModelProperty(value = "自定义参数",required = true)
-    private String param;
+    private String param = "";
 
     @ApiModelProperty("通知邮箱")
     private String email;
