@@ -2,7 +2,6 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
-import org.jeecg.modules.business.entity.Product;
 import org.jeecg.modules.business.entity.Sku;
 
 import java.util.List;
@@ -15,16 +14,7 @@ public interface ISkuListMabangService extends IService<SkuData> {
      * @param skuDataList skus to save.
      */
     Map<Sku, String> saveSkuFromMabang(List<SkuData> skuDataList);
-    void updateSkusFromMabang(List<SkuData> skuDataList);
-
-    /**
-     * Save products to DB from mabang api.
-     *
-     * @param skuDataList we save the new product code of the new skus
-     * @return return the number of new products to be inserted in DB
-     */
-    Map<String,String> saveProductFromMabang(List<SkuData> skuDataList);
-
+    Map<Sku, String> updateSkusFromMabang(List<SkuData> skuDataList);
     /**
      * Parse a Sku erpCode into a Product code
      * @param erpCode Sku erpCode in format XXXXXXXX-XX
@@ -38,6 +28,5 @@ public interface ISkuListMabangService extends IService<SkuData> {
      * @return List of product code in format XXXXXXXX
      */
     List<String> parseSkuListToProductCodeList(List<SkuData> erpCodeList) throws Exception;
-    Map<Product, String> createProductMap(List<SkuData> skuDataList);
-    List<Sku> createSkus(List<SkuData> skuDataList);
+    Map<Sku, String> createSkus(List<SkuData> skuDataList);
 }

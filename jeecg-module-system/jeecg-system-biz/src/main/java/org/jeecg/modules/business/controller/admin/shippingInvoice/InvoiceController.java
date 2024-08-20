@@ -86,7 +86,7 @@ public class InvoiceController {
     @Autowired
     private PlatformOrderContentMapper platformOrderContentMap;
     @Autowired
-    private IProductService productService;
+    private ISkuWeightService skuWeightService;
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
@@ -600,8 +600,8 @@ public class InvoiceController {
                     orderFront.setShippingAvailable(Unavailable.code);
                 }
                 // finds the first product with missing weight
-                String missingWeightProductId = productService.searchFirstEmptyWeightProduct(skuIds);
-                if(missingWeightProductId != null) {
+                String missingWeightSkuId = skuWeightService.searchFirstEmptyWeightSku(skuIds);
+                if(missingWeightSkuId != null) {
                     if(!errorMapToOrderId.containsKey(entry.getKey().getPlatformOrderId()))
                         errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more weight for order : " + entry.getKey().getPlatformOrderId());
                     else

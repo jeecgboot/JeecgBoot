@@ -3,8 +3,6 @@ package org.jeecg.modules.business.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.jeecg.common.aspect.annotation.Dict;
-import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 
@@ -41,6 +39,18 @@ public class SkuOrderPage {
     @Excel(name = "ERP中商品代码", width = 15)
     @ApiModelProperty(value = "ERP中商品代码")
     private String erpCode;
+    /**
+     * 重量
+     */
+    @Excel(name = "重量", width = 15)
+    @ApiModelProperty(value = "重量")
+    private java.lang.Integer weight;
+    /**
+     * 生效日期
+     */
+    @Excel(name = "生效日期", width = 15)
+    @ApiModelProperty(value = "生效日期")
+    private java.util.Date effectiveDate;
     /**
      * 库存数量
      */

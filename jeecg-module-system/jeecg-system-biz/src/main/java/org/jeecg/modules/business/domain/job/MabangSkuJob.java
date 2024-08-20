@@ -1,15 +1,16 @@
 package org.jeecg.modules.business.domain.job;
 
+import freemarker.template.Template;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.jeecg.common.api.dto.message.TemplateMessageDTO;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
 import org.jeecg.modules.business.entity.Sku;
+import org.jeecg.modules.business.service.EmailService;
 import org.jeecg.modules.business.service.ISkuListMabangService;
 import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
 import org.quartz.Job;
@@ -17,16 +18,18 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * A Job that retrieves all Sku from Mabang
@@ -36,27 +39,16 @@ import java.util.stream.Collectors;
 @Component
 public class MabangSkuJob implements Job {
 
-    private static final String SECTION_START = "<section style=\"display:flex;align-items:stretch;justify-content:space-between;flex-wrap:wrap;\">";
-    private static final String DIV_START = "<div style=\"flex:1 1 160px;border:1px solid;padding-left:10px;\">";
-    private static final String DIV_END_NEXT_DIV_START = "</div><div style=\"flex:1 1 160px;border:1px solid;padding-left:10px;\">";
-    private static final String ROW_START = "<tr><td>";
-    private static final String ROW_END = "</td></tr>";
-    private static final String NEXT_COLUMN = "</td><td>";
-    private static final String TABLE_START = "<style>\n" +
-            "table, th, td {\n" +
-            "  border: 1px solid black;\n" +
-            "  width: 800px;\n" +
-            "  text-align: center;\n" +
-            "    vertical-align: middle;" +
-            "}\n" +
-            "</style><table><tr><th style=\"width:20%\">SKU</th><th style=\"width:50%\">中文名</th><th style=\"width:10%\">重量</th><th style=\"width:10%\">申报价</th><th style=\"width:10%\">售价</th></tr>";
-    private static final String SECTION_END = "</div></section>";
-    private static final String TABLE_END = "</table>";
     @Autowired
     @Setter
     private ISkuListMabangService skuListMabangService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private FreeMarkerConfigurer freemarkerConfigurer;
+    @Autowired
+    Environment env;
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;
-    private static final Integer NBR_SKU_PER_PAGE = 400;
     private static final DateType DEFAULT_DATE_TYPE = DateType.CREATE;
 
     @Autowired
@@ -92,7 +84,7 @@ public class MabangSkuJob implements Job {
             throw new RuntimeException("EndDateTime must be strictly greater than StartDateTime !");
         }
 
-        Map<Sku, String> newSkusMap = new HashMap<>();
+        Map<Sku, String> newSkusNeedTreatmentMap = new HashMap<>();
         Map<String, SkuData> skuDataMap = new HashMap<>();
         try {
             while (startDateTime.until(endDateTime, ChronoUnit.HOURS) > 0) {
@@ -108,7 +100,7 @@ public class MabangSkuJob implements Job {
 
                 if (!skusFromMabang.isEmpty()) {
                     // we save the skuDatas in DB
-                    newSkusMap.putAll(skuListMabangService.saveSkuFromMabang(skusFromMabang));
+                    newSkusNeedTreatmentMap.putAll(skuListMabangService.saveSkuFromMabang(skusFromMabang));
                 }
                 endDateTime = dayBeforeEndDateTime;
             }
@@ -119,73 +111,31 @@ public class MabangSkuJob implements Job {
         updateSkuId();
         log.info("SKU codes replaced by new created SKU IDs");
 
-        // here we send system notification with the number and list of new skus saved in DB
-        if (newSkusMap.isEmpty()) {
+        // here we send system notification with the list of new skus that need extra treatment
+        if (newSkusNeedTreatmentMap.isEmpty()) {
             return;
         }
-        List<String> messageContentList = new ArrayList<>();
-        List<String> newSkuCodeList = newSkusMap.keySet().stream().map(Sku::getErpCode).sorted().collect(Collectors.toList());
-        String skuListContent = TABLE_START;
-        // we truncate the message and only send skus by groups of 400
-        for (int i = 0; i < newSkuCodeList.size(); i++) {
-            String skuErpCode = newSkuCodeList.get(i);
-            SkuData skuData = skuDataMap.get(skuErpCode);
-            if (skuData != null) {
-                skuListContent = skuListContent
-                        .concat(ROW_START)
-                        .concat(skuErpCode)
-                        .concat(NEXT_COLUMN)
-                        .concat(skuData.getNameCN())
-                        .concat(NEXT_COLUMN)
-                        .concat(String.valueOf(skuData.getWeight() == null ? 0 : skuData.getWeight()))
-                        .concat(NEXT_COLUMN)
-                        .concat(String.valueOf(skuData.getDeclareValue() == null ? 0 : skuData.getDeclareValue()))
-                        .concat(NEXT_COLUMN)
-                        .concat(String.valueOf(skuData.getSalePrice() == null ? 0 : skuData.getSalePrice()))
-                        .concat(ROW_END);
+        Properties prop = emailService.getMailSender();
+        Session session = Session.getInstance(prop, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
             }
-            if (i == newSkuCodeList.size() - 1 || i % NBR_SKU_PER_PAGE == NBR_SKU_PER_PAGE - 1) {
-                skuListContent = skuListContent.concat(TABLE_END);
-                messageContentList.add(skuListContent);
-                skuListContent = TABLE_START;
-            }
-        }
+        });
 
-        // here we are printing the list of skus with extra info
-        Map<String, String> needTreatmentSkuMap = new HashMap<>();
-        for (Map.Entry<Sku, String> entry : newSkusMap.entrySet()) {
-            if (!entry.getValue().isEmpty()) {
-                needTreatmentSkuMap.put(entry.getKey().getErpCode(), entry.getValue());
-            }
-        }
-        String needTreatmentSku = SECTION_START;
-        int cpt = 0;
-        for (Map.Entry<String, String> entry : needTreatmentSkuMap.entrySet()) {
-            if (cpt % 10 == 0 && cpt != 0) {
-                needTreatmentSku = needTreatmentSku.concat(DIV_END_NEXT_DIV_START);
-            }
-            if (cpt == 0) {
-                needTreatmentSku = needTreatmentSku.concat(DIV_START);
-            }
-            needTreatmentSku = needTreatmentSku.concat("<p>" + entry.getKey() + " : " + entry.getValue() + "</p>");
-            cpt++;
-        }
-        needTreatmentSku = needTreatmentSku.concat(SECTION_END);
-
-        int page = 1;
-        for (String msg : messageContentList) {
-            Map<String, String> param = new HashMap<>();
-            param.put("nb_of_entries", String.valueOf(newSkusMap.size()));
-            param.put("sku_list", msg);
-            param.put("need_treatment", !needTreatmentSkuMap.isEmpty() ? needTreatmentSku : "None");
-            param.put("current_page", String.valueOf(page));
-            param.put("total_page", String.valueOf(messageContentList.size()));
-            TemplateMessageDTO message = new TemplateMessageDTO("admin", "admin", "SKU导入任务", param, "sku_mabang_job_result");
-            ISysBaseApi.sendTemplateAnnouncement(message);
-            message = new TemplateMessageDTO("admin", "Jessyca", "SKU导入任务", param, "sku_mabang_job_result");
-            ISysBaseApi.sendTemplateAnnouncement(message);
-            log.info("Page {} of recap sent through system announcement", page);
-            page++;
+        String subject = "Association of Sku to Client failed while creating new Sku";
+        String destEmail = env.getProperty("company.jessy.email");
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("operation", "créés");
+        templateModel.put("skusMap", newSkusNeedTreatmentMap);
+        try {
+            freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+            Template template = freemarkerConfigurer.getConfiguration().getTemplate("admin/unknownClientForSku.ftl");
+            String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(template, templateModel);
+            emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
+            log.info("Mail sent successfully");
+        } catch (Exception e) {
+            log.error("Error sending mail: {}", e.getMessage());
         }
     }
 

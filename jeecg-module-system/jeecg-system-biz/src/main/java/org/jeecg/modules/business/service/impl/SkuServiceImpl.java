@@ -415,11 +415,51 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     public List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds) {
         return skuMapper.getSkuQuantitiesFromOrderIds(orderIds);
     }
+    @Override
+    public Integer countAllSkus() {
+        return skuMapper.countAllSkus();
+    }
+    @Override
+    public List<SkuOrderPage> fetchSkuWeights(Integer pageNo, Integer pageSize, String column, String order) {
+        int offset = (pageNo - 1) * pageSize;
+        return skuMapper.fetchSkuWeights(offset, pageSize, column, order);
+    }
 
     @Override
     public List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order) {
         int offset = (pageNo - 1) * pageSize;
         return skuMapper.fetchSkusByClient(clientId, offset, pageSize, column, order);
+    }
+    @Override
+    public Integer countAllSkuWeightsWithFilters() {
+        return skuMapper.countAllSkuWeightsWithFilters();
+    }
+    @Override
+    public List<SkuOrderPage> fetchSkuWeightsWithFilters(Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames) {
+        int offset = (pageNo - 1) * pageSize;
+        StringBuilder erpCodesRegex= new StringBuilder(), zhNamesRegex = new StringBuilder(), enNamesRegex = new StringBuilder();
+        if(erpCodes != null){
+            erpCodesRegex.append("^");
+            for(String name : erpCodes){
+                erpCodesRegex.append("(?=.*").append(name).append(")");
+            }
+            erpCodesRegex.append(".*");
+        }
+        if(enNames != null){
+            enNamesRegex.append("^");
+            for(String name : enNames){
+                enNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            enNamesRegex.append(".*");
+        }
+        if(zhNames != null){
+            zhNamesRegex.append("^");
+            for(String name : zhNames){
+                zhNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            zhNamesRegex.append(".*$");
+        }
+        return skuMapper.fetchSkuWeightsWithFilters(offset, pageSize, column, order, erpCodesRegex.toString(), zhNamesRegex.toString(), enNamesRegex.toString());
     }
 
     @Override
@@ -478,6 +518,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Override
     public List<Sku> listByClientId(String clientId) {
         return skuMapper.listByClientId(clientId);
+    }
+
+    @Override
+    public List<org.jeecg.modules.business.model.Sku> listAsMongoCollection() {
+        return skuMapper.listAsMongoCollection();
     }
 
 }

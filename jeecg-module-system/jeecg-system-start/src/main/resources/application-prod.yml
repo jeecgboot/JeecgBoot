@@ -175,6 +175,11 @@ spring:
     host: 127.0.0.1
     port: 6379
     password: ''
+  #MongoDB 配置
+  data:
+    mongodb:
+      authentication-database: prod
+      uri: mongodb://prod:pwd@ip:port/wia_app?authSource=prod
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml

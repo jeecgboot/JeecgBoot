@@ -3,7 +3,6 @@ package org.jeecg.modules.business.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
-import org.jeecg.modules.business.entity.Product;
 import org.jeecg.modules.business.entity.Sku;
 import org.springframework.stereotype.Repository;
 
@@ -25,8 +24,6 @@ public interface SkuListMabangMapper extends BaseMapper<SkuData> {
      * @return
      */
     List<Sku> searchExistence(@Param("skuErpCode") Collection<String> skuErpCode);
-    List<Product> searchProductExistence(@Param("productCode") Collection<String> productCode);
-    String searchProductId(@Param("productCode") String code);
     String searchSkuId(@Param("erpCode") String erpCode);
     String searchSensitiveAttributeId(@Param("enName") String enName);
 

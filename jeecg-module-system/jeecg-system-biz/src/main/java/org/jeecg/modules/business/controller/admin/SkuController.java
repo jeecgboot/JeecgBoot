@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -352,16 +353,16 @@ public class SkuController {
         return Result.OK(skus);
     }
 
-    @GetMapping("/skusByClient")
-    public Result<?> skusByClient(@RequestParam(name = "clientId") String clientId,
+    @GetMapping("/listWithFilters")
+    public Result<?> listWithFilters(@RequestParam(name = "clientId", required = false) String clientId,
                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                   @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
                                   @RequestParam(name = "column", defaultValue = "erp_code") String column,
                                   @RequestParam(name = "order", defaultValue = "ASC") String order,
                                   @RequestParam(name = "erpCodes", required = false) String erpCodes,
                                   @RequestParam(name = "zhNames", required = false) String zhNames,
-                                  @RequestParam(name = "enNames", required = false) String enNames
-    ) {
+                                  @RequestParam(name = "enNames", required = false) String enNames,
+                                     ServletRequest servletRequest) {
         String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
         String parsedOrder = order.toUpperCase();
         if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
@@ -379,15 +380,23 @@ public class SkuController {
             List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
             List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
             List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
-            allSkuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, 1, -1, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
-            skuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
-
+            if(clientId != null) {
+                allSkuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, 1, -1, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+                skuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+            } else {
+                total = skuService.countAllSkuWeightsWithFilters();
+                skuOrdersPage = skuService.fetchSkuWeightsWithFilters(pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+            }
         }
         else {
-            allSkuOrdersPage = skuService.fetchSkusByClient(clientId, 1, -1, parsedColumn, parsedOrder);
-            skuOrdersPage = skuService.fetchSkusByClient(clientId, pageNo, pageSize, parsedColumn, parsedOrder);
+            if(clientId != null) {
+                allSkuOrdersPage = skuService.fetchSkusByClient(clientId, 1, -1, parsedColumn, parsedOrder);
+                skuOrdersPage = skuService.fetchSkusByClient(clientId, pageNo, pageSize, parsedColumn, parsedOrder);
+            } else {
+                total = skuService.countAllSkus();
+                skuOrdersPage = skuService.fetchSkuWeights(pageNo, pageSize, parsedColumn, parsedOrder);
+            }
         }
-        total = allSkuOrdersPage.size();
         IPage<SkuOrderPage> page = new Page<>();
         page.setRecords(skuOrdersPage);
         page.setCurrent(pageNo);

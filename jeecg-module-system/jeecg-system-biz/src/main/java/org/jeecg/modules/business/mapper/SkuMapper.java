@@ -54,7 +54,11 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(@Param("orderIds") List<String> orderIds);
 
+    Integer countAllSkus();
+    Integer countAllSkuWeightsWithFilters();
+    List<SkuOrderPage> fetchSkuWeights(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
     List<SkuOrderPage> fetchSkusByClient(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
+    List<SkuOrderPage> fetchSkuWeightsWithFilters(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
     List<SkuOrderPage> fetchSkusByClientWithFilters(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
 
     String getIdFromErpCode(@Param("erpCode") String erpCode);
@@ -68,4 +72,6 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<SkuOrderPage> getInventoryByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 
     List<Sku> listByClientId(@Param("clientId") String clientId);
+
+    List<org.jeecg.modules.business.model.Sku> listAsMongoCollection();
 }

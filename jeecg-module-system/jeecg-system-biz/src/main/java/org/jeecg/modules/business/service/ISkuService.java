@@ -95,13 +95,22 @@ public interface ISkuService extends IService<Sku> {
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds);
 
+    Integer countAllSkus();
+    List<SkuOrderPage> fetchSkuWeights(Integer pageNo, Integer pageSize, String parsedColumn, String parsedOrder);
     List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order);
+
+    Integer countAllSkuWeightsWithFilters();
+    List<SkuOrderPage> fetchSkuWeightsWithFilters(Integer pageNo, Integer pageSize, String parsedColumn, String parsedOrder, List<String> erpCodes, List<String> zhNames, List<String> enNames);
     List<SkuOrderPage> fetchSkusByClientWithFilters(String clientId, Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames);
 
     void addSkuQuantity(Map<String, Integer> quantityPurchased);
     String getIdFromErpCode(String erpCode);
     Sku getByErpCode(String erpCode);
     void updateBatchStockByIds(List<Sku> skuToUpdate);
+
     List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber);
+
     List<Sku> listByClientId(String clientId);
+
+    List<org.jeecg.modules.business.model.Sku> listAsMongoCollection();
 }

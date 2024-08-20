@@ -86,6 +86,11 @@ public class SkuData {
      */
     @JSONField(name="magnetic")
     private Integer magnetic ;
+    /**
+     * 是否赠品1是;2否
+     */
+    @JSONField(name="isGift")
+    private Integer isGift;
 
     public SkuStatus getStatus() {
         return SkuStatus.fromCode(this.status);
