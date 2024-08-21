@@ -34,8 +34,12 @@ public interface Constant {
     int NUMBER_5 = 5;
     int NUMBER_6 = 6;
     long NUMBER_8 = 8;
+    long NUMBER_9 = 9;
     int NUMBER_10 = 10;
     long NUMBER_20 = 20;
+    int NUMBER_24 = 24;
+    long NUMBER_25 = 25;
+    long NUMBER_29 = 29;
     int NUMBER_30 = 30;
     int NUMBER_60 = 60;
     int NUMBER_120 = 120;

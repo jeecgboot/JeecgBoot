@@ -79,6 +79,19 @@ public class PayOrder {
     @ApiModelProperty(hidden = true)
     private long closeDate;
 
+    public long getPayDate() {
+        if (String.valueOf(payDate).length() == 10) {
+            this.payDate = payDate * 1000;
+        }
+        return payDate;
+    }
+
+    public void setPayDate(long payDate) {
+        if (String.valueOf(payDate).length() == 10) {
+            this.payDate = payDate * 1000;
+        }
+    }
+
     public String getUnitCode() {
         return username + type + reallyPrice;
     }

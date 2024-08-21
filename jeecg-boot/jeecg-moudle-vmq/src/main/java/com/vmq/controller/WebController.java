@@ -46,15 +46,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 @Slf4j
 @RestController
 @Api(tags = "开放接口",description = "API支付接口")
 public class WebController {
-
-    @Value("${token.expire.ip}")
-    private int expireCount;
 
     @Autowired
     private WebService webService;
@@ -189,7 +185,7 @@ public class WebController {
         } else if (StringUtils.isBlank(otherSetting.getAppKey())) {
             return new Gson().toJson(ResUtil.error("该商户未配置"));
         }
-        String ip = HttpRequest.getIpAddr(request);
+        String ip = HttpRequest.getIpAddr(request) + "_" + money;
         String temp = redisTemplate.opsForValue().get(ip);
         Long expire = redisTemplate.getExpire(ip, TimeUnit.SECONDS);
         if (StringUtils.isNotBlank(temp)) {
@@ -236,7 +232,7 @@ public class WebController {
         CommonRes commonRes = webService.createOrder(payOrder);
         if (commonRes.getCode() == 1) {
             //记录缓存
-            redisTemplate.opsForValue().set(ip, "added", expireCount, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(ip, "epaySubmit", Constant.NUMBER_3, TimeUnit.SECONDS);
             CreateOrderRes c = (CreateOrderRes) commonRes.getData();
             return "<script>window.location.href = '/vmq/payPage?orderId=" + c.getOrderId() + "'</script>";
         }
@@ -253,7 +249,7 @@ public class WebController {
     @RequestMapping(value = "/createOrder", method = {RequestMethod.GET, RequestMethod.POST})
     @ApiOperation(value = "创建订单")
     public String createOrder(PayOrder payOrder, HttpServletRequest request) {
-        String ip = HttpRequest.getIpAddr(request);
+        String ip = HttpRequest.getIpAddr(request) + "_" + payOrder.getPrice();
         String temp = redisTemplate.opsForValue().get(ip);
         Long expire = redisTemplate.getExpire(ip, TimeUnit.SECONDS);
         if (StringUtils.isNotBlank(temp)) {
@@ -267,7 +263,7 @@ public class WebController {
         CommonRes commonRes = webService.createOrder(payOrder);
         if (commonRes.getCode() == 1) {
             //记录缓存
-            redisTemplate.opsForValue().set(ip, "added", expireCount, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(ip, "createOrder", Constant.NUMBER_3, TimeUnit.SECONDS);
         }
         if (isHtml == 0) { // JSON
             String res = new Gson().toJson(commonRes);

@@ -3,70 +3,6 @@
         <h2 class="layui-colla-title" ><a href="swagger-ui.html" target="_blank" style="color: #1E0FBE">swagger接口页面</a></h2>
     </div>
     <div class="layui-colla-item">
-        <h2 class="layui-colla-title">获取token</h2>
-        <div class="layui-colla-content">
-            <div>
-                <blockquote class="layui-elem-quote news_search">
-                    <div class="layui-inline">
-                        请求地址：http://msl1214.gnway.cc/vmq/getToken
-                    </div>
-                </blockquote>
-
-                <blockquote class="layui-elem-quote news_search">
-                    <div class="layui-inline">
-                        请求方式：POST/GET
-                    </div>
-                </blockquote>
-
-                <blockquote class="layui-elem-quote news_search">
-                    <p style="font-weight: bold">*登录系统会自动获取token。接口对接时才会用到此接口。</p>
-                    <p>参数示例（示例）：user=123&pass=123</p>
-
-                    <div class="layui-inline">
-                        <p>参数说明:</p>
-                    </div>
-                    <table class="layui-table">
-                        <colgroup><col><col></colgroup>
-                        <thead>
-                        <tr>
-                            <th>参数</th><th>参数类型</th><th>参数说明</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>user</td><td>字符串</td><td>【必传】账号</td>
-                        </tr>
-                        <tr>
-                            <td>pass</td><td>字符串</td><td>【必传】密码</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </blockquote>
-
-                <blockquote class="layui-elem-quote news_search">
-                    <p>返回数据（示例）："123456789"</p>
-                    <div class="layui-inline">
-                        返回数据说明:
-                    </div>
-
-                    <table class="layui-table">
-                        <colgroup><col><col></colgroup>
-                        <thead>
-                        <tr>
-                            <th>返回参数</th><th>参数类型</th><th>参数说明</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td>token</td><td>字符串</td><td>根据用户名和密码获取token。调用订单创建接口时需要传递token</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </blockquote>
-            </div>
-        </div>
-    </div>
-    <div class="layui-colla-item">
         <h2 class="layui-colla-title">创建订单</h2>
         <div class="layui-colla-content">
             <div>
@@ -116,14 +52,16 @@
                             <td>sign</td><td>字符串</td><td>【必传】签名，计算方式为 md5(payId+param+type+price+通讯密钥)</td>
                         </tr>
                         <tr>
-                            <td>param</td><td>字符串</td><td>【必传】只能传输token。（如果不传token，数据则会关联到默认用户）</td>
+                            <td>username</td><td>字符串</td><td>【必传】码支付商户名</td>
                         </tr>
                         <tr>
-                            <td>isHtml</td><td>整数</td><td>【可选】传入1则自动跳转到支付页面，否则返回创建结果的json数据</td>
+                            <td>param</td><td>字符串</td><td>【可选】自定义参数。如果username为空，则param需要传商户名（二选一）</td>
+                        </tr>
+                        <tr>
+                            <td>isHtml</td><td>整数</td><td>【可选】传入0则返回json数据，否则跳转支付页面</td>
                         </tr>
                         </tbody>
                     </table>
-
                 </blockquote>
 
                 <blockquote class="layui-elem-quote news_search">
@@ -483,7 +421,6 @@
 
                     <p>参数示例（示例）：t=1547613643141&amp;sign=7db2d26323dd8ccbb5d130dd61d210a0</p>
 
-
                     <div class="layui-inline">
                         <p>参数说明:</p>
                     </div>
@@ -497,7 +434,7 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td>t</td><td>长整数</td><td>【必传】现行时间戳</td>
+                            <td>t</td><td>长整数</td><td>【必传】现行时间戳(10位或13位)</td>
                         </tr>
                         <tr>
                             <td>sign</td><td>字符串</td><td>【必传】md5(现行时间戳+通讯密钥)</td>

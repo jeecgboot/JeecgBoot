@@ -241,14 +241,11 @@ public class AdminService {
     }
 
     public CommonRes addPayQrcode(PayQrcode payQrcode){
-        if (payQrcode.getPayUrl()==null){
-            return ResUtil.error();
-        }
-        if (payQrcode.getPrice()==0){
-            return ResUtil.error();
+        if (StringUtils.isBlank(payQrcode.getPayUrl())){
+            return ResUtil.error("二维码解析失败");
         }
         if (payQrcode.getType()==0){
-            return ResUtil.error();
+            return ResUtil.error("不支持的付款类型");
         }
         payQrcodeDao.save(payQrcode);
         return ResUtil.success();

@@ -16,6 +16,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -31,6 +32,9 @@ import java.util.Date;
 @Aspect
 @Component
 public class AutoLogAspect {
+
+    @Value("${config.savelog}")
+    private boolean savelog;
 
     @Autowired
     private SysLogService sysLogService;
@@ -53,6 +57,9 @@ public class AutoLogAspect {
     }
 
     private void saveSysLog(ProceedingJoinPoint joinPoint, long time, Object result) {
+        if (!savelog) {
+            return;
+        }
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         // 获取reques对象

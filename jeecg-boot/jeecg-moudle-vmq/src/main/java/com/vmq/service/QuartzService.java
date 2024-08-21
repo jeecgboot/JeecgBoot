@@ -39,6 +39,9 @@ public class QuartzService {
     @Autowired
     private WebService webService;
 
+    /**
+     * 防止重复执行
+     */
     @Autowired
     private StringRedisTemplate redisTemplate;
 
@@ -88,13 +91,13 @@ public class QuartzService {
             }
         }
         log.info(msg);
-        redisTemplate.opsForValue().set(method, method, Constant.NUMBER_20, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(method, method, Constant.NUMBER_29, TimeUnit.SECONDS);
     }
 
     /**
      * 查询支付宝账单
      */
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 10000)
     public void queryAliPayAndPush(){
         String method = "queryAliPayAndPush";
         String temp = redisTemplate.opsForValue().get(method);
@@ -116,7 +119,7 @@ public class QuartzService {
             }
         }
         log.info("queryAliPayAndPush success");
-        redisTemplate.opsForValue().set(method, method, Constant.NUMBER_8, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(method, method, Constant.NUMBER_9, TimeUnit.SECONDS);
     }
 
     private void validAlipayBillSell(String username, TradeItemResult detail) {

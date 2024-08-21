@@ -45,10 +45,10 @@ public class LoginController {
     private static final Pattern namePatt = Pattern.compile("^\\w{4,20}$");
 
     /** 审批链接有效时间 */
-    @Value("${token.expire.link}")
-    private int expireHour;
+    private int expireHour = Constant.NUMBER_24;
 
-    @Value("${token.regist.email}")
+    /** 邮箱验证码 */
+    @Value("${config.regist.validemail}")
     private boolean emailRegist;
 
     /** 邮箱发送者账号 */

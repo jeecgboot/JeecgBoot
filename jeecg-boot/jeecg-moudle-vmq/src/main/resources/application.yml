@@ -44,8 +44,9 @@ spring:
         pathmatch:
             matching-strategy: ant_path_matcher
 
-token:
-    expire:
-        link: 24
-        ip: 5
+config:
+    regist:
+        validemail: true
+    savelog: true
+
 

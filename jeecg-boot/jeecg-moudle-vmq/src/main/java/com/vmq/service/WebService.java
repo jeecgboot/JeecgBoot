@@ -73,12 +73,16 @@ public class WebService {
     public CommonRes createOrder(PayOrder payOrder){
         log.info("createOrder...");
         String username = default_user;
+        VmqSetting vmqSetting = null;
         if (StringUtils.isNotBlank(payOrder.getUsername())) {
             username = payOrder.getUsername();
-        } else if (StringUtils.isNotBlank(JWTUtil.getUsername(payOrder.getParam()))) {
-            username = JWTUtil.getUsername(payOrder.getParam());
+        } else if (StringUtils.isNotBlank(payOrder.getParam())) {
+            vmqSetting = settingDao.getSettingByUserName(payOrder.getParam());
+            if (vmqSetting != null) {
+                username = payOrder.getParam();
+            }
         }
-        VmqSetting vmqSetting = settingDao.getSettingByUserName(username);
+        vmqSetting = settingDao.getSettingByUserName(username);
         log.info("使用【{}】密钥创建订单{}",username,payOrder.getPayId());
         String key = vmqSetting.getMd5key();
         String content = payOrder.getPayId()+payOrder.getParam()+payOrder.getType()+payOrder.getPrice();
