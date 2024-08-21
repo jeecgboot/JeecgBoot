@@ -4,7 +4,7 @@
   "author": {
     "name": "北京国炬信息技术有限公司",
     "email": "jeecgos@163.com",
-    "url": "https://www.jeecg.com"
+    "url": "https://github.com/jeecgboot/jeecgboot-vue3"
   },
   "scripts": {
     "pinstall": "pnpm install",
@@ -160,11 +160,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jeecgboot/JeecgBoot.git"
+    "url": "git+https://github.com/jeecgboot/jeecgboot-vue3.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jeecgboot/JeecgBoot/issues"
+    "url": "https://github.com/jeecgboot/jeecgboot-vue3/issues"
   },
   "homepage": "https://www.jeecg.com",
   "engines": {

@@ -13,7 +13,7 @@ import { ExceptionEnum } from "@/enums/exceptionEnum";
 const { createErrorModal } = useMessage();
 enum Api {
   Login = '/sys/login',
-  phoneLogin = '/oauth2/token',
+  phoneLogin = '/sys/phoneLogin',
   Logout = '/sys/logout',
   GetUserInfo = '/sys/user/getUserInfo',
   // 获取系统权限
@@ -36,7 +36,7 @@ enum Api {
   //修改密码
   passwordChange = '/sys/user/passwordChange',
   //第三方登录
-  thirdLogin = '/oauth2/token',
+  thirdLogin = '/sys/thirdLogin/getLoginUser',
   //第三方登录
   getThirdCaptcha = '/sys/thirdSms',
   //获取二维码信息
@@ -53,10 +53,6 @@ export function loginApi(params: LoginParams, mode: ErrorMessageMode = 'modal') 
     {
       url: Api.Login,
       params,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic amVlY2ctY2xpZW50OnNlY3JldA=='
-      },
     },
     {
       errorMessageMode: mode,
@@ -72,13 +68,8 @@ export function phoneLoginApi(params: LoginParams, mode: ErrorMessageMode = 'mod
     {
       url: Api.phoneLogin,
       params,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic amVlY2ctY2xpZW50OnNlY3JldA=='
-      },
     },
     {
-      isTransformResponse: false,
       errorMessageMode: mode,
     }
   );
@@ -180,19 +171,12 @@ export function thirdLogin(params, mode: ErrorMessageMode = 'modal') {
     tenantId = params.tenantId;
   }
   //==========end 第三方登录/auth2登录需要传递租户id===========
-  return defHttp.post<LoginResultModel>(
+  return defHttp.get<LoginResultModel>(
     {
-      url: `${Api.thirdLogin}`,
-      params,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic amVlY2ctY2xpZW50OnNlY3JldA=='
-      },
+      url: `${Api.thirdLogin}/${params.token}/${params.thirdType}/${tenantId}`,
     },
     {
-      isTransformResponse: false,
       errorMessageMode: mode,
-      
     }
   );
 }
