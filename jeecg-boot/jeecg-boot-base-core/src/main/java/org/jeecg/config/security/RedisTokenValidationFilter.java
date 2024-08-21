@@ -24,7 +24,7 @@ import java.util.Objects;
  * @author eightmonth@qq.com
  * @date 2024/3/7 17:30
  */
-//@Component
+@Component
 @AllArgsConstructor
 public class RedisTokenValidationFilter extends OncePerRequestFilter {
     private OAuth2AuthorizationService authorizationService;
