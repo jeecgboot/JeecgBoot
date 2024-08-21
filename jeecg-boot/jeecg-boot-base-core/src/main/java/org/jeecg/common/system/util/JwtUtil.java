@@ -117,8 +117,7 @@ public class JwtUtil {
 	public static String getUsername(String token) {
 		try {
 			DecodedJWT jwt = JWT.decode(token);
-			LoginUser loginUser = JSONObject.parseObject(jwt.getClaim("sub").asString(), LoginUser.class);
-			return loginUser.getUsername();
+			return jwt.getClaim("username").asString();
 		} catch (JWTDecodeException e) {
 			return null;
 		}
