@@ -1,7 +1,7 @@
 server:
   port: 9080
   servlet:
-      context-path: /xxl-job-admin
+    context-path: /xxl-job-admin
   #数据源配置
 spring:
   datasource:
@@ -24,6 +24,7 @@ spring:
     host: smtphz.qiye.163.com
     port: 994
     username: zhuwei@aboatedu.com
+    from: zhuwei@aboatedu.com
     password: zwass1314
     properties:
       mail:

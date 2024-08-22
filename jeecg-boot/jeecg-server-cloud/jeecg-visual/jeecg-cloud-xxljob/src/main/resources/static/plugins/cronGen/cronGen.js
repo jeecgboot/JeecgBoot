@@ -10,7 +10,7 @@
             options = $.extend({}, $.fn.cronGen.defaultOptions, options);
             //create top menu
             var cronContainer = $("<div/>", { id: "CronContainer", style: "display:none;width:300px;height:300px;" });
-            var mainDiv = $("<div/>", { id: "CronGenMainDiv", style: "width:410px;height:300px;" });
+            var mainDiv = $("<div/>", { id: "CronGenMainDiv", style: "width:410px;height:420px;" });
             var topMenu = $("<ul/>", { "class": "nav nav-tabs", id: "CronGenTabs" });
             $('<li/>', { 'class': 'active' }).html($('<a id="SecondlyTab" href="#Secondly">秒</a>')).appendTo(topMenu);
             $('<li/>').html($('<a id="MinutesTab" href="#Minutes">分钟</a>')).appendTo(topMenu);
@@ -318,9 +318,12 @@
             // resultsName = $(this).prop("id");
             // $(this).prop("name", resultsName);
 
+            var runTime = '<br style="padding-top: 10px"><label>最近运行时间: </label></br><textarea id="runTime" rows="6" style="width: 90%;resize: none;background: none;border: none;outline: none;" readonly = readonly></textarea></div>';
+
             $(span12).appendTo(row);
             $(row).appendTo(container);
             $(container).appendTo(mainDiv);
+            $(runTime).appendTo(mainDiv);
             $(cronContainer).append(mainDiv);
 
             var that = $(this);
@@ -351,9 +354,13 @@
                     return $(cronContainer).html();
                 },
                 template: '<div class="popover" style="max-width:500px !important; width:425px;left:-341.656px;"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+                sanitize:false,
                 placement: options.direction
 
             }).on('click', function (e) {
+                if (inputElement.val().trim() !== '') {
+                    refreshRunTime();
+                }
                 e.preventDefault();
 
                 //fillDataOfMinutesAndHoursSelectOptions();
@@ -374,6 +381,7 @@
                 });
                 $("#CronGenMainDiv select,input").change(function (e) {
                     generate();
+                    refreshRunTime();
                 });
                 $("#CronGenMainDiv input").focus(function (e) {
                     generate();
@@ -626,6 +634,25 @@
         inputElement.val(results);
         // Update display
         displayElement.val(results);
+    };
+
+    var refreshRunTime = function () {
+        $.ajax({
+            type : 'GET',
+            url : base_url + "/jobinfo/nextTriggerTime",
+            data : {
+                "scheduleType" : 'CRON',
+                "scheduleConf" : inputElement.val()
+            },
+            dataType : "json",
+            success : function(data){
+                if (data.code === 200) {
+                    $('#runTime').val(data.content.join("\n"));
+                } else {
+                    $('#runTime').val(data.msg);
+                }
+            }
+        });
     };
 
 })(jQuery);
@@ -1011,12 +1038,12 @@
             //获取参数中表达式的值
             if (cronExpress) {
                 var regs = cronExpress.split(' ');
-                $("input[name=secondHidden]").val(regs[0]);
-                $("input[name=minHidden]").val(regs[1]);
-                $("input[name=hourHidden]").val(regs[2]);
-                $("input[name=dayHidden]").val(regs[3]);
-                $("input[name=monthHidden]").val(regs[4]);
-                $("input[name=weekHidden]").val(regs[5]);
+                $("#secondHidden").val(regs[0]);
+                $("#minHidden").val(regs[1]);
+                $("#hourHidden").val(regs[2]);
+                $("#dayHidden").val(regs[3]);
+                $("#monthHidden").val(regs[4]);
+                $("#weekHidden").val(regs[5]);
 
                 $.fn.cronGen.tools.initObj(regs[0], "second");
                 $.fn.cronGen.tools.initObj(regs[1], "min");

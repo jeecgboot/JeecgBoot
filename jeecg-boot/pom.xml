@@ -38,7 +38,7 @@
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 		<seata.version>1.5.2</seata.version>
 
-		<xxl-job-core.version>2.2.0</xxl-job-core.version>
+		<xxl-job-core.version>2.4.1</xxl-job-core.version>
         <fastjson.version>1.2.83</fastjson.version>
         <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
