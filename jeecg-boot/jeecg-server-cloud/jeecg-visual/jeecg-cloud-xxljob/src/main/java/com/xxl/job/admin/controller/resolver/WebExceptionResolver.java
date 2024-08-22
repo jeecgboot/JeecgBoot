@@ -34,10 +34,12 @@ public class WebExceptionResolver implements HandlerExceptionResolver {
 
 		// if json
 		boolean isJson = false;
-		HandlerMethod method = (HandlerMethod)handler;
-		ResponseBody responseBody = method.getMethodAnnotation(ResponseBody.class);
-		if (responseBody != null) {
-			isJson = true;
+		if (handler instanceof HandlerMethod) {
+			HandlerMethod method = (HandlerMethod)handler;
+			ResponseBody responseBody = method.getMethodAnnotation(ResponseBody.class);
+			if (responseBody != null) {
+				isJson = true;
+			}
 		}
 
 		// error result

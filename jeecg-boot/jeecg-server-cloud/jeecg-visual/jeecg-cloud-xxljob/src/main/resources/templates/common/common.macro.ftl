@@ -34,9 +34,9 @@
 </#macro>
 
 <#macro commonScript>
-	<!-- jQuery 2.1.4 -->
+	<!-- jQuery -->
 	<script src="${request.contextPath}/static/adminlte/bower_components/jquery/jquery.min.js"></script>
-	<!-- Bootstrap 3.3.5 -->
+	<!-- Bootstrap -->
 	<script src="${request.contextPath}/static/adminlte/bower_components/bootstrap/js/bootstrap.min.js"></script>
 	<!-- FastClick -->
 	<script src="${request.contextPath}/static/adminlte/bower_components/fastclick/fastclick.js"></script>
