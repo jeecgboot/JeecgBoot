@@ -1799,7 +1799,7 @@ a cite {
 .layui-card {
     margin-bottom: 15px;
     border-radius: 5px;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0px 0px 2px rgb(98 124 153 / 10%)
 }
 
@@ -2030,7 +2030,7 @@ a cite {
 
 .layui-btn-primary {
     border: 1px solid #C9C9C9;
-    background-color: #fff;
+    background-color: #fffd;
     color: #555
 }
 
@@ -2145,7 +2145,7 @@ a cite {
     line-height: 38px \9;
     border-width: 1px;
     border-style: solid;
-    background-color: #fff;
+    background-color: #fffd;
     border-radius: 2px
 }
 
@@ -2285,7 +2285,7 @@ a cite {
     border: 1px solid #d2d2d2;
     max-height: 300px;
     overflow-y: auto;
-    background-color: #fff;
+    background-color: #fffd;
     border-radius: 2px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
     box-sizing: border-box
@@ -2462,7 +2462,7 @@ a cite {
     border: 1px solid #d2d2d2;
     font-size: 12px;
     border-radius: 2px;
-    background-color: #fff;
+    background-color: #fffd;
     -webkit-transition: .1s linear;
     transition: .1s linear
 }
@@ -2501,7 +2501,7 @@ a cite {
     border: 1px solid #d2d2d2;
     border-radius: 20px;
     cursor: pointer;
-    background-color: #fff;
+    background-color: #fffd;
     -webkit-transition: .1s linear;
     transition: .1s linear
 }
@@ -2849,7 +2849,7 @@ a cite {
     height: 28px;
     line-height: 28px;
     margin: 0 -1px 5px 0;
-    background-color: #fff;
+    background-color: #fffd;
     color: #333;
     font-size: 12px
 }
@@ -2937,7 +2937,7 @@ a cite {
     line-height: 30px;
     border-radius: 2px;
     vertical-align: top;
-    background-color: #fff;
+    background-color: #fffd;
     box-sizing: border-box
 }
 
@@ -2997,7 +2997,7 @@ a cite {
 
 .layui-table {
     width: 100%;
-    background-color: #fff;
+    background-color: #fffd;
     color: #666
 }
 
@@ -3191,7 +3191,7 @@ a cite {
     border: 1px solid #d2d2d2;
     text-align: left;
     overflow-y: auto;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12)
 }
 
@@ -3491,7 +3491,7 @@ select.layui-table-edit {
     padding: 5px 0;
     border-width: 0 0 0 1px;
     text-align: center;
-    background-color: #fff;
+    background-color: #fffd;
     color: #999;
     cursor: pointer
 }
@@ -3519,7 +3519,7 @@ body .layui-table-tips .layui-layer-content {
     padding: 8px 15px;
     font-size: 14px;
     overflow-y: scroll;
-    background-color: #fff;
+    background-color: #fffd;
     color: #666
 }
 
@@ -3568,7 +3568,7 @@ body .layui-table-tips .layui-layer-content {
     position: relative;
     padding: 30px;
     border: 1px dashed #e2e2e2;
-    background-color: #fff;
+    background-color: #fffd;
     text-align: center;
     cursor: pointer;
     color: #999
@@ -3811,7 +3811,7 @@ body .layui-table-tips .layui-layer-content {
     padding: 5px 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .12);
     border: 1px solid #d2d2d2;
-    background-color: #fff;
+    background-color: #fffd;
     z-index: 100;
     border-radius: 2px;
     white-space: nowrap
@@ -4035,7 +4035,7 @@ body .layui-table-tips .layui-layer-content {
     border-style: solid;
     border-radius: 2px;
     text-align: center;
-    background-color: #fff;
+    background-color: #fffd;
     cursor: pointer
 }
 
@@ -4172,7 +4172,7 @@ body .layui-table-tips .layui-layer-content {
     width: 20px;
     height: 20px;
     line-height: 20px;
-    background-color: #fff;
+    background-color: #fffd;
     color: #5FB878;
     border-radius: 50%;
     text-align: center;
@@ -4238,7 +4238,7 @@ body .layui-table-tips .layui-layer-content {
     line-height: 18px;
     border-width: 1px;
     border-style: solid;
-    background-color: #fff;
+    background-color: #fffd;
     color: #666
 }
 
@@ -4547,7 +4547,7 @@ body .layui-util-face {
 
 body .layui-util-face .layui-layer-content {
     padding: 0;
-    background-color: #fff;
+    background-color: #fffd;
     color: #666;
     box-shadow: none
 }
@@ -4561,7 +4561,7 @@ body .layui-util-face .layui-layer-content {
     width: 372px;
     padding: 10px;
     border: 1px solid #D9D9D9;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 0 20px rgba(0, 0, 0, .2)
 }
 

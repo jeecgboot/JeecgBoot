@@ -12,7 +12,7 @@
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
     border: 1px solid #E6E6E6;
     border-radius: 2px;
-    background-color: #fff;
+    background-color: #fffd;
     color: #ccc;
     cursor: pointer;
     width: auto !important;
@@ -110,7 +110,7 @@
 .city-select-content {
     width: 100%;
     min-height: 10px;
-    background-color: #fff;
+    background-color: #fffd;
     padding: 10px 15px;
     box-sizing: border-box;
 }

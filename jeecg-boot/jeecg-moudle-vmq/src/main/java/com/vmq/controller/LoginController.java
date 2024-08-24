@@ -189,8 +189,17 @@ public class LoginController {
     }
 
     @GetMapping("/payPage")
-    public String payPage(String orderId,Model model){
-        model.addAttribute("orderId",orderId);
+    public String payPage(String payId, String orderId,Model model){
+        PayOrder payOrder = null;
+        if (StringUtils.isNotBlank(payId)) {
+            payOrder = payOrderDao.findByPayId(payId);
+        } else if (StringUtils.isNotBlank(orderId)) {
+            payOrder = payOrderDao.findByOrderId(orderId);
+        }
+        if (payOrder == null) {
+            payOrder = new PayOrder();
+        }
+        model.addAttribute("payOrder",payOrder);
         return "pay";
     }
 
@@ -209,9 +218,15 @@ public class LoginController {
         return "staticPay";
     }
 
+    /**
+     * 静态码扫码创建订单
+     * @param username
+     * @param model
+     * @return
+     */
     @ResponseBody
     @GetMapping("/creatOrderByApp")
-    public String creatOrderByApp(String username,Model model){
+    public String creatOrderByApp(String username){
         if (StringUtils.isBlank(username)) {
             return "未识别到商户名";
         }
@@ -228,7 +243,7 @@ public class LoginController {
         if (commonRes.getCode() == -1) {
             return commonRes.getMsg();
         }
-        return "<script>window.location.href = '/vmq/payPage?orderId=" + payOrder.getOrderId() + "'</script>";
+        return String.format(Constant.PAY_HREF_URL,payOrder.getPayId());
     }
 
     @AutoLog(value = "email-订单审核")

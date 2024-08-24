@@ -7,6 +7,10 @@ import java.util.stream.Stream;
  * 常量
  */
 public interface Constant {
+    // 加解密
+    String RSA2 = "RSA2";
+    String MD5 = "MD5";
+
     // 网络请求相关常量
     String HTTP_POST = "POST";
     String HTTP_PUT = "PUT";
@@ -62,8 +66,6 @@ public interface Constant {
     String ALI_ORDER_QUERY_URL = "https://mbillexprod.alipay.com/enterprise/tradeListQuery.json?_output_charset=utf-8&ctoken=";
     String ALI_GATEWAY_URL = "https://openapi.alipay.com/gateway.do";
 
-    // 加解密
-    String RSA2 = "RSA2";
-    String MD5 = "MD5";
-
+    // 地址常量
+    String PAY_HREF_URL = "<script>window.location.href = '/vmq/payPage?payId=%s'</script>";
 }

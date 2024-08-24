@@ -88,8 +88,9 @@ public class PayOrder {
 
     public void setPayDate(long payDate) {
         if (String.valueOf(payDate).length() == 10) {
-            this.payDate = payDate * 1000;
+            payDate = payDate * 1000;
         }
+        this.payDate = payDate;
     }
 
     public String getUnitCode() {

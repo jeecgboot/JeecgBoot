@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,6 +7,7 @@
     <meta name="apple-touch-fullscreen" content="yes"/>
     <meta name="format-detection" content="telephone=no,email=no"/>
     <meta name="apple-mobile-web-app-status-bar-style" content="white">
+    <meta name="renderer" content="webkit"/>
     <meta name="renderer" content="webkit"/>
     <meta name="force-rendering" content="webkit"/>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"/>
@@ -33,101 +32,103 @@
     </h1>
 
     <div class="mod-ct">
-        <div class="order"></div>
-        <div class="amount" id="timeOut" style="font-size: 20px;color: red;display: none;"><p>订单已过期，请您返回网站重新发起支付</p><br></div>
-        <div id="orderbody">
-            <div class="amount" style="font-size: 16px" v-if="reallyPrice == 0">扫码后请手动输入付款金额</div>
-            <div class="amount" v-if="reallyPrice > 0">￥{{ reallyPrice }}</div>
-            <div class="qrcode-img-wrapper" data-role="qrPayImgWrapper">
-                <div data-role="qrPayImg" class="qrcode-img-area">
-                    <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
-                    <div style="position: relative;display: inline-block;">
-                        <!-- 根据用户使用的app类型自动选择收款码、支付宝转账-->
-                        <div v-if="payType == 0 || payType == 5">
-                            <a class="payHref">
-                                <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="240" height="240" style="display: none;">
-                                <img class="APPPage MobilePage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: none;">
-                            </a>
+        <div class="order">
+            <span id="payId" th:text="${payOrder.payId}" style="display: none"></span>
+        </div>
+        <div class="amount" id="timeOut" style="font-size: 20px;color: red;display: none;">
+            <p>订单已过期，请您返回网站重新发起支付</p><br>
+        </div>
+        <div class="amount" style="font-size: 16px" v-if="reallyPrice == 0">扫码后请手动输入付款金额</div>
+        <div class="amount" v-if="reallyPrice > 0">￥{{ reallyPrice }}</div>
+        <div class="qrcode-img-wrapper" data-role="qrPayImgWrapper">
+            <div v-if="state == -1">
+                <img width="240px" height="240px" src="assets/images/timeOut.jpg">
+            </div>
+            <div v-if="state == 0" data-role="qrPayImg" class="qrcode-img-area">
+                <div class="ui-loading qrcode-loading" data-role="qrPayImgLoading" style="display: none;">加载中</div>
+                <div style="position: relative;display: inline-block;">
+                    <!-- 根据用户使用的app类型自动选择收款码、支付宝转账-->
+                    <div v-if="payType == 0 || payType == 5">
+                        <a class="payHref">
+                            <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="240" height="240" style="display: none;">
+                            <img class="APPPage MobilePage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: none;">
+                        </a>
+                    </div>
+                    <div v-if="payType==1 || payType==2 || payType==3 || payType==4">
+                        <!-- 二维码 -->
+                        <a class="payHref" v-if="payUrlType == 'url'">
+                            <img alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: block;">
+                        </a>
+                        <!-- 太阳码：收款单、赞赏码 -->
+                        <div v-if="payUrlType == 'image'" style="width: 300px;height: 200px;overflow: hidden">
+                            <img v-if="payType == 1" alt="加载中..." :src="payUrl" style="width: 400px;height: 500px;margin-top: -140px;margin-left: -50px;">
+                            <img v-if="payType == 4" alt="加载中..." :src="payUrl" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -50px;">
                         </div>
-                        <div v-if="payType==1 || payType==2 || payType==3 || payType==4">
-                            <!-- 二维码 -->
-                            <a class="payHref" v-if="payUrlType == 'url'">
-                                <img alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: block;">
-                            </a>
-                            <!-- 太阳码：收款单、赞赏码 -->
-                            <div v-if="payUrlType == 'image'" style="width: 300px;height: 200px;overflow: hidden">
-                                <img v-if="payType == 1" alt="加载中..." :src="payUrl" style="width: 400px;height: 500px;margin-top: -150px;margin-left: -50px;">
-                                <img v-if="payType == 4" alt="加载中..." :src="payUrl" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -50px;">
-                            </div>
-                        </div>
+                    </div>
 
-                        <!-- 支付宝转账 -->
-                        <div v-if="payType == 5">
-                            <a class="payHref">
-                                <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="240" height="240" style="display: none;">
-                                <img class="APPPage MobilePage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: none;">
-                            </a>
-                        </div>
+                    <!-- 支付宝转账 -->
+                    <div v-if="payType == 5">
+                        <a class="payHref">
+                            <img class="PCPage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(window.location.href)" width="240" height="240" style="display: none;">
+                            <img class="APPPage MobilePage" alt="加载中..." :src="'enQrcode?url='+encodeURIComponent(payUrl)" width="240" height="240" style="display: none;">
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="time-item">
-                <div class="time-item" id="msg">
-                    <h1  v-if="price != reallyPrice || payType == 4">
-                        <span style="color:red">为了您正常支付 请务必付款 {{ reallyPrice }} 元</span><br>
-                    </h1>
-                    <h1  v-if="payType == 4">
-                        <span style="color:red">您可以通过选择<span style="color: dodgerblue;font-size: smaller;letter-spacing: 0">其他金额 </span>输入{{reallyPrice}}元</span><br>
-                    </h1>
+        </div>
+        <div class="time-item">
+            <div class="time-item" id="msg">
+                <h1  v-if="price != reallyPrice || payType == 4">
+                    <span style="color:red">为了您正常支付 请务必付款 {{ reallyPrice }} 元</span><br>
+                </h1>
+                <h1  v-if="payType == 4">
+                    <span style="color:red">您可以通过选择<span style="color: dodgerblue;font-size: smaller;letter-spacing: 0">其他金额 </span>输入{{reallyPrice}}元</span><br>
+                </h1>
+            </div>
+            <div v-if="state == 0"><strong id="hour_show">0时</strong><strong id="minute_show">0分</strong><strong id="second_show">0秒</strong></div>
+        </div>
+
+        <div class="tip">
+            <div class="ico-scan"></div>
+            <div class="tip-text">
+                <div class="PCPage" style="display: none">
+                    <label id="title" style="font-size: medium">请使用{{payName}}进行支付</label>
                 </div>
-                <strong id="hour_show">0时</strong><strong id="minute_show">0分</strong><strong id="second_show">0秒</strong>
-            </div>
-
-            <div class="tip">
-                <div class="ico-scan"></div>
-                <div class="tip-text">
-                    <div class="PCPage" style="display: none">
-                        <label id="title" style="font-size: medium">请使用{{payName}}进行支付</label>
-                    </div>
-                    <div class="MobilePage" style="display: none">
-                        <label  style="font-size: medium">请先保存图片，再使用{{payName}}进行支付</label>
-                    </div>
-                    <div class="APPPage" style="display: none">
-                        <label  style="font-size: medium">请长按图片识别二维码</label>
-                    </div>
+                <div class="MobilePage" style="display: none">
+                    <label  style="font-size: medium">请先保存图片，再使用{{payName}}进行支付</label>
+                </div>
+                <div class="APPPage" style="display: none">
+                    <label  style="font-size: medium">请长按图片识别二维码</label>
                 </div>
             </div>
+        </div>
 
-            <div class="detail" id="orderDetail">
-                <dl class="detail-ct" id="desc" style="display: none;">
-                    <dt>金额</dt>
-                    <dd>{{price}}</dd>
-                    <dt>商户订单：</dt>
-                    <dd>{{payId}}</dd>
-                    <dt>创建时间：</dt>
-                    <dd>{{formatDate(date)}}</dd>
-                    <dt>状态</dt>
-                    <dd>等待支付</dd>
-                </dl>
-
-                <a href="javascript:void(0)" class="arrow" onclick="showOrderDetail()"><i class="ico-arrow"></i></a>
-            </div>
+        <div class="detail" id="orderDetail">
+            <dl class="detail-ct" id="desc" style="display: none;">
+                <dt>金额</dt>
+                <dd>{{price}}</dd>
+                <dt>商户订单：</dt>
+                <dd>{{payId}}</dd>
+                <dt>创建时间：</dt>
+                <dd>{{formatDate(date)}}</dd>
+                <dt>状态</dt>
+                <dd v-if="state == 0">等待支付</dd>
+                <dd v-if="state == -1">支付超时</dd>
+            </dl>
+            <a href="javascript:void(0)" class="arrow" onclick="showOrderDetail()"><i class="ico-arrow"></i></a>
         </div>
         <div class="tip-text"></div>
     </div>
     <div class="foot">
         <div class="inner"><p>码支付Copyright &copy;2024 by 小码哥</p></div>
     </div>
-
-</div>
-<div class="copyRight">
-
 </div>
 
 <script src="assets/js/jquery.min.js"></script>
 <script src="assets/js/vue.min.js"></script>
 <script src="assets/js/function.js"></script>
 <script>
+    var payId = $("#payId").text();
     function showOrderDetail() {
         if ($('#orderDetail').hasClass('detail-open')) {
             $('#orderDetail .detail-ct').slideUp(500, function () {
@@ -193,17 +194,13 @@
     }
 
     function qrcode_timeout(){
-        document.getElementById("orderbody").style.display = "none";
+        document.images[0].src="assets/images/timeOut.jpg";
+        document.images[0].style = "";
+        document.images[0].style.width = "240px";
+        document.images[0].style.height = "240px";
         document.getElementById("timeOut").style.display = "";
     }
 
-    function getQueryString(name) {
-        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
-        var r = window.location.search.substr(1).match(reg);
-        if (r != null)
-            return decodeURI(r[2]);
-        return null;
-    }
     var appType = getAppType();
     var defaultPayType = 0;
     if (appType=="wx") {
@@ -213,27 +210,37 @@
     }else if (appType=="qq") {
         defaultPayType = 3;
     }
-    $.get("getOrder","orderId="+getQueryString("orderId")+"&payType="+defaultPayType,function (data) {
-        var time = 0;
-        if (data.code == 1) {
-            if (data.data.state != -1) {
-                time = new Date().getTime() - data.data.date;
-                time = time / 1000;
-                time = data.data.timeOut * 60 - time;
-                check();
+    if (payId == "") {
+        alert("订单不存在");
+    }else {
+        getOrder();
+    }
+
+    function getOrder() {
+        $.get("getOrder","payId="+payId+"&payType="+defaultPayType,function (data) {
+            var time = 0;
+            if (data.code == 1) {
+                if (data.data.state != -1) {
+                    time = new Date().getTime() - data.data.date;
+                    time = time / 1000;
+                    time = data.data.timeOut * 60 - time;
+                    check();
+                }
+                var payUrl = appOpenPayUrl(data.data.payType, data.data.payUrl, data.data.payUrlType);
+                data.data.payUrl = payUrl;
+                new Vue({
+                    el: '#body',
+                    data: data.data
+                });
+                if (data.data.state != 1) {
+                    document.getElementById("body").style.display = "block";
+                }
+            } else {
+                alert(data.msg);
             }
-            var payUrl = appOpenPayUrl(data.data.payType, data.data.payUrl, data.data.payUrlType);
-            data.data.payUrl = payUrl;
-            new Vue({
-                el: '#body',
-                data: data.data
-            });
-            document.getElementById("body").style.display = "block";
-        } else {
-            alert(data.msg);
-        }
-        timer(time);
-    });
+            timer(time);
+        });
+    }
 
     // app扫码后自动跳转支付链接，目前仅支付宝可以自动跳转
     function appOpenPayUrl(payType,payUrl,payUrlType) {
@@ -260,7 +267,7 @@
     var hasScan = true;
     // 判断是否支付成功
     function check() {
-        $.get("checkOrder","orderId="+getQueryString("orderId"),function (data) {
+        $.get("checkOrder","payId="+payId,function (data) {
             if (data.code == 1) {
                 window.location.href = data.data;
             } else{

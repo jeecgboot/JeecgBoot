@@ -28,7 +28,7 @@ body {
     left: 0;
     right: 0;
     height: 50px;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 1px 0 0 rgba(0, 0, 0, .03);
     z-index: 999
 }
@@ -581,7 +581,7 @@ body {
     height: 40px;
     line-height: 40px;
     padding: 0 80px 0 40px;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .1);
     position: absolute;
     top: 0;
@@ -653,7 +653,7 @@ body {
     width: 40px;
     height: 40px;
     line-height: 40px;
-    background-color: #fff;
+    background-color: #fffd;
     border-left: 1px solid #f6f6f6;
     -webkit-transition: background-color .2s;
     transition: background-color .2s;
@@ -708,7 +708,7 @@ body {
     padding: 0 20px;
     height: 40px;
     line-height: 40px;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .1);
     box-sizing: border-box;
     position: absolute;
@@ -3098,7 +3098,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
     color: #333;
     font-size: 16px;
     padding-left: 23px;
-    background-color: #fff;
+    background-color: #fffd;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom: 1px solid #f1f1f1
@@ -3354,7 +3354,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
 }
 
 .theme-white .layui-layout-admin .layui-side {
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 2px 8px 8px 0 rgba(29, 35, 41, .05)
 }
 
@@ -3432,7 +3432,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
     border: 0;
     margin-right: 6px;
     border-radius: 4px;
-    background-color: #fff;
+    background-color: #fffd;
     line-height: 32px;
     height: 32px
 }
@@ -3466,7 +3466,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
 
 .theme-white .layui-layout-admin .layui-body .admin-tabs-control.layui-icon-down {
     border-radius: 4px;
-    background-color: #fff;
+    background-color: #fffd;
     width: 32px;
     right: 8px
 }
@@ -3512,7 +3512,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
     color: #262626;
     font-size: 16px;
     padding-left: 23px;
-    background-color: #fff;
+    background-color: #fffd;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom: 1px solid #f1f1f1
@@ -3774,7 +3774,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
 }
 
 .theme-pink .layui-layout-admin .layui-side {
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 2px 8px 8px 0 rgba(29, 35, 41, .05)
 }
 
@@ -3852,7 +3852,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
     border: 0;
     margin-right: 6px;
     border-radius: 4px;
-    background-color: #fff;
+    background-color: #fffd;
     line-height: 32px;
     height: 32px
 }
@@ -3886,7 +3886,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
 
 .theme-pink .layui-layout-admin .layui-body .admin-tabs-control.layui-icon-down {
     border-radius: 4px;
-    background-color: #fff;
+    background-color: #fffd;
     width: 32px;
     right: 8px
 }
@@ -3932,7 +3932,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
     color: #262626;
     font-size: 16px;
     padding-left: 23px;
-    background-color: #fff;
+    background-color: #fffd;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom: 1px solid #f1f1f1
@@ -4194,7 +4194,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
 }
 
 .theme-colorful .layui-layout-admin .layui-side {
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 2px 8px 8px 0 rgba(29, 35, 41, .05)
 }
 
@@ -4327,7 +4327,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
     border: 0;
     margin-right: 6px;
     border-radius: 4px;
-    background-color: #fff;
+    background-color: #fffd;
     line-height: 32px;
     height: 32px
 }
@@ -4361,7 +4361,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
 
 .theme-colorful .layui-layout-admin .layui-body .admin-tabs-control.layui-icon-down {
     border-radius: 4px;
-    background-color: #fff;
+    background-color: #fffd;
     width: 32px;
     right: 8px
 }
@@ -4407,7 +4407,7 @@ body .ew-xmselect-tree xm-select .xm-body .xm-option.selected .xm-option-content
     color: #262626;
     font-size: 16px;
     padding-left: 23px;
-    background-color: #fff;
+    background-color: #fffd;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
     border-bottom: 1px solid #f1f1f1

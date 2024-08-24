@@ -78,7 +78,7 @@ html #layuicss-layer {
     cursor: move;
     opacity: 0;
     filter: alpha(opacity=0);
-    background-color: #fff;
+    background-color: #fffd;
     z-index: 2147483647
 }
 
@@ -474,7 +474,7 @@ html #layuicss-layer {
     margin: 0 5px 0;
     padding: 0 26px;
     border: 1px solid #dedede;
-    background-color: #fff;
+    background-color: #fffd;
     color: #333;
     border-radius: 2px;
     font-weight: 400;
@@ -785,7 +785,7 @@ html #layuicss-layer {
     height: 43px;
     border-left: 1px solid #eee;
     border-right: 1px solid #eee;
-    background-color: #fff;
+    background-color: #fffd;
     z-index: 10
 }
 

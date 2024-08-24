@@ -157,8 +157,11 @@ public class WebController {
     @AutoLog(value = "web-添加订单")
     @RequestMapping(value = "/addOrder",method = {RequestMethod.GET, RequestMethod.POST})
     public String addOrder(@RequestBody PayOrder payOrder, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String username = (String) session.getAttribute("username");
         String sign = webService.getMd5("",payOrder.getMd5ForCreate());
         payOrder.setSign(sign);
+        payOrder.setUsername(username);
         return createOrder(payOrder,request);
     }
 
@@ -234,7 +237,7 @@ public class WebController {
             //记录缓存
             redisTemplate.opsForValue().set(ip, "epaySubmit", Constant.NUMBER_3, TimeUnit.SECONDS);
             CreateOrderRes c = (CreateOrderRes) commonRes.getData();
-            return "<script>window.location.href = '/vmq/payPage?orderId=" + c.getOrderId() + "'</script>";
+            return String.format(Constant.PAY_HREF_URL,c.getPayId());
         }
         return commonRes.getMsg();
 
@@ -271,7 +274,7 @@ public class WebController {
         } else { // HTML
             if (commonRes.getCode() == 1) {
                 CreateOrderRes c = (CreateOrderRes) commonRes.getData();
-                return "<script>window.location.href = '/vmq/payPage?orderId=" + c.getOrderId() + "'</script>";
+                return String.format(Constant.PAY_HREF_URL,c.getPayId());
             }
             return commonRes.getMsg();
 

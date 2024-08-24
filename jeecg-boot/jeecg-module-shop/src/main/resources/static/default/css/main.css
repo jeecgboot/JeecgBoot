@@ -42,7 +42,7 @@ body {
 }
 
 .layui-elem-quote {
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 5%);
     border-radius: 0;
     color: #666;
@@ -557,7 +557,7 @@ body .layui-layer-tips.layui-table-tips .layui-layer-content {
 
 body .layui-util-face .layui-layer-content {
     padding: 0;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: none
 }
 
@@ -725,7 +725,7 @@ body .layui-util-face .layui-layer-content {
         right: 0;
         width: 160px;
         border-radius: 5px;
-        background-color: #fff;
+        background-color: #fffd;
         box-shadow: 0 0 5px rgba(0, 0, 0, .15);
         overflow: hidden;
         transform: scale(0);
@@ -1026,7 +1026,7 @@ body .layui-util-face .layui-layer-content {
 .pricing {
     text-align: center;
     padding: 35px 30px;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.06)
 }
 
@@ -1120,7 +1120,7 @@ body .layui-util-face .layui-layer-content {
 }
 
 .product-card {
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.04), 0 2px 10px 0 rgba(0, 0, 0, 0.06);
     margin-bottom: 10px
 }
@@ -1781,7 +1781,7 @@ body .layui-util-face .layui-layer-content {
     width: 380px;
     max-width: 100%;
     margin: 0 auto;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);
     padding: 25px 30px 10px 30px;
     box-sizing: border-box;
@@ -1893,7 +1893,7 @@ body .layui-util-face .layui-layer-content {
 .reg-wrapper .layui-container {
     padding: 0;
     max-width: 400px;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 3px 6px -1px rgba(0, 0, 0, 0.19)
 }
 
@@ -2095,7 +2095,7 @@ body .layui-util-face .layui-layer-content {
     right: 0;
     display: none;
     width: 130px;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 1px 2px rgba(0, 0, 0, .1)
 }
 
@@ -2526,7 +2526,7 @@ div.tagsinput span.tag {
 }
 
 .ew-header .layui-nav > .layui-nav-item > .test-btn {
-    background-color: #fff;
+    background-color: #fffd;
     border: 1px solid #eee;
     color: #666;
     border-radius: 5px;
@@ -2559,7 +2559,7 @@ div.tagsinput span.tag {
 
 .datagrid-page-goodsList {
     margin-top: 15px;
-    background-color: #ffffff;
+    background-color: #fffd;
     border-radius: 5px;
     color: #5c5c5c !important;
     box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);
@@ -2675,7 +2675,7 @@ div.tagsinput span.tag {
     /* bottom: -10px; */
     right: 0;
     z-index: 100;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: -8px 0px 35px 0px rgb(181 181 181 / 32%);
 }
 

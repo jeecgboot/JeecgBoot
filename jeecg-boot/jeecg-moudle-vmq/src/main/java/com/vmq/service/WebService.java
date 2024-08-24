@@ -101,7 +101,9 @@ public class WebService {
         }
         String orderId = StringUtils.format(new Date(),"yyyyMMddHHmmss") + (int)(1000+Math.random()*(9999-1000+1));
         payOrder.setOrderId(orderId);
-
+        if (StringUtils.isBlank(payOrder.getUsername())) {
+            payOrder.setUsername(vmqSetting.getUsername());
+        }
         // 获取支付链接
         String payUrl = getPayUrl(vmqSetting,payOrder);
         if (payUrl == "") {
@@ -287,7 +289,9 @@ public class WebService {
             tmpPriceDao.deleteByPayId(payOrder.getPayId());
             payOrder.setState(1);
             payOrder.setPayDate(Long.valueOf(t));
-            payOrder.setCloseDate(new Date().getTime());
+            if (payOrder.getCloseDate() <= 0L) {
+                payOrder.setCloseDate(new Date().getTime());
+            }
             payOrderDao.save(payOrder);
 
             //执行通知
@@ -394,7 +398,7 @@ public class WebService {
      */
     public String webPush(String username, int type, String price, String outTradeNo,long createTime,long payTime) {
         log.info("webPush...");
-        PayOrder tmp = payOrderDao.findByUsernameAndPayId(username,outTradeNo);
+        PayOrder tmp = payOrderDao.findByUsernameAndOrderId(username,outTradeNo);
         if (tmp!=null){
             return "已处理";
         }
@@ -405,15 +409,17 @@ public class WebService {
             List<PayOrder> payOrderList = payOrderDao.getRecentPaidOrder(username,Double.valueOf(price),type,createTime,payTime-Constant.SEC5);
             if (payOrderList.size() == 1) {
                 payOrder = payOrderList.get(0);
-                payOrder.setPayId(outTradeNo);
+                payOrder.setOrderId(outTradeNo);
+                payOrderDao.save(payOrder);
+                return "已更新";
             }
         }
         String message = Constant.SUCCESS;
         if (payOrder == null){
             payOrder = new PayOrder();
-            payOrder.setPayId(outTradeNo);
+            payOrder.setPayId("无订单转账");
             payOrder.setUsername(username);
-            payOrder.setOrderId("无订单转账");
+            payOrder.setOrderId(outTradeNo);
             payOrder.setCreateDate(new Date().getTime());
             payOrder.setPayDate(payTime);
             payOrder.setCloseDate(new Date().getTime());
@@ -430,8 +436,10 @@ public class WebService {
             tmpPriceDao.deleteByPayId(payOrder.getPayId());
             payOrder.setState(1);
             payOrder.setPayDate(payTime);
-            payOrder.setCloseDate(new Date().getTime());
-            payOrder.setPayId(outTradeNo);
+            if (payOrder.getCloseDate() <= 0L) {
+                payOrder.setCloseDate(new Date().getTime());
+            }
+            payOrder.setOrderId(outTradeNo);
             payOrderDao.save(payOrder);
 
             //执行通知
@@ -612,6 +620,9 @@ public class WebService {
     public String getPayUrl(VmqSetting vmqSetting, PayOrder payOrder) {
         int isAuto = 0;
         Long payCodeId = null;
+        if (StringUtils.isBlank(payOrder.getUsername())) {
+            payOrder.setUsername(vmqSetting.getUsername());
+        }
         String username = payOrder.getUsername();
         String payUrl = PayTypeEnum.getPayUrlByOrder(vmqSetting, payOrder);
         PayQrcode payQrcode = null;

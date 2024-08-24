@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -32,46 +30,40 @@
 
     <div class="mod-ct">
         <div class="order"></div>
-        <div id="orderbody">
-            <div class="amount" style="font-size: 16px">请使用手机App进行扫码</div>
-            <div class="qrcode-img-wrapper" data-role="qrPayImgWrapper">
-                <div data-role="qrPayImg" class="qrcode-img-area">
+        <div class="amount" style="font-size: 16px">请使用手机App进行扫码</div>
+        <div class="qrcode-img-wrapper" data-role="qrPayImgWrapper">
+            <div data-role="qrPayImg" class="qrcode-img-area">
 
-                    <div style="position: relative;display: inline-block;">
-                        <!-- 根据用户使用的app类型自动选择收款码、支付宝转账-->
-                        <a class="payHref">
-                            <img th:src="@{'enQrcode?url='+${payUrl}}" width="240" height="240">
-                        </a>
-                    </div>
+                <div style="position: relative;display: inline-block;">
+                    <!-- 根据用户使用的app类型自动选择收款码、支付宝转账-->
+                    <a class="payHref">
+                        <img th:src="@{'enQrcode?url='+${payUrl}}" width="240" height="240">
+                    </a>
                 </div>
-            </div>
-            <div class="time-item">
-                <div class="time-item" id="msg">
-                    <h2>
-                        <span>静态码仅适用于收款，不适用于商城对接</span>
-                    </h2>
-                </div>
-            </div>
-            <div class="tip">
-                <div class="ico-scan"></div>
-                <div class="tip-text">
-                    支持<span th:text="${payName}"></span>
-                </div>
-            </div>
-            <div class="detail" id="orderDetail">
-                <dl class="detail-ct" id="desc"></dl>
-                <a href="javascript:void(0)" class="arrow" onclick="showOrderDetail()"><i class="ico-arrow"></i></a>
             </div>
         </div>
-
+        <div class="time-item">
+            <div class="time-item" id="msg">
+                <h2>
+                    <span>静态码仅适用于收款，不适用于商城对接</span>
+                </h2>
+            </div>
+        </div>
+        <div class="tip">
+            <div class="ico-scan"></div>
+            <div class="tip-text">
+                支持<span th:text="${payName}"></span>
+            </div>
+        </div>
+        <div class="detail" id="orderDetail">
+            <dl class="detail-ct" id="desc"></dl>
+            <a href="javascript:void(0)" class="arrow" onclick="showOrderDetail()"><i class="ico-arrow"></i></a>
+        </div>
         <div class="tip-text"></div>
     </div>
     <div class="foot">
         <div class="inner"><p>码支付Copyright &copy;2024 by 小码哥</p></div>
     </div>
-
-</div>
-<div class="copyRight">
 
 </div>
 

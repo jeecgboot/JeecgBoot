@@ -6,7 +6,7 @@
     padding-right: 10px;
     text-align: center;
     font-size: 25px;
-    background-color: #fff;
+    background-color: #fffd;
     border-radius: 5px;
 }
 
@@ -336,7 +336,7 @@
 }
 
 .box, .side-fixed {
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);
     position: relative;
 }
@@ -538,7 +538,7 @@ img.avatar {
 }
 
 .user-widget-content {
-    background-color: #FFF;
+    background-color: #fffd;
     border-radius: 5px;
     box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);
 }

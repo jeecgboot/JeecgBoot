@@ -21,7 +21,7 @@
 
 .order-show {
     margin: 0 auto;
-    background-color: #fff;
+    background-color: #fffd;
     padding: 10px;
     border-radius: 5px;
     box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);
@@ -95,7 +95,7 @@
     line-height: 38px \9;
     border-width: 2px;
     border-style: solid;
-    background-color: #fff;
+    background-color: #fffd;
     border-radius: 5px;
 }
 
@@ -465,7 +465,7 @@
     box-sizing: border-box;
     border: 1px solid rgba(225,227,232,.48);
     border-radius: 3px;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0 2px 2px 0 rgb(44 71 146 / 17%);
     cursor: pointer;
     text-align: center;
@@ -507,7 +507,7 @@
     border-radius: 5px;
     overflow: hidden;
     border: 2px solid #f2f2f2 !important;
-    background-color: #fff;
+    background-color: #fffd;
     box-shadow: 0px 0px 2px rgb(98 124 153 / 10%);
 }
 

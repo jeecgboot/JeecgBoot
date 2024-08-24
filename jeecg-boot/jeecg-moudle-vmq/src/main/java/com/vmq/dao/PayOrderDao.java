@@ -13,6 +13,7 @@ import java.util.Map;
 public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecificationExecutor {
 
     PayOrder findByPayId(String payId);
+
     PayOrder findByOrderId(String orderId);
     
     @Transactional
@@ -68,7 +69,7 @@ public interface PayOrderDao  extends JpaRepository<PayOrder,Long>, JpaSpecifica
     @Query(value = "delete from pay_order where username=?1 and create_date<?2", nativeQuery = true)
     int deleteByAfterCreateDate(String username,String date);
 
-    PayOrder findByUsernameAndPayId(String username, String outTradeNo);
+    PayOrder findByUsernameAndOrderId(String username, String outTradeNo);
 
     @Query("select o from PayOrder o where o.username=?1 and o.state=0 and o.param='static'")
     List<PayOrder> getUnPaidStaticOrder(String username);

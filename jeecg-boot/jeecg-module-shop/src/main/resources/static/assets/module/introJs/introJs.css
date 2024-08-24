@@ -54,7 +54,7 @@ tr.introjs-showElement > th {
     box-sizing: content-box;
     position: absolute;
     z-index: 9999998;
-    background-color: #FFF;
+    background-color: #fffd;
     background-color: rgba(255, 255, 255, 1);
     border: 1px solid #777;
     border: 1px solid rgba(0, 0, 0, .1);
