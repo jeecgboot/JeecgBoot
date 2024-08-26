@@ -22,7 +22,7 @@ services:
       - jeecg-boot
 
   jeecg-boot-redis:
-    image: redis:5.0
+    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/redis:5.0
     ports:
       - 6379:6379
     restart: always
