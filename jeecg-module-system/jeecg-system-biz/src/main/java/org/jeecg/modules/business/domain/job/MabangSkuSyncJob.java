@@ -29,8 +29,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
- * A Job that retrieves all Sku from Mabang
- * if the sku is of status 3 (normal) and not in DB, then we insert it in DB
+ * Updates product name (en, zh), sku status, weight and isGift
+ * By default checks sku updates within the last 5 days
+ * If "skus" param is not empty then, dates are ignored and it will only update the given skus (erpCode)
+ * Execution periodicity : everyday at 2:10pm : 10 14 * * *
  */
 @Slf4j
 @Component

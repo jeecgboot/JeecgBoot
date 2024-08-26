@@ -236,6 +236,11 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                             }
                         }
                     }
+                    // updating isGift
+                    if(!Objects.equals(s.getIsGift(), skuData.getIsGift())) {
+                        s.setIsGift(skuData.getIsGift());
+                        isUpdated = true;
+                    }
                     if(isUpdated)
                         skusToUpdate.add(s);
 

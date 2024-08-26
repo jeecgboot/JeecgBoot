@@ -76,6 +76,10 @@ public class PurchaseOrderPage {
 	@Excel(name = "订单是否下了单", width = 15)
 	@ApiModelProperty(value = "订单是否下了单")
 	private boolean ordered;
+	/**采购批次号*/
+	@Excel(name = "采购批次号", width = 15)
+	@ApiModelProperty(value = "采购批次号")
+	private String groupId;
 
 	/**
 	 * Payment document
