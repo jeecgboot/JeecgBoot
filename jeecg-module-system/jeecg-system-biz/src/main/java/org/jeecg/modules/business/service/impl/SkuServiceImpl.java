@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuService {
-
     @Autowired
     private SkuMapper skuMapper;
     @Autowired
@@ -156,11 +155,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Override
     public List<Sku> listSkus() {
         return skuMapper.listSkus();
-    }
-
-    @Override
-    public List<Sku> selectByMainId(String mainId) {
-        return skuMapper.selectByMainId(mainId);
     }
 
     @Override
@@ -426,13 +420,39 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
+    public Integer countAllClientSkus() {
+        return skuMapper.countAllClientSkus();
+    }
+    @Override
     public List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order) {
         int offset = (pageNo - 1) * pageSize;
         return skuMapper.fetchSkusByClient(clientId, offset, pageSize, column, order);
     }
     @Override
-    public Integer countAllSkuWeightsWithFilters() {
-        return skuMapper.countAllSkuWeightsWithFilters();
+    public Integer countAllSkuWeightsWithFilters(List<String> erpCodes, List<String> zhNames, List<String> enNames) {
+        StringBuilder erpCodesRegex= new StringBuilder(), zhNamesRegex = new StringBuilder(), enNamesRegex = new StringBuilder();
+        if(erpCodes != null){
+            erpCodesRegex.append("^");
+            for(String name : erpCodes){
+                erpCodesRegex.append("(?=.*").append(name).append(")");
+            }
+            erpCodesRegex.append(".*");
+        }
+        if(enNames != null){
+            enNamesRegex.append("^");
+            for(String name : enNames){
+                enNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            enNamesRegex.append(".*");
+        }
+        if(zhNames != null){
+            zhNamesRegex.append("^");
+            for(String name : zhNames){
+                zhNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            zhNamesRegex.append(".*$");
+        }
+        return skuMapper.countAllSkuWeightsWithFilters(erpCodesRegex.toString(), zhNamesRegex.toString(), enNamesRegex.toString());
     }
     @Override
     public List<SkuOrderPage> fetchSkuWeightsWithFilters(Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames) {
@@ -460,6 +480,33 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
             zhNamesRegex.append(".*$");
         }
         return skuMapper.fetchSkuWeightsWithFilters(offset, pageSize, column, order, erpCodesRegex.toString(), zhNamesRegex.toString(), enNamesRegex.toString());
+    }
+
+    @Override
+    public Integer countAllClientSkusWithFilters(String clientId, List<String> erpCodes, List<String> zhNames, List<String> enNames) {
+        StringBuilder erpCodesRegex= new StringBuilder(), zhNamesRegex = new StringBuilder(), enNamesRegex = new StringBuilder();
+        if(erpCodes != null){
+            erpCodesRegex.append("^");
+            for(String name : erpCodes){
+                erpCodesRegex.append("(?=.*").append(name).append(")");
+            }
+            erpCodesRegex.append(".*");
+        }
+        if(enNames != null){
+            enNamesRegex.append("^");
+            for(String name : enNames){
+                enNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            enNamesRegex.append(".*");
+        }
+        if(zhNames != null){
+            zhNamesRegex.append("^");
+            for(String name : zhNames){
+                zhNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            zhNamesRegex.append(".*$");
+        }
+        return skuMapper.countAllClientSkusWithFilters(clientId, erpCodesRegex.toString(), zhNamesRegex.toString(), enNamesRegex.toString());
     }
 
     @Override

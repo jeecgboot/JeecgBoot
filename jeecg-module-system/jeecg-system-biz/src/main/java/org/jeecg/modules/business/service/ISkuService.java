@@ -21,8 +21,6 @@ import java.util.Map;
  */
 public interface ISkuService extends IService<Sku> {
     List<Sku> listSkus();
-    List<Sku> selectByMainId(String mainId);
-
     /**
      * 添加一对多
      */
@@ -97,10 +95,14 @@ public interface ISkuService extends IService<Sku> {
 
     Integer countAllSkus();
     List<SkuOrderPage> fetchSkuWeights(Integer pageNo, Integer pageSize, String parsedColumn, String parsedOrder);
+
+    Integer countAllClientSkus();
     List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order);
 
-    Integer countAllSkuWeightsWithFilters();
+    Integer countAllSkuWeightsWithFilters(List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
     List<SkuOrderPage> fetchSkuWeightsWithFilters(Integer pageNo, Integer pageSize, String parsedColumn, String parsedOrder, List<String> erpCodes, List<String> zhNames, List<String> enNames);
+
+    Integer countAllClientSkusWithFilters(String clientId, List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
     List<SkuOrderPage> fetchSkusByClientWithFilters(String clientId, Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames);
 
     void addSkuQuantity(Map<String, Integer> quantityPurchased);

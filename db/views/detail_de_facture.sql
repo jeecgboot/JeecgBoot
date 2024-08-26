@@ -9,7 +9,7 @@ SELECT s.name                                      AS 'Boutique',
        po.country                                  AS 'Pays',
        po.postcode                                 AS 'Code postal',
        JSON_ARRAYAGG(sku.erp_code)                 AS 'SKU',
-       JSON_ARRAYAGG(p.en_name)                    AS 'Nom produits',
+       JSON_ARRAYAGG(sku.en_name)                  AS 'Nom produits',
        JSON_ARRAYAGG(poc.quantity)                 AS 'Quantité',
        SUM(poc.purchase_fee)                       AS 'Frais d\'achat',
        po.fret_fee                                 AS 'Frais de FRET',
@@ -23,7 +23,6 @@ FROM platform_order po
          JOIN shop s ON po.shop_id = s.id
          RIGHT JOIN platform_order_content poc ON po.id = poc.platform_order_id
          JOIN sku ON poc.sku_id = sku.id
-         JOIN product p ON sku.product_id = p.id
 WHERE shipping_invoice_number IS NOT NULL
   AND poc.erp_status <> 5
 GROUP BY po.id, s.name, po.order_time

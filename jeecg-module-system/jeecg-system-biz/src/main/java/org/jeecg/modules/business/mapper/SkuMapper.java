@@ -22,11 +22,6 @@ import java.util.Map;
  */
 @Repository
 public interface SkuMapper extends BaseMapper<Sku> {
-
-    boolean deleteByMainId(@Param("mainId") String mainId);
-
-    List<Sku> selectByMainId(@Param("mainId") String mainId);
-
     List<InventoryRecord> pageSkuByClientId(String clientId, long offset, long size);
 
     long countTotal(String clientId);
@@ -55,7 +50,10 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(@Param("orderIds") List<String> orderIds);
 
     Integer countAllSkus();
-    Integer countAllSkuWeightsWithFilters();
+    Integer countAllSkuWeightsWithFilters(@Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
+    Integer countAllClientSkus();
+    Integer countAllClientSkusWithFilters(@Param("clientId") String clientId, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
+
     List<SkuOrderPage> fetchSkuWeights(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
     List<SkuOrderPage> fetchSkusByClient(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
     List<SkuOrderPage> fetchSkuWeightsWithFilters(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);

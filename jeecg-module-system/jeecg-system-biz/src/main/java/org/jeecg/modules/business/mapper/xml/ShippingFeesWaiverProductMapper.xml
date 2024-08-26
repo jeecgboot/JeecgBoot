@@ -20,7 +20,7 @@
         SELECT sku.id, sku.erp_code, sfw.id AS waiver_id, sfw.name AS waiver_name, sfw.threshold, sfw.fees
         FROM shipping_fees_waiver_product sfwp
         JOIN shipping_fees_waiver sfw ON sfwp.waiver_id = sfw.id
-        JOIN sku ON sku.product_id = sfwp.product_id
+        JOIN sku ON sku.id = sfwp.sku_id
 		WHERE sku.id IN
 		<foreach collection="list" index="i" item="item" open="(" separator="," close=")">#{item}</foreach>
 	</select>

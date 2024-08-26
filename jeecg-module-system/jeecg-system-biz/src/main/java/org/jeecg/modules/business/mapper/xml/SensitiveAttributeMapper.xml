@@ -4,10 +4,8 @@
 <select id="getHighestPriorityAttribute" resultType="org.jeecg.modules.business.entity.SensitiveAttribute">
     SELECT sa.en_name, sa.priority
     FROM sensitive_attribute sa
-             JOIN product p
-                  ON sa.id = p.sensitive_attribute_id
              JOIN sku s
-                  ON p.id = s.product_id
+                  ON s.sensitive_attribute_id = sa.id
              JOIN platform_order_content poc
                   ON s.id = poc.sku_id
              JOIN platform_order po
@@ -18,10 +16,8 @@
 <select id="getHighestPriorityAttributeId" resultType="java.lang.String">
     SELECT sa.id
     FROM sensitive_attribute sa
-             JOIN product p
-                  ON sa.id = p.sensitive_attribute_id
              JOIN sku s
-                  ON p.id = s.product_id
+                  ON sa.id = s.sensitive_attribute_id
              JOIN platform_order_content poc
                   ON s.id = poc.sku_id
              JOIN platform_order po

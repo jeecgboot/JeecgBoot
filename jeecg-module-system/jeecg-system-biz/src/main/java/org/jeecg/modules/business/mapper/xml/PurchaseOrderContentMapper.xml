@@ -13,17 +13,15 @@
         FROM purchase_order_sku
         WHERE purchase_order_id = #{mainId}    </select>
     <select id="selectInvoiceDataByID" resultType="org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry">
-        SELECT s.erp_code, p.en_name, pos.quantity, pos.total_amount
+        SELECT s.erp_code, s.en_name, pos.quantity, pos.total_amount
         FROM purchase_order_sku pos
         JOIN sku s on pos.sku_id = s.id
-        JOIN product p on s.product_id = p.id
         WHERE purchase_order_id = #{purchaseID}
     </select>
     <select id="selectInvoicesDataByID" resultType="org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry">
-        SELECT s.erp_code, p.en_name, SUM(pos.quantity) as quantity, SUM(pos.total_amount) as total_amount
+        SELECT s.erp_code, s.en_name, SUM(pos.quantity) as quantity, SUM(pos.total_amount) as total_amount
         FROM purchase_order_sku pos
         JOIN sku s on pos.sku_id = s.id
-        JOIN product p on s.product_id = p.id
         WHERE purchase_order_id IN
         <foreach collection="purchaseIds" item="purchaseId" index="i" open="(" close=")" separator=",">
             #{purchaseId}

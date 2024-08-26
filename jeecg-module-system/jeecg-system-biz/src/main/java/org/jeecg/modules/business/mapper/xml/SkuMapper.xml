@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.SkuMapper">
-
-    <delete id="deleteByMainId" parameterType="java.lang.String">
-        DELETE
-        FROM sku
-        WHERE product_id = #{mainId}    </delete>
-
-    <select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.Sku">
-        SELECT *
-        FROM sku
-        WHERE product_id = #{mainId}    </select>
-
-
     <sql id="selectSkuByClientId">
         SELECT *
         FROM inventory_record i
@@ -179,6 +167,13 @@
         LIMIT #{offset}, #{size}
         ;
     </select>
+    <select id="countAllClientSkus" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS total
+        FROM sku s
+        JOIN client_sku ON s.id = client_sku.sku_id
+        WHERE s.status = 3
+            AND client_sku.client_id = #{clientId};
+    </select>
     <select id="fetchSkusByClient" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         WITH qtyInOrdersNotShipped AS (
             SELECT sku_id as ID, SUM(quantity) AS quantity
@@ -193,11 +188,11 @@
         )
         SELECT s.id,
                s.erp_code,
-               p.en_name                                                     as productEn,
-               p.zh_name                                                     as product,
+               s.en_name                                                     as productEn,
+               s.zh_name                                                     as product,
                s.purchasing_amount,
                s.available_amount,
-               qtyInOrdersNotShipped.quantity                                          as qtyInOrdersNotShipped,
+               qtyInOrdersNotShipped.quantity                                as qtyInOrdersNotShipped,
                s.available_amount + s.purchasing_amount - IF(qtyInOrdersNotShipped.quantity IS NULL, 0, qtyInOrdersNotShipped.quantity) as stock,
                s.image_source,
                s.service_fee,
@@ -229,7 +224,6 @@
                s42.quantity                                                  as sales_six_weeks
         FROM sku s
                  JOIN client_sku ON s.id = client_sku.sku_id
-                 JOIN product p ON s.product_id = p.id
                  LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
                  LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
                  LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
@@ -238,9 +232,7 @@
         WHERE client_sku.client_id = #{clientId}
             AND s.status = 3
         ORDER BY ${column} ${order}
-        <if test="size != -1">
-            LIMIT #{offset}, #{size}
-        </if>
+        LIMIT #{offset}, #{size}
         ;
     </select>
     <select id="countAllSkuWeightsWithFilters" resultType="java.lang.Integer">
@@ -306,6 +298,30 @@
         </if>
         ;
     </select>
+    <select id="countAllClientSkusWithFilters" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS total
+        FROM sku s
+        JOIN client_sku ON s.id = client_sku.sku_id
+        WHERE s.status = 3
+            AND client_sku.client_id = #{clientId}
+            AND (
+                <if test="erpCodes != ''">
+                    s.erp_code REGEXP #{erpCodes}
+                </if>
+                <if test="zhNames != ''">
+                    <if test="erpCodes != ''">
+                        AND
+                    </if>
+                    s.zh_name REGEXP #{zhNames}
+                </if>
+                <if test="enNames != ''">
+                    <if test="erpCodes != '' || zhNames != ''">
+                        AND
+                    </if>
+                    s.en_name REGEXP #{enNames}
+                </if>
+            );
+    </select>
     <select id="fetchSkusByClientWithFilters" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         WITH qtyInOrdersNotShippedCTE AS (
             SELECT sku_id as ID, SUM(quantity) AS quantity
@@ -320,8 +336,8 @@
         )
         SELECT s.id,
                s.erp_code,
-               p.en_name                                                     as productEn,
-               p.zh_name                                                     as product,
+               s.en_name                                                     as productEn,
+               s.zh_name                                                     as product,
                s.purchasing_amount,
                s.available_amount,
                qtyInOrdersNotShippedCTE.quantity                                          as qtyInOrdersNotShipped,
@@ -356,7 +372,6 @@
                s42.quantity                                                  as sales_six_weeks
         FROM sku s
                  JOIN client_sku ON s.id = client_sku.sku_id
-                 JOIN product p ON s.product_id = p.id
                  LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
                  LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
                  LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
@@ -372,13 +387,13 @@
                     <if test="erpCodes != ''">
                         AND
                     </if>
-                    p.zh_name REGEXP #{zhNames}
+                    s.zh_name REGEXP #{zhNames}
                 </if>
                 <if test="enNames != ''">
                     <if test="erpCodes != '' || zhNames != ''">
                         AND
                     </if>
-                    p.en_name REGEXP #{enNames}
+                    s.en_name REGEXP #{enNames}
                 </if>
             )
         ORDER BY ${column} ${order}
@@ -407,8 +422,8 @@
         )
         SELECT s.id,
                s.erp_code,
-               p.en_name                                                     as productEn,
-               p.zh_name                                                     as product,
+               s.en_name                                                     as productEn,
+               s.zh_name                                                     as product,
                sfi.quantity                                                  as qtyOrdered,
                s.purchasing_amount                                           as purchasing_amount,
                s.available_amount                                            as available_amount,
@@ -446,7 +461,6 @@
                IFNULL(s28.quantity, 0)                                       as sales_four_weeks,
                IFNULL(s42.quantity, 0)                                       as sales_six_weeks
         FROM sku s
-                 JOIN product p ON s.product_id = p.id
                  LEFT JOIN sku_price sp ON s.id = sp.sku_id
                  LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
                  LEFT JOIN sales_42 s42 ON s.id = s42.sku_id

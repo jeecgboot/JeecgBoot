@@ -3,7 +3,6 @@ package org.jeecg.modules.business.controller.admin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.jeecg.modules.business.entity.ShippingDiscount;
 import org.jeecg.modules.business.entity.ShippingFeesWaiver;
 import org.jeecg.modules.business.entity.ShippingFeesWaiverProduct;
 import org.jeecg.modules.business.service.IShippingFeesWaiverProductService;

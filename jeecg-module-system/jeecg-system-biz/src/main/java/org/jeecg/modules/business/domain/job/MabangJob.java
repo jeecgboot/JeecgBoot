@@ -12,6 +12,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -22,11 +23,12 @@ import java.util.List;
 
 import static org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus.*;
 
+@Setter
+@Component
 @Slf4j
 public class MabangJob implements Job {
 
     @Autowired
-    @Setter
     private IPlatformOrderMabangService platformOrderMabangService;
 
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;

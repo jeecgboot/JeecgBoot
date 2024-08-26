@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
@@ -50,9 +49,6 @@ public class MabangSkuJob implements Job {
     Environment env;
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;
     private static final DateType DEFAULT_DATE_TYPE = DateType.CREATE;
-
-    @Autowired
-    private ISysBaseAPI ISysBaseApi;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

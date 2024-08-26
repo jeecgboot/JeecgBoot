@@ -373,24 +373,23 @@ public class SkuController {
         } catch (RuntimeException e) {
             return Result.error("Error 400 Bad Request");
         }
-        List<SkuOrderPage> allSkuOrdersPage = new ArrayList<>();
-        List<SkuOrderPage> skuOrdersPage = new ArrayList<>();
-        int total = 0;
+        List<SkuOrderPage> skuOrdersPage;
+        int total;
         if(erpCodes != null || zhNames != null || enNames != null) {
             List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
             List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
             List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
             if(clientId != null) {
-                allSkuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, 1, -1, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+                total = skuService.countAllClientSkusWithFilters(clientId, erpCodeList, zhNameList, enNameList);
                 skuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
             } else {
-                total = skuService.countAllSkuWeightsWithFilters();
+                total = skuService.countAllSkuWeightsWithFilters(erpCodeList, zhNameList, enNameList);
                 skuOrdersPage = skuService.fetchSkuWeightsWithFilters(pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
             }
         }
         else {
             if(clientId != null) {
-                allSkuOrdersPage = skuService.fetchSkusByClient(clientId, 1, -1, parsedColumn, parsedOrder);
+                total = skuService.countAllClientSkus();
                 skuOrdersPage = skuService.fetchSkusByClient(clientId, pageNo, pageSize, parsedColumn, parsedOrder);
             } else {
                 total = skuService.countAllSkus();
