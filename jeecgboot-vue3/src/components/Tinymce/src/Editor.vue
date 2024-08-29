@@ -314,11 +314,12 @@
         setValue(editor, content);
       }
 
-      function handleDone(name: string, url: string) {
+      async function handleDone(name: string, url: string) {
         const editor = unref(editorRef);
         if (!editor) {
           return;
         }
+        await handleImageUploading(name);
         const content = editor?.getContent() ?? '';
         const val = content?.replace(getUploadingImgName(name), `<img src="${url}"/>`) ?? '';
         setValue(editor, val);
