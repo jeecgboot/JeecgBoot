@@ -1,7 +1,6 @@
 package org.jeecg.modules.business.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.ClientPlatformOrderContent;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
@@ -11,7 +10,6 @@ import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -49,13 +47,6 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     List<SkuDetail> searchSkuDetail(List<String> skuIDs);
 
     List<SkuWeightDiscountServiceFees> getAllWeightsDiscountsServiceFees();
-
-    List<PlatformOrderContent> findUninvoicedOrderContents(
-            @Param("shopIDs") List<String> shopIds,
-            @Param("begin") Date begin,
-            @Param("end") Date end
-    );
-    List<PlatformOrderContent> findUninvoicedOrderContents(@Param("orderIds") List<String> orderIds);
 
     /**
      * Find all uninvoiced order content for specified shop between order time period with specified status ([1,2] or [1,2,3])
