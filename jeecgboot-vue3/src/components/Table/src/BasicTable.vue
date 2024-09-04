@@ -424,7 +424,22 @@
         tableAction,
         redoHeight,
         handleResizeColumn: (w, col) => {
-        console.log('col',col);
+          // update-begin--author:liaozhiyang---date:20240903---for：【issues/7101】列配置resizable: true时，表尾合计的列宽没有同步改变
+          const columns = getColumns();
+          const findItem = columns.find((item) => {
+            if (item['dataIndex'] != null) {
+              return item['dataIndex'] === col['dataIndex'];
+            } else if (item['flag'] != null) {
+              return item['flag'] === col['flag'];
+            }
+            return false;
+          });
+          if (findItem) {
+            findItem.width = w;
+            setColumns(columns);
+          }
+          // update-end--author:liaozhiyang---date:20240903---for：【issues/7101】列配置resizable: true时，表尾合计的列宽没有同步改变
+          console.log('col',col);
           col.width = w;
         },
         getFormProps: getFormProps as any,
