@@ -249,7 +249,7 @@ public class AddPortraitTubeJob implements Job {
                     if (canvasNew46RemainderCount > 0) {
                         // TODO 2024-08-28 Temporarily use OLD 50cm tubes for NEW 46cm canvases
                         tube50SingleCount++;
-                    } else if (canvas40RemainderCount > 0) {
+                    } else if (canvas40RemainderCount > 0 || canvasNew36RemainderCount > 0) {
                         tube40SingleCount++;
                     } else if (canvas30RemainderCount > 0){
                         tube30SingleDoubleCount++;
