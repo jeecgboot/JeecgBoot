@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.jeecg.modules.business.domain.api.mabang.RequestBody;
 
 import java.util.HashSet;
@@ -18,9 +19,9 @@ public class ChangeOrderRequestBody implements RequestBody {
     private String orderStatus;
     private String remark;
 
-    private final HashSet<Pair<String, Integer>> oldSkuData;
+    private HashSet<Triple<String, String, Integer>> oldSkuData;
 
-    private final HashSet<Pair<String, Integer>> newSkuData;
+    private HashSet<Pair<String, Integer>> newSkuData;
 
     private final static String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
 
@@ -36,7 +37,25 @@ public class ChangeOrderRequestBody implements RequestBody {
         }
     }
 
-    public ChangeOrderRequestBody(String platformOrderId, String orderStatus, HashSet<Pair<String, Integer>> oldSkuData,
+    public ChangeOrderRequestBody() {
+    }
+
+    public static ChangeOrderRequestBody buildChangeOrderRequestBody(String platformOrderId, String orderStatus,
+                                                                     HashSet<Pair<String, Integer>> oldSkuData,
+                                                                     HashSet<Pair<String, Integer>> newSkuData, String remark) {
+        ChangeOrderRequestBody body = new ChangeOrderRequestBody();
+        body.platformOrderId = platformOrderId;
+        body.orderStatus = orderStatus;
+        body.oldSkuData = new HashSet<>();
+        if (oldSkuData != null) {
+            oldSkuData.forEach(pair -> body.oldSkuData.add(Triple.of(pair.getLeft(), null, pair.getRight())));
+        }
+        body.newSkuData = newSkuData;
+        body.remark = remark;
+        return body;
+    }
+
+    public ChangeOrderRequestBody(String platformOrderId, String orderStatus, HashSet<Triple<String, String, Integer>> oldSkuData,
                                   HashSet<Pair<String, Integer>> newSkuData, String remark) {
         this.platformOrderId = platformOrderId;
         this.oldSkuData = oldSkuData;
@@ -58,17 +77,20 @@ public class ChangeOrderRequestBody implements RequestBody {
         putNonNull(json, "remark", remark);
         JSONArray stockDataArray = new JSONArray();
         if (oldSkuData != null && !oldSkuData.isEmpty()) {
-            for (Pair<String, Integer> oldSkuDatum : oldSkuData) {
+            for (Triple<String, String, Integer> oldSkuDatum : oldSkuData) {
                 JSONObject stockData = new JSONObject();
                 stockData.put("warehouseName", DEFAULT_WAREHOUSE_NAME);
-                stockData.put("stockSku", oldSkuDatum.getKey());
-                stockData.put("quantity", oldSkuDatum.getValue());
+                stockData.put("stockSku", oldSkuDatum.getLeft());
+                if (oldSkuDatum.getMiddle() != null) {
+                    stockData.put("erpOrderItemId", oldSkuDatum.getMiddle());
+                }
+                stockData.put("quantity", oldSkuDatum.getRight());
                 stockData.put("type", OperationType.REMOVE.code);
                 stockDataArray.add(stockData);
             }
 
         }
-        if(newSkuData != null) {
+        if (newSkuData != null) {
             for (Pair<String, Integer> newSkuDatum : newSkuData) {
                 JSONObject stockData = new JSONObject();
                 stockData.put("warehouseName", DEFAULT_WAREHOUSE_NAME);
@@ -78,7 +100,7 @@ public class ChangeOrderRequestBody implements RequestBody {
                 stockDataArray.add(stockData);
             }
         }
-        putNonNull(json,"stockData", stockDataArray.toJSONString());
+        putNonNull(json, "stockData", stockDataArray.toJSONString());
         return json;
     }
 
