@@ -413,4 +413,11 @@
              JOIN product p ON s.product_id = p.id
         WHERE client_sku.client_id = #{clientId};
     </select>
+    <select id="listImgUrls" resultType="org.jeecg.modules.business.entity.Sku">
+        SELECT row_number() over (
+            ORDER BY create_time DESC
+        ) as id, erp_code, image_source
+        FROM sku
+        WHERE image_source IS NOT NULL
+    </select>
 </mapper>
