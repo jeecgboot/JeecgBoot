@@ -104,4 +104,6 @@ public interface ISkuService extends IService<Sku> {
     void updateBatchStockByIds(List<Sku> skuToUpdate);
     List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber);
     List<Sku> listByClientId(String clientId);
+
+    List<Sku> listImgUrls();
 }

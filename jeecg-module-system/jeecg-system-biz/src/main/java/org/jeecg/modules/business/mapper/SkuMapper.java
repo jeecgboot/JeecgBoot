@@ -68,4 +68,6 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<SkuOrderPage> getInventoryByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 
     List<Sku> listByClientId(@Param("clientId") String clientId);
+
+    List<Sku> listImgUrls();
 }

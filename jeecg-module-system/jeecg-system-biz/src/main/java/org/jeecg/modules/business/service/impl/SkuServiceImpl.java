@@ -480,4 +480,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
         return skuMapper.listByClientId(clientId);
     }
 
+    @Override
+    public List<Sku> listImgUrls() {
+        return skuMapper.listImgUrls();
+    }
+
 }
