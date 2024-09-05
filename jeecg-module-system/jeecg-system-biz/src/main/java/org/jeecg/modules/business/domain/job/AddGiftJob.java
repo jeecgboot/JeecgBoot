@@ -171,7 +171,7 @@ public class AddGiftJob implements Job {
                 log.info("Processing order {} ", order.getPlatformOrderId());
                 // Non matching-quantity rules only apply once per order
                 boolean nonMatchingRulesApplied = false;
-                HashMap<String, Integer> giftMap = new HashMap<>();
+                HashMap<String, Integer> newGiftMap = new HashMap<>();
                 Map<Boolean, List<OrderItem>> orderItemMap = order.getOrderItems()
                         .stream()
                         .filter(orderItem -> !orderItem.getStatus().equalsIgnoreCase(OBSOLETE_STATUS_CODE))
@@ -182,27 +182,31 @@ public class AddGiftJob implements Job {
                         for (GiftRule giftRule : nonMatchingQuantityRules) {
                             if (erpCode.matches(giftRule.getRegex())) {
                                 nonMatchingRulesApplied = true;
-                                putValueInMapOrReduce(giftRule.getSku(), 1, giftMap);
+                                putValueInMapOrReduce(giftRule.getSku(), 1, newGiftMap);
                                 break;
                             }
                         }
                     }
                     for (GiftRule giftRule : matchingQuantityRules) {
                         if (erpCode.matches(giftRule.getRegex())) {
-                            putValueInMapOrReduce(giftRule.getSku(), orderItem.getQuantity(), giftMap);
+                            putValueInMapOrReduce(giftRule.getSku(), orderItem.getQuantity(), newGiftMap);
                             break;
                         }
                     }
                 }
-                log.debug("Order {} 's new gift map : ", giftMap);
+                log.debug("Order {} 's new gift map : ", newGiftMap);
                 HashSet<Triple<String, String, Integer>> oldSkuData = new HashSet<>();
+                HashMap<String, Integer> oldGiftMap = new HashMap<>();
                 List<OrderItem> oldGifts = orderItemMap.get(Boolean.TRUE) == null ? new ArrayList<>() : orderItemMap.get(Boolean.TRUE);
-                oldGifts.forEach(orderItem -> oldSkuData.add(Triple.of(orderItem.getErpCode(),
-                        orderItem.getErpOrderItemId(), orderItem.getQuantity())));
+                oldGifts.forEach(orderItem -> {
+                    oldSkuData.add(Triple.of(orderItem.getErpCode(),
+                            orderItem.getErpOrderItemId(), orderItem.getQuantity()));
+                    putValueInMapOrReduce(orderItem.getErpCode(), orderItem.getQuantity(), oldGiftMap);
+                });
                 HashSet<Pair<String, Integer>> newSkuData = new HashSet<>();
-                giftMap.forEach((key, value) -> newSkuData.add(Pair.of(key, value)));
+                newGiftMap.forEach((key, value) -> newSkuData.add(Pair.of(key, value)));
 
-                if (giftInsertionNeeded(oldSkuData, newSkuData)) {
+                if (!newGiftMap.isEmpty() && !newGiftMap.equals(oldGiftMap)) {
                     ChangeOrderRequestBody changeOrderRequestBody = new ChangeOrderRequestBody(order.getPlatformOrderId(), null,
                             oldSkuData, newSkuData, null);
                     giftInsertionRequests.add(changeOrderRequestBody);
@@ -224,18 +228,5 @@ public class AddGiftJob implements Job {
         } else {
             giftMap.put(key, value);
         }
-    }
-
-    private static boolean giftInsertionNeeded(HashSet<Triple<String, String, Integer>> oldSkuData, HashSet<Pair<String, Integer>> newSkuData) {
-        if (newSkuData.isEmpty()) {
-            return false;
-        } else
-        // Need more inspection when set sizes are the same
-        if (oldSkuData.size() == newSkuData.size()) {
-            HashSet<Pair<String, Integer>> oldSkuDataInPairs = new HashSet<>();
-            oldSkuData.forEach(triple -> oldSkuDataInPairs.add(Pair.of(triple.getLeft(), triple.getRight())));
-            return !oldSkuDataInPairs.containsAll(newSkuData) && !newSkuData.containsAll(oldSkuDataInPairs);
-        }
-        return true;
     }
 }
