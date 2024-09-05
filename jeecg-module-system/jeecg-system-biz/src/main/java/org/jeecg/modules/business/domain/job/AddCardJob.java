@@ -123,8 +123,8 @@ public class AddCardJob implements Job {
                 // Still no card in order, add one
                 HashSet<Pair<String, Integer>> card = new HashSet<>();
                 card.add(Pair.of(CARD_SKU, 1));
-                ChangeOrderRequestBody changeOrderRequestBody = new ChangeOrderRequestBody(mabangOrder.getPlatformOrderId(), null,
-                        null, card, null);
+                ChangeOrderRequestBody changeOrderRequestBody = ChangeOrderRequestBody.buildChangeOrderRequestBody(
+                        mabangOrder.getPlatformOrderId(), null, null, card, null);
                 changeOrderRequests.add(changeOrderRequestBody);
             }
         }
