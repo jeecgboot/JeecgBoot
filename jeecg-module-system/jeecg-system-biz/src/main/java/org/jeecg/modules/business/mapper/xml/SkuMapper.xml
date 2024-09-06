@@ -584,4 +584,48 @@
         WHERE c.active = 1
             AND s.status = 3
     </select>
+    <select id="searchExistingSkuByKeywords" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
+        SELECT
+            s.id,
+            s.erp_code,
+            s.en_name as productEn,
+            s.zh_name as product,
+            s.purchasing_amount,
+            s.available_amount,
+            s.image_source,
+            s.service_fee,
+            IF(sp.price_rmb IS NULL, sp.price,
+                (
+                    ROUND(
+                        sp.price_rmb /
+                        (SELECT rate
+                        FROM exchange_rates
+                        WHERE original_currency = 'EUR' AND target_currency = 'RMB'
+                        ORDER BY create_time DESC LIMIT 1)
+                    ,2)
+                )
+            ) as sku_price,
+            sp.threshold as discount_moq,
+            IF(sp.price_rmb IS NULL, sp.discounted_price,
+                (
+                    ROUND(
+                        sp.discounted_price_rmb /
+                        (SELECT rate
+                        FROM exchange_rates
+                        WHERE target_currency = 'EUR' AND original_currency = 'RMB'
+                        ORDER BY create_time DESC LIMIT 1)
+                    ,2)
+                )
+            ) as discounted_price,
+        FROM sku s
+        LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
+        WHERE s.status = 3
+            AND (
+                <foreach collection="keywords" item="keyword" index="index" separator="OR">
+                    s.erp_code LIKE CONCAT('%', #{keyword}, '%')
+                    OR s.en_name LIKE CONCAT('%', #{keyword}, '%')
+                    OR s.zh_name LIKE CONCAT('%', #{keyword}, '%')
+                </foreach>
+            )
+    </select>
 </mapper>

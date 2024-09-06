@@ -403,4 +403,9 @@ public class SkuController {
         page.setTotal(total);
         return Result.OK(page);
     }
+    @GetMapping("/searchExistingSkuByKeywords")
+    public Result<?> searchExistingSkuByKeywords(@RequestParam("keywords[]") List<String> keywords) {
+        System.out.println("keywords : " + keywords);
+        return Result.OK(skuService.searchExistingSkuByKeywords(keywords));
+    }
 }
