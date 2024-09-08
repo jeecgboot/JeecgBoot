@@ -2,6 +2,7 @@ package org.jeecg.common.util;
 
 import java.security.Key;
 import java.security.SecureRandom;
+import java.util.Random;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -187,5 +188,14 @@ public class PasswordUtil {
 		return (byte) "0123456789ABCDEF".indexOf(c);
 	}
 
+	public static String randomNum(int place) {
+		String base = "0123456789";
+		StringBuffer sb = new StringBuffer();
+		Random rd = new Random();
+		for(int i=0;i<place;i++) {
+			sb.append(base.charAt(rd.nextInt(base.length())));
+		}
+		return sb.toString();
+	}
 
 }

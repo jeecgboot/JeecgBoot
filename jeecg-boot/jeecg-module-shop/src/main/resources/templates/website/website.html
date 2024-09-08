@@ -145,8 +145,8 @@
                 num: 1,
                 onChoose: function (urls) {
                     var list = urls;
-                    $("#favicon").val("${ctxPath}/file" + list[0].url);
-                    $('#demo1').attr('src', "${ctxPath}/file" + list[0].url); //图片链接（base64）
+                    $("#favicon").val("${ctxPath}/file/" + list[0].url);
+                    $('#demo1').attr('src', "${ctxPath}/file/" + list[0].url); //图片链接（base64）
                 },
                 response: {code: 0}
             });
@@ -160,8 +160,8 @@
                 num: 1,
                 onChoose: function (urls) {
                     var list = urls;
-                    $("#websiteLogo").val("${ctxPath}/file" + list[0].url);
-                    $('#demo2').attr('src', "${ctxPath}/file" + list[0].url); //图片链接（base64）
+                    $("#websiteLogo").val("${ctxPath}/file/" + list[0].url);
+                    $('#demo2').attr('src', "${ctxPath}/file/" + list[0].url); //图片链接（base64）
                 },
                 response: {code: 0}
             });

@@ -57,7 +57,7 @@ public class AsyncAListDateJob implements Job {
         List<Object[]> sharesParams = new ArrayList<>(200);
         List<Object[]> deleteStorages = new ArrayList<>(200);
         List<Map<String, Object>> removeList = new ArrayList<>();
-        String query = "select id,name,links,resource_type,driver,mount_path from alist_shares where resource_type='' or resource_type is null or driver='' or driver is null or instr(mount_path,resource_type)<=0 limit 5000";
+        String query = "select id,name,links,resource_type,driver,mount_path from x_shares where resource_type='' or resource_type is null or driver='' or driver is null or instr(mount_path,resource_type)<=0 limit 5000";
         List<Map<String, Object>> result = DynamicDBUtil.findList(dbKey, query);
         for (Map map : result) {
             boolean isUpdate = false;
@@ -94,7 +94,7 @@ public class AsyncAListDateJob implements Job {
                 if (!removeList.isEmpty()) {
                     ThreadUtil.execute(() -> {
                         JobRequestUtil.deleteStorage(removeList);
-                        DynamicDBUtil.batchUpdate(dbKey, "delete from alist_storages where mount_path=?", deleteStorages);
+                        DynamicDBUtil.batchUpdate(dbKey, "delete from x_storages where mount_path=?", deleteStorages);
                     });
                 }
                 log.info(String.format("updateShares: delete %d,total %d", deleteStorages.size(), result.size()));
@@ -107,7 +107,7 @@ public class AsyncAListDateJob implements Job {
         if (!removeList.isEmpty()) {
             ThreadUtil.execute(() -> {
                 JobRequestUtil.deleteStorage(removeList);
-                DynamicDBUtil.batchUpdate(dbKey, "delete from alist_storages where mount_path=?", deleteStorages);
+                DynamicDBUtil.batchUpdate(dbKey, "delete from x_storages where mount_path=?", deleteStorages);
             });
         }
         log.info(String.format("updateShares: update %d,total %d", sharesParams.size(), result.size()));
@@ -121,10 +121,10 @@ public class AsyncAListDateJob implements Job {
     private void updateMountPathNew() {
         List<Object[]> sharesParams = new ArrayList<>(200);
         List<Object[]> deleteStorages = new ArrayList<>(200);
-        String query = "select mount_path,resource_type,driver from alist_storages where disabled=0 and driver like '%Share' and resource_type!='' and instr(mount_path,resource_type)<=0" + debug;
+        String query = "select mount_path,resource_type,driver from x_storages where disabled=0 and driver like '%Share' and resource_type!='' and instr(mount_path,resource_type)<=0" + debug;
         List<Map<String, Object>> result = DynamicDBUtil.findList(dbKey, query);
         JobRequestUtil.updateMountPath(resourceTypeList, result, sharesParams, deleteStorages);
-        DynamicDBUtil.batchUpdate(dbKey, "delete from alist_storages where mount_path=?", deleteStorages);
+        DynamicDBUtil.batchUpdate(dbKey, "delete from x_storages where mount_path=?", deleteStorages);
         DynamicDBUtil.batchUpdate(dbKey, "update alist_shares set mount_path=?,resource_type=? where name=? and driver=?", sharesParams);
         log.info(String.format("updateMountPathNew: readd %d,total %d", deleteStorages.size(), result.size()));
         LogUtil.endTime("AsyncAListDateJob", "updateMountPathNew");

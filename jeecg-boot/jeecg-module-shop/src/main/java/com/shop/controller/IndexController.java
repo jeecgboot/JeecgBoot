@@ -112,7 +112,7 @@ public class IndexController {
      * @return
      */
     @RequestMapping({"/", "/index"})
-    public String IndexView(Model model) {
+    public String indexView(Model model) {
         Website website = websiteService.getById(1);
         model.addAttribute("website", website);
         ShopSettings shopSettings = shopSettingsService.getById(1);

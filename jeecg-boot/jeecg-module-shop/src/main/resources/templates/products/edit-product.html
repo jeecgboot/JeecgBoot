@@ -264,7 +264,7 @@
                 '<input name="sales" placeholder="请输入销量" class="layui-input" value="0"/>' +
                 '<div class="layui-word-aux">手动发货模式生效</div>'
             );
-            $("#sellTypeDisplay").attr("style", "display:none;");
+            $("#sellTypeDisplay").attr(" style", "display:none;");
         }
 
         // 回显表单数据
@@ -317,8 +317,8 @@
                     $.post('${ctxPath}/file/upload/base64', {base64: data}, function (res) {
                         if (0 === res.code) {
                             console.log(res)
-                            $("#imageLogo").val("${ctxPath}/file" + res.url);
-                            $('#demo1').attr('src', "${ctxPath}/file" + res.url); //图片链接（base64）
+                            $("#imageLogo").val("${ctxPath}/file/" + res.url);
+                            $('#demo1').attr('src', "${ctxPath}/file/" + res.url); //图片链接（base64）
                             layer.close(loadIndex);
                         } else {
                             layer.close(loadIndex);
@@ -338,8 +338,8 @@
                     $.post('${ctxPath}/file/upload/base64', {base64: data}, function (res) {
                         if (0 === res.code) {
                             console.log(res)
-                            $("#indexLogo").val("${ctxPath}/file" + res.url);
-                            $('#demo2').attr('src', "${ctxPath}/file" + res.url); //图片链接（base64）
+                            $("#indexLogo").val("${ctxPath}/file/" + res.url);
+                            $('#demo2').attr('src', "${ctxPath}/file/" + res.url); //图片链接（base64）
                             layer.close(loadIndex);
                         } else {
                             layer.close(loadIndex);

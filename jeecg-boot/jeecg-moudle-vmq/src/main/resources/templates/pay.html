@@ -61,7 +61,7 @@
                         </a>
                         <!-- 太阳码：收款单、赞赏码 -->
                         <div v-if="payUrlType == 'image'" style="width: 300px;height: 200px;overflow: hidden">
-                            <img v-if="payType == 1" alt="加载中..." :src="payUrl" style="width: 400px;height: 500px;margin-top: -140px;margin-left: -50px;">
+                            <img v-if="payType == 1 || payType != 4" alt="加载中..." :src="payUrl" style="width: 400px;height: 500px;margin-top: -140px;margin-left: -50px;">
                             <img v-if="payType == 4" alt="加载中..." :src="payUrl" style="width: 400px;height: 400px;margin-top: -50px;margin-left: -50px;">
                         </div>
                     </div>

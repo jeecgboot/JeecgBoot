@@ -97,7 +97,7 @@ public class OnlineController {
 		data.put("mount_path","/共享/"+(StringUtils.isBlank(resourceType)?driver:resourceType)+"/"+name);
 		updateRecord(tableName, data);
 		// 更新storages
-		String query = "select * from alist_storages where mount_path=?";
+		String query = "select * from x_storages where mount_path=?";
 		Map<String, Object> result = (Map<String, Object>) DynamicDBUtil.findOne(dbKey,query, mount_path);
 		if (result != null) {
 			result.put("mount_path", data.get("mount_path"));

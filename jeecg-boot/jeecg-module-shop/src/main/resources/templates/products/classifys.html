@@ -210,7 +210,7 @@
         /* 修改分类状态 */
         form.on('switch(classifysTbStatuCk)', function (obj) {
             var loadIndex = layer.load(2);
-            $.post('${ctxPath}/classifys/status/update', {
+            $.post('classifys/status/update', {
                 id: obj.elem.value,
                 status: obj.elem.checked ? 1 : 0
             }, function (res) {

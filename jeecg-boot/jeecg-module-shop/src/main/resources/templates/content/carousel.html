@@ -205,8 +205,8 @@
                             num: 1,
                             onChoose: function (urls) {
                                 var list = urls;
-                                $("#imageLogo").val("${ctxPath}/file" + list[0].url);
-                                $('#image_url').attr('src', "${ctxPath}/file" + list[0].url); //图片链接（base64）
+                                $("#imageLogo").val("${ctxPath}/file/" + list[0].url);
+                                $('#image_url').attr('src', "${ctxPath}/file/" + list[0].url); //图片链接（base64）
                             },
                             response: {code: 0}
                         });

@@ -265,6 +265,8 @@
                 {
                     field: 'payType', title: '支付类型', templet: function (res) {
                         switch (res.payType) {
+                            case 'vmqpay' :
+                                return '<span class="layui-badge layui-badge-yellow">码支付</span>';
                             case 'mqpay_alipay' :
                                 return '<span class="layui-badge layui-badge-blue">支付宝-v免签</span>';
                             case 'mqpay_wxpay' :

@@ -177,8 +177,8 @@
                 num: 1,
                 onChoose: function (urls) {
                     var list = urls;
-                    $("#isBackground").val("${ctxPath}/file" + list[0].url);
-                    $('#demo1').attr('src', "${ctxPath}/file" + list[0].url); //图片链接（base64）
+                    $("#isBackground").val("${ctxPath}/file/" + list[0].url);
+                    $('#demo1').attr('src', "${ctxPath}/file/" + list[0].url); //图片链接（base64）
                 },
                 response: {code: 0}
             });

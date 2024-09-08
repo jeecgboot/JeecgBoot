@@ -34,19 +34,19 @@ public class UpdateAListStorageJob implements Job {
     private static final String dbKey = "jeecg-boot";
 
     /** 查询状态异常的存储 */
-    private static final String query_status_empty_sql = "select * from alist_storages where disabled=0 and driver in('%s') and status!='work'";
+    private static final String query_status_empty_sql = "select * from x_storages where disabled=0 and driver in('%s') and status!='work'";
     /** 更新为不可用（disabled=2）*/
     private static final String update_disabled2_sql = "update alist_storages set disabled=2 where id=?";
     /** 查询未启用的存储（disabled=2）*/
-    private static final String query_disabled2_sql = "select * from alist_storages where disabled=2 and driver like '%Share'";
+    private static final String query_disabled2_sql = "select * from x_storages where disabled=2 and driver like '%Share'";
     /** 删除未启用的存储（disabled=2）*/
-    private static final String delete_disabled2_sql = "delete from alist_storages where disabled=2 and driver like '%Share'";
+    private static final String delete_disabled2_sql = "delete from x_storages where disabled=2 and driver like '%Share'";
     /** 查询未启用的存储（disabled=1），用于alist启动后初始化 */
-    private static final String query_enable_sql = "select id from alist_storages where disabled=1 and driver like '%Share' limit 5000";
+    private static final String query_enable_sql = "select id from x_storages where disabled=1 and driver like '%Share' limit 5000";
     /** 查询未分类存储 */
-    private static final String query_resourceType_empty_sql = "select mount_path,resource_type,driver from alist_storages where disabled=0 and driver like '%Share' and (resource_type='' or resource_type is null) limit 5000";
+    private static final String query_resourceType_empty_sql = "select mount_path,resource_type,driver from x_storages where disabled=0 and driver like '%Share' and (resource_type='' or resource_type is null) limit 5000";
     /** 删除未分类存储 */
-    private static final String delete_mountpath_sql = "delete from alist_storages where mount_path=?";
+    private static final String delete_mountpath_sql = "delete from x_storages where mount_path=?";
     /** 更新未分类存储，并添加 */
     private static final String update_mountpath_sql = "update alist_shares set mount_path=?,resource_type=? where name=? and driver=?";
 

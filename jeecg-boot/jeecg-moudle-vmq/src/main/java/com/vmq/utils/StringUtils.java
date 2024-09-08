@@ -6,9 +6,7 @@ import org.springframework.cglib.beans.BeanMap;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,18 +89,6 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils {
             }
         }
         return map;
-    }
-
-    /**
-     * 随机4位数生成
-     */
-    public static String getRandomNum() {
-
-        Random random = new Random();
-        int end2 = random.nextInt(9999);
-        //如果不足两位前面补0
-        String str = String.format("%04d", end2);
-        return str;
     }
 
     public static String format(long time, String format) {

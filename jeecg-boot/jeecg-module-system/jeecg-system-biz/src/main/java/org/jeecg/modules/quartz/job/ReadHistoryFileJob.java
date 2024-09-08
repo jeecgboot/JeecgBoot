@@ -1,11 +1,14 @@
 package org.jeecg.modules.quartz.job;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.system.vo.DictModel;
+import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.RestUtil;
+import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
 import org.jeecg.common.util.dynamic.db.DynamicDBUtil;
 import org.jeecg.config.LogUtil;
 import org.jeecg.config.StringUtil;
@@ -38,6 +41,8 @@ public class ReadHistoryFileJob implements Job {
 
     private static final String dbKey = "jeecg-boot";
 
+    private static final String alist = "alist";
+
     private static final boolean reAdd = false;
 
     private static final String[] nameFilter = new String[]{"(&lt;|&gt);", "[,;，；。]\\s*希望大佬能转存一下", "(链接|提取码)[:：]"};
@@ -67,7 +72,14 @@ public class ReadHistoryFileJob implements Job {
         log.info(" Job Execution key：" + jobExecutionContext.getJobDetail().getKey());
         LogUtil.startTime("ReadHistoryFileJob");
         try {
-            List<String> result = DynamicDBUtil.findList(dbKey, "select distinct links from alist_shares", String.class);
+            DynamicDataSourceModel dbSource = DataSourceCachePool.getCacheDynamicDataSourceModel(alist);
+            if (StringUtils.isBlank(dbSource.getDbUrl())) {
+                DruidDataSource dataSource = new DruidDataSource();
+                dataSource.setDriverClassName("org.sqlite.JDBC");
+                dataSource.setUrl("jdbc:sqlite:C:\\Users\\Administrator\\AppData\\Roaming\\shaoxia.xyz.sha1\\little_lucky2\\alist\\data.db");
+                DataSourceCachePool.putCacheBasicDataSource(alist, dataSource);
+            }
+            List<String> result = DynamicDBUtil.findList(alist, "select distinct links from x_shares", String.class);
             for (String link : result) {
                 linkMap.put(link, "");
             }
@@ -246,8 +258,8 @@ public class ReadHistoryFileJob implements Job {
                 addParamList.add(new Object[]{name, links, password, size, resourceType, driverType, mountPath, remark});
                 linkMap.put(links, name);
             }
-            DynamicDBUtil.batchUpdate(dbKey, "delete from alist_shares where links=?", delParamList);
-            DynamicDBUtil.batchUpdate(dbKey, "INSERT INTO alist_shares (name, links, password, size, resource_type, driver,mount_path, remark) VALUES (?,?,?,?,?,?,?,?)", addParamList);
+            DynamicDBUtil.batchUpdate(alist, "delete from x_shares where links=?", delParamList);
+            DynamicDBUtil.batchUpdate(alist, "INSERT INTO x_shares (name, links, password, size, resource_type, driver,mount_path, remark) VALUES (?,?,?,?,?,?,?,?)", addParamList);
             log.info(String.format("文件名：%s\t成功%d；总数%d", htmlFile.getName(), addParamList.size(), totalCount));
         } catch (Exception e) {
             log.error(StringUtil.delHTMLTag(line));

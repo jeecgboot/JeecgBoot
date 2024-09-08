@@ -511,6 +511,8 @@ public class WebController {
                     price = StringUtils.getAmount(msgArray[2]);
                 } else if (msgArray[1].startsWith("你收到1笔转账")) { // 无法获取金额
 
+                } else if (msgArray[1].startsWith("钱已到账")) { // 无法获取金额
+                    
                 }
             } else if (msgArray[0].equals(SmsTypeEnum.QQ.getSource())) {
                 payType = PayTypeEnum.QQ.getCode();
