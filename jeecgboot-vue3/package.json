@@ -21,7 +21,7 @@
     "husky:install": "husky install"
   },
   "dependencies": {
-    "@jeecg/online": "3.7.0-beta",
+    "@jeecg/online": "3.7.1-RC",
     "@iconify/iconify": "^3.1.1",
     "@ant-design/colors": "^7.0.2",
     "@ant-design/icons-vue": "^7.0.1",
