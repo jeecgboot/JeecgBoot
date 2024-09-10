@@ -47,7 +47,10 @@
 
 	<!-- 获取用户未读消息数量 -->
 	<select id="getUnreadMessageCountByUserId" resultType="java.lang.Integer">
-		select count(1) from sys_announcement_send where user_id = #{userId} and read_flag = 0 and create_time &gt;= #{beginDate}
+		<!-- update by wangshuai 2024-07-02【TV360X-1682】撤销之后数量还显示，但是点开面板没有这条数据，他会一直显示有数据，需要联查判断已经发送的-->
+		select count(1) from sys_announcement_send sas
+		right join sys_announcement sa on sas.annt_id = sa.id and sa.send_status = '1'
+	    where sas.user_id = #{userId} and sas.read_flag = 0 and sas.create_time &gt;= #{beginDate}
 	</select>
 	
 	<!-- 查询消息记录 -->

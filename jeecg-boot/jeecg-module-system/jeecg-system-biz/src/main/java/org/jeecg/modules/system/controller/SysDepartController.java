@@ -364,9 +364,17 @@ public class SysDepartController {
 				//return arg0.getOrgCode().compareTo(arg1.getOrgCode());
 			//}
 		//});
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		List<String> idList = new ArrayList<>();
+		if (oConvertUtils.isNotEmpty(selections)) {
+			idList = Arrays.asList(selections.split(","));
+		}
 		//step.2 组装导出数据
 		Integer tenantId = sysDepart == null ? null : sysDepart.getTenantId();
-		List<SysDepartExportVo> sysDepartExportVos = sysDepartService.getExportDepart(tenantId);
+		//update-begin---author:wangshuai---date:2024-07-05---for:【TV360X-1671】部门管理不支持选中的记录导出---
+		List<SysDepartExportVo> sysDepartExportVos = sysDepartService.getExportDepart(tenantId,idList);
+		//update-end---author:wangshuai---date:2024-07-05---for:【TV360X-1671】部门管理不支持选中的记录导出---
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
         mv.addObject(NormalExcelConstants.CLASS, SysDepartExportVo.class);

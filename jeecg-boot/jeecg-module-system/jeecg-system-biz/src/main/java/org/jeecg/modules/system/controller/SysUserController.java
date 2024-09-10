@@ -205,7 +205,8 @@ public class SysUserController {
                 // 修改用户走一个service 保证事务
                 //获取租户ids
                 String relTenantIds = jsonObject.getString("relTenantIds");
-				sysUserService.editUser(user, roles, departs, relTenantIds);
+                String updateFromPage = jsonObject.getString("updateFromPage");
+				sysUserService.editUser(user, roles, departs, relTenantIds, updateFromPage);
 				result.success("修改成功!");
 			}
 		} catch (Exception e) {
@@ -222,7 +223,12 @@ public class SysUserController {
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		baseCommonService.addLog("删除用户，id： " +id ,CommonConstant.LOG_TYPE_2, 3);
+        List<String> userNameList = sysUserService.userIdToUsername(Arrays.asList(id));
 		this.sysUserService.deleteUser(id);
+
+        if (!userNameList.isEmpty()) {
+            String joinedString = String.join(",", userNameList);
+        }
 		return Result.ok("删除用户成功");
 	}
 
@@ -233,7 +239,13 @@ public class SysUserController {
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		baseCommonService.addLog("批量删除用户， ids： " +ids ,CommonConstant.LOG_TYPE_2, 3);
+        List<String> userNameList = sysUserService.userIdToUsername(Arrays.asList(ids.split(",")));
 		this.sysUserService.deleteBatchUsers(ids);
+		
+        // 用户变更，触发同步工作流
+        if (!userNameList.isEmpty()) {
+            String joinedString = String.join(",", userNameList);
+        }
 		return Result.ok("批量删除用户成功");
 	}
 
@@ -906,6 +918,9 @@ public class SysUserController {
             boolean b = sysUserDepartService.remove(queryWrapper);
             if(b){
                 departRoleUserService.removeDeptRoleUser(Arrays.asList(userIds.split(",")),depId);
+            }else{
+                result.error500("删除失败，目标用户不在当前部门！");
+                return result;
             }
             result.success("删除成功!");
         }catch(Exception e) {
@@ -1261,6 +1276,12 @@ public class SysUserController {
             updateUser.setUpdateBy(JwtUtil.getUserNameByToken(request));
             updateUser.setUpdateTime(new Date());
             sysUserService.revertLogicDeleted(Arrays.asList(userIds.split(",")), updateUser);
+            // 用户变更，触发同步工作流
+            List<String> userNameList = sysUserService.userIdToUsername(Arrays.asList(userIds.split(",")));
+            if (!userNameList.isEmpty()) {
+                String joinedString = String.join(",", userNameList);
+            }
+           
         }
         return Result.ok("还原成功");
     }
@@ -1286,7 +1307,7 @@ public class SysUserController {
      * @param jsonObject
      * @return
      */
-    @RequiresRoles({"admin"})
+    @RequiresPermissions("system:user:app:edit")
     @RequestMapping(value = "/appEdit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<SysUser> appEdit(HttpServletRequest request,@RequestBody JSONObject jsonObject) {
         Result<SysUser> result = new Result<SysUser>();

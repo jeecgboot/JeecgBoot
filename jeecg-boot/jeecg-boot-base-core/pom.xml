@@ -149,7 +149,7 @@
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>kingbase8</artifactId>
-			<version>${kingbase8.version}</version>
+			<version>9.0.0</version>
 			<scope>runtime</scope>
 		</dependency>
 		<!--达梦数据库驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->

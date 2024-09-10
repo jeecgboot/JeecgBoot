@@ -310,11 +310,11 @@
           }
         ],
         url: {
-          list: "/${entityPackage}/${entityName?uncap_first}/list",
-          delete: "/${entityPackage}/${entityName?uncap_first}/delete",
-          deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch",
-          exportXlsUrl: "/${entityPackage}/${entityName?uncap_first}/exportXls",
-          importExcelUrl: "${entityPackage}/${entityName?uncap_first}/importExcel",
+          list: "/${entityPackagePath}/${entityName?uncap_first}/list",
+          delete: "/${entityPackagePath}/${entityName?uncap_first}/delete",
+          deleteBatch: "/${entityPackagePath}/${entityName?uncap_first}/deleteBatch",
+          exportXlsUrl: "/${entityPackagePath}/${entityName?uncap_first}/exportXls",
+          importExcelUrl: "${entityPackagePath}/${entityName?uncap_first}/importExcel",
         },
         dictOptions:{
          <#list columns as po>

@@ -9,9 +9,11 @@
 	<#assign query_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1>
 	    <#assign need_select_tag = true>
+        <#assign need_multi = true>
 	    <#assign query_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
 	<#elseif po.dictField?default("")?trim?length gt 1>
 	    <#assign need_select_tag = true>
+        <#assign need_multi = true>
 	    <#assign query_field_dictCode="${po.dictField}">
 	</#if>
 	<#if po.queryMode=='single'>
@@ -66,9 +68,9 @@
             <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
              <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
              <#if po.dictTable?default("")?trim?length gt 1>
-              <#if query_field_no gt 1>  </#if><j-dict-select-tag placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dictCode="${po.dictTable},${po.dictText},${po.dictField}" allow-clear />
+              <#if query_field_no gt 1>  </#if><j-select-multiple placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dictCode="${po.dictTable},${po.dictText},${po.dictField}" allow-clear />
               <#elseif po.dictField?default("")?trim?length gt 1>
-              <#if query_field_no gt 1>  </#if><j-dict-select-tag placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dictCode="${po.dictField}" allow-clear />
+              <#if query_field_no gt 1>  </#if><j-select-multiple placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dictCode="${po.dictField}" allow-clear />
               <#else>
               <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model:value="queryParam.${po.fieldName}" allow-clear ></a-input>
              </#if>

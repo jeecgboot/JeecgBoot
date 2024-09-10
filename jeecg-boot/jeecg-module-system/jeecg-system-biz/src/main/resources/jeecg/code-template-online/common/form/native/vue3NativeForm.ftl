@@ -91,7 +91,7 @@
 								<j-image-upload <#if po.uploadnum??>:fileMax=${po.uploadnum}<#else>:fileMax="0"</#if> v-model:value="formData.${po.fieldName}" <#if po.readonly=='Y'>disabled</#if>></j-image-upload>
 					<#elseif po.classType=='umeditor'>
 								<#assign need_editor = true>
-								<j-editor v-model:value="formData.${autoStringSuffixForModel(po)}" <#if po.readonly=='Y'>disabled</#if>/>
+								<j-editor v-model:value="formData.${autoStringSuffixForModel(po)}" <#if po.readonly=='Y'>disabled</#if> :autoFocus="false"/>
 						<#elseif po.fieldDbType=='Blob'>
 								<a-input v-model:value="formData.${autoStringSuffixForModel(po)}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if> allow-clear ></a-input>
 						<#elseif po.classType == 'sel_tree'>

@@ -219,26 +219,31 @@ public class SysPositionController {
      * @param response
      */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, HttpServletResponse response) {
+    public ModelAndView exportXls(SysPosition sysPosition,HttpServletRequest request, HttpServletResponse response) {
         // Step.1 组装查询条件
         QueryWrapper<SysPosition> queryWrapper = null;
         try {
             String paramsStr = request.getParameter("paramsStr");
             if (oConvertUtils.isNotEmpty(paramsStr)) {
                 String deString = URLDecoder.decode(paramsStr, "UTF-8");
-                SysPosition sysPosition = JSON.parseObject(deString, SysPosition.class);
+                sysPosition = JSON.parseObject(deString, SysPosition.class);
                 //------------------------------------------------------------------------------------------------
                 //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
                 if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
                     sysPosition.setTenantId(oConvertUtils.getInt(TenantContext.getTenant(),0));
                 }
                 //------------------------------------------------------------------------------------------------
-                queryWrapper = QueryGenerator.initQueryWrapper(sysPosition, request.getParameterMap());
             }
+            queryWrapper = QueryGenerator.initQueryWrapper(sysPosition, request.getParameterMap());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
+        //update-begin--Author:liusq  Date:20240715 for：[03]职务导出，如果选择数据则只导出相关数据--------------------
+        String selections = request.getParameter("selections");
+        if(!oConvertUtils.isEmpty(selections)){
+            queryWrapper.in("id",selections.split(","));
+        }
+        //update-end--Author:liusq  Date:20240715 for：[03]职务导出，如果选择数据则只导出相关数据----------------------
         //Step.2 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         List<SysPosition> pageList = sysPositionService.list(queryWrapper);

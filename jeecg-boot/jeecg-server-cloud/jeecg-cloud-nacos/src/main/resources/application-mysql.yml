@@ -33,15 +33,15 @@ nacos:
         enabled: true
       server:
         identity:
-          key: example
-          value: example
+          key: nacos
+          value: nacos
       plugin:
         nacos:
           token:
             expire:
               seconds: 18000
             secret:
-              key: SecretKey01234567890123456789012345345678999987654901234567890123456789
+              key: VGhpc0lzTXlDdXN0b21TZWNyZXRLZXkwMTIzNDU2Nzg=
       system:
         type: nacos
   istio:

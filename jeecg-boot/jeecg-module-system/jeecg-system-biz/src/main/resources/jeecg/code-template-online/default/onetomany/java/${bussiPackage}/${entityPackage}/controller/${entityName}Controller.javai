@@ -61,7 +61,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
  */
 @Api(tags="${tableVo.ftlDescription}")
 @RestController
-@RequestMapping("/${entityPackage}/${entityName?uncap_first}")
+@RequestMapping("/${entityPackagePath}/${entityName?uncap_first}")
 @Slf4j
 public class ${entityName}Controller {
 	@Autowired

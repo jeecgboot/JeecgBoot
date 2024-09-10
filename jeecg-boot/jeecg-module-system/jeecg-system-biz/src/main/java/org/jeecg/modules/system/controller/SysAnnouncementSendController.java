@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -217,13 +218,21 @@ public class SysAnnouncementSendController {
 	@GetMapping(value = "/getMyAnnouncementSend")
 	public Result<IPage<AnnouncementSendModel>> getMyAnnouncementSend(AnnouncementSendModel announcementSendModel,
 			@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-			  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+		    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 		Result<IPage<AnnouncementSendModel>> result = new Result<IPage<AnnouncementSendModel>>();
 		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
 		String userId = sysUser.getId();
 		announcementSendModel.setUserId(userId);
 		announcementSendModel.setPageNo((pageNo-1)*pageSize);
 		announcementSendModel.setPageSize(pageSize);
+		//update-begin---author:wangshuai---date:2024-06-11---for:【TV360X-545】我的消息列表不能通过时间范围查询---
+		if(StringUtils.isNotEmpty(announcementSendModel.getSendTimeBegin())){
+			announcementSendModel.setSendTimeBegin(announcementSendModel.getSendTimeBegin() + " 00:00:00");
+		}
+		if(StringUtils.isNotEmpty(announcementSendModel.getSendTimeBegin())){
+			announcementSendModel.setSendTimeEnd(announcementSendModel.getSendTimeEnd() + " 23:59:59");
+		}
+		//update-end---author:wangshuai---date:2024-06-11---for:【TV360X-545】我的消息列表不能通过时间范围查询---
 		Page<AnnouncementSendModel> pageList = new Page<AnnouncementSendModel>(pageNo,pageSize);
 		pageList = sysAnnouncementSendService.getMyAnnouncementSendPage(pageList, announcementSendModel);
 		result.setResult(pageList);

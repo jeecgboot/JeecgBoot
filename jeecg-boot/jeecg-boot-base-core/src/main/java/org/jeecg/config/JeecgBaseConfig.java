@@ -62,8 +62,12 @@ public class JeecgBaseConfig {
      * @return
      */
     private WeiXinPay weiXinPay;
-    
-    
+
+    /**
+     * 百度开放API配置
+     */
+    private BaiduApi baiduApi;
+
     public Elasticsearch getElasticsearch() {
         return elasticsearch;
     }
@@ -143,5 +147,13 @@ public class JeecgBaseConfig {
     public void setWeiXinPay(WeiXinPay weiXinPay) {
         this.weiXinPay = weiXinPay;
     }
-    
+
+    public BaiduApi getBaiduApi() {
+        return baiduApi;
+    }
+
+    public void setBaiduApi(BaiduApi baiduApi) {
+        this.baiduApi = baiduApi;
+    }
+
 }

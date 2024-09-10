@@ -34,9 +34,10 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
 		</dependency>
+		<!-- 积木仪表盘 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>drag-free</artifactId>
+			<artifactId>jimureport-dashboard-spring-boot-starter</artifactId>
 		</dependency>
 	<!-- 积木报表 mongo redis 支持包 
 		<dependency>

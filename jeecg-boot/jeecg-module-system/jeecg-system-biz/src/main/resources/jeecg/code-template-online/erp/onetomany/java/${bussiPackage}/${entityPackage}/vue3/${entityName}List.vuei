@@ -264,7 +264,7 @@
     let params = {
       flowCode: 'dev_${tableName}_001',
       id: record.id,
-      formUrl: '${entityPackage}/modules/${entityName}Form',
+      formUrl: '${entityPackagePath}/modules/${entityName}Form',
       formUrlMobile: ''
     }
     await startProcess(params);

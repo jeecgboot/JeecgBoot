@@ -155,7 +155,8 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
     @RequiresPermissions("system:depart:role:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
-		this.sysDepartRoleService.removeByIds(Arrays.asList(ids.split(",")));
+		this.sysDepartRoleService.deleteDepartRole(Arrays.asList(ids.split(",")));
+		//this.sysDepartRoleService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.ok("批量删除成功！");
 	}
 	

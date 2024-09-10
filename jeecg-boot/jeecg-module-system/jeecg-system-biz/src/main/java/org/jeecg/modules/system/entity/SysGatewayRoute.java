@@ -2,6 +2,7 @@ package org.jeecg.modules.system.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -97,6 +98,12 @@ public class SysGatewayRoute implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建日期")
     private Date createTime;
+
+    /**
+     * 删除状态（0未删除，1已删除）
+     */
+    @TableLogic
+    private Integer delFlag;
     /*    *//**更新人*//*
     @ApiModelProperty(value = "更新人")
     private String updateBy;

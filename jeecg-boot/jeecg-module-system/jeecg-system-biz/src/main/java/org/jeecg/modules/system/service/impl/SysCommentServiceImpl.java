@@ -276,15 +276,30 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
                 // update-begin-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
                 String tableName = sysComment.getTableName();
                 String prefix = "desform:";
-                if(tableName!=null && tableName.startsWith(prefix)){
-                    Map<String, Object> data = new HashMap<>();
-                    data.put(CommonConstant.NOTICE_MSG_BUS_TYPE, "comment");
-                    JSONObject params = new JSONObject();
-                    params.put("code", tableName.substring(prefix.length()));
-                    params.put("dataId", sysComment.getTableDataId());
-                    params.put("type", "designForm");
-                    data.put(CommonConstant.NOTICE_MSG_SUMMARY, params);
-                    md.setData(data);
+                if (tableName != null) {
+                    // 表单设计器
+                    if (tableName.startsWith(prefix)) {
+                        Map<String, Object> data = new HashMap<>();
+                        data.put(CommonConstant.NOTICE_MSG_BUS_TYPE, "comment");
+                        JSONObject params = new JSONObject();
+                        params.put("code", tableName.substring(prefix.length()));
+                        params.put("dataId", sysComment.getTableDataId());
+                        params.put("type", "designForm");
+                        data.put(CommonConstant.NOTICE_MSG_SUMMARY, params);
+                        md.setData(data);
+                    }
+                    // Online表单，判断是否携带id
+                    else if (oConvertUtils.isNotEmpty(sysComment.getTableId())) {
+                        Map<String, Object> data = new HashMap<>();
+                        data.put(CommonConstant.NOTICE_MSG_BUS_TYPE, "comment");
+                        JSONObject params = new JSONObject();
+                        params.put("code", tableName);
+                        params.put("formId", sysComment.getTableId());
+                        params.put("dataId", sysComment.getTableDataId());
+                        params.put("type", "cgform");
+                        data.put(CommonConstant.NOTICE_MSG_SUMMARY, params);
+                        md.setData(data);
+                    }
                 }
                 // update-end-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
                 

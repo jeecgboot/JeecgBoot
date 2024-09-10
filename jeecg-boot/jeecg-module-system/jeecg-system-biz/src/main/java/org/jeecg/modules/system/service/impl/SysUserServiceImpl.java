@@ -55,11 +55,9 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -105,13 +103,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Autowired
 	private SysThirdAccountMapper sysThirdAccountMapper;
 	@Autowired
-    ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
+	ThirdAppWechatEnterpriseServiceImpl wechatEnterpriseService;
 	@Autowired
-    ThirdAppDingtalkServiceImpl dingtalkService;
+	ThirdAppDingtalkServiceImpl dingtalkService;
 	@Autowired
-    ISysRoleIndexService sysRoleIndexService;
+	ISysRoleIndexService sysRoleIndexService;
 	@Autowired
-    SysTenantMapper sysTenantMapper;
+	SysTenantMapper sysTenantMapper;
 	@Autowired
     private SysUserTenantMapper relationMapper;
 	@Autowired
@@ -122,10 +120,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private SysPositionMapper sysPositionMapper;
 	@Autowired
 	private SystemSendMsgHandle systemSendMsgHandle;
-	
 	@Autowired
 	private ISysThirdAccountService sysThirdAccountService;
-
 	@Autowired
 	private RedisUtil redisUtil;
 	
@@ -206,7 +202,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 				List<String> positionList =  sysUserPositionMapper.getPositionIdByUserTenantId(item.getId(),posTenantId);
 				//update-end---author:wangshuai---date:2023-11-15---for:【QQYUN-7028】用户职务保存后未回显---
 				//update-end---author:wangshuai ---date:20230228  for：[QQYUN-4354]加入更多字段：当前加入时间应该取当前租户的/职位也是当前租户下的------------
-				item.setPost(CommonUtils.getSplitText(positionList, SymbolConstant.COMMA));
+				item.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
 				
 				//update-begin---author:wangshuai---date:2023-10-08---for:【QQYUN-6668】钉钉部门和用户同步，我怎么知道哪些用户是双向绑定成功的---
 				//是否根据租户隔离(敲敲云用户列表专用，用于展示是否同步钉钉)
@@ -269,13 +265,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	@Transactional(rollbackFor = Exception.class)
 	public boolean deleteUser(String userId) {
-		//update-begin---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】admin用户禁止删除---
-		//1.验证当前用户是管理员账号 admin
-		//验证用户是否为管理员
-		this.checkUserAdminRejectDel(userId);
-		//update-end---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】admin用户禁止删除---
-		
-		//2.删除用户
+		//1.删除用户
 		this.removeById(userId);
 		return false;
 	}
@@ -284,9 +274,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	@Transactional(rollbackFor = Exception.class)
 	public boolean deleteBatchUsers(String userIds) {
-		//1.验证当前用户是管理员账号 admin
-		this.checkUserAdminRejectDel(userIds);
-		//2.删除用户
+		//1.删除用户
 		this.removeByIds(Arrays.asList(userIds.split(",")));
 		return false;
 	}
@@ -490,7 +478,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
 	@Override
-	public IPage<SysUser> getUserByDepId(Page<SysUser> page, String departId, String username) {
+	public IPage<SysUser> getUserByDepId(Page<SysUser> page, String departId,String username) {
 		return userMapper.getUserByDepId(page, departId,username);
 	}
 
@@ -533,7 +521,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//根据部门orgCode查询部门，需要将职位id进行传递
 		for (SysUserSysDepartModel model:list) {
 			List<String> positionList = sysUserPositionMapper.getPositionIdByUserId(model.getId());
-			model.setPost(CommonUtils.getSplitText(positionList, SymbolConstant.COMMA));
+			model.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
 		}
 		Integer total = baseMapper.getUserByOrgCodeTotal(orgCode, userParams);
 
@@ -779,19 +767,21 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	@CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
-	public void editUser(SysUser user, String roles, String departs, String relTenantIds) {
+	public void editUser(SysUser user, String roles, String departs, String relTenantIds, String updateFromPage) {
 		//获取用户编辑前台传过来的租户id
         this.editUserTenants(user.getId(),relTenantIds);
 		//step.1 修改用户基础信息
 		this.updateById(user);
 		//step.2 修改角色
-		//处理用户角色 先删后加
-		sysUserRoleMapper.delete(new QueryWrapper<SysUserRole>().lambda().eq(SysUserRole::getUserId, user.getId()));
-		if(oConvertUtils.isNotEmpty(roles)) {
-			String[] arr = roles.split(",");
-			for (String roleId : arr) {
-				SysUserRole userRole = new SysUserRole(user.getId(), roleId);
-				sysUserRoleMapper.insert(userRole);
+		if (oConvertUtils.isEmpty(updateFromPage) || !"deptUsers".equalsIgnoreCase(updateFromPage)) {
+			// 处理用户角色 先删后加 , 如果是在部门用户页面修改用户,不处理用户角色,因为该页面无法编辑用户角色.
+			sysUserRoleMapper.delete(new QueryWrapper<SysUserRole>().lambda().eq(SysUserRole::getUserId, user.getId()));
+			if (oConvertUtils.isNotEmpty(roles)) {
+				String[] arr = roles.split(",");
+				for (String roleId : arr) {
+					SysUserRole userRole = new SysUserRole(user.getId(), roleId);
+					sysUserRoleMapper.insert(userRole);
+				}
 			}
 		}
 
@@ -842,7 +832,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	@Override
-	@Cacheable(cacheNames= CacheConstant.SYS_USERS_CACHE, key="#username")
+	@Cacheable(cacheNames=CacheConstant.SYS_USERS_CACHE, key="#username")
 	@SensitiveEncode
 	public LoginUser getEncodeUserInfo(String username){
 		if(oConvertUtils.isEmpty(username)) {
@@ -885,6 +875,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		SysUserTenant userTenant = new SysUserTenant();
 		userTenant.setStatus(CommonConstant.USER_TENANT_QUIT);
 		userTenantMapper.update(userTenant,query);
+		//update-end---author:wangshuai ---date:20230111  for：[QQYUN-3951]租户用户离职重构------------
     }
 
     @Override
@@ -903,7 +894,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @return
 	 */
 	@Override
-	public Result<JSONObject> setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result){
+	public Result<JSONObject>  setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result){
 		// update-begin--Author:sunjianlei Date:20210802 for：获取用户租户信息
 		//用户有哪些租户
 //		List<SysTenant> tenantList = null;
@@ -1343,7 +1334,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @param orgName
 	 * @param orgId
 	 */
-	private void getParentDepart(SysDepart depart, List<String> orgName, List<String> orgId){
+	private void getParentDepart(SysDepart depart,List<String> orgName,List<String> orgId){
 		String pid = depart.getParentId();
 		orgName.add(0, depart.getDepartName());
 		orgId.add(0, depart.getId());
@@ -1471,7 +1462,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private void userPositionId(SysUser sysUser) {
 		if(null != sysUser){
 			List<String> positionList = sysUserPositionMapper.getPositionIdByUserId(sysUser.getId());
-			sysUser.setPost(CommonUtils.getSplitText(positionList, SymbolConstant.COMMA));
+			sysUser.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
 		}
 	}
 
@@ -1522,7 +1513,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 * @param departChargeUsers
 	 * @param departId
 	 */
-	private void removeDepartmentManager(List<String> departChargeUserIdList, List<SysUser> departChargeUsers, String departId){
+	private void removeDepartmentManager(List<String> departChargeUserIdList,List<SysUser> departChargeUsers,String departId){
 		//移除部门负责人
 		for(String chargeUserId: departChargeUserIdList){
 			for(SysUser chargeUser: departChargeUsers){
@@ -1910,6 +1901,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 	}
 
+
 	@Override
 	public void changePhone(JSONObject json, String username) {
 		String smscode = json.getString("smscode");
@@ -1943,7 +1935,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			userMapper.updateById(sysUser);
 		}
 	}
-	
+
 	/**
 	 * 验证手机号
 	 *
@@ -1963,7 +1955,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//验证完成之后清空手机验证码
 		redisUtil.removeAll(phoneKey);
 	}
-	
+
 	@Override
 	public void sendChangePhoneSms(JSONObject jsonObject, String username, String ipAddress) {
 		String type = jsonObject.getString("type");
@@ -2006,7 +1998,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			log.warn("--------[警告] IP地址:{}, 短信接口请求太多-------", clientIp);
 			throw new JeecgBootException("短信接口请求太多，请稍后再试！", CommonConstant.PHONE_SMS_FAIL_CODE);
 		}
-		
+
 		//随机数
 		String captcha = RandomUtil.randomNumbers(6);
 		JSONObject obj = new JSONObject();

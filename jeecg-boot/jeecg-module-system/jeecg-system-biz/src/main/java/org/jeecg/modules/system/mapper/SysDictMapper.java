@@ -200,4 +200,18 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 */
 	@Select("select * from sys_dict where del_flag = 1 and tenant_id = #{tenantId}")
 	List<SysDict> queryDeleteListBtTenantId(@Param("tenantId") Integer tenantId);
+
+	/**
+	 * 还原被逻辑删除的数据（根据id）
+	 * @param ids
+	 * @return
+	 */
+	int revertLogicDeleted(@Param("ids") List<String> ids);
+
+	/**
+	 *  彻底删除的数据（根据ids）
+	 * @param ids
+	 * @return
+	 */
+    int removeLogicDeleted(@Param("ids")List<String> ids);
 }

@@ -200,7 +200,7 @@ export const searchFormSchema: FormSchema[] = [
      },
 <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
 <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
-      component: 'JDictSelectTag',
+      component: 'JSelectMultiple',
       componentProps:{
        <#if po.dictTable?default("")?trim?length gt 1>
           dictCode:"${po.dictTable},${po.dictText},${po.dictField}"

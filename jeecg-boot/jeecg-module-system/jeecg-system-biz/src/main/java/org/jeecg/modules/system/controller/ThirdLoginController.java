@@ -11,12 +11,14 @@ import me.zhyd.oauth.model.AuthCallback;
 import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
+import me.zhyd.oauth.utils.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.*;
 import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysThirdAccount;
 import org.jeecg.modules.system.entity.SysThirdAppConfig;
 import org.jeecg.modules.system.entity.SysUser;
@@ -25,6 +27,7 @@ import org.jeecg.modules.system.service.ISysDictService;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.jeecg.modules.system.service.ISysThirdAppConfigService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.impl.ThirdAppDingtalkServiceImpl;
 import org.jeecg.modules.system.service.impl.ThirdAppWechatEnterpriseServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +63,8 @@ public class ThirdLoginController {
     private RedisUtil redisUtil;
 	@Autowired
 	private AuthRequestFactory factory;
+	@Autowired
+	private ISysDepartService sysDepartService;
 
 	@Autowired
 	private ThirdAppWechatEnterpriseServiceImpl thirdAppWechatEnterpriseService;
@@ -250,8 +255,8 @@ public class ThirdLoginController {
 		}
 		//update-end-author:wangshuai date:20201118 for:如果真实姓名和头像不存在就取第三方登录的
 		JSONObject obj = new JSONObject();
-		//TODO 第三方登确定登录租户和部门逻辑
-
+		//第三方登确定登录租户和部门逻辑
+		this.setUserTenantAndDepart(sysUser,obj,result);		
 		//用户登录信息
 		obj.put("userInfo", sysUser);
 		//获取字典缓存【解决 #jeecg-boot/issues/3998】
@@ -526,6 +531,30 @@ public class ThirdLoginController {
 			return Result.ok(token);
 		} catch (Exception e) {
 			return Result.error("注册失败");
+		}
+	}
+
+	/**
+	 * 设置用户租户和部门信息
+	 *
+	 * @param sysUser
+	 * @param obj
+	 * @param result
+	 */
+	private void setUserTenantAndDepart(SysUser sysUser, JSONObject obj, Result<JSONObject> result) {
+		//1.设置登录租户
+		sysUserService.setLoginTenant(sysUser, obj, sysUser.getUsername(), result);
+		//2.设置登录部门
+		String orgCode = sysUser.getOrgCode();
+		//部门不为空还是用原来的部门code
+		if(StringUtils.isEmpty(orgCode)){
+			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
+			//部门不为空取第一个作为当前登录部门
+			if(CollectionUtil.isNotEmpty(departs)){
+				orgCode = departs.get(0).getOrgCode();
+				sysUser.setOrgCode(orgCode);
+				this.sysUserService.updateUserDepart(sysUser.getUsername(), orgCode,null);
+			}
 		}
 	}
 }

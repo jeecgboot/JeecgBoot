@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -77,4 +78,11 @@ public class SysComment implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新日期")
     private Date updateTime;
+
+    /**
+     * 不是数据库字段，用于评论跳转
+     */
+    @TableField(exist = false)
+    private String tableId;
+
 }

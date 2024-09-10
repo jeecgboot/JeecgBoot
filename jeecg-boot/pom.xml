@@ -42,6 +42,7 @@
         <fastjson.version>1.2.83</fastjson.version>
         <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
+		<commonmark.version>0.17.0</commonmark.version>
 		<knife4j-spring-boot-starter.version>4.4.0</knife4j-spring-boot-starter.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
@@ -59,7 +60,7 @@
 		<druid.version>1.2.22</druid.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.8.0</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.8.1</jimureport-spring-boot-starter.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
@@ -74,6 +75,7 @@
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
+		<baidu-java-sdk.version>4.16.19</baidu-java-sdk.version>
 		<!-- Log4j2爆雷漏洞 -->
 		<log4j2.version>2.17.0</log4j2.version>
 		<logback.version>1.2.9</logback.version>
@@ -138,10 +140,16 @@
 			<version>${fastjson.version}</version>
 		</dependency>
 		<!-- markdown -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.pegdown</groupId>
 			<artifactId>pegdown</artifactId>
 			<version>${pegdown.version}</version>
+		</dependency>-->
+		<!--markdown 解析 https://github.com/commonmark/commonmark-java -->
+		<dependency>
+			<groupId>org.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<version>${commonmark.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -219,14 +227,12 @@
 				<artifactId>jeecg-boot-starter-lock</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
-			<!--rabbitmq消息队列 -->
-			<!-- 【.20240627 版本后缀表示是临时版本，修复了MQ的问题】Shutdown Signal: channel error; protocol method: #method<channel.close>(reply-code=406, reply-text=PRECONDITION_FAILED - unknown delivery tag 1, class-id=60, method-id=80) -->
+			<!--rabbitmq消息队列-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-rabbitmq</artifactId>
-				<version>3.7.0.20240627</version>
+				<version>${jeecgboot.version}</version>
 			</dependency>
-			<!--rocketmq-->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-rocketmq</artifactId>
@@ -271,6 +277,18 @@
 					<exclusion>
 						<artifactId>okhttp</artifactId>
 						<groupId>com.squareup.okhttp3</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- 百度SDK （OCR） -->
+			<dependency>
+				<groupId>com.baidu.aip</groupId>
+				<artifactId>java-sdk</artifactId>
+				<version>${baidu-java-sdk.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-simple</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -393,14 +411,20 @@
 			<!-- 积木仪表盘-->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
-				<artifactId>drag-free</artifactId>
-				<version>1.1.2</version>
+				<artifactId>jimureport-dashboard-spring-boot-starter</artifactId>
+				<version>1.8.0-beta</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.jeecgframework.jimureport</groupId>
+						<artifactId>jimureport-spring-boot-starter</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<!-- chatgpt -->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
-                <version>${jeecgboot.version}</version>
+				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
 			<!--mysql5.6，需要把版本号改成5.2.1-->

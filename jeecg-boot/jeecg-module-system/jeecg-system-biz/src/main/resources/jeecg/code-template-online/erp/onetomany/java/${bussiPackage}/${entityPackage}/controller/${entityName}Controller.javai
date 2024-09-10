@@ -2,6 +2,7 @@ package ${bussiPackage}.${entityPackage}.controller;
 
 import org.jeecg.common.system.query.QueryGenerator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.jeecg.common.system.query.QueryRuleEnum;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import java.util.Arrays;
+import java.util.HashMap;
 import org.jeecg.common.util.oConvertUtils;
 <#list subTables as sub>
 import ${bussiPackage}.${entityPackage}.entity.${sub.entityName};
@@ -39,7 +41,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-
+<#assign has_multi_query_field=false>
+<#list originalColumns as po>
+<#if po.isQuery=='Y' && (po.classType=='list' || po.classType=='list_multi' || po.classType=='radio' || po.classType=='checkbox')>
+   <#assign has_multi_query_field=true>
+</#if>
+</#list>
  /**
  * @Description: ${tableVo.ftlDescription}
  * @Author: jeecg-boot
@@ -48,7 +55,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
  */
 @Api(tags="${tableVo.ftlDescription}")
 @RestController
-@RequestMapping("/${entityPackage}/${entityName?uncap_first}")
+@RequestMapping("/${entityPackagePath}/${entityName?uncap_first}")
 @Slf4j
 public class ${entityName}Controller extends JeecgController<${entityName}, I${entityName}Service> {
 
@@ -78,7 +85,19 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
-		QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
+    <#if has_multi_query_field>
+        // 自定义查询规则
+        Map<String, QueryRuleEnum> customeRuleMap = new HashMap<>();
+        // 自定义多选的查询规则为：LIKE_WITH_OR
+    <#list originalColumns as po>
+        <#if po.isQuery=='Y' && (po.classType=='list' || po.classType=='list_multi' || po.classType=='radio' || po.classType=='checkbox')>
+        customeRuleMap.put("${po.fieldName}", QueryRuleEnum.LIKE_WITH_OR);
+        </#if>
+    </#list>
+        QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap(),customeRuleMap);
+    <#else>
+      	QueryWrapper<${entityName}> queryWrapper = QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
+    </#if>
 		Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
 		IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
 		return Result.OK(pageList);

@@ -382,7 +382,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize) {
+    public List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageNo, Integer pageSize) {
         return null;
     }
 

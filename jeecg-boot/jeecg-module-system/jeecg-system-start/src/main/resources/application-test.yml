@@ -267,6 +267,12 @@ jeecg:
     password:
     type: STANDALONE
     enabled: true
+  # 百度开放API配置
+  baidu-api:
+    app-id: ??
+    api-key: ??
+    secret-key: ??
+
 #Mybatis输出sql日志
 logging:
   level:

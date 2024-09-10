@@ -23,6 +23,7 @@ import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SqlInjectionUtil;
+import org.jeecg.common.util.dynamic.db.DbTypeUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysDict;
@@ -94,6 +95,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 		// 4.执行SQL 查询是否存在值
 		try{
+			//update-begin---author:chenrui ---date:20240715  for：[TV360X-49]postgres日期、年月日时分秒唯一校验报错------------
+			if(DbTypeUtils.dbTypeIsPostgre(CommonUtils.getDatabaseTypeEnum())){
+				duplicateCheckVo.setFieldName("CAST("+duplicateCheckVo.getFieldName()+" as text)");
+			}
+			//update-end---author:chenrui ---date:20240715  for：[TV360X-49]postgres日期、年月日时分秒唯一校验报错------------
 			if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {
 				// [1].编辑页面校验
 				count = sysDictMapper.duplicateCheckCountSql(duplicateCheckVo);
@@ -503,8 +509,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 //	}
 
 	@Override
-	public List<DictModel> queryLittleTableDictItems(String tableSql, String text, String code, String condition, String keyword, int pageSize) {
-    	Page<DictModel> page = new Page<DictModel>(1, pageSize);
+	public List<DictModel> queryLittleTableDictItems(String tableSql, String text, String code, String condition, String keyword, int pageNo, int pageSize) {
+		int current = oConvertUtils.getInt(pageNo, 1);
+		Page<DictModel> page = new Page<DictModel>(current, pageSize);
 		page.setSearchCount(false);
 		
 		//为了防止sql（jeecg提供了防注入的方法，可以在拼接 SQL 语句时自动对参数进行转义，避免SQL注入攻击）
@@ -742,7 +749,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	}
 
 	@Override
-	public List<DictModel> loadDict(String dictCode, String keyword, Integer pageSize) {
+	public List<DictModel> loadDict(String dictCode, String keyword, Integer pageNo, Integer pageSize) {
 		// 【QQYUN-6533】表字典白名单check
 		sysBaseAPI.dictTableWhiteListCheckByDict(dictCode);
 		// 1.表字典黑名单check
@@ -776,7 +783,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			}
 			List<DictModel> ls;
 			if (pageSize != null) {
-				ls = this.queryLittleTableDictItems(params[0], params[1], params[2], condition, keyword, pageSize);
+				ls = this.queryLittleTableDictItems(params[0], params[1], params[2], condition, keyword, pageNo,pageSize);
 			} else {
 				ls = this.queryAllTableDictItems(params[0], params[1], params[2], condition, keyword);
 			}
@@ -831,6 +838,30 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		this.updateDictItem(id,sysDictVo.getDictItemsList());
 		// 删除字典缓存
 		redisUtil.removeAll(CacheConstant.SYS_DICT_CACHE + "::" + dict.getDictCode());
+	}
+
+	/**
+	 * 还原逻辑删除
+	 * @param ids
+	 */
+	@Override
+	public boolean revertLogicDeleted(List<String> ids) {
+		return baseMapper.revertLogicDeleted(ids) > 0;
+	}
+
+	/**
+	 * 彻底删除
+	 * @param ids
+	 * @return
+	 */
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public boolean removeLogicDeleted(List<String> ids) {
+		// 1. 删除字典
+		int line = this.baseMapper.removeLogicDeleted(ids);
+		// 2. 删除字典选项配置
+		line += this.sysDictItemMapper.delete(new LambdaQueryWrapper<SysDictItem>().in(SysDictItem::getDictId, ids));
+		return line > 0;
 	}
 
 	/**
