@@ -11,37 +11,37 @@
     <a-tabs style="padding-left: 15px;padding-right: 15px">
       <a-tab-pane tab="方向性图标" key="1">
         <a-form-item-rest>
-          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="directionIcons" :value="currentSelect" />
+          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="directionIcons" v-model:value="selectIcon" />
         </a-form-item-rest>
       </a-tab-pane>
       <a-tab-pane tab="指示性图标" key="2">
         <a-form-item-rest>
-          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="suggestionIcons" :value="currentSelect" />
+          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="suggestionIcons" v-model:value="selectIcon" />
         </a-form-item-rest>
       </a-tab-pane>
       <a-tab-pane tab="编辑类图标" key="3">
         <a-form-item-rest>
-          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="editIcons" :value="currentSelect" />
+          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="editIcons" v-model:value="selectIcon" />
         </a-form-item-rest>
       </a-tab-pane>
       <a-tab-pane tab="数据类图标" key="4">
         <a-form-item-rest>
-          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="dataIcons" :value="currentSelect" />
+          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="dataIcons" v-model:value="selectIcon" />
         </a-form-item-rest>
       </a-tab-pane>
       <a-tab-pane tab="网站通用图标" key="5">
         <a-form-item-rest>
-          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="webIcons" :value="currentSelect" />
+          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="webIcons" v-model:value="selectIcon" />
         </a-form-item-rest>
       </a-tab-pane>
       <a-tab-pane tab="品牌和标识" key="6">
         <a-form-item-rest>
-          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="logoIcons" :value="currentSelect" />
+          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-svg-mode="isSvgMode" :current-list="logoIcons" v-model:value="selectIcon" />
         </a-form-item-rest>
       </a-tab-pane>
       <a-tab-pane tab="其他" key="7">
         <a-form-item-rest>
-          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-page="true" :is-search="true" :is-svg-mode="isSvgMode" :current-list="otherIcons" :value="currentSelect" />
+          <icon-list ref="iconListRef" :clear-select="clearSelect" :copy="copy" :is-page="true" :is-search="true" :is-svg-mode="isSvgMode" :current-list="otherIcons" v-model:value="selectIcon" />
         </a-form-item-rest>
       </a-tab-pane>
     </a-tabs>
@@ -94,6 +94,7 @@
   const isSvgMode = props.mode === 'svg';
   const icons = isSvgMode ? getSvgIcons() : getIcons();
 
+  const selectIcon = ref('');
   const currentSelect = ref('');
 
   const { t } = useI18n();
@@ -170,7 +171,7 @@
    * 图标弹窗确定事件
    */
   function handleOk() {
-    currentSelect.value = iconListRef.value.getIcon();
+    currentSelect.value = selectIcon.value;
     iconOpen.value = false;
   }
 

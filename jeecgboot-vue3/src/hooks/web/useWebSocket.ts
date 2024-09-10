@@ -17,14 +17,13 @@ export function connectWebSocket(url: string) {
   result = useWebSocket(url, {
     // 自动重连 (遇到错误最多重复连接10次)
     autoReconnect: {
-      retries: 10,
-      delay: 5000,
+      retries : 10,
+      delay : 5000
     },
     // 心跳检测
     heartbeat: {
-      message: 'ping',
-      // 如果服务器压力再改回来55秒
-      interval: 5000,
+      message: "ping",
+      interval: 55000
     },
     protocols: [token],
     // update-begin--author:liaozhiyang---date:20240726---for：[issues/6662] 演示系统socket总断，换一个写法

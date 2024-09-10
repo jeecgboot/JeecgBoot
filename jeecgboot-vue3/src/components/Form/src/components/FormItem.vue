@@ -18,6 +18,8 @@
   import { useAppInject } from '/@/hooks/web/useAppInject';
   import { usePermission } from '/@/hooks/web/usePermission';
   import Middleware from './Middleware.vue';
+  import { useLocaleStoreWithOut } from '/@/store/modules/locale';
+
   export default defineComponent({
     name: 'BasicFormItem',
     inheritAttrs: false,
@@ -58,10 +60,16 @@
         default: null,
       },
       // update-end-author:liaozhiyang---date:20240605---for：【TV360X-857】解决禁用状态下触发校验
+      // update-begin--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
+      formName: {
+        type: String,
+        default: '',
+      },
+      // update-end--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
     },
     setup(props, { slots }) {
       const { t } = useI18n();
-
+      const localeStore = useLocaleStoreWithOut();
       const { schema, formProps } = toRefs(props) as {
         schema: Ref<FormSchema>;
         formProps: Ref<FormProps>;
@@ -306,7 +314,7 @@
       }
 
       function renderComponent() {
-        const { renderComponentContent, component, field, changeEvent = 'change', valueField, componentProps, dynamicRules } = props.schema;
+        const { renderComponentContent, component, field, changeEvent = 'change', valueField, componentProps, dynamicRules, rules:defRules = [] } = props.schema;
 
         const isCheck = component && ['Switch', 'Checkbox'].includes(component);
         // update-begin--author:liaozhiyang---date:20231013---for：【QQYUN-6679】input去空格
@@ -316,6 +324,10 @@
         }
         // update-end--author:liaozhiyang---date:20231013---for：【QQYUN-6679】input去空格
         const eventKey = `on${upperFirst(changeEvent)}`;
+        const getRules = (): ValidationRule[] => {
+          const dyRules = isFunction(dynamicRules) ? dynamicRules(unref(getValues)) : [];
+          return [...dyRules, ...defRules];
+        };
         // update-begin--author:liaozhiyang---date:20230922---for：【issues/752】表单校验dynamicRules 无法 使用失去焦点后校验 trigger: 'blur'
         const on = {
           [eventKey]: (...args: Nullable<Recordable>[]) => {
@@ -337,9 +349,14 @@
             }
             // update-end--author:liaozhiyang---date:20231013---for：【QQYUN-6679】input去空格
             props.setFormModel(field, value);
-            // update-begin--author:liaozhiyang---date:20240522---for：【TV360X-341】有值之后必填校验不消失
-            props.validateFields([field]).catch((_) => {});
-            // update-end--author:liaozhiyang---date:20240522--for：【TV360X-341】有值之后必填校验不消失
+            // update-begin--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
+            const findItem = getRules().find((item) => item?.trigger === 'blur');
+            if (!findItem) {
+              // update-begin--author:liaozhiyang---date:20240522---for：【TV360X-341】有值之后必填校验不消失
+              props.validateFields([field]).catch((_) => {});
+              // update-end--author:liaozhiyang---date:20240625---for：【TV360X-341】有值之后必填校验不消失
+            }
+            // update-end--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
           },
           // onBlur: () => {
           //   props.validateFields([field], { triggerName: 'blur' }).catch((_) => {});
@@ -366,11 +383,21 @@
         }
         // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
 
-        const isCreatePlaceholder = !propsData.disabled && autoSetPlaceHolder;
+        // update-begin--author:sunjianlei---date:20240725---for：【TV360X-972】控件禁用时统一占位内容
+        // const isCreatePlaceholder = !propsData.disabled && autoSetPlaceHolder;
+        const isCreatePlaceholder = !!autoSetPlaceHolder;
+        // update-end----author:sunjianlei---date:20240725---for：【TV360X-972】控件禁用时统一占位内容
+
         // RangePicker place是一个数组
         if (isCreatePlaceholder && component !== 'RangePicker' && component) {
           //自动设置placeholder
-          propsData.placeholder = unref(getComponentsProps)?.placeholder || createPlaceholderMessage(component) + props.schema.label;
+          // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+          let label = isFunction(props.schema.label) ? props.schema.label() : props.schema.label;
+          if (localeStore.getLocale === 'en' && !(/^\s/.test(label))) {
+            label = ' ' + label;
+          }
+          // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+          propsData.placeholder = unref(getComponentsProps)?.placeholder || createPlaceholderMessage(component) + label;
         }
         propsData.codeField = field;
         propsData.formValues = unref(getValues);
@@ -403,7 +430,10 @@
       function renderLabelHelpMessage() {
         //update-begin-author:taoyan date:2022-9-7 for: VUEN-2061【样式】online表单超出4个 .. 省略显示
         //label宽度支持自定义
-        const { label, helpMessage, helpComponentProps, subLabel, labelLength } = props.schema;
+        const { label: itemLabel, helpMessage, helpComponentProps, subLabel, labelLength } = props.schema;
+        // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+        const label = isFunction(itemLabel) ? itemLabel() : itemLabel;
+        // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
         let showLabel: string = label + '';
         // update-begin--author:liaozhiyang---date:20240517---for：【TV360X-98】label展示的文字必须和labelLength配置一致
         if (labelLength) {
@@ -469,7 +499,7 @@
               <div style="display:flex">
                 {/* author: sunjianlei for: 【VUEN-744】此处加上 width: 100%; 因为要防止组件宽度超出 FormItem */}
                 {/* update-begin--author:liaozhiyang---date:20240510---for：【TV360X-719】表单校验不通过项滚动到可视区内 */}
-                <Middleware>{getContent()}</Middleware>
+                <Middleware formName={props.formName} fieldName={field}>{getContent()}</Middleware>
                 {/* update-end--author:liaozhiyang---date:20240510---for：【TV360X-719】表单校验不通过项滚动到可视区内 */}
                 {showSuffix && <span class="suffix">{getSuffix}</span>}
               </div>

@@ -32,6 +32,7 @@
     "ant-design-vue": "^4.1.2",
     "axios": "^1.6.7",
     "china-area-data": "^5.0.1",
+    "@vant/area-data": "^1.5.1",
     "clipboard": "^2.0.11",
     "codemirror": "^5.65.3",
     "cron-parser": "^4.9.0",

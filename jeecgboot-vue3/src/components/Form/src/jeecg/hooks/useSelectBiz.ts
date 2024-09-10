@@ -2,7 +2,7 @@ import { inject, reactive, ref, watch, unref, Ref } from 'vue';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { isEmpty } from '@/utils/is';
 
-export function useSelectBiz(getList, props, emit) {
+export function useSelectBiz(getList, props, emit?) {
   //接收下拉框选项
   const selectOptions = inject('selectOptions', ref<Array<object>>([]));
   //接收已选择的值
@@ -120,7 +120,7 @@ export function useSelectBiz(getList, props, emit) {
       props.showSelected && initSelectRows();
     } else {
       // update-begin--author:liaozhiyang---date:20240517---for：【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
-      emit('close');
+      emit?.('close');
       // update-end--author:liaozhiyang---date:20240517---for：【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
     }
   }

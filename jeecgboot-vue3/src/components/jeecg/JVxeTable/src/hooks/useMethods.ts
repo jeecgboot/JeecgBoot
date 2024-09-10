@@ -11,6 +11,7 @@ import { useWebSocket } from './useWebSocket';
 import { getPrefix, getJVxeAuths } from '../utils/authUtils';
 import { excludeKeywords } from '../componentMap';
 import { useColumnsCache } from './useColumnsCache';
+import { isEnabledVirtualYScroll } from '/@/components/jeecg/JVxeTable/utils';
 
 export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps, refs: JVxeRefs, instanceRef: Ref) {
   let xTableTemp: VxeTableInstance & VxeTablePrivateMethods;
@@ -195,7 +196,9 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
       return getEnhanced(column.params.type).aopEvents.activeMethod!.apply(instanceRef.value, arguments as any) ?? true;
     })();
     if (!flag) {
-      getXTable().clearActived();
+      // -update-begin--author:liaozhiyang---date:20240619---for：【TV360X-1404】vxetable警告
+      getXTable().clearEdit();
+      // -update-end--author:liaozhiyang---date:20240619---for：【TV360X-1404】vxetable警告
     }
     return flag;
   }
@@ -424,8 +427,10 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
     // 插入行
     let result = await xTable.insertAt(rows, index);
     if (setActive) {
+      // -update-begin--author:liaozhiyang---date:20240619---for：【TV360X-1404】vxetable警告
       // 激活最后一行的编辑模式
-      xTable.setActiveRow(result.rows[result.rows.length - 1]);
+      xTable.setEditRow(result.rows[result.rows.length - 1]);
+      // -update-end--author:liaozhiyang---date:20240619---for：【TV360X-1404】vxetable警告
     }
     await recalcSortNumber();
     return result;
@@ -453,8 +458,14 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
     callback('', tableData);
   }
 
+  type getTableDataOptions = {
+    rowIds?: string[];
+    // 是否保留新行的id
+    keepNewId?: boolean;
+  }
+
   /** 获取表格数据 */
-  function getTableData(options: any = {}) {
+  function getTableData(options: getTableDataOptions = {}) {
     let { rowIds } = options;
     let tableData;
     // 仅查询指定id的行
@@ -470,7 +481,10 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
       // 查询所有行
       tableData = getXTable().getTableData().fullData;
     }
-    return filterNewRows(tableData, false);
+    return filterNewRows(tableData, {
+      keepNewId: options.keepNewId ?? false,
+      removeNewLine: false,
+    });
   }
 
   /** 仅获取新增的数据 */
@@ -513,23 +527,33 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
     return null;
   }
 
+  type filterNewRowsOptions = {
+    keepNewId?: boolean;
+    removeNewLine?: boolean;
+  } | boolean
+
   /**
    * 过滤添加的行
    * @param rows 要筛选的行数据
-   * @param remove true = 删除新增，false=只删除id
+   * @param optOrRm 如果传 boolean 则是 removeNewLine 参数（true = 删除新增，false=只删除id），如果传对象则是配置参数
    * @param handler function
    */
-  function filterNewRows(rows, remove = true, handler?: Fn) {
+  function filterNewRows(rows, optOrRm:filterNewRowsOptions = true, handler?: Fn) {
     let insertRecords = getXTable().getInsertRecords();
     let records: Recordable[] = [];
+    optOrRm = typeof optOrRm === 'boolean' ? { removeNewLine: optOrRm } : optOrRm;
+    // true = 删除新增，false=只删除id
+    let removeNewLine = optOrRm?.removeNewLine ?? true;
     for (let row of rows) {
       let item = cloneDeep(row);
       if (insertRecords.includes(row)) {
         handler ? handler({ item, row, insertRecords }) : null;
-        if (remove) {
+        if (removeNewLine) {
           continue;
         }
-        delete item.id;
+        if (!optOrRm?.keepNewId) {
+          delete item.id;
+        }
       }
       records.push(item);
     }
@@ -762,6 +786,11 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
       if (xTable.keepSource) {
         sort(xTable.internalData.tableSourceData);
       }
+      // -update-begin--author:liaozhiyang---date:20240620---for：【TV360X-585】拖动字段虚拟滚动不好使
+      if (isEnabledVirtualYScroll(props, xTable)) {
+        await xTable.loadData(xTable.internalData.tableFullData);
+      }
+      // -update-end--author:liaozhiyang---date:20240620---for：【TV360X-585】拖动字段虚拟滚动不好使
       return await recalcSortNumber(force);
     }
   }

@@ -64,12 +64,21 @@ export const searchFormSchema: FormSchema[] = [
     field: 'titile',
     label: '标题',
     component: 'Input',
-    colProps: { span: 8 },
+    colProps: { span: 6 },
   },
   {
     field: 'sender',
     label: '发布人',
     component: 'Input',
-    colProps: { span: 8 },
+    colProps: { span: 6 },
+  },
+  {
+    field: 'sendTime',
+    label: '发布时间',
+    component: 'RangeDate',
+    componentProps: {
+      valueType: 'Date',
+    },
+    colProps: { span: 6 },
   },
 ];

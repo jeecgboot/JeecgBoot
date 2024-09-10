@@ -10,6 +10,7 @@
           :formProps="getProps"
           :allDefaultValues="defaultValueRef"
           :formModel="formModel"
+          :formName="getBindValue.name"
           :setFormModel="setFormModel"
           :validateFields="validateFields"
           :clearValidate="clearValidate"
@@ -213,6 +214,7 @@
         getFieldsValue,
         updateSchema,
         resetSchema,
+        getSchemaByField,
         appendSchemaByField,
         removeSchemaByFiled,
         resetFields,
@@ -308,6 +310,7 @@
         resetSchema,
         setProps,
         getProps,
+        getSchemaByField,
         removeSchemaByFiled,
         appendSchemaByField,
         clearValidate,

@@ -56,14 +56,23 @@ function handleIndexColumn(propsRef: ComputedRef<BasicTableProps>, getPagination
       columns.splice(indIndex, 1);
     }
   });
-
+  // update-begin--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
+  if (columns.length === 0 && showIndexColumn) {
+    const indIndex = columns.findIndex((column) => column.flag === INDEX_COLUMN_FLAG);
+    if (indIndex === -1) {
+      pushIndexColumns = true;
+    }
+  }
+  // update-end--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
   if (!pushIndexColumns) return;
 
   const isFixedLeft = columns.some((item) => item.fixed === 'left');
 
   columns.unshift({
     flag: INDEX_COLUMN_FLAG,
-    width: 50,
+    // update-begin--author:liaozhiyang---date:20240724---for：【TV360X-1634】密度是宽松模式时，序号列表头换行了
+    width: propsRef.value.size === 'large' ? 65 : 50,
+    // update-end--author:liaozhiyang---date:20240724---for：【TV360X-1634】密度是宽松模式时，序号列表头换行了
     title: t('component.table.index'),
     align: 'center',
     customRender: ({ index }) => {
@@ -107,7 +116,13 @@ export function useColumns(
 
   const getColumnsRef = computed(() => {
     const columns = cloneDeep(unref(columnsRef));
-
+    // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+    if (isArray(columns)) {
+      columns.forEach((item) => {
+        item.title = isFunction(item.title) ? item.title() : item.title;
+      });
+    }
+    // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
     handleIndexColumn(propsRef, getPaginationRef, columns);
     handleActionColumn(propsRef, columns);
     // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
@@ -346,3 +361,4 @@ export function formatCell(text: string, format: CellFormat, record: Recordable,
     return text;
   }
 }
+

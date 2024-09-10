@@ -14,11 +14,12 @@
     @focus="handleAsyncFocus"
     @search="loadData"
     @change="handleAsyncChange"
+    @popupScroll="handlePopupScroll"
   >
     <template #notFoundContent>
       <a-spin size="small" />
     </template>
-    <a-select-option v-for="d in options" :key="d.value" :value="d.value">{{ d.text }}</a-select-option>
+    <a-select-option v-for="d in options" :key="d?.value" :value="d?.value">{{ d?.text }}</a-select-option>
   </a-select>
   <!--字典下拉搜素-->
   <a-select
@@ -36,7 +37,7 @@
     <template #notFoundContent>
       <a-spin v-if="loading" size="small" />
     </template>
-    <a-select-option v-for="d in options" :key="d.value" :value="d.value">{{ d.text }}</a-select-option>
+    <a-select-option v-for="d in options" :key="d?.value" :value="d?.value">{{ d?.text }}</a-select-option>
   </a-select>
 </template>
 
@@ -95,6 +96,11 @@
       const lastLoad = ref(0);
       // 是否根据value加载text
       const loadSelectText = ref(true);
+      // 异步(字典表) - 滚动加载时会用到
+      let isHasData = true;
+      let scrollLoading = false;
+      let pageNo = 1;
+      let searchKeyword = '';
 
       // 是否是字典表
       const isDictTable = computed(() => {
@@ -152,6 +158,12 @@
         if (!isDictTable.value) {
           return;
         }
+        // update-begin--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+        pageNo = 1;
+        isHasData = true;
+        searchKeyword = value;
+        // update-end--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+ 
         lastLoad.value += 1;
         const currentLoad = unref(lastLoad);
         options.value = [];
@@ -164,7 +176,7 @@
         defHttp
           .get({
             url: `/sys/dict/loadDict/${props.dict}`,
-            params: { keyword: keywordInfo, pageSize: props.pageSize },
+            params: { keyword: keywordInfo, pageSize: props.pageSize, pageNo },
           })
           .then((res) => {
             loading.value = false;
@@ -173,6 +185,13 @@
                 return;
               }
               options.value = res;
+              // update-begin--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+              pageNo++;
+              // update-end--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+            } else {
+              // update-begin--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+              pageNo == 1 && (isHasData = false);
+              // update-end--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
             }
           });
       }, 300);
@@ -195,10 +214,12 @@
                   key: value,
                   label: res,
                 };
-                selectedAsyncValue.value = { ...obj };
+                if (props.value == value) {
+                  selectedAsyncValue.value = { ...obj };
+                }
                 //update-begin-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online关联记录配置页面
                 if(props.immediateChange == true){
-                  emit('change', value);
+                  emit('change', props.value);
                 }
                 //update-end-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online关联记录配置页面
               }
@@ -243,18 +264,31 @@
           if (!dict) {
             console.error('搜索组件未配置字典项');
           } else {
+            // update-begin--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+            pageNo = 1;
+            isHasData = true;
+            searchKeyword = '';
+            // update-end--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+
             //异步一开始也加载一点数据
             loading.value = true;
             let keywordInfo = getKeywordParam('');
             defHttp
               .get({
                 url: `/sys/dict/loadDict/${dict}`,
-                params: { pageSize: pageSize, keyword: keywordInfo },
+                params: { pageSize: pageSize, keyword: keywordInfo, pageNo },
               })
               .then((res) => {
                 loading.value = false;
                 if (res && res.length > 0) {
                   options.value = res;
+                  // update-begin--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+                  pageNo++;
+                  // update-end--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+                } else {
+                  // update-begin--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+                  pageNo == 1 && (isHasData = false);
+                  // update-end--author:liaozhiyang---date:20240731---for：【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
                 }
               });
           }
@@ -355,11 +389,57 @@
       // update-begin--author:liaozhiyang---date:20240523---for：【TV360X-26】下拉搜索控件选中选项后再次点击下拉应该显示初始的下拉选项，而不是只展示选中结果
       const handleAsyncFocus = () => {
         // update-begin--author:liaozhiyang---date:20240709---for：【issues/6681】异步查询不生效
-        (isObject(selectedAsyncValue.value) || selectedAsyncValue.value?.length) && isDictTable.value && props.async && initDictTableData();
+        if ((isObject(selectedAsyncValue.value) || selectedAsyncValue.value?.length) && isDictTable.value && props.async) {
+          // update-begin--author:liaozhiyang---date:20240809---for：【TV360X-2062】下拉搜索选择第二页数据后，第一次点击时(得到焦点)滚动条没复原到初始位置且数据会加载第二页数据(应该只加载第一页数据)
+          options.value = [];
+          // update-end--author:liaozhiyang---date:20240809---for：【TV360X-2062】下拉搜索选择第二页数据后，第一次点击时(得到焦点)滚动条没复原到初始位置且数据会加载第二页数据(应该只加载第一页数据)
+          initDictTableData();
+        }
         // update-end--author:liaozhiyang---date:20240709---for：【issues/6681】异步查询不生效
         attrs.onFocus?.();
       };
       // update-end--author:liaozhiyang---date:20240523---for：【TV360X-26】下拉搜索控件选中选项后再次点击下拉应该显示初始的下拉选项，而不是只展示选中结果
+
+      /**
+       * 2024-07-30
+       * liaozhiyang
+       * 【TV360X-1898】JsearchSelect组件传入字典表格式则支持滚动加载
+       * */
+      const handlePopupScroll = async (e) => {
+        // 字典表才才支持滚动加载
+        if (isDictTable.value) {
+          const { target } = e;
+          const { scrollTop, scrollHeight, clientHeight } = target;
+          if (!scrollLoading && isHasData && scrollTop + clientHeight >= scrollHeight - 10) {
+            scrollLoading = true;
+            let keywordInfo = getKeywordParam(searchKeyword);
+
+            defHttp
+              .get({ url: `/sys/dict/loadDict/${props.dict}`, params: { pageSize: props.pageSize, keyword: keywordInfo, pageNo } })
+              .then((res) => {
+                loading.value = false;
+                if (res?.length > 0) {
+                  // 防止开源只更新了前端代码没更新后端代码（第一页和第二页面的第一条数据相同则是后端代码没更新，没分页）
+                  if (JSON.stringify(res[0]) === JSON.stringify(options.value[0])) {
+                    isHasData =  false;
+                    return;
+                  }
+                  options.value.push(...res);
+                  pageNo++;
+                } else {
+                  isHasData = false;
+                }
+              })
+              .finally(() => {
+                scrollLoading = false;
+              })
+              .catch(() => {
+                pageNo != 1 && pageNo--;
+              });
+          }
+        }
+      };
+
       return {
         attrs,
         options,
@@ -373,6 +453,7 @@
         handleChange,
         handleAsyncChange,
         handleAsyncFocus,
+        handlePopupScroll,
       };
     },
   });

@@ -1,5 +1,5 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" title="用户选择列表" width="1000px" @ok="handleSubmit" destroyOnClose>
+  <BasicModal v-bind="$attrs" @register="registerModal" title="用户选择列表" width="1000px" @ok="handleSubmit" destroyOnClose @openChange="handleOpenChange">
     <BasicTable @register="registerTable" :rowSelection="rowSelection" />
   </BasicModal>
 </template>
@@ -46,6 +46,14 @@
   function onSelectChange(selectedRowKeys: (string | number)[]) {
     checkedKeys.value = selectedRowKeys;
   }
+
+  const handleOpenChange = (visible) => {
+    // -update-begin--author:liaozhiyang---date:20240702---for：【TV360X-1679】系统角色-角色用户再次打开弹窗重置之前选中的状态
+    if (visible) {
+      checkedKeys.value = [];
+    }
+    // -update-end--author:liaozhiyang---date:20240702---for：【TV360X-1679】系统角色-角色用户再次打开弹窗重置之前选中的状态
+  };
 
   //提交事件
   function handleSubmit() {

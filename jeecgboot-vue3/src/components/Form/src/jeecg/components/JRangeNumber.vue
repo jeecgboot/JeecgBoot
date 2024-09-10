@@ -39,8 +39,10 @@
 
       function emitArray() {
         let arr = [];
-        let begin = beginValue.value || '';
-        let end = endValue.value || '';
+        // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1749】数量0输入不了，输入清空了
+        let begin = beginValue.value ?? '';
+        let end = endValue.value ?? '';
+        // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1749】数量0输入不了，输入清空了
         arr.push(begin);
         arr.push(end);
         emit('change', arr);

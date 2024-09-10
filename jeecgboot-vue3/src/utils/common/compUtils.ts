@@ -5,6 +5,7 @@ import { FormSchema } from '/@/components/Form';
 import { reactive } from "vue";
 import { getTenantId, getToken } from "/@/utils/auth";
 import { useUserStoreWithOut } from "/@/store/modules/user";
+import dayjs from 'dayjs';
 
 import { Modal } from "ant-design-vue";
 import { defHttp } from "@/utils/http/axios";
@@ -416,6 +417,14 @@ export function getUserInfoByExpression(expression) {
   if (!expression) {
     return expression;
   }
+  // 当前日期
+  if (expression === 'sys_date' || expression === 'sysDate') {
+    return dayjs().format('YYYY-MM-DD');
+  }
+  // 当前时间
+  if (expression === 'sys_time' || expression === 'sysTime') {
+    return dayjs().format('HH:mm:ss');
+  }
   const userStore = useUserStoreWithOut();
   let userInfo = userStore.getUserInfo;
   if (userInfo) {
@@ -574,4 +583,23 @@ export function translateTitle(data) {
     });
   }
   return data;
+}
+
+/**
+ *
+ * 深度冻结对象
+ * @param obj Object or Array
+ */
+export function freezeDeep(obj: Recordable | Recordable[]) {
+  if (obj != null) {
+    if (Array.isArray(obj)) {
+      obj.forEach(item => freezeDeep(item))
+    } else if (typeof obj === 'object') {
+      Object.values(obj).forEach(value => {
+        freezeDeep(value)
+      })
+    }
+    Object.freeze(obj)
+  }
+  return obj
 }

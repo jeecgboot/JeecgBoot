@@ -5,7 +5,6 @@
       <ImgUpload
         :fullscreen="fullscreen"
         @uploading="handleImageUploading"
-        @loading="handleLoading"
         @done="handleDone"
         v-show="editorRef"
         :disabled="disabled"
@@ -14,7 +13,6 @@
     <!-- update-end--author:liaozhiyang---date:20240517---for：【TV360X-35】富文本，图片上传遮挡其他按钮 -->
     <Editor :id="tinymceId" ref="elRef" :disabled="disabled" :init="initOptions" :style="{ visibility: 'hidden' }" v-if="!initOptions.inline"></Editor>
     <slot v-else></slot>
-    <ProcessMask ref="processMaskRef" :show="showUploadMask"/>
   </div>
 </template>
 
@@ -35,7 +33,6 @@
   import 'tinymce/plugins/image';
   import { defineComponent, computed, nextTick, ref, unref, watch, onDeactivated, onBeforeUnmount, onMounted } from 'vue';
   import ImgUpload from './ImgUpload.vue';
-  import ProcessMask from './ProcessMask.vue';
   import {simpleToolbar, menubar, simplePlugins} from './tinymce';
   import { buildShortUUID } from '/@/utils/uuid';
   import { bindHandlers } from './helper';
@@ -85,10 +82,6 @@
       type: Boolean,
       default: true,
     },
-    showUploadMask: {
-      type: Boolean,
-      default: false,
-    },
     //是否聚焦
     autoFocus:{
       type: Boolean,
@@ -98,9 +91,9 @@
 
   export default defineComponent({
     name: 'Tinymce',
-    components: { ImgUpload,Editor,ProcessMask },
+    components: { ImgUpload,Editor },
     inheritAttrs: false,
-    props: tinymceProps as any,
+    props: tinymceProps,
     emits: ['change', 'update:modelValue', 'inited', 'init-error'],
     setup(props, { emit, attrs }) {
       console.log("---Tinymce---初始化---")
@@ -110,7 +103,6 @@
       const tinymceId = ref<string>(buildShortUUID('tiny-vue'));
       const elRef = ref<Nullable<HTMLElement>>(null);
       const editorRootRef = ref<Nullable<HTMLElement>>(null);
-      const processMaskRef = ref<any>(null);
       const imgUploadShow = ref(false);
       const targetElem = ref<null | HTMLDivElement>(null);
 
@@ -333,20 +325,6 @@
         setValue(editor, val);
       }
 
-      /**
-       * 上传进度计算
-       * @param file
-       * @param fileList
-       */
-      function handleLoading(fileLength,showMask){
-        if(fileLength && fileLength > 0){
-          setTimeout(() => {
-              props?.showUploadMask && processMaskRef.value.calcProcess(fileLength)
-          },100)
-        }else{
-           props?.showUploadMask && (processMaskRef.value.showMask = showMask);
-        }
-      }
       function getUploadingImgName(name: string) {
         return `[uploading:${name}]`;
       }
@@ -419,9 +397,6 @@
         editorRootRef,
         imgUploadShow,
         targetElem,
-
-        handleLoading,
-        processMaskRef
       };
     },
   });
@@ -453,7 +428,6 @@
     }
     // update-end--author:liaozhiyang---date:20240527---for：【TV360X-329】富文本禁用状态下工具栏划过边框丢失
   }
-
   html[data-theme='dark'] {
     .@{prefix-cls} {
       .tox .tox-edit-area__iframe {background-color: #141414;}

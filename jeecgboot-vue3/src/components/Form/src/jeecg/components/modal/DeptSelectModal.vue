@@ -80,7 +80,7 @@
       
       const queryUrl = getQueryUrl();
       const [{ visibleChange, checkedKeys, getCheckStrictly, getSelectTreeData, onCheck, onLoadData, treeData, checkALL, expandAll, onSelect }] =
-        useTreeBiz(treeRef, queryUrl, getBindValue, props);
+        useTreeBiz(treeRef, queryUrl, getBindValue, props, emit);
       const searchInfo = ref(props.params);
       const tree = ref([]);
       //替换treeNode中key字段为treeData中对应的字段

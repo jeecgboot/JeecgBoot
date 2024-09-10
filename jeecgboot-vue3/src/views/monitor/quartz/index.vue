@@ -64,7 +64,7 @@
     },
   });
 
-  const [registerTable, { reload }, { rowSelection, selectedRowKeys }] = tableContext;
+  const [registerTable, { reload }, { rowSelection, selectedRowKeys, selectedRows }] = tableContext;
 
   /**
    * 操作列定义
@@ -172,6 +172,12 @@
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    await batchDeleteQuartz({ ids: selectedRowKeys.value }, reload);
+    await batchDeleteQuartz({ ids: selectedRowKeys.value }, () => {
+      // -update-begin--author:liaozhiyang---date:20240702---for：【TV360X-1662】菜单管理、定时任务批量删除清空选中
+      reload();
+      selectedRows.value = [];
+      selectedRowKeys.value = [];
+      // -update-end--author:liaozhiyang---date:20240702---for：【TV360X-1662】菜单管理、定时任务批量删除清空选中
+    });
   }
 </script>

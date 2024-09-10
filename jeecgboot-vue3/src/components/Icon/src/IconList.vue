@@ -53,6 +53,7 @@
       Empty,
       Pagination,
     },
+    emits: ['update:value'],
     props: {
       currentList: propTypes.any.def([]),
       clearSelect: propTypes.bool.def(false),
@@ -141,6 +142,7 @@
             }
           }
         }
+        emit('update:value', currentSelect.value);
       }
 
       /**

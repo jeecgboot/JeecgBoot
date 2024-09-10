@@ -138,6 +138,7 @@ export const formSchema: FormSchema[] = [
     label: '用户账号',
     field: 'username',
     component: 'Input',
+    required: true,
     dynamicDisabled: ({ values }) => {
       return !!values.id;
     },
