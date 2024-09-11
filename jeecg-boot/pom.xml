@@ -412,7 +412,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-dashboard-spring-boot-starter</artifactId>
-				<version>1.8.0-beta</version>
+				<version>1.8.1-beta</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>autopoi-web</artifactId>
