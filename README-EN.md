@@ -195,7 +195,7 @@ Technical Architecture:
 
 - Persistence layer framework: MybatisPlus 3.5.3.2
 
-- Report tool: JimuReport 1.7.6
+- Report tool: JimuReport 1.8.1
 
 - Security framework: Apache Shiro 1.12.0, Jwt 3.11.0
 
@@ -229,6 +229,7 @@ Technical Architecture:
 |   MariaDB   |  √   |
 |   达梦   |  √   |
 |   人大金仓   |  √   |
+|   TiDB   |  √   |
 
 
 ## Microservice solutions
