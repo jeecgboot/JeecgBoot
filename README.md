@@ -92,6 +92,12 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - 依赖管理：node、npm、pnpm
 
 
+#### 前端环境要求
+
+*   本地环境安装 `Node.js 、npm 、pnpm`
+*   Node.js 版本建议`v20.15.0`，要求`Node 18+ / 16+` 版本以上
+ ` ( 因为Vite5 不再支持已 EOL 的 Node.js 14 / 16 / 17 / 19，现在需要 Node.js 18 / 20+ )`
+
 
 #### 支持库
 

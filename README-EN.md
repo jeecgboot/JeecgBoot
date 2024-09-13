@@ -212,6 +212,12 @@ Technical Architecture:
 
 - TechnologyStack：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts`
 
+#### Front-end environment requirements
+
+*    `Node.js 、npm 、pnpm`
+*   Node.js Version suggestion: `v20.15.0`
+ ` ( Since Vite5 no longer supports EOL Node.js 14/16/17/19, Node.js 18/20 + is now required )`
+ 
 #### Support library
 
 |  database   |  support   |
