@@ -3,6 +3,8 @@ package org.jeecg.modules.system.controller;
 import javax.servlet.http.HttpServletResponse;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.jeecg.modules.system.util.XssUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,8 +25,13 @@ public class WechatVerifyController {
      */
     @RequestMapping(value = "/WW_verify_{code}.txt")
     public void mpVerify(@PathVariable("code") String code, HttpServletResponse response) {
+        if(StringUtils.isEmpty(code)){
+            log.error("企业微信证书验证失败！(code为空)");
+            return;
+        }
         try {
             PrintWriter writer = response.getWriter();
+            code = XssUtils.scriptXss(code);
             writer.write(code);
             writer.close();
         } catch (Exception e) {
