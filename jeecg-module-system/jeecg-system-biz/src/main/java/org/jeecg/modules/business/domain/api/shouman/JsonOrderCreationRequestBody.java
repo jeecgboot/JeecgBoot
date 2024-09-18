@@ -7,7 +7,7 @@ public class JsonOrderCreationRequestBody extends OrderCreationRequestBody {
 
     private final String jsonString;
     public JsonOrderCreationRequestBody(String jsonString) {
-        super(null, null);
+        super(null);
         this.jsonString = jsonString;
     }
 

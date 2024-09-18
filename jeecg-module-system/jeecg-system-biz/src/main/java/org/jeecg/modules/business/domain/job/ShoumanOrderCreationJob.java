@@ -28,14 +28,10 @@ public class ShoumanOrderCreationJob implements Job {
     private PlatformOrderContentMapper platformOrderContentMapper;
     @Autowired
     private IShoumanOrderService shoumanOrderService;
-    @Autowired
-    private CountryMapper countryMapper;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         log.info("Started Shouman order creation job");
-        Map<String, Country> countryCodeMap = countryMapper.findAll().stream()
-                .collect(toMap(Country::getMabangName, Function.identity()));
 
         List<ShoumanOrderContent> shoumanOrderContents = platformOrderContentMapper.searchShoumanOrderContent();
         log.info("Fetched {} shouman order contents", shoumanOrderContents.size());
@@ -47,7 +43,7 @@ public class ShoumanOrderCreationJob implements Job {
         log.info("Started constructing Shouman request bodies");
         List<ShoumanOrder> shoumanOrders = new ArrayList<>();
         for (Map.Entry<String, List<ShoumanOrderContent>> entry : groupedByPlatformOrderId.entrySet()) {
-            OrderCreationRequestBody requestBody = new OrderCreationRequestBody(entry.getValue(), countryCodeMap);
+            OrderCreationRequestBody requestBody = new OrderCreationRequestBody(entry.getValue());
             ShoumanOrder shoumanOrder = new ShoumanOrder();
             shoumanOrder.setOrderJson(requestBody.parameters().toJSONString());
             shoumanOrder.setPlatformOrderId(entry.getKey());

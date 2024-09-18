@@ -19,8 +19,6 @@ public class OrderCreationRequestBody implements RequestBody {
 
     private List<ShoumanOrderContent> orderContents;
 
-    private Map<String, Country> countryMap;
-
     private final static String DEFAULT_SPLIT = ";";
     private final static String LINE_BREAK = "\n";
     private final static String QUOTE = ":";
@@ -30,9 +28,8 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String PRODUCT_GROUP_KEY = "_gpo_product_group";
     private final static String PARENT_PRODUCT_GROUP_KEY = "_gpo_parent_product_group";
 
-    public OrderCreationRequestBody(List<ShoumanOrderContent> orderContents, Map<String, Country> countryMap) {
+    public OrderCreationRequestBody(List<ShoumanOrderContent> orderContents) {
         this.orderContents = orderContents;
-        this.countryMap = countryMap;
     }
 
     @Override
@@ -48,8 +45,6 @@ public class OrderCreationRequestBody implements RequestBody {
         putNonNull(json, "address", "收货人：王生 收货地址： 广东省东镇芦莞市寮步溪二路40号汇元佳科技园二栋10楼公司前台 手机：17633551138");
         putNonNull(json, "addressee", "王生");
         putNonNull(json, "city", "东莞市");
-        String countryName = anyContent.getCountry();
-        Country country = countryMap.get(countryName);
         putNonNull(json, "country", "CHINA");
         putNonNull(json, "countryCode", "CN");
         // TODO: 2023/11/29 Change to real address
@@ -148,16 +143,16 @@ public class OrderCreationRequestBody implements RequestBody {
         for (ShoumanOrderContent necklace : necklaces) {
             String necklacePgValue = extractProductGroupValue(necklace.getCustomizationData().split(DEFAULT_SPLIT), PRODUCT_GROUP_KEY);
             for (ShoumanOrderContent gem : gems) {
-                    String gemPgValue = extractProductGroupValue(gem.getCustomizationData().split(DEFAULT_SPLIT), PARENT_PRODUCT_GROUP_KEY);
-                    if (necklacePgValue != null && necklacePgValue.equalsIgnoreCase(gemPgValue)) {
-                        // We need the remark from necklace for colour/material/month/font AND we need remark from
-                        // gem for the mention of its presence
-                        gem.setRemark(necklace.getRemark().concat(gem.getRemark()));
-                        // We need the custom data from necklace to parse the name
-                        gem.setCustomizationData(necklace.getCustomizationData());
-                        reducedContents.add(gem);
-                        break;
-                    }
+                String gemPgValue = extractProductGroupValue(gem.getCustomizationData().split(DEFAULT_SPLIT), PARENT_PRODUCT_GROUP_KEY);
+                if (necklacePgValue != null && necklacePgValue.equalsIgnoreCase(gemPgValue)) {
+                    // We need the remark from necklace for colour/material/month/font AND we need remark from
+                    // gem for the mention of its presence
+                    gem.setRemark(necklace.getRemark().concat(gem.getRemark()));
+                    // We need the custom data from necklace to parse the name
+                    gem.setCustomizationData(necklace.getCustomizationData());
+                    reducedContents.add(gem);
+                    break;
+                }
             }
         }
         return reducedContents;
