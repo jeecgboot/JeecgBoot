@@ -10,7 +10,7 @@
   import { defineComponent, computed, watch, watchEffect, ref, unref } from 'vue';
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
-  import { initDictOptions } from '/@/utils/dict/index';
+  import {getDictItems} from "@/api/common/api";
 
   export default defineComponent({
     name: 'JCheckbox',
@@ -67,19 +67,28 @@
         }
         //根据字典Code, 初始化选项
         if (props.dictCode) {
-          const dictData = await initDictOptions(props.dictCode);
-          checkOptions.value = dictData.reduce((prev, next) => {
-            if (next) {
-              const value = next['value'];
-              prev.push({
-                label: next['text'],
-                value: value,
-                color: next['color'],
-              });
-            }
-            return prev;
-          }, []);
+          loadDictOptions()
         }
+      }
+
+      // 根据字典code查询字典项
+      function loadDictOptions() {
+        //update-begin-author:taoyan date:2022-6-21 for: 字典数据请求前将参数编码处理，但是不能直接编码，因为可能之前已经编码过了
+        let temp = props.dictCode || '';
+        if (temp.indexOf(',') > 0 && temp.indexOf(' ') > 0) {
+          // 编码后 是不包含空格的
+          temp = encodeURI(temp);
+        }
+        //update-end-author:taoyan date:2022-6-21 for: 字典数据请求前将参数编码处理，但是不能直接编码，因为可能之前已经编码过了
+        getDictItems(temp).then((res) => {
+          if (res) {
+            checkOptions.value = res.map((item) => ({value: item.value, label: item.text, color: item.color}));
+            //console.info('res', dictOptions.value);
+          } else {
+            console.error('getDictItems error: : ', res);
+            checkOptions.value = [];
+          }
+        });
       }
 
       /**

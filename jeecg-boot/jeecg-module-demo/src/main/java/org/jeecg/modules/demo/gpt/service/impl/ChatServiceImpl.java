@@ -59,12 +59,6 @@ public class ChatServiceImpl implements ChatService {
     private OpenAiStreamClient openAiStreamClient = null;
 
     //update-begin---author:chenrui ---date:20240131  for：[QQYUN-8212]fix 没有配置启动报错------------
-    public ChatServiceImpl() {
-        try {
-            this.openAiStreamClient = SpringContextUtils.getBean(OpenAiStreamClient.class);
-        } catch (Exception ignored) {
-        }
-    }
 
     /**
      * 防止client不能成功注入
@@ -73,8 +67,14 @@ public class ChatServiceImpl implements ChatService {
      * @date 2024/2/3 23:08
      */
     private OpenAiStreamClient ensureClient(){
-        if(null == this.openAiStreamClient){
-            this.openAiStreamClient = SpringContextUtils.getBean(OpenAiStreamClient.class);
+        if (null == this.openAiStreamClient){
+            //update-begin---author:chenrui ---date:20240625  for：[TV360X-1570]给于更友好的提示，提示未配置ai------------
+            try {
+                this.openAiStreamClient = SpringContextUtils.getBean(OpenAiStreamClient.class);
+            } catch (Exception ignored) {
+                sendErrorMsg("如果您想使用AI助手，请先设置相应配置!");
+            }
+            //update-end---author:chenrui ---date:20240625  for：[TV360X-1570]给于更友好的提示，提示未配置ai------------
         }
         return this.openAiStreamClient;
     }
@@ -163,16 +163,21 @@ public class ChatServiceImpl implements ChatService {
             log.info("聊天消息推送失败uid:[{}],没有创建连接，请重试。", uid);
             throw new JeecgBootException("聊天消息推送失败uid:[{}],没有创建连接，请重试。~");
         }
-        OpenAISSEEventSourceListener openAIEventSourceListener = new OpenAISSEEventSourceListener(topicId, sseEmitter);
-        ChatCompletion completion = ChatCompletion
-                .builder()
-                .messages(msgHistory)
-                .model(ChatCompletion.Model.GPT_3_5_TURBO.getName())
-                .build();
-        ensureClient().streamChatCompletion(completion, openAIEventSourceListener);
-        redisTemplate.opsForHash().put(cacheKey, CACHE_KEY_MSG_CONTEXT, JSONUtil.toJsonStr(msgHistory));
-        //update-end---author:chenrui ---date:20240223  for：[QQYUN-8225]聊天记录保存------------
-        Result.ok(completion.tokens());
+        //update-begin---author:chenrui ---date:20240625  for：[TV360X-1570]给于更友好的提示，提示未配置ai------------
+        OpenAiStreamClient client = ensureClient();
+        if (null != client) {
+            OpenAISSEEventSourceListener openAIEventSourceListener = new OpenAISSEEventSourceListener(topicId, sseEmitter);
+            ChatCompletion completion = ChatCompletion
+                    .builder()
+                    .messages(msgHistory)
+                    .model(ChatCompletion.Model.GPT_3_5_TURBO.getName())
+                    .build();
+            client.streamChatCompletion(completion, openAIEventSourceListener);
+            redisTemplate.opsForHash().put(cacheKey, CACHE_KEY_MSG_CONTEXT, JSONUtil.toJsonStr(msgHistory));
+            //update-end---author:chenrui ---date:20240223  for：[QQYUN-8225]聊天记录保存------------
+            Result.ok(completion.tokens());
+        }
+        //update-end---author:chenrui ---date:20240625  for：[TV360X-1570]给于更友好的提示，提示未配置ai------------
     }
 
     //update-begin---author:chenrui ---date:20240223  for：[QQYUN-8225]聊天记录保存------------
@@ -194,6 +199,35 @@ public class ChatServiceImpl implements ChatService {
         return Result.OK(chatHistoryVO);
     }
     //update-end---author:chenrui ---date:20240223  for：[QQYUN-8225]聊天记录保存------------
+
+    /**
+     * 发送异常消息给前端
+     * [TV360X-1570]给于更友好的提示，提示未配置ai
+     *
+     * @param msg
+     * @author chenrui
+     * @date 2024/6/25 10:38
+     */
+    private void sendErrorMsg(String msg) {
+        String uid = getUserId();
+        SseEmitter sseEmitter = (SseEmitter) LocalCache.CACHE.get(uid);
+        if (sseEmitter == null) {
+            return;
+        }
+        try {
+            sseEmitter.send(SseEmitter.event()
+                    .id("[ERR]")
+                    .data(Message.builder().content(msg).build())
+                    .reconnectTime(3000));
+            sseEmitter.send(SseEmitter.event()
+                    .id("[DONE]")
+                    .data("[DONE]")
+                    .reconnectTime(3000));
+            sseEmitter.complete();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+    }
 }
 
 //update-end---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------

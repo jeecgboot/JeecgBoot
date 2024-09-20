@@ -16,6 +16,9 @@
     @search="onSearch"
     :tree-checkable="treeCheckAble"
   >
+    <template #[name]="data" v-for="name in slotNamesGroup" :key="name">
+      <slot :name="name" v-bind="data"></slot>
+    </template>
   </a-tree-select>
 </template>
 <script lang="ts" setup>
@@ -23,12 +26,13 @@
    * 异步树加载组件 通过传入表名 显示字段 存储字段 加载一个树控件
    * <j-tree-select dict="aa_tree_test,aad,id" pid-field="pid" ></j-tree-select>
    * */
-  import { ref, watch, unref, nextTick } from 'vue';
+  import { ref, watch, unref, nextTick, computed } from 'vue';
   import { defHttp } from '/@/utils/http/axios';
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { TreeSelect } from 'ant-design-vue';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { isObject } from '/@/utils/is';
 
   enum Api {
     url = '/sys/dict/loadTreeData',
@@ -62,6 +66,7 @@
   });
   const attrs = useAttrs();
   const emit = defineEmits(['change', 'update:value']);
+  const slots = defineSlots();
   const { createMessage } = useMessage();
   //树形下拉数据
   const treeData = ref<any[]>([]);
@@ -82,14 +87,15 @@
   /**
    * 监听dict变化
    */
+  // update-begin--author:liaozhiyang---date:20240612---for：【issues/1283】JtreeSelect组件初始调用了两次接口
   watch(
     () => props.dict,
     () => {
       initDictInfo();
       loadRoot();
-    },
-    { deep: true, immediate: true }
+    }
   );
+  // update-end--author:liaozhiyang---date:20240612---for：【issues/1283】JtreeSelect组件初始调用了两次接口
   // update-begin--author:liaozhiyang---date:20240529---for：【TV360X-87】树表编辑时不可选自己及子孙节点当父节点
   watch(
     () => props.hiddenNodeKey,
@@ -394,6 +400,20 @@
       }
     }
   }
+  /**
+   * 2024-07-30
+   * liaozhiyang
+   * 【issues/6953】JTreeSelect 组件能支持antdv 对应的a-tree-select 组件的插槽
+   */
+  const slotNamesGroup = computed(() => {
+    const native: string[] = [];
+    if (isObject(slots)) {
+      for (const name of Object.keys(slots)) {
+        native.push(name);
+      }
+    }
+    return native;
+  });
   // onCreated
   validateProp().then(() => {
     initDictInfo();

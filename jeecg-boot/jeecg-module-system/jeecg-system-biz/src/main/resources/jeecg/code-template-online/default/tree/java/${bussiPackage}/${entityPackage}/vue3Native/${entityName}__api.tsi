@@ -4,15 +4,15 @@ import { useMessage } from "/@/hooks/web/useMessage";
 const { createConfirm } = useMessage();
 
 enum Api {
-  list = '/${entityPackage}/${entityName?uncap_first}/rootList',
-  save='/${entityPackage}/${entityName?uncap_first}/add',
-  edit='/${entityPackage}/${entityName?uncap_first}/edit',
-  delete${entityName} = '/${entityPackage}/${entityName?uncap_first}/delete',
-  importExcel = '/${entityPackage}/${entityName?uncap_first}/importExcel',
-  exportXls = '/${entityPackage}/${entityName?uncap_first}/exportXls',
-  loadTreeData = '/${entityPackage}/${entityName?uncap_first}/loadTreeRoot',
-  getChildList = '/${entityPackage}/${entityName?uncap_first}/childList',
-  getChildListBatch = '/${entityPackage}/${entityName?uncap_first}/getChildListBatch',
+  list = '/${entityPackagePath}/${entityName?uncap_first}/rootList',
+  save='/${entityPackagePath}/${entityName?uncap_first}/add',
+  edit='/${entityPackagePath}/${entityName?uncap_first}/edit',
+  delete${entityName} = '/${entityPackagePath}/${entityName?uncap_first}/delete',
+  importExcel = '/${entityPackagePath}/${entityName?uncap_first}/importExcel',
+  exportXls = '/${entityPackagePath}/${entityName?uncap_first}/exportXls',
+  loadTreeData = '/${entityPackagePath}/${entityName?uncap_first}/loadTreeRoot',
+  getChildList = '/${entityPackagePath}/${entityName?uncap_first}/childList',
+  getChildListBatch = '/${entityPackagePath}/${entityName?uncap_first}/getChildListBatch',
 }
 
 /**

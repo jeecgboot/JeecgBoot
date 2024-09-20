@@ -377,14 +377,14 @@ export default {
      },
 </#list>
      url: {
-       add: "/${entityPackage}/${entityName?uncap_first}/add",
-       edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+       add: "/${entityPackagePath}/${entityName?uncap_first}/add",
+       edit: "/${entityPackagePath}/${entityName?uncap_first}/edit",
         ${tableVo.entityName?uncap_first}: {
-         list: '/${entityPackage}/${entityName?uncap_first}/queryById'
+         list: '/${entityPackagePath}/${entityName?uncap_first}/queryById'
         },
 <#list subTables as sub><#rt/>
        ${sub.entityName?uncap_first}: {
-         list: '/${entityPackage}/${entityName?uncap_first}/query${sub.entityName}ByMainId'
+         list: '/${entityPackagePath}/${entityName?uncap_first}/query${sub.entityName}ByMainId'
        },
 </#list>
      }

@@ -27,6 +27,9 @@ public class JeecgNacosApplication {
     public static void main(String[] args) {
         System.setProperty("nacos.standalone", standalone);
         System.setProperty("nacos.core.auth.enabled", enabled);
+//        //一旦Nacos初始化，用户名nacos将不能被修改，但你可以通过控制台或API来修改密码  https://nacos.io/en/blog/faq/nacos-user-question-history8420       
+//        System.setProperty("nacos.core.auth.default.username", "nacos");
+//        System.setProperty("nacos.core.auth.default.password", "nacos");
         System.setProperty("server.tomcat.basedir","logs");
         //自定义启动端口号
         System.setProperty("server.port","8848");

@@ -1,6 +1,6 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" title="用户回收站" :showOkBtn="false" width="1000px" destroyOnClose>
-    <BasicTable @register="registerTable" :rowSelection="rowSelection">
+  <BasicModal v-bind="$attrs" @register="registerModal" title="用户回收站" :showOkBtn="false" width="1000px" destroyOnClose @fullScreen="handleFullScreen">
+    <BasicTable @register="registerTable" :rowSelection="rowSelection" :scroll="scroll">
       <!--插槽:table标题-->
       <template #tableTitle>
         <a-dropdown v-if="checkedKeys.length > 0">
@@ -32,7 +32,7 @@
   </BasicModal>
 </template>
 <script lang="ts" setup>
-  import { ref, toRaw, unref } from 'vue';
+  import { ref, toRaw, unref, watch } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { recycleColumns } from './user.data';
@@ -46,6 +46,7 @@
   const [registerModal] = useModalInner(() => {
     checkedKeys.value = [];
   });
+  const scroll = ref({ y: 0 });
   //注册table数据
   const [registerTable, { reload }] = useTable({
     api: getRecycleBinList,
@@ -68,6 +69,33 @@
       fixed: undefined,
     },
   });
+  // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1657】系统用户回收站弹窗分页展示在可视区内
+  const handleFullScreen = (maximize) => {
+    setTableHeight(maximize);
+  };
+  const setTableHeight = (maximize) => {
+    const clientHeight = document.documentElement.clientHeight;
+    scroll.value = {
+      y: clientHeight - (maximize ? 300 : 500),
+    };
+  };
+  setTableHeight(false);
+  watch(
+    checkedKeys,
+    (newValue, oldValue) => {
+      if (checkedKeys.value.length && oldValue.length == 0) {
+        scroll.value = {
+          y: scroll.value.y - 50,
+        };
+      } else if (checkedKeys.value.length == 0 && oldValue.length) {
+        scroll.value = {
+          y: scroll.value.y + 50,
+        };
+      }
+    },
+    { deep: true }
+  );
+  // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1657】系统用户回收站弹窗分页展示在可视区内
   /**
    * 选择列配置
    */

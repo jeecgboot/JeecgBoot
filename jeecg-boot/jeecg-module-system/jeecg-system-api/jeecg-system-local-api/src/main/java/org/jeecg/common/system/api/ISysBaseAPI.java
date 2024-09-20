@@ -457,7 +457,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param pageSize 分页条数
      * @return
      */
-    List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize);
+    List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageNo, Integer pageSize);
 
     /**
      * 新增数据日志

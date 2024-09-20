@@ -28,6 +28,7 @@ import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
+import org.jeecg.common.exception.JeecgBootBizTipException;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.*;
@@ -1147,6 +1148,11 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         }
         // 获取【钉钉】所有的部门
         List<Department> departments = JdtDepartmentAPI.listAll(accessToken);
+        //update-begin---author:wangshuai---date:2024-06-25---for:【TV360X-1316】钉钉同步提示消息不正确---
+        if(departments.isEmpty()){
+            throw new JeecgBootBizTipException("请查看配置参数和白名单是否配置！");
+        }
+        //update-end---author:wangshuai---date:2024-06-25---for:【TV360X-1316】钉钉同步提示消息不正确---
         String username = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
         List<JdtDepartmentTreeVo> departmentTreeList = JdtDepartmentTreeVo.listToTree(departments);
         int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
@@ -1182,7 +1188,11 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                 try {
                     userMapper.updateById(updateSysUser);
                     String str = String.format("用户 %s(%s) 更新成功！", updateSysUser.getRealname(), updateSysUser.getUsername());
-                    syncInfo.addSuccessInfo(str);
+                    //update-begin---author:wangshuai---date:2024-06-24---for:【TV360X-1317】钉钉同步 同步成功之后 重复提示---
+                    if(!syncInfo.getSuccessInfo().contains(str)){
+                        syncInfo.addSuccessInfo(str);
+                    }
+                    //update-end---author:wangshuai---date:2024-06-24---for:【TV360X-1317】钉钉同步 同步成功之后 重复提示---
                 } catch (Exception e) {
                     this.syncUserCollectErrInfo(e, user, syncInfo);
                 }

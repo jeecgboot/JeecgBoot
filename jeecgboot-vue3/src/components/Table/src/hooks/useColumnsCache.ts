@@ -97,7 +97,14 @@ export function useColumnsCache(opt, setColumns, handleColumnFixed) {
   /** 保存列配置 */
   function saveSetting() {
     const { checkedList } = opt.state;
-    const sortedList = unref(opt.plainSortOptions).map((item) => item.value);
+    // update-begin--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[重置之后保存的顺序还是上次的]
+    let sortedList = [];
+    if (opt.restAfterOptions.value) {
+      sortedList = opt.restAfterOptions.value.map((item) => item.value);
+    } else {
+      sortedList = unref(opt.plainSortOptions).map((item) => item.value);
+    }
+    // update-end--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[重置之后保存的顺序还是上次的]
     $ls.set(cacheKey.value, {
       // 保存的列
       checkedList,

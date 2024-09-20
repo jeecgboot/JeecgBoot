@@ -1,6 +1,6 @@
 import { defHttp } from '/@/utils/http/axios';
 import { Modal } from 'ant-design-vue';
-
+import { isObject } from '/@/utils/is';
 enum Api {
   listNoCareTenant = '/sys/user/listAll',
   list = '/sys/user/list',
@@ -103,11 +103,19 @@ export const duplicateCheck = (params) => defHttp.get({ url: Api.duplicateCheck,
  * 唯一校验（ 延迟【防抖】）
  * @param params
  */
-let timer;
+const timer = {};
 export const duplicateCheckDelay = (params) => {
   return new Promise((resove, rejected) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
+    // -update-begin--author:liaozhiyang---date:20240619---for：【TV360X-1380】表单中使用多个duplicateCheckDelay，validate方法调用时会导致promise被挂起保存不了
+    let key;
+    if (isObject(params)) {
+      key = `${params.tableName}_${params.fieldName}`;
+    } else {
+      key = params;
+    }
+    clearTimeout(timer[key]);
+    // -update-end--author:liaozhiyang---date:20240619---for：【TV360X-1380】表单中使用多个duplicateCheckDelay，validate方法调用时会导致promise被挂起保存不了
+    timer[key] = setTimeout(() => {
       defHttp
         .get({ url: Api.duplicateCheck, params }, { isTransformResponse: false })
         .then((res: any) => {
@@ -116,6 +124,7 @@ export const duplicateCheckDelay = (params) => {
         .catch((error) => {
           rejected(error);
         });
+      delete timer[key];
     }, 500);
   });
 };

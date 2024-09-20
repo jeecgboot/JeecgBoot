@@ -1,4 +1,4 @@
-//package com.xxl.job.admin.core.schedule;
+package com.xxl.job.admin.core.old;//package com.xxl.job.admin.core.schedule;
 //
 //import com.xxl.job.admin.core.conf.XxlJobAdminConfig;
 //import com.xxl.job.admin.core.jobbean.RemoteHttpJobBean;

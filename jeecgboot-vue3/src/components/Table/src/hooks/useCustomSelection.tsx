@@ -219,22 +219,27 @@ export function useCustomSelection(
   });
 
   // 选择全部
-  function onSelectAll(checked: boolean) {
+  function onSelectAll(checked: boolean, flag = 'currentPage') {
     // update-begin--author:liaozhiyang---date:20231122---for：【issues/5577】BasicTable组件全选和取消全选时不触发onSelectAll事件
     if (unref(propsRef)?.rowSelection?.onSelectAll) {
       allSelected = checked;
-      changeRows = getInvertRows(selectedRows.value);
+      changeRows = getInvertRows(selectedRows.value, checked, flag);
     }
     // update-end--author:liaozhiyang---date:20231122---for：【issues/5577】BasicTable组件全选和取消全选时不触发onSelectAll事件
     // 取消全选
     if (!checked) {
       // update-begin--author:liaozhiyang---date:20240510---for：【issues/1173】取消全选只是当前页面取消
-      // selectedKeys.value = [];
-      // selectedRows.value = [];
-      // emitChange('all');
-      flattedData.value.forEach((item) => {
-        updateSelected(item, false);
-      });
+      // update-begin--author:liaozhiyang---date:20240808---for：【issues/6958】取消没触发onSelectAll事件，跨页选中后 changeRows 为空
+      if (flag === 'allPage') {
+        selectedKeys.value = [];
+        selectedRows.value = [];
+      } else {
+        flattedData.value.forEach((item) => {
+          updateSelected(item, false);
+        });
+      }
+      emitChange('all');
+      // update-end--author:liaozhiyang---date:20240808---for：【issues/6958】取消没触发onSelectAll事件，跨页选中后 changeRows 为空
       // update-end--author:liaozhiyang---date:20240510---for：【issues/1173】取消全选只是当前页面取消
       return;
     }
@@ -310,6 +315,7 @@ export function useCustomSelection(
 
   // 选中单个
   function onSelect(record, checked) {
+    onSelectChild(record, checked);
     updateSelected(record, checked);
     emitChange();
   }
@@ -359,7 +365,25 @@ export function useCustomSelection(
     }
     // update-end--author:liaozhiyang---date:20231122---for：【issues/5577】BasicTable组件全选和取消全选时不触发
   }
-
+  // update-begin--author:liusq---date:20240819---for：树形表格设置层级关联不生效
+  /**
+   * 层级关联时，选中下级数据
+   * @param record
+   * @param checked
+   */
+  function onSelectChild(record, checked) {
+    if (unref(propsRef)?.isTreeTable && unref(propsRef)?.rowSelection?.checkStrictly && !isRadio.value) {
+      if (record[childrenColumnName.value] && record[childrenColumnName.value].length > 0) {
+        record[childrenColumnName.value].forEach((children) => {
+          updateSelected(children, checked);
+          if (children[childrenColumnName.value] && children[childrenColumnName.value].length > 0) {
+            onSelectChild(children, checked);
+          }
+        });
+      }
+    }
+  }
+  // update-end--author:liusq---date:20240819---for：树形表格设置层级关联不生效
   // 用于判断是否是自定义选择列
   function isCustomSelection(column: BasicColumn) {
     return column.key === CUS_SEL_COLUMN_KEY;
@@ -481,7 +505,7 @@ export function useCustomSelection(
 
   // 清空所有选择
   function clearSelectedRowKeys() {
-    onSelectAll(false);
+    onSelectAll(false, 'allPage');
   }
 
   // 通过 selectedKeys 同步 selectedRows
@@ -536,28 +560,30 @@ export function useCustomSelection(
     return false;
   }
   /**
-   *2023-11-22
+   *2024-08-08
    *廖志阳
-   *根据全选或者反选返回源数据中这次需要变更的数据
+   *根据全选或者反选(或者使用clearSelectedRowKeys()方法)返回源数据中这次需要变更的数据
    */
-  function getInvertRows(rows: any): any {
-    const allRows = findNodeAll(toRaw(unref(flattedData)), () => true, {
-      children: propsRef.value.childrenColumnName ?? 'children',
-    });
-    if (rows.length === 0 || rows.length === allRows.length) {
-      return allRows;
-    } else {
-      const allRowsKey = allRows.map((item) => getRecordKey(item));
-      rows.forEach((rItem) => {
-        const rItemKey = getRecordKey(rItem);
-        const findIndex = allRowsKey.findIndex((item) => rItemKey === item);
-        if (findIndex != -1) {
-          allRowsKey.splice(findIndex, 1);
-          allRows.splice(findIndex, 1);
+  function getInvertRows(selectedRows: any, checked: boolean, flag): any {
+    if (flag == 'currentPage') {
+      const curPageRows = findNodeAll(toRaw(unref(flattedData)), () => true, {
+        children: propsRef.value.childrenColumnName ?? 'children',
+      });
+      const selectedkeys = selectedRows.map((item) => getRecordKey(item));
+      const result: any = [];
+      curPageRows.forEach((item) => {
+        const curRowkey = getRecordKey(item);
+        const index = selectedkeys.findIndex((item) => item === curRowkey);
+        if (index == -1) {
+          checked && result.push(toRaw(item));
+        } else {
+          !checked && result.push(toRaw(item));
         }
       });
+      return result;
+    } else {
+      return toRaw(selectedRows);
     }
-    return allRows;
   }
   function getSelectRows<T = Recordable>() {
     return unref(selectedRows) as T[];

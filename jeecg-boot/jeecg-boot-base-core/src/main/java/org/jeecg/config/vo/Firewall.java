@@ -12,6 +12,10 @@ public class Firewall {
      */
     private Boolean dataSourceSafe = false;
     /**
+     * 是否禁止使用 * 查询所有字段
+     */
+    private Boolean disableSelectAll = false;
+    /**
      * 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
      */
     private String lowCodeMode;
@@ -36,4 +40,11 @@ public class Firewall {
         this.lowCodeMode = lowCodeMode;
     }
 
+    public Boolean getDisableSelectAll() {
+        return disableSelectAll;
+    }
+
+    public void setDisableSelectAll(Boolean disableSelectAll) {
+        this.disableSelectAll = disableSelectAll;
+    }
 }

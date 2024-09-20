@@ -2,7 +2,11 @@
   <div :class="prefixCls">
     <div v-show="!isEdit" :class="{ [`${prefixCls}__normal`]: true, 'ellipsis-cell': column.ellipsis }" @click="handleEdit">
       <div class="cell-content" :title="column.ellipsis ? getValues ?? '' : ''">
-        {{ getValues ? getValues : '&nbsp;' }}
+        <!-- update-begin--author:liaozhiyang---date:20240731---for：【issues/6957】editableCell组件值长度为0，无法编辑 -->
+        <!-- update-begin--author:liaozhiyang---date:20240709---for：【issues/6851】editableCell组件值为0时不展示 -->
+        {{ typeof getValues === 'string' && getValues.length === 0 ? '&nbsp;' : getValues ?? '&nbsp;' }}
+        <!-- update-end--author:liaozhiyang---date:20240709---for：【issues/6851】editableCell组件值为0时不展示 -->
+        <!-- update-end--author:liaozhiyang---date:20240731---for：【issues/6957】editableCell组件值长度为0，无法编辑 -->
       </div>
       <FormOutlined :class="`${prefixCls}__normal-icon`" v-if="!column.editRow" />
     </div>

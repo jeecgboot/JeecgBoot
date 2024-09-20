@@ -4,15 +4,15 @@ import { useMessage } from "/@/hooks/web/useMessage";
 const { createConfirm } = useMessage();
 
 enum Api {
-  list = '/${entityPackage}/${entityName?uncap_first}/list',
-  save='/${entityPackage}/${entityName?uncap_first}/add',
-  edit='/${entityPackage}/${entityName?uncap_first}/edit',
-  deleteOne = '/${entityPackage}/${entityName?uncap_first}/delete',
-  deleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch',
-  importExcel = '/${entityPackage}/${entityName?uncap_first}/importExcel',
-  exportXls = '/${entityPackage}/${entityName?uncap_first}/exportXls',
+  list = '/${entityPackagePath}/${entityName?uncap_first}/list',
+  save='/${entityPackagePath}/${entityName?uncap_first}/add',
+  edit='/${entityPackagePath}/${entityName?uncap_first}/edit',
+  deleteOne = '/${entityPackagePath}/${entityName?uncap_first}/delete',
+  deleteBatch = '/${entityPackagePath}/${entityName?uncap_first}/deleteBatch',
+  importExcel = '/${entityPackagePath}/${entityName?uncap_first}/importExcel',
+  exportXls = '/${entityPackagePath}/${entityName?uncap_first}/exportXls',
 <#list subTables as sub><#rt/>
-  ${sub.entityName?uncap_first}List = '/${entityPackage}/${entityName?uncap_first}/query${sub.entityName}ByMainId',
+  ${sub.entityName?uncap_first}List = '/${entityPackagePath}/${entityName?uncap_first}/query${sub.entityName}ByMainId',
 </#list>
 }
 /**

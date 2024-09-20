@@ -102,6 +102,7 @@
 <script setup lang="ts">
   import { ref, watch } from 'vue';
   const props = defineProps(['dataSource']);
+  const emit = defineEmits(['save']);
   const inputRef = ref(null);
   let inputValue = '';
   //新建聊天
@@ -161,6 +162,7 @@
         //  删没了（删除了最后一个）
         props.dataSource.active = null;
       }
+      emit('save');
     }
   };
   watch(

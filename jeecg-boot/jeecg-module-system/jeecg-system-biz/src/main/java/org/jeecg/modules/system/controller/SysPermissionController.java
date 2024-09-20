@@ -604,9 +604,8 @@ public class SysPermissionController {
 			log.info("======角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 
 			//update-begin---author:scott ---date:2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
-			// 获取当前用户的Subject对象
-			Subject currentUser = SecurityUtils.getSubject();
 			// 清除当前用户的授权缓存信息
+			Subject currentUser = SecurityUtils.getSubject();
 			if (currentUser.isAuthenticated()) {
 				shiroRealm.clearCache(currentUser.getPrincipals());
 			}

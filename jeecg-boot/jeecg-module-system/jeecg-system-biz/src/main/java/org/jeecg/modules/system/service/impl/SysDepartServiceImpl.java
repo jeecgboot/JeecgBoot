@@ -1223,12 +1223,13 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	/**
 	 * 系统部门导出
 	 * @param tenantId
+	 * @param idList 需要查询部门sql的id集合
 	 * @return
 	 */
 	@Override
-	public List<SysDepartExportVo> getExportDepart(Integer tenantId) {
+	public List<SysDepartExportVo> getExportDepart(Integer tenantId, List<String> idList) {
 		//获取父级部门
-		List<SysDepartExportVo> parentDepart = departMapper.getSysDepartList("", tenantId);
+		List<SysDepartExportVo> parentDepart = departMapper.getSysDepartList("", tenantId, idList);
 		//子部门
 		List<SysDepartExportVo> childrenDepart = new ArrayList<>();
 		//把一级部门名称放在里面
@@ -1245,7 +1246,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			List<String> path = new ArrayList<>();
 			path.add(sysDepart.getDepartName());
 			//创建子部门路径
-			findSysDepartPath(sysDepart, path, tenantId, childrenDepart, departIdList);
+			findSysDepartPath(sysDepart, path, tenantId, childrenDepart, departIdList, idList);
 			path.clear();
 		}
 		exportDepartVoList.addAll(childrenDepart);
@@ -1353,11 +1354,12 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * @param tenantId       租户id
 	 * @param childrenDepart 子部门
 	 * @param departIdList   部门id集合
+	 * @param idList   需要查询sql的部门id集合
 	 */
-	private void findSysDepartPath(SysDepartExportVo departVo, List<String> path, Integer tenantId, List<SysDepartExportVo> childrenDepart, List<String> departIdList) {
+	private void findSysDepartPath(SysDepartExportVo departVo, List<String> path, Integer tenantId, List<SysDepartExportVo> childrenDepart, List<String> departIdList, List<String> idList) {
 		//step 1.查询子部门的数据
 		//获取租户id和部门父id获取的部门数据
-		List<SysDepartExportVo> departList = departMapper.getSysDepartList(departVo.getId(), tenantId);
+		List<SysDepartExportVo> departList = departMapper.getSysDepartList(departVo.getId(), tenantId, idList);
 		//部门为空判断
 		if (departList == null || departList.size() <= 0) {
 			//判断最后一个子部门是否已拼接
@@ -1379,7 +1381,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				childrenDepart.add(departVo);
 			}
 			//step 3.递归查询子路径，直到找不到为止
-			findSysDepartPath(exportDepartVo, cPath, tenantId, childrenDepart, departIdList);
+			findSysDepartPath(exportDepartVo, cPath, tenantId, childrenDepart, departIdList, idList);
 		}
 	}
 	//========================end 系统下部门与人员导入 ==================================================================

@@ -1531,8 +1531,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	 * @return
 	 */
 	@Override
-	public List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageSize) {
-		return sysDictService.loadDict(dictCode, keyword, pageSize);
+	public List<DictModel> loadDictItemByKeyword(String dictCode, String keyword, Integer pageNo, Integer pageSize) {
+		return sysDictService.loadDict(dictCode, keyword,pageNo, pageSize);
 	}
 
 	@Override

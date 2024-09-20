@@ -10,9 +10,20 @@
             AND role_name like #{bindKeyword}
         </if>
         <if test="role.roleCode!='' and role.roleCode!=null">
-            <bind name="bindRoleCode" value="'%'+role.roleCode+'%'"/>
-            AND role_code like #{bindRoleCode}
+            <choose>
+                <when test="role.roleCode.indexOf(',') != -1">
+                    AND role_code in
+                    <foreach item="item" index="index" collection="role.roleCode.split(',')" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    <bind name="bindRoleCode" value="'%'+role.roleCode+'%'"/>
+                    AND role_code like #{bindRoleCode}
+                </otherwise>
+            </choose>
         </if>
+       order by create_time desc
     </select>
    
 

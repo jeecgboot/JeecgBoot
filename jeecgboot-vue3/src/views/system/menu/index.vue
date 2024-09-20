@@ -78,8 +78,8 @@
       tableSetting: { fullScreen: true },
       formConfig: {
         // update-begin--author:liaozhiyang---date:20230803---for：【QQYUN-5873】查询区域lablel默认居左
-        labelWidth:60,
-        owProps: { gutter: 24 },
+        labelWidth: 74,
+        rowProps: { gutter: 24 },
         // update-end--author:liaozhiyang---date:20230803---for：【QQYUN-5873】查询区域lablel默认居左
         schemas: searchFormSchema,
         autoAdvancedCol: 4,
@@ -167,7 +167,12 @@
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    await batchDeleteMenu({ ids: checkedKeys.value }, reload);
+    await batchDeleteMenu({ ids: checkedKeys.value }, () => {
+      // -update-begin--author:liaozhiyang---date:20240702---for：【TV360X-1662】菜单管理、定时任务批量删除清空选中
+      reload();
+      checkedKeys.value = [];
+      // -update-end--author:liaozhiyang---date:20240702---for：【TV360X-1662】菜单管理、定时任务批量删除清空选中
+    });
   }
   /**
    * 成功回调

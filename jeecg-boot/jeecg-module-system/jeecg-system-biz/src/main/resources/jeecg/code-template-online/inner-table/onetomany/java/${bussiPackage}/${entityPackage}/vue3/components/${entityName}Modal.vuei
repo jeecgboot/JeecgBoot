@@ -1,7 +1,7 @@
 <#include "/common/utils.ftl">
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
-      <BasicForm @register="registerForm" ref="formRef"/>
+      <BasicForm @register="registerForm" ref="formRef" name="${entityName}Form" />
       <!-- 子表单区域 -->
       <a-tabs v-model:activeKey="activeKey" animated @change="handleChangeTabs">
   <#list subTables as sub><#rt/>
@@ -77,7 +77,9 @@
    </#list>
     //表单配置
     const [registerForm, {setProps,resetFields, setFieldsValue, validate}] = useForm({
-        //labelWidth: 150,
+        <#if tableVo.fieldRowNum == 1>
+        labelWidth: 150,
+        </#if>
         schemas: formSchema,
         showActionButtonGroup: false,
         baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}}
@@ -157,6 +159,12 @@
                  if (e.error === VALIDATE_FAILED) {
                      // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
                      activeKey.value = e.index == null ? unref(activeKey) : refKeys.value[e.index]
+                     if (e.errorFields) {
+                       const firstField = e.errorFields[0];
+                       if (firstField) {
+                         e.scrollToField(firstField.name, { behavior: 'smooth', block: 'center' });
+                       }
+                     }
                  } else {
                      console.error(e)
                  }
