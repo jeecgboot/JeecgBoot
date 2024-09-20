@@ -34,11 +34,6 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
 		</dependency>
-		<!-- 积木仪表盘 -->
-        <dependency>
-            <groupId>org.jeecgframework.jimureport</groupId>
-            <artifactId>jimureport-dashboard-spring-boot-starter</artifactId>
-        </dependency>
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>drag-free-springboot3</artifactId>
