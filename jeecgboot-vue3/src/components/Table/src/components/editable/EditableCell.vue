@@ -113,10 +113,17 @@
         const val = unref(currentValueRef);
 
         const value = isCheckValue ? (isNumber(val) && isBoolean(val) ? val : !!val) : val;
-
+        //update-begin---author:wangshuai---date:2024-09-19---for:【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
+        let tooltipPosition:any = unref(table?.wrapRef.value)?.parentElement?.querySelector('.ant-table-body');
+        if(tooltipPosition){
+          tooltipPosition.style.position = 'relative';
+        }
+        //update-end---author:wangshuai---date:2024-09-19---for:【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
         return {
           size: 'small',
-          getPopupContainer: () => unref(table?.wrapRef.value) ?? document.body,
+          //update-begin---author:wangshuai---date:2024-09-19---for:【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
+          getPopupContainer: () => tooltipPosition ?? document.body,
+          //update-end---author:wangshuai---date:2024-09-19---for:【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
           getCalendarContainer: () => unref(table?.wrapRef.value) ?? document.body,
           placeholder: createPlaceholderMessage(unref(getComponent)),
           ...apiSelectProps,
