@@ -33,7 +33,7 @@
   import { TreeSelect } from 'ant-design-vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { isObject } from '/@/utils/is';
-
+  import { useI18n } from '/@/hooks/web/useI18n';
   enum Api {
     url = '/sys/dict/loadTreeData',
     view = '/sys/dict/loadDictItem/',
@@ -65,6 +65,7 @@
     hiddenNodeKey: propTypes.string.def(''),
   });
   const attrs = useAttrs();
+  const { t } = useI18n();
   const emit = defineEmits(['change', 'update:value']);
   const slots = defineSlots();
   const { createMessage } = useMessage();
@@ -151,10 +152,10 @@
             treeValue.value = result.result.map((item, index) => ({
               key: values[index],
               value: values[index],
-              label: item,
+              label: translateTitle(item),
             }));
           }else{
-            treeValue.value = { key: props.value, value: props.value, label: result.result[0] };
+            treeValue.value = { key: props.value, value: props.value, label: translateTitle(result.result[0]) };
           }
           //update-end-author:liaozhiyang date:2023-7-17 for:【issues/5141】使用JtreeSelect 组件 控制台报错
           onLoadTriggleChange(result.result[0]);
@@ -198,6 +199,7 @@
     let res = await defHttp.get({ url: Api.url, params }, { isTransformResponse: false });
     if (res.success && res.result) {
       for (let i of res.result) {
+        i.title = translateTitle(i.title);
         i.value = i.key;
         i.isLeaf = !!i.leaf;
       }
@@ -211,13 +213,23 @@
   }
 
   /**
+   * 翻译
+   * @param text
+   */
+  function translateTitle(text) {
+    if (text.includes("t('") && t) {
+      return new Function('t', `return ${text}`)(t);
+    }
+    return text;
+  }
+  /**
    * 异步加载数据
    */
   async function asyncLoadTreeData(treeNode) {
     if (treeNode.dataRef.children) {
       return Promise.resolve();
     }
-    if(props.url){
+    if (props.url) {
       return Promise.resolve();
     }
     let pid = treeNode.dataRef.key;
@@ -234,6 +246,7 @@
     let res = await defHttp.get({ url: Api.url, params }, { isTransformResponse: false });
     if (res.success) {
       for (let i of res.result) {
+        i.title = translateTitle(i.title);
         i.value = i.key;
         i.isLeaf = !!i.leaf;
       }
@@ -334,6 +347,7 @@
     let res = await defHttp.get({ url, params }, { isTransformResponse: false });
     if (res.success && res.result) {
       for (let i of res.result) {
+        i.title = translateTitle(i.title);
         i.key = i.value;
         i.isLeaf = !!i.leaf;
       }
