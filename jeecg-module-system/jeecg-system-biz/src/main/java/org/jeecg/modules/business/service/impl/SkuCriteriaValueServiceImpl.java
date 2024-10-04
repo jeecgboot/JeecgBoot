@@ -25,4 +25,12 @@ public class SkuCriteriaValueServiceImpl extends ServiceImpl<SkuCriteriaValueMap
     public List<SkuCriteriaValue> listByCriteria(String criteriaId) {
         return skuCriteriaValueMapper.listByCriteria(criteriaId);
     }
+
+    @Override
+    public String translateValueByCriteria(String criteria, String field, String value) {
+        if(!field.equals("enName") && !field.equals("zhName")) {
+            return value;
+        }
+        return skuCriteriaValueMapper.translateValueByCriteria(criteria, field, value);
+    }
 }

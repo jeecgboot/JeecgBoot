@@ -114,7 +114,5 @@ public interface ISkuService extends IService<Sku> {
 
     List<Sku> listByClientId(String clientId);
 
-    List<org.jeecg.modules.business.model.Sku> listAsMongoCollection();
-
     List<SkuOrderPage> searchExistingSkuByKeywords(List<String> keywords);
 }

@@ -17,4 +17,6 @@ import java.util.List;
 public interface SkuCriteriaValueMapper extends BaseMapper<SkuCriteriaValue> {
 
     List<SkuCriteriaValue> listByCriteria(@Param("criteriaId") String criteriaId);
+
+    String translateValueByCriteria(@Param("criteria") String criteria, @Param("field") String field, @Param("value") String value);
 }

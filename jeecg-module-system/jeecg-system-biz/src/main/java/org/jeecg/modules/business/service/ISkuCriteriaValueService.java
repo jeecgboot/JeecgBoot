@@ -14,4 +14,6 @@ import java.util.List;
 public interface ISkuCriteriaValueService extends IService<SkuCriteriaValue> {
 
     List<SkuCriteriaValue> listByCriteria(String criteriaId);
+
+    String translateValueByCriteria(String criteria, String field, String value);
 }

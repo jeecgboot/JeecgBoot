@@ -71,7 +71,5 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     List<Sku> listByClientId(@Param("clientId") String clientId);
 
-    List<org.jeecg.modules.business.model.Sku> listAsMongoCollection();
-
     List<SkuOrderPage> searchExistingSkuByKeywords(@Param("keywords") List<String> keywords);
 }

@@ -156,9 +156,9 @@
         )
         SELECT s.id,
                s.erp_code,
-               s.en_name                                                     as productEn,
-               s.zh_name                                                     as product,
-               lsw.effective_date,
+               s.en_name,
+               s.zh_name,
+               lsw.effective_date                                            as weightEffectiveDate,
                lsw.weight
         FROM sku s
         LEFT JOIN latestSkuWeights lsw ON s.id = lsw.sku_id AND lsw.rn = 1
@@ -188,8 +188,8 @@
         )
         SELECT s.id,
                s.erp_code,
-               s.en_name                                                     as productEn,
-               s.zh_name                                                     as product,
+               s.en_name,
+               s.zh_name,
                s.purchasing_amount,
                s.available_amount,
                qtyInOrdersNotShipped.quantity                                as qtyInOrdersNotShipped,
@@ -268,9 +268,9 @@
         )
         SELECT s.id,
                s.erp_code,
-               s.en_name                                                     as productEn,
-               s.zh_name                                                     as product,
-               lsw.effective_date,
+               s.en_name,
+               s.zh_name,
+               lsw.effective_date                                            as weightEffectiveDate,
                lsw.weight
         FROM sku s
         LEFT JOIN latestSkuWeights lsw ON s.id = lsw.sku_id AND lsw.rn = 1
@@ -336,8 +336,8 @@
         )
         SELECT s.id,
                s.erp_code,
-               s.en_name                                                     as productEn,
-               s.zh_name                                                     as product,
+               s.en_name,
+               s.zh_name,
                s.purchasing_amount,
                s.available_amount,
                qtyInOrdersNotShippedCTE.quantity                                          as qtyInOrdersNotShipped,
@@ -422,8 +422,8 @@
         )
         SELECT s.id,
                s.erp_code,
-               s.en_name                                                     as productEn,
-               s.zh_name                                                     as product,
+               s.en_name,
+               s.zh_name,
                sfi.quantity                                                  as qtyOrdered,
                s.purchasing_amount                                           as purchasing_amount,
                s.available_amount                                            as available_amount,
@@ -488,9 +488,7 @@
     </select>
     <update id="updateBatchStockByIds">
         UPDATE sku
-        SET update_by = 'mabang api',
-            update_time = NOW(),
-            available_amount =
+        SET available_amount =
             case id
                 <foreach collection="skus" item="sku" index="index" separator=" ">
                     when #{sku.id} then #{sku.availableAmount}
@@ -510,86 +508,18 @@
     <select id="listByClientId" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         SELECT s.id,
                s.erp_code,
-               s.en_name                                                     as productEn,
-               s.zh_name                                                     as product
+               s.en_name,
+               s.zh_name
         FROM sku s
              JOIN client_sku ON s.id = client_sku.sku_id
         WHERE client_sku.client_id = #{clientId};
-    </select>
-    <select id="listAsMongoCollection" resultType="org.jeecg.modules.business.model.Sku">
-        WITH qtyInOrdersNotShipped AS (
-            SELECT sku_id as ID, SUM(quantity) AS quantity
-            FROM platform_order_content poc
-                     JOIN platform_order po ON poc.platform_order_id = po.id
-            WHERE po.erp_status IN ('1','2')
-              AND poc.erp_status IN ('1','2')
-            GROUP BY sku_id
-        )
-        SELECT s.id                                                                                              as sku_id,
-               s.create_by,
-               s.create_time,
-               s.update_by,
-               s.update_time,
-               s.erp_code,
-               s.en_name,
-               s.zh_name,
-               s.invoice_name,
-               s.available_amount,
-               s.purchasing_amount,
-               s.image_source,
-               s.shipping_discount,
-               s.service_fee,
-               s.status,
-               sa.en_name                                                                                        as sensitive_attribute,
-               s.moq,
-               s.is_gift,
-               c.internal_code                                                                                   as client_code,
-               (SELECT sw.weight FROM sku_weight sw WHERE sw.sku_id = s.id ORDER BY effective_date DESC LIMIT 1) as weight,
-               qtyInOrdersNotShipped.quantity                                                                    as qtyInOrdersNotShipped,
-               IF(sp.price_rmb IS NULL, sp.price,
-                  (
-                      ROUND(
-                              sp.price_rmb /
-                              (SELECT rate
-                               FROM exchange_rates
-                               WHERE original_currency = 'EUR' AND target_currency = 'RMB'
-                               ORDER BY create_time DESC LIMIT 1)
-                          ,2)
-                      )
-               )                                                             as sku_price,
-               sp.threshold                                                  as discount_moq,
-               IF(sp.price_rmb IS NULL, sp.discounted_price,
-                  (
-                      ROUND(
-                              sp.discounted_price_rmb /
-                              (SELECT rate
-                               FROM exchange_rates
-                               WHERE target_currency = 'EUR' AND original_currency = 'RMB'
-                               ORDER BY create_time DESC LIMIT 1)
-                          ,2)
-                      )
-               )                                                             as discounted_price,
-               s7.quantity                                                   as sales_last_week,
-               s28.quantity                                                  as sales_four_weeks,
-               s42.quantity                                                  as sales_six_weeks
-        FROM sku s
-        JOIN sensitive_attribute sa ON s.sensitive_attribute_id = sa.id
-        JOIN client_sku ON s.id = client_sku.sku_id
-        JOIN client c ON client_sku.client_id = c.id
-        LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
-        LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
-        LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
-        LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
-        LEFT JOIN qtyInOrdersNotShipped ON s.id = qtyInOrdersNotShipped.ID
-        WHERE c.active = 1
-            AND s.status = 3
     </select>
     <select id="searchExistingSkuByKeywords" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         SELECT
             s.id,
             s.erp_code,
-            s.en_name as productEn,
-            s.zh_name as product,
+            s.en_name,
+            s.zh_name,
             s.purchasing_amount,
             s.available_amount,
             s.image_source,
@@ -616,7 +546,7 @@
                         ORDER BY create_time DESC LIMIT 1)
                     ,2)
                 )
-            ) as discounted_price,
+            ) as discounted_price
         FROM sku s
         LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
         WHERE s.status = 3

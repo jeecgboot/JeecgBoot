@@ -71,5 +71,5 @@ public class SkuWeight implements Serializable {
      */
     @Excel(name = "生效日期", width = 15)
     @ApiModelProperty(value = "生效日期")
-    private java.util.Date effective_date;
+    private java.util.Date effectiveDate;
 }

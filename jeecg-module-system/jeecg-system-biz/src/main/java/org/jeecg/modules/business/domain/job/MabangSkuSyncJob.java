@@ -8,8 +8,11 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
 import org.jeecg.modules.business.entity.Sku;
+import org.jeecg.modules.business.entity.SkuWeight;
+import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.EmailService;
 import org.jeecg.modules.business.service.ISkuListMabangService;
+import org.jeecg.modules.business.service.ISkuWeightService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -40,6 +43,10 @@ public class MabangSkuSyncJob implements Job {
 
     @Autowired
     private ISkuListMabangService skuListMabangService;
+    @Autowired
+    private SkuMongoService skuMongoService;
+    @Autowired
+    private ISkuWeightService skuWeightService;
     @Autowired
     private EmailService emailService;
     @Autowired
@@ -86,7 +93,8 @@ public class MabangSkuSyncJob implements Job {
         if (!endDateTime.isAfter(startDateTime)) {
             throw new RuntimeException("EndDateTime must be strictly greater than StartDateTime !");
         }
-        Map<Sku, String> skusNeedTreatmentMap = new HashMap<>();
+        // all updated Skus from Mabang with their remark if any
+        Map<Sku, String> updatedSkuRemarkMap = new HashMap<>();
         try {
             if(skus.isEmpty()) {
                 log.info("Updating skus by date");
@@ -102,7 +110,7 @@ public class MabangSkuSyncJob implements Job {
 
                     if (!skusFromMabang.isEmpty()) {
                         // we save the skuDatas in DB
-                        skusNeedTreatmentMap.putAll(skuListMabangService.updateSkusFromMabang(skusFromMabang));
+                        updatedSkuRemarkMap.putAll(skuListMabangService.updateSkusFromMabang(skusFromMabang));
                     }
                     endDateTime = dayBeforeEndDateTime;
                 }
@@ -119,13 +127,26 @@ public class MabangSkuSyncJob implements Job {
                     log.info("{} skus to be updated.", skusFromMabang.size());
                     if (!skusFromMabang.isEmpty()) {
                         // we save the skuDatas in DB
-                        skusNeedTreatmentMap.putAll(skuListMabangService.updateSkusFromMabang(skusFromMabang));
+                        updatedSkuRemarkMap.putAll(skuListMabangService.updateSkusFromMabang(skusFromMabang));
                     }
                 }
             }
         } catch (SkuListRequestErrorException e) {
             throw new RuntimeException(e);
         }
+        // Mongo sync after update transaction
+        for(Sku sku : updatedSkuRemarkMap.keySet()) {
+            skuMongoService.updateSkuFromMabangSync(sku);
+            SkuWeight skuWeight = skuWeightService.getBySkuId(sku.getId());
+            skuMongoService.updateSkuWeight(sku.getErpCode(), skuWeight.getWeight());
+        }
+
+        Map<Sku, String> skusNeedTreatmentMap = new HashMap<>(updatedSkuRemarkMap);
+        updatedSkuRemarkMap.forEach((k, v) -> {
+            if (v.isEmpty()) {
+                skusNeedTreatmentMap.remove(k);
+            }
+        });
         if(skusNeedTreatmentMap.isEmpty()) {
             return;
         }

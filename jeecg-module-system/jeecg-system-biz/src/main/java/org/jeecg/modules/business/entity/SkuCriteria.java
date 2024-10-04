@@ -51,9 +51,13 @@ public class SkuCriteria implements Serializable {
 	/**criteria name*/
 	@Excel(name = "criteria name", width = 15)
     @ApiModelProperty(value = "criteria name")
-    private java.lang.String nameZh;
+    private java.lang.String zhName;
 	/**english name*/
 	@Excel(name = "english name", width = 15)
     @ApiModelProperty(value = "english name")
-    private java.lang.String nameEn;
+    private java.lang.String enName;
+    /**multiple values can be selected (0: false, 1: true)*/
+    @Excel(name = "multiple values can be selected (0: false, 1: true)", width = 15)
+    @ApiModelProperty(value = "multiple values can be selected (0: false, 1: true)")
+    private java.lang.Integer isMultiple;
 }

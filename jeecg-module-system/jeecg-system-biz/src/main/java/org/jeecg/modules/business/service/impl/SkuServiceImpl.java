@@ -568,11 +568,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
-    public List<org.jeecg.modules.business.model.Sku> listAsMongoCollection() {
-        return skuMapper.listAsMongoCollection();
-    }
-
-    @Override
     public List<SkuOrderPage> searchExistingSkuByKeywords(List<String> keywords) {
         return skuMapper.searchExistingSkuByKeywords(keywords);
     }

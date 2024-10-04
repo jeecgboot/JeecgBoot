@@ -4,12 +4,26 @@
 <select id="listByCriteria" resultType="org.jeecg.modules.business.entity.SkuCriteriaValue">
     SELECT
         scv.id,
-        scv.name_zh,
-        scv.name_en,
+        scv.zh_name,
+        scv.en_name,
         scv.code,
         scvc.name as category
     FROM sku_criteria_value scv
     LEFT JOIN sku_criteria_value_category scvc ON scv.category = scvc.id
     WHERE sku_criteria_id = #{criteriaId};
+</select>
+<select id="translateValueByCriteria" resultType="java.lang.String">
+    SELECT
+        <if test="field == 'enName'">
+            scv.en_name
+        </if>
+        <if test="field == 'zhName'">
+            scv.zh_name
+        </if>
+    FROM sku_criteria_value scv
+    JOIN sku_criteria sc ON scv.sku_criteria_id = sc.id
+    WHERE sc.en_name = #{criteria}
+    AND scv.code = #{value}
+    LIMIT 1;
 </select>
 </mapper>

@@ -524,9 +524,9 @@ public class PlatformOrderShippingInvoiceService {
         for (SkuOrderPage skuPurchase : skuOrders) {
             sheetManager.write(skuPurchase.getErpCode());
             sheetManager.nextCol();
-            sheetManager.write(skuPurchase.getProductEn());
+            sheetManager.write(skuPurchase.getEnName());
             sheetManager.nextCol();
-            sheetManager.write(skuPurchase.getProduct());
+            sheetManager.write(skuPurchase.getZhName());
             sheetManager.nextCol();
             sheetManager.write(skuPurchase.getAvailableAmount());
             sheetManager.nextCol();

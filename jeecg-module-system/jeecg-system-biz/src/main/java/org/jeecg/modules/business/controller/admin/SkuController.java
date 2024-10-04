@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.CaseFormat;
+import freemarker.template.Template;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -23,11 +25,17 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,7 +65,15 @@ public class SkuController {
     @Autowired
     private ISkuDeclaredValueService skuDeclaredValueService;
     @Autowired
-    private IClientService clientService;
+    private ISkuListMabangService skuListMabangService;
+    @Autowired
+    private SkuMongoService skuMongoService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private FreeMarkerConfigurer freemarkerConfigurer;
+    @Autowired
+    Environment env;
 
     /**
      * 分页列表查询
@@ -404,8 +420,59 @@ public class SkuController {
         return Result.OK(page);
     }
     @GetMapping("/searchExistingSkuByKeywords")
-    public Result<?> searchExistingSkuByKeywords(@RequestParam("keywords[]") List<String> keywords) {
-        System.out.println("keywords : " + keywords);
-        return Result.OK(skuService.searchExistingSkuByKeywords(keywords));
+    public Result<?> searchExistingSkuByKeywords(@RequestParam("keywords") String keywords) {
+        String parsedKeywords = keywords.trim().replaceAll("[{}=$]", "");
+        System.out.println("keywords : " + parsedKeywords);
+        if(parsedKeywords.isEmpty()) {
+            return Result.OK(new ArrayList<>());
+        }
+        return Result.OK(skuMongoService.textSearch(parsedKeywords));
+    }
+
+    @PostMapping("/createMabangSku")
+    public Result<?> createMabangSku(@RequestBody List<SkuOrderPage> skuList) {
+        System.out.println(skuList);
+        skuList.forEach(sku -> sku.setStatus(3));
+        return Result.OK(skuListMabangService.publishSkuToMabang(skuList));
+    }
+    @PostMapping("syncSkus")
+    public Result<?> syncSkus(@RequestBody List<String> erpCodes) {
+        System.out.println("syncSkus : " + erpCodes);
+        Map<Sku, String> newSkusNeedTreatmentMap;
+
+        try {
+            newSkusNeedTreatmentMap = skuListMabangService.skuSyncUpsert(erpCodes);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+        skuListMabangService.updateSkuId();
+
+        // here we send system notification with the list of new skus that need extra treatment
+        if (newSkusNeedTreatmentMap.isEmpty()) {
+            return Result.ok();
+        }
+        Properties prop = emailService.getMailSender();
+        Session session = Session.getInstance(prop, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
+            }
+        });
+
+        String subject = "Association of Sku to Client failed while creating new Sku";
+        String destEmail = env.getProperty("company.jessy.email");
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("operation", "créés");
+        templateModel.put("skusMap", newSkusNeedTreatmentMap);
+        try {
+            freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+            Template template = freemarkerConfigurer.getConfiguration().getTemplate("admin/unknownClientForSku.ftl");
+            String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(template, templateModel);
+            emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
+            log.info("Mail sent successfully");
+        } catch (Exception e) {
+            log.error("Error sending mail: {}", e.getMessage());
+        }
+        return Result.OK();
     }
 }

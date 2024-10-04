@@ -24,4 +24,9 @@ public class SkuPriceServiceImpl extends ServiceImpl<SkuPriceMapper, SkuPrice> i
 	public List<SkuPrice> selectByMainId(String mainId) {
 		return skuPriceMapper.selectByMainId(mainId);
 	}
+
+	@Override
+	public SkuPrice getLatestBySkuId(String sku_id) {
+		return skuPriceMapper.getLatestBySkuId(sku_id);
+	}
 }

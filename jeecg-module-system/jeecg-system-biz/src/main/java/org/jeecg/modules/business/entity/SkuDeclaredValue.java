@@ -16,8 +16,6 @@ import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * @Description: SKU申报价格
  * @Author: jeecg-boot

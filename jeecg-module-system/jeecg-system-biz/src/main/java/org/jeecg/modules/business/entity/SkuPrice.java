@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
-
 /**
  * @Description: SKU价格表
  * @Author: jeecg-boot
@@ -23,7 +22,7 @@ import java.util.Date;
  * @Version: V1.1
  */
 @ApiModel(value = "sku对象", description = "SKU表")
-@Setter
+@Data
 @RequiredArgsConstructor
 @EqualsAndHashCode
 @TableName("sku_price")
@@ -35,7 +34,6 @@ public class SkuPrice implements Serializable {
      */
     @TableId(type = IdType.ASSIGN_ID)
     @ApiModelProperty(value = "主键")
-    @Getter
     private String id;
 
     /**
@@ -56,18 +54,23 @@ public class SkuPrice implements Serializable {
     @ApiModelProperty(value = "更新人")
     private java.lang.String updateBy;
     /**
+     * 更新日期
+     */
+    @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "更新日期")
+    private java.util.Date updateTime;
+    /**
      * SKU ID
      */
     @Dict(dictTable = "sku", dicText = "erp_code", dicCode = "id")
     @ApiModelProperty(value = "SKU ID")
-    @Getter
     private String skuId;
     /**
      * 价格
      */
     @Excel(name = "价格", width = 15)
     @ApiModelProperty(value = "价格")
-    @Getter
     private BigDecimal price;
 
     /**
@@ -75,14 +78,12 @@ public class SkuPrice implements Serializable {
      */
     @Excel(name = "优惠价起订量", width = 15)
     @ApiModelProperty(value = "优惠价起订量")
-    @Getter
     private Integer threshold;
     /**
      * 优惠价
      */
     @Excel(name = "优惠价", width = 15)
     @ApiModelProperty(value = "优惠价")
-    @Getter
     private java.math.BigDecimal discountedPrice;
     /**
      * 生效日期
@@ -97,14 +98,12 @@ public class SkuPrice implements Serializable {
      */
     @Excel(name = "人民币价格", width = 15)
     @ApiModelProperty(value = "人民币价格")
-    @Getter
     private java.math.BigDecimal priceRmb;
     /**
      * 人民币优惠价
      */
     @Excel(name = "人民币优惠价", width = 15)
     @ApiModelProperty(value = "人民币优惠价")
-    @Getter
     private java.math.BigDecimal discountedPriceRmb;
 
     /**

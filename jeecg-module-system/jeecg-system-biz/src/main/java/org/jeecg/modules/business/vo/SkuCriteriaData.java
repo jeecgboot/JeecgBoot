@@ -5,7 +5,8 @@ import lombok.Data;
 @Data
 public class SkuCriteriaData {
     private final String id;
-    private final String nameZh;
-    private final String nameEn;
+    private final String zhName;
+    private final String enName;
     private final Integer ranking;
+    private final Integer isMultiple;
 }

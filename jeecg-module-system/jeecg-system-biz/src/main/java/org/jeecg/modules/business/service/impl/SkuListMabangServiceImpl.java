@@ -3,14 +3,18 @@ package org.jeecg.modules.business.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
-import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuListRequestErrorException;
-import org.jeecg.modules.business.entity.Sku;
-import org.jeecg.modules.business.entity.SkuDeclaredValue;
-import org.jeecg.modules.business.entity.SkuPrice;
-import org.jeecg.modules.business.entity.SkuWeight;
+import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.modules.business.domain.api.mabang.Response;
+import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
+import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddRequest;
+import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddResponse;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.SkuListMabangMapper;
 import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.SkuOrderPage;
+import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,9 @@ import javax.mail.Session;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +42,8 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, SkuData> implements ISkuListMabangService {
+    @Autowired
+    private ISensitiveAttributeService sensitiveAttributeService;
     @Autowired
     private SkuListMabangMapper skuListMabangMapper;
     @Autowired
@@ -50,9 +59,15 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     @Autowired
     private EmailService emailService;
     @Autowired
+    private MigrationService migrationService;
+    @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
     @Autowired
     Environment env;
+
+    private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
+
+    private final static String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
 
     // In NameCN field on top of the product name we also get the customer code in the beginning of the string : "XX Description of the product"
     final Pattern cnNamePattern = Pattern.compile("^([a-zA-Z]{2,5})\\s(.*)$");
@@ -102,11 +117,9 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                 // we can proceed to create new sku_declare_value associated with the new Sku and also sku_price after we create new skus
 //                Map<String, String> productNeedTreatment = saveProductFromMabang(newSkuDatas);
                 log.info("{} skus to be inserted.", newSkuDatas.size());
-
                 //create a new sku for each sku data
                 newSkusMap = createSkus(newSkuDatas);
                 List<Sku> newSkus = new ArrayList<>(newSkusMap.keySet());
-                skuService.saveBatch(newSkus);
 
                 // attributing sku to client
                 List<String> unknownClientSkus = clientSkuService.saveClientSku(newSkus);
@@ -144,22 +157,15 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         } catch (RuntimeException e) {
             log.error(e.getLocalizedMessage());
         }
-        // return only skus that need manual treatment
-        Map<Sku, String> skusNeedTreatmentMap = newSkusMap;
-        newSkusMap.forEach((k, v) -> {
-            if (v.isEmpty()) {
-                skusNeedTreatmentMap.remove(k);
-            }
-        });
-        return skusNeedTreatmentMap;
+        return newSkusMap;
     }
 
     @Override
     @Transactional
     public Map<Sku, String> updateSkusFromMabang(List<SkuData> skuDataList) {
-        Map<Sku, String> updateSkusNeedTreatmentMap = new HashMap<>();
+        Map<Sku, String> updatedSkusRemarkMap = new HashMap<>();
         if (skuDataList.isEmpty()) {
-            return updateSkusNeedTreatmentMap;
+            return updatedSkusRemarkMap;
         }
         // we collect all erpCode
         List<String> allSkuErpCode = skuDataList.stream()
@@ -247,7 +253,9 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                     // update sku_weight
                     String remark = updateSkuWeight(s, skuData.getSaleRemark());
                     if(!remark.isEmpty())
-                        updateSkusNeedTreatmentMap.put(s, remark);
+                        updatedSkusRemarkMap.put(s, remark);
+                    else
+                        updatedSkusRemarkMap.put(s, "");
                 }
                 if(!skusToUpdate.isEmpty())
                     skuService.updateBatchById(skusToUpdate);
@@ -256,7 +264,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         } catch (RuntimeException e) {
             log.error(e.getLocalizedMessage());
         }
-        return updateSkusNeedTreatmentMap;
+        return updatedSkusRemarkMap;
     }
 
     public void saveSkuPrices(List<SkuData> newSkus) {
@@ -403,10 +411,11 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         return skuMap;
     }
     public String createSkuWeight(Sku sku, String salesRemark) {
+        System.out.println("salesRemark : " + salesRemark);
         String remark = "";
         SkuWeight sw = new SkuWeight();
         sw.setSkuId(sku.getId());
-        sw.setEffective_date(new Date());
+        sw.setEffectiveDate(new Date());
         Matcher saleRemarkMatcher = saleRemarkPattern.matcher(salesRemark);
         if(saleRemarkMatcher.matches() && !saleRemarkMatcher.group(1).isEmpty()) {
             String saleRemark = saleRemarkMatcher.group(1);
@@ -439,5 +448,121 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             }
         }
         return remark;
+    }
+    public Responses publishSkuToMabang(List<SkuOrderPage> skuList) {
+        List<SkuData> skuDataList = skuList.stream()
+                .map(this::SkuOrderPageToSkuData)
+                .collect(toList());
+        List<SkuAddRequestBody> requestBodies = new ArrayList<>();
+        for(SkuData skuData : skuDataList) {
+            requestBodies.add(new SkuAddRequestBody(skuData));
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
+
+        List<CompletableFuture<SkuAddResponse>> futures = requestBodies.stream()
+                .map(requestBody -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        SkuAddRequest request = new SkuAddRequest(requestBody);
+                        return request.send();
+                    } catch (Exception e) {
+                        log.error("Error publishing sku {} to mabang : {}", requestBody.getStockSku(), e.getMessage());
+                        return new SkuAddResponse(Response.Code.ERROR, null, null, requestBody.getStockSku());
+                    }
+                }, executor))
+                .collect(toList());
+        List<SkuAddResponse> results = futures.stream().map(CompletableFuture::join).collect(toList());
+        long successCount = results.stream().filter(SkuAddResponse::success).count();
+        log.info("{}/{} skus published successfully.", successCount, skuDataList.size());
+        List<String> successes = results.stream()
+                .filter(SkuAddResponse::success)
+                .map(SkuAddResponse::getStockSku)
+                .collect(toList());
+        List<String> failures = results.stream()
+                .filter(response -> !response.success())
+                .map(SkuAddResponse::getStockSku)
+                .collect(toList());
+        Responses responses = new Responses();
+        responses.setSuccesses(successes);
+        responses.setFailures(failures);
+        return responses;
+    }
+
+    /**
+     * Upsert skus to Mabang, max 50 skus
+     * @param erpCodes
+     * @return
+     */
+    @Transactional
+    @Override
+    public Map<Sku, String> skuSyncUpsert(List<String> erpCodes) {
+        Map<Sku, String> newSkusNeedTreatmentMap = new HashMap<>();
+        SkuListRequestBody body = new SkuListRequestBody();
+        body.setStockSkuList(String.join(",", erpCodes));
+        SkuListRawStream rawStream = new SkuListRawStream(body);
+        SkuListStream stream = new SkuListStream(rawStream);
+        List<SkuData> skusFromMabang = stream.all();
+        if (!skusFromMabang.isEmpty()) {
+            // we save the skuDatas in DB
+            // and store skus that need manual treatment
+            System.out.println("skusFromMabang : " + skusFromMabang);
+            Map<Sku, String> newSkusMap = new HashMap<>(saveSkuFromMabang(skusFromMabang));
+            newSkusNeedTreatmentMap = new HashMap<>(newSkusMap);
+            Map<Sku, String> finalNewSkusNeedTreatmentMap = newSkusNeedTreatmentMap;
+            newSkusMap.forEach((k, v) -> {
+                if (v.isEmpty()) {
+                    finalNewSkusNeedTreatmentMap.remove(k);
+                }
+            });
+            // mongo sync after transaction
+            for(Sku sku : newSkusMap.keySet()) {
+                try {
+                    migrationService.migrateOneSku(sku);
+                } catch (Exception e) {
+                    log.error("Error while migrating skuId: {}", sku.getId());
+                    log.error(e.getMessage());
+                }
+            }
+        }
+        return newSkusNeedTreatmentMap;
+    }
+
+    public SkuData SkuOrderPageToSkuData(SkuOrderPage skuOrderPage) {
+        SensitiveAttribute sensitiveAttribute = sensitiveAttributeService.getById(skuOrderPage.getSensitiveAttribute());
+        SkuData skuData = new SkuData();
+        skuData.setErpCode(skuOrderPage.getErpCode());
+        skuData.setNameCN(skuOrderPage.getZhName());
+        skuData.setNameEN(skuOrderPage.getEnName());
+        skuData.setDeclareNameZh(skuOrderPage.getDeclareName());
+        skuData.setDeclareNameEn(skuOrderPage.getDeclareEname());
+        skuData.setSalePrice(skuOrderPage.getSkuPrice());
+        skuData.setDeclareValue(skuOrderPage.getDeclaredValue());
+        skuData.setProvider(DEFAULT_WAREHOUSE_NAME);
+        if(skuOrderPage.getWeight() != null)
+            skuData.setSaleRemark(skuOrderPage.getWeight().toString());
+        skuData.setHasBattery(sensitiveAttribute.getHasBattery());
+        skuData.setMagnetic(sensitiveAttribute.getMagnetic());
+        skuData.setPowder(sensitiveAttribute.getPowder());
+        skuData.setIsPaste(sensitiveAttribute.getIsPaste());
+        skuData.setNoLiquidCosmetic(sensitiveAttribute.getNoLiquidCosmetic());
+        skuData.setIsFlammable(sensitiveAttribute.getIsFlammable());
+        skuData.setIsKnife(sensitiveAttribute.getIsKnife());
+        skuData.setIsGift(skuOrderPage.getIsGift());
+        skuData.setSupplier(skuOrderPage.getSupplier());
+        skuData.setSupplierLink(skuOrderPage.getSupplierLink());
+        return skuData;
+    }
+
+
+    /**
+     * Call a routine to replace SKU codes (from MabangAPI)
+     * by SKU IDs in platform_order_content table after creating new SKUs
+     */
+    @Override
+    public void updateSkuId() {
+        OnlCgformFieldMapper onlCgformFieldMapper = SpringContextUtils.getBean(OnlCgformFieldMapper.class);
+        Map<String, Object> params = new HashMap<>();
+        String sql = "UPDATE platform_order_content SET sku_id = skuErpToId(sku_id) WHERE sku_id NOT LIKE '1%'";
+        params.put("execute_sql_string", sql);
+        onlCgformFieldMapper.executeUpdatetSQL(params);
     }
 }

@@ -3,6 +3,8 @@ package org.jeecg.modules.business.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
 import org.jeecg.modules.business.entity.Sku;
+import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.SkuOrderPage;
 
 import java.util.List;
 import java.util.Map;
@@ -29,4 +31,9 @@ public interface ISkuListMabangService extends IService<SkuData> {
      */
     List<String> parseSkuListToProductCodeList(List<SkuData> erpCodeList) throws Exception;
     Map<Sku, String> createSkus(List<SkuData> skuDataList);
+
+    Responses publishSkuToMabang(List<SkuOrderPage> skuList);
+
+    Map<Sku, String> skuSyncUpsert(List<String> erpCodes);
+    void updateSkuId();
 }

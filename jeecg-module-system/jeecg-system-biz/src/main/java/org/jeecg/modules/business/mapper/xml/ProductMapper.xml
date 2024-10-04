@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.ProductMapper">
+<select id="listByCategory" resultType="org.jeecg.modules.business.entity.Product">
+    SELECT product.en_name, product.zh_name, product.code
+    FROM product
+    JOIN sku_category sc ON product.category = sc.id
+    WHERE sc.code = #{categoryCode}
+</select>
+<select id="translateProductNameByValue" resultType="java.lang.String">
+    SELECT
+        <if test="field == 'enName'">
+            p.en_name
+        </if>
+        <if test="field == 'zhName'">
+            p.zh_name
+        </if>
+    FROM product p
+    JOIN sku_category sc ON p.category = sc.id
+    WHERE p.code = #{value}
+    AND sc.code = #{categoryCode}
+    LIMIT 1;
+</select>
+</mapper>

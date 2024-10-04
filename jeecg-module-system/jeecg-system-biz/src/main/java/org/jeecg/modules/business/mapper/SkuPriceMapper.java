@@ -18,4 +18,6 @@ public interface SkuPriceMapper extends BaseMapper<SkuPrice> {
 	boolean deleteByMainId(@Param("mainId") String mainId);
     
 	List<SkuPrice> selectByMainId(@Param("mainId") String mainId);
+
+    SkuPrice getLatestBySkuId(@Param("skuId") String skuId);
 }

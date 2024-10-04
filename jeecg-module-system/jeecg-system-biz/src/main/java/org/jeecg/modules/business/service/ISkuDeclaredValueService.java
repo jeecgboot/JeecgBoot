@@ -21,4 +21,6 @@ public interface ISkuDeclaredValueService extends IService<SkuDeclaredValue> {
     BigDecimal getDeclaredValueForDate(String skuId, Date date);
 
     List<SkuDeclaredValue> getLatestDeclaredValues();
+
+    SkuDeclaredValue getLatestBySkuId(String sku_id);
 }

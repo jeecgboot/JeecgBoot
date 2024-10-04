@@ -44,6 +44,11 @@ public class SkuData {
     private BigDecimal salePrice;
     @JSONField(name="declareValue")
     private BigDecimal declareValue;
+    @JSONField(name="declareName")
+    private String declareNameZh;
+    /**申报英文名称, yes yes declareEname not declareEnName*/
+    @JSONField(name="declareEname")
+    private String declareNameEn;
     /**最新采购价*/
     @JSONField(name="purchasePrice")
     private BigDecimal purchasePrice;
@@ -87,10 +92,40 @@ public class SkuData {
     @JSONField(name="magnetic")
     private Integer magnetic ;
     /**
+     * 粉末 1.是 2.否
+     */
+    @JSONField(name="powder")
+    private Integer powder;
+    /**
+     * 膏体：1是、2否
+     */
+    @JSONField(name="ispaste")
+    private Integer isPaste;
+    /**
+     * 0:非液体,2:液体(化妆品),1:非液体(化妆品),3:液体(非化妆品)
+     */
+    @JSONField(name="noLiquidCosmetic")
+    private Integer noLiquidCosmetic;
+    /**
+     * 是否为易燃品 1: 是 2：不是，默认为2
+     */
+    @JSONField(name="is_flammable")
+    private Integer isFlammable;
+    /**
+     * 是否为刀具 1：是 2：不是，默认为2
+     */
+    @JSONField(name="is_knife")
+    private Integer isKnife;
+    /**
      * 是否赠品1是;2否
      */
     @JSONField(name="isGift")
     private Integer isGift;
+
+    @JSONField(name="provider")
+    private String supplier;
+    @JSONField(name="productLinkAddress")
+    private String supplierLink;
 
     public SkuStatus getStatus() {
         return SkuStatus.fromCode(this.status);

@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.controller.admin;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -164,5 +165,16 @@ public class SkuCriteriaValueController extends JeecgController<SkuCriteriaValue
 	public Result<?> listByCriteria(@RequestParam(name="criteriaId") String criteriaId) {
 		List<SkuCriteriaValue> list = skuCriteriaValueService.listByCriteria(criteriaId);
 		return Result.OK(list);
+	}
+	@GetMapping(value = "/translateValueByCriteria")
+	public Result<?> translateValueByCriteria(@RequestParam(name="criteria") String criteria,
+											  @RequestParam(name="field") String field,
+											  @RequestParam(name="value") String value)
+	{
+		String translatedValue = skuCriteriaValueService.translateValueByCriteria(criteria, field, value);
+		if(translatedValue == null) {
+			return Result.ok(Collections.singletonList(value));
+		}
+		return Result.ok(Collections.singletonList(translatedValue));
 	}
 }

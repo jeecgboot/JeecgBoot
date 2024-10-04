@@ -9,24 +9,23 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Description: sku erpCode sub category
+ * @Description: sku product
  * @Author: jeecg-boot
- * @Date:   2024-08-28
+ * @Date:   2024-10-03
  * @Version: V1.0
  */
 @Data
-@TableName("sku_subcategory")
+@TableName("product")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="sku_subcategory对象", description="sku erpCode sub category")
-public class SkuSubcategory implements Serializable {
+@ApiModel(value="product对象", description="sku product")
+public class Product implements Serializable {
     private static final long serialVersionUID = 1L;
 
 	/**主键*/
@@ -49,21 +48,20 @@ public class SkuSubcategory implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
-	/**zh name*/
-	@Excel(name = "zh name", width = 15)
-    @ApiModelProperty(value = "zh name")
-    private java.lang.String zhName;
+	/**code*/
+	@Excel(name = "code", width = 15)
+    @ApiModelProperty(value = "code")
+    private java.lang.Integer code;
+	/**sku_category*/
+	@Excel(name = "sku_category", width = 15)
+    @ApiModelProperty(value = "sku_category")
+    private java.lang.String category;
 	/**english name*/
 	@Excel(name = "english name", width = 15)
     @ApiModelProperty(value = "english name")
     private java.lang.String enName;
-	/**code*/
-	@Excel(name = "code", width = 15)
-    @ApiModelProperty(value = "code")
-    private java.lang.String code;
-	/**sku category id*/
-	@Excel(name = "sku category id", width = 15, dictTable = "sku_category", dicText = "code", dicCode = "id")
-	@Dict(dictTable = "sku_category", dicText = "code", dicCode = "id")
-    @ApiModelProperty(value = "sku category id")
-    private java.lang.String skuCategoryId;
+	/**中文名称*/
+	@Excel(name = "中文名称", width = 15)
+    @ApiModelProperty(value = "中文名称")
+    private java.lang.String zhName;
 }

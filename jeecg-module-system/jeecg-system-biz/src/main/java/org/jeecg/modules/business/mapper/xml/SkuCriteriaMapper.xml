@@ -4,12 +4,14 @@
 <select id="listByCategoryCode" resultType="org.jeecg.modules.business.vo.SkuCriteriaData">
 SELECT
     sc.id,
-    sc.name_zh,
-    sc.name_en,
-    scc.ranking
+    sc.zh_name,
+    sc.en_name,
+    scc.ranking,
+    sc.is_multiple
     FROM sku_criteria sc
     JOIN sku_category_criteria scc ON sc.id = scc.sku_criteria_id
     JOIN sku_category scg ON scc.sku_category_id = scg.id
     WHERE scg.code = #{category}
+    ORDER BY scc.ranking;
 </select>
 </mapper>

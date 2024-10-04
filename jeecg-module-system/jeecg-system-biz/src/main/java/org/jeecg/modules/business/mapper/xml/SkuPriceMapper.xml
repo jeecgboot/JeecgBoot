@@ -2,15 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.SkuPriceMapper">
 
-	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  sku_price 
-		WHERE
-			 sku_id = #{mainId} 	</delete>
-	
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.SkuPrice">
-		SELECT * 
-		FROM  sku_price
-		WHERE
-			 sku_id = #{mainId} 	</select>
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+        DELETE
+        FROM sku_price
+        WHERE sku_id = #{mainId}
+    </delete>
+
+    <select id="selectByMainId" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.SkuPrice">
+        SELECT *
+        FROM sku_price
+        WHERE sku_id = #{mainId}
+    </select>
+	<select id="getLatestBySkuId" resultType="org.jeecg.modules.business.entity.SkuPrice">
+		SELECT date, price, threshold, discounted_price, price_rmb, discounted_price_rmb
+		FROM sku_price
+		WHERE sku_id = #{skuId}
+		ORDER BY date DESC
+		LIMIT 1;
+	</select>
 </mapper>

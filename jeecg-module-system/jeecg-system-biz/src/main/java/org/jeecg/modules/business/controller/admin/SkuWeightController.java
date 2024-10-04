@@ -179,7 +179,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		}
 		SkuWeight skuWeight = new SkuWeight();
 		skuWeight.setCreateBy(sysUser.getUsername());
-		skuWeight.setEffective_date(new Date());
+		skuWeight.setEffectiveDate(new Date());
 		skuWeight.setSkuId(skuId);
 		skuWeightService.save(skuWeight);
 		return Result.OK("data.invoice.effectiveDate");
@@ -200,7 +200,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			}
 			SkuWeight skuWeight = new SkuWeight();
 			skuWeight.setCreateBy(sysUser.getUsername());
-			skuWeight.setEffective_date(param.getEffectiveDate());
+			skuWeight.setEffectiveDate(param.getEffectiveDate());
 			skuWeight.setSkuId(skuId);
 			skuWeight.setWeight(param.getWeight());
 			skuWeights.add(skuWeight);

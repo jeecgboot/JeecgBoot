@@ -52,11 +52,11 @@ public class SkuCriteriaValue implements Serializable {
 	/**value zh name*/
 	@Excel(name = "value zh name", width = 15)
     @ApiModelProperty(value = "value zh name")
-    private java.lang.String nameZh;
+    private java.lang.String zhName;
 	/**value en name*/
 	@Excel(name = "value en name", width = 15)
     @ApiModelProperty(value = "value en name")
-    private java.lang.String nameEn;
+    private java.lang.String enName;
 	/**value in code form*/
 	@Excel(name = "value in code form", width = 15)
     @ApiModelProperty(value = "value in code form")
