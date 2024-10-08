@@ -60,7 +60,7 @@
 		<druid.version>1.2.22</druid.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.7.8</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.8.1</jimureport-spring-boot-starter.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
@@ -69,7 +69,7 @@
 		<shiro.version>1.12.0</shiro.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.2.2</shiro-redis.version>
-		<codegenerate.version>1.4.7</codegenerate.version>
+		<codegenerate.version>1.4.9</codegenerate.version>
 		<autopoi-web.version>1.4.7</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
