@@ -70,7 +70,7 @@
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<shiro-redis.version>3.2.2</shiro-redis.version>
 		<codegenerate.version>1.4.9</codegenerate.version>
-		<autopoi-web.version>1.4.7</autopoi-web.version>
+		<autopoi-web.version>1.4.11</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
@@ -261,7 +261,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.7.0</version>
+				<version>3.7.1-RC</version>
 			</dependency>
 			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 			<dependency>
