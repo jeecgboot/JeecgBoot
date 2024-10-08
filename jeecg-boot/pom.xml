@@ -438,8 +438,8 @@
 			<!-- 积木仪表盘-->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
-				<artifactId>drag-free</artifactId>
-				<version>1.1.2</version>
+				<artifactId>jimureport-dashboard-spring-boot3-starter</artifactId>
+				<version>1.8.1-beta</version>
 			</dependency>
 			<!-- chatgpt -->
 			<dependency>
