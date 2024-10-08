@@ -14,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface SysDepartRoleUserMapper extends BaseMapper<SysDepartRoleUser> {
 
+    void deleteByRoleIds(@Param("ids")List<String> ids);
 }

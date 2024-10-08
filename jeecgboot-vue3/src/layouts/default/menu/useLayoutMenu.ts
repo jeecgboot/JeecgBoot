@@ -62,7 +62,9 @@ export function useSplitMenu(splitType: Ref<MenuSplitTyeEnum>) {
   watch(
     () => getSplit.value,
     () => {
-      if (unref(splitNotLeft)) return;
+      // update-begin--author:liaozhiyang---date:20240919---for：【issues/7209】顶部左侧组合菜单关闭之后左侧导航没还原
+      // if (unref(splitNotLeft)) return;
+      // update-end--author:liaozhiyang---date:20240919---for：【issues/7209】顶部左侧组合菜单关闭之后左侧导航没还原
       genMenus();
     }
   );

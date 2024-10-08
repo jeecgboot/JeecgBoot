@@ -158,6 +158,7 @@
   import '../style/style.less';
 
   const props = defineProps(['chatData', 'uuid', 'dataSource']);
+  const emit = defineEmits(['save']);
   const { scrollRef, scrollToBottom, scrollToBottomIfAtBottom } = useScroll();
   const prompt = ref<string>('');
   const loading = ref<boolean>(false);
@@ -335,6 +336,7 @@
         try {
           return await new Promise<void>((resolve) => {
             props.chatData.length = 0;
+            emit('save');
             resolve();
           });
         } catch {

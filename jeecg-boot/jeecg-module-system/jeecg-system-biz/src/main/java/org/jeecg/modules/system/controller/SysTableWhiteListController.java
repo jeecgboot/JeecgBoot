@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
@@ -41,7 +42,8 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      * @param req
      * @return
      */
-    @RequiresRoles("admin")
+    //@RequiresRoles("admin")
+    @RequiresPermissions("system:tableWhite:list")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(
             SysTableWhiteList sysTableWhiteList,
@@ -63,7 +65,8 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      */
     @AutoLog(value = "系统表白名单-添加")
     @Operation(summary = "系统表白名单-添加")
-    @RequiresRoles("admin")
+    //@RequiresRoles("admin")
+    @RequiresPermissions("system:tableWhite:add")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody SysTableWhiteList sysTableWhiteList) {
         if (sysTableWhiteListService.add(sysTableWhiteList)) {
@@ -81,7 +84,8 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      */
     @AutoLog(value = "系统表白名单-编辑")
     @Operation(summary =  "系统表白名单-编辑")
-    @RequiresRoles("admin")
+    //@RequiresRoles("admin")
+    @RequiresPermissions("system:tableWhite:edit")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     public Result<?> edit(@RequestBody SysTableWhiteList sysTableWhiteList) {
         if (sysTableWhiteListService.edit(sysTableWhiteList)) {
@@ -99,7 +103,8 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      */
     @AutoLog(value = "系统表白名单-通过id删除")
     @Operation(summary = "系统表白名单-通过id删除")
-    @RequiresRoles("admin")
+//    @RequiresRoles("admin")
+    @RequiresPermissions("system:tableWhite:delete")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id") String id) {
         if (sysTableWhiteListService.deleteByIds(id)) {
@@ -117,7 +122,8 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      */
     @AutoLog(value = "系统表白名单-批量删除")
     @Operation(summary =  "系统表白名单-批量删除")
-    @RequiresRoles("admin")
+//    @RequiresRoles("admin")
+    @RequiresPermissions("system:tableWhite:deleteBatch")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids") String ids) {
         if (sysTableWhiteListService.deleteByIds(ids)) {
@@ -135,7 +141,8 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      */
     @AutoLog(value = "系统表白名单-通过id查询")
     @Operation(summary = "系统表白名单-通过id查询")
-    @RequiresRoles("admin")
+//    @RequiresRoles("admin")
+    @RequiresPermissions("system:tableWhite:queryById")
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         SysTableWhiteList sysTableWhiteList = sysTableWhiteListService.getById(id);

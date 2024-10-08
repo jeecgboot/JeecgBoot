@@ -95,6 +95,22 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       placeholder: '请输入标题',
     },
+    // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1632】标题过长保存报错，长度校验
+    dynamicRules() {
+      return [
+        {
+          validator: (_, value) => {
+            return new Promise<void>((resolve, reject) => {
+              if (value.length > 100) {
+                reject('最长100个字符');
+              }
+              resolve();
+            });
+          },
+        },
+      ];
+    },
+    // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1632】标题过长保存报错，长度校验
   },
   {
     field: 'msgAbstract',
@@ -132,7 +148,9 @@ export const formSchema: FormSchema[] = [
     required: true,
     componentProps: {
       rowKey: 'id',
-      labelKey: 'username',
+      // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1627】通知公告用户选择组件没翻译
+      labelKey: 'realname',
+      // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1627】通知公告用户选择组件没翻译
     },
     ifShow: ({ values }) => values.msgType == 'USER',
   },

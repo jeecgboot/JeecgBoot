@@ -129,7 +129,7 @@
       {
         label: '编辑',
         onClick: handleEdit.bind(null, record),
-        ifShow: record.sendStatus == 0,
+        ifShow: record.sendStatus == 0 || record.sendStatus == '2',
       },
     ];
   }

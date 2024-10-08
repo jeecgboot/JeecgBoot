@@ -1,6 +1,9 @@
 <template>
   <div>
-    <a-row class="j-select-row" type="flex" :gutter="8">
+    <div v-if="isDetailsMode">
+      <p class="detailStr" :title="detailStr">{{ detailStr }}</p>
+    </div>
+    <a-row v-else class="j-select-row" type="flex" :gutter="8">
       <a-col class="left" :class="{ full: !showButton }">
         <!-- 显示加载效果 -->
         <a-input v-if="loading" readOnly placeholder="加载中…">
@@ -32,7 +35,7 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, inject, reactive } from 'vue';
+  import { defineComponent, ref, inject, reactive, watch } from 'vue';
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { LoadingOutlined } from '@ant-design/icons-vue';
@@ -59,6 +62,8 @@
       maxTagCount: propTypes.number,
       // buttonIcon
       buttonIcon: propTypes.string.def(''),
+      // 【TV360X-1002】是否是详情模式
+      isDetailsMode: propTypes.bool.def(false),
     },
     emits: ['handleOpen', 'change'],
     setup(props, { emit, refs }) {
@@ -67,7 +72,7 @@
       //接收选择的值
       const selectValues = inject('selectValues') || ref({});
       const attrs = useAttrs();
-
+      const detailStr = ref('');
       /**
        * 打开弹出框
        */
@@ -89,12 +94,28 @@
         emit('change', value);
       }
 
+      // -update-begin--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
+      watch(
+        [selectValues, options],
+        () => {
+          if (props.isDetailsMode) {
+            if (Array.isArray(selectValues.value) && Array.isArray(options.value)) {
+              const result = options.value.map((item) => item.label);
+              detailStr.value = result.join(',');
+            }
+          }
+        },
+        { immediate: true }
+      );
+      // -update-end--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
+
       return {
         attrs,
         selectValues,
         options,
         handleChange,
         openModal,
+        detailStr,
       };
     },
   });
@@ -118,5 +139,11 @@
     :deep(.ant-select-search__field) {
       display: none !important;
     }
+  }
+  .detailStr {
+    margin: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>

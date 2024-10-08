@@ -7,6 +7,7 @@ import { JVxeRenderType } from '../types/JVxeTypes';
 import { isBoolean, isFunction, isObject, isPromise } from '/@/utils/is';
 import { JVxeComponent } from '../types/JVxeComponent';
 import { filterDictText } from '/@/utils/dict/JDictSelectUtil';
+import { getAreaTextByCode } from "@/components/Form/src/utils/Area";
 
 export function useJVxeCompProps() {
   return {
@@ -44,6 +45,17 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
   const fullDataLength = computed(() => props.params.$table.internalData.tableFullData.length);
   // 是否正在滚动中
   const scrolling = computed(() => !!props.renderOptions.scrolling);
+  // 当有formatter时，优先使用formatter
+  const innerLabel = computed(() => {
+    if(typeof column.value?.formatter === 'function'){
+      return column.value.formatter({
+        cellValue: innerValue.value,
+        row: row.value,
+        column: column.value,
+      });
+    }
+    return innerValue.value
+  });
   const cellProps = computed(() => {
     let renderOptions = props.renderOptions;
     let col = originColumn.value;
@@ -111,6 +123,7 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
     return listeners;
   });
   const context = {
+    innerLabel,
     innerValue,
     row,
     rows,
@@ -148,6 +161,14 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
         return;
       }
       // update-end--author:liaozhiyang---date:20240509---for：【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
+
+      //update-begin---author:wangshuai---date:2024-09-18---for:【issues/7203】自动生成一对多表单代码中，省市区回显问题---
+      if (props.type === 'pca' && props.renderType === JVxeRenderType.spaner) {
+        innerValue.value = getAreaTextByCode(newValue);
+        return;
+      }
+      //update-end---author:wangshuai---date:2024-09-18---for:【issues/7203】自动生成一对多表单代码中，省市区回显问题---
+
       // 判断是否启用翻译
       if (props.renderType === JVxeRenderType.spaner && enhanced.translate.enabled === true) {
         if (isFunction(enhanced.translate.handler)) {

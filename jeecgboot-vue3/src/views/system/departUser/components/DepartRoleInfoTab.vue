@@ -3,7 +3,7 @@
   <BasicTable @register="registerTable" :rowSelection="rowSelection">
     <!--插槽:table标题-->
     <template #tableTitle>
-      <a-button type="primary" preIcon="ant-design:plus-outlined" @click="addDepartRole">添加部门角色</a-button>
+      <a-button type="primary" preIcon="ant-design:plus-outlined" @click="addDepartRole" :disabled="!departId">添加部门角色</a-button>
       <template v-if="selectedRowKeys.length > 0">
         <a-divider type="vertical" />
         <a-dropdown>

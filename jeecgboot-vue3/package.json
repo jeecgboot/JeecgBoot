@@ -1,6 +1,6 @@
 {
   "name": "jeecgboot-vue3",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "author": {
     "name": "北京国炬信息技术有限公司",
     "email": "jeecgos@163.com",
@@ -21,7 +21,7 @@
     "husky:install": "husky install"
   },
   "dependencies": {
-    "@jeecg/online": "3.7.0-beta",
+    "@jeecg/online": "3.7.1-RC",
     "@iconify/iconify": "^3.1.1",
     "@ant-design/colors": "^7.0.2",
     "@ant-design/icons-vue": "^7.0.1",
@@ -32,6 +32,7 @@
     "ant-design-vue": "^4.1.2",
     "axios": "^1.6.7",
     "china-area-data": "^5.0.1",
+    "@vant/area-data": "^1.5.1",
     "clipboard": "^2.0.11",
     "codemirror": "^5.65.3",
     "cron-parser": "^4.9.0",
@@ -168,6 +169,6 @@
   },
   "homepage": "https://www.jeecg.com",
   "engines": {
-    "node": "^12 || >=14"
+    "node": "^18 || >=20"
   }
 }

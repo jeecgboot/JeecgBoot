@@ -144,7 +144,9 @@ public interface CommonConstant {
      */
     String STATUS_0 = "0";
     String STATUS_1 = "1";
-    
+    Integer STATUS_0_INT = 0;
+    Integer STATUS_1_INT = 1;
+
     /**
      * 同步工作流引擎1同步0不同步
      */
@@ -474,6 +476,11 @@ public interface CommonConstant {
      * 只允许编辑
      */
     String FILE_EDITABLE = "editable";
+
+    /**
+     * 文件 只读
+     */
+    String FILE_READONLY = "readonly";
 
     /**
      * 登录失败，用于记录失败次数的key

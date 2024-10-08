@@ -286,6 +286,12 @@ jeecg:
 #    proxy:
 #      host: "http://127.0.0.1"
 #      port: "7890"
+  # 百度开放API配置
+  baidu-api:
+    app-id: ??
+    api-key: ??
+    secret-key: ??
+
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas

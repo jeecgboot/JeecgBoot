@@ -152,6 +152,11 @@
         let result = typeof props.value == 'string' ? values.join(',') : values;
         emit('update:value', result);
         emit('change', result);
+        // update-begin--author:liaozhiyang---date:20240627---for：【TV360X-1648】用户编辑界面“所属部门”与“负责部门”联动出错（同步之前丢的代码）
+        if (!values || values.length == 0) {
+          emit('select', null, null);
+        }
+        // update-end--author:liaozhiyang---date:20240627---for：【TV360X-1648】用户编辑界面“所属部门”与“负责部门”联动出错（同步之前丢的代码）
       };
       // update-end--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
       

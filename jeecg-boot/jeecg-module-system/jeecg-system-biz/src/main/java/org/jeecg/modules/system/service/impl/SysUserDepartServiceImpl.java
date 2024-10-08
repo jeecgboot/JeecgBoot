@@ -174,7 +174,15 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 			//update-end---author:liusq ---date:20231215  for：逗号分割多个用户翻译问题------------
             //update-begin---author:wangshuai ---date:20220608  for：[VUEN-1238]邮箱回复时，发送到显示的为用户id------------
             if(oConvertUtils.isNotEmpty(id)){
-                query.eq(SysUser::getId, id);
+				//update-begin---author:wangshuai ---date:2024-06-25  for：【TV360X-1482】写信，选择用户后第一次回显没翻译------------
+				String COMMA = ",";
+				if(oConvertUtils.isNotEmpty(isMultiTranslate) && id.contains(COMMA)){
+					String[] idArr = id.split(COMMA);
+					query.in(SysUser::getId, Arrays.asList(idArr));
+				}else {
+					query.eq(SysUser::getId, id);
+				}
+				//update-end---author:wangshuai ---date:2024-06-25  for：【TV360X-1482】写信，选择用户后第一次回显没翻译------------
             }
             //update-end---author:wangshuai ---date:20220608  for：[VUEN-1238]邮箱回复时，发送到显示的为用户id------------
             //update-begin---author:wangshuai ---date:20220902  for：[VUEN-2121]临时用户不能直接显示------------

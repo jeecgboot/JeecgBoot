@@ -183,6 +183,16 @@
         if (file.status === 'error') {
           createMessage.error(`${file.name} 上传失败.`);
         }
+        // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1640】上传图片大小超出限制显示优化
+        if (file.status === 'done' && file.response.success === false) {
+          const failIndex = uploadFileList.value.findIndex((item) => item.uid === file.uid);
+          if (failIndex != -1) {
+            uploadFileList.value.splice(failIndex, 1);
+          }
+          createMessage.warning(file.response.message);
+          return;
+        }
+        // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1640】上传图片大小超出限制显示优化
         let fileUrls = [];
         let noUploadingFileCount = 0;
         if (file.status != 'uploading') {

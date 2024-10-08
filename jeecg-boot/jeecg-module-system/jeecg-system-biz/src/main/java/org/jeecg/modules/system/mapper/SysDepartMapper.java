@@ -177,5 +177,5 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @param parentId
 	 * @return
 	 */
-    List<SysDepartExportVo> getSysDepartList(@Param("parentId") String parentId,@Param("tenantId") Integer tenantId);
+    List<SysDepartExportVo> getSysDepartList(@Param("parentId") String parentId,@Param("tenantId") Integer tenantId, List<String> idList);
 }

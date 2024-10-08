@@ -124,6 +124,7 @@ export function useCommentWithFile(props) {
   async function saveComment(obj) {
     const {fromUserId, toUserId, commentId, commentContent} = obj;
     let commentData = {
+      tableId: props.tableId,
       tableName: props.tableName,
       tableDataId: props.dataId,
       fromUserId,

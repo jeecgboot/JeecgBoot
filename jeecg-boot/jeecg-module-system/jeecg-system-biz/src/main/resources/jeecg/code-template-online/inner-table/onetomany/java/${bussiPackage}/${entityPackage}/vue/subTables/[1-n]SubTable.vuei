@@ -104,7 +104,7 @@
 </#list>
 <#-- end 遍历表头 -->
         ],
-<#assign urlPrefix="/${entityPackage}/${entityName?uncap_first}">
+<#assign urlPrefix="/${entityPackagePath}/${entityName?uncap_first}">
         url: {
           listByMainId: '${urlPrefix}/query${sub.entityName}ByMainId',
         },

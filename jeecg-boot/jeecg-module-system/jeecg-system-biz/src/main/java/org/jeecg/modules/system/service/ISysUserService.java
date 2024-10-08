@@ -89,7 +89,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param user
 	 * @param roles
 	 */
-	public void addUserWithRole(SysUser user, String roles);
+	public void addUserWithRole(SysUser user,String roles);
 	
 	
 	/**
@@ -97,7 +97,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param user
 	 * @param roles
 	 */
-	public void editUserWithRole(SysUser user, String roles);
+	public void editUserWithRole(SysUser user,String roles);
 
 	/**
 	 * 获取用户的授权角色
@@ -113,7 +113,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param version 前端UI版本
 	 * @return
 	 */
-	public SysRoleIndex getDynamicIndexByUserRole(String username, String version);
+	public SysRoleIndex getDynamicIndexByUserRole(String username,String version);
 	
 	/**
 	  * 查询用户信息包括 部门信息
@@ -177,7 +177,7 @@ public interface ISysUserService extends IService<SysUser> {
      * @param username 用户账户名称
 	 * @return
 	 */
-	public IPage<SysUser> getUserByRoleId(Page<SysUser> page, String roleId, String username);
+	public IPage<SysUser> getUserByRoleId(Page<SysUser> page,String roleId, String username);
 
 	/**
 	 * 通过用户名获取用户角色集合
@@ -311,8 +311,9 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param roles 选择的角色id，多个以逗号隔开
 	 * @param departs 选择的部门id，多个以逗号隔开
 	 * @param relTenantIds 多个租户id
+	 * @param updateFromPage 更新来自的页面 [TV360X-1686]
 	 */
-	void editUser(SysUser user, String roles, String departs, String relTenantIds);
+	void editUser(SysUser user, String roles, String departs, String relTenantIds, String updateFromPage);
 
 	/**
      * userId转为username
@@ -355,7 +356,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param sysUser
 	 * @return
 	 */
-	Result<JSONObject> setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result);
+	Result<JSONObject>  setLoginTenant(SysUser sysUser, JSONObject obj, String username, Result<JSONObject> result);
 
 	//--- author:taoyan date:20221231 for: QQYUN-3515【应用】应用下的组织机构管理功能，细节实现 ---
 	/**
@@ -399,7 +400,7 @@ public interface ISysUserService extends IService<SysUser> {
 	 */
 	void editTenantUser(SysUser sysUser, String tenantId, String departs, String roles);
 
-	/**
+/**
 	 * 修改用户账号状态
 	 * @param id 账号id
 	 * @param status 账号状态

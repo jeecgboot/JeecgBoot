@@ -26,6 +26,7 @@
   const isUpdate = ref(true);
   const rowId = ref('');
   const departOptions = ref([]);
+  let isFormDepartUser = false;
   //表单配置
   const [registerForm, { setProps, resetFields, setFieldsValue, validate, updateSchema }] = useForm({
     labelWidth: 90,
@@ -78,6 +79,9 @@
     }
     //处理角色用户列表情况(和角色列表有关系)
     data.selectedroles && (await setFieldsValue({ selectedroles: data.selectedroles }));
+    // -update-begin--author:liaozhiyang---date:20240702---for：【TV360X-1737】部门用户编辑接口，增加参数updateFromPage:"deptUsers"
+    isFormDepartUser = data?.departDisabled === true ? true : false;
+    // -update-end--author:liaozhiyang---date:20240702---for：【TV360X-1737】部门用户编辑接口，增加参数updateFromPage:"deptUsers"
     //编辑时隐藏密码/角色列表隐藏角色信息/我的部门时隐藏所属部门
     updateSchema([
       {
@@ -99,11 +103,11 @@
       },
       {
         field: 'selecteddeparts',
-        show: !data?.departDisabled ?? false,
+        show: !data?.departDisabled,
       },
       {
         field: 'selectedroles',
-        show: !data?.departDisabled ?? false,
+        show: !data?.departDisabled,
         //update-begin---author:wangshuai ---date:20230424  for：【issues/4844】多租户模式下，新增或编辑用户，选择角色一栏，角色选项没有做租户隔离------------
         //判断是否为多租户模式
         componentProps:{
@@ -155,8 +159,14 @@
       setDrawerProps({ confirmLoading: true });
       values.userIdentity === 1 && (values.departIds = '');
       let isUpdateVal = unref(isUpdate);
+      // -update-begin--author:liaozhiyang---date:20240702---for：【TV360X-1737】部门用户编辑接口，增加参数updateFromPage:"deptUsers"
+      let params = values;
+      if (isFormDepartUser) {
+        params = { ...params, updateFromPage: 'deptUsers' };
+      }
+      // -update-end--author:liaozhiyang---date:20240702---for：【TV360X-1737】部门用户编辑接口，增加参数updateFromPage:"deptUsers"
       //提交表单
-      await saveOrUpdateUser(values, isUpdateVal);
+      await saveOrUpdateUser(params, isUpdateVal);
       //关闭弹窗
       closeDrawer();
       //刷新列表

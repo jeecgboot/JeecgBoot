@@ -305,7 +305,10 @@
     } else if (info.file.status === 'error') {
       createMessage.error(`${info.file.name} 上传失败.`);
     }
-    fileList.value = fileListTemp;
+    // update-begin--author:liaozhiyang---date:20240628---for：【issues/1273】上传组件JUpload配置beforeUpload阻止了上传，前端页面中还是显示缩略图
+    // beforeUpload 返回false，则没有status
+    info.file.status && (fileList.value = fileListTemp);
+    // update-end--author:liaozhiyang---date:20240628---for：【issues/1273】上传组件JUpload配置beforeUpload阻止了上传，前端页面中还是显示缩略图
     if (info.file.status === 'done' || info.file.status === 'removed') {
       //returnUrl为true时仅返回文件路径
       if (props.returnUrl) {

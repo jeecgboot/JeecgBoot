@@ -58,6 +58,10 @@
         <if test="announcementSendModel.msgCategory !=null and announcementSendModel.msgCategory != ''">
             and sa.msg_category = #{announcementSendModel.msgCategory}
         </if>
+		<if test="announcementSendModel.sendTimeBegin !=null and announcementSendModel.sendTimeBegin != '' 
+		and announcementSendModel.sendTimeEnd != '' and announcementSendModel.sendTimeEnd != ''">
+			and sa.send_time between #{announcementSendModel.sendTimeBegin} and #{announcementSendModel.sendTimeEnd}
+		</if>
 	   order by sas.read_flag,sa.send_time desc
 	</select>
 

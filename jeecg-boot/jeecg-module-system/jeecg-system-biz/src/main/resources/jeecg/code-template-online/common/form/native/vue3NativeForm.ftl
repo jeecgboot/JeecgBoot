@@ -9,7 +9,7 @@
 		<#assign form_field_dictCode="${po.dictField}">
 	</#if>
 						<a-col :span="${form_span}">
-							<a-form-item label="${po.filedComment}" v-bind="validateInfos.${autoStringSuffixForModel(po)}">
+							<a-form-item label="${po.filedComment}" v-bind="validateInfos.${autoStringSuffixForModel(po)}" id="${formEntityName}-${autoStringSuffixForModel(po)}" name="${autoStringSuffixForModel(po)}">
 					<#if po.classType =='date'>
 								<a-date-picker placeholder="请选择${po.filedComment}" <#if po.extendParams?exists && po.extendParams.picker?exists>picker="${po.extendParams.picker}"</#if> v-model:value="formData.${po.fieldName}" value-format="YYYY-MM-DD"  style="width: 100%" <#if po.readonly=='Y'>disabled</#if> allow-clear />
 					<#elseif po.classType =='datetime'>
@@ -33,9 +33,18 @@
 									:multi="${po.extendParams.popupMulti?c}"
 									:setFieldsValue="setFieldsValue"
 									<#if po.readonly=='Y'>disabled</#if><#rt> allow-clear />
+					<#elseif po.classType =='popup_dict'>
+								<#assign need_popup_dict = true>
+								<#assign sourceFields = po.dictField?default("")?trim?split(",")/>
+								<#assign targetFields = po.dictText?default("")?trim?split(",")/>
+								<j-popup-dict
+									placeholder="请选择${po.filedComment}"
+									v-model:value="formData.${po.fieldName}"
+									dictCode="${po.dictTable},${po.dictText},${po.dictField}"
+									:multi="${po.extendParams.popupMulti?c}" <#if po.readonly=='Y'>disabled</#if> />
 					<#elseif po.classType =='sel_depart'>
 								<#assign need_dept = true>
-								<j-select-dept v-model:value="formData.${po.fieldName}" :multiple="${po.extendParams.multi?default('true')}" checkStrictly <#if po.readonly=='Y'>disabled</#if> allow-clear />
+								<j-select-dept v-model:value="formData.${po.fieldName}"  <#if po.extendParams?exists && po.extendParams.text?exists>labelKey="${po.extendParams.text}"</#if> <#if po.extendParams?exists && po.extendParams.store?exists>rowKey="${po.extendParams.store}"</#if>   <#if po.readonly=='Y'>disabled</#if> :multiple="${po.extendParams.multi?default('true')}" checkStrictly <#if po.readonly=='Y'>disabled</#if> allow-clear />
 					<#elseif po.classType =='switch'>
 								<#assign need_switch = true>
 								<j-switch v-model:value="formData.${po.fieldName}" <#if po.dictField != 'is_open'>:options="${po.dictField}"</#if> <#if po.readonly=='Y'>disabled</#if>></j-switch>
@@ -50,7 +59,7 @@
 					<#elseif po.classType =='sel_user'>
 								<#assign need_dept_user = true>
 						<#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
-						<j-select-user v-model:value="formData.${po.fieldName}" <#if po.readonly=='Y'>disabled</#if> allow-clear />
+						<j-select-user v-model:value="formData.${po.fieldName}"  <#if po.extendParams?exists && po.extendParams.text?exists>labelKey="${po.extendParams.text}"</#if> <#if po.extendParams?exists && po.extendParams.store?exists>rowKey="${po.extendParams.store}"</#if>  <#if po.readonly=='Y'>disabled</#if> allow-clear />
 						<#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
 					<#elseif po.classType =='textarea'>
 								<a-textarea v-model:value="formData.${autoStringSuffixForModel(po)}" :rows="4" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
@@ -82,7 +91,7 @@
 								<j-image-upload <#if po.uploadnum??>:fileMax=${po.uploadnum}<#else>:fileMax="0"</#if> v-model:value="formData.${po.fieldName}" <#if po.readonly=='Y'>disabled</#if>></j-image-upload>
 					<#elseif po.classType=='umeditor'>
 								<#assign need_editor = true>
-								<j-editor v-model:value="formData.${autoStringSuffixForModel(po)}" <#if po.readonly=='Y'>disabled</#if>/>
+								<j-editor v-model:value="formData.${autoStringSuffixForModel(po)}" <#if po.readonly=='Y'>disabled</#if> :autoFocus="false"/>
 						<#elseif po.fieldDbType=='Blob'>
 								<a-input v-model:value="formData.${autoStringSuffixForModel(po)}" placeholder="请输入${po.filedComment}" <#if po.readonly=='Y'>disabled</#if> allow-clear ></a-input>
 						<#elseif po.classType == 'sel_tree'>

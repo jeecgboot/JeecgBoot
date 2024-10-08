@@ -44,13 +44,13 @@ export const searchFormSchema: FormSchema[] = [
   {
     label: '字典名称',
     field: 'dictName',
-    component: 'Input',
+    component: 'JInput',
     colProps: { span: 6 },
   },
   {
     label: '字典编码',
     field: 'dictCode',
-    component: 'Input',
+    component: 'JInput',
     colProps: { span: 6 },
   },
 ];

@@ -22,7 +22,7 @@
       showArea: propTypes.bool.def(true),
       //是否是全部
       showAll: propTypes.bool.def(false),
-      // 存储数据 
+      // 存储数据 （all时：传递到外面的是数组；province, city, region传递外面的是字符串）
       saveCode: propTypes.oneOf(['province', 'city', 'region', 'all']).def('all'),
     },
     emits: ['options-change', 'change', 'update:value'],
@@ -97,6 +97,25 @@
         }
         return result;
       }
+      /**
+       * liaozhiyang
+       * 2024-06-17
+       * 【TV360X-1224】省市区组件默认传到外面的值是字符串逗号分隔
+       * */
+      const send = (data) => {
+        let result = data;
+        if (result) {
+          if (props.saveCode === 'all') {
+            // 传递的是数组
+          } else {
+            // 传递的是字符串
+            result = data.join(',');
+          }
+        }
+        emit('change', result);
+        emit('update:value', result);
+      };
+
       function handleChange(arr, ...args) {
         // update-begin--author:liaozhiyang---date:20240607---for：【TV360X-501】省市区换新组件
         if (arr?.length) {
@@ -111,11 +130,9 @@
           } else {
             result = arr;
           }
-          emit('change', result);
-          emit('update:value', result);
+          send(result);
         } else {
-          emit('change', arr);
-          emit('update:value', arr);
+          send(arr);
         }
         // update-end--author:liaozhiyang---date:20240607---for：【TV360X-501】省市区换新组件
         // emitData.value = args;
@@ -124,6 +141,7 @@
         // state.value = result;
         //update-end-author:taoyan date:2022-6-27 for: VUEN-1424【vue3】树表、单表、jvxe、erp 、内嵌子表省市县 选择不上
       }
+      
       return {
         cascaderValue,
         attrs,

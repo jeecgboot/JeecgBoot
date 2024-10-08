@@ -58,7 +58,7 @@ export const columns: BasicColumn[] = [
     customRender:({text}) => {
        return  render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
      },
-   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user' || po.classType=='popup_dict'>
     dataIndex: '${po.fieldName}_dictText'
    <#elseif po.classType=='cat_tree'>
     dataIndex: '${po.fieldName}',
@@ -106,6 +106,14 @@ export const searchFormSchema: FormSchema[] = [
 <#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
       component: 'JSelectUser',
 <#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
+     componentProps:{
+   <#if po.extendParams?exists && po.extendParams.text?exists>
+       labelKey: '${po.extendParams.text}',
+   </#if>
+   <#if po.extendParams?exists && po.extendParams.store?exists>
+       rowKey: '${po.extendParams.store}',
+   </#if>
+     },
 <#elseif po.classType=='switch'>
       component: 'JSwitch',
       componentProps:{
@@ -116,6 +124,14 @@ export const searchFormSchema: FormSchema[] = [
        },
  <#elseif po.classType=='sel_depart'>
       component: 'JSelectDept',
+      componentProps:{
+   <#if po.extendParams?exists && po.extendParams.text?exists>
+       labelKey: '${po.extendParams.text}',
+   </#if>
+   <#if po.extendParams?exists && po.extendParams.store?exists>
+       rowKey: '${po.extendParams.store}',
+   </#if>
+      },
  <#elseif po.classType=='list_multi'>
       component: 'JSelectMultiple',
        componentProps:{
@@ -152,9 +168,16 @@ export const searchFormSchema: FormSchema[] = [
       },
 <#elseif po.classType=='popup'>
     <#include "/common/form/vue3popup.ftl">
+<#elseif po.classType=='popup_dict'>
+      component: 'JPopupDict',
+      componentProps: {
+        placeholder: '请选择${po.filedComment}',
+        dictCode: '${po.dictTable},${po.dictText},${po.dictField}',
+        multi: ${po.extendParams.popupMulti?c}
+      },
 <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
 <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
-      component: 'JDictSelectTag',
+      component: 'JSelectMultiple',
       componentProps:{
        <#if po.dictTable?default("")?trim?length gt 1>
           dictCode:"${po.dictTable},${po.dictText},${po.dictField}"
@@ -272,8 +295,23 @@ export const formSchema: FormSchema[] = [
     },
     <#elseif po.classType =='popup'>
     <#include "/common/form/vue3popup.ftl">
+    <#elseif po.classType=='popup_dict'>
+    component: 'JPopupDict',
+    componentProps: {
+      placeholder: '请选择${po.filedComment}',
+      dictCode: '${po.dictTable},${po.dictText},${po.dictField}',
+      multi: ${po.extendParams.popupMulti?c}
+    },
     <#elseif po.classType =='sel_depart'>
      component: 'JSelectDept',
+     componentProps:{
+   <#if po.extendParams?exists && po.extendParams.text?exists>
+       labelKey: '${po.extendParams.text}',
+   </#if>
+   <#if po.extendParams?exists && po.extendParams.store?exists>
+       rowKey: '${po.extendParams.store}',
+   </#if>
+     },
      <#elseif po.classType =='switch'>
      component: 'JSwitch',
      componentProps:{
@@ -294,8 +332,13 @@ export const formSchema: FormSchema[] = [
 <#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
     component: 'JSelectUser',
 <#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
-    componentProps:{
-        labelKey:'realname',
+     componentProps:{
+   <#if po.extendParams?exists && po.extendParams.text?exists>
+       labelKey: '${po.extendParams.text}',
+   </#if>
+   <#if po.extendParams?exists && po.extendParams.store?exists>
+       rowKey: '${po.extendParams.store}',
+   </#if>
      },
     <#elseif po.classType =='textarea'>
     component: 'InputTextArea',
@@ -494,7 +537,7 @@ export const ${sub.entityName?uncap_first}Columns: BasicColumn[] = [
     customRender:({text}) => {
        return  render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
      },
-   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user' || po.classType=='popup_dict'>
     dataIndex: '${po.fieldName}_dictText'
    <#elseif po.classType=='cat_tree'>
     dataIndex: '${po.fieldName}',
@@ -565,8 +608,23 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     },
     <#elseif po.classType =='popup'>
     <#include "/common/form/vue3popup.ftl">
+    <#elseif po.classType=='popup_dict'>
+    component: 'JPopupDict',
+    componentProps: {
+      placeholder: '请选择${po.filedComment}',
+      dictCode: '${po.dictTable},${po.dictText},${po.dictField}',
+      multi: ${po.extendParams.popupMulti?c}
+    },
      <#elseif po.classType =='sel_depart'>
      component: 'JSelectDept',
+     componentProps:{
+   <#if po.extendParams?exists && po.extendParams.text?exists>
+       labelKey: '${po.extendParams.text}',
+   </#if>
+   <#if po.extendParams?exists && po.extendParams.store?exists>
+       rowKey: '${po.extendParams.store}',
+   </#if>
+     },
      <#elseif po.classType =='switch'>
      component: 'JSwitch',
      componentProps:{
@@ -587,8 +645,13 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
 <#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
     component: 'JSelectUser',
 <#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
-    componentProps:{
-        labelKey:'realname',
+     componentProps:{
+   <#if po.extendParams?exists && po.extendParams.text?exists>
+       labelKey: '${po.extendParams.text}',
+   </#if>
+   <#if po.extendParams?exists && po.extendParams.store?exists>
+       rowKey: '${po.extendParams.store}',
+   </#if>
      },
     <#elseif po.classType =='textarea'>
     component: 'InputTextArea',
@@ -780,14 +843,6 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
        <#if col.readonly=='Y'>
       disabled:true,
        </#if>
-<#-- update-begin-author:taoyan date:20220523 for: VUEN-1084 【vue3】online表单测试发现的新问题 20、一对多列字段类型生成的不对，数字或者金额类型 -->
-<#-- elseif "int,decimal,double,"?contains(col.classType) -->
-<#elseif col.fieldDbType=='int' || col.fieldDbType=='double' || col.fieldDbType=='BigDecimal'>
-<#-- update-end-author:taoyan date:20220523 for: VUEN-1084 【vue3】online表单测试发现的新问题 20、一对多列字段类型生成的不对，数字或者金额类型 -->
-      type: JVxeTypes.inputNumber,
-      <#if col.readonly=='Y'>
-      disabled:true,
-      </#if>
 <#elseif col.classType =='list' || col.classType =='radio'>
       type: JVxeTypes.select,
       options:[],
@@ -822,11 +877,27 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
       </#if>
 <#elseif col.classType =='sel_depart'>
       type: JVxeTypes.departSelect,
+      props:{
+    <#if col.extendParams?exists && col.extendParams.text?exists>
+        labelKey: '${col.extendParams.text}',
+    </#if>
+    <#if col.extendParams?exists && col.extendParams.store?exists>
+        rowKey: '${col.extendParams.store}',
+    </#if>
+      },
       <#if col.readonly=='Y'>
       disabled:true,
       </#if>
 <#elseif col.classType =='sel_user'>
       type: JVxeTypes.userSelect,
+      props:{
+    <#if col.extendParams?exists && col.extendParams.text?exists>
+        labelKey: '${col.extendParams.text}',
+    </#if>
+    <#if col.extendParams?exists && col.extendParams.store?exists>
+        rowKey: '${col.extendParams.store}',
+    </#if>
+      },
       <#if col.readonly=='Y'>
       disabled:true,
       </#if>
@@ -867,6 +938,14 @@ export const ${sub.entityName?uncap_first}JVxeColumns: JVxeColumn[] = [
     <#assign popupBackFields = "${col.dictText}">
 </#if>
     <#include "/common/form/vue3Jvxepopup.ftl">
+<#-- update-begin-author:taoyan date:20220523 for: VUEN-1084 【vue3】online表单测试发现的新问题 20、一对多列字段类型生成的不对，数字或者金额类型 -->
+<#-- elseif "int,decimal,double,"?contains(col.classType) -->
+<#elseif col.fieldDbType=='int' || col.fieldDbType=='double' || col.fieldDbType=='BigDecimal'>
+<#-- update-end-author:taoyan date:20220523 for: VUEN-1084 【vue3】online表单测试发现的新问题 20、一对多列字段类型生成的不对，数字或者金额类型 -->
+      type: JVxeTypes.inputNumber,
+    <#if col.readonly=='Y'>
+      disabled:true,
+    </#if>
 <#else>
       type: JVxeTypes.input,
        <#if col.readonly=='Y'>

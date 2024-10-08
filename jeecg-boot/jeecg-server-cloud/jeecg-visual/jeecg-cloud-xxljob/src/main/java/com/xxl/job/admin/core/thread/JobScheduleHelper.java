@@ -3,6 +3,8 @@ package com.xxl.job.admin.core.thread;
 import com.xxl.job.admin.core.conf.XxlJobAdminConfig;
 import com.xxl.job.admin.core.cron.CronExpression;
 import com.xxl.job.admin.core.model.XxlJobInfo;
+import com.xxl.job.admin.core.scheduler.MisfireStrategyEnum;
+import com.xxl.job.admin.core.scheduler.ScheduleTypeEnum;
 import com.xxl.job.admin.core.trigger.TriggerTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +87,15 @@ public class JobScheduleHelper {
                                     // 2.1、trigger-expire > 5s：pass && make next-trigger-time
                                     logger.warn(">>>>>>>>>>> xxl-job, schedule misfire, jobId = " + jobInfo.getId());
 
-                                    // fresh next
+                                    // 1、misfire match
+                                    MisfireStrategyEnum misfireStrategyEnum = MisfireStrategyEnum.match(jobInfo.getMisfireStrategy(), MisfireStrategyEnum.DO_NOTHING);
+                                    if (MisfireStrategyEnum.FIRE_ONCE_NOW == misfireStrategyEnum) {
+                                        // FIRE_ONCE_NOW 》 trigger
+                                        JobTriggerPoolHelper.trigger(jobInfo.getId(), TriggerTypeEnum.MISFIRE, -1, null, null, null);
+                                        logger.debug(">>>>>>>>>>> xxl-job, schedule push trigger : jobId = " + jobInfo.getId() );
+                                    }
+
+                                    // 2、fresh next
                                     refreshNextValidTime(jobInfo, new Date());
 
                                 } else if (nowTime > jobInfo.getTriggerNextTime()) {
@@ -213,16 +222,16 @@ public class JobScheduleHelper {
             @Override
             public void run() {
 
-                // align second
-                try {
-                    TimeUnit.MILLISECONDS.sleep(1000 - System.currentTimeMillis()%1000 );
-                } catch (InterruptedException e) {
-                    if (!ringThreadToStop) {
-                        logger.error(e.getMessage(), e);
-                    }
-                }
-
                 while (!ringThreadToStop) {
+
+                    // align second
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(1000 - System.currentTimeMillis() % 1000);
+                    } catch (InterruptedException e) {
+                        if (!ringThreadToStop) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    }
 
                     try {
                         // second data
@@ -251,15 +260,6 @@ public class JobScheduleHelper {
                             logger.error(">>>>>>>>>>> xxl-job, JobScheduleHelper#ringThread error:{}", e);
                         }
                     }
-
-                    // next second, align second
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(1000 - System.currentTimeMillis()%1000);
-                    } catch (InterruptedException e) {
-                        if (!ringThreadToStop) {
-                            logger.error(e.getMessage(), e);
-                        }
-                    }
                 }
                 logger.info(">>>>>>>>>>> xxl-job, JobScheduleHelper#ringThread stop");
             }
@@ -269,8 +269,8 @@ public class JobScheduleHelper {
         ringThread.start();
     }
 
-    private void refreshNextValidTime(XxlJobInfo jobInfo, Date fromTime) throws ParseException {
-        Date nextValidTime = new CronExpression(jobInfo.getJobCron()).getNextValidTimeAfter(fromTime);
+    private void refreshNextValidTime(XxlJobInfo jobInfo, Date fromTime) throws Exception {
+        Date nextValidTime = generateNextValidTime(jobInfo, fromTime);
         if (nextValidTime != null) {
             jobInfo.setTriggerLastTime(jobInfo.getTriggerNextTime());
             jobInfo.setTriggerNextTime(nextValidTime.getTime());
@@ -278,6 +278,8 @@ public class JobScheduleHelper {
             jobInfo.setTriggerStatus(0);
             jobInfo.setTriggerLastTime(0);
             jobInfo.setTriggerNextTime(0);
+            logger.warn(">>>>>>>>>>> xxl-job, refreshNextValidTime fail for job: jobId={}, scheduleType={}, scheduleConf={}",
+                    jobInfo.getId(), jobInfo.getScheduleType(), jobInfo.getScheduleConf());
         }
     }
 
@@ -349,6 +351,19 @@ public class JobScheduleHelper {
         }
 
         logger.info(">>>>>>>>>>> xxl-job, JobScheduleHelper stop");
+    }
+
+
+    // ---------------------- tools ----------------------
+    public static Date generateNextValidTime(XxlJobInfo jobInfo, Date fromTime) throws Exception {
+        ScheduleTypeEnum scheduleTypeEnum = ScheduleTypeEnum.match(jobInfo.getScheduleType(), null);
+        if (ScheduleTypeEnum.CRON == scheduleTypeEnum) {
+            Date nextValidTime = new CronExpression(jobInfo.getScheduleConf()).getNextValidTimeAfter(fromTime);
+            return nextValidTime;
+        } else if (ScheduleTypeEnum.FIX_RATE == scheduleTypeEnum /*|| ScheduleTypeEnum.FIX_DELAY == scheduleTypeEnum*/) {
+            return new Date(fromTime.getTime() + Integer.valueOf(jobInfo.getScheduleConf())*1000 );
+        }
+        return null;
     }
 
 }

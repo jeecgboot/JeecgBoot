@@ -74,4 +74,13 @@ public class AnnouncementSendModel implements Serializable {
 	 */
 	private java.lang.String msgAbstract;
 
+	/**
+	 * 发布开始日期
+	 */
+	private java.lang.String sendTimeBegin;
+	
+	/**
+	 * 发布结束日期
+	 */
+	private java.lang.String sendTimeEnd;
 }

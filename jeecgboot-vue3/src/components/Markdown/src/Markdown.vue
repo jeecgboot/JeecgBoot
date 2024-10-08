@@ -12,6 +12,7 @@
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { getTenantId, getToken } from '/@/utils/auth';
   import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
+  import { uploadFile } from '@/api/common/api';
 
   type Lang = 'zh_CN' | 'en_US' | 'ja_JP' | 'ko_KR' | undefined;
 
@@ -161,7 +162,7 @@
           //update-begin-author:taoyan date:2022-5-24 for: VUEN-1090 markdown 无法上传
           upload: {
             accept: 'image/*',
-            url: uploadUrl,
+            //url: uploadUrl,
             fieldName: 'file',
             extraData: { biz: 'markdown' },
             setHeaders() {
@@ -172,6 +173,23 @@
             },
             format(files, response) {
               return formatResult(files, response);
+            },
+            // 遍历文件上传并展示
+            async handler(files) {
+              const uploadSuccess = (res) => {
+                // {"success":true,"message":"markdown/aa_1653391146501.png","code":0,"result":null,"timestamp":1653391146501}'
+                if (res.success) {
+                  vditorRef.value?.insertValue(`![${res.message}](${getFileAccessHttpUrl(res.message)})`);
+                }
+              };
+              for (const file of files) {
+                let params = {
+                  file: file,
+                  filename: file.name,
+                  data: { biz: 'markdown' },
+                };
+                await uploadFile(params, uploadSuccess);
+              }
             },
           },
           //update-end-author:taoyan date:2022-5-24 for: VUEN-1090 markdown 无法上传

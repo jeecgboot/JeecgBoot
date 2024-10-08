@@ -144,7 +144,12 @@
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    await batchDeleteUserRole({ userIds: checkedKeys.value.join(','), roleId: roleId.value }, reload);
+    await batchDeleteUserRole({ userIds: checkedKeys.value.join(','), roleId: roleId.value }, () => {
+      // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1655】批量取消关联之后清空选中记录
+      reload();
+      checkedKeys.value = [];
+      // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1655】批量取消关联之后清空选中记录
+    });
   }
 
   /**

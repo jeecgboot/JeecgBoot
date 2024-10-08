@@ -94,6 +94,23 @@ export function useFormEvents({
     });
     validateFields(validKeys).catch((_) => {});
   }
+
+  /**
+   *  根据字段名获取schema
+   * @param field
+   */
+  function getSchemaByField(field: string): Nullable<FormSchema> {
+    if (!isString(field)) {
+      return null
+    }
+    const schemaList: FormSchema[] = unref(getSchema);
+    const index = schemaList.findIndex((schema) => schema.field === field);
+    if (index !== -1) {
+      return cloneDeep(schemaList[index]);
+    }
+    return null
+  }
+
   /**
    * @description: Delete based on field name
    */
@@ -270,6 +287,7 @@ export function useFormEvents({
     getFieldsValue,
     updateSchema,
     resetSchema,
+    getSchemaByField,
     appendSchemaByField,
     removeSchemaByFiled,
     resetFields,

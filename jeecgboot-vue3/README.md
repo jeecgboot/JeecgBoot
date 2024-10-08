@@ -1,11 +1,11 @@
 JeecgBoot 企业级低代码开发平台
 ===============
-当前最新版本： 3.7.0（发布时间：2024-06-17）
+当前最新版本： 3.7.1（发布时间：2024-09-12）
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://jeecg.com/aboutusIndex)
-[![](https://img.shields.io/badge/Blog-官方博客-blue.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.7.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.7.1-brightgreen.svg)](https://github.com
+/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -26,17 +26,19 @@ JeecgBoot-Vue3采用 Vue3.0、Vite、 Ant-Design-Vue4、TypeScript 等新技术�
 ## 技术文档
 
 -   官方文档：[https://help.jeecg.com](https://help.jeecg.com)
--   快速入门：[快速入门](http://jeecg.com/doc/quickstart) | [常见问题](http://help.jeecg.com/qa.html) | [视频教程](https://www.bilibili.com/video/BV1V34y187Y9 "入门视频") |  [ 代码生成](http://help.jeecg.com/vue3/codegen/online.html)
--   QQ交流群：⑨808791225、⑧825232878(满)、⑦791696430(满)、683903138(满)、其他满
+-   快速入门：[快速入门](http://jeecg.com/doc/quickstart) | [常见问题](http://help.jeecg.com/qa.html) 
+-   QQ交流群：⑨808791225、其他满
 -   在线演示 ：  [系统演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取
 
 
 ## 安装与使用
 
+*   本地环境安装 `Node.js 、npm 、pnpm`
+*   Node.js 版本建议`v20.15.0`，要求`Node 20+` 版本以上
 
- > 环境要求: 版本要求Node 14.18+ / 16+ 版本以上，不再支持 Node 12 / 13 / 15。
- > 建议使用pnpm，如果使用yarn,请用Yarn1.x版本，否则依赖可能安装不上。
+ ` ( 因为Vite5 不再支持已 EOL 的 Node.js 14 / 16 / 17 / 19，现在需要 Node.js 18 / 20+ )`
+
 
   
 - Get the project code
@@ -76,80 +78,6 @@ pnpm dev
 pnpm build
 ```
 
-
-## Docker镜像启动前端(单体模式)
-
-- host设置
-
->注意： 需要把`127.0.0.1`替换成真实IP 比如`192.`开头,不然后端不通。
-
-```bash
-127.0.0.1 jeecg-boot-system
-127.0.0.1 jeecg-boot-gateway
-```
-
-
-- 下载项目
-
-```bash
-git clone https://github.com/jeecgboot/JeecgBoot.git
-
-cd JeecgBoot/jeecgboot-vue3
-```
-
-- 配置接口域名 `.env.production`
-
-```bash
-VITE_GLOB_API_URL=/jeecgboot
-VITE_GLOB_DOMAIN_URL=http://jeecg-boot-system:8080/jeecg-boot
-```
-后台单体启动 [见此文档](https://help.jeecg.com/java/setup/docker/up.html)
-
-- 编译项目
-
-```bash
-pnpm install
-
-pnpm build
-```
-
-- 启动容器
-```bash
-docker build -t jeecgboot-vue3 .
-docker run --name jeecgboot-vue3-nginx -p 80:80 -d jeecgboot-vue3
-```
-
-- 访问前台
-
-http://localhost
-
-## Docker镜像启动前端(微服务模式)
-> 这里只写与单体的区别步骤
-
--  区别1. 修改后台域名
-.env.production
-
-```bash
-VITE_GLOB_API_URL=/jeecgboot
-VITE_GLOB_DOMAIN_URL=http://jeecg-boot-gateway:9999
-```
-
-后台微服务启动 [见此文档](https://help.jeecg.com/java/springcloud/docker.html)
-
-- 区别2. 修改Dockerfile文件
-
-```bash
-- 把`http://jeecg-boot-system:8080/jeecg-boot`替换成 `http://jeecg-boot-gateway:9999`
-- 把`jeecg-boot-system`替换成 `jeecg-boot-gateway`
-```
-
--  其他与单体模式一样
-
-```bash
-镜像需要重现构建，最好把单体的镜像删掉，重新构建docker镜像。
-```
-
-
 ## 入门必备
 
 本项目需要一定前端基础知识，请确保掌握 Vue 的基础知识，以便能处理一些常见的问题。 建议在开发前先学一下以下内容，提前了解和学习这些知识，会对项目理解非常有帮助:
@@ -164,9 +92,7 @@ VITE_GLOB_DOMAIN_URL=http://jeecg-boot-gateway:9999
 *   [Vitejs](https://cn.vitejs.dev/guide/)
 *   [Pinia(vuex替代方案)](https://pinia.esm.dev/introduction.html)
 *   [Vue-RFCS](https://github.com/vuejs/rfcs)
-*   [Vue2 迁移到 3](https://v3.vuejs.org/guide/migration/introduction.html)
 *   [vxetable文档](https://vxetable.cn)
-*   [~~WindiCss~~](https://windicss.netlify.app/)
 
 
 ##   浏览器支持

@@ -17,13 +17,12 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, computed } from 'vue';
+  import { defineComponent, computed, ref } from 'vue';
 
   import { Upload } from 'ant-design-vue';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useGlobSetting } from '/@/hooks/setting';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { getToken } from '/@/utils/auth';
   import { getFileAccessHttpUrl, getHeaders } from '/@/utils/common/compUtils';
 
   export default defineComponent({
@@ -55,6 +54,8 @@
       }
       const { domainUrl } = useGlobSetting();
       const uploadUrl = domainUrl + '/sys/common/upload';
+      //文件列表
+      let uploadFileList = ref<any[]>([]);
       //update-end-author:taoyan date:2022-5-13 for: 富文本上传图片不支持
       const { t } = useI18n();
       const { prefixCls } = useDesign('tinymce-img-upload');
@@ -66,26 +67,30 @@
         };
       });
 
-      function handleChange(info: Recordable) {
-        const file = info.file;
-        const status = file?.status;
-        //const url = file?.response?.url;
-        const name = file?.name;
-
-        if (status === 'uploading') {
-          if (!uploading) {
-            emit('uploading', name);
-            uploading = true;
-          }
-        } else if (status === 'done') {
-          //update-begin-author:taoyan date:2022-5-13 for: 富文本上传图片不支持
-          let realUrl = getFileAccessHttpUrl(file.response.message);
-          emit('done', name, realUrl);
-          //update-end-author:taoyan date:2022-5-13 for: 富文本上传图片不支持
-          uploading = false;
-        } else if (status === 'error') {
+      function handleChange({ file, fileList }) {
+        if (file.status === 'error') {
           emit('error');
           uploading = false;
+        }
+        let files = [] as any;
+        let noUploadingFileCount = 0;
+        if (file.status != 'uploading') {
+          fileList.forEach((file) => {
+            if (file.status === 'done' && file.response.success) {
+              files.push(file);
+            }
+            if (file.status != 'uploading') {
+              noUploadingFileCount++;
+            }
+          });
+        }
+
+        if (noUploadingFileCount == fileList.length) {
+          fileList.forEach((file) => {
+            const name = file?.name;
+            let realUrl = getFileAccessHttpUrl(file.response.message);
+            emit('done', name, realUrl);
+          });
         }
       }
 
@@ -97,6 +102,7 @@
         getBizData,
         t,
         getButtonProps,
+        uploadFileList
       };
     },
   });

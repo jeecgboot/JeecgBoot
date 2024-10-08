@@ -87,6 +87,7 @@
       HistoryFileList,
     },
     props: {
+      tableId: propTypes.string.def(''),
       tableName: propTypes.string.def(''),
       dataId: propTypes.string.def(''),
       datetime:  propTypes.number.def(1)
@@ -146,14 +147,15 @@
       
       function onSelectFileOk(temp) {
         // update-begin--author:liaozhiyang---date:20240603---for：【TV360X-935】从知识库选择文件判断下是否没选
-        if (temp.id === '') return;
+        if (temp.length === 0) return;
         // update-end--author:liaozhiyang---date:20240603---for：【TV360X-935】从知识库选择文件判断下是否没选
         let arr = selectFileList.value;
-        arr.push({
-          ...temp,
-          exist: true
-        })
-        selectFileList.value = arr;
+        // -update-begin--author:liaozhiyang---date:20240614---for：【TV360X-938】知识库文件选择支持多选
+        temp.forEach((item) => {
+          item.exist = true;
+        });
+        selectFileList.value = [...arr, ...temp];
+        // -update-end--author:liaozhiyang---date:20240614---for：【TV360X-938】知识库文件选择支持多选
       }
 
       return {

@@ -1,4 +1,4 @@
-FROM alibabadragonwell/dragonwell:17-anolis
+FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/java:21-anolis
 
 MAINTAINER jeecgos@163.com
 
@@ -10,6 +10,6 @@ WORKDIR /jeecg-cloud-nacos
 
 EXPOSE 8848
 
-ADD ./target/jeecg-cloud-nacos-3.7.0.jar ./
+ADD ./target/jeecg-cloud-nacos-3.7.1.jar ./
 
-CMD sleep 1;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-nacos-3.7.0.jar
+CMD sleep 30;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-nacos-3.7.1.jar

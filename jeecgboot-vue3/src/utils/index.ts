@@ -1,5 +1,6 @@
 import type { RouteLocationNormalized, RouteRecordNormalized } from 'vue-router';
 import type { App, Plugin } from 'vue';
+import type { FormSchema } from "@/components/Form";
 
 import { unref } from 'vue';
 import { isObject } from '/@/utils/is';
@@ -60,6 +61,7 @@ export function openWindow(url: string, opt?: { target?: TargetContext | string;
 export function getDynamicProps<T, U>(props: T): Partial<U> {
   const ret: Recordable = {};
 
+  // @ts-ignore
   Object.keys(props).map((key) => {
     ret[key] = unref((props as Recordable)[key]);
   });
@@ -78,10 +80,24 @@ export function getValueType(props, field) {
   let valueType = 'string';
   if (formSchema) {
     let schema = formSchema.filter((item) => item.field === field)[0];
-    valueType = schema.componentProps && schema.componentProps.valueType ? schema.componentProps.valueType : valueType;
+    valueType = schema && schema.componentProps && schema.componentProps.valueType ? schema.componentProps.valueType : valueType;
   }
   return valueType;
 }
+
+/**
+ * 获取表单字段值数据类型
+ * @param schema
+ */
+export function getValueTypeBySchema(schema: FormSchema) {
+  let valueType = 'string';
+  if (schema) {
+    const componentProps = schema.componentProps as Recordable;
+    valueType = componentProps?.valueType ? componentProps?.valueType : valueType;
+  }
+  return valueType;
+}
+
 export function getRawRoute(route: RouteLocationNormalized): RouteLocationNormalized {
   if (!route) return route;
   const { matched, ...opt } = route;
@@ -110,6 +126,7 @@ export const withInstall = <T>(component: T, alias?: string) => {
   
   const comp = component as any;
   comp.install = (app: App) => {
+    // @ts-ignore
     app.component(comp.name || comp.displayName, component);
     if (alias) {
       app.config.globalProperties[alias] = component;
@@ -438,3 +455,98 @@ export const setPopContainer = (node, selector) => {
     return selector;
   }
 };
+
+/**
+ * 2024-06-14
+ * liaozhiyang
+ * 根据控件显示条件
+ * label、value通用，title、val给权限管理用的
+ */
+export function useConditionFilter() {
+
+  // 通用条件
+  const commonConditionOptions = [
+    {label: '为空', value: 'empty', val: 'EMPTY'},
+    {label: '不为空', value: 'not_empty', val: 'NOT_EMPTY'},
+  ]
+
+  // 数值、日期
+  const numberConditionOptions = [
+    { label: '等于', value: 'eq', val: '=' },
+    { label: '在...中', value: 'in', val: 'IN', title: '包含' },
+    { label: '不等于', value: 'ne', val: '!=' },
+    { label: '大于', value: 'gt', val: '>' },
+    { label: '大于等于', value: 'ge', val: '>=' },
+    { label: '小于', value: 'lt', val: '<' },
+    { label: '小于等于', value: 'le', val: '<=' },
+    ...commonConditionOptions,
+  ];
+
+  // 文本、密码、多行文本、富文本、markdown
+  const inputConditionOptions = [
+    { label: '等于', value: 'eq', val: '=' },
+    { label: '模糊', value: 'like', val: 'LIKE' },
+    { label: '以..开始', value: 'right_like', title: '右模糊', val: 'RIGHT_LIKE' },
+    { label: '以..结尾', value: 'left_like', title: '左模糊', val: 'LEFT_LIKE' },
+    { label: '在...中', value: 'in', val: 'IN', title: '包含' },
+    { label: '不等于', value: 'ne', val: '!=' },
+    ...commonConditionOptions,
+  ];
+
+  // 下拉、单选、多选、开关、用户、部门、关联记录、省市区、popup、popupDict、下拉多选、下拉搜索、分类字典、自定义树
+  const selectConditionOptions = [
+    { label: '等于', value: 'eq', val: '=' },
+    { label: '在...中', value: 'in', val: 'IN', title: '包含' },
+    { label: '不等于', value: 'ne', val: '!=' },
+    ...commonConditionOptions,
+  ];
+
+  const def = [
+    { label: '等于', value: 'eq', val: '=' },
+    { label: '模糊', value: 'like', val: 'LIKE' },
+    { label: '以..开始', value: 'right_like', title: '右模糊', val: 'RIGHT_LIKE' },
+    { label: '以..结尾', value: 'left_like', title: '左模糊', val: 'LEFT_LIKE' },
+    { label: '在...中', value: 'in', val: 'IN', title: '包含' },
+    { label: '不等于', value: 'ne', val: '!=' },
+    { label: '大于', value: 'gt', val: '>' },
+    { label: '大于等于', value: 'ge', val: '>=' },
+    { label: '小于', value: 'lt', val: '<' },
+    { label: '小于等于', value: 'le', val: '<=' },
+    ...commonConditionOptions,
+  ];
+
+  const filterCondition = (data) => {
+    if (data.view == 'text' && data.fieldType == 'number') {
+      data.view = 'number';
+    }
+    switch (data.view) {
+      case 'text':
+      case 'textarea':
+      case 'umeditor':
+      case 'markdown':
+      case 'pca':
+      case 'popup':
+        return inputConditionOptions;
+      case 'list':
+      case 'radio':
+      case 'checkbox':
+      case 'switch':
+      case 'sel_user':
+      case 'sel_depart':
+      case 'link_table':
+      case 'popup_dict':
+      case 'list_multi':
+      case 'sel_search':
+      case 'cat_tree':
+      case 'sel_tree':
+        return selectConditionOptions;
+      case 'date':
+      // number是虚拟的
+      case 'number':
+        return numberConditionOptions;
+      default:
+        return def;
+    }
+  };
+  return { filterCondition };
+}

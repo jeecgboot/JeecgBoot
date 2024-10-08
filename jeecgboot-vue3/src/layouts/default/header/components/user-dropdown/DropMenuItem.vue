@@ -18,13 +18,16 @@
     name: 'DropdownMenuItem',
     components: { MenuItem: Menu.Item, Icon },
     props: {
-      key: propTypes.string,
+      // 【issues/6855】
+      itemKey: propTypes.string,
       text: propTypes.string,
       icon: propTypes.string,
     },
     setup(props) {
       const instance = getCurrentInstance();
-      const itemKey = computed(() => props.key || instance?.vnode?.props?.key);
+      // update-begin--author:liaozhiyang---date:20240717---for：【issues/6855】组件使用key作props报警告，改为itemKey
+      const itemKey = computed(() => props.itemKey || instance?.vnode?.props?.itemKey);
+      // update-end--author:liaozhiyang---date:20240717---for：【issues/6855】组件使用key作props报警告，改为itemKey
       return { itemKey };
     },
   });

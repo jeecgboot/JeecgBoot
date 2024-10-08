@@ -49,6 +49,10 @@ export const APP__THEME__COLOR = '__APP__THEME__COLOR__';
 
 // 
 export const ROLE_AUTH_CONFIG_KEY = 'ROLE__AUTH__CONFIG__KEY__';
+// 部门角色权限
+export const DEPART_ROLE_AUTH_CONFIG_KEY = 'DEPART__ROLE__AUTH__CONFIG__KEY__';
+// 部门管理权限
+export const DEPART_MANGE_AUTH_CONFIG_KEY = 'DEPART__MANGE__AUTH__CONFIG__KEY__';
 
 export enum CacheTypeEnum {
   SESSION,

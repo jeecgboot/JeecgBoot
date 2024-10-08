@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -14,6 +16,7 @@ import org.jeecg.modules.system.service.ISysGatewayRouteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -74,4 +77,72 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
         return Result.ok("删除路由成功");
     }
 
+	/**
+	 * 查询被删除的列表
+	 * @return
+	 */
+	@RequestMapping(value = "/deleteList", method = RequestMethod.GET)
+	public Result<List<SysGatewayRoute>> deleteList(HttpServletRequest request) {
+		Result<List<SysGatewayRoute>> result = new Result<>();
+		List<SysGatewayRoute> list = sysGatewayRouteService.getDeletelist();
+		result.setSuccess(true);
+		result.setResult(list);
+		return result;
+	}
+
+	/**
+	 * 还原被逻辑删除的路由
+	 *
+	 * @param jsonObject
+	 * @return
+	 */
+	@RequiresPermissions("system:gateway:putRecycleBin")
+	@RequestMapping(value = "/putRecycleBin", method = RequestMethod.PUT)
+	public Result putRecycleBin(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
+		try {
+			String ids = jsonObject.getString("ids");
+			if (StringUtils.isNotBlank(ids)) {
+				sysGatewayRouteService.revertLogicDeleted(Arrays.asList(ids.split(",")));
+				return Result.ok("操作成功!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Result.error("操作失败!");
+		}
+		return Result.ok("还原成功");
+	}
+	/**
+	 * 彻底删除路由
+	 *
+	 * @param ids 被删除的路由ID，多个id用半角逗号分割
+	 * @return
+	 */
+	@RequiresPermissions("system:gateway:deleteRecycleBin")
+	@RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
+	public Result deleteRecycleBin(@RequestParam("ids") String ids) {
+		try {
+			if (StringUtils.isNotBlank(ids)) {
+				sysGatewayRouteService.deleteLogicDeleted(Arrays.asList(ids.split(",")));
+			}
+			return Result.ok("删除成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Result.error("删除失败!");
+		}
+	}
+	/**
+	 * 复制路由
+	 *
+	 * @param id 路由id
+	 * @return
+	 */
+	@RequiresPermissions("system:gateway:copyRoute")
+	@RequestMapping(value = "/copyRoute", method = RequestMethod.GET)
+	public Result<SysGatewayRoute> copyRoute(@RequestParam(name = "id", required = true) String id, HttpServletRequest req) {
+		Result<SysGatewayRoute> result = new Result<>();
+		SysGatewayRoute sysGatewayRoute= sysGatewayRouteService.copyRoute(id);
+		result.setResult(sysGatewayRoute);
+		result.setSuccess(true);
+		return result;
+	}
 }

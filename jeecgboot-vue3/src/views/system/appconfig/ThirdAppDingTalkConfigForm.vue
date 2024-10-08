@@ -167,7 +167,7 @@
                 Modal.warning(options)
               } else {
                 createMessage.warning({
-                  content: "同步失败，请检查对接信息录入中是否填写正确，并确认是否已开启钉钉配置！",
+                  content: res.message || "同步失败，请检查对接信息录入中是否填写正确，并确认是否已开启钉钉配置！",
                   duration: 5
                 });
               }

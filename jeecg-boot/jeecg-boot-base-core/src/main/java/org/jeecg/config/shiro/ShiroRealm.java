@@ -19,6 +19,7 @@ import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -141,7 +142,7 @@ public class ShiroRealm extends AuthorizingRealm {
         }
         //update-begin-author:taoyan date:20210609 for:校验用户的tenant_id和前端传过来的是否一致
         String userTenantIds = loginUser.getRelTenantIds();
-        if(oConvertUtils.isNotEmpty(userTenantIds)){
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && oConvertUtils.isNotEmpty(userTenantIds)){
             String contextTenantId = TenantContext.getTenant();
             log.debug("登录租户：" + contextTenantId);
             log.debug("用户拥有那些租户：" + userTenantIds);
@@ -167,8 +168,8 @@ public class ShiroRealm extends AuthorizingRealm {
 
                     //*********************************************
                     if(!isAuthorization){
-                        log.info("租户异常——登录租户：" + contextTenantId);
-                        log.info("租户异常——用户拥有租户组：" + userTenantIds);
+                        log.warn("租户异常——当前登录的租户是：" + contextTenantId);
+                        log.warn("租户异常——用户拥有的租户是：" + userTenantIds);
                         throw new AuthenticationException("登录租户授权变更，请重新登陆!");
                     }
                     //*********************************************

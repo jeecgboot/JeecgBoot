@@ -17,6 +17,8 @@
     props: {
       value: propTypes.string.def(''),
       disabled: propTypes.bool.def(false),
+      //是否聚焦
+      autoFocus: propTypes.bool.def(true),
     },
     emits: ['change', 'update:value'],
     setup(props, { emit, attrs }) {

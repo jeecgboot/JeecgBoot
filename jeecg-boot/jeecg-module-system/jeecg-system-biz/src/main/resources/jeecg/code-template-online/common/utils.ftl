@@ -149,6 +149,8 @@
         <#-- update-begin---author:chenrui ---date:20231228  for:fix 带条件字典存在单引号导致js编译错误---------- -->
     <#elseif po.dictField?default("")?trim?length gt 1>
         <#assign dictCode="dictCode: '${po.dictField}'">
+    <#else>
+        <#assign dictCode="dictCode: ''">
     </#if>
 
     <#if po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='checkbox' || po.classType=='radio'>
@@ -229,4 +231,19 @@
     </#if>
   </#if>
   <#return flag>
+</#function>
+
+<#-- vue3 native 获取范围字段 -->
+<#function getRangeField(columns) >
+  <#assign rangeField = "">
+  <#list columns as po>
+      <#if po.isQuery=='Y'>
+          <#if po.queryMode!='single'>
+              <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal' || po.classType=='time' || po.classType=='date' || po.classType=='datetime'>
+                  <#assign rangeField = rangeField + "${po.fieldName},">
+              </#if>
+          </#if>
+      </#if>
+  </#list>
+  <#return rangeField>
 </#function>

@@ -183,7 +183,9 @@ function handleSeqColumn({ props, col, columns }: HandleArgs) {
  */
 function handleSelectionColumn({ props, data, col, columns }: HandleArgs) {
   // 判断是否开启了可选择行
-  if (props.rowSelection) {
+  // -update-begin--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑不显示checkbox
+  if (props.rowSelection && props.disabled == false) {
+    // -update-end--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑不显示checkbox
     let width = 45;
     if (data.statistics.has && !props.rowExpand && !props.dragSort) {
       width = 60;

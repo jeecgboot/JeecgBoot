@@ -15,6 +15,7 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -206,6 +207,12 @@ public class QuartzJobController {
 	public ModelAndView exportXls(HttpServletRequest request, QuartzJob quartzJob) {
 		// Step.1 组装查询条件
 		QueryWrapper<QuartzJob> queryWrapper = QueryGenerator.initQueryWrapper(quartzJob, request.getParameterMap());
+		// 过滤选中数据
+		String selections = request.getParameter("selections");
+		if (oConvertUtils.isNotEmpty(selections)) {
+			List<String> selectionList = Arrays.asList(selections.split(","));
+			queryWrapper.in("id",selectionList);
+		}
 		// Step.2 AutoPoi 导出Excel
 		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
 		List<QuartzJob> pageList = quartzJobService.list(queryWrapper);

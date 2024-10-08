@@ -1,0 +1,63 @@
+server:
+  servlet:
+    contextPath: /nacos
+  tomcat:
+    accesslog:
+      enabled: true
+      pattern: '%h %l %u %t "%r" %s %b %D %{User-Agent}i %{Request-Source}i'
+    basedir: ''
+spring:
+  sql:
+    init:
+      platform: dm
+db:
+  pool: 
+    config:
+      driverClassName: dm.jdbc.driver.DmDriver
+  num: 1
+  password:
+    '0': SYSDBA
+  url:
+    '0': jdbc:dm://192.168.1.188:30236/DMSERVER?schema=NACOS&compatibleMode=mysql&ignoreCase=true&ENCODING=utf-8
+  user:
+    '0': SYSDBA
+management:
+  metrics:
+    export:
+      elastic:
+        enabled: false
+      influx:
+        enabled: false
+nacos:
+  core:
+    auth:
+      enabled: false
+      caching:
+        enabled: true
+      server:
+        identity:
+          key: example
+          value: example
+      plugin:
+        nacos:
+          token:
+            expire:
+              seconds: 18000
+            secret:
+              key: SecretKey01234567890123456789012345345678999987654901234567890123456789
+      system:
+        type: nacos
+  istio:
+    mcp:
+      server:
+        enabled: false
+  naming:
+    empty-service:
+      auto-clean: true
+      clean:
+        initial-delay-ms: 50000
+        period-time-ms: 30000
+  security:
+    ignore:
+      urls: /,/error,/**/*.css,/**/*.js,/**/*.html,/**/*.map,/**/*.svg,/**/*.png,/**/*.ico,/console-ui/public/**,/v1/auth/**,/v1/console/health/**,/actuator/**,/v1/console/server/**
+  standalone: true
