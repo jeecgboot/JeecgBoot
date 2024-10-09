@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div :class="prefixCls" class="relative w-full h-full px-4">
     <AppLocalePicker class="absolute text-white top-4 right-4 enter-x xl:text-gray-600" :showText="false" v-if="!sessionTimeout && showLocale" />
@@ -49,7 +50,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useLocaleStore } from '/@/store/modules/locale';
-  import { useLoginState, LoginStateEnum } from './useLogin';
+  import { useLoginState } from './useLogin';
   defineProps({
     sessionTimeout: {
       type: Boolean,
