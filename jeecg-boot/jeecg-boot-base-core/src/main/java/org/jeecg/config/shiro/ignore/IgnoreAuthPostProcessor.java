@@ -3,14 +3,6 @@ package org.jeecg.config.shiro.ignore;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.config.shiro.IgnoreAuth;
-import org.springframework.aop.framework.Advised;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.security.web.DefaultSecurityFilterChain;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -18,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,9 +41,6 @@ public class IgnoreAuthPostProcessor implements InitializingBean {
         log.info("Init Token ignoreAuthUrls Config [ 集合 ]  ：{}", ignoreAuthUrls);
         if (!CollectionUtils.isEmpty(ignoreAuthUrls)) {
             InMemoryIgnoreAuth.set(ignoreAuthUrls);
-
-            // 添加免登录url
-            addIgnoreUrl(ignoreAuthUrls);
         }
 
         // 计算方法的耗时
@@ -116,29 +104,5 @@ public class IgnoreAuthPostProcessor implements InitializingBean {
 
     private String prefix(String seg) {
         return seg.startsWith("/") ? seg : "/"+seg;
-    }
-
-    private void addIgnoreUrl(List<String> urls){
-        FilterChainProxy obj = applicationContext.getBean(FilterChainProxy.class);
-        if (Objects.isNull(obj)) {
-            return;
-        }
-        List<SecurityFilterChain> filterChains = (List<SecurityFilterChain>) getProperty(obj,"filterChains");
-
-        if (!CollectionUtils.isEmpty(filterChains)) {
-            for (String url : urls) {
-                filterChains.add(0, new DefaultSecurityFilterChain(new AntPathRequestMatcher(url, null)));
-            }
-        }
-    }
-
-    private Object getProperty(Object obj, String fieldName) {
-        try {
-            Field field = obj.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field.get(obj);
-        } catch (Exception e) {
-            return null;
-        }
     }
 }

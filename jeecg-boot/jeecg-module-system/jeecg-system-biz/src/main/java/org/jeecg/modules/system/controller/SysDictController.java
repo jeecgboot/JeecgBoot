@@ -700,7 +700,7 @@ public class SysDictController {
 	 * @param ids 被删除的字典ID，多个id用半角逗号分割
 	 * @return
 	 */
-	@RequiresPermissions("system:dict:deleteRecycleBin")
+	@PreAuthorize("@jps.RequiresPermissions('system:dict:deleteRecycleBin')")
 	@RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
 	public Result deleteRecycleBin(@RequestParam("ids") String ids) {
 		try {
