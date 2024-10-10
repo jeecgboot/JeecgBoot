@@ -20,5 +20,8 @@
     width: 100%;
     height: 100%;
     min-height: 500px;
+    // -update-begin--author:liaozhiyang---date:20240702---for：【TV360X-1685】通知公告查看出现两个滚动条
+    display: block;
+    // -update-end--author:liaozhiyang---date:20240702---for：【TV360X-1685】通知公告查看出现两个滚动条
   }
 </style>

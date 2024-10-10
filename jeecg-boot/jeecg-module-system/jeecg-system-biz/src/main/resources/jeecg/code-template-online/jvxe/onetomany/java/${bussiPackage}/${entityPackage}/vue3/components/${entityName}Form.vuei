@@ -154,7 +154,7 @@
         await saveOrUpdate(values, true);
       }
 
-      const queryByIdUrl = '/${entityPackage}/${entityName?uncap_first}/queryById';
+      const queryByIdUrl = '/${entityPackagePath}/${entityName?uncap_first}/queryById';
       async function initFormData(){
         let params = {id: props.formData.dataId};
         const data = await defHttp.get({url: queryByIdUrl, params});

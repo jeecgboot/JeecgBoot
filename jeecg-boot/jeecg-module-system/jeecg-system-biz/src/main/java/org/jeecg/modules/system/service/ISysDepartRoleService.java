@@ -21,4 +21,9 @@ public interface ISysDepartRoleService extends IService<SysDepartRole> {
      */
     List<SysDepartRole> queryDeptRoleByDeptAndUser(String orgCode, String userId);
 
+    /**
+     *  删除部门角色和对应关联表信息
+     * @param ids
+     */
+    void deleteDepartRole(List<String> ids);
 }

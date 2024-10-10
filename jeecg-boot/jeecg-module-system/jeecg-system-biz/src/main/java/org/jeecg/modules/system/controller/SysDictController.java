@@ -2,11 +2,13 @@ package org.jeecg.modules.system.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
@@ -75,8 +77,14 @@ public class SysDictController {
 	private JeecgPermissionService jeecgPermissionService;
 	
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public Result<IPage<SysDict>> queryPageList(SysDict sysDict,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
+	public Result<IPage<SysDict>> queryPageList(
+			SysDict sysDict,
+			@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+			// 查询关键字，模糊筛选code和name
+			@RequestParam(name = "keywords", required = false) String keywords,
+			HttpServletRequest req
+	) {
 		Result<IPage<SysDict>> result = new Result<IPage<SysDict>>();
 		//------------------------------------------------------------------------------------------------
 		//是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
@@ -85,7 +93,12 @@ public class SysDictController {
 		}
 		//------------------------------------------------------------------------------------------------
 		QueryWrapper<SysDict> queryWrapper = QueryGenerator.initQueryWrapper(sysDict, req.getParameterMap());
-		Page<SysDict> page = new Page<SysDict>(pageNo, pageSize);
+		// 查询关键字，模糊筛选code和name
+		if (oConvertUtils.isNotEmpty(keywords)) {
+			queryWrapper.and(i -> i.like("dict_code", keywords).or().like("dict_name", keywords));
+		}
+
+		Page<SysDict> page = new Page<>(pageNo, pageSize);
 		IPage<SysDict> pageList = sysDictService.page(page, queryWrapper);
 		log.debug("查询当前页："+pageList.getCurrent());
 		log.debug("查询当前页数量："+pageList.getSize());
@@ -199,7 +212,8 @@ public class SysDictController {
 	public Result<List<DictModel>> loadDict(@PathVariable("dictCode") String dictCode,
 			@RequestParam(name="keyword",required = false) String keyword,
 			@RequestParam(value = "sign",required = false) String sign,
-			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
+			@RequestParam(name = "pageNo", defaultValue = "1", required = false) Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 		
 		//update-begin-author:taoyan date:2023-5-22 for: /issues/4905 因为中括号(%5)的问题导致的 表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905 RouteToRequestUrlFilter
 		if(keyword!=null && keyword.indexOf("%5")>=0){
@@ -214,7 +228,7 @@ public class SysDictController {
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
 		try {
-			List<DictModel> ls = sysDictService.loadDict(dictCode, keyword, pageSize);
+			List<DictModel> ls = sysDictService.loadDict(dictCode, keyword, pageNo,pageSize);
 			if (ls == null) {
 				result.error500("字典Code格式不正确！");
 				return result;
@@ -246,12 +260,12 @@ public class SysDictController {
 			@RequestParam(value = "sign", required = false) String sign,
 			@RequestParam(value = "pageSize", required = false) Integer pageSize) {
 		// 首次查询查出来用户选中的值，并且不分页
-		Result<List<DictModel>> firstRes = this.loadDict(dictCode, keyword, sign, null);
+		Result<List<DictModel>> firstRes = this.loadDict(dictCode, keyword, sign,null, null);
 		if (!firstRes.isSuccess()) {
 			return firstRes;
 		}
 		// 然后再查询出第一页的数据
-		Result<List<DictModel>> result = this.loadDict(dictCode, "", sign, pageSize);
+		Result<List<DictModel>> result = this.loadDict(dictCode, "", sign,1, pageSize);
 		if (!result.isSuccess()) {
 			return result;
 		}
@@ -658,6 +672,45 @@ public class SysDictController {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Result.error("操作失败!");
+		}
+	}
+	/**
+	 * 还原被逻辑删除的用户
+	 *
+	 * @param jsonObject
+	 * @return
+	 */
+	@RequestMapping(value = "/putRecycleBin", method = RequestMethod.PUT)
+	public Result putRecycleBin(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
+		try {
+			String ids = jsonObject.getString("ids");
+			if (StringUtils.isNotBlank(ids)) {
+				sysDictService.revertLogicDeleted(Arrays.asList(ids.split(",")));
+				return Result.ok("操作成功!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Result.error("操作失败!");
+		}
+		return Result.ok("还原成功");
+	}
+	/**
+	 * 彻底删除字典
+	 *
+	 * @param ids 被删除的字典ID，多个id用半角逗号分割
+	 * @return
+	 */
+	@PreAuthorize("@jps.requiresPermissions('system:dict:deleteRecycleBin')")
+	@RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
+	public Result deleteRecycleBin(@RequestParam("ids") String ids) {
+		try {
+			if (StringUtils.isNotBlank(ids)) {
+				sysDictService.removeLogicDeleted(Arrays.asList(ids.split(",")));
+			}
+			return Result.ok("删除成功!");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Result.error("删除失败!");
 		}
 	}
 

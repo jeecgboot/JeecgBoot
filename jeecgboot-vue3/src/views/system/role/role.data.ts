@@ -58,6 +58,7 @@ export const searchUserFormSchema: FormSchema[] = [
     label: '用户账号',
     component: 'Input',
     colProps: { span: 12 },
+    labelWidth: 74,
   },
 ];
 

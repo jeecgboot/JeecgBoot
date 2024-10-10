@@ -95,7 +95,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
                 // 当传过来的id数据库不存在时，说明数据库没有，走新增逻辑
                 ticket.setOrderId(jeecgOrderMain.getId());
                 jeecgOrderTicketMapper.insert(ticket);
-                break;
+                continue;
             }
             if(orderTicket.getId().equals(ticket.getId())){
                 // 传过来的id和数据库id一至时，说明数据库存在该数据，走更新逻辑
@@ -109,7 +109,7 @@ public class JeecgOrderMainServiceImpl extends ServiceImpl<JeecgOrderMainMapper,
                 // 当传过来的id数据库不存在时，说明数据库没有，走新增逻辑
                 customer.setOrderId(jeecgOrderMain.getId());
                 jeecgOrderCustomerMapper.insert(customer);
-                break;
+                continue;
             }
             if(customers.getId().equals(customer.getId())){
                 //TODO 传过来的id和数据库id一至时，说明数据库存在该数据，走更新逻辑

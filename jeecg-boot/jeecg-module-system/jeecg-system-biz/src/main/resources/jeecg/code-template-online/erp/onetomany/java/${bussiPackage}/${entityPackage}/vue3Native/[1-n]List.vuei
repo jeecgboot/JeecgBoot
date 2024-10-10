@@ -87,6 +87,7 @@
       useSearchForm: false,
       actionColumn: {
         width: 180,
+        fixed:'right'
       },
       beforeFetch: (params) => {
         return Object.assign(params, queryParam);

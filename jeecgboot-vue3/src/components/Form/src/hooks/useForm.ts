@@ -5,7 +5,7 @@ import { handleRangeValue } from '../utils/formUtils';
 import { ref, onUnmounted, unref, nextTick, watch } from 'vue';
 import { isProdMode } from '/@/utils/env';
 import { error } from '/@/utils/log';
-import { getDynamicProps, getValueType } from '/@/utils';
+import { getDynamicProps, getValueType, getValueTypeBySchema } from '/@/utils';
 import { add } from "/@/components/Form/src/componentMap";
 //集成online专用控件
 import { OnlineSelectCascade, LinkTableCard, LinkTableSelect } from  '@jeecg/online';
@@ -137,7 +137,7 @@ export function useForm(props?: Props): UseFormReturnType {
       let values = form.validate(nameList).then((values) => {
         for (let key in values) {
           if (values[key] instanceof Array) {
-            let valueType = getValueType(getProps, key);
+            let valueType = getValueTypeBySchema(form.getSchemaByField(key)!);
             if (valueType === 'string') {
               values[key] = values[key].join(',');
             }

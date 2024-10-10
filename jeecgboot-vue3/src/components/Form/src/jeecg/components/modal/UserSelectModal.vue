@@ -29,6 +29,7 @@
             :rowSelection="rowSelection"
             :indexColumnProps="indexColumnProps"
             :afterFetch="afterFetch"
+            :beforeFetch="beforeFetch"
           >
             <!-- update-begin-author:taoyan date:2022-5-25 for: VUEN-1112一对多 用户选择 未显示选择条数，及清空 -->
             <template #tableTitle></template>
@@ -267,6 +268,17 @@
       maxHeight.value = clientHeight > 600 ? 600 : clientHeight;
       // update-end--author:liaozhiyang---date:20240607---for：【TV360X-305】小屏幕展示10条
 
+      //update-begin---author:wangshuai---date:2024-07-03---for:【TV360X-1629】用户选择组件不是根据创建时间正序排序的---
+      /**
+       * 请求之前根据创建时间排序
+       *
+       * @param params
+       */
+      function beforeFetch(params) {
+        return Object.assign({ column: 'createTime', order: 'desc' }, params);
+      }
+      //update-end---author:wangshuai---date:2024-07-03---for:【TV360X-1629】用户选择组件不是根据创建时间正序排序的---
+
       return {
         //config,
         handleOk,
@@ -287,6 +299,7 @@
         afterFetch,
         handleCancel,
         maxHeight,
+        beforeFetch,
       };
     },
   });

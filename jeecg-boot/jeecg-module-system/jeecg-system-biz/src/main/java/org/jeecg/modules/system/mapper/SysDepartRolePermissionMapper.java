@@ -14,4 +14,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface SysDepartRolePermissionMapper extends BaseMapper<SysDepartRolePermission> {
 
+    void deleteByRoleIds(@Param("ids")List<String> ids);
 }

@@ -35,6 +35,7 @@ export interface FormActionType {
   resetSchema: (data: Partial<FormSchema> | Partial<FormSchema>[]) => Promise<void>;
   setProps: (formProps: Partial<FormProps>) => Promise<void>;
   getProps: ComputedRef<Partial<FormProps>>;
+  getSchemaByField: (field: string) => Nullable<FormSchema>;
   removeSchemaByFiled: (field: string | string[]) => Promise<void>;
   appendSchemaByField: (schema: FormSchema, prefixField: string | undefined, first?: boolean | undefined) => Promise<void>;
   validateFields: (nameList?: NamePath[], options?: ValidateOptions) => Promise<any>;
@@ -131,7 +132,9 @@ export interface FormSchema {
   // Variable name bound to v-model Default value
   valueField?: string;
   // Label name
-  label: string | VNode;
+  // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+  label: string | VNode | Fn;
+  // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
   // Auxiliary text
   subLabel?: string;
   // Help text on the right side of the text

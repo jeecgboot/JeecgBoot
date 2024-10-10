@@ -746,7 +746,11 @@ public class QueryGenerator {
 	private static boolean judgedIsUselessField(String name) {
 		return "class".equals(name) || "ids".equals(name)
 				|| "page".equals(name) || "rows".equals(name)
-				|| "sort".equals(name) || "order".equals(name);
+//// update-begin--author:sunjianlei date:20240808 for：【TV360X-2009】取消过滤 sort、order 字段，防止前端排序报错 ------
+//// https://github.com/jeecgboot/JeecgBoot/issues/6937
+//				|| "sort".equals(name) || "order".equals(name)
+//// update-end----author:sunjianlei date:20240808 for：【TV360X-2009】取消过滤 sort、order 字段，防止前端排序报错 ------
+				;
 	}
 
 	
@@ -834,6 +838,9 @@ public class QueryGenerator {
 	public static String getSqlRuleValue(String sqlRule){
 		try {
 			Set<String> varParams = getSqlRuleParams(sqlRule);
+			if (varParams == null || varParams.isEmpty()) {
+				return sqlRule;
+			}
 			for(String var:varParams){
 				String tempValue = converRuleValue(var);
 				sqlRule = sqlRule.replace("#{"+var+"}",tempValue);

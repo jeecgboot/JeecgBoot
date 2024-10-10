@@ -107,3 +107,26 @@ export function vModel(value, row, column: Ref<any> | string) {
   let property = isRef(column) ? column.value.property : column;
   unref(row)[property] = value;
 }
+
+/**
+ * liaozhiyang
+ * 2024-06-20
+ * 判断当前行编辑是否使用了虚拟滚动（并不是开启了就是，还得满足数据数量大于gt值）
+ */
+export function isEnabledVirtualYScroll(props, xTable): boolean {
+  let isRealEnabledVirtual = false;
+  const isEnabledVScroll = props?.scrollY?.enabled;
+  // 100是底层的默认值
+  const gtYNum = props?.scrollY?.gt || 100;
+  if (isEnabledVScroll) {
+    const tableFullData = xTable.internalData.tableFullData;
+    if (gtYNum === 0) {
+      isRealEnabledVirtual = true;
+    } else {
+      if (tableFullData.length > gtYNum) {
+        isRealEnabledVirtual = true;
+      }
+    }
+  }
+  return isRealEnabledVirtual;
+}

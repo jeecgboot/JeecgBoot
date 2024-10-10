@@ -5,15 +5,15 @@
       <template #buttons>
         <div :class="`${prefixCls}-button div`" :size="btnSize">
           <slot v-if="showPrefix" name="toolbarPrefix" :size="btnSize" />
-          <a-button v-if="showAdd" type="primary" preIcon="ant-design:plus-outlined" :disabled="disabled" @click="trigger('add')">
+          <a-button v-if="showAdd" type="primary" preIcon="ant-design:plus-outlined" :disabled="disabled" :loading="deleting" @click="trigger('add')">
             <span>新增</span>
           </a-button>
           <a-button v-if="showSave" preIcon="ant-design:save-outlined" :disabled="disabled" @click="trigger('save')">
             <span>保存</span>
           </a-button>
-          <template v-if="selectedRowIds.length > 0">
-            <Popconfirm v-if="showRemove" :title="`确定要删除这 ${selectedRowIds.length} 项吗?`" @confirm="trigger('remove')">
-              <a-button preIcon="ant-design:minus-outlined" :disabled="disabled">删除</a-button>
+          <template v-if="deleting || selectedRowIds.length > 0">
+            <Popconfirm v-if="showRemove" :title="`确定要删除这 ${selectedRowIds.length} 项吗?`" :disabled="deleting" @confirm="onRemove">
+              <a-button preIcon="ant-design:minus-outlined" :disabled="disabled" :loading="deleting">删除</a-button>
             </Popconfirm>
             <template v-if="showClearSelection">
               <a-button preIcon="ant-design:delete-outlined" @click="trigger('clearSelection')">清空选择</a-button>
@@ -115,4 +115,19 @@
   function toggleCollapse() {
     collapsed.value = !collapsed.value;
   }
+
+  // 【TV360X-1975】在Online设计中，当字段多时，由于会同步删除其他表格导致删除时间变长，所以增加删除loading，防止以为点击删除按钮无效
+  const deleting = ref(false);
+
+  let deleteTimer: any = null
+
+  function onRemove() {
+    trigger('remove')
+    deleting.value = true;
+    if (deleteTimer) {
+      clearTimeout(deleteTimer)
+    }
+    deleteTimer = setTimeout(() => deleting.value = false, 300);
+  }
+
 </script>

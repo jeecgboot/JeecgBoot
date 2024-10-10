@@ -38,7 +38,7 @@ export function useThirdLogin() {
   //第三方登录
   function onThirdLogin(source) {
     let url = `${glob.uploadUrl}/sys/thirdLogin/render/${source}`;
-    window.open(
+    const openWin = window.open(
       url,
       `login ${source}`,
       'height=500, width=500, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, resizable=no,location=n o, status=no'
@@ -68,10 +68,15 @@ export function useThirdLogin() {
       } else {
         createMessage.warning('不识别的信息传递');
       }
-      //update-begin---author:wangshuai---date:2024-02-20---for:【QQYUN-8156】连续登录失败，导致失败提醒累加---
-      window.removeEventListener('message', unref(receiveMessage),false);
-      //update-end---author:wangshuai---date:2024-02-20---for:【QQYUN-8156】连续登录失败，导致失败提醒累加---
+      // update-begin--author:liaozhiyang---date:20240717---for：【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
+      if (openWin?.closed) {
+        window.removeEventListener('message', receiveMessage, false);
+      }
+      // update-end--author:liaozhiyang---date:20240717---for：【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
     };
+    // update-begin--author:liaozhiyang---date:20240717---for：【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
+    window.removeEventListener('message', receiveMessage, false);
+    // update-end--author:liaozhiyang---date:20240717---for：【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
     window.addEventListener('message', receiveMessage, false);
   }
   // 根据token执行登录

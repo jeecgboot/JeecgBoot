@@ -217,5 +217,29 @@
 		and tenant_id = #{tenantId}
 	</select>
 
+	<!-- 还原被逻辑删除的字典 -->
+	<update id="revertLogicDeleted">
+		UPDATE
+		sys_dict
+		SET
+		del_flag = 0
+		WHERE
+		del_flag = 1
+		AND id IN
+		<foreach collection="ids" item="dictId" open="(" close=")" separator="," >
+			#{dictId}
+		</foreach>
+	</update>
+
+	<!-- 彻底删除字典 -->
+	<delete id="removeLogicDeleted">
+		DELETE FROM sys_dict
+		WHERE
+		del_flag = 1
+		AND id IN
+		<foreach collection="ids" item="dictId" open="(" close=")" separator="," >
+			#{dictId}
+		</foreach>
+	</delete>
 
 </mapper>

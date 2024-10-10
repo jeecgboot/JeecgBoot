@@ -17,7 +17,7 @@
                   <span>{{ item.toUserId_dictText }}</span>
                   <Tooltip class="comment-last-content" @openChange="(v)=>visibleChange(v, item)">
                     <template #title>
-                      <div v-html="getHtml(item.commentId_dictText)"></div>
+                      <div v-html="getHtml(lineFeed(item.commentId_dictText))"></div>
                     </template>
                     <message-outlined />
                   </Tooltip>
@@ -42,7 +42,7 @@
             </template>
 
             <template #content>
-              <div class="content" v-html="getHtml(item.commentContent)" style="font-size: 15px">
+              <div class="content" v-html="getHtml(lineFeed(item.commentContent))" style="font-size: 15px">
               </div>
 
               <div v-if="item.fileList && item.fileList.length > 0">
@@ -105,6 +105,7 @@
       HistoryFileList,
     },
     props: {
+      tableId: propTypes.string.def(''),
       tableName: propTypes.string.def(''),
       dataId: propTypes.string.def(''),
       datetime:  propTypes.number.def(1),
@@ -281,6 +282,11 @@
           }
         }
       }
+      // update-begin--author:liaozhiyang---date:20240618---for：【TV360X-932】评论加上换行
+      const lineFeed = (content) => {
+        return content.replace(/\n/g, '<br>');
+      };
+      // update-end--author:liaozhiyang---date:20240618---for：【TV360X-932】评论加上换行
 
       return {
         dataList,
@@ -303,6 +309,7 @@
         bottomCommentRef,
         visibleChange,
         listRef,
+        lineFeed,
       };
     },
   });
@@ -318,6 +325,9 @@
     }
     .ant-comment {
       width: 100%;
+    }
+    :deep(.ant-comment-avatar) {
+      cursor: default;
     }
   }
   .comment-author {

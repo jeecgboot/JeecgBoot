@@ -116,7 +116,7 @@
       initFormData();
     });
     //渲染流程表单数据
-    const queryByIdUrl = '/${entityPackage}/${entityName?uncap_first}/queryById';
+    const queryByIdUrl = '/${entityPackagePath}/${entityName?uncap_first}/queryById';
     async function initFormData(){
       if(props.formBpm === true){
         await reset();

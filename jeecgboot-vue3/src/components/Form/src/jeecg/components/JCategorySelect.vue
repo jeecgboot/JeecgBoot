@@ -84,7 +84,9 @@
         () => {
           loadItemByCode();
         },
-        { deep: true }
+        //update-begin---author:wangshuai---date:2024-06-17---for:【TV360X-480】封装表单和原生表单，默认值生成有问题的字段：分类字典树附默认值不生效---
+        { deep: true, immediate: true }
+        //update-end---author:wangshuai---date:2024-06-17---for:【TV360X-480】封装表单和原生表单，默认值生成有问题的字段：分类字典树附默认值不生效---
       );
       watch(
         () => props.pcode,
@@ -124,6 +126,7 @@
             treeValue.value = { value: null, label: null };
           }
         } else {
+          console.log("props.value:::",props.value)
           loadDictItem({ ids: props.value }).then((res) => {
             let values = props.value.split(',');
             treeValue.value = res.map((item, index) => ({

@@ -1,5 +1,5 @@
 <template>
-  <BasicDrawer v-bind="$attrs" @register="registerDrawer" title="数据权限规则" :width="adaptiveWidth">
+  <BasicDrawer v-bind="$attrs" @register="registerDrawer" title="数据权限规则" :width="adaptiveWidth" :rootClassName="prefixCls">
     <BasicTable @register="registerTable">
       <template #tableTitle>
         <a-button type="primary" @click="handleCreate"> 新增</a-button>
@@ -21,8 +21,10 @@
   import { dataRuleList, deleteRule } from './menu.api';
   import { ColEx } from '/@/components/Form/src/types';
   import { useDrawerAdaptiveWidth } from '/@/hooks/jeecg/useAdaptiveWidth';
+  import { useDesign } from '/@/hooks/web/useDesign';
   const permissionId = ref('');
   const { adaptiveWidth } = useDrawerAdaptiveWidth();
+  const { prefixCls } = useDesign('sys-menu-dataRulelist');
   //权限规则model
   const [registerModal, { openModal }] = useModal();
   const [registerDrawer] = useDrawerInner(async (data) => {
@@ -120,3 +122,23 @@
     ];
   }
 </script>
+<style lang="less">
+  // -update-begin--author:liaozhiyang---date:20240702---for：【TV360X-1660】菜单管理-数据权限的查询和按钮没间隙
+  @prefix-cls: ~'@{namespace}-sys-menu-dataRulelist';
+  .@{prefix-cls} {
+    .jeecg-basic-table {
+      padding: 0;
+    }
+    .btnArea {
+      .ant-btn {
+        &:last-child {
+          margin-right: 0;
+        }
+        &:first-child {
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+  // -update-end--author:liaozhiyang---date:20240702---for：【TV360X-1660】菜单管理-数据权限的查询和按钮没间隙
+</style>

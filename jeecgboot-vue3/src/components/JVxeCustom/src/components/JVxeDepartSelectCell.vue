@@ -77,6 +77,9 @@
           maxTagCount: 1,
           // 显示提示重写，去掉省略号
           maxTagPlaceholder: ({ length }) => '+' + length,
+          // -update-begin--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
+          isDetailsMode: cellProps.value.disabledTable,
+          // -update-end--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
         };
       });
 

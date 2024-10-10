@@ -57,7 +57,7 @@ export const columns: BasicColumn[] = [
     customRender:({text}) => {
        return  render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
      },
-   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user' || po.classType=='popup_dict'>
     dataIndex: '${po.fieldName}_dictText'
    <#elseif po.classType=='cat_tree'>
     dataIndex: '${po.fieldName}',
@@ -104,6 +104,14 @@ export const searchFormSchema: FormSchema[] = [
 <#elseif po.classType=='sel_user'>
 <#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
       component: 'JSelectUser',
+      componentProps:{
+      <#if po.extendParams?exists && po.extendParams.text?exists>
+         labelKey: '${po.extendParams.text}',
+      </#if>
+      <#if po.extendParams?exists && po.extendParams.store?exists>
+          rowKey: '${po.extendParams.store}',
+      </#if>
+      },
 <#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
 <#elseif po.classType=='switch'>
       component: 'JSwitch',
@@ -115,6 +123,14 @@ export const searchFormSchema: FormSchema[] = [
        },
  <#elseif po.classType=='sel_depart'>
       component: 'JSelectDept',
+      componentProps:{
+      <#if po.extendParams?exists && po.extendParams.text?exists>
+         labelKey: '${po.extendParams.text}',
+      </#if>
+      <#if po.extendParams?exists && po.extendParams.store?exists>
+          rowKey: '${po.extendParams.store}',
+      </#if>
+      },
  <#elseif po.classType=='list_multi'>
       component: 'JSelectMultiple',
       componentProps:{
@@ -156,9 +172,16 @@ export const searchFormSchema: FormSchema[] = [
       },
 <#elseif po.classType=='popup'>
     <#include "/common/form/vue3popup.ftl">
+<#elseif po.classType=='popup_dict'>
+      component: 'JPopupDict',
+      componentProps: {
+        placeholder: '请选择${po.filedComment}',
+        dictCode: '${po.dictTable},${po.dictText},${po.dictField}',
+        multi: ${po.extendParams.popupMulti?c}
+      },
 <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
 <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
-      component: 'JDictSelectTag',
+      component: 'JSelectMultiple',
       componentProps:{
        <#if po.dictTable?default("")?trim?length gt 1>
           dictCode:"${po.dictTable},${po.dictText},${po.dictField}"
@@ -276,8 +299,23 @@ export const formSchema: FormSchema[] = [
     },
     <#elseif po.classType =='popup'>
     <#include "/common/form/vue3popup.ftl">
+    <#elseif po.classType=='popup_dict'>
+    component: 'JPopupDict',
+    componentProps: {
+      placeholder: '请选择${po.filedComment}',
+      dictCode: '${po.dictTable},${po.dictText},${po.dictField}',
+      multi: ${po.extendParams.popupMulti?c}
+    },
      <#elseif po.classType =='sel_depart'>
      component: 'JSelectDept',
+     componentProps:{
+      <#if po.extendParams?exists && po.extendParams.text?exists>
+         labelKey: '${po.extendParams.text}',
+      </#if>
+      <#if po.extendParams?exists && po.extendParams.store?exists>
+          rowKey: '${po.extendParams.store}',
+      </#if>
+      },
      <#elseif po.classType =='switch'>
      component: 'JSwitch',
      componentProps:{
@@ -299,8 +337,13 @@ export const formSchema: FormSchema[] = [
     component: 'JSelectUser',
     <#-- update-end---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
     componentProps:{
-        labelKey:'realname',
-     },
+  <#if po.extendParams?exists && po.extendParams.text?exists>
+      labelKey: '${po.extendParams.text}',
+  </#if>
+  <#if po.extendParams?exists && po.extendParams.store?exists>
+      rowKey: '${po.extendParams.store}',
+  </#if>
+    },
     <#elseif po.classType =='textarea'>
     component: 'InputTextArea',
     <#elseif po.classType=='list'>

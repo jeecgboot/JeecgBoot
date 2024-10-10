@@ -1,9 +1,9 @@
 //package org.jeecg.config;
 //
-// 已使用swagger3config平替
-//import com.github.xiaoymin.knife4j.spring.annotations.EnableKnife4j;
+//
 //import io.swagger.annotations.ApiOperation;
 //import org.jeecg.common.constant.CommonConstant;
+//import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 //import org.springframework.beans.BeansException;
 //import org.springframework.beans.factory.config.BeanPostProcessor;
 //import org.springframework.context.annotation.Bean;
@@ -19,15 +19,13 @@
 //import springfox.documentation.builders.ParameterBuilder;
 //import springfox.documentation.builders.PathSelectors;
 //import springfox.documentation.builders.RequestHandlerSelectors;
-//import springfox.documentation.oas.annotations.EnableOpenApi;
 //import springfox.documentation.schema.ModelRef;
 //import springfox.documentation.service.*;
 //import springfox.documentation.spi.DocumentationType;
 //import springfox.documentation.spi.service.contexts.SecurityContext;
 //import springfox.documentation.spring.web.plugins.Docket;
-//import springfox.documentation.spring.web.plugins.WebFluxRequestHandlerProvider;
 //import springfox.documentation.spring.web.plugins.WebMvcRequestHandlerProvider;
-//import springfox.documentation.swagger2.annotations.EnableSwagger2;
+//import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 //
 //import java.lang.reflect.Field;
 //import java.util.ArrayList;
@@ -39,8 +37,7 @@
 // * @Author scott
 // */
 //@Configuration
-//@EnableSwagger2    //开启 Swagger2
-//@EnableKnife4j     //开启 knife4j，可以不写
+//@EnableSwagger2WebMvc
 //@Import(BeanValidatorPluginsConfiguration.class)
 //public class Swagger2Config implements WebMvcConfigurer {
 //
@@ -98,6 +95,14 @@
 //        List<Parameter> pars = new ArrayList<>();
 //        tokenPar.name(CommonConstant.X_ACCESS_TOKEN).description("token").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
 //        pars.add(tokenPar.build());
+//        //update-begin-author:liusq---date:2024-08-15--for:  开启多租户时，全局参数增加租户id
+//        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+//            ParameterBuilder tenantPar = new ParameterBuilder();
+//            tenantPar.name(CommonConstant.TENANT_ID).description("租户ID").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
+//            pars.add(tenantPar.build());
+//        }
+//        //update-end-author:liusq---date:2024-08-15--for: 开启多租户时，全局参数增加租户id
+//
 //        return pars;
 //    }
 //
@@ -152,7 +157,7 @@
 //
 //            @Override
 //            public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-//                if (bean instanceof WebMvcRequestHandlerProvider || bean instanceof WebFluxRequestHandlerProvider) {
+//                if (bean instanceof WebMvcRequestHandlerProvider) {
 //                    customizeSpringfoxHandlerMappings(getHandlerMappings(bean));
 //                }
 //                return bean;

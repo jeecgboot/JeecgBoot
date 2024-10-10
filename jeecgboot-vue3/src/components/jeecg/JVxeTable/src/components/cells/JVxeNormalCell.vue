@@ -1,13 +1,12 @@
 <template>
-  <JVxeReloadEffect :vNode="innerValue" :effect="isEffect" @effectEnd="handleEffectEnd" />
+  <JVxeReloadEffect :vNode="innerLabel" :effect="isEffect" @effectEnd="handleEffectEnd" />
 </template>
 
 <script lang="ts">
-  import { ref, defineComponent } from 'vue';
+  import { ref, watch, defineComponent } from 'vue';
   import JVxeReloadEffect from '../JVxeReloadEffect';
   import { JVxeComponent } from '/@/components/jeecg/JVxeTable/types';
   import { useJVxeComponent, useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks';
-  import { watch } from 'vue';
 
   export default defineComponent({
     name: 'JVxeNormalCell',
@@ -15,7 +14,7 @@
     props: useJVxeCompProps(),
     setup(props: JVxeComponent.Props) {
       const setup = useJVxeComponent(props);
-      const { innerValue, row } = setup;
+      const { innerValue, innerLabel, row } = setup;
 
       const reloadEffect = props.renderOptions.reloadEffect;
       const isEffect = ref<boolean>(false);
@@ -39,6 +38,7 @@
       }
 
       return {
+        innerLabel,
         innerValue,
         isEffect,
         handleEffectEnd,

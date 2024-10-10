@@ -1,7 +1,7 @@
 <template>
   <div :class="{'comment-active': commentActive}" class="comment-main" @click="handleClickBlank">
-    <textarea ref="commentRef" v-model="myComment" @keyup.enter="sendComment" @input="handleCommentChange" @blur="handleBlur" class="comment-content" :rows="3" placeholder="请输入你的评论，可以@成员" />
-    <div class="comment-content comment-html-shower" :class="{'no-content':noConent, 'top-div': showHtml, 'bottom-div': showHtml == false }" v-html="commentHtml" @click="handleClickHtmlShower"></div>
+    <textarea ref="commentRef" v-model="myComment" @keyup.enter="sendComment" @input="handleCommentChange" @blur="handleBlur" class="comment-content" :rows="3" placeholder="请输入你的评论，可以@成员"></textarea>
+    <div ref="commentContentRef" class="comment-content comment-html-shower" :class="{'no-content':noConent, 'top-div': showHtml, 'bottom-div': showHtml == false }" v-html="commentHtml" @click="handleClickHtmlShower"></div>
     <div class="comment-buttons" v-if="commentActive">
       <div style="cursor: pointer">
         <Tooltip title="选择@用户">
@@ -90,12 +90,18 @@
     setup(props, { emit }) {
       const uploadVisible = ref(false);
       const uploadRef = ref();
+      const commentContentRef = ref<null | HTMLDivElement>(null);
       //注册model
       const [registerModal, { openModal, closeModal }] = useModal();
       const buttonLoading = ref(false);
       const myComment = ref<string>('');
-      function sendComment() {
-        console.log(myComment.value);
+      function sendComment(e) {
+        // update-begin--author:liaozhiyang---date:20240618---for：【TV360X-932】评论加上换行
+        const keyCode = e.keyCode || e.which;
+        if (keyCode == 13 && e.shiftKey) {
+          return;
+        }
+        // update-end--author:liaozhiyang---date:20240618---for：【TV360X-932】评论加上换行
         let content = myComment.value;
         if (!content && content !== '0') {
           disabledButton.value = true;
@@ -153,15 +159,29 @@
           if (realname && username) {
             let str = `${realname}[${username}]`;
             let temp = myComment.value;
+            // update-begin--author:liaozhiyang---date:20240726---for：【TV360X-929】选择@用户，应该插入到光标位置
             if (!temp) {
-              myComment.value = '@' + str;
+              myComment.value = '@' + str + ' ';
             } else {
-              if (temp.endsWith('@')) {
-                myComment.value = temp + str +' ';
+              const index = commentRef.value?.selectionStart ?? temp.length;
+              let startStr = temp.substring(0, index);
+              const endStr = temp.substring(index);
+              if (startStr.endsWith('@')) {
+                if (startStr.length >= 2) {
+                  const i = startStr.length - 1;
+                  const s_str = startStr.substring(0, i);
+                  const e_str = startStr.substring(i);
+                  const spacing = s_str.endsWith(' ') ? '' : ' ';
+                  startStr = s_str + spacing + e_str;
+                }
+                myComment.value = startStr + str + ' ' + endStr;
               } else {
-                myComment.value = '@' + str + ' ' + temp + ' ';
+                const _symbol = startStr && startStr.endsWith(' ') ? '@' : ' @';
+                myComment.value = startStr + _symbol + str + ' ' + endStr;
               }
             }
+            // update-begin--author:liaozhiyang---date:20240726---for：【TV360X-929】选择@用户，应该插入到光标位置
+
             //update-begin---author:wangshuai---date:2024-01-22---for:【QQYUN-8002】选完人，鼠标应该放到后面并在前面加上空格---
             showHtml.value = false;
             commentRef.value.focus();
@@ -171,18 +191,22 @@
         }
         closeModal();        
       }
-
-      function handleCommentChange() {
-        //console.log(1,e)
-      }
-      watch(
-        () => myComment.value,
-        (val) => {
-          if (val && val.endsWith('@')) {
-            openSelectUser();
-          }
+      // update-begin--author:liaozhiyang---date:20240724---for：【TV360X-927】@只有在输入时弹出用户弹窗，删除时不应该弹出
+      function handleCommentChange(e) {
+        if (e.data === '@') {
+          e.target.blur();
+          openSelectUser();
         }
-      );
+      }
+      // watch(
+      //   () => myComment.value,
+      //   (val) => {
+      //     if (val && val.endsWith('@')) {
+      //       openSelectUser();
+      //     }
+      //   }
+      // );
+      // update-end--author:liaozhiyang---date:20240724---for：【TV360X-927】@只有在输入时弹出用户弹窗，删除时不应该弹出
 
       const emojiButton = ref();
       function onSelectEmoji(emoji) {
@@ -255,6 +279,11 @@
       }
       function handleBlur() {
         showHtml.value = true;
+        // update-begin--author:liaozhiyang---date:20240724---for：解决多行获取焦点和失去焦点时滚动位置不一致
+        setTimeout(() => {
+          commentContentRef.value!.scrollTop = commentRef.value.scrollTop;
+        }, 0);
+        // update-end--author:liaozhiyang---date:20240724---for：解决多行获取焦点和失去焦点时滚动位置不一致
       }
       
       const commentActive = ref(false);
@@ -306,7 +335,8 @@
         commentActive,
         noConent,
         changeActive,
-        selectFirstFile
+        selectFirstFile,
+        commentContentRef,
       };
     },
   };
@@ -342,7 +372,9 @@
     width: 100%;
     border: solid 0px;
     outline: none;
-
+    // update-begin--author:liaozhiyang---date:20240724---for：【TV360X-933】评论框拖动之后底部评论列表被覆盖了部分
+    resize: none;
+    // update-end--author:liaozhiyang---date:20240724---for：【TV360X-933】评论框拖动之后底部评论列表被覆盖了部分
     .emoji-item {
       display: inline-block !important;
       width: 0 !important;
@@ -361,7 +393,10 @@
     position: absolute;
     top: 0;
     left: 0;
-    height: 70px;
+    // update-begin--author:liaozhiyang---date:20240724---for：解决多行获取焦点和失去焦点时滚动位置不一致
+    height: 78px;
+    overflow-y: auto;
+    // update-end--author:liaozhiyang---date:20240724---for：解决多行获取焦点和失去焦点时滚动位置不一致
     &.bottom-div {
       z-index: -99;
     }

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.7.0</version>
+  <version>3.7.1</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.7.0</jeecgboot.version>
+		<jeecgboot.version>3.7.1</jeecgboot.version>
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -38,10 +38,11 @@
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 		<seata.version>1.5.2</seata.version>
 
-		<xxl-job-core.version>2.2.0</xxl-job-core.version>
+		<xxl-job-core.version>2.4.1</xxl-job-core.version>
         <fastjson.version>2.0.43</fastjson.version>
         <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
+		<commonmark.version>0.17.0</commonmark.version>
 		<knife4j-spring-boot-starter.version>4.4.0</knife4j-spring-boot-starter.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
@@ -59,20 +60,21 @@
 		<druid.version>1.2.22</druid.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.8.0</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.8.1</jimureport-spring-boot-starter.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.17.3</aliyun.oss.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
-		<codegenerate.version>1.4.7</codegenerate.version>
-		<autopoi-web.version>1.4.7</autopoi-web.version>
+		<codegenerate.version>1.4.9</codegenerate.version>
+		<autopoi-web.version>1.4.11</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<justauth.version>1.16.6</justauth.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
 		<jedis.version>3.8.0</jedis.version>
+		<baidu-java-sdk.version>4.16.19</baidu-java-sdk.version>
 		<!-- Log4j2爆雷漏洞 -->
 		<!-- spring boot 3 不支持下列两个版本-->
 		<!--<log4j2.version>2.17.0</log4j2.version>
@@ -138,16 +140,16 @@
 			<version>${fastjson.version}</version>
 		</dependency>
 		<!-- markdown -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.pegdown</groupId>
 			<artifactId>pegdown</artifactId>
 			<version>${pegdown.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>asm</artifactId>
-					<groupId>org.ow2.asm</groupId>
-				</exclusion>
-			</exclusions>
+		</dependency>-->
+		<!--markdown 解析 https://github.com/commonmark/commonmark-java -->
+		<dependency>
+			<groupId>org.commonmark</groupId>
+			<artifactId>commonmark</artifactId>
+			<version>${commonmark.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -257,13 +259,15 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.7.0</version>
+				<version>3.7.1-RC</version>
 			</dependency>
+			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 			<dependency>
 				<groupId>org.glassfish.jaxb</groupId>
 				<artifactId>jaxb-runtime</artifactId>
 				<version>2.3.3</version>
 			</dependency>
+			<!-- update-end-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 
 			<!--mongon db-->
 			<dependency>
@@ -298,6 +302,18 @@
 					<exclusion>
 						<artifactId>okhttp</artifactId>
 						<groupId>com.squareup.okhttp3</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- 百度SDK （OCR） -->
+			<dependency>
+				<groupId>com.baidu.aip</groupId>
+				<artifactId>java-sdk</artifactId>
+				<version>${baidu-java-sdk.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-simple</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -422,6 +438,12 @@
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
 				<version>1.6.0</version>
+			</dependency>
+			<!-- 积木仪表盘-->
+			<dependency>
+				<groupId>org.jeecgframework.jimureport</groupId>
+				<artifactId>jimureport-dashboard-spring-boot3-starter</artifactId>
+				<version>1.8.1-beta</version>
 			</dependency>
 			<!-- chatgpt -->
 			<dependency>

@@ -1,3 +1,4 @@
+<#include "/common/utils.ftl">
 <template>
   <div class="p-2">
 <#assign query_field_no=0>  
@@ -9,6 +10,7 @@
 <#assign need_dept = false>
 <#assign need_multi = false>
 <#assign need_popup = false>
+<#assign need_popup_dict = false>
 <#assign need_select_tag = false>
 <#assign need_select_tree = false>
 <#assign need_time = false>
@@ -18,6 +20,8 @@
 <#assign need_image_upload = false>
 <#assign need_editor = false>
 <#assign need_checkbox = false>
+<#assign need_range_number = false>
+<#assign is_range = false>
 <#assign query_flag = false>
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
@@ -52,11 +56,20 @@
 <#if po.classType=='popup'>
 <#assign need_popup = true>
 </#if>
+<#if po.classType=='popup_dict'>
+<#assign need_popup_dict = true>
+</#if>
 <#if po.classType=='sel_tree'>
 <#assign need_select_tree = true>
 </#if>
 <#if po.classType=='time'>
 <#assign need_time = true>
+</#if>
+<#if po.queryMode!='single' && (po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal')>
+<#assign need_range_number = true>
+</#if>
+<#if po.queryMode!='single'>
+<#assign is_range = true>
 </#if>
   <#include "/common/form/native/vue3NativeSearch.ftl">
 </#list>
@@ -85,9 +98,9 @@
     <BasicTable @register="registerTable" :rowSelection="rowSelection">
       <!--插槽:table标题-->
       <template #tableTitle>
-        <a-button type="primary" @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
-        <a-button  type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
-        <j-upload-button  type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
+        <a-button type="primary" v-auth="'${entityPackage}:${tableName}:add'"  @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
+        <a-button  type="primary" v-auth="'${entityPackage}:${tableName}:exportXls'" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
+        <j-upload-button  type="primary" v-auth="'${entityPackage}:${tableName}:importExcel'"  preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <template #overlay>
             <a-menu>
@@ -97,7 +110,7 @@
               </a-menu-item>
             </a-menu>
           </template>
-          <a-button>批量操作
+          <a-button v-auth="'${entityPackage}:${tableName}:deleteBatch'">批量操作
             <Icon icon="mdi:chevron-down"></Icon>
           </a-button>
         </a-dropdown>
@@ -158,6 +171,9 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  <#if is_range>
+  import { cloneDeep } from "lodash-es";
+  </#if>
 
   const formRef = ref();
   const queryParam = reactive<any>({});
@@ -176,8 +192,13 @@
         width: 120,
         fixed: 'right',
       },
-      beforeFetch: (params) => {
+      beforeFetch: async (params) => {
+       <#if is_range>
+        let rangerQuery = await setRangeQuery();
+        return Object.assign(params, rangerQuery);
+       <#else>
         return Object.assign(params, queryParam);
+       </#if>
       },
     },
     exportConfig: {
@@ -270,6 +291,7 @@
       {
         label: '编辑',
         onClick: handleEdit.bind(null, record),
+        auth: '${entityPackage}:${tableName}:edit'
       },
     ];
   }
@@ -289,7 +311,8 @@
           title: '是否确认删除',
           confirm: handleDelete.bind(null, record),
           placement: 'topLeft',
-        }
+        },
+        auth: '${entityPackage}:${tableName}:delete'
       }
     ];
     if(record.bpmStatus == '1'){
@@ -314,7 +337,8 @@
           title: '是否确认删除',
           confirm: handleDelete.bind(null, record),
           placement: 'topLeft',
-        }
+        },
+        auth: '${entityPackage}:${tableName}:delete'
       }
     ]
     </#if>
@@ -369,7 +393,7 @@
     let params = {
       flowCode: 'dev_${tableName}_001',
       id: record.id,
-      formUrl: '${entityPackage}/components/${entityName}Form',
+      formUrl: '${entityPackagePath}/components/${entityName}Form',
       formUrlMobile: ''
     }
     await startProcess(params);
@@ -407,6 +431,32 @@
   }
   initDictConfig();
     </#if>
+  <#if is_range>
+  
+  let rangeField = '${getRangeField(columns)}'
+  
+  /**
+   * 设置范围查询条件
+   */
+  async function setRangeQuery(){
+    let queryParamClone = cloneDeep(queryParam);
+    if (rangeField) {
+      let fieldsValue = rangeField.split(',');
+      fieldsValue.forEach(item => {
+        if (queryParamClone[item]) {
+          let range = queryParamClone[item];
+          queryParamClone[item+'_begin'] = range[0];
+          queryParamClone[item+'_end'] = range[1];
+          delete queryParamClone[item];
+        } else {
+          queryParamClone[item+'_begin'] = '';
+          queryParamClone[item+'_end'] = '';
+        }
+      })
+    }
+    return queryParamClone;
+  }
+  </#if>
 </script>
 
 <style lang="less" scoped>

@@ -1,4 +1,4 @@
-FROM nginx
+FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/nginx
 MAINTAINER jeecgos@163.com
 VOLUME /tmp
 ENV LANG en_US.UTF-8

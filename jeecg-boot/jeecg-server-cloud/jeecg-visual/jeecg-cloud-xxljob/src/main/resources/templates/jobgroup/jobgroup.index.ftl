@@ -28,13 +28,13 @@
                 <div class="col-xs-3">
                     <div class="input-group">
                         <span class="input-group-addon">AppName</span>
-                        <input type="text" class="form-control" id="appname" autocomplete="on" placeholder="${I18n.system_please_input}AppName" >
+                        <input type="text" class="form-control" id="appname" placeholder="${I18n.system_please_input}AppName" >
                     </div>
                 </div>
                 <div class="col-xs-3">
                     <div class="input-group">
                         <span class="input-group-addon">${I18n.jobgroup_field_title}</span>
-                        <input type="text" class="form-control" id="title" autocomplete="on" placeholder="${I18n.jobgroup_field_title}" >
+                        <input type="text" class="form-control" id="title" placeholder="${I18n.jobgroup_field_title}" >
                     </div>
                 </div>
                 <div class="col-xs-2">
@@ -70,6 +70,25 @@
 	    </section>
 	</div>
 
+    <!-- 注册列表查看.模态框 -->
+    <div class="modal fade" id="showRegistryListModal" tabindex="-1" role="dialog"  aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" >${I18n.jobinfo_opt_registryinfo}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="data" style="word-wrap: break-word;"></div>
+                </div>
+                <div class="modal-footer">
+                    <div class="text-center" >
+                        <button type="button" class="btn btn-info ok" data-dismiss="modal" >${I18n.system_ok}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 新增.模态框 -->
     <div class="modal fade" id="addModal" tabindex="-1" role="dialog"  aria-hidden="true">
         <div class="modal-dialog ">
@@ -98,7 +117,7 @@
                         <div class="form-group">
                             <label for="lastname" class="col-sm-2 control-label">${I18n.jobgroup_field_registryList}<font color="red">*</font></label>
                             <div class="col-sm-10">
-                                <textarea class="textarea" name="addressList" maxlength="512" placeholder="${I18n.jobgroup_field_registryList_placeholder}" readonly="readonly" style="background-color:#eee; width: 100%; height: 100px; font-size: 14px; line-height: 15px; border: 1px solid #dddddd; padding: 5px;"></textarea>
+                                <textarea class="textarea" name="addressList" maxlength="20000" placeholder="${I18n.jobgroup_field_registryList_placeholder}" readonly="readonly" style="background-color:#eee; width: 100%; height: 100px; font-size: 14px; line-height: 15px; border: 1px solid #dddddd; padding: 5px;"></textarea>
                             </div>
                         </div>
                         <hr>
@@ -142,7 +161,7 @@
                         <div class="form-group">
                             <label for="lastname" class="col-sm-2 control-label">${I18n.jobgroup_field_registryList}<font color="red">*</font></label>
                             <div class="col-sm-10">
-                                <textarea class="textarea" name="addressList" maxlength="512" placeholder="${I18n.jobgroup_field_registryList_placeholder}" readonly="readonly" style="background-color:#eee; width: 100%; height: 100px; font-size: 14px; line-height: 15px; border: 1px solid #dddddd; padding: 5px;"></textarea>
+                                <textarea class="textarea" name="addressList" maxlength="20000" placeholder="${I18n.jobgroup_field_registryList_placeholder}" readonly="readonly" style="background-color:#eee; width: 100%; height: 100px; font-size: 14px; line-height: 15px; border: 1px solid #dddddd; padding: 5px;"></textarea>
                             </div>
                         </div>
                         <hr>

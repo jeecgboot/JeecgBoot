@@ -1,6 +1,6 @@
 <template>
   <a-col v-bind="actionColOpt" v-if="showActionButtonGroup">
-    <div style="width: 100%" :style="{ textAlign: actionColOpt.style.textAlign }">
+    <div class="btnArea" style="width: 100%" :style="{ textAlign: actionColOpt.style.textAlign }">
       <FormItem>
         <!-- update-begin-author:zyf   Date:20211213  for：调换按钮前后位置-->
         <slot name="submitBefore"></slot>
@@ -126,3 +126,16 @@
     },
   });
 </script>
+<style lang="less" scoped>
+  // update-begin--author:liaozhiyang---date:20240617---for：【TV360X-999】在1753px宽度下 流程设计页面查询的展开换行了
+  .btnArea {
+    :deep(.ant-form-item-control-input-content) {
+      display: flex;
+      align-items: center;
+      .ant-btn-link {
+        padding-left: 0;
+      }
+    }
+  }
+  // update-end--author:liaozhiyang---date:20240617---for：【TV360X-999】在1753px宽度下 流程设计页面查询的展开换行了
+</style>

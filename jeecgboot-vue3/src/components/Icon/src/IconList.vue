@@ -3,7 +3,7 @@
     <a-input :placeholder="t('component.icon.search')" v-model:value="searchIconValue" @change="debounceHandleSearchChange" allowClear />
   </div>
   <div v-if="getPaginationList.length > 0">
-    <ScrollContainer>
+    <div class="overflow-auto">
       <ul class="px-2 icon-list" style="padding-right: 0">
         <li
           v-for="icon in getPaginationList"
@@ -17,7 +17,7 @@
           <Icon :icon="icon" v-else />
         </li>
       </ul>
-    </ScrollContainer>
+    </div>
     <div class="flex py-2 items-center justify-content-right mr-10 mt-5" v-if="getTotal >= pageSize && isPage">
       <Pagination
         showLessItems
@@ -36,7 +36,6 @@
 </template>
 
 <script lang="ts" name="icon-list">
-  import { ScrollContainer } from '@/components/Container';
   import SvgIcon from '@/components/Icon/src/SvgIcon.vue';
   import Icon from '@/components/Icon/src/Icon.vue';
   import { defineComponent, ref, unref, watchEffect} from 'vue';
@@ -49,12 +48,12 @@
   import { Empty, Pagination } from 'ant-design-vue';
   export default defineComponent({
     components: {
-      ScrollContainer,
       SvgIcon,
       Icon,
       Empty,
       Pagination,
     },
+    emits: ['update:value'],
     props: {
       currentList: propTypes.any.def([]),
       clearSelect: propTypes.bool.def(false),
@@ -143,6 +142,7 @@
             }
           }
         }
+        emit('update:value', currentSelect.value);
       }
 
       /**

@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysGatewayRoute;
 
+import java.util.List;
+
 /**
  * @Description: gateway路由管理
  * @Author: jeecg-boot
@@ -35,4 +37,28 @@ public interface ISysGatewayRouteService extends IService<SysGatewayRoute> {
      */
     void clearRedis();
 
+    /**
+     * 还原逻辑删除
+     * @param ids
+     */
+    void revertLogicDeleted(List<String> ids);
+
+    /**
+     * 彻底删除
+     * @param ids
+     */
+    void deleteLogicDeleted(List<String> ids);
+
+    /**
+     * 复制路由
+     * @param id
+     * @return
+     */
+    SysGatewayRoute copyRoute(String id);
+
+    /**
+     * 获取删除列表
+     * @return
+     */
+    List<SysGatewayRoute> getDeletelist();
 }

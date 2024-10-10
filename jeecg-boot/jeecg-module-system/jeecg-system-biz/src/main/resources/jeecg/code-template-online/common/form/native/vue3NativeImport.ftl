@@ -13,6 +13,9 @@
 <#if need_popup>
   import JPopup from '/@/components/Form/src/jeecg/components/JPopup.vue';
 </#if>
+<#if need_popup_dict>
+  import JPopupDict from '/@/components/Form/src/jeecg/components/JPopupDict.vue';
+</#if>
 <#if need_category>
   import JCategorySelect from '/@/components/Form/src/jeecg/components/JCategorySelect.vue';
 </#if>
@@ -47,4 +50,7 @@
 </#if>
 <#if need_checkbox>
   import JCheckbox from "/@/components/Form/src/jeecg/components/JCheckbox.vue";
+</#if>
+<#if need_range_number>
+  import JRangeNumber from "/@/components/Form/src/jeecg/components/JRangeNumber.vue";
 </#if>

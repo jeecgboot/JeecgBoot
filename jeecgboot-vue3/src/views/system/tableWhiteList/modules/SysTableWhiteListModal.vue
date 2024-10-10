@@ -22,7 +22,7 @@ import {saveOrUpdate} from '../SysTableWhiteList.api';
 const emit = defineEmits(['register', 'success']);
 const isUpdate = ref(true);
 //表单配置
-const [registerForm, {resetFields, setFieldsValue, validate}] = useForm({
+const [registerForm, { resetFields, setFieldsValue, validate, setProps }] = useForm({
   labelWidth: 120,
   wrapperCol: null,
   schemas: formSchema,
@@ -44,6 +44,7 @@ const [registerModal, {setModalProps, closeModal}] = useModalInner(async (data) 
       ...data.record,
     });
   }
+  setProps({ disabled: !data?.showFooter })
 });
 //设置标题
 const title = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
