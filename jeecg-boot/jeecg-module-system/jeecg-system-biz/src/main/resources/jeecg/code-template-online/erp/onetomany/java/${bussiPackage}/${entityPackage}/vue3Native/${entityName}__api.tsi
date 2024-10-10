@@ -4,19 +4,19 @@ import { useMessage } from "/@/hooks/web/useMessage";
 const { createConfirm } = useMessage();
 
 enum Api {
-  list = '/${entityPackage}/${entityName?uncap_first}/list',
-  save= '/${entityPackage}/${entityName?uncap_first}/add',
-  edit= '/${entityPackage}/${entityName?uncap_first}/edit',
-  deleteOne = '/${entityPackage}/${entityName?uncap_first}/delete',
-  deleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch',
-  importExcel = '/${entityPackage}/${entityName?uncap_first}/importExcel',
-  exportXls = '/${entityPackage}/${entityName?uncap_first}/exportXls',
+  list = '/${entityPackagePath}/${entityName?uncap_first}/list',
+  save= '/${entityPackagePath}/${entityName?uncap_first}/add',
+  edit= '/${entityPackagePath}/${entityName?uncap_first}/edit',
+  deleteOne = '/${entityPackagePath}/${entityName?uncap_first}/delete',
+  deleteBatch = '/${entityPackagePath}/${entityName?uncap_first}/deleteBatch',
+  importExcel = '/${entityPackagePath}/${entityName?uncap_first}/importExcel',
+  exportXls = '/${entityPackagePath}/${entityName?uncap_first}/exportXls',
 <#list subTables as sub><#rt/>
-  ${sub.entityName?uncap_first}List = '/${entityPackage}/${entityName?uncap_first}/list${sub.entityName}ByMainId',
-  ${sub.entityName?uncap_first}Save= '/${entityPackage}/${entityName?uncap_first}/add${sub.entityName}',
-  ${sub.entityName?uncap_first}Edit= '/${entityPackage}/${entityName?uncap_first}/edit${sub.entityName}',
-  ${sub.entityName?uncap_first}Delete = '/${entityPackage}/${entityName?uncap_first}/delete${sub.entityName}',
-  ${sub.entityName?uncap_first}DeleteBatch = '/${entityPackage}/${entityName?uncap_first}/deleteBatch${sub.entityName}',
+  ${sub.entityName?uncap_first}List = '/${entityPackagePath}/${entityName?uncap_first}/list${sub.entityName}ByMainId',
+  ${sub.entityName?uncap_first}Save= '/${entityPackagePath}/${entityName?uncap_first}/add${sub.entityName}',
+  ${sub.entityName?uncap_first}Edit= '/${entityPackagePath}/${entityName?uncap_first}/edit${sub.entityName}',
+  ${sub.entityName?uncap_first}Delete = '/${entityPackagePath}/${entityName?uncap_first}/delete${sub.entityName}',
+  ${sub.entityName?uncap_first}DeleteBatch = '/${entityPackagePath}/${entityName?uncap_first}/deleteBatch${sub.entityName}',
 </#list>
 }
 /**
@@ -130,10 +130,10 @@ export const  ${sub.entityName?uncap_first}SaveOrUpdate = (params, isUpdate) => 
 /**
  * 导入
  */
-export const ${sub.entityName?uncap_first}ImportUrl = '/${entityPackage}/${entityName?uncap_first}/import${sub.entityName}'
+export const ${sub.entityName?uncap_first}ImportUrl = '/${entityPackagePath}/${entityName?uncap_first}/import${sub.entityName}'
 
 /**
  * 导出
  */
-export const ${sub.entityName?uncap_first}ExportXlsUrl = '/${entityPackage}/${entityName?uncap_first}/export${sub.entityName}'
+export const ${sub.entityName?uncap_first}ExportXlsUrl = '/${entityPackagePath}/${entityName?uncap_first}/export${sub.entityName}'
 </#list>

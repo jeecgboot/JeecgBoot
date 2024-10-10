@@ -13,7 +13,7 @@ const listeners = new Map();
  */
 export function connectWebSocket(url: string) {
   //update-begin-author:taoyan date:2022-4-24 for: v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
-  let token = (getToken() || '') as string;
+  const token = (getToken() || '') as string;
   result = useWebSocket(url, {
     // 自动重连 (遇到错误最多重复连接10次)
     autoReconnect: {
@@ -26,22 +26,55 @@ export function connectWebSocket(url: string) {
       interval: 55000
     },
     protocols: [token],
+    // update-begin--author:liaozhiyang---date:20240726---for：[issues/6662] 演示系统socket总断，换一个写法
+    onConnected: function (ws) {
+      console.log('[WebSocket] 连接成功', ws);
+    },
+    onDisconnected: function (ws, event) {
+      console.log('[WebSocket] 连接断开：', ws, event);
+    },
+    onError: function (ws, event) {
+      console.log('[WebSocket] 连接发生错误: ', ws, event);
+    },
+    onMessage: function (_ws, e) {
+      console.debug('[WebSocket] -----接收消息-------', e.data);
+      try {
+        //update-begin---author:wangshuai---date:2024-05-07---for:【issues/1161】前端websocket因心跳导致监听不起作用---
+        if (e.data === 'ping') {
+          return;
+        }
+        //update-end---author:wangshuai---date:2024-05-07---for:【issues/1161】前端websocket因心跳导致监听不起作用---
+        const data = JSON.parse(e.data);
+        for (const callback of listeners.keys()) {
+          try {
+            callback(data);
+          } catch (err) {
+            console.error(err);
+          }
+        }
+      } catch (err) {
+        console.error('[WebSocket] data解析失败：', err);
+      }
+    },
+    // update-end--author:liaozhiyang---date:20240726---for：[issues/6662] 演示系统socket总断，换一个写法
   });
+  // update-begin--author:liaozhiyang---date:20240726---for：[issues/6662] 演示系统socket总断，换一个写法
   //update-end-author:taoyan date:2022-4-24 for: v2.4.6 的 websocket 服务端，存在性能和安全问题。 #3278
-  if (result) {
-    result.open = onOpen;
-    result.close = onClose;
+  // if (result) {
+  //   result.open = onOpen;
+  //   result.close = onClose;
 
-    const ws = unref(result.ws);
-    if(ws!=null){
-      ws.onerror = onError;
-      ws.onmessage = onMessage;
-      //update-begin---author:wangshuai---date:2024-04-30---for:【issues/1217】发送测试消息后，铃铛数字没有变化---
-      ws.onopen = onOpen;
-      ws.onclose = onClose;
-      //update-end---author:wangshuai---date:2024-04-30---for:【issues/1217】发送测试消息后，铃铛数字没有变化---
-    }
-  }
+  //   const ws = unref(result.ws);
+  //   if(ws!=null){
+  //     ws.onerror = onError;
+  //     ws.onmessage = onMessage;
+  //     //update-begin---author:wangshuai---date:2024-04-30---for:【issues/1217】发送测试消息后，铃铛数字没有变化---
+  //     ws.onopen = onOpen;
+  //     ws.onclose = onClose;
+  //     //update-end---author:wangshuai---date:2024-04-30---for:【issues/1217】发送测试消息后，铃铛数字没有变化---
+  //   }
+  // }
+  // update-end--author:liaozhiyang---date:20240726---for：[issues/6662] 演示系统socket总断，换一个写法
 }
 
 function onOpen() {

@@ -55,9 +55,9 @@
                 model: {},
                 backRouteName:'index',
                 url: {
-                  queryById: "/${entityPackage}/${entityName?uncap_first}/queryById",
-                  add: "/${entityPackage}/${entityName?uncap_first}/add",
-                  edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+                  queryById: "/${entityPackagePath}/${entityName?uncap_first}/queryById",
+                  add: "/${entityPackagePath}/${entityName?uncap_first}/add",
+                  edit: "/${entityPackagePath}/${entityName?uncap_first}/edit",
                 },
             }
         },

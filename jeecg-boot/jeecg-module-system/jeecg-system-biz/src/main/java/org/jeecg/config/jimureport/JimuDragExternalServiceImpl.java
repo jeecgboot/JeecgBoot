@@ -1,5 +1,6 @@
 package org.jeecg.config.jimureport;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.dto.LogDTO;
 import org.jeecg.common.system.api.ISysBaseAPI;
@@ -13,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,18 +44,38 @@ public class JimuDragExternalServiceImpl implements IOnlDragExternalService {
      * @return key = dictCode ； value=对应的字典项
      */
     @Override
-    public Map<String, List<DragDictModel>> getManyDictItems(List<String> codeList) {
+    public Map<String, List<DragDictModel>> getManyDictItems(List<String> codeList, List<JSONObject> tableDictList) {
         Map<String, List<DragDictModel>> manyDragDictItems  = new HashMap<>();
-        Map<String, List<DictModel>> dictItemsMap = sysBaseApi.getManyDictItems(codeList);
-        dictItemsMap.forEach((k,v)->{
-            List<DragDictModel> dictItems  = new ArrayList<>();
-            v.forEach(dictItem->{
-                DragDictModel dictModel = new DragDictModel();
-                BeanUtils.copyProperties(dictItem,dictModel);
-                dictItems.add(dictModel);
+        if(!CollectionUtils.isEmpty(codeList)){
+            Map<String, List<DictModel>> dictItemsMap = sysBaseApi.getManyDictItems(codeList);
+            dictItemsMap.forEach((k,v)->{
+                List<DragDictModel> dictItems  = new ArrayList<>();
+                v.forEach(dictItem->{
+                    DragDictModel dictModel = new DragDictModel();
+                    BeanUtils.copyProperties(dictItem,dictModel);
+                    dictItems.add(dictModel);
+                });
+                manyDragDictItems.put(k,dictItems);
             });
-            manyDragDictItems.put(k,dictItems);
-        });
+        }
+
+        if(!CollectionUtils.isEmpty(tableDictList)){
+            tableDictList.forEach(item->{
+                List<DragDictModel> dictItems  = new ArrayList<>();
+                JSONObject object = JSONObject.parseObject(item.toString());
+                String dictField = object.getString("dictField");
+                String dictTable = object.getString("dictTable");
+                String dictText = object.getString("dictText");
+                String fieldName = object.getString("fieldName");
+                List<DictModel> dictItemsList = sysBaseApi.queryTableDictItemsByCode(dictTable,dictText,dictField);
+                dictItemsList.forEach(dictItem->{
+                    DragDictModel dictModel = new DragDictModel();
+                    BeanUtils.copyProperties(dictItem,dictModel);
+                    dictItems.add(dictModel);
+                });
+                manyDragDictItems.put(fieldName,dictItems);
+            });
+        }
         return manyDragDictItems;
     }
 

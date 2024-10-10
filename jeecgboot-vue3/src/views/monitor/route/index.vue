@@ -3,6 +3,7 @@
     <BasicTable @register="registerTable" :indexColumnProps="indexColumnProps">
       <template #tableTitle>
         <a-button preIcon="ant-design:plus-outlined" type="primary" @click="handleAdd" style="margin-right: 5px">新增</a-button>
+        <a-button type="primary" @click="openRecycleModal(true)" preIcon="ant-design:hdd-outlined"> 回收站</a-button>
       </template>
       <template #status="{ record, text }">
         <a-tag color="pink" v-if="text == 0">禁用</a-tag>
@@ -13,22 +14,27 @@
       </template>
     </BasicTable>
     <RouteModal @register="registerDrawer" @success="reload" />
+    <!--回收站弹窗-->
+    <RouteRecycleBinModal @register="registerRecycleModal" @success="reload" />
   </div>
 </template>
 <script lang="ts" name="monitor-route" setup>
   import { ref } from 'vue';
   import { BasicTable, TableAction } from '/@/components/Table';
   import { useModal } from '/@/components/Modal';
-  import { getRouteList, deleteRoute } from './route.api';
+  import { getRouteList, deleteRoute, copyRoute } from './route.api';
   import { columns } from './route.data';
   import RouteModal from './RouteModal.vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useDrawer } from '/@/components/Drawer';
   import { useListPage } from '/@/hooks/system/useListPage';
+  import RouteRecycleBinModal from './components/RouteRecycleBinModal.vue';
   const { createMessage } = useMessage();
   const [registerDrawer, { openDrawer }] = useDrawer();
   const checkedKeys = ref<Array<string | number>>([]);
 
+  //回收站model
+  const [registerRecycleModal, { openModal: openRecycleModal }] = useModal();
   // 列表页面公共参数、方法
   const { prefixCls, tableContext } = useListPage({
     designScope: 'router-template',
@@ -58,6 +64,13 @@
       {
         label: '编辑',
         onClick: handleEdit.bind(null, record),
+      },
+      {
+        label: '复制',
+        popConfirm: {
+          title: '是否确认复制',
+          confirm: handleCopy.bind(null, record),
+        },
       },
       {
         label: '删除',
@@ -93,6 +106,13 @@
       record,
       isUpdate: true,
     });
+  }
+  /**
+   * 复制
+   */
+  async function handleCopy(record) {
+    await copyRoute({ id: record.id }, reload);
+    createMessage.success('复制成功');
   }
 
   /**

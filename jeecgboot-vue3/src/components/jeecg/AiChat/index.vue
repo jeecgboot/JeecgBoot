@@ -3,7 +3,7 @@
     <template v-if="dataSource">
       <div class="leftArea" :class="[expand ? 'expand' : 'shrink']">
         <div class="content">
-          <slide v-if="uuid" :dataSource="dataSource"></slide>
+          <slide v-if="uuid" :dataSource="dataSource" @save="handleSave"></slide>
         </div>
         <div class="toggle-btn" @click="handleToggle">
           <span class="icon">
@@ -17,7 +17,7 @@
         </div>
       </div>
       <div class="rightArea" :class="[expand ? 'expand' : 'shrink']">
-        <chat v-if="uuid && chatVisible" :uuid="uuid" :chatData="chatData" :dataSource="dataSource"></chat>
+        <chat v-if="uuid && chatVisible" :uuid="uuid" :chatData="chatData" :dataSource="dataSource" @save="handleSave"></chat>
       </div>
     </template>
     <Spin v-else :spinning="true"></Spin>
@@ -83,6 +83,14 @@
   };
   const save = (content) => {
     defHttp.post({ url: configUrl.save, params: { content: JSON.stringify(content) } }, { isTransformResponse: false });
+  };
+  const handleSave = () => {
+    // 删除标签或清空内容之后的保存
+    save(dataSource.value);
+    setTimeout(() => {
+      // 删除标签或清空内容也会触发watch保存，此时不需watch保存需清除
+      clearTimeout(timer);
+    }, 50);
   };
   // 监听dataSource变化执行操作
   const execute = () => {

@@ -3,7 +3,7 @@
 <#if sub.foreignRelationType=='1'>
 #segment#${sub.entityName}Form.vue
 <template>
-    <BasicForm @register="registerForm"/>
+    <BasicForm @register="registerForm" name="${sub.entityName}Form" class="basic-modal-form" />
 </template>
 <script lang="ts">
     import {defineComponent} from 'vue';
@@ -23,8 +23,10 @@
             }
         },
         setup(props,{emit}) {
-            const [registerForm, {setProps, resetFields, setFieldsValue,getFieldsValue,validate}] = useForm({
-                //labelWidth: 150,
+            const [registerForm, { setProps, resetFields, setFieldsValue, getFieldsValue, validate, scrollToField }] = useForm({
+                <#if tableVo.fieldRowNum == 1>
+                labelWidth: 150,
+                </#if>
                 schemas: ${sub.entityName?uncap_first}FormSchema,
                 showActionButtonGroup: false,
                 baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}}
@@ -60,9 +62,9 @@
                     // 验证子表表单
                     validate().then(()=>{
                         return resolve()
-                    }).catch(()=> {
-                        return reject({ error: VALIDATE_FAILED ,index})
-                    })
+                    }).catch(({ errorFields }) => {
+                      return reject({ error: VALIDATE_FAILED , index, errorFields: errorFields, scrollToField: scrollToField });
+                    });
                 })
             }
             return {
@@ -75,5 +77,11 @@
         }
     })
 </script>
+<style lang="less" scoped>
+  .basic-modal-form {
+    overflow: auto;
+    height: 340px;
+  }
+</style>
 </#if>
 </#list>

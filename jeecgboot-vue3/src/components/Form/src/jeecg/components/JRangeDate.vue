@@ -42,9 +42,9 @@
             function handleChange(arr){
                 let str = ''
                 if(arr && arr.length>0){
-                    if(arr[1] && arr[0]){
-                        str = arr.join(',')
-                    }
+                  // update-begin--author:liaozhiyang---date:20240710---for：[issues/6368] rangeDate去掉判断允许起始项或结束项为空兼容allowEmpty
+                  str = arr.join(',')
+                  // update-end--author:liaozhiyang---date:20240710---for：[issues/6368] rangeDate去掉判断允许起始项或结束项为空兼容allowEmpty
                 }
                 emit('change', str);
                 emit('update:value', str);

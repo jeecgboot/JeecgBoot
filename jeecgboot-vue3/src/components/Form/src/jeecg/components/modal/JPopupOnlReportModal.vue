@@ -12,8 +12,8 @@
       wrapClassName="j-popup-modal"
       @visible-change="visibleChange"
     >
-      <div class="jeecg-basic-table-form-container" v-if="showSearchFlag">
-        <a-form ref="formRef" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol" @keyup.enter.native="searchQuery">
+      <div class="jeecg-basic-table-form-container">
+        <a-form ref="formRef" v-if="showSearchFlag" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol" @keyup.enter.native="searchQuery">
           <a-row :gutter="24">
             <template v-for="(item, index) in queryInfo">
               <template v-if="item.hidden === '1'">
@@ -31,8 +31,8 @@
             <a-col :md="8" :sm="8" v-if="showAdvancedButton">
               <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
                 <a-col :lg="6">
-                  <a-button type="primary" preIcon="ant-design:reload-outlined" @click="searchReset">重置</a-button>
-                  <a-button type="primary" preIcon="ant-design:search-outlined" @click="searchQuery" style="margin-left: 8px">查询</a-button>
+                  <a-button type="primary" preIcon="ant-design:search-outlined" @click="searchQuery">查询</a-button>
+                  <a-button preIcon="ant-design:reload-outlined" @click="searchReset" style="margin-left: 8px">重置</a-button>
                   <a @click="handleToggleSearch" style="margin-left: 8px">
                     {{ toggleSearchStatus ? '收起' : '展开' }}
                     <Icon :icon="toggleSearchStatus ? 'ant-design:up-outlined' : 'ant-design:down-outlined'" />
@@ -59,6 +59,12 @@
         @change="handleChangeInTable"
       >
         <template #tableTitle></template>
+         <template #bodyCell="{text, column}">
+          <template v-if="column.fieldType === 'Image'">
+            <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+            <img v-else :src="getImgView(text)" alt="图片不存在" class="cellIamge" @click="viewOnlineCellImage($event, text)" />
+          </template>
+        </template>
       </BasicTable>
     </BasicModal>
   </div>
@@ -71,6 +77,8 @@
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { usePopBiz } from '/@/components/jeecg/OnLine/hooks/usePopBiz';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
+  import { createImgPreview } from '/@/components/Preview/index';
 
   export default defineComponent({
     name: 'JPopupOnlReportModal',
@@ -82,9 +90,9 @@
         loading: true,
       }),
     },
-    props: ['multi', 'code', 'sorter', 'groupId', 'param','showAdvancedButton'],
+    props: ['multi', 'code', 'sorter', 'groupId', 'param','showAdvancedButton', 'getFormValues'],
     emits: ['ok', 'register'],
-    setup(props, { emit, refs }) {
+    setup(props, { emit }) {
       const { createMessage } = useMessage();
       const labelCol = reactive({
         xs: { span: 24 },
@@ -242,6 +250,41 @@
         queryParam.value = {};
         loadData(1);
       }
+
+      /**
+       * 2024-07-24
+       * liaozhiyang
+       * 【TV360X-1756】报表添加图片类型
+       * 图片
+       * @param text
+       */
+      function getImgView(text) {
+        if (text && text.indexOf(',') > 0) {
+          text = text.substring(0, text.indexOf(','));
+        }
+        return getFileAccessHttpUrl(text);
+      }
+      /**
+       * 2024-07-24
+       * liaozhiyang
+       * 【TV360X-1756】报表添加图片类型
+       * 预览列表 cell 图片
+       * @param text
+       */
+      function viewOnlineCellImage(e, text) {
+        e.stopPropagation();
+        if (text) {
+          let imgList: any = [];
+          let arr = text.split(',');
+          for (let str of arr) {
+            if (str) {
+              imgList.push(getFileAccessHttpUrl(str));
+            }
+          }
+          createImgPreview({ imageList: imgList });
+        }
+      }
+
       return {
         attrs,
         register,
@@ -272,6 +315,8 @@
         handleToggleSearch,
         searchQuery,
         searchReset,
+        getImgView,
+        viewOnlineCellImage,
       };
     },
   });
@@ -289,5 +334,13 @@
   }
   :deep(.jeecg-basic-table .ant-table-wrapper .ant-table-title){
     min-height: 0;
+  }
+  .cellIamge {
+    height: 25px !important;
+    margin: 0 auto;
+    max-width: 80px;
+    font-size: 12px;
+    font-style: italic;
+    cursor: pointer;
   }
 </style>

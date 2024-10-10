@@ -182,9 +182,15 @@
                 parent_id = #{parentId}
             </when>
             <otherwise>
-                parent_id IS NULL OR parent_id=''
+                (parent_id IS NULL OR parent_id='')
             </otherwise>
         </choose>
+        <if test="idList != null and !idList.isEmpty()">
+            and id in
+            <foreach item="id" index="index" collection="idList" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
         ORDER BY depart_order DESC
     </select>
 </mapper>

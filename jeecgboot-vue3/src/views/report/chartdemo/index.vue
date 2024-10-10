@@ -38,7 +38,7 @@
           <Gauge :chartData="{ name: '出勤率', value: 70 }" height="50vh"></Gauge>
         </a-tab-pane>
         <a-tab-pane key="10" tab="折柱图">
-          <BarAndLine :chartData="barLineData" height="50vh"></BarAndLine>
+          <BarAndLine :chartData="barLineData" :customColor="barLineColors" height="50vh"></BarAndLine>
         </a-tab-pane>
         <a-tab-pane key="11" tab="排名列表">
           <RankList title="门店销售排行榜" :list="rankList" style="width: 600px; margin: 0 auto"></RankList>
@@ -71,7 +71,7 @@
   import BarAndLine from '/@/components/chart/BarAndLine.vue';
 
   const activeKey = ref('1');
-  const { barDataSource, barMultiData, pieData, barLineData, radarData } = getData;
+  const { barDataSource, barMultiData, pieData, barLineData, radarData,barLineColors } = getData;
   const multiBarOption = {
     title: { text: '多列柱状图', left: 'center' },
   };

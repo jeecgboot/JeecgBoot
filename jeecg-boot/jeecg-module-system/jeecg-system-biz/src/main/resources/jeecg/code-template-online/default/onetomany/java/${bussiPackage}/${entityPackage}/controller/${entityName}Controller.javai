@@ -61,7 +61,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
  */
 @Tag(name="${tableVo.ftlDescription}")
 @RestController
-@RequestMapping("/${entityPackage}/${entityName?uncap_first}")
+@RequestMapping("/${entityPackagePath}/${entityName?uncap_first}")
 @Slf4j
 public class ${entityName}Controller {
 	@Autowired

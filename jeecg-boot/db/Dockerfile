@@ -1,4 +1,4 @@
-FROM mysql:8.0.19
+FROM registry.cn-hangzhou.aliyuncs.com/jeecgdocker/mysql:8.0.19
 
 MAINTAINER jeecgos@163.com
 

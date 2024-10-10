@@ -31,7 +31,7 @@
 			return {
 				CustomBar:this.CustomBar,
 				NavBarColor:this.NavBarColor,
-				url: "/${entityPackage}/${entityName?uncap_first}/list",
+				url: "/${entityPackagePath}/${entityName?uncap_first}/list",
 			};
 		},
 		methods: {

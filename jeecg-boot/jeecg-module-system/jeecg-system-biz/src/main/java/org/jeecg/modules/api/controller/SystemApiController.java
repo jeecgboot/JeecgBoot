@@ -98,7 +98,7 @@ public class SystemApiController {
         try {
             SensitiveInfoUtil.handlerObject(loginUser, true);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return loginUser;
     }
@@ -666,8 +666,11 @@ public class SystemApiController {
      * @return
      */
     @GetMapping("/loadDictItemByKeyword")
-    public List<DictModel> loadDictItemByKeyword(@RequestParam("dictCode") String dictCode, @RequestParam("keyword") String keyword, @RequestParam(value = "pageSize", required = false) Integer pageSize) {
-        return sysBaseApi.loadDictItemByKeyword(dictCode, keyword, pageSize);
+    public List<DictModel> loadDictItemByKeyword(@RequestParam("dictCode") String dictCode,
+                                                 @RequestParam("keyword") String keyword,
+                                                 @RequestParam(value = "pageNo", defaultValue = "1", required = false) Integer pageNo,
+                                                 @RequestParam(value = "pageSize", required = false) Integer pageSize) {
+        return sysBaseApi.loadDictItemByKeyword(dictCode, keyword,pageNo, pageSize);
     }
 
     /**

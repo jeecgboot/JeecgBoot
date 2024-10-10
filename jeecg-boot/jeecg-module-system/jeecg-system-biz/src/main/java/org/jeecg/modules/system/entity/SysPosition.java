@@ -46,7 +46,7 @@ public class SysPosition {
     /**
      * 职级
      */
-    @Excel(name = "职级", width = 15,dicCode ="position_rank")
+    //@Excel(name = "职级", width = 15,dicCode ="position_rank")
     @Schema(description = "职级")
     @Dict(dicCode = "position_rank")
     private java.lang.String postRank;

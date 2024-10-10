@@ -57,7 +57,7 @@ export const columns: BasicColumn[] = [
     customRender:({text}) => {
       return render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
     },
-   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user' || po.classType=='popup_dict'>
     dataIndex: '${po.fieldName}_dictText'
    <#elseif po.classType=='cat_tree'>
     dataIndex: '${po.fieldName}',
@@ -121,7 +121,7 @@ export const ${sub.entityName?uncap_first}Columns: BasicColumn[] = [
     customRender:({text}) => {
       return  render.renderSwitch(text, [{text:'是',value:'${switch_extend_arr1}'},{text:'否',value:'${switch_extend_arr2}'}])
     },
-   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user'>
+   <#elseif po.classType == 'sel_tree' || po.classType=='list' || po.classType=='list_multi' || po.classType=='sel_search' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='sel_depart' || po.classType=='sel_user' || po.classType=='popup_dict'>
     dataIndex: '${po.fieldName}_dictText'
    <#elseif po.classType=='cat_tree'>
     dataIndex: '${po.fieldName}',

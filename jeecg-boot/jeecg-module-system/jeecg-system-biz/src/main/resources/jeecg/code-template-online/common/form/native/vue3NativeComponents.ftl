@@ -13,6 +13,9 @@
 <#if need_popup>
       JPopup,
 </#if>
+<#if need_popup_dict>
+      JPopupDict,
+</#if>
 <#if need_category>
       JCategorySelect,
 </#if>

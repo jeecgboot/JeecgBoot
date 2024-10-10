@@ -48,6 +48,12 @@
       <template #tableTitle>
         <a-button type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
       </template>
+      <template #bodyCell="{ text, column }">
+        <template v-if="column.fieldType === 'Image'">
+          <span v-if="!text" style="font-size: 12px; font-style: italic">无图片</span>
+          <img v-else :src="getImgView(text)" alt="图片不存在" class="cellIamge" @click="viewOnlineCellImage($event, text)" />
+        </template>
+      </template>
     </BasicTable>
 
     <!-- 跳转Href的动态组件方式 -->
@@ -64,7 +70,9 @@
   import { usePopBiz } from '/@/components/jeecg/OnLine/hooks/usePopBiz';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useRoute } from 'vue-router';
-  
+  import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
+  import { createImgPreview } from '/@/components/Preview/index';
+
   export default defineComponent({
     name: 'JPopupOnlReport',
     components: {
@@ -198,6 +206,40 @@
         loadData(1);
       }
 
+      /**
+       * 2024-07-24
+       * liaozhiyang
+       * 【TV360X-1756】报表添加图片类型
+       * 图片
+       * @param text
+       */
+      function getImgView(text) {
+        if (text && text.indexOf(',') > 0) {
+          text = text.substring(0, text.indexOf(','));
+        }
+        return getFileAccessHttpUrl(text);
+      }
+      /**
+       * 2024-07-24
+       * liaozhiyang
+       * 【TV360X-1756】报表添加图片类型
+       * 预览列表 cell 图片
+       * @param text
+       */
+      function viewOnlineCellImage(e, text) {
+        e.stopPropagation();
+        if (text) {
+          let imgList: any = [];
+          let arr = text.split(',');
+          for (let str of arr) {
+            if (str) {
+              imgList.push(getFileAccessHttpUrl(str));
+            }
+          }
+          createImgPreview({ imageList: imgList });
+        }
+      }
+
       return {
         attrs,
 
@@ -229,6 +271,8 @@
         searchQuery,
         searchReset,
         onExportXls,
+        getImgView,
+        viewOnlineCellImage,
       };
     },
   });
@@ -250,5 +294,13 @@
   }
   :deep(.ant-select-selector){
     min-width: 95px;
+  }
+  .cellIamge {
+    height: 25px !important;
+    margin: 0 auto;
+    max-width: 80px;
+    font-size: 12px;
+    font-style: italic;
+    cursor: pointer;
   }
 </style>

@@ -1,4 +1,4 @@
-FROM anapsix/alpine-java:8_server-jre_unlimited
+FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/java:21-anolis
 
 MAINTAINER jeecgos@163.com
 
@@ -10,6 +10,6 @@ WORKDIR /jeecg-cloud-gateway
 
 EXPOSE 9999
 
-ADD ./target/jeecg-cloud-gateway-3.7.0.jar ./
+ADD ./target/jeecg-cloud-gateway-3.7.1.jar ./
 
-CMD sleep 1;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-gateway-3.7.0.jar
+CMD sleep 100;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-gateway-3.7.1.jar

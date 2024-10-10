@@ -11,13 +11,17 @@ import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 在spring boot初始化时，根据@RestController注解获取当前spring容器中的bean
@@ -27,24 +31,20 @@ import java.util.*;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class IgnoreAuthPostProcessor implements ApplicationListener<ContextRefreshedEvent> {
+public class IgnoreAuthPostProcessor implements InitializingBean {
 
-    private ApplicationContext applicationContext;
+    private RequestMappingHandlerMapping requestMappingHandlerMapping;
+
 
     @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
+    public void afterPropertiesSet() throws Exception {
+
         long startTime = System.currentTimeMillis();
         
         List<String> ignoreAuthUrls = new ArrayList<>();
-        if (event.getApplicationContext().getParent() == null) {
-            // 只处理根应用上下文的事件，避免在子上下文中重复处理
-            Map<String, Object> restControllers = applicationContext.getBeansWithAnnotation(RestController.class);
-            for (Object restController : restControllers.values()) {
-                // 如 online系统的controller并不是spring 默认生成
-                if (restController instanceof Advised) {
-                    ignoreAuthUrls.addAll(postProcessRestController(restController));
-                }
-            }
+        Set<Class<?>> restControllers = requestMappingHandlerMapping.getHandlerMethods().values().stream().map(HandlerMethod::getBeanType).collect(Collectors.toSet());
+        for (Class<?> restController : restControllers) {
+            ignoreAuthUrls.addAll(postProcessRestController(restController));
         }
 
         log.info("Init Token ignoreAuthUrls Config [ 集合 ]  ：{}", ignoreAuthUrls);
@@ -61,9 +61,8 @@ public class IgnoreAuthPostProcessor implements ApplicationListener<ContextRefre
         log.info("Init Token ignoreAuthUrls Config [ 耗时 ] ：" + elapsedTime + "毫秒");
     }
 
-    private List<String> postProcessRestController(Object restController) {
+    private List<String> postProcessRestController(Class<?> clazz) {
         List<String> ignoreAuthUrls = new ArrayList<>();
-        Class<?> clazz = ((Advised) restController).getTargetClass();
         RequestMapping base = clazz.getAnnotation(RequestMapping.class);
         String[] baseUrl = Objects.nonNull(base) ? base.value() : new String[]{};
         Method[] methods = clazz.getDeclaredMethods();

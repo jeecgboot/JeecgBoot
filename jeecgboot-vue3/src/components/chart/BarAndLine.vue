@@ -24,6 +24,10 @@
         type: String as PropType<string>,
         default: 'calc(100vh - 78px)',
       },
+      customColor: {
+        type: Array,
+        default: () => [],
+      }
     },
     setup(props) {
       const chartRef = ref<HTMLDivElement | null>(null);
@@ -68,12 +72,15 @@
         //轴数据
         let xAxisData = Array.from(new Set(props.chartData.map((item) => item.name)));
         let seriesData = [];
-        typeArr.forEach((type) => {
+        typeArr.forEach((type,index) => {
           let obj = { name: type };
           let chartArr = props.chartData.filter((item) => type === item.type);
           //data数据
           obj['data'] = chartArr.map((item) => item.value);
           obj['type'] = chartArr[0].seriesType;
+          if(props?.customColor && props?.customColor[index]){
+            obj['color'] = props.customColor[index];
+          }
           seriesData.push(obj);
         });
         option.series = seriesData;

@@ -44,6 +44,9 @@
   import 'codemirror/addon/hint/anyword-hint.js';
   // 匹配括号
   import 'codemirror/addon/edit/matchbrackets';
+  // 占位符
+  import 'codemirror/addon/display/placeholder.js';
+  
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { isJsonObjectString } from '/@/utils/is.ts';
@@ -355,6 +358,10 @@
     /** VUEN-2344【vue3】这个样式有问题，是不是加个边框 */
     .CodeMirror{
       border: 1px solid #ddd;
+    }
+    .CodeMirror pre.CodeMirror-placeholder {
+      color: #cacaca;
+      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
     }
   }
   .CodeMirror-hints.idea,

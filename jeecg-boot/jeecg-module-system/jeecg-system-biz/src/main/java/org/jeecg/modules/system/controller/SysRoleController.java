@@ -220,7 +220,7 @@ public class SysRoleController {
 			String username = "admin";
 			if(getRoleCount == 0 && !username.equals(sysUser.getUsername())){
 				baseCommonService.addLog("未经授权，删除非本租户下的角色ID：" + id + "，操作人：" + sysUser.getUsername(), CommonConstant.LOG_TYPE_2, CommonConstant.OPERATE_TYPE_4);
-				return Result.error("删除角色失败，删除角色不属于登录租户！");
+				return Result.error("删除角色失败,当前角色不在此租户中。");
 			}
 		}
     	

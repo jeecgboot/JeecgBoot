@@ -1,8 +1,10 @@
+const colors = ['#4db6ac', '#ffb74d', '#64b5f6', '#e57373', '#9575cd', '#a1887f', '#90a4ae', '#4dd0e1', '#81c784', '#ff8a65'];
 export const getData = (() => {
   let dottedBase = +new Date();
   const barDataSource: any[] = [];
   const barMultiData: any[] = [];
   const barLineData: any[] = [];
+  const barLineColors: any[] = [];
 
   for (let i = 0; i < 20; i++) {
     let obj = { name: '', value: 0 };
@@ -44,6 +46,7 @@ export const getData = (() => {
       obj.value = Math.random() * 200;
       barLineData.push(obj);
     }
+    barLineColors.push(colors[j]);
   }
-  return { barDataSource, barMultiData, pieData, barLineData, radarData };
+  return { barDataSource, barMultiData, pieData, barLineData, barLineColors,radarData };
 })();

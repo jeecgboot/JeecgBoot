@@ -1,4 +1,4 @@
-import REGION_DATA from 'china-area-data';
+import {pcaa as REGION_DATA} from "@/utils/areaData/pcaUtils";
 import { cloneDeep } from 'lodash-es';
 
 // code转汉字大对象

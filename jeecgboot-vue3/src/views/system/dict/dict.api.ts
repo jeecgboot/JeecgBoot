@@ -11,6 +11,8 @@ enum Api {
   exportXls = '/sys/dict/exportXls',
   recycleBinList = '/sys/dict/deleteList',
   putRecycleBin = '/sys/dict/back',
+  batchPutRecycleBin = '/sys/dict/putRecycleBin',
+  batchDeleteRecycleBin = '/sys/dict/deleteRecycleBin',
   deleteRecycleBin = '/sys/dict/deletePhysic',
   itemList = '/sys/dictItem/list',
   deleteItem = '/sys/dictItem/delete',
@@ -78,12 +80,31 @@ export const duplicateCheck = (params) => defHttp.get({ url: Api.duplicateCheck,
  * @param params
  */
 export const getRecycleBinList = (params) => defHttp.get({ url: Api.recycleBinList, params });
+
+/**
+ * 回收站批量还原
+ * @param params
+ */
+export const batchPutRecycleBin = (params, handleSuccess) => {
+  return defHttp.put({ url: Api.batchPutRecycleBin, params}).then(() => {
+    handleSuccess();
+  });
+};
 /**
  * 回收站还原
  * @param params
  */
 export const putRecycleBin = (id, handleSuccess) => {
   return defHttp.put({ url: Api.putRecycleBin + `/${id}` }).then(() => {
+    handleSuccess();
+  });
+};
+/**
+ * 回收站批量删除
+ * @param params
+ */
+export const batchDeleteRecycleBin = (params, handleSuccess) => {
+  return defHttp.delete({ url: `${Api.batchDeleteRecycleBin}?ids=${params.ids}`}).then(() => {
     handleSuccess();
   });
 };

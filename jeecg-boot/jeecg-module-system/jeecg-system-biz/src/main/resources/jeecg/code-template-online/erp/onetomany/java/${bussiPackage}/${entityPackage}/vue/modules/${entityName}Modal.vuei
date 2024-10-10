@@ -138,8 +138,8 @@
         confirmLoading: false,
         <#include "/common/validatorRulesTemplate/main.ftl">
         url: {
-          add: "/${entityPackage}/${entityName?uncap_first}/add",
-          edit: "/${entityPackage}/${entityName?uncap_first}/edit",
+          add: "/${entityPackagePath}/${entityName?uncap_first}/add",
+          edit: "/${entityPackagePath}/${entityName?uncap_first}/edit",
         }
      
       }

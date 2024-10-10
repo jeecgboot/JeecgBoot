@@ -287,11 +287,11 @@
           }
         ],
         url: {
-          list: "/${entityPackage}/${entityName?uncap_first}/list${sub.entityName}ByMainId",
-          delete: "/${entityPackage}/${entityName?uncap_first}/delete${sub.entityName}",
-          deleteBatch: "/${entityPackage}/${entityName?uncap_first}/deleteBatch${sub.entityName}",
-          exportXlsUrl: "/${entityPackage}/${entityName?uncap_first}/export${sub.entityName}",
-          importUrl: "/${entityPackage}/${entityName?uncap_first}/import${sub.entityName}",
+          list: "/${entityPackagePath}/${entityName?uncap_first}/list${sub.entityName}ByMainId",
+          delete: "/${entityPackagePath}/${entityName?uncap_first}/delete${sub.entityName}",
+          deleteBatch: "/${entityPackagePath}/${entityName?uncap_first}/deleteBatch${sub.entityName}",
+          exportXlsUrl: "/${entityPackagePath}/${entityName?uncap_first}/export${sub.entityName}",
+          importUrl: "/${entityPackagePath}/${entityName?uncap_first}/import${sub.entityName}",
         },
         dictOptions:{
          <#list columns as po>

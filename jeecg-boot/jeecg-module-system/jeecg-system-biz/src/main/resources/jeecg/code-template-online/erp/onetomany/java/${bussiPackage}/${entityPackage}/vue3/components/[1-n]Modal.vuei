@@ -3,7 +3,7 @@
 #segment#${sub.entityName}Modal.vue
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
-      <BasicForm @register="registerForm"/>
+      <BasicForm @register="registerForm" name="${sub.entityName}Form" />
   </BasicModal>
 </template>
 
@@ -21,8 +21,10 @@
     const isUpdate = ref(true);
     const isDetail = ref(false);
     //表单配置
-    const [registerForm, {setProps,resetFields, setFieldsValue, validate}] = useForm({
-        //labelWidth: 150,
+    const [registerForm, { setProps,resetFields, setFieldsValue, validate, scrollToField }] = useForm({
+        <#if tableVo.fieldRowNum == 1>
+        labelWidth: 150,
+        </#if>
         schemas: ${sub.entityName?uncap_first}FormSchema,
         showActionButtonGroup: false,
         baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}}
@@ -61,6 +63,13 @@
             closeModal();
             //刷新列表
             emit('success');
+        } catch ({ errorFields }) {
+          if (errorFields) {
+            const firstField = errorFields[0];
+            if (firstField) {
+              scrollToField(firstField.name, { behavior: 'smooth', block: 'center' });
+            }
+          }
         } finally {
             setModalProps({confirmLoading: false});
         }

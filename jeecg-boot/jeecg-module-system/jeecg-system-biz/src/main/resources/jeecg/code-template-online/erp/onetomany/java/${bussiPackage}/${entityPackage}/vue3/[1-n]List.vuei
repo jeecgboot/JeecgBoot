@@ -79,6 +79,7 @@
             useSearchForm: false,
             actionColumn: {
                 width: 180,
+                fixed:'right'
             },
             pagination:{
                 current: 1,

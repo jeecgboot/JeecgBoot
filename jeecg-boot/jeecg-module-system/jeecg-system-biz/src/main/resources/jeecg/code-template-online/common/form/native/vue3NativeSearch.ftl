@@ -9,9 +9,11 @@
 	<#assign query_field_dictCode="">
 	<#if po.dictTable?default("")?trim?length gt 1>
 	    <#assign need_select_tag = true>
+        <#assign need_multi = true>
 	    <#assign query_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
 	<#elseif po.dictField?default("")?trim?length gt 1>
 	    <#assign need_select_tag = true>
+        <#assign need_multi = true>
 	    <#assign query_field_dictCode="${po.dictField}">
 	</#if>
 	<#if po.queryMode=='single'>
@@ -56,66 +58,41 @@
                 <#if query_field_no gt 1>  </#if>]"
                 <#if query_field_no gt 1>  </#if>:multi="${po.extendParams.popupMulti?c}"
                 <#if query_field_no gt 1>  </#if>:setFieldsValue="setFieldsValue" allow-clear />
+            <#elseif po.classType=='popup_dict'>
+                <#if query_field_no gt 1>  </#if><j-popup-dict
+                <#if query_field_no gt 1>  </#if>placeholder="请选择${po.filedComment}"
+                <#if query_field_no gt 1>  </#if>v-model:value="queryParam.${po.fieldName}"
+                <#if query_field_no gt 1>  </#if>dictCode="${po.dictTable},${po.dictText},${po.dictField}"
+                <#if query_field_no gt 1>  </#if>:multi="${po.extendParams.popupMulti?c}"
+                <#if query_field_no gt 1>  </#if><#if po.readonly=='Y'>disabled</#if> />
             <#elseif po.classType=='list' || po.classType=='radio' || po.classType=='checkbox'>
-            <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
-            <#if po.dictTable?default("")?trim?length gt 1>
-              <#if query_field_no gt 1>  </#if><j-dict-select-tag placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dictCode="${po.dictTable},${po.dictText},${po.dictField}" allow-clear />
-            <#elseif po.dictField?default("")?trim?length gt 1>
-              <#if query_field_no gt 1>  </#if><j-dict-select-tag placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dictCode="${po.dictField}" allow-clear />
-            <#else>
+             <#--  ---------------------------下拉或是单选 判断数据字典是表字典还是普通字典------------------------------- -->
+             <#if po.dictTable?default("")?trim?length gt 1>
+              <#if query_field_no gt 1>  </#if><j-select-multiple placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dictCode="${po.dictTable},${po.dictText},${po.dictField}" allow-clear />
+              <#elseif po.dictField?default("")?trim?length gt 1>
+              <#if query_field_no gt 1>  </#if><j-select-multiple placeholder="请选择${po.filedComment}" v-model:value="queryParam.${po.fieldName}" dictCode="${po.dictField}" allow-clear />
+              <#else>
               <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model:value="queryParam.${po.fieldName}" allow-clear ></a-input>
-            </#if>
+             </#if>
             <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
               <#if query_field_no gt 1>  </#if><a-input-number placeholder="请输入${po.filedComment}" v-model:value="queryParam.${po.fieldName}"></a-input-number>           
-      <#else>
+            <#else>
               <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model:value="queryParam.${autoStringSuffixForModel(po)}" allow-clear ></a-input>
-      </#if>
+          </#if>
             <#if query_field_no gt 1>  </#if></a-form-item>
           <#if query_field_no gt 1>  </#if></a-col>
 	<#else>
           <#if query_field_no gt 1>  </#if><a-col :lg="6">
-            <#if query_field_no gt 1>  </#if><a-form-item>
-               <#if query_field_no gt 1>  </#if><template #label><span title="${po.filedComment}"><#if po.filedComment?default("")?trim?length gt 4>${po.filedComment?substring(0,4)}<#else>${po.filedComment}</#if></span></template>
+            <#if query_field_no gt 1>  </#if><a-form-item name="${autoStringSuffixForModel(po)}">
+              <#if query_field_no gt 1>  </#if><template #label><span title="${po.filedComment}"><#if po.filedComment?default("")?trim?length gt 4>${po.filedComment?substring(0,4)}<#else>${po.filedComment}</#if></span></template>
       <#if po.classType=='date'>
-               <#if query_field_no gt 1>  </#if><div style="display: flex">
-                 <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}_begin" style="margin-bottom: 0;">
-                   <#if query_field_no gt 1>  </#if><a-date-picker value-format="YYYY-MM-DD" placeholder="请选择开始日期" <#if po.extendParams?exists && po.extendParams.picker?exists>picker="${po.extendParams.picker}"</#if> v-model:value="queryParam.${po.fieldName}_begin" class="query-group-cust" allow-clear />
-                 <#if query_field_no gt 1>  </#if></a-form-item>  
-                 <#if query_field_no gt 1>  </#if><span class="query-group-split-cust">~</span>
-                 <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}_end" style="margin-bottom: 0;">
-                   <#if query_field_no gt 1>  </#if><a-date-picker value-format="YYYY-MM-DD" placeholder="请选择结束日期" <#if po.extendParams?exists && po.extendParams.picker?exists>picker="${po.extendParams.picker}"</#if> v-model:value="queryParam.${po.fieldName}_end" class="query-group-cust" allow-clear />
-                 <#if query_field_no gt 1>  </#if></a-form-item>
-               <#if query_field_no gt 1>  </#if></div>
+              <#if query_field_no gt 1>  </#if><a-range-picker value-format="YYYY-MM-DD" <#if po.extendParams?exists && po.extendParams.picker?exists>picker="${po.extendParams.picker}"</#if> v-model:value="queryParam.${po.fieldName}" class="query-group-cust"/>
       <#elseif po.classType=='time'>
-               <#if query_field_no gt 1>  </#if><div style="display: flex">
-                 <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}_begin" style="margin-bottom: 0;">
-                   <#if query_field_no gt 1>  </#if><time-picker value-format="HH:mm:ss" placeholder="请选择开始时间" v-model:value="queryParam.${po.fieldName}_begin" class="query-group-cust" allow-clear />
-                 <#if query_field_no gt 1>  </#if></a-form-item>
-                 <#if query_field_no gt 1>  </#if><span class="query-group-split-cust">~</span>
-                 <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}_end" style="margin-bottom: 0;">
-                   <#if query_field_no gt 1>  </#if><time-picker value-format="HH:mm:ss" placeholder="请选择结束日期" v-model:value="queryParam.${po.fieldName}_end" class="query-group-cust" allow-clear />
-                 <#if query_field_no gt 1>  </#if></a-form-item>
-               <#if query_field_no gt 1>  </#if></div>
+              <#if query_field_no gt 1>  </#if><a-time-range-picker value-format="HH:mm:ss" v-model:value="queryParam.${po.fieldName}" class="query-group-cust" />
       <#elseif po.classType=='datetime'>
-               <#if query_field_no gt 1>  </#if><div style="display: flex">
-                 <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}_begin" style="margin-bottom: 0;">
-                   <#if query_field_no gt 1>  </#if><a-date-picker showTime value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择开始时间" v-model:value="queryParam.${po.fieldName}_begin" class="query-group-cust" allow-clear />
-                 <#if query_field_no gt 1>  </#if></a-form-item>
-                 <#if query_field_no gt 1>  </#if><span class="query-group-split-cust">~</span>
-                 <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}_end" style="margin-bottom: 0;">
-                   <#if query_field_no gt 1>  </#if><a-date-picker showTime value-format="YYYY-MM-DD HH:mm:ss" placeholder="请选择结束时间" v-model:value="queryParam.${po.fieldName}_end" class="query-group-cust" allow-clear />
-                 <#if query_field_no gt 1>  </#if></a-form-item>
-               <#if query_field_no gt 1>  </#if></div>
+              <#if query_field_no gt 1>  </#if><a-range-picker showTime value-format="YYYY-MM-DD HH:mm:ss" v-model:value="queryParam.${po.fieldName}" class="query-group-cust"/>
       <#else>
-               <#if query_field_no gt 1>  </#if><div style="display: flex">
-                 <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}_begin" style="margin-bottom: 0;">
-                   <#if query_field_no gt 1>  </#if><a-input placeholder="请输入最小值" v-model:value="queryParam.${po.fieldName}_begin" class="query-group-cust" allow-clear ></a-input>
-                 <#if query_field_no gt 1>  </#if></a-form-item>       
-                 <#if query_field_no gt 1>  </#if><span class="query-group-left query-group-split-cust">~</span>
-                 <#if query_field_no gt 1>  </#if><a-form-item name="${po.fieldName}_end" style="margin-bottom: 0;"> 
-                  <#if query_field_no gt 1>  </#if><a-input placeholder="请输入最大值" v-model:value="queryParam.${po.fieldName}_end" class="query-group-cust" allow-clear ></a-input>
-                 <#if query_field_no gt 1>  </#if></a-form-item>
-               <#if query_field_no gt 1>  </#if></div>
+              <#if query_field_no gt 1>  </#if><JRangeNumber v-model:value="queryParam.${po.fieldName}" class="query-group-cust"></JRangeNumber>
       </#if>
             <#if query_field_no gt 1>  </#if></a-form-item>
           <#if query_field_no gt 1>  </#if></a-col>

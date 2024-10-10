@@ -3,8 +3,8 @@
   <BasicTable @register="registerTable" :rowSelection="rowSelection">
     <!--插槽:table标题-->
     <template #tableTitle>
-      <a-button type="primary" preIcon="ant-design:plus-outlined" @click="selectAddUser">添加已有用户</a-button>
-      <a-button type="primary" preIcon="ant-design:plus-outlined" @click="createUser">新建用户</a-button>
+      <a-button type="primary" preIcon="ant-design:plus-outlined" @click="selectAddUser" :disabled="!departId">添加已有用户</a-button>
+      <a-button type="primary" preIcon="ant-design:plus-outlined" @click="createUser" :disabled="!departId">新建用户</a-button>
       <template v-if="selectedRowKeys.length > 0">
         <a-dropdown>
           <template #overlay>
@@ -29,7 +29,7 @@
   </BasicTable>
   <UserDrawer @register="registerDrawer" @success="onUserDrawerSuccess" />
   <DepartRoleUserAuthDrawer @register="registerUserAuthDrawer" />
-  <UserSelectModal rowKey="id" @register="registerSelUserModal" @getSelectResult="onSelectUserOk" />
+  <UserSelectModal ref="userSelectModalRef" rowKey="id" @register="registerSelUserModal" @getSelectResult="onSelectUserOk" />
 </template>
 
 <script lang="ts" setup>
@@ -50,6 +50,7 @@
   const props = defineProps({
     data: { require: true, type: Object },
   });
+  const userSelectModalRef: any = ref(null);
   // 当前选中的部门ID，可能会为空，代表未选择部门
   const departId = computed(() => props.data?.id);
 
@@ -93,6 +94,9 @@
       beforeFetch(params) {
         params.depId = departId.value;
       },
+      // update-begin--author:liaozhiyang---date:20240717---for：【TV360X-1861】没部门时不加载用户信息
+      immediate: !!departId.value,
+      // update-end--author:liaozhiyang---date:20240717---for：【TV360X-1861】没部门时不加载用户信息
     },
   });
 
@@ -155,6 +159,9 @@
 
   // 选择添加已有用户
   function selectAddUser() {
+    // update-begin--author:liaozhiyang---date:20240308---for：【TV360X-1613】再次打开还是上次的选中用户，没置空
+    userSelectModalRef.value.rowSelection.selectedRowKeys = [];
+    // update-end--author:liaozhiyang---date:20240308---for：【TV360X-1613】再次打开还是上次的选中用户，没置空
     selUserModal.openModal();
   }
 

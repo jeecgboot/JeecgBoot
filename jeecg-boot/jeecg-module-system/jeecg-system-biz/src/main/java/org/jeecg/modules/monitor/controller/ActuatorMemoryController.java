@@ -26,27 +26,31 @@ public class ActuatorMemoryController {
     /**
      * 内存详情
      * @return
-     * @throws Exception
      */
     @GetMapping("/info")
-    public Result<?> getRedisInfo() throws Exception {
-		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
-		JSONObject operatingSystemJson = JSONObject.parseObject(JSONObject.toJSONString(operatingSystemMXBean));
-		long totalPhysicalMemory = operatingSystemJson.getLongValue("totalPhysicalMemorySize");
-		long freePhysicalMemory = operatingSystemJson.getLongValue("freePhysicalMemorySize");
-		long usedPhysicalMemory = totalPhysicalMemory - freePhysicalMemory;
+    public Result<?> getRedisInfo() {
 		Runtime runtime = Runtime.getRuntime();
 		Map<String,Number> result = new HashMap<>();
-		result.put("memory.physical.total", totalPhysicalMemory);
-		result.put("memory.physical.used", freePhysicalMemory);
-		result.put("memory.physical.free", usedPhysicalMemory);
-		result.put("memory.physical.usage", NumberUtil.div(usedPhysicalMemory, totalPhysicalMemory));
 		result.put("memory.runtime.total", runtime.totalMemory());
 		result.put("memory.runtime.used", runtime.freeMemory());
 		result.put("memory.runtime.max", runtime.totalMemory() - runtime.freeMemory());
 		result.put("memory.runtime.free", runtime.maxMemory() - runtime.totalMemory() + runtime.freeMemory());
 		result.put("memory.runtime.usage", NumberUtil.div(runtime.totalMemory() - runtime.freeMemory(), runtime.totalMemory()));
-        return Result.ok(result);
+		//update-begin---author:chenrui ---date:20240705  for：[TV360X-1695]内存信息-立即更新 功能报错 #6635------------
+		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+		if (operatingSystemMXBean instanceof com.sun.management.OperatingSystemMXBean) {
+			com.sun.management.OperatingSystemMXBean opBean = (com.sun.management.OperatingSystemMXBean) operatingSystemMXBean;
+//			JSONObject operatingSystemJson = JSONObject.parseObject(JSONObject.toJSONString(operatingSystemMXBean));
+			long totalPhysicalMemory = opBean.getTotalPhysicalMemorySize();
+			long freePhysicalMemory = opBean.getFreePhysicalMemorySize();
+			long usedPhysicalMemory = totalPhysicalMemory - freePhysicalMemory;
+			result.put("memory.physical.total", totalPhysicalMemory);
+			result.put("memory.physical.used", freePhysicalMemory);
+			result.put("memory.physical.free", usedPhysicalMemory);
+			result.put("memory.physical.usage", NumberUtil.div(usedPhysicalMemory, totalPhysicalMemory));
+		}
+		//update-end---author:chenrui ---date:20240705  for：[TV360X-1695]内存信息-立即更新 功能报错 #6635------------
+		return Result.ok(result);
     }
 
 }

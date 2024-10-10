@@ -7,7 +7,6 @@
 		<result column="id" property="id" />
 
 		<result column="job_group" property="jobGroup" />
-	    <result column="job_cron" property="jobCron" />
 	    <result column="job_desc" property="jobDesc" />
 
 	    <result column="add_time" property="addTime" />
@@ -15,6 +14,10 @@
 
 	    <result column="author" property="author" />
 	    <result column="alarm_email" property="alarmEmail" />
+
+		<result column="schedule_type" property="scheduleType" />
+		<result column="schedule_conf" property="scheduleConf" />
+		<result column="misfire_strategy" property="misfireStrategy" />
 
 		<result column="executor_route_strategy" property="executorRouteStrategy" />
 		<result column="executor_handler" property="executorHandler" />
@@ -38,12 +41,14 @@
 	<sql id="Base_Column_List">
 		t.id,
 		t.job_group,
-		t.job_cron,
 		t.job_desc,
 		t.add_time,
 		t.update_time,
 		t.author,
 		t.alarm_email,
+		t.schedule_type,
+		t.schedule_conf,
+		t.misfire_strategy,
 		t.executor_route_strategy,
 		t.executor_handler,
 		t.executor_param,
@@ -109,12 +114,14 @@
 	<insert id="save" parameterType="com.xxl.job.admin.core.model.XxlJobInfo" useGeneratedKeys="true" keyProperty="id" >
 		INSERT INTO xxl_job_info (
 			job_group,
-			job_cron,
 			job_desc,
 			add_time,
 			update_time,
 			author,
 			alarm_email,
+			schedule_type,
+			schedule_conf,
+			misfire_strategy,
             executor_route_strategy,
 			executor_handler,
 			executor_param,
@@ -131,12 +138,14 @@
 			trigger_next_time
 		) VALUES (
 			#{jobGroup},
-			#{jobCron},
 			#{jobDesc},
 			#{addTime},
 			#{updateTime},
 			#{author},
 			#{alarmEmail},
+			#{scheduleType},
+			#{scheduleConf},
+			#{misfireStrategy},
 			#{executorRouteStrategy},
 			#{executorHandler},
 			#{executorParam},
@@ -168,11 +177,13 @@
 		UPDATE xxl_job_info
 		SET
 			job_group = #{jobGroup},
-			job_cron = #{jobCron},
 			job_desc = #{jobDesc},
 			update_time = #{updateTime},
 			author = #{author},
 			alarm_email = #{alarmEmail},
+			schedule_type = #{scheduleType},
+			schedule_conf = #{scheduleConf},
+			misfire_strategy = #{misfireStrategy},
 			executor_route_strategy = #{executorRouteStrategy},
 			executor_handler = #{executorHandler},
 			executor_param = #{executorParam},

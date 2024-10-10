@@ -89,7 +89,7 @@
   });
 
   //注册table数据
-  const [registerTable, { reload, updateTableDataRecord }, { rowSelection, selectedRowKeys }] = tableContext;
+  const [registerTable, { reload, updateTableDataRecord }, { rowSelection, selectedRowKeys, selectedRows }] = tableContext;
 
   /**
    * 新增事件
@@ -127,7 +127,13 @@
    * 批量删除事件
    */
   async function batchHandleDelete() {
-    await batchDeleteDict({ ids: selectedRowKeys.value }, reload);
+    await batchDeleteDict({ ids: selectedRowKeys.value }, () => {
+      // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1665】数据字典批量删除后选中也清空
+      reload();
+      selectedRowKeys.value = [];
+      selectedRows.value = [];
+      // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1665】数据字典批量删除后选中也清空
+    });
   }
   /**
    * 成功回调

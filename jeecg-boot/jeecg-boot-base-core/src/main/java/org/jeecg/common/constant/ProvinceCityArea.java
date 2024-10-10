@@ -1,6 +1,7 @@
 package org.jeecg.common.constant;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -22,26 +23,30 @@ public class ProvinceCityArea {
     List<Area> areaList;
 
     public String getText(String code){
-        this.initAreaList();
-        if(this.areaList!=null || this.areaList.size()>0){
-            List<String> ls = new ArrayList<String>();
-            getAreaByCode(code,ls);
-            return String.join("/",ls);
+        if(StringUtils.isNotBlank(code)){
+            this.initAreaList();
+            if(this.areaList!=null || this.areaList.size()>0){
+                List<String> ls = new ArrayList<String>();
+                getAreaByCode(code,ls);
+                return String.join("/",ls);
+            }
         }
         return "";
     }
 
     public String getCode(String text){
-        this.initAreaList();
-        if(areaList!=null && areaList.size()>0){
-            for(int i=areaList.size()-1;i>=0;i--){
-                //update-begin-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
-                String areaText = areaList.get(i).getText();
-                String cityText = areaList.get(i).getAheadText();
-                if(text.indexOf(areaText)>=0 && (cityText!=null && text.indexOf(cityText)>=0)){
-                    return areaList.get(i).getId();
+        if(StringUtils.isNotBlank(text)){
+            this.initAreaList();
+            if(areaList!=null && areaList.size()>0){
+                for(int i=areaList.size()-1;i>=0;i--){
+                    //update-begin-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
+                    String areaText = areaList.get(i).getText();
+                    String cityText = areaList.get(i).getAheadText();
+                    if(text.indexOf(areaText)>=0 && (cityText!=null && text.indexOf(cityText)>=0)){
+                        return areaList.get(i).getId();
+                    }
+                    //update-end-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
                 }
-                //update-end-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
             }
         }
         return null;

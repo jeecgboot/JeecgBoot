@@ -15,9 +15,10 @@
         :sorter="sorter"
         :groupId="''"
         :param="param"
-        @ok="callBack"
+        :getFormValues="getFormValues"
         :getContainer="getContainer"
         :showAdvancedButton="showAdvancedButton"
+        @ok="callBack"
       />
     </a-form-item>
     <!-- update-end--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
@@ -56,6 +57,7 @@
       multi: propTypes.bool.def(false),
       param: propTypes.object.def({}),
       spliter: propTypes.string.def(','),
+      getFormValues: propTypes.func,
       getContainer: propTypes.func,
       showAdvancedButton: propTypes.bool.def(true),
     },

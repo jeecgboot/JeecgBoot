@@ -389,12 +389,12 @@
         },
 </#list>
         url: {
-          add: "/${entityPackage}/${entityName?uncap_first}/add",
-          edit: "/${entityPackage}/${entityName?uncap_first}/edit",
-          queryById: "/${entityPackage}/${entityName?uncap_first}/queryById",
+          add: "/${entityPackagePath}/${entityName?uncap_first}/add",
+          edit: "/${entityPackagePath}/${entityName?uncap_first}/edit",
+          queryById: "/${entityPackagePath}/${entityName?uncap_first}/queryById",
 <#list subTables as sub><#rt/>
           ${sub.entityName?uncap_first}: {
-            list: '/${entityPackage}/${entityName?uncap_first}/query${sub.entityName}ByMainId'
+            list: '/${entityPackagePath}/${entityName?uncap_first}/query${sub.entityName}ByMainId'
           },
 </#list>
         }

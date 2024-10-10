@@ -26,11 +26,14 @@ export function useItemLabelWidth(schemaItemRef: Ref<FormSchema>, propsRef: Ref<
       return { labelCol, wrapperCol };
     }
     let width = labelWidth || globalLabelWidth;
-    const col = { ...globalLabelCol, ...labelCol };
+    let col = { ...globalLabelCol, ...labelCol };
     const wrapCol = { ...globWrapperCol, ...wrapperCol };
 
     if (width) {
       width = isNumber(width) ? `${width}px` : width;
+      // update-begin--author:liaozhiyang---date:20240717---for：【issues/6865】配置单个的labelWidth不生效
+      col = {};
+      // update-end--author:liaozhiyang---date:20240717---for：【issues/6865】配置单个的labelWidth不生效
     }
 
     return {

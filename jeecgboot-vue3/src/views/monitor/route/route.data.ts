@@ -21,7 +21,7 @@ export const columns: BasicColumn[] = [
     title: '状态',
     dataIndex: 'status',
     slots: { customRender: 'status' },
-    width: 200,
+    width: 150,
   },
 ];
 

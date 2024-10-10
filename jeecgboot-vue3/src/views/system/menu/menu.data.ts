@@ -399,12 +399,50 @@ export const dataRuleFormSchema: FormSchema[] = [
       getPopupContainer: (node) => document.body,
     },
   },
+  // update-begin--author:liaozhiyang---date:20240724---for：【TV360X-1864】添加系统变量
   {
     field: 'ruleValue',
+    component: 'JInputSelect',
     label: '规则值',
-    component: 'Input',
     required: true,
+    componentProps: {
+      selectPlaceholder: '可选择系统变量',
+      inputPlaceholder: '请输入',
+      getPopupContainer: () => document.body,
+      selectWidth: '200px',
+      options: [
+        {
+          label: '登录用户账号',
+          value: '#{sys_user_code}',
+        },
+        {
+          label: '登录用户名称',
+          value: '#{sys_user_name}',
+        },
+        {
+          label: '当前日期',
+          value: '#{sys_date}',
+        },
+        {
+          label: '当前时间',
+          value: '#{sys_time}',
+        },
+        {
+          label: '登录用户部门',
+          value: '#{sys_org_code}',
+        },
+        {
+          label: '用户拥有部门',
+          value: '#{sys_multi_org_code}',
+        },
+        {
+          label: '登录用户租户',
+          value: '#{tenant_id}',
+        },
+      ],
+    },
   },
+  // update-end--author:liaozhiyang---date:20240724---for：【TV360X-1864】添加系统变量
   {
     field: 'status',
     label: '状态',

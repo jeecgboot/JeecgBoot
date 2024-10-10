@@ -92,6 +92,17 @@
       });
 
       watch(
+          () => props.dictCode,
+          () => {
+            if (props.dictCode) {
+              loadDictOptions();
+            } else {
+              dictOptions.value = props.options;
+            }
+          }
+      );
+
+      watch(
         () => props.value,
         (val) => {
           if (!val) {
