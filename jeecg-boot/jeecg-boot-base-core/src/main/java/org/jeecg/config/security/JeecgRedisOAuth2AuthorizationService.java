@@ -1,7 +1,9 @@
 package org.jeecg.config.security;
 
 import cn.hutool.core.collection.CollUtil;
-import lombok.RequiredArgsConstructor;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.lang.Nullable;
@@ -28,14 +30,28 @@ import java.util.concurrent.TimeUnit;
  * @author EightMonth
  */
 @Component
-@RequiredArgsConstructor
-public class JeecgRedisOAuth2AuthorizationService implements OAuth2AuthorizationService {
+public class JeecgRedisOAuth2AuthorizationService implements OAuth2AuthorizationService{
 
 	private final static Long TIMEOUT = 10L;
 
 	private static final String AUTHORIZATION = "token";
 
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+
+	@Autowired
+	private RedisConnectionFactory redisConnectionFactory;
+
+	/**
+	 * 因为保存sas的认证信息至redis，无法使用jeecg对redisTemplate的某些设置。
+	 * 如果在使用时修改redisTemplate属性，会发生线程安全问题，最终容易引起系统无法正常运行。
+	 * 所以重新建了一个redis client给到sas操作redis，并且该redis实例不注入spring 容器中
+	 */
+	@PostConstruct
+	public void initSasRedis()  {
+		redisTemplate.setValueSerializer(RedisSerializer.java());
+		redisTemplate.setConnectionFactory(redisConnectionFactory);
+		redisTemplate.afterPropertiesSet();
+	}
 
 	@Override
 	public void save(OAuth2Authorization authorization) {
@@ -43,7 +59,6 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 
 		if (isState(authorization)) {
 			String token = authorization.getAttribute("state");
-			redisTemplate.setValueSerializer(RedisSerializer.java());
 			redisTemplate.opsForValue().set(buildKey(OAuth2ParameterNames.STATE, token), authorization, TIMEOUT,
 					TimeUnit.MINUTES);
 		}
@@ -54,7 +69,6 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 			OAuth2AuthorizationCode authorizationCodeToken = authorizationCode.getToken();
 			long between = ChronoUnit.MINUTES.between(authorizationCodeToken.getIssuedAt(),
 					authorizationCodeToken.getExpiresAt());
-			redisTemplate.setValueSerializer(RedisSerializer.java());
 			redisTemplate.opsForValue().set(buildKey(OAuth2ParameterNames.CODE, authorizationCodeToken.getTokenValue()),
 					authorization, between, TimeUnit.MINUTES);
 		}
@@ -62,7 +76,6 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 		if (isRefreshToken(authorization)) {
 			OAuth2RefreshToken refreshToken = authorization.getRefreshToken().getToken();
 			long between = ChronoUnit.SECONDS.between(refreshToken.getIssuedAt(), refreshToken.getExpiresAt());
-			redisTemplate.setValueSerializer(RedisSerializer.java());
 			redisTemplate.opsForValue().set(buildKey(OAuth2ParameterNames.REFRESH_TOKEN, refreshToken.getTokenValue()),
 					authorization, between, TimeUnit.SECONDS);
 		}
@@ -70,7 +83,6 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 		if (isAccessToken(authorization)) {
 			OAuth2AccessToken accessToken = authorization.getAccessToken().getToken();
 			long between = ChronoUnit.SECONDS.between(accessToken.getIssuedAt(), accessToken.getExpiresAt());
-			redisTemplate.setValueSerializer(RedisSerializer.java());
 			redisTemplate.opsForValue().set(buildKey(OAuth2ParameterNames.ACCESS_TOKEN, accessToken.getTokenValue()),
 					authorization, between, TimeUnit.SECONDS);
 
@@ -125,7 +137,6 @@ public class JeecgRedisOAuth2AuthorizationService implements OAuth2Authorization
 	public OAuth2Authorization findByToken(String token, @Nullable OAuth2TokenType tokenType) {
 		Assert.hasText(token, "token cannot be empty");
 		Assert.notNull(tokenType, "tokenType cannot be empty");
-		redisTemplate.setValueSerializer(RedisSerializer.java());
 		return (OAuth2Authorization) redisTemplate.opsForValue().get(buildKey(tokenType.getValue(), token));
 	}
 
