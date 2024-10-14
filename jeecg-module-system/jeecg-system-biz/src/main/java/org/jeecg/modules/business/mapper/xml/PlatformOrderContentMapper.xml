@@ -357,7 +357,7 @@
                  join shouman_sku_relation ssr on s.id = ssr.sku_id
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
-        where poc.erp_status = 1
+        where poc.erp_status in (1,2)
           and sr.is_active = 1
           and po.platform_order_id not in (select platform_order_id from shouman_order);
     </select>
@@ -387,4 +387,39 @@
             <result property="isSizeRegex" column="is_size_regex" javaType="string"/>
         </collection>
     </resultMap>
+
+    <select id="searchShoumanOrderContentByPlatformOrderId"
+            resultType="org.jeecg.modules.business.entity.ShoumanOrderContent" resultMap="shoumanOrderContentResultMap">
+        select sh.erp_code,
+               po.platform_order_id,
+               po.platform_order_number,
+               po.postcode,
+               po.recipient,
+               po.city,
+               po.country,
+               poc.id as platform_order_content_id,
+               poc.customization_data,
+               poc.quantity,
+               sc.product_name,
+               ssr.remark,
+               sc.price,
+               sc.image_url,
+               sc.sku,
+               sc.is_necklace,
+               sc.is_gem,
+               sr.content_rec_regex,
+               sr.content_ext_regex,
+               sr.prefix,
+               sr.is_size_regex
+        from platform_order_content poc
+                 join platform_order po on poc.platform_order_id = po.id
+                 join shop sh on po.shop_id = sh.id
+                 join sku s on poc.sku_id = s.id
+                 join shouman_sku_relation ssr on s.id = ssr.sku_id
+                 join shouman_category sc on ssr.shouman_category_id = sc.id
+                 join shouman_regex sr on sc.id = sr.shouman_category_id
+        where poc.erp_status in (1,2)
+          and sr.is_active = 1
+          and po.platform_order_id = #{platformOrderId};
+    </select>
 </mapper>

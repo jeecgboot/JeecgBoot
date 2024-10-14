@@ -79,4 +79,6 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     List<PlatformOrderContent> findOrderContentsWithStock(@Param("orderIds") List<String> orderIds);
 
     List<ShoumanOrderContent> searchShoumanOrderContent();
+
+    List<ShoumanOrderContent> searchShoumanOrderContentByPlatformOrderId(@Param("platformOrderId") String platformOrderId);
 }
