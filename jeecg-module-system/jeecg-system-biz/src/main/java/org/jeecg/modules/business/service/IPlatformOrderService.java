@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
 import org.jeecg.modules.business.entity.*;
-import org.jeecg.modules.business.vo.PlatformOrderOption;
-import org.jeecg.modules.business.vo.PlatformOrderQuantity;
-import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
-import org.jeecg.modules.business.vo.SkuQuantity;
+import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PurchaseConfirmation;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.ClientInfo;
@@ -17,7 +14,10 @@ import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatistic
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 平台订单表
@@ -105,6 +105,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @return list of pre-shipping orders and their contents
      */
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderData(List<String> orderIds);
+
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataByInvoiceCode(String invoiceCode);
 
 
@@ -127,7 +128,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<String> fetchBillCodesOfParcelsWithoutTrace(Date startDate, Date endDate, List<String> transporters);
 
-    List<String> fetchUninvoicedOrdersForShops(LocalDateTime startDate, LocalDateTime endDate, List<String> shops);
+    List<PlatformOrder> fetchUninvoicedOrdersForShops(LocalDateTime startDate, LocalDateTime endDate, List<String> shops);
 
     /**
      * Fetch platformOrderId of shipped AND invoiced orders, from startDatetime to endDatetime, excluding orders from
@@ -144,6 +145,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<PlatformOrderShopSync> fetchOrderInShopsReadyForShopifySync(List<String> shopCodes);
 
     List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyNote(List<String> shopCodes);
+
     List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(List<String> shopCodes);
 
     List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses);
@@ -151,8 +153,9 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     /**
      * Fetch all platform orders between 2 dates and of status erp_status 4 or 5
      * this list will then be archived
+     *
      * @param startDate Start date time
-     * @param endDate End date time
+     * @param endDate   End date time
      * @return List of PlatformOrder
      */
     List<PlatformOrder> fetchOrdersToArchiveBetweenDate(String startDate, String endDate);
@@ -168,24 +171,28 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     /**
      * Archive a list of platform orders
+     *
      * @param platformOrders list of platform orders
      */
     void savePlatformOrderArchive(List<PlatformOrder> platformOrders);
 
     /**
      * Cancel Invoice
+     *
      * @param invoiceNumber
      */
-    void cancelInvoice(String invoiceNumber);
+    void cancelInvoice(String invoiceNumber, String clientId);
     /**
      * Cancel Invoice
+     *
      * @param invoiceNumbers
      */
     void cancelBatchInvoice(List<String> invoiceNumbers);
 
     /**
      * Find all order that can be invoiced (shipping only).
-     * @param shopIds list of shop id
+     *
+     * @param shopIds     list of shop id
      * @param erpStatuses list of erp_status
      * @return list of orders
      */
@@ -193,6 +200,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     /**
      * Find all orders that can be invoiced (purchase only).
+     *
      * @param shopIds
      * @param erpStatuses
      * @return
@@ -201,6 +209,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     /**
      * Find all order that can be invoiced (shipping and purchase).
+     *
      * @param shopIds
      * @param erpStatuses
      * @param column
@@ -209,10 +218,11 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * @param pageSize
      * @return
      */
-    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
+    List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses, String column, String order, Integer pageNo, Integer pageSize);
     /**
      * Get ids of all order that can be invoiced by small clients (type 2) themselves.
-     * @param shopIds list of shop id
+     *
+     * @param shopIds     list of shop id
      * @param erpStatuses list of erp_status
      * @return list of orders
      */
@@ -220,6 +230,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     /**
      * Find all order with empty logistic_channel_name and invoice_logistic_channel_name
+     *
      * @param startDate
      * @param endDate
      * @return
@@ -233,15 +244,18 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
 
     void removePurchaseInvoiceNumber(String purchaseInvoiceNumber, String clientId);
+
     void removePurchaseInvoiceNumbers(List<String> invoiceNumbers);
 
     void updatePurchaseInvoiceNumber(List<String> orderIds, String invoiceCode);
 
     /**
      * Fetch all orders with productAvailable = 1, purchaseInvoiceNumber NOT NULL, invoiceNumber NULL and erp_status IN (1,2)
+     *
      * @return
      */
     List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
+
     List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber);
 
     Map<String, String> fetchShippingPeriodAndType(String invoiceNumber);
@@ -252,15 +266,18 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<PlatformOrderOption> ordersByShop(String shopID);
 
     List<String> fetchUninvoicedOrdersWithSkusInCountry(LocalDateTime startDateTime, LocalDateTime endDateTime, String shop, List<String> skus, List<String> countries);
+
     List<String> fetchUninvoicedOrdersWithSkusNotInCountry(LocalDateTime startDateTime, LocalDateTime endDateTime, String shop, List<String> skus, List<String> countries);
 
     List<String> findReadyAbnormalOrders(List<String> skus, List<String> shops);
 
     List<String> findReadyAbnormalOrdersWithSkus(List<String> skus);
+
     void updateShopifySynced(Collection<String> platformOrderIds);
 
     List<String> fetchShippedOrdersFromShopAndTransporters(String shopCode, List<String> transporters);
 
     void updateLocalTrackingNumber(List<YDTrackingNumberData> data);
+
     void pagePotentialShoumanOrders(IPage<PlatformOrderPage> page, String column, String order);
 }
