@@ -1,48 +1,55 @@
 package org.jeecg.modules.business.controller.admin;
 
-import java.io.UnsupportedEncodingException;
-import java.io.IOException;
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import net.sf.saxon.functions.ScalarSystemFunction;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.CaseFormat;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.util.StringUtil;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
+import org.jeecg.modules.business.domain.api.shouman.JsonOrderCreationRequestBody;
+import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequest;
+import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequestBody;
+import org.jeecg.modules.business.domain.api.shouman.ShoumanOrderRequest;
+import org.jeecg.modules.business.entity.PlatformOrder;
+import org.jeecg.modules.business.entity.PlatformOrderContent;
+import org.jeecg.modules.business.entity.Shouman.ShoumanOrder;
+import org.jeecg.modules.business.entity.ShoumanOrderContent;
+import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
+import org.jeecg.modules.business.service.IPlatformOrderService;
+import org.jeecg.modules.business.service.IShoumanOrderService;
+import org.jeecg.modules.business.vo.PlatformOrderPage;
 import org.jeecg.modules.business.vo.PlatformOrderQuantity;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
-import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.vo.PlatformOrderPage;
-import org.jeecg.modules.business.service.IPlatformOrderService;
-import org.jeecg.modules.business.service.IPlatformOrderContentService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
-import com.alibaba.fastjson.JSON;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.jeecg.common.aspect.annotation.AutoLog;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 平台订单表
@@ -59,6 +66,13 @@ public class PlatformOrderController {
 
     @Autowired
     private PlatformOrderMapper platformOrderMapper;
+
+    @Autowired
+    private PlatformOrderContentMapper platformOrderContentMapper;
+
+    @Autowired
+    private IShoumanOrderService shoumanOrderService;
+
     @Autowired
     public PlatformOrderController(IPlatformOrderService platformOrderService) {
         this.platformOrderService = platformOrderService;
@@ -74,7 +88,7 @@ public class PlatformOrderController {
      * @param req
      * @return
      */
-     @AutoLog(value = "平台订单有货未交运-分页列表查询")
+    @AutoLog(value = "平台订单有货未交运-分页列表查询")
     @ApiOperation(value = "平台订单有货未交运-分页列表查询", notes = "平台订单有货未交运-分页列表查询")
     @GetMapping(value = "/errorList")
     public Result<?> queryPageErrorList(PlatformOrder platformOrder,
@@ -336,12 +350,113 @@ public class PlatformOrderController {
     }
 
     /**
-     *
      * @return
      */
     @GetMapping("/monthOrderQuantity")
-    public Result<List<PlatformOrderQuantity>> monthOrderNumber(){
+    public Result<List<PlatformOrderQuantity>> monthOrderNumber() {
         List<PlatformOrderQuantity> res = platformOrderService.monthOrderNumber();
         return Result.OK(res);
+    }
+
+    /**
+     * Fetches all potential Shouman orders
+     *
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @AutoLog(value = "潜在首曼订单-分页列表查询")
+    @ApiOperation(value = "潜在首曼订单-分页列表查询", notes = "潜在首曼订单-分页列表查询")
+    @GetMapping(value = "/shouman/list")
+    public Result<?> queryPageShoumanList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                          @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
+                                          @RequestParam(name = "column") String column,
+                                          @RequestParam(name = "order") String order) {
+        Page<PlatformOrderPage> page = new Page<>(pageNo, pageSize);
+        platformOrderService.pagePotentialShoumanOrders(page, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column), order);
+        return Result.OK(page);
+    }
+
+    /**
+     * Generates remarks of a Shouman eligible order
+     *
+     * @param platformOrderId
+     * @return
+     */
+    @AutoLog(value = "潜在首曼订单-订单备注预览")
+    @ApiOperation(value = "潜在首曼订单-订单备注预览", notes = "潜在首曼订单-订单备注预览")
+    @GetMapping(value = "/shouman/preview")
+    public Result<?> generateShoumanRemarkForOrder(@RequestParam(name = "platformOrderId") String platformOrderId) {
+        List<ShoumanOrderContent> shoumanOrderContents = platformOrderContentMapper.searchShoumanOrderContentByPlatformOrderId(platformOrderId);
+        OrderCreationRequestBody requestBody = new OrderCreationRequestBody(shoumanOrderContents);
+        return Result.OK(requestBody.parameters().get("outboundInfos"));
+    }
+
+    /**
+     * Create/update Shouman Orders
+     *
+     * @param shoumanOrderRequests
+     * @return
+     */
+    @AutoLog(value = "首曼订单-生成或更新首曼订单")
+    @ApiOperation(value = "首曼订单-生成或更新首曼订单", notes = "首曼订单-生成或更新首曼订单")
+    @Transactional
+    @RequestMapping(value = "/shouman/create", method = {RequestMethod.PUT, RequestMethod.POST})
+    public Result<?> generateShoumanOrder(@RequestBody List<ShoumanOrderRequest> shoumanOrderRequests) {
+        List<ShoumanOrder> shoumanOrders = new ArrayList<>();
+        for (ShoumanOrderRequest shoumanOrderRequest : shoumanOrderRequests) {
+            List<ShoumanOrderContent> shoumanOrderContents = platformOrderContentMapper
+                    .searchShoumanOrderContentByPlatformOrderId(shoumanOrderRequest.getPlatformOrderId());
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            OrderCreationRequestBody requestBody = new OrderCreationRequestBody(shoumanOrderContents);
+            ShoumanOrder shoumanOrder = new ShoumanOrder();
+            JSONObject jsonToUpdate = requestBody.parameters();
+            // Override remarks if present
+            if (shoumanOrderRequest.getRemarks() != null) {
+                jsonToUpdate.put("outboundInfos", shoumanOrderRequest.getRemarks());
+            }
+            shoumanOrder.setOrderJson(jsonToUpdate.toJSONString());
+            shoumanOrder.setPlatformOrderId(shoumanOrderRequest.getPlatformOrderId());
+            shoumanOrder.setCreateBy(sysUser.getUsername());
+            shoumanOrders.add(shoumanOrder);
+        }
+        try {
+            shoumanOrderService.saveBatch(shoumanOrders);
+
+            log.info("{} Shouman orders to send to ShoumanAPI", shoumanOrders.size());
+
+            log.info("Started building and sending Shouman order requests");
+            for (ShoumanOrder shoumanOrder : shoumanOrders) {
+                String platformOrderId = shoumanOrder.getPlatformOrderId();
+
+                log.info("Started building Shouman Order request {}", platformOrderId);
+                OrderCreationRequest request = new OrderCreationRequest(new JsonOrderCreationRequestBody(shoumanOrder.getOrderJson()));
+                log.info("Finished building Shouman Order request {}", platformOrderId);
+
+                log.info("Started sending Shouman Order request {}", platformOrderId);
+                String resultString = request.rawSend(shoumanOrder).getBody();
+                log.info("Finished sending Shouman Order request {}", platformOrderId);
+
+                JSONObject json = JSON.parseObject(resultString);
+                Object status = json.get("status");
+                if (status != null) {
+                    if (((Integer) status) == 1) {
+                        log.info("Shouman Order {} ended with success", platformOrderId);
+                        shoumanOrder.setSuccess(status.toString());
+                    } else {
+                        log.info("Shouman Order {} failed", platformOrderId);
+                    }
+                }
+            }
+            log.info("Finished building and sending Shouman order requests");
+
+            log.info("Started updating Shouman Orders in DB");
+            shoumanOrderService.updateBatchById(shoumanOrders);
+            log.info("Finished updating Shouman Orders in DB");
+
+            return Result.OK("订单已发送成功，请前往首曼系统确认");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
