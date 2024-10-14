@@ -1114,4 +1114,44 @@
             #{item.platformOrderId}
         </foreach>
     </update>
+
+
+    <sql id="pagePotentialShoumanOrders">
+        SELECT distinct p.*
+        FROM platform_order_content poc
+                 JOIN platform_order p ON poc.platform_order_id = p.id
+                 JOIN shop sh ON p.shop_id = sh.id
+                 JOIN sku s ON poc.sku_id = s.id
+                 JOIN shouman_sku_relation ssr ON s.id = ssr.sku_id
+                 JOIN shouman_category sc ON ssr.shouman_category_id = sc.id
+                 JOIN shouman_regex sr ON sc.id = sr.shouman_category_id
+        WHERE p.erp_status in (1, 2)
+          AND sr.is_active = 1
+          AND p.platform_order_id NOT IN (SELECT platform_order_id FROM shouman_order)
+          AND p.order_time > '2024-10-01'
+    </sql>
+
+    <select id="pagePotentialShoumanOrders"
+            resultType="org.jeecg.modules.business.vo.PlatformOrderPage">
+        <include refid="pagePotentialShoumanOrders"/>
+        <if test="column != null and order != null">
+        ORDER BY ${column} ${order}
+        </if>
+        LIMIT #{pageNo}, #{pageSize}
+    </select>
+
+    <select id="countPotentialShoumanOrders" resultType="java.lang.Integer">
+        SELECT count(distinct p.id)
+        FROM platform_order_content poc
+                 JOIN platform_order p ON poc.platform_order_id = p.id
+                 JOIN shop sh ON p.shop_id = sh.id
+                 JOIN sku s ON poc.sku_id = s.id
+                 JOIN shouman_sku_relation ssr ON s.id = ssr.sku_id
+                 JOIN shouman_category sc ON ssr.shouman_category_id = sc.id
+                 JOIN shouman_regex sr ON sc.id = sr.shouman_category_id
+        WHERE p.erp_status in (1, 2)
+          AND sr.is_active = 1
+          AND p.platform_order_id NOT IN (SELECT platform_order_id FROM shouman_order)
+          AND p.order_time > '2024-10-01'
+    </select>
 </mapper>

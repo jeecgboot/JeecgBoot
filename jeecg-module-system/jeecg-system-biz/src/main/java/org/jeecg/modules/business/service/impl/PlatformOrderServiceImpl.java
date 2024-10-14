@@ -537,4 +537,12 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public void updateLocalTrackingNumber(List<YDTrackingNumberData> data) {
         platformOrderMap.updateLocalTrackingNumber(data);
     }
+
+    @Override
+    public void pagePotentialShoumanOrders(IPage<PlatformOrderPage> page, String column, String order) {
+        List<PlatformOrderPage> potentialShoumanOrders = platformOrderMap.pagePotentialShoumanOrders(page.offset(), page.getSize(), column, order);
+        page.setRecords(potentialShoumanOrders);
+        page.setTotal(platformOrderMap.countPotentialShoumanOrders());
+    }
+
 }

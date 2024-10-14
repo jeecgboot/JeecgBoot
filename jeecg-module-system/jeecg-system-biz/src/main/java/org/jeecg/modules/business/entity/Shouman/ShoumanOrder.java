@@ -1,31 +1,36 @@
-package org.jeecg.modules.business.entity;
+package org.jeecg.modules.business.entity.Shouman;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.math.BigDecimal;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
+import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * @Description: 国家
+ * @Description: 首曼订单
  * @Author: jeecg-boot
- * @Date: 2023-10-06
- * @Version: V1.0
+ * @Date: 2023-12-05
+ * @Version: V1.1
  */
 @Data
-@TableName("country")
+@TableName("shouman_order")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "country对象", description = "国家")
-public class Country implements Serializable {
+@ApiModel(value = "shouman_order对象", description = "首曼订单")
+public class ShoumanOrder implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -59,34 +64,35 @@ public class Country implements Serializable {
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
     /**
-     * 英语全名
+     * 平台订单ID
      */
-    @Excel(name = "英语全名", width = 15)
-    @ApiModelProperty(value = "英语全名")
-    private java.lang.String nameEn;
+    @Excel(name = "平台订单ID", width = 15, dictTable = "platform_order", dicText = "platform_order_id", dicCode = "id")
+    @Dict(dictTable = "platform_order", dicText = "platform_order_id", dicCode = "id")
+    @ApiModelProperty(value = "平台订单ID")
+    private java.lang.String platformOrderId;
     /**
-     * 中文全名
+     * 订单内容JSON
      */
-    @Excel(name = "中文全名", width = 15)
-    @ApiModelProperty(value = "中文全名")
-    private java.lang.String nameZh;
+    @Excel(name = "订单内容JSON", width = 15)
+    @ApiModelProperty(value = "订单内容JSON")
+    private java.lang.String orderJson;
     /**
-     * ISO 3166 代码
+     * 请求成功
      */
-    @Excel(name = "ISO 3166 代码", width = 15)
-    @ApiModelProperty(value = "ISO 3166 代码")
-    private java.lang.String code;
+    @Excel(name = "请求成功", width = 15, dictTable = "yn", dicText = "", dicCode = "")
+    @Dict(dictTable = "yn", dicText = "", dicCode = "")
+    @ApiModelProperty(value = "请求成功")
+    private java.lang.String success;
     /**
-     * 特殊名称（匹配马帮用）
+     * 签名字符串值
      */
-    @Excel(name = "特殊名称（匹配马帮用）", width = 15)
-    @ApiModelProperty(value = "特殊名称（匹配马帮用）")
-    private java.lang.String specialName;
-
-    public String getMabangName() {
-        if (specialName == null || specialName.isEmpty()) {
-            return nameEn;
-        }
-        return specialName;
-    }
+    @Excel(name = "签名字符串值", width = 15)
+    @ApiModelProperty(value = "签名字符串值")
+    private java.lang.String signatureString;
+    /**
+     * 签名MD5值
+     */
+    @Excel(name = "签名MD5值", width = 15)
+    @ApiModelProperty(value = "签名MD5值")
+    private java.lang.String signatureMd5;
 }
