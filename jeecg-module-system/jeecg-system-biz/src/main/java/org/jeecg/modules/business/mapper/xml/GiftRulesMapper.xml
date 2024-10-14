@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.GiftRulesMapper">
+    <select id="findByShop" resultType="org.jeecg.modules.business.entity.GiftRule">
+        SELECT s.erp_code AS shop_code,
+               sku.erp_code AS sku,
+               g.normal_sku_regex AS regex,
+               g.match_normal_sku_quantity AS match_quantity
+        FROM gift_rules g JOIN shop s ON g.shop_id = s.id
+        JOIN sku ON g.gift_sku_id = sku.id
+        WHERE s.erp_code IN
+        <foreach collection="shopCodes" separator="," open="(" close=")" item="shopCode">
+            #{shopCode}
+        </foreach>
+    </select>
+</mapper>

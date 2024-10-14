@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
 
@@ -65,6 +66,16 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public Set<String> getDepartParentIdsByUsername(String username) {
+        return null;
+    }
+
+    @Override
+    public Set<String> getDepartParentIdsByDepIds(Set<String> depIds) {
+        return null;
+    }
+
+    @Override
     public List<String> getDepartNamesByUsername(String username) {
         return null;
     }
@@ -91,7 +102,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public List<DictModel> queryTableDictItemsByCode(String table, String text, String code) {
+    public List<DictModel> queryTableDictItemsByCode(String tableFilterSql, String text, String code) {
         return null;
     }
 
@@ -122,7 +133,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public JSONObject queryAllUser(String userIds, Integer pageNo, int pageSize) {
+    public JSONObject queryAllUser(String userIds, Integer pageNo, Integer pageSize) {
         return null;
     }
 
@@ -163,7 +174,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public List<LoginUser> queryAllUserByIds(String[] userIds) {
+    public List<UserAccountInfo> queryAllUserByIds(String[] userIds) {
         return null;
     }
 
@@ -173,7 +184,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public List<LoginUser> queryUserByNames(String[] userNames) {
+    public List<UserAccountInfo> queryUserByNames(String[] userNames) {
         return null;
     }
 
@@ -183,7 +194,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public Set<String> getUserPermissionSet(String username) {
+    public Set<String> getUserPermissionSet(String userId) {
         return null;
     }
 
@@ -208,7 +219,7 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
-    public Set<String> queryUserAuths(String username) {
+    public Set<String> queryUserAuths(String userId) {
         return null;
     }
 
@@ -274,10 +285,12 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
         return null;
     }
 
+    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     @Override
-    public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys) {
+    public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys, String dataSource) {
         return null;
     }
+    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     @Override
     public void sendTemplateMessage(MessageDTO message) {
@@ -299,6 +312,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public void sendHtmlTemplateEmail(String email, String title, EmailTemplateEnum emailTemplateEnum, JSONObject params) {
+
+    }
+
+    @Override
     public List<Map> getDeptUserByOrgCode(String orgCode) {
         return null;
     }
@@ -314,7 +332,17 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public List<String> loadCategoryDictItemByNames(String names, boolean delNotExist) {
+        return null;
+    }
+
+    @Override
     public List<String> loadDictItem(String dictCode, String keys) {
+        return null;
+    }
+
+    @Override
+    public Map<String, String> copyLowAppDict(String originalAppId, String appId, String tenantId) {
         return null;
     }
 
@@ -333,17 +361,6 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
         return null;
     }
 
-
-    @Override
-    public void addSysFiles(SysFilesModel sysFilesModel) {
-
-    }
-
-    @Override
-    public String getFileUrl(String fileId) {
-        return null;
-    }
-
     @Override
     public void updateAvatar(LoginUser loginUser) { }
 
@@ -351,4 +368,75 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     public void sendAppChatSocket(String userId) {
         
     }
+
+    @Override
+    public String getRoleCodeById(String id) {
+        return null;
+    }
+
+    @Override
+    public List<DictModel> queryRoleDictByCode(String roleCodes) {
+        return null;
+    }
+
+    @Override
+    public List<JSONObject> queryUserBySuperQuery(String superQuery, String matchType) {
+        return null;
+    }
+
+    @Override
+    public JSONObject queryUserById(String id) {
+        return null;
+    }
+
+    @Override
+    public List<JSONObject> queryDeptBySuperQuery(String superQuery, String matchType) {
+        return null;
+    }
+
+    @Override
+    public List<JSONObject> queryRoleBySuperQuery(String superQuery, String matchType) {
+        return null;
+    }
+
+    @Override
+    public List<String> selectUserIdByTenantId(String tenantId) {
+        return null;
+    }
+
+    @Override
+    public List<String> queryUserIdsByDeptIds(List<String> deptIds) {
+        return null;
+    }
+
+    @Override
+    public List<String> queryUserAccountsByDeptIds(List<String> deptIds) {
+        return null;
+    }
+
+    @Override
+    public List<String> queryUserIdsByRoleds(List<String> roleCodes) {
+        return null;
+    }
+
+    @Override
+    public List<String> queryUserIdsByPositionIds(List<String> positionIds) {
+        return null;
+    }
+
+    @Override
+    public List<String> getUserAccountsByDepCode(String orgCode) {
+        return null;
+    }
+
+    @Override
+    public boolean dictTableWhiteListCheckBySql(String selectSql) {
+        return false;
+    }
+
+    @Override
+    public boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String... fields) {
+        return false;
+    }
+
 }

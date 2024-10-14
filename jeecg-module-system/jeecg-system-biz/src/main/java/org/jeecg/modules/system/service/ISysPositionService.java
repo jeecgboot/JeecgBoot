@@ -3,6 +3,8 @@ package org.jeecg.modules.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysPosition;
 
+import java.util.List;
+
 /**
  * @Description: 职务表
  * @Author: jeecg-boot
@@ -18,4 +20,17 @@ public interface ISysPositionService extends IService<SysPosition> {
      */
     SysPosition getByCode(String code);
 
+    /**
+     * 通过用户id获取职位名称列表
+     * @param userId
+     * @return
+     */
+    List<SysPosition> getPositionList(String userId);
+
+    /**
+     * 获取职位名称
+     * @param postList
+     * @return
+     */
+    String getPositionName(List<String> postList);
 }

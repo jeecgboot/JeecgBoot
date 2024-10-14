@@ -1,6 +1,7 @@
 package org.jeecg.common.exception;
 
 import cn.hutool.core.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.jeecg.common.api.vo.Result;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 异常处理器
@@ -34,7 +33,7 @@ public class JeecgBootExceptionHandler {
 	@ExceptionHandler(JeecgBootException.class)
 	public Result<?> handleJeecgBootException(JeecgBootException e){
 		log.error(e.getMessage(), e);
-		return Result.error(e.getMessage());
+		return Result.error(e.getErrCode(), e.getMessage());
 	}
 
 	/**
@@ -84,7 +83,7 @@ public class JeecgBootExceptionHandler {
 			return Result.error(errorInfoEnum.getError());
 		}
 		//update-end---author:zyf ---date:20220411  for：处理Sentinel限流自定义异常
-		return Result.error("操作失败，"+e.getMessage());
+		return Result.error("Error : "+e.getMessage());
 	}
 	
 	/**
@@ -132,5 +131,25 @@ public class JeecgBootExceptionHandler {
     	log.error(e.getMessage(), e);
         return Result.error("Redis 连接异常!");
     }
+
+
+	/**
+	 * SQL注入风险，全局异常处理
+	 *
+	 * @param exception
+	 * @return
+	 */
+	@ExceptionHandler(JeecgSqlInjectionException.class)
+	public Result<?> handleSQLException(Exception exception) {
+		String msg = exception.getMessage().toLowerCase();
+		final String extractvalue = "extractvalue";
+		final String updatexml = "updatexml";
+		boolean hasSensitiveInformation = msg.indexOf(extractvalue) >= 0 || msg.indexOf(updatexml) >= 0;
+		if (msg != null && hasSensitiveInformation) {
+			log.error("校验失败，存在SQL注入风险！{}", msg);
+			return Result.error("校验失败，存在SQL注入风险！");
+		}
+		return Result.error("校验失败，存在SQL注入风险！" + msg);
+	}
 
 }

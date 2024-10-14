@@ -90,6 +90,9 @@ public class SkuData {
     public SkuStatus getStatus() {
         return SkuStatus.fromCode(this.status);
     }
+    public int getStatusValue() {
+        return this.status;
+    }
     public String toString() {
         return "ID : " + this.id +
                 "\nStockSkuId : " + this.stockSkuId +

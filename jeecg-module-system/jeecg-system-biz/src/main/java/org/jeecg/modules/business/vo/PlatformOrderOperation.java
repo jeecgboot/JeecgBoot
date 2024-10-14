@@ -1,0 +1,40 @@
+package org.jeecg.modules.business.vo;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Data;
+
+@Data
+public class PlatformOrderOperation {
+    @JSONField(name = "shopId")
+    private String shopId;
+    @JSONField(name = "orderIds")
+    private String orderIds;
+    @JSONField(name = "action")
+    private String action;
+    @JSONField(name = "reason")
+    private String reason;
+    @JSONField(name = "recipient")
+    private String recipient;
+    @JSONField(name = "phone")
+    private String phone;
+    @JSONField(name = "street1")
+    private String street1;
+    @JSONField(name = "street2")
+    private String street2;
+
+    public enum Action {
+        CANCEL("cancel"),
+        SUSPEND("suspend"),
+        EDIT("edit");
+
+        private final String action;
+
+        Action(String value) {
+            this.action = value;
+        }
+
+        public String getValue() {
+            return action;
+        }
+    }
+}

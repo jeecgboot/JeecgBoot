@@ -30,7 +30,7 @@ public class PurchaseOrder implements Serializable {
     /**
      * 主键
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty(value = "主键")
     private String id;
     /**

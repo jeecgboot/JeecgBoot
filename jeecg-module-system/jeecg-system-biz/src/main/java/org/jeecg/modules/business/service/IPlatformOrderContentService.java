@@ -49,7 +49,7 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
      * Cancels an invoice
      * @param invoiceNumber
      */
-    void cancelInvoice(String invoiceNumber);
+    void cancelInvoice(String invoiceNumber, String clientId);
     /**
      * Cancels a batch of invoices
      * @param invoiceNumbers

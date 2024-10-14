@@ -4,8 +4,6 @@ package org.jeecg.modules.system.controller;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
-import com.baomidou.dynamic.datasource.creator.DruidDataSourceCreator;
-import com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DataSourceProperty;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -65,7 +63,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      */
     @AutoLog(value = "多数据源管理-分页列表查询")
     @ApiOperation(value = "多数据源管理-分页列表查询", notes = "多数据源管理-分页列表查询")
-    //@RequiresPermissions("system:datasource:list")
+    @RequiresPermissions("system:datasource:list")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(
             SysDataSource sysDataSource,
@@ -228,5 +226,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, SysDataSource.class);
     }
+
+
 
 }

@@ -404,8 +404,8 @@
           AND internal_tracking_number IS NOT NULL;
     </select>
 
-    <select id="fetchUninvoicedOrdersForShops" resultType="java.lang.String">
-        SELECT platform_order_id
+    <select id="fetchUninvoicedOrdersForShops" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT platform_order_id, logistic_channel_name
         FROM platform_order po join shop s ON po.shop_id = s.id
         WHERE erp_code IN
         <foreach
@@ -449,7 +449,8 @@
     </select>
 
     <select id="fetchOrderInShopsReadyForShopifySync" resultType="org.jeecg.modules.business.entity.PlatformOrderShopSync">
-        SELECT po.platform_order_id, po.tracking_number, s.shopify_prefix, s.shopify_token, po.postcode
+        SELECT po.platform_order_id, COALESCE(po.local_tracking_number, po.tracking_number) as tracking_number,
+        s.shopify_prefix, s.shopify_token, po.postcode
         FROM platform_order po join shop s ON po.shop_id = s.id
         WHERE erp_code IN
         <foreach
@@ -463,6 +464,7 @@
             #{shop}
         </foreach>
         AND ready_for_shopify_sync = 1
+        AND shopify_synced = 0
         AND erp_status = 3
         ORDER BY shipping_time;
     </select>
@@ -647,7 +649,7 @@
             </foreach>;
     </select>
     <select id="findUninvoicedOrdersByShopForClient" resultType="org.jeecg.modules.business.entity.PlatformOrder">
-        SELECT *
+        SELECT id, order_time, platform_order_number
         FROM platform_order
         WHERE erp_status IN
         <foreach
@@ -673,7 +675,12 @@
                 item="shopId"
         >
             #{shopId}
-        </foreach>;
+        </foreach>
+        ORDER BY ${column} ${order}
+        <if test="size != -1">
+            LIMIT #{offset}, #{size}
+        </if>
+        ;
     </select>
     <insert id="insertPlatformOrdersArchives" parameterType="list">
         INSERT INTO platform_order_delete(id, create_by,
@@ -726,18 +733,21 @@
     <update id="cancelInvoice">
         UPDATE platform_order po
         JOIN shipping_invoice si ON po.shipping_invoice_number = si.invoice_number
-        SET fret_fee                = NULL,
-            order_service_fee       = NULL,
-            shipping_invoice_number = NULL,
-            picking_fee = 0.0,
-            packaging_material_fee = 0.0,
-            erp_status =
+        JOIN shop s ON po.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+        SET po.fret_fee                = NULL,
+            po.order_service_fee       = NULL,
+            po.shipping_invoice_number = NULL,
+            po.picking_fee = 0.0,
+            po.packaging_material_fee = 0.0,
+            po.erp_status =
                 CASE
                     WHEN erp_status = '4' THEN '3'
                     WHEN erp_status = '2' AND si.create_by = 'system' THEN '1'
                 ELSE erp_status
                 END
-        WHERE shipping_invoice_number = #{invoiceNumber};
+        WHERE shipping_invoice_number = #{invoiceNumber}
+        AND c.id = #{clientId};
     </update>
     <update id="cancelBatchInvoice">
         UPDATE platform_order
@@ -806,8 +816,11 @@
     </select>
     <update id="removePurchaseInvoiceNumber">
         UPDATE platform_order
+            JOIN shop s ON platform_order.shop_id = s.id
+            JOIN client c ON s.owner_id = c.id
         SET purchase_invoice_number = NULL
         WHERE purchase_invoice_number = #{invoiceNumber}
+            AND c.id = #{clientId};
     </update>
     <update id="removePurchaseInvoiceNumbers">
         UPDATE platform_order
@@ -879,6 +892,228 @@
         JOIN shipping_invoice s ON po.shipping_invoice_number = s.invoice_number
         WHERE shipping_invoice_number = #{invoiceNumber};
     </select>
+
+    <update id="anonymizePersonalData">
+        UPDATE platform_order_delete
+        SET recipient = UUID()
+        WHERE create_time &lt; DATE_SUB(NOW(), INTERVAL #{period} YEAR);
+    </update>
+
+    <select id="ordersByShop" resultType="org.jeecg.modules.business.vo.PlatformOrderOption">
+        SELECT platform_order_id as value, platform_order_number as label, erp_status, IF(erp_status = 1 OR erp_status = 2, false, true) as disabled
+        FROM platform_order
+        WHERE shop_id = #{shopID}
+        AND erp_status IN (1,2,3)
+    </select>
+    <select id="fetchUninvoicedOrdersWithSkusInCountry" resultType="java.lang.String">
+        SELECT po.platform_order_id
+        FROM platform_order po
+            JOIN shop ON po.shop_id = shop.id
+            JOIN country c ON po.country = c.name_en
+            JOIN platform_order_content poc ON po.id = poc.platform_order_id
+            JOIN sku s ON poc.sku_id = s.id
+        WHERE po.erp_status IN (1,2)
+        AND po.can_send = 2
+        AND c.code IN
+        <foreach
+                collection="countries"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="country"
+        >
+            #{country}
+        </foreach>
+        AND shop.erp_code = #{shop}
+        AND s.erp_code IN
+        <foreach
+                collection="skus"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="sku"
+        >
+            #{sku}
+        </foreach>
+        AND order_time &gt;= #{startDate}
+        AND order_time &lt;= #{endDate}
+        AND shipping_invoice_number IS NULL;
+    </select>
+    <select id="fetchUninvoicedOrdersWithSkusNotInCountry" resultType="java.lang.String">
+        SELECT po.platform_order_id
+        FROM platform_order po
+            JOIN shop ON po.shop_id = shop.id
+            JOIN country c ON po.country = c.name_en
+            JOIN platform_order_content poc ON po.id = poc.platform_order_id
+            JOIN sku s ON poc.sku_id = s.id
+        WHERE po.erp_status IN (1,2)
+        AND po.can_send = 2
+        AND c.code NOT IN
+        <foreach
+                collection="countries"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="country"
+        >
+            #{country}
+        </foreach>
+        AND shop.erp_code = #{shop}
+        AND s.erp_code IN
+        <foreach
+                collection="skus"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="sku"
+        >
+            #{sku}
+        </foreach>
+        AND order_time &gt;= #{startDate}
+        AND order_time &lt;= #{endDate}
+        AND shipping_invoice_number IS NULL;
+    </select>
+    <select id="findReadyAbnormalOrders" resultType="java.lang.String">
+        WITH skusInAbnormalOrders AS (
+            SELECT poc.sku_id , poc.platform_order_id, poc.erp_status
+            FROM platform_order po
+            JOIN platform_order_content poc ON po.id = poc.platform_order_id
+            JOIN shop s ON po.shop_id = s.id
+            WHERE can_send = 2
+            AND po.erp_status IN (1,2)
+            AND po.order_time &gt;= NOW() - INTERVAL 5 DAY
+            AND s.erp_code IN
+            <foreach
+                    collection="shops"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="shop">
+                #{shop}
+            </foreach>
+        ),
+        orders_with_bad_sku AS (
+            SELECT DISTINCT
+            CASE
+                WHEN s.id IS NULL AND sao.erp_status &lt;&gt; 5 THEN sao.platform_order_id
+            END as order_id
+            FROM skusInAbnormalOrders sao
+            LEFT JOIN sku s ON sao.sku_id = s.id
+        ),
+        orders_with_skus AS (
+            SELECT DISTINCT poc.platform_order_id as id
+            FROM platform_order_content poc
+            JOIN sku s ON poc.sku_id = s.id
+            JOIN platform_order po ON poc.platform_order_id = po.id
+            WHERE po.can_send IN (1,2)
+            AND po.can_send = 2
+            AND po.order_time &gt;= NOW() - INTERVAL 5 DAY
+            AND s.erp_code IN
+            <foreach
+                    collection="skus"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="sku">
+                #{sku}
+            </foreach>
+            AND poc.erp_status &lt;&gt; 5
+            AND poc.warehouse_name != '法国巴黎仓库-唯客路'
+        ),
+        orders_ready AS (
+            SELECT po.id as id
+            FROM platform_order po
+            JOIN shop s ON po.shop_id = s.id
+            LEFT JOIN orders_with_bad_sku owbs ON po.id = owbs.order_id
+            WHERE owbs.order_id IS NULL
+            AND po.erp_status IN (1,2)
+            AND po.can_send = 2
+            AND po.order_time &gt;= NOW() - INTERVAL 5 DAY
+            AND s.erp_code IN
+            <foreach
+                    collection="shops"
+                    separator=","
+                    open="("
+                    close=")"
+                    index="index"
+                    item="shop">
+                #{shop}
+            </foreach>
+        )
+        SELECT ors.id
+        FROM orders_ready ors
+        WHERE ors.id NOT IN (SELECT * FROM orders_with_skus);
+    </select>
+    <select id="findReadyAbnormalOrdersWithSkus" resultType="java.lang.String">
+        SELECT DISTINCT poc.platform_order_id
+        FROM platform_order_content poc
+        JOIN sku s ON poc.sku_id = s.id
+        JOIN platform_order po ON poc.platform_order_id = po.id
+        WHERE po.can_send IN (1,2)
+        AND po.can_send = 2
+        AND po.order_time &gt;= NOW() - INTERVAL 5 DAY
+        AND s.erp_code IN
+        <foreach
+            collection="skus"
+            separator=","
+            open="("
+            close=")"
+            index="index"
+            item="sku">
+                #{sku}
+        </foreach>
+        AND poc.erp_status &lt;&gt; 5
+        AND poc.warehouse_name = '法国巴黎仓库-唯客路';
+    </select>
+
+    <update id="updateShopifySynced">
+        UPDATE platform_order
+        SET shopify_synced = 1
+        WHERE platform_order_id IN
+        <foreach collection="platformOrderIds" separator="," open="(" close=")" index="index" item="platformOrderId">
+            #{platformOrderId}
+        </foreach>
+    </update>
+
+    <select id="fetchShippedOrdersFromShopAndTransporters" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code = #{shopCode}
+        AND erp_status = 3
+        AND shopify_synced = 0
+        AND logistic_channel_name IN
+        <foreach
+                collection="transporters"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="transporter">
+            #{transporter}
+        </foreach>
+        ;
+    </select>
+
+    <update id="updateLocalTrackingNumber">
+        UPDATE platform_order
+        SET ready_for_shopify_sync = 1,
+            local_tracking_number =
+        case platform_order_id
+        <foreach collection="data" separator=" " open="" close="" index="index" item="item">
+            when #{item.platformOrderId} then #{item.localTrackingNumber}
+        </foreach>
+        end
+        where platform_order_id in
+        <foreach collection="data" separator="," open="(" close=")" index="index" item="item">
+            #{item.platformOrderId}
+        </foreach>
+    </update>
 
 
     <sql id="pagePotentialShoumanOrders">

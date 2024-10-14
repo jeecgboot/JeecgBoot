@@ -74,6 +74,13 @@
 				select user_id from sys_user_tenant where tenant_id = #{tenantId} and status = '1'
 			)
 		</if>
+		<!--【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页 需要将不符合的用户id排除--> 
+		<if test="excludeUserIdList!=null and excludeUserIdList.size()>0">
+			and a.id not in
+			<foreach collection="excludeUserIdList" item="userId" open="(" close=")" separator=",">
+				#{userId}
+			</foreach>
+		</if>
 	</select>
 	
 	<!--获取租户下的部门-通过前台传过来的部门id-->
@@ -96,7 +103,18 @@
 			select id from sys_depart where tenant_id = #{tenantId}
 		)
 	</select>
-	
+
+	<!--通过部门id和租户id获取用户-->
+	<select id="getUsersByDepartTenantId" resultType="org.jeecg.modules.system.entity.SysUser">
+		select su.id,su.realname from sys_user_depart sud
+		INNER JOIN sys_user su ON sud.user_id = su.id
+		INNER JOIN sys_user_tenant sut ON su.id = sut.user_id
+		where
+		sud.dep_id = #{departId}
+		AND sut.tenant_id = #{tenantId}
+		AND sut.status = '1'
+	</select>
+
 	<!--根据用户id和租户id,删除用户部门数据-->
     <delete id="deleteUserDepart">
 		delete from sys_user_depart

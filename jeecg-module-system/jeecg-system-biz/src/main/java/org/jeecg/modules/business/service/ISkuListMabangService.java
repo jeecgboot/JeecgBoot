@@ -15,6 +15,7 @@ public interface ISkuListMabangService extends IService<SkuData> {
      * @param skuDataList skus to save.
      */
     Map<Sku, String> saveSkuFromMabang(List<SkuData> skuDataList);
+    void updateSkusFromMabang(List<SkuData> skuDataList);
 
     /**
      * Save products to DB from mabang api.

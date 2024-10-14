@@ -37,22 +37,36 @@
                 <Icon icon="mdi:chevron-down"></Icon>
               </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
        <!--操作栏-->
       <template #action="{ record }">
         <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
       </template>
       <!--字段回显插槽-->
-      <template #htmlSlot="{text}">
-         <div v-html="text"></div>
-      </template>
-       <!--省市区字段回显插槽-->
-       <template #pcaSlot="{text}">
-         {{ getAreaTextByCode(text) }}
-       </template>
-      <template #fileSlot="{text}">
-         <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-         <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+      <template v-slot:bodyCell="{ column, record, index, text }">
+      <#list columns as po>
+        <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
+        <template v-if="column.dataIndex==='${po.fieldName}'">
+        <#if po.classType=='umeditor'>
+          <!--富文本件字段回显插槽-->
+          <div v-html="text"></div>
+        </#if>
+        <#if po.classType=='pca'>
+          <!--省市区字段回显插槽-->
+          {{ getAreaTextByCode(text) }}
+        </#if>
+        <#if po.classType=='file'>
+          <!--文件字段回显插槽-->
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+        </#if>
+        </template>
+        </#if>
+      </#list>
       </template>
     </BasicTable>
    <!--子表表格tab-->
@@ -71,15 +85,16 @@
 </template>
 
 <script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
-  import {ref, computed, unref,provide} from 'vue';
+  import {ref, reactive, computed, unref,provide} from 'vue';
   import {BasicTable, useTable, TableAction} from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
   import {useModal} from '/@/components/Modal';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
+  import { useUserStore } from '/@/store/modules/user';
 <#list subTables as sub>
   import ${sub.entityName}List from './${sub.entityName}List.vue'
 </#list>
-  import {columns, searchFormSchema} from './${entityName}.data';
+  import {columns, searchFormSchema, superQuerySchema} from './${entityName}.data';
   import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   import {downloadFile} from '/@/utils/common/renderUtils';
  <#if list_need_pca>
@@ -93,6 +108,7 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  const queryParam = reactive<any>({});
   //注册model
   const [registerModal, {openModal}] = useModal();
    //注册table数据
@@ -134,6 +150,9 @@
                width: 120,
                fixed:'right'
            },
+           beforeFetch: (params) => {
+             return Object.assign(params, queryParam);
+           },
            pagination:{
                current: 1,
                pageSize: 5,
@@ -143,18 +162,35 @@
         exportConfig: {
             name:"${tableVo.ftlDescription}",
             url: getExportUrl,
+            params: queryParam,
         },
         importConfig: {
             url: getImportUrl,
             success: handleSuccess
         },
     })
-
+  const userStore = useUserStore();
   const [registerTable, {reload},{ rowSelection, selectedRowKeys }] = tableContext
 
   const mainId = computed(() => (unref(selectedRowKeys).length > 0 ? unref(selectedRowKeys)[0] : ''));
   //下发 mainId,子组件接收
   provide('mainId', mainId);
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+    // 高级查询配置
+    const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    reload();
+  }
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+
    /**
     * 新增事件
     */
@@ -244,6 +280,7 @@
         popConfirm: {
           title: '是否确认删除',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         }
       }
     ];
@@ -267,6 +304,7 @@
         popConfirm: {
           title: '是否确认删除',
           confirm: handleDelete.bind(null, record),
+          placement: 'topLeft',
         }
       }
     ]
@@ -283,11 +321,10 @@
        <#if po.classType=='cat_tree' && list_need_category==true>
        loadCategoryData({code:'${po.dictField?default("")}'}).then((res) => {
          if (res) {
-             let allDictDate = getAuthCache(DB_DICT_DATA_KEY);
-             if(!allDictDate['${po.dictField?default("")}']){
-               Object.assign(allDictDate,{'${po.dictField?default("")}':res})
-             }
-             setAuthCache(DB_DICT_DATA_KEY,allDictDate)
+           const allDictDate = userStore.getAllDictItems;
+           if(!allDictDate['${po.dictField?default("")}']){
+             userStore.setAllDictItems({...allDictDate,'${po.dictField?default("")}':res});
+           }
          }
        })
        </#if>

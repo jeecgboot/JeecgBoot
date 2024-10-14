@@ -1,7 +1,6 @@
 package org.jeecg.modules.business.service;
 
-import com.aspose.cells.SaveFormat;
-import com.aspose.cells.Workbook;
+import com.aspose.cells.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -50,6 +49,8 @@ import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 @Slf4j
 public class PlatformOrderShippingInvoiceService {
 
+    @Autowired
+    IClientService clientService;
     @Autowired
     ICurrencyService currencyService;
     @Autowired
@@ -745,6 +746,13 @@ public class PlatformOrderShippingInvoiceService {
             log.info("Generating a new invoice file ...");
             if(filetype.equals("invoice"))
                 pathList = generateInvoiceExcel(invoiceNumber, filetype);
+            else if(filetype.equals("detail")){
+                Client client = clientService.getClientFromInvoice(invoiceNumber);
+                List<FactureDetail> details = getInvoiceDetail(invoiceNumber);
+                List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
+                exportToExcel(details, refunds, invoiceNumber, client.getInvoiceEntity(), client.getInternalCode());
+                pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
+            }
             else {
                 return "ERROR";
             }
@@ -772,9 +780,25 @@ public class PlatformOrderShippingInvoiceService {
                 pdfFilePath = INVOICE_PDF_DIR + "/" + m.group(2) + ".pdf";
             }
             // Créé un classeur pour charger le fichier Excel
+            PdfSaveOptions saveOptions = new PdfSaveOptions();
+            saveOptions.setDefaultFont("Arial");
+            saveOptions.setCheckWorkbookDefaultFont(false);
             Workbook workbook = new Workbook(excelFilePath);
+            Worksheet sheet = workbook.getWorksheets().get(0);
+            // get number of lines
+            Cells cells = sheet.getCells();
+            int maxRow = cells.getMaxDataRow();
+            PageSetup pageSetup = sheet.getPageSetup();
+            // Setting the number of pages to which the length of the worksheet will
+            if(maxRow < 63) {
+                // be spanned
+                pageSetup.setFitToPagesTall(1);
+
+                // Setting the number of pages to which the width of the worksheet will be spanned
+                pageSetup.setFitToPagesWide(1);
+            }
             // On enregistre le document au format PDF
-            workbook.save(pdfFilePath, SaveFormat.PDF);
+            workbook.save(pdfFilePath, saveOptions);
             return pdfFilePath;
         }
         return "ERROR";

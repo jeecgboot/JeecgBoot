@@ -2,6 +2,7 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
+    connection-timeout: 30000
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -20,6 +21,29 @@ management:
         include: metrics,httptrace
 
 spring:
+  # flyway配置
+  flyway:
+    # 是否启用flyway
+    enabled: false
+    # 编码格式，默认UTF-8
+    encoding: UTF-8
+    # 迁移sql脚本文件存放路径，官方默认db/migration
+    locations: classpath:flyway/sql/mysql
+    # 迁移sql脚本文件名称的前缀，默认V
+    sql-migration-prefix: V
+    # 迁移sql脚本文件名称的分隔符，默认2个下划线__
+    sql-migration-separator: __
+    # 避免带${}sql执行失败
+    placeholder-prefix: '#('
+    placeholder-suffix: )
+    # 迁移sql脚本文件名称的后缀
+    sql-migration-suffixes: .sql
+    # 迁移时是否进行校验，默认true
+    validate-on-migrate: true
+    # 当迁移发现数据库非空且存在没有元数据的表时，自动执行基准迁移，新建schema_version表
+    baseline-on-migrate: true
+    # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
+    clean-disabled: true
   servlet:
     multipart:
       max-file-size: 10MB
@@ -39,7 +63,7 @@ spring:
   quartz:
     job-store-type: jdbc
     initialize-schema: embedded
-    #定时任务启动开关，true-开  false-关
+    #定时任务开关，true-开  false-关
     auto-startup: true
     #延迟1秒启动定时任务
     startup-delay: 1s
@@ -66,7 +90,7 @@ spring:
   #json 时间戳统一转换
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: GMT+2
+    time-zone: GMT+8
   jpa:
     open-in-view: false
   aop:
@@ -95,7 +119,9 @@ spring:
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+    exclude:
+      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
       stat-view-servlet:
@@ -127,8 +153,10 @@ spring:
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
         filters: stat,wall,slf4j
-        # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
-        connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+        # 打开mergeSql功能；慢SQL记录
+        stat:
+          merge-sql: true
+          slow-sql-millis: 5000
       datasource:
         master:
           url: jdbc:mysql://127.0.0.1:3306/new_wia_app?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
@@ -145,13 +173,6 @@ spring:
   redis:
     database: 0
     host: 127.0.0.1
-    lettuce:
-      pool:
-        max-active: 8   #最大连接数据库连接数,设 0 为没有限制
-        max-idle: 8     #最大等待连接中的数量,设 0 为没有限制
-        max-wait: -1ms  #最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
-        min-idle: 0     #最小等待连接中的数量,设 0 为没有限制
-      shutdown-timeout: 100ms
     port: 6379
     password: ''
 #mybatis plus 设置
@@ -172,15 +193,19 @@ mybatis-plus:
     call-setters-on-nulls: true
 #jeecg专用配置
 minidao:
-  base-package: org.jeecg.modules.jmreport.*
+  base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
-  # 是否启用安全模式
-  safeMode: false
+  # 平台上线安全配置
+  firewall:
+    # 数据源安全 (开启后，Online报表和图表的数据源为必填)
+    dataSourceSafe: true
+    # 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
+    lowCodeMode: prod
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
-  # 签名拦截接口
+  #签名拦截接口
   signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
-  #local\minio\alioss
+  # local\minio\alioss
   uploadType: local
   # 前端访问地址
   domainUrl:
@@ -208,12 +233,14 @@ jeecg:
     shippingInvoiceDetailDir: /wia/invoices/shippingDetail
     shippingInvoicePdfDir: /wia/invoices/pdf/shipping
     shippingInvoiceDetailPdfDir: /wia/invoices/pdf/shippingDetail
+    # sku csv file for image search
+    skuCsvPath: /mnt/wia/products/sku.csv
     # CDG location
     CGS: /wia/files/WIASourcingCGCVF_mai.pdf
     #webapp文件路径
     webapp: /wia_app
   shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/category/**,/visual/**,/map/**,/jmreport/bigscreen2/**,/api/getUserInfo
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/bigscreen/category/**,/bigscreen/visual/**,/bigscreen/map/**,/jmreport/bigscreen2/**,/api/getUserInfo
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
@@ -236,17 +263,14 @@ jeecg:
     bucketName: otatest
   #大屏报表参数设置
   jmreport:
-    mode: prod
-    #数据字典是否进行saas数据隔离，自己看自己的字典
-    saas: false
-    #是否开启租户模式 Support By v1.5.5+
-    openTenant: false
-    #安全模式(敏感接口校验、saas模式下不允许使用平台数据源)
-    #safeMode: true
-    #是否需要校验token
-    is_verify_token: true
-    #必须校验方法
-    verify_methods: remove,delete,save,add,update
+    #多租户模式，默认值为空(created:按照创建人隔离、tenant:按照租户隔离) (v1.6.2+ 新增)
+    saasMode: created
+    # 平台上线安全配置(v1.6.2+ 新增)
+    firewall:
+      # 数据源安全 (开启后，不允许使用平台数据源、SQL解析加签并且不允许查询数据库)
+      dataSourceSafe: true
+      # 低代码开发模式（dev:开发模式，prod:发布模式—关闭在线报表设计功能，分配角色admin、lowdeveloper可以放开限制）
+      lowCodeMode: prod
   #xxl-job配置
   xxljob:
     enabled: false
@@ -270,6 +294,7 @@ cas:
 #Mybatis输出sql日志
 logging:
   level:
+    org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
 #swagger
 knife4j:
@@ -306,26 +331,9 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
-#第三方APP对接
-third-app:
-  enabled: false
-  type:
-    #企业微信
-    WECHAT_ENTERPRISE:
-      enabled: false
-      #CORP_ID
-      client-id: ??
-      #SECRET
-      client-secret: ??
-      #自建应用id
-      agent-id: ??
-      #自建应用秘钥（新版企微需要配置）
-      # agent-app-secret: ??
-    #钉钉
-    DINGTALK:
-      enabled: false
-      # appKey
-      client-id: ??
-      # appSecret
-      client-secret: ??
-      agent-id: ??
+mabang:
+  api:
+    appkey: "87a1a0c46df86eb2683e74776894dae9"
+    devid: "200809"
+company:
+  orgName: "WIA"

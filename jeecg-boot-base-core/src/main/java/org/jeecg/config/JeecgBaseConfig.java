@@ -1,8 +1,6 @@
 package org.jeecg.config;
 
-import org.jeecg.config.vo.DomainUrl;
-import org.jeecg.config.vo.Path;
-import org.jeecg.config.vo.Shiro;
+import org.jeecg.config.vo.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -28,10 +26,12 @@ public class JeecgBaseConfig {
      * 本地：local\Minio：minio\阿里云：alioss
      */
     private String uploadType;
+
     /**
-     * 是否启用安全模式
+     * 平台安全模式配置
      */
-    private Boolean safeMode = false;
+    private Firewall firewall;
+
     /**
      * shiro拦截排除
      */
@@ -52,13 +52,32 @@ public class JeecgBaseConfig {
      * 文件预览
      */
     private String fileViewDomain;
+     /**
+     * ES配置
+     */
+    private Elasticsearch elasticsearch;
 
-    public Boolean getSafeMode() {
-        return safeMode;
+    /**
+     * 微信支付
+     * @return
+     */
+    private WeiXinPay weiXinPay;
+
+
+    public Elasticsearch getElasticsearch() {
+        return elasticsearch;
     }
 
-    public void setSafeMode(Boolean safeMode) {
-        this.safeMode = safeMode;
+    public void setElasticsearch(Elasticsearch elasticsearch) {
+        this.elasticsearch = elasticsearch;
+    }
+
+    public Firewall getFirewall() {
+        return firewall;
+    }
+
+    public void setFirewall(Firewall firewall) {
+        this.firewall = firewall;
     }
 
     public String getSignatureSecret() {
@@ -116,4 +135,13 @@ public class JeecgBaseConfig {
     public void setUploadType(String uploadType) {
         this.uploadType = uploadType;
     }
+
+    public WeiXinPay getWeiXinPay() {
+        return weiXinPay;
+    }
+
+    public void setWeiXinPay(WeiXinPay weiXinPay) {
+        this.weiXinPay = weiXinPay;
+    }
+
 }

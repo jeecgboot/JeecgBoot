@@ -72,15 +72,11 @@ public class SysAnnouncementSendController {
 		String column = req.getParameter("column");
 		String order = req.getParameter("order");
 
-		//issues/3331 SQL injection vulnerability
-		SqlInjectionUtil.filterContent(column);
-		SqlInjectionUtil.filterContent(order);
-
 		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
 			if(DataBaseConstant.SQL_ASC.equals(order)) {
-				queryWrapper.orderByAsc(oConvertUtils.camelToUnderline(column));
+				queryWrapper.orderByAsc(SqlInjectionUtil.getSqlInjectSortField(column));
 			}else {
-				queryWrapper.orderByDesc(oConvertUtils.camelToUnderline(column));
+				queryWrapper.orderByDesc(SqlInjectionUtil.getSqlInjectSortField(column));
 			}
 		}
 		IPage<SysAnnouncementSend> pageList = sysAnnouncementSendService.page(page, queryWrapper);
@@ -203,7 +199,11 @@ public class SysAnnouncementSendController {
 		LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 		updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);
 		updateWrapper.set(SysAnnouncementSend::getReadTime, new Date());
-		updateWrapper.last("where annt_id ='"+anntId+"' and user_id ='"+userId+"'");
+		//update-begin-author:liusq date:2023-09-04 for:系统模块存在的sql漏洞写法
+		updateWrapper.eq(SysAnnouncementSend::getAnntId,anntId);
+		updateWrapper.eq(SysAnnouncementSend::getUserId,userId);
+		//update-end-author:liusq date:2023-09-04 for: 系统模块存在的sql漏洞写法
+		//updateWrapper.last("where annt_id ='"+anntId+"' and user_id ='"+userId+"'");
 		SysAnnouncementSend announcementSend = new SysAnnouncementSend();
 		sysAnnouncementSendService.update(announcementSend, updateWrapper);
 		result.setSuccess(true);
@@ -243,7 +243,8 @@ public class SysAnnouncementSendController {
 		LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 		updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);
 		updateWrapper.set(SysAnnouncementSend::getReadTime, new Date());
-		updateWrapper.last("where user_id ='"+userId+"'");
+		updateWrapper.eq(SysAnnouncementSend::getUserId,userId);
+		//updateWrapper.last("where user_id ='"+userId+"'");
 		SysAnnouncementSend announcementSend = new SysAnnouncementSend();
 		sysAnnouncementSendService.update(announcementSend, updateWrapper);
 		JSONObject socketParams = new JSONObject();

@@ -24,6 +24,11 @@ public class OrderItem {
     @JSONField(name = "originOrderId")
     private String originOrderId;
 
+    @JSONField(name="erpOrderItemId")
+    private String erpOrderItemId;
+    @JSONField(name = "stockWarehouseName")
+    private String warehouseName;
+
     /**
      * 1 = 有货
      * 2 = 缺货

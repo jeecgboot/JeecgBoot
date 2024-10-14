@@ -26,25 +26,40 @@
 		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
 		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
 
-		<result column="read_flag" property="readFlag" jdbcType="VARCHAR"/>
+		<result column="read_flag" property="readFlag" jdbcType="INTEGER"/>
 		<result column="star_flag" property="starFlag" jdbcType="VARCHAR"/>
 		<result column="send_id" property="sendId" jdbcType="VARCHAR"/>
 	</resultMap>
 	
 	
 	<select id="querySysCementListByUserId" parameterType="String"  resultMap="SysAnnouncement">
-	   select * from sys_announcement 
+	   select id,titile,create_time,priority,bus_id,open_type,open_page,sender,send_time,msg_content from sys_announcement 
 	   where send_status = '1' 
 	   and del_flag = '0' 
 	   and msg_category = #{msgCategory} 
-	   and id IN ( select annt_id from sys_announcement_send where user_id = #{userId} and read_flag = '0')
+	   and id IN ( select annt_id from sys_announcement_send where user_id = #{userId} and read_flag = 0)
 	   order by create_time DESC
 	</select>
 
 
 	<!-- 查询消息记录 -->
-	<select id="queryMessageList" resultMap="SysAnnouncement">
-	   select a.*, 
+	<select id="queryAllMessageList" resultMap="SysAnnouncement">
+	   select
+			a.id,
+			a.titile,
+			a.msg_content,
+			a.sender,
+			a.priority,
+			a.msg_category,
+			a.msg_type,
+			a.send_status,
+			a.send_time,
+			a.bus_type,
+			a.bus_id,
+			a.open_type,
+			a.open_page,
+			a.msg_abstract,
+			a.dt_task_id,
 	   		b.read_flag, 
 	   		b.star_flag,
 	   		b.id as send_id
@@ -65,7 +80,27 @@
 		<if test="starFlag!=null and starFlag!=''">
 			and b.star_flag = #{starFlag}
 		</if>
-	   order by b.read_flag ASC,a.create_time DESC
+		order by b.read_flag ASC, a.create_time DESC
 	</select>
-	
+
+	<!-- 查询用户未阅读的通知公告 -->
+	<select id="getNotSendedAnnouncementlist" resultType="java.lang.String" parameterType="object">
+		SELECT
+			a.id
+		FROM
+			sys_announcement a 
+		WHERE
+			a.del_flag = '0' 
+			AND a.send_status = '1' 
+			AND a.msg_type = 'ALL' 
+			AND a.end_time >= #{currDate}
+			AND a.id NOT IN (
+			SELECT
+				annt_id 
+			FROM
+				sys_announcement_send 
+			WHERE
+				user_id = #{userId}
+			)
+	</select>
 </mapper>

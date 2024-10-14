@@ -3,9 +3,11 @@ package org.jeecg.modules.business.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
+import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
 import org.jeecg.modules.business.vo.OrderKpi;
+import org.jeecg.modules.business.vo.PlatformOrderOption;
 import org.jeecg.modules.business.vo.PlatformOrderPage;
 import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
@@ -13,9 +15,7 @@ import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 平台订单表
@@ -161,7 +161,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<String> fetchBillCodesOfParcelsWithoutTrace(@Param("startDate") Date startDate, @Param("endDate") Date endDate,
                                                      @Param("transporters") List<String> transporters);
 
-    List<String> fetchUninvoicedOrdersForShops(@Param("startDateTime") LocalDateTime startDateTime,
+    List<PlatformOrder> fetchUninvoicedOrdersForShops(@Param("startDateTime") LocalDateTime startDateTime,
                                                @Param("endDateTime") LocalDateTime endDateTime,
                                                @Param("shops") List<String> shops);
 
@@ -187,12 +187,13 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrder> fetchOrdersToArchiveBetweenDate(@Param("startDate") String startDate, @Param("endDate") String endDate);
     List<PlatformOrder> fetchOrdersToArchiveBeforeDate(@Param("endDate") String endDate);
     void insertPlatformOrdersArchives(@Param("orders") List<PlatformOrder> platformOrders);
-    void cancelInvoice(@Param("invoiceNumber") String invoiceNumber);
+    void cancelInvoice(@Param("invoiceNumber") String invoiceNumber, @Param("clientId") String clientId);
     void cancelBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
 
     List<PlatformOrder> findUninvoicedShippingOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
     List<PlatformOrder> fetchUninvoicedPurchaseOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
-    List<PlatformOrder> findUninvoicedOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
+    List<PlatformOrder> findUninvoicedOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses,
+                                                                  @Param("column") String column, @Param("order") String order, @Param("offset") Integer offset, @Param("size") Integer pageSize);
     List<String> findUninvoicedOrderIdsByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
 
     List<PlatformOrder> fetchEmptyLogisticChannelOrders(@Param("startDate") String startDate,@Param("endDate") String endDate);
@@ -207,7 +208,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     List<PlatformOrder> selectByPlatformOrderIds(@Param("platformOrderIds") List<String> platformOrderIds);
 
-    void removePurchaseInvoiceNumber(@Param("invoiceNumber") String purchaseInvoiceNumber);
+    void removePurchaseInvoiceNumber(@Param("invoiceNumber") String purchaseInvoiceNumber, @Param("clientId") String clientId);
 
     void removePurchaseInvoiceNumbers(@Param("invoiceNumbers") List<String> invoiceNumbers);
 
@@ -220,6 +221,22 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     OrderKpi countPlatformOrders(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
 
     Map<String, String> fetchShippingPeriodAndType(@Param("invoiceNumber") String invoiceNumber);
+
+    void anonymizePersonalData(@Param("period") int indirectClientAnonymizationPeriod);
+
+    List<PlatformOrderOption> ordersByShop(@Param("shopID") String shopID);
+
+    List<String> fetchUninvoicedOrdersWithSkusInCountry(@Param("startDate") LocalDateTime startDateTime, @Param("endDate") LocalDateTime endDateTime, @Param("shop") String shop, @Param("skus") List<String> skus, @Param("countries") List<String> countries);
+    List<String> fetchUninvoicedOrdersWithSkusNotInCountry(@Param("startDate") LocalDateTime startDateTime, @Param("endDate") LocalDateTime endDateTime, @Param("shop") String shop, @Param("skus") List<String> skus, @Param("countries") List<String> countries);
+
+    List<String> findReadyAbnormalOrders(@Param("skus") List<String> skus, @Param("shops") List<String> shops);
+
+    List<String> findReadyAbnormalOrdersWithSkus(@Param("skus") List<String> skus);
+    void updateShopifySynced(@Param("platformOrderIds") Collection<String> platformOrderIds);
+
+    List<String> fetchShippedOrdersFromShopAndTransporters(@Param("shopCode")String shopCode, @Param("transporters") List<String> transporters);
+
+    void updateLocalTrackingNumber(@Param("data") List<YDTrackingNumberData> data);
 
     List<PlatformOrderPage> pagePotentialShoumanOrders(long pageNo, long pageSize, String column, String order);
 

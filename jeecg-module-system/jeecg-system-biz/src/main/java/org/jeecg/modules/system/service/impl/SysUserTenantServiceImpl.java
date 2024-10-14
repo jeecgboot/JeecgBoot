@@ -4,20 +4,29 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserTenant;
+import org.jeecg.modules.system.mapper.SysTenantPackUserMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
+import org.jeecg.modules.system.mapper.SysUserPositionMapper;
 import org.jeecg.modules.system.mapper.SysUserTenantMapper;
 import org.jeecg.modules.system.service.ISysUserTenantService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.jeecg.modules.system.vo.SysUserTenantVo;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +50,12 @@ public class SysUserTenantServiceImpl extends ServiceImpl<SysUserTenantMapper, S
     
     @Autowired
     private SysUserMapper userMapper;
+
+    @Autowired
+    private SysUserPositionMapper userPositionMapper;
+
+    @Autowired
+    private SysTenantPackUserMapper packUserMapper;
 
     @Override
     public Page<SysUser> getPageUserList(Page<SysUser> page, Integer userTenantId, SysUser user) {
@@ -111,6 +126,9 @@ public class SysUserTenantServiceImpl extends ServiceImpl<SysUserTenantMapper, S
                 } else {
                     item.setRelTenantIds("");
                 }
+                //查询用户职位，将租户id传到前台
+                List<String> positionList = userPositionMapper.getPositionIdByUserId(item.getId());
+                item.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
             });
         }
         return page.setRecords(tenantPageList);
@@ -146,5 +164,31 @@ public class SysUserTenantServiceImpl extends ServiceImpl<SysUserTenantMapper, S
     @Override
     public Integer userTenantIzExist(String userId, Integer tenantId) {
         return userTenantMapper.userTenantIzExist(userId,tenantId);
+    }
+
+    @Override
+    public IPage<SysTenant> getTenantPageListByUserId(Page<SysTenant> page, String userId, List<String> userTenantStatus,SysUserTenantVo sysUserTenantVo) {
+        return page.setRecords(userTenantMapper.getTenantPageListByUserId(page,userId,userTenantStatus,sysUserTenantVo));
+    }
+
+    @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
+    @Override
+    public void agreeJoinTenant(String userId, Integer tenantId) {
+        userTenantMapper.agreeJoinTenant(userId,tenantId);
+    }
+
+    @Override
+    public void refuseJoinTenant(String userId, Integer tenantId) {
+        userTenantMapper.refuseJoinTenant(userId,tenantId);
+    }
+
+    @Override
+    public SysUserTenant getUserTenantByTenantId(String userId, Integer tenantId) {
+        return userTenantMapper.getUserTenantByTenantId(userId,tenantId);
+    }
+
+    @Override
+    public Long getUserCount(Integer tenantId, String tenantStatus) {
+        return userTenantMapper.getUserCount(tenantId,tenantStatus);
     }
 }

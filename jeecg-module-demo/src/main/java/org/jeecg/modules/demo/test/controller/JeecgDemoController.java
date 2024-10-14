@@ -12,6 +12,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
@@ -26,6 +28,7 @@ import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -466,6 +469,21 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
     @GetMapping(value = "/groupList")
     public Result<?> groupList() {
         return Result.ok(jeecgDemoService.getCreateByList());
+    }
+
+    /**
+     * 测试Mono对象
+     * @return
+     */
+    @ApiOperation("Mono测试")
+    @GetMapping(value ="/test")
+    public Mono<String> test() {
+        //解决shiro报错No SecurityManager accessible to the calling code, either bound to the org.apache.shiro
+        // https://blog.csdn.net/Japhet_jiu/article/details/131177210
+        DefaultSecurityManager securityManager = new DefaultSecurityManager();
+        SecurityUtils.setSecurityManager(securityManager);
+        
+        return Mono.just("测试");
     }
 
 }

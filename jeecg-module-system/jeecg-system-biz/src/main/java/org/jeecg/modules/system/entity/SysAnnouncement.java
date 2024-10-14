@@ -124,7 +124,7 @@ public class SysAnnouncement implements Serializable {
      **/
     private java.lang.String userIds;
     /**
-     * 业务类型(email:邮件 bpm:流程)
+     * 业务类型(email:邮件 bpm:流程 tenant_invite:租户邀请)
      */
     private java.lang.String busType;
     /**
@@ -140,7 +140,13 @@ public class SysAnnouncement implements Serializable {
      */
     private java.lang.String openPage;
     /**
-     * 摘要
+     * 摘要/扩展业务参数
+     * 
+     * 示例：
+     * 1 摘要值
+     *  放假安排
+     * 2 跳转流程的参数值
+     * {"taskDetail":true,"procInsId":"1706547306004377602","taskId":"task630958764530507776"}
      */
     private java.lang.String msgAbstract;
     /**

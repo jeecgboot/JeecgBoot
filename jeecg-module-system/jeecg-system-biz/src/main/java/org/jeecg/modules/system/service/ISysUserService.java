@@ -15,6 +15,7 @@ import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.vo.lowapp.DepartAndUserInfo;
 import org.jeecg.modules.system.vo.lowapp.UpdateDepartInfo;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -189,10 +190,10 @@ public interface ISysUserService extends IService<SysUser> {
 	/**
 	 * 通过用户名获取用户权限集合
 	 *
-	 * @param username 用户名
+	 * @param userId 用户id
 	 * @return 权限集合
 	 */
-	Set<String> getUserPermissionsSet(String username);
+	Set<String> getUserPermissionsSet(String userId);
 	
 	/**
 	 * 根据用户名设置部门ID
@@ -389,4 +390,31 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param departs
 	 */
 	void editTenantUser(SysUser sysUser, String tenantId, String departs, String roles);
+
+	/**
+	 * 修改用户账号状态
+	 * @param id 账号id
+	 * @param status 账号状态
+	 */
+	void updateStatus(String id, String status);
+
+	/**
+	 * 导出应用下的用户Excel
+	 * @param request
+	 * @return
+	 */
+	ModelAndView exportAppUser(HttpServletRequest request);
+
+	/**
+	 * 导入应用下的用户
+	 * @param request
+	 * @return
+	 */
+	Result<?> importAppUser(HttpServletRequest request);
+
+	/**
+	 * 验证用户是否为管理员
+	 * @param ids
+	 */
+	void checkUserAdminRejectDel(String ids);
 }

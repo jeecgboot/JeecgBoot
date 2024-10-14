@@ -1,16 +1,20 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
-import org.springframework.stereotype.Service;
+import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderListRequestBody;
+import org.jeecg.modules.business.vo.PlatformOrderOperation;
+import org.jeecg.modules.business.vo.Responses;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Services related to operations on {@code Order} entity
  */
-@Service
 public interface IPlatformOrderMabangService extends IService<Order> {
     /**
      * Save orders to DB from mabang api.
@@ -29,4 +33,15 @@ public interface IPlatformOrderMabangService extends IService<Order> {
      */
     void updateMergedOrderFromMabang(Order mergedOrder, Collection<String> sourceOrderErpId);
 
+    Responses suspendOrder(PlatformOrderOperation orderOperation);
+
+    Responses cancelOrders(PlatformOrderOperation orderOperation);
+
+    List<Order> getOrdersFromMabang(List<OrderListRequestBody> requests, ExecutorService executor);
+
+    void clearLogisticChannel(List<Order> orders, ExecutorService executor);
+
+    String stripAccents(String input);
+
+    JSONObject syncOrdersFromMabang(List<String> platformOrderIds) throws JSONException;
 }

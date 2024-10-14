@@ -43,23 +43,37 @@
             <Icon icon="ant-design:down-outlined"></Icon>
           </a-button>
         </a-dropdown>
+        <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+        <!-- 高级查询 -->
+        <super-query :config="superQueryConfig" @search="handleSuperQuery" />
+        <#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
       </template>
       <!--操作栏-->
       <template #action="{ record }">
         <TableAction :actions="getTableAction(record)" :dropDownActions="getDropDownAction(record)"/>
       </template>
-       <!--字段回显插槽-->
-    <template #htmlSlot="{text}">
-       <div v-html="text"></div>
-    </template>
-    <!--省市区字段回显插槽-->
-    <template #pcaSlot="{text}">
-       {{ getAreaTextByCode(text) }}
-    </template>
-    <template #fileSlot="{text}">
-       <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
-       <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
-    </template>
+      <!--字段回显插槽-->
+      <template v-slot:bodyCell="{ column, record, index, text }">
+      <#list columns as po>
+        <#if po.classType=='umeditor' || po.classType=='pca' || po.classType=='file'>
+        <template v-if="column.dataIndex==='${po.fieldName}'">
+        <#if po.classType=='umeditor'>
+          <!--富文本件字段回显插槽-->
+          <div v-html="text"></div>
+        </#if>
+        <#if po.classType=='pca'>
+          <!--省市区字段回显插槽-->
+          {{ getAreaTextByCode(text) }}
+        </#if>
+        <#if po.classType=='file'>
+          <!--文件字段回显插槽-->
+          <span v-if="!text" style="font-size: 12px;font-style: italic;">无文件</span>
+          <a-button v-else :ghost="true" type="primary" preIcon="ant-design:download-outlined" size="small" @click="downloadFile(text)">下载</a-button>
+        </#if>
+        </template>
+        </#if>
+      </#list>
+      </template>
     </BasicTable>
     <!--字典弹窗-->
     <${entityName}Modal @register="registerModal" @success="handleSuccess"/>
@@ -68,12 +82,12 @@
 
 <script lang="ts" name="${entityPackage}-${entityName?uncap_first}" setup>
   //ts语法
-  import {ref, computed, unref, toRaw, nextTick} from 'vue';
+  import {ref, reactive, computed, unref, toRaw, nextTick} from 'vue';
   import {BasicTable, TableAction} from '/@/components/Table';
   import {useModal} from '/@/components/Modal';
   import { useListPage } from '/@/hooks/system/useListPage'
   import ${entityName}Modal from './components/${entityName}Modal.vue';
-  import {columns,searchFormSchema} from './${entityName}.data';
+  import {columns, searchFormSchema, superQuerySchema} from './${entityName}.data';
   import { downloadFile } from '/@/utils/common/renderUtils';
   import {list, delete${entityName}, batchDelete${entityName}, getExportUrl,getImportUrl, getChildList,getChildListBatch} from './${entityName}.api';
   <#if list_need_pca>
@@ -82,6 +96,7 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  const queryParam = reactive<any>({});
   const expandedRowKeys = ref([]);
   //字典model
   const [registerModal, {openModal}] = useModal();
@@ -92,6 +107,9 @@
          title: '${tableVo.ftlDescription}',
          columns,
          canResize:false,
+         <#-- update-begin---author:chenrui ---date:20231228  for：[issue/#5658] 树表复选框与展开按钮重叠问题---------- -->
+         isTreeTable: true,
+         <#-- update-end---author:chenrui ---date:20231228  for：[issue/#5658] 树表复选框与展开按钮重叠问题---------- -->
          formConfig: {
            //labelWidth: 120,
            schemas: searchFormSchema,
@@ -126,10 +144,14 @@
            width: 240,
            fixed:'right'
          },
+         beforeFetch: (params) => {
+           return Object.assign(params, queryParam);
+         },
     },
      exportConfig: {
           name:"${tableVo.ftlDescription}",
           url: getExportUrl,
+          params: queryParam,
         },
         importConfig: {
           url: getImportUrl,
@@ -138,6 +160,21 @@
     })
 
   const [registerTable, {reload, collapseAll, updateTableDataRecord, findTableDataRecord,getDataSource},{ rowSelection, selectedRowKeys }] = tableContext
+
+<#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
+  // 高级查询配置
+  const superQueryConfig = reactive(superQuerySchema);
+
+  /**
+   * 高级查询事件
+   */
+  function handleSuperQuery(params) {
+    Object.keys(params).map((k) => {
+      queryParam[k] = params[k];
+    });
+    reload();
+  }
+<#-- update-end---author:chenrui ---date:20231228  for：[QQYUN-7527]vue3代码生成默认带上高级查询---------- -->
 
   /**
    * 新增事件
@@ -347,7 +384,8 @@
          label: '删除',
          popConfirm: {
            title: '是否确认删除',
-           confirm: handleDelete.bind(null, record)
+           confirm: handleDelete.bind(null, record),
+           placement: 'topLeft',
          }
        }
      ];
@@ -357,6 +395,7 @@
          popConfirm: {
            title: '确认提交流程吗？',
            confirm: handleProcess.bind(null, record),
+           placement: 'topLeft',
          }
        })
      }
@@ -371,6 +410,7 @@
          popConfirm: {
            title: '确定删除吗?',
            confirm: handleDelete.bind(null, record),
+           placement: 'topLeft',
          }
        }
      ]

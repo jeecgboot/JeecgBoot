@@ -147,11 +147,7 @@
       const activeKey = ref('${subTabActiveKey}');
       const formData = reactive<Record<string, any>>({
         id: '',
-      <#list columns as po>
-      <#if po.isShow == 'Y'>
-        ${po.fieldName}: '',
-      </#if>
-      </#list>
+        <#include "/common/init/native/vue3NativeMainInitValue.ftl">
       });
 
       //表单验证
@@ -162,7 +158,7 @@
       </#if>
       </#list>
       });
-      const {resetFields, validate, validateInfos} = useForm(formData, validatorRules, {immediate: true});
+      const {resetFields, validate, validateInfos} = useForm(formData, validatorRules, {immediate: false});
       const dbData = {};
       const formItemLayout = {
         labelCol: {xs: {span: 24}, sm: {span: 5}},
@@ -245,9 +241,14 @@
 
       async function queryMainData(id) {
         const row = await queryDataById(id);
-        Object.keys(row).map(k => {
-          formData[k] = row[k];
-        });
+        const tmpData = {};
+        Object.keys(formData).forEach((key) => {
+          if(row.hasOwnProperty(key)){
+            tmpData[key] = row[key]
+          }
+        })
+        //赋值
+        Object.assign(formData,tmpData);
       }
 
       const {getSubFormAndTableData, transformData} = useValidateAntFormAndTable(activeKey, {

@@ -18,4 +18,8 @@ public interface IShopService extends IService<Shop> {
     List<String> listIdByClient(String clientID);
 
     List<String> getShopIdsByClientAndType(List<String> clientIds, String clientType);
+
+    String getNameById(String shopId);
+
+    String getCodeById(String shopId);
 }

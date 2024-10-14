@@ -77,4 +77,7 @@ public class SysThirdAccount {
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private java.util.Date updateTime;
+
+	/**租户id*/
+	private java.lang.Integer tenantId;
 }

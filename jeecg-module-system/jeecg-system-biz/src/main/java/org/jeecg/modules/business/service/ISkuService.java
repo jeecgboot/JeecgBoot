@@ -95,12 +95,15 @@ public interface ISkuService extends IService<Sku> {
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds);
 
-    List<SkuOrderPage> fetchSkusByClient(String clientId);
+    List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order);
+    List<SkuOrderPage> fetchSkusByClientWithFilters(String clientId, Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames);
 
     void addSkuQuantity(Map<String, Integer> quantityPurchased);
-
     String getIdFromErpCode(String erpCode);
     Sku getByErpCode(String erpCode);
     void updateBatchStockByIds(List<Sku> skuToUpdate);
     List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber);
+    List<Sku> listByClientId(String clientId);
+
+    List<Sku> listImgUrls();
 }

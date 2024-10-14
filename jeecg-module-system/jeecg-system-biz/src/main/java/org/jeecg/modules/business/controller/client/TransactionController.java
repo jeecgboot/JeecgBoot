@@ -93,10 +93,14 @@ public class TransactionController {
         List<String> errorMessages = new ArrayList<>();
         List<String> shopIds = shopService.listIdByClient(clientId);
         List<PlatformOrder> shippingOrders = platformOrderService.findUninvoicedShippingOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
+        List<String> orderIds = shippingOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         Date startDate = null;
         Date endDate = null;
         List<ShippingFeesEstimation> shippingFeesEstimations;
         BigDecimal shippingFeesEstimation = BigDecimal.ZERO;
+        String internalCode = "";
+        int ordersToProcess = 0;
+        int processedOrders = 0;
         if(!shippingOrders.isEmpty()) {
             startDate = shippingOrders.stream().map(PlatformOrder::getOrderTime).min(Date::compareTo).get();
             endDate = shippingOrders.stream().map(PlatformOrder::getOrderTime).max(Date::compareTo).get();
@@ -109,7 +113,10 @@ public class TransactionController {
             shippingFeesEstimations = factory.getEstimations(clientId, shippingOrderIds, errorMessages);
             for (ShippingFeesEstimation estimation : shippingFeesEstimations) {
                 shippingFeesEstimation = shippingFeesEstimation.add(estimation.getDueForProcessedOrders());
+                ordersToProcess += estimation.getOrdersToProcess();
+                processedOrders += estimation.getProcessedOrders();
             }
+            internalCode = shippingFeesEstimations.get(0).getCode();
         }
 
         // purchase estimation
@@ -160,8 +167,8 @@ public class TransactionController {
             shippingFeesEstimation = shippingFeesEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
 
         }
-        log.info("Purchase Fee " + currency + " : " + purchaseEstimation);
-        log.info("Shipping Fee " + currency + " : " + shippingFeesEstimation);
+        log.info("Purchase Fee {} : {}", currency, purchaseEstimation);
+        log.info("Shipping Fee {} : {}", currency, shippingFeesEstimation);
         // system notification
         String errors = SECTION_START;
         int max_entries = 100;
@@ -184,6 +191,6 @@ public class TransactionController {
                 ISysBaseApi.sendTemplateAnnouncement(message);
             }
         }
-        return Result.ok(new Estimation(shippingFeesEstimation, purchaseEstimation, currency, errorMessages, shopIds, new DateTime(startDate).toString(), new DateTime(endDate).toString(), isCompleteInvoiceReady));
+        return Result.ok(new Estimation(internalCode, ordersToProcess, processedOrders, shippingFeesEstimation, purchaseEstimation, currency, errorMessages,null, shopIds, new DateTime(startDate).toString(), new DateTime(endDate).toString(), isCompleteInvoiceReady, orderIds));
     }
 }

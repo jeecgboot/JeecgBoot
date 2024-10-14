@@ -54,7 +54,10 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     @Autowired
     Environment env;
 
-
+    // In NameCN field on top of the product name we also get the customer code in the beginning of the string : "XX Description of the product"
+    final Pattern cnNamePattern = Pattern.compile("^([a-zA-Z]{2,5})\\s(.*)$");
+    // In NameEN field on top of the product name we also get the customer code in the beginning of the string : "XX-En name of product"
+    final Pattern enNamePattern = Pattern.compile("^([a-zA-Z]{2,5})-(.*)$");
     /**
      * Save skus to DB from mabang api.
      *
@@ -94,7 +97,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
 
         /* for new skuDatas, insert them to DB */
         try {
-            if (newSkuDatas.size() != 0) {
+            if (!newSkuDatas.isEmpty()) {
                 // we need to check if the product associated with the sku exists, for that we are going to parse the Sku erpCode into product code
                 // check if the product code exists in DB, if not we create a new entry in DB and fill all the infos.
                 // then we can finally add the new Sku, product has to be created first if it doesn't exist, since we need to fill productID in Sku table
@@ -160,6 +163,63 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         return newSkusMap;
     }
 
+    @Override
+    @Transactional
+    public void updateSkusFromMabang(List<SkuData> skuDataList) {
+        if (skuDataList.isEmpty()) {
+            return;
+        }
+        // we collect all erpCode
+        List<String> allSkuErpCode = skuDataList.stream()
+                .map(SkuData::getErpCode)
+                .collect(toList());
+        // find Skus that already exist in DB
+        List<Sku> existingSkuList = skuListMabangMapper.searchExistence(allSkuErpCode);
+        // We map all existing Skus in DB with erpCode as key
+        Map<String, Sku> existingSkusIDMap = existingSkuList.stream()
+                .collect(
+                        Collectors.toMap(
+                                Sku::getErpCode, Function.identity()
+                        )
+                );
+
+        ArrayList<SkuData> existingSkuDatas = new ArrayList<>();
+        for (SkuData retrievedSkuData : skuDataList) {
+            Sku skuInDatabase = existingSkusIDMap.get(retrievedSkuData.getErpCode());
+            // the current SkuData's erpCode is in DB, so we add it to the list of existingSkuDatas
+            if (skuInDatabase != null) {
+                existingSkuDatas.add(retrievedSkuData);
+            }
+        }
+
+        /* for skuDatas to update, update product names and sku status them to DB */
+        try {
+            if (!existingSkuDatas.isEmpty()) {
+                // we need to check if the product associated with the sku exists, for that we are going to parse the Sku erpCode into product code
+                // check if the product code exists in DB, if not we create a new entry in DB and fill all the infos.
+                // then we can finally add the new Sku, product has to be created first if it doesn't exist, since we need to fill productID in Sku table
+                // we can now proceed to create new sku_declare_value associated with the new Sku and also sku_price
+                updateProductFromMabang(existingSkuDatas);
+                log.info("{} skus to be updated.", existingSkuDatas.size());
+
+                //update status of existing skus
+                List<Sku> skusToUpdate = new ArrayList<>();
+                for(SkuData skuData: existingSkuDatas) {
+                    Sku s = new Sku();
+                    s.setId(existingSkusIDMap.get(skuData.getErpCode()).getId());
+                    s.setUpdateBy("mabang api");
+                    s.setUpdateTime(new Date());
+                    s.setStatus(skuData.getStatusValue());
+                    skusToUpdate.add(s);
+                }
+                skuService.updateBatchById(skusToUpdate);
+                log.info("Updated {} skus : {}.", skusToUpdate.size(), existingSkuDatas.stream().map(SkuData::getErpCode).collect(toList()));
+            }
+        } catch (RuntimeException e) {
+            log.error(e.getLocalizedMessage());
+        }
+    }
+
     /**
      * Save products to DB from mabang api.
      *
@@ -196,6 +256,63 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             productService.saveBatch(newProducts);
         }
         return productsWithInfoMap;
+    }
+    /**
+     * Update products enName and zhName to DB from mabang api.
+     *
+     * @param skuDataList we update the product enName and zhName of the skus
+     */
+    public void updateProductFromMabang(List<SkuData> skuDataList) {
+        List<String> allProductCodes = parseSkuListToProductCodeList(skuDataList);
+
+        List< Product> existingProduct = skuListMabangMapper.searchProductExistence(allProductCodes);
+        Map<String, Product> existingProductsIDMap = existingProduct.stream()
+                .collect(
+                        Collectors.toMap(
+                                Product::getCode, Function.identity()
+                        )
+                );
+        List<SkuData> skuDatasToUpdate = new ArrayList<>();
+        // we ignore the new products and only update the existing ones
+        for(SkuData skuData : skuDataList) {
+            Product productInDB = existingProductsIDMap.get(parseSkuToProduct(skuData.getErpCode()));
+            // the current product code is in DB, so we add it to the list of newProducts
+            if (productInDB != null) {
+                skuDatasToUpdate.add(skuData);
+            }
+        }
+        List<Product> productsToUpdate = new ArrayList<>();
+        for(SkuData skuData: skuDatasToUpdate) {
+            Product p = new Product();
+            p.setId(existingProductsIDMap.get(parseSkuToProduct(skuData.getErpCode())).getId());
+            p.setUpdateBy("mabang api");
+            p.setUpdateTime(new Date());
+            // Removing the customer code from the product CN name
+            if (!skuData.getNameEN().isEmpty()) {
+                Matcher enNameMatcher = enNamePattern.matcher(skuData.getNameEN());
+                if (enNameMatcher.matches() && !enNameMatcher.group(2).isEmpty()) {
+                    p.setEnName(enNameMatcher.group(2));
+                }
+                else {
+                    p.setEnName(skuData.getNameEN());
+                }
+            }
+            // Removing the customer code from the product CN name
+            if (!skuData.getNameCN().isEmpty()) {
+                Matcher cnNameMatcher = cnNamePattern.matcher(skuData.getNameCN());
+                if (cnNameMatcher.matches() && !cnNameMatcher.group(2).isEmpty()) {
+                    p.setZhName(cnNameMatcher.group(2));
+                }
+                else {
+                    p.setZhName(skuData.getNameCN());
+                }
+            }
+            productsToUpdate.add(p);
+        }
+        if(!productsToUpdate.isEmpty()) {
+            productService.updateBatchById(productsToUpdate);
+        }
+        log.info("Updated {} products : {}.", productsToUpdate.size(), skuDatasToUpdate.stream().map(SkuData::getErpCode).collect(toList()));
     }
 
     public void saveSkuPrices(List<SkuData> newSkus) {
@@ -290,8 +407,6 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         final String electroMagSensitiveAttributeId = skuListMabangMapper.searchSensitiveAttributeId("Electro-magnetic");
         final String electricSensitiveAttributeId = skuListMabangMapper.searchSensitiveAttributeId("Electronic/Electric");
         final String normalSensitiveAttributeId = skuListMabangMapper.searchSensitiveAttributeId("Normal goods");
-        // In NameCN field on top of the product name we also get the customer code in the beginning of the string : "XX Description of the product"
-        final Pattern cnNamePattern = Pattern.compile("^([a-zA-Z]{2,5})\\s(.*)$");
         // IN saleRemark sometimes not only the product weight provided, we can get extra information such as service_fee (eg : "15每件服务费0.2")
         final Pattern saleRemarkPattern = Pattern.compile("^([0-9]*)(.*)$");
         // we are stocking product codes, so we don't get duplicates which causes error

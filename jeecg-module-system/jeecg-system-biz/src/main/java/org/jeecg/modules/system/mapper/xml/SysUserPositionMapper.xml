@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.system.mapper.SysUserPositionMapper">
+
+    <!--获取职位用户列表-->
+    <select id="getPositionUserList" resultType="org.jeecg.modules.system.entity.SysUser">
+        SELECT su.realname,su.id,su.username,su.email,su.phone,su.work_no
+        FROM sys_user_position sup
+        INNER JOIN sys_user su on sup.user_id = su.id and su.del_flag = 0
+        WHERE
+        sup.position_id = #{positionId}
+        ORDER BY sup.create_time DESC
+    </select>
+
+    <!--根据用户id查询职位id-->
+    <select id="getPositionIdByUserId" resultType="java.lang.String">
+        SELECT position_id FROM sys_user_position
+        WHERE
+        user_id = #{userId}
+        ORDER BY create_time DESC
+    </select>
+
+    <!--根据用户ID和租户ID获取职位id-->
+    <select id="getPositionIdByUserTenantId" resultType="java.lang.String">
+        SELECT sp.id FROM sys_user_position sup
+        LEFT JOIN sys_position sp ON sup.position_id = sp.id
+        WHERE
+        sup.user_id = #{userId}
+       <if test="tenantId != null and tenantId != 0">
+           AND sp.tenant_id = #{tenantId}
+       </if>
+    </select>
+
+    <!--职位列表移除成员-->
+    <update id="removePositionUser">
+        DELETE FROM sys_user_position
+        WHERE
+        position_id = #{positionId}
+        AND user_id IN
+        <foreach collection="userIdList" index="index" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </update>
+    
+    <!--根据用户id获取用户职位-->
+    <select id="getPositionIdByUsersTenantId" resultType="org.jeecg.modules.system.vo.SysUserPositionVo">
+        SELECT sp.name,sup.user_id FROM sys_position sp
+        RIGHT JOIN sys_user_position sup on sup.position_id = sp.id
+        WHERE sup.user_id IN
+        <foreach collection="userIdList" index="index" item="userIds" open="(" separator="," close=")">
+            #{userIds.id}
+        </foreach>
+        AND sp.tenant_id = #{tenantId}
+    </select>
+    
+    <!--根据职位名称和租户id，删除用户职位关系表-->
+    <delete id="deleteUserPosByNameAndTenantId">
+        DELETE FROM sys_user_position
+        WHERE user_id = #{userId} 
+        AND position_id in ( 
+            SELECT id FROM sys_position where name in
+            <foreach collection="positionNames" index="index" item="name" open="(" separator="," close=")">
+                #{name}
+            </foreach>
+            AND tenant_id = #{tenantId}
+        )
+    </delete>
+</mapper>

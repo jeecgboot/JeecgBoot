@@ -3,8 +3,9 @@ package org.jeecg.modules.business.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.controller.UserException;
+import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
 import org.jeecg.modules.business.entity.*;
-import org.jeecg.modules.business.vo.PlatformOrderPage;
+import org.jeecg.modules.business.vo.PlatformOrderOption;
 import org.jeecg.modules.business.vo.PlatformOrderQuantity;
 import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.SkuQuantity;
@@ -16,10 +17,7 @@ import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatistic
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Description: 平台订单表
@@ -205,6 +203,10 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      * Find all order that can be invoiced (shipping and purchase).
      * @param shopIds
      * @param erpStatuses
+     * @param column
+     * @param order
+     * @param pageNo
+     * @param pageSize
      * @return
      */
     List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses);
@@ -230,7 +232,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
 
-    void removePurchaseInvoiceNumber(String purchaseInvoiceNumber);
+    void removePurchaseInvoiceNumber(String purchaseInvoiceNumber, String clientId);
     void removePurchaseInvoiceNumbers(List<String> invoiceNumbers);
 
     void updatePurchaseInvoiceNumber(List<String> orderIds, String invoiceCode);
@@ -244,5 +246,21 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     Map<String, String> fetchShippingPeriodAndType(String invoiceNumber);
 
+
+    void anonymizePersonalData(int indirectClientAnonymizationPeriod);
+
+    List<PlatformOrderOption> ordersByShop(String shopID);
+
+    List<String> fetchUninvoicedOrdersWithSkusInCountry(LocalDateTime startDateTime, LocalDateTime endDateTime, String shop, List<String> skus, List<String> countries);
+    List<String> fetchUninvoicedOrdersWithSkusNotInCountry(LocalDateTime startDateTime, LocalDateTime endDateTime, String shop, List<String> skus, List<String> countries);
+
+    List<String> findReadyAbnormalOrders(List<String> skus, List<String> shops);
+
+    List<String> findReadyAbnormalOrdersWithSkus(List<String> skus);
+    void updateShopifySynced(Collection<String> platformOrderIds);
+
+    List<String> fetchShippedOrdersFromShopAndTransporters(String shopCode, List<String> transporters);
+
+    void updateLocalTrackingNumber(List<YDTrackingNumberData> data);
     void pagePotentialShoumanOrders(IPage<PlatformOrderPage> page, String column, String order);
 }

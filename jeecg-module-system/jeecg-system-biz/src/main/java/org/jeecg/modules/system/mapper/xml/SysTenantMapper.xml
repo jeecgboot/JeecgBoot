@@ -43,6 +43,7 @@
     <select id="queryTenantPackUserCount" resultType="org.jeecg.modules.system.vo.tenant.TenantPackUserCount">
         SELECT pack_code, count(*) as user_count FROM sys_tenant_pack a 
         join sys_tenant_pack_user b on a.id = b.pack_id
+        join sys_user_tenant sut on a.tenant_id = sut.tenant_id and b.user_id = sut.user_id and sut.status = 1
         where a.tenant_id = #{tenantId} 
         and a.pack_code in ('superAdmin', 'accountAdmin', 'appAdmin')
         and b.status = 1
@@ -74,6 +75,7 @@
         SELECT c.id, c.username, c.realname, c.phone, c.avatar, a.pack_name, a.id as pack_id  FROM sys_user c
         join sys_tenant_pack_user b on c.id = b.user_id
         join sys_tenant_pack a on a.id = b.pack_id
+        join sys_user_tenant sut on a.tenant_id = sut.tenant_id and b.user_id = sut.user_id and sut.status = 1
         where c.status = 1 
         and c.del_flag = 0
         and b.status = #{packUserStatus}
@@ -120,6 +122,15 @@
         <if test="packId!='' and packId!=null">
             and a.id = #{packId}
         </if>
+    </select>
+    
+    <!--查看是否已经申请过了超级管理员-->
+    <select id="getApplySuperAdminCount" resultType="java.lang.Long">
+        SELECT count(*) FROM sys_tenant_pack a
+        join sys_tenant_pack_user b on a.id = b.pack_id
+        where a.pack_code = 'superAdmin'
+        and a.tenant_id = #{tenantId}
+        and b.user_id = #{userId}
     </select>
 
 </mapper>
