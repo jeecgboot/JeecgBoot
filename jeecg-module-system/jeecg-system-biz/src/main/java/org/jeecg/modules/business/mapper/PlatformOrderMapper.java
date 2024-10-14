@@ -6,6 +6,7 @@ import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
 import org.jeecg.modules.business.vo.OrderKpi;
+import org.jeecg.modules.business.vo.PlatformOrderPage;
 import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
@@ -219,4 +220,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     OrderKpi countPlatformOrders(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
 
     Map<String, String> fetchShippingPeriodAndType(@Param("invoiceNumber") String invoiceNumber);
+
+    List<PlatformOrderPage> pagePotentialShoumanOrders(long pageNo, long pageSize, String column, String order);
+
+    Integer countPotentialShoumanOrders();
 }

@@ -491,4 +491,12 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public Map<String, String> fetchShippingPeriodAndType(String invoiceNumber) {
         return platformOrderMap.fetchShippingPeriodAndType(invoiceNumber);
     }
+
+    @Override
+    public void pagePotentialShoumanOrders(IPage<PlatformOrderPage> page, String column, String order) {
+        List<PlatformOrderPage> potentialShoumanOrders = platformOrderMap.pagePotentialShoumanOrders(page.offset(), page.getSize(), column, order);
+        page.setRecords(potentialShoumanOrders);
+        page.setTotal(platformOrderMap.countPotentialShoumanOrders());
+    }
+
 }
