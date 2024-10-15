@@ -44,7 +44,7 @@ public class AddPortraitTubeJob implements Job {
     // TODO 2024-08-28 To delete when no longer in use
     private static final String TUBE_50_SKU_MULTIPLE = "PJ95530040-WIA";
 
-//    private static final String TUBE_NEW_40_SKU_SINGLE = "PJ349400032-JCH";
+    private static final String TUBE_NEW_40_SKU_SINGLE = "PJ349400032-JCH";
     private static final String TUBE_NEW_40_SKU_MULTIPLE = "PJ349400045-JCH";
 //    private static final String TUBE_NEW_50_SKU_SINGLE = "PJ349500032-JCH";
     private static final String TUBE_NEW_50_SKU_MULTIPLE = "PJ349500045-JCH";
@@ -53,7 +53,7 @@ public class AddPortraitTubeJob implements Job {
 
     private static final List<String> TUBE_SKUS = Arrays.asList(TUBE_30_SKU_SINGLE_DOUBLE, TUBE_50_SKU_SINGLE,
             TUBE_40_SKU_SINGLE, TUBE_NEW_40_SKU_MULTIPLE, TUBE_NEW_50_SKU_MULTIPLE, TUBE_NEW_60_SKU_SINGLE,
-            TUBE_NEW_60_SKU_MULTIPLE, TUBE_40_SKU_MULTIPLE, TUBE_50_SKU_MULTIPLE);
+            TUBE_NEW_60_SKU_MULTIPLE, TUBE_40_SKU_MULTIPLE, TUBE_50_SKU_MULTIPLE, TUBE_NEW_40_SKU_SINGLE);
     private static final String PREFIX_50_CANVAS = "JJ2501";
     private static final String PREFIX_50_CANVAS_CHROME = "JJ2001";
     private static final String PREFIX_40_CANVAS = "JJ2500";
@@ -317,7 +317,7 @@ public class AddPortraitTubeJob implements Job {
             adequateTubes.add(Pair.of(TUBE_NEW_60_SKU_MULTIPLE, tubeNew60MultipleCount));
         }
         if (tube40SingleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_40_SKU_SINGLE, tube40SingleCount));
+            adequateTubes.add(Pair.of(TUBE_NEW_40_SKU_SINGLE, tube40SingleCount));
         }
         if (tubeNew50MultipleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_NEW_50_SKU_MULTIPLE, tubeNew50MultipleCount));
