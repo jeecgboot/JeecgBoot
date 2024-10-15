@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.ClientPlatformOrderContent;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.entity.SkuPrice;
+import org.jeecg.modules.business.entity.ShoumanOrderContent;
 import org.jeecg.modules.business.vo.SkuDetail;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
@@ -76,4 +77,8 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     List<PlatformOrderContent> findOrderContentsWithMissingStock(@Param("orderIds") List<String> orderIds);
 
     List<PlatformOrderContent> findOrderContentsWithStock(@Param("orderIds") List<String> orderIds);
+
+    List<ShoumanOrderContent> searchShoumanOrderContent();
+
+    List<ShoumanOrderContent> searchShoumanOrderContentByPlatformOrderId(@Param("platformOrderId") String platformOrderId);
 }

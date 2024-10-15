@@ -1,31 +1,33 @@
-package org.jeecg.modules.business.entity;
+package org.jeecg.modules.business.entity.Shouman;
 
 import java.io.Serializable;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
+
+import java.util.Date;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+
+import java.io.UnsupportedEncodingException;
 
 /**
- * @Description: 国家
+ * @Description: 首曼产品类别与SKU关系
  * @Author: jeecg-boot
- * @Date: 2023-10-06
+ * @Date: 2023-11-29
  * @Version: V1.0
  */
+@ApiModel(value = "shouman_sku_relation对象", description = "首曼产品类别与SKU关系")
 @Data
-@TableName("country")
-@Accessors(chain = true)
-@EqualsAndHashCode(callSuper = false)
-@ApiModel(value = "country对象", description = "国家")
-public class Country implements Serializable {
+@TableName("shouman_sku_relation")
+public class ShoumanSkuRelation implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -59,34 +61,20 @@ public class Country implements Serializable {
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
     /**
-     * 英语全名
+     * 首曼产品类别ID
      */
-    @Excel(name = "英语全名", width = 15)
-    @ApiModelProperty(value = "英语全名")
-    private java.lang.String nameEn;
+    @ApiModelProperty(value = "首曼产品类别ID")
+    private java.lang.String shoumanCategoryId;
     /**
-     * 中文全名
+     * SKU ID
      */
-    @Excel(name = "中文全名", width = 15)
-    @ApiModelProperty(value = "中文全名")
-    private java.lang.String nameZh;
+    @Excel(name = "SKU ID", width = 15, dictTable = "sku", dicText = "erp_code", dicCode = "id")
+    @ApiModelProperty(value = "SKU ID")
+    private java.lang.String skuId;
     /**
-     * ISO 3166 代码
+     * 备注
      */
-    @Excel(name = "ISO 3166 代码", width = 15)
-    @ApiModelProperty(value = "ISO 3166 代码")
-    private java.lang.String code;
-    /**
-     * 特殊名称（匹配马帮用）
-     */
-    @Excel(name = "特殊名称（匹配马帮用）", width = 15)
-    @ApiModelProperty(value = "特殊名称（匹配马帮用）")
-    private java.lang.String specialName;
-
-    public String getMabangName() {
-        if (specialName == null || specialName.isEmpty()) {
-            return nameEn;
-        }
-        return specialName;
-    }
+    @Excel(name = "备注", width = 15)
+    @ApiModelProperty(value = "备注")
+    private java.lang.String remark;
 }
