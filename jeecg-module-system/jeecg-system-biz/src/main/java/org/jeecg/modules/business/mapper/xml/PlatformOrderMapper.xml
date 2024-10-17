@@ -1128,7 +1128,7 @@
         WHERE p.erp_status in (1, 2)
           AND sr.is_active = 1
           AND p.platform_order_id NOT IN (SELECT platform_order_id FROM shouman_order)
-          AND p.order_time > '2024-10-01'
+          AND p.create_time > '2024-10-01'
     </sql>
 
     <select id="pagePotentialShoumanOrders"
@@ -1152,6 +1152,6 @@
         WHERE p.erp_status in (1, 2)
           AND sr.is_active = 1
           AND p.platform_order_id NOT IN (SELECT platform_order_id FROM shouman_order)
-          AND p.order_time > '2024-10-01'
+          AND p.create_time > '2024-10-01'
     </select>
 </mapper>
