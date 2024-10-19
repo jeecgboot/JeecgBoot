@@ -19,7 +19,7 @@ spring:
   datasource:
     dynamic:
       primary: order
-      seata: true    # 开启对 seata的支持
+#      seata: true    # 开启对 seata的支持
       datasource:
         # 设置 账号数据源配置
         order:

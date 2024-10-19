@@ -18,7 +18,7 @@ spring:
     exclude: com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
     dynamic:
-      seata: true    # 开启对 seata的支持
+#      seata: true    # 开启对 seata的支持
       primary: account
       datasource:
         account:
