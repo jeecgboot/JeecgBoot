@@ -105,7 +105,7 @@ spring:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
     exclude:
-      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+      - com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
       - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
