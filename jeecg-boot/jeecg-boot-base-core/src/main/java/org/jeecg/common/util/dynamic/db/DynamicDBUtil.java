@@ -106,9 +106,10 @@ public class DynamicDBUtil {
                 dataSource.getConnection().commit();
                 dataSource.getConnection().close();
                 dataSource.close();
+                DataSourceCachePool.removeCache(dbKey);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.info(e.getMessage(), e);
         }
     }
 
