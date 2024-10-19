@@ -14,11 +14,13 @@ spring:
     name: seata-product
   main:
     allow-bean-definition-overriding: true
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
   datasource:
     dynamic:
       primary: product
-      seata: true    # 开启对 seata的支持
-      seata-mode: AT #支持XA及AT模式,默认AT
+#      seata: true    # 开启对 seata的支持
+#      seata-mode: AT #支持XA及AT模式,默认AT
       datasource:
         # 设置 账号数据源配置
         product:
