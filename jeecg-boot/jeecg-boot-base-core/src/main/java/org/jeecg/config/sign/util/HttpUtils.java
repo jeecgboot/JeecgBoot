@@ -50,7 +50,7 @@ public class HttpUtils {
                     deString = URLDecoder.decode(deString, "UTF-8");
                     log.info("存在%情况下，执行两次解码 — pathVariable decode: {}",deString);
                 } catch (Exception e) {
-                    //e.printStackTrace();
+                	log.error(e.getMessage(), e);
                 }
             }
             log.info(" pathVariable decode: {}",deString);
