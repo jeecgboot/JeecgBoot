@@ -56,23 +56,14 @@ function handleIndexColumn(propsRef: ComputedRef<BasicTableProps>, getPagination
       columns.splice(indIndex, 1);
     }
   });
-  // update-begin--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
-  if (columns.length === 0 && showIndexColumn) {
-    const indIndex = columns.findIndex((column) => column.flag === INDEX_COLUMN_FLAG);
-    if (indIndex === -1) {
-      pushIndexColumns = true;
-    }
-  }
-  // update-end--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
+
   if (!pushIndexColumns) return;
 
   const isFixedLeft = columns.some((item) => item.fixed === 'left');
 
   columns.unshift({
     flag: INDEX_COLUMN_FLAG,
-    // update-begin--author:liaozhiyang---date:20240724---for：【TV360X-1634】密度是宽松模式时，序号列表头换行了
-    width: propsRef.value.size === 'large' ? 65 : 50,
-    // update-end--author:liaozhiyang---date:20240724---for：【TV360X-1634】密度是宽松模式时，序号列表头换行了
+    width: 50,
     title: t('component.table.index'),
     align: 'center',
     customRender: ({ index }) => {
@@ -85,8 +76,8 @@ function handleIndexColumn(propsRef: ComputedRef<BasicTableProps>, getPagination
     },
     ...(isFixedLeft
       ? {
-          fixed: 'left',
-        }
+        fixed: 'left',
+      }
       : {}),
     ...indexColumnProps,
   });
@@ -116,13 +107,7 @@ export function useColumns(
 
   const getColumnsRef = computed(() => {
     const columns = cloneDeep(unref(columnsRef));
-    // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
-    if (isArray(columns)) {
-      columns.forEach((item) => {
-        item.title = isFunction(item.title) ? item.title() : item.title;
-      });
-    }
-    // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+
     handleIndexColumn(propsRef, getPaginationRef, columns);
     handleActionColumn(propsRef, columns);
     // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
@@ -161,20 +146,17 @@ export function useColumns(
     const viewColumns = sortFixedColumn(unref(getColumnsRef));
 
     const columns = cloneDeep(viewColumns);
-    const result = columns
-      .filter((column) => {
-        return hasPermission(column.auth) && isIfShow(column);
-      })
-      .map((column) => {
-        // update-begin--author:liaozhiyang---date:20230718---for: 【issues-179】antd3 一些警告以及报错(针对表格)
-        if(column.slots?.customRender) {
+    const formatEditColumn = (columns) => {
+      for (let i = 0;i < columns.length;i++) {
+        const column = columns[i];
+        if (column.slots?.customRender) {
           // slots的备份，兼容老的写法，转成新写法避免控制台警告
           column.slotsBak = column.slots;
           delete column.slots;
         }
         // update-end--author:liaozhiyang---date:20230718---for: 【issues-179】antd3 一些警告以及报错(针对表格)
 
-        const { slots, customRender, format, edit, editRow, flag, title: metaTitle } = column;
+        const { slots, customRender, format, edit, editRow, flag, title: metaTitle, children } = column;
 
         if (!slots || !slots?.title) {
           // column.slots = { title: `header-${dataIndex}`, ...(slots || {}) };
@@ -198,9 +180,13 @@ export function useColumns(
         if ((edit || editRow) && !isDefaultAction) {
           column.customRender = renderEditCell(column);
         }
-        return reactive(column);
-      });
-    // update-begin--author:liaozhiyang---date:20230919---for：【QQYUN-6387】展开写法（去掉报错）
+        if (children) {
+          formatEditColumn(children.filter((item) => hasPermission(column.auth) && isIfShow(column)));
+        }
+      }
+      return columns
+    }
+    const result = reactive(formatEditColumn(columns).filter((item) => hasPermission(item.auth) && isIfShow(item)));
     if (propsRef.value.expandedRowKeys && !propsRef.value.isTreeTable) {
       let index = 0;
       const findIndex = result.findIndex((item) => item.key === CUS_SEL_COLUMN_KEY);
@@ -361,4 +347,3 @@ export function formatCell(text: string, format: CellFormat, record: Recordable,
     return text;
   }
 }
-
