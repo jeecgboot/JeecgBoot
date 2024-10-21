@@ -411,7 +411,6 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         return skuMap;
     }
     public String createSkuWeight(Sku sku, String salesRemark) {
-        System.out.println("salesRemark : " + salesRemark);
         String remark = "";
         SkuWeight sw = new SkuWeight();
         sw.setSkuId(sku.getId());
@@ -504,7 +503,6 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         if (!skusFromMabang.isEmpty()) {
             // we save the skuDatas in DB
             // and store skus that need manual treatment
-            System.out.println("skusFromMabang : " + skusFromMabang);
             Map<Sku, String> newSkusMap = new HashMap<>(saveSkuFromMabang(skusFromMabang));
             newSkusNeedTreatmentMap = new HashMap<>(newSkusMap);
             Map<Sku, String> finalNewSkusNeedTreatmentMap = newSkusNeedTreatmentMap;

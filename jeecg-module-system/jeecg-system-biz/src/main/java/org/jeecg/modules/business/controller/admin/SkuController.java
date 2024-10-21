@@ -422,7 +422,6 @@ public class SkuController {
     @GetMapping("/searchExistingSkuByKeywords")
     public Result<?> searchExistingSkuByKeywords(@RequestParam("keywords") String keywords) {
         String parsedKeywords = keywords.trim().replaceAll("[{}=$]", "");
-        System.out.println("keywords : " + parsedKeywords);
         if(parsedKeywords.isEmpty()) {
             return Result.OK(new ArrayList<>());
         }
@@ -431,13 +430,11 @@ public class SkuController {
 
     @PostMapping("/createMabangSku")
     public Result<?> createMabangSku(@RequestBody List<SkuOrderPage> skuList) {
-        System.out.println(skuList);
         skuList.forEach(sku -> sku.setStatus(3));
         return Result.OK(skuListMabangService.publishSkuToMabang(skuList));
     }
     @PostMapping("syncSkus")
     public Result<?> syncSkus(@RequestBody List<String> erpCodes) {
-        System.out.println("syncSkus : " + erpCodes);
         Map<Sku, String> newSkusNeedTreatmentMap;
 
         try {
