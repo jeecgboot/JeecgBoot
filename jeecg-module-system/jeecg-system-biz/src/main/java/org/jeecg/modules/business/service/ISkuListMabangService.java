@@ -36,4 +36,6 @@ public interface ISkuListMabangService extends IService<SkuData> {
 
     Map<Sku, String> skuSyncUpsert(List<String> erpCodes);
     void updateSkuId();
+
+    void mabangSkuStockUpdate(List<String> erpCodes);
 }

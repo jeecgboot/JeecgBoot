@@ -405,7 +405,7 @@ public class SkuController {
         }
         else {
             if(clientId != null) {
-                total = skuService.countAllClientSkus();
+                total = skuService.countAllClientSkus(clientId);
                 skuOrdersPage = skuService.fetchSkusByClient(clientId, pageNo, pageSize, parsedColumn, parsedOrder);
             } else {
                 total = skuService.countAllSkus();
@@ -418,6 +418,23 @@ public class SkuController {
         page.setSize(pageSize);
         page.setTotal(total);
         return Result.OK(page);
+    }
+    @GetMapping("/listAllSelectableSkuIds")
+    public Result<?> listAllSelectableSkuIds(@RequestParam(name = "clientId") String clientId,
+                                             @RequestParam(name = "erpCodes", required = false) String erpCodes,
+                                             @RequestParam(name = "zhNames", required = false) String zhNames,
+                                             @RequestParam(name = "enNames", required = false) String enNames
+    ) {
+        List<SkuOrderPage> selectableSkuIds;
+        if(erpCodes != null || zhNames != null || enNames != null) {
+            List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
+            List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
+            List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
+            selectableSkuIds = skuService.listSelectableSkuIdsWithFilters(clientId, erpCodeList, zhNameList, enNameList);
+        } else {
+            selectableSkuIds = skuService.listSelectableSkuIds(clientId);
+        }
+        return Result.OK(selectableSkuIds);
     }
     @GetMapping("/searchExistingSkuByKeywords")
     public Result<?> searchExistingSkuByKeywords(@RequestParam("keywords") String keywords) {
@@ -470,6 +487,12 @@ public class SkuController {
         } catch (Exception e) {
             log.error("Error sending mail: {}", e.getMessage());
         }
+        return Result.OK();
+    }
+
+    @PostMapping("/syncSkuQty")
+    public Result<?> syncSkuQty(@RequestBody List<String> erpCodes) {
+        skuListMabangService.mabangSkuStockUpdate(erpCodes);
         return Result.OK();
     }
 }

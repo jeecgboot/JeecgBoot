@@ -420,8 +420,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
-    public Integer countAllClientSkus() {
-        return skuMapper.countAllClientSkus();
+    public Integer countAllClientSkus(String clientId) {
+        return skuMapper.countAllClientSkus(clientId);
     }
     @Override
     public List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order) {
@@ -538,6 +538,38 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
+    public List<SkuOrderPage> listSelectableSkuIdsWithFilters(String clientId, List<String> erpCodes, List<String> zhNames, List<String> enNames) {
+        StringBuilder erpCodesRegex= new StringBuilder(), zhNamesRegex = new StringBuilder(), enNamesRegex = new StringBuilder();
+        if(erpCodes != null){
+            erpCodesRegex.append("^");
+            for(String name : erpCodes){
+                erpCodesRegex.append("(?=.*").append(name).append(")");
+            }
+            erpCodesRegex.append(".*");
+        }
+        if(enNames != null){
+            enNamesRegex.append("^");
+            for(String name : enNames){
+                enNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            enNamesRegex.append(".*");
+        }
+        if(zhNames != null){
+            zhNamesRegex.append("^");
+            for(String name : zhNames){
+                zhNamesRegex.append("(?=.*").append(name).append(")");
+            }
+            zhNamesRegex.append(".*$");
+        }
+        return skuMapper.listSelectableSkuIdsWithFilters(clientId, erpCodesRegex.toString(), zhNamesRegex.toString(), enNamesRegex.toString());
+    }
+
+    @Override
+    public List<SkuOrderPage> listSelectableSkuIds(String clientId) {
+        return skuMapper.listSelectableSkuIds(clientId);
+    }
+
+    @Override
     public void addSkuQuantity(Map<String, Integer> quantityPurchased) {
         skuMapper.addSkuQuantity(quantityPurchased);
     }
@@ -560,6 +592,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Override
     public List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber) {
         return skuMapper.getInventoryByInvoiceNumber(invoiceNumber);
+    }
+
+    @Override
+    public List<SkuOrderPage> getInventory(List<String> erpCodes, String invoiceNumber) {
+        return skuMapper.getInventory(erpCodes, invoiceNumber);
     }
 
     @Override
