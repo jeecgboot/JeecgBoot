@@ -17,6 +17,7 @@ import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationToken;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -55,6 +56,7 @@ public class AppGrantAuthenticationProvider implements AuthenticationProvider {
 
     private final OAuth2AuthorizationService authorizationService;
     private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
+    @Lazy
     @Autowired
     private CommonAPI commonAPI;
     @Autowired

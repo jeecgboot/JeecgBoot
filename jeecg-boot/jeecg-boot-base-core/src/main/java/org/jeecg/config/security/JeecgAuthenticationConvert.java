@@ -1,8 +1,9 @@
 package org.jeecg.config.security;
 
-import lombok.RequiredArgsConstructor;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.system.vo.LoginUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,10 +19,11 @@ import java.util.ArrayList;
  * @date 2024/7/15 11:05
  */
 @Component
-@RequiredArgsConstructor
 public class JeecgAuthenticationConvert implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    private final CommonAPI commonAPI;
+    @Lazy
+    @Autowired
+    private CommonAPI commonAPI;
 
     @Override
     public AbstractAuthenticationToken convert(Jwt source) {
