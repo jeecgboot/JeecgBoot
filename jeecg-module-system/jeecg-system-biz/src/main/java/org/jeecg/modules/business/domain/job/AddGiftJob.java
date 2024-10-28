@@ -178,7 +178,7 @@ public class AddGiftJob implements Job {
                         .collect(groupingBy(orderItem -> giftSkuSet.contains(orderItem.getErpCode())));
                 for (OrderItem orderItem : orderItemMap.get(Boolean.FALSE)) {
                     String erpCode = orderItem.getErpCode();
-                    if (!nonMatchingRulesApplied && !nonMatchingQuantityRules.isEmpty()) {
+                    if (!nonMatchingRulesApplied && nonMatchingQuantityRules != null) {
                         for (GiftRule giftRule : nonMatchingQuantityRules) {
                             if (erpCode.matches(giftRule.getRegex())) {
                                 nonMatchingRulesApplied = true;
