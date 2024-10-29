@@ -39,11 +39,16 @@
 			<artifactId>jimureport-drag</artifactId>
 			<version>2.0.1</version>
 		</dependency>
-		<!-- 积木报表 mongo redis 支持包 
-		<dependency>
-			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimureport-nosql-starter</artifactId>
-		</dependency>-->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>3.4.18</version>
+        </dependency>
+        <!-- 积木报表 mongo redis 支持包
+        <dependency>
+            <groupId>org.jeecgframework.jimureport</groupId>
+            <artifactId>jimureport-nosql-starter</artifactId>
+        </dependency>-->
 	</dependencies>
 	
 </project>
