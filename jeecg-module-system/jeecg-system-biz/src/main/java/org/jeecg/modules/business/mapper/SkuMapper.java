@@ -51,13 +51,16 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     Integer countAllSkus();
     Integer countAllSkuWeightsWithFilters(@Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
-    Integer countAllClientSkus();
+    Integer countAllClientSkus(@Param("clientId") String clientId);
     Integer countAllClientSkusWithFilters(@Param("clientId") String clientId, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
 
     List<SkuOrderPage> fetchSkuWeights(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
     List<SkuOrderPage> fetchSkusByClient(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
     List<SkuOrderPage> fetchSkuWeightsWithFilters(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
     List<SkuOrderPage> fetchSkusByClientWithFilters(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
+
+    List<SkuOrderPage> listSelectableSkuIdsWithFilters(@Param("clientId") String clientId, @Param("erpCodes") String erpCodeList, @Param("zhNames") String zhNameList, @Param("enNames") String enNameList);
+    List<SkuOrderPage> listSelectableSkuIds(@Param("clientId") String clientId);
 
     String getIdFromErpCode(@Param("erpCode") String erpCode);
 
@@ -68,6 +71,8 @@ public interface SkuMapper extends BaseMapper<Sku> {
     void updateBatchStockByIds(@Param("skus") List<Sku> skuToUpdate);
 
     List<SkuOrderPage> getInventoryByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
+
+    List<SkuOrderPage> getInventory(@Param("erpCodes") List<String> erpCodes, @Param("invoiceNumber") String invoiceNumber);
 
     List<Sku> listByClientId(@Param("clientId") String clientId);
 

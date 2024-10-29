@@ -17,6 +17,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.*;
 
 @Slf4j
+@Component
 public class SkuShippingQtyJob implements Job {
     @Autowired
     private IPlatformOrderService platformOrderService;

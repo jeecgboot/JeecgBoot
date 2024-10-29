@@ -9,8 +9,13 @@ import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddRequest;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddResponse;
+import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockData;
+import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockRawStream;
+import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockStream;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.SkuListMabangMapper;
+import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.Responses;
 import org.jeecg.modules.business.vo.SkuOrderPage;
@@ -60,6 +65,8 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     private EmailService emailService;
     @Autowired
     private MigrationService migrationService;
+    @Autowired
+    private SkuMongoService skuMongoService;
     @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
     @Autowired
@@ -562,5 +569,57 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         String sql = "UPDATE platform_order_content SET sku_id = skuErpToId(sku_id) WHERE sku_id NOT LIKE '1%'";
         params.put("execute_sql_string", sql);
         onlCgformFieldMapper.executeUpdatetSQL(params);
+    }
+    @Override
+    public void mabangSkuStockUpdate(List<String> skuList) {
+        StringBuilder skus = new StringBuilder();
+        List<SkuStockData> updateList = new ArrayList<>();
+        List<Sku> skuToUpdate = new ArrayList<>();
+        int count = 1;
+        for(int i = 1; i <= skuList.size(); i++) {
+            if(i%100 != 1)
+                skus.append(",");
+            skus.append(skuList.get(i - 1));
+            if(i%100 == 0) {
+                SkuStockRequestBody body = (new SkuStockRequestBody())
+                        .setStockSkus(skus.toString())
+                        .setTotal(skuList.size());
+                log.info("Sending request for page {}/{}.", count++, body.getTotalPages());
+
+                SkuStockRawStream rawStream = new SkuStockRawStream(body);
+                SkuStockStream stream = new SkuStockStream(rawStream);
+                updateList.addAll(stream.all());
+                skus = new StringBuilder();
+            }
+        }
+        if(skus.length() != 0) {
+            SkuStockRequestBody body = (new SkuStockRequestBody())
+                    .setStockSkus(skus.toString())
+                    .setTotal(skuList.size());
+            SkuStockRawStream rawStream = new SkuStockRawStream(body);
+            SkuStockStream stream = new SkuStockStream(rawStream);
+            updateList.addAll(stream.all());
+        }
+        updateList.forEach(skuStockData -> {
+            Sku sku = skuService.getByErpCode(skuStockData.getStockSku());
+            Integer availableAmount = skuStockData.getWarehouseStock("SZBA宝安仓").getStockQuantity();
+            Integer purchasingAmount = skuStockData.getWarehouseStock("SZBA宝安仓").getShippingQuantity();
+            if(sku.getAvailableAmount().equals(availableAmount) && sku.getPurchasingAmount().equals(purchasingAmount)) {
+                return;
+            }
+            sku.setAvailableAmount(availableAmount);
+            sku.setPurchasingAmount(purchasingAmount);
+            sku.setUpdateBy("mabang api");
+            sku.setUpdateTime(new Date());
+            skuToUpdate.add(sku);
+        });
+        if(skuToUpdate.isEmpty()) {
+            return;
+        }
+        log.info("Updating stock for {} skus.", skuToUpdate.size());
+        skuService.updateBatchStockByIds(skuToUpdate);
+        for(Sku sku : skuToUpdate) {
+            skuMongoService.updateStock(sku);
+        }
     }
 }

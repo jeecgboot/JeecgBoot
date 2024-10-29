@@ -738,10 +738,18 @@ public class InvoiceController {
         List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
         return shippingInvoiceService.exportToExcel(factureDetails, refunds, invoiceNumber, invoiceEntity, internalCode);
     }
+    @GetMapping(value = "/downloadInvoiceInventory")
+    public byte[] downloadInvoiceInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
+        InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
+        List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
+        return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
+    }
     @GetMapping(value = "/downloadInventory")
     public byte[] downloadInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
         InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
-        List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
+        String clientId = clientService.getClientIdByCode(internalCode);
+        List<String> erpCodes = skuService.listSelectableSkuIds(clientId).stream().map(SkuOrderPage::getErpCode).collect(Collectors.toList());
+        List<SkuOrderPage> skuOrderPages = skuService.getInventory(erpCodes, metaData.getInvoiceCode());
         return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
     }
 

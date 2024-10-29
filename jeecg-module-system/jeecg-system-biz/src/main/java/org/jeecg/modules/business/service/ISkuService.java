@@ -96,7 +96,7 @@ public interface ISkuService extends IService<Sku> {
     Integer countAllSkus();
     List<SkuOrderPage> fetchSkuWeights(Integer pageNo, Integer pageSize, String parsedColumn, String parsedOrder);
 
-    Integer countAllClientSkus();
+    Integer countAllClientSkus(String clientId);
     List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order);
 
     Integer countAllSkuWeightsWithFilters(List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
@@ -111,8 +111,13 @@ public interface ISkuService extends IService<Sku> {
     void updateBatchStockByIds(List<Sku> skuToUpdate);
 
     List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber);
+    List<SkuOrderPage> getInventory(List<String> erpCodes, String invoiceNumber);
 
     List<Sku> listByClientId(String clientId);
 
     List<SkuOrderPage> searchExistingSkuByKeywords(List<String> keywords);
+
+    List<SkuOrderPage> listSelectableSkuIdsWithFilters(String clientId, List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
+
+    List<SkuOrderPage> listSelectableSkuIds(String clientId);
 }
