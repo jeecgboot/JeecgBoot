@@ -35,7 +35,7 @@ JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端�
 
 - 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)
-- QQ交流群 ： ⑨808791225、其他(满)
+- QQ交流群 ： ⑩716488839、⑨808791225、其他(满)
 - 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
 

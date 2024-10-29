@@ -51,7 +51,7 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 - 开发文档：  [https://help.jeecg.com](https://help.jeecg.com)
 - 反馈问题：  [在Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video)
-- QQ交流群 ： ⑨808791225、其他(满)
+- QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
 
 
 
