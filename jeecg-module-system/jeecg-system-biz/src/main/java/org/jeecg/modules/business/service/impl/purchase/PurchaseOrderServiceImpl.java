@@ -619,6 +619,12 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     }
 
     @Override
+    public void updatePurchaseOrderGroupIds(String invoiceCode, List<String> groupIds) {
+        String groupIdsStr = String.join(",", groupIds);
+        purchaseOrderMapper.updatePurchaseOrderGroupIds(invoiceCode, groupIdsStr);
+    }
+
+    @Override
     public void setPaid(List<String> invoiceNumber) {
         purchaseOrderMapper.setPaid(invoiceNumber);
     }

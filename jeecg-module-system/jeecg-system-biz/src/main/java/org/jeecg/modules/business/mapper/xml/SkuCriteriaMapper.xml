@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SkuCriteriaMapper">
+<select id="listByCategoryCode" resultType="org.jeecg.modules.business.vo.SkuCriteriaData">
+SELECT
+    sc.id,
+    sc.zh_name,
+    sc.en_name,
+    scc.ranking,
+    sc.is_multiple
+    FROM sku_criteria sc
+    JOIN sku_category_criteria scc ON sc.id = scc.sku_criteria_id
+    JOIN sku_category scg ON scc.sku_category_id = scg.id
+    WHERE scg.code = #{category}
+    ORDER BY scc.ranking;
+</select>
+</mapper>

@@ -18,19 +18,27 @@ SHOW VARIABLES LIKE 'collation%';
 SHOW TABLE STATUS LIKE 'sen%';
 ALTER DATABASE wia_app COLLATE utf8mb4_general_ci;
 
-SELECT c.internal_code                             AS '客户',
-        s.erp_code                                  AS SKU,
-       p.zh_name                                   AS '中文名',
-        p.weight                                    AS '重量',
+WITH latestSkuWeights AS (
+    SELECT
+        sku_id,
+        weight,
+        effective_date,
+        ROW_NUMBER() OVER (PARTITION BY sku_id ORDER BY effective_date DESC) AS rn
+    FROM sku_weight
+)
+SELECT c.internal_code                                      AS '客户',
+        s.erp_code                                          AS SKU,
+        s.zh_name                                           AS '中文名',
+        lsw.weight                                           AS '重量',
         ROUND(calculate_shipping_fees(IF(sa.zh_name = '普货', '联邮通优先挂号-普货', '联邮通优先挂号-带电'), 'FR', '2021-06-24',
-                                      p.weight), 2) AS '运费',
+                                      lsw.weight), 2) AS '运费',
         get_registration_fees(IF(sa.zh_name = '普货', '联邮通优先挂号-普货', '联邮通优先挂号-带电'), 'FR', '2021-06-24',
-            p.weight)             AS '挂号费'
+            lsw.weight)                               AS '挂号费'
 FROM sku s
          LEFT JOIN client_sku ON s.id = client_sku.sku_id
          LEFT JOIN client c ON client_sku.client_id = c.id
-         JOIN product p ON p.id = s.product_id
-         JOIN sensitive_attribute sa ON p.sensitive_attribute_id = sa.id;
+         LEFT JOIN latestSkuWeights lsw ON lsw.sku_id = s.id AND lsw.rn = 1
+         JOIN sensitive_attribute sa ON s.sensitive_attribute_id = sa.id;
 
 SELECT c.internal_code                                AS 'Client',
         po.platform_order_id                           AS 'Order ID',

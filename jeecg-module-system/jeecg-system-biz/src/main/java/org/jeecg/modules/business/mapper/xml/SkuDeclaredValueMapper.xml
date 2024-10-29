@@ -57,4 +57,11 @@
             )
         </foreach>
     </insert>
+    <select id="getLatestBySkuId" resultType="org.jeecg.modules.business.entity.SkuDeclaredValue">
+        SELECT declared_value, effective_date
+        FROM sku_declared_value
+        WHERE sku_id = #{skuId}
+        ORDER BY effective_date DESC
+        LIMIT 1;
+    </select>
 </mapper>

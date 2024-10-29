@@ -1,73 +1,49 @@
 package org.jeecg.modules.business.domain.job;
 
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockData;
-import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockRawStream;
-import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockRequestBody;
-import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockStream;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.entity.Sku;
+import org.jeecg.modules.business.service.ISkuListMabangService;
 import org.jeecg.modules.business.service.ISkuService;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class MabangSkuStockUpdateJob implements Job {
     @Autowired
+    private ISkuListMabangService skuListMabangService;
+    @Autowired
     private ISkuService skuService;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        List<String> skuList = skuService.listSkus().stream().map(Sku::getErpCode).collect(Collectors.toList());
-        StringBuilder skus = new StringBuilder();
-        List<SkuStockData> updateList = new ArrayList<>();
-        List<Sku> skuToUpdate = new ArrayList<>();
         log.info("Sku stock update Job has started.");
-        int count = 1;
-        for(int i = 1; i <= skuList.size(); i++) {
-            if(i%100 != 1)
-                skus.append(",");
-            skus.append(skuList.get(i - 1));
-            if(i%100 == 0) {
-                SkuStockRequestBody body = (new SkuStockRequestBody())
-                        .setStockSkus(skus.toString())
-                        .setTotal(skuList.size());
-                log.info("Sending request for page {}/{}.", count++, body.getTotalPages());
-
-                SkuStockRawStream rawStream = new SkuStockRawStream(body);
-                SkuStockStream stream = new SkuStockStream(rawStream);
-                updateList.addAll(stream.all());
-                skus = new StringBuilder();
+        List<String> erpCodes = skuService.listSkus().stream().map(Sku::getErpCode).collect(Collectors.toList());
+        JobDataMap jobDataMap = context.getMergedJobDataMap();
+        String parameter = ((String) jobDataMap.get("parameter"));
+        if (parameter != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(parameter);
+                if (!jsonObject.isNull("skus")) {
+                    JSONArray array = jsonObject.getJSONArray("skus");
+                    for(int i = 0; i < array.length(); i++) {
+                        erpCodes.add(array.getString(i));
+                    }
+                }
+            } catch (JSONException e) {
+                log.error("Error while parsing parameter as JSON, falling back to default parameters.");
             }
         }
-        if(skus.length() != 0) {
-            SkuStockRequestBody body = (new SkuStockRequestBody())
-                    .setStockSkus(skus.toString())
-                    .setTotal(skuList.size());
-            SkuStockRawStream rawStream = new SkuStockRawStream(body);
-            SkuStockStream stream = new SkuStockStream(rawStream);
-            updateList.addAll(stream.all());
-        }
-        updateList.forEach(skuStockData -> {
-            Sku sku = skuService.getByErpCode(skuStockData.getStockSku());
-            Integer availableAmount = skuStockData.getWarehouseStock("SZBA宝安仓").getStockQuantity();
-            Integer purchasingAmount = skuStockData.getWarehouseStock("SZBA宝安仓").getShippingQuantity();
-            if(sku.getAvailableAmount().equals(availableAmount) && sku.getPurchasingAmount().equals(purchasingAmount)) {
-                return;
-            }
-            sku.setAvailableAmount(availableAmount);
-            sku.setPurchasingAmount(purchasingAmount);
-            skuToUpdate.add(sku);
-        });
-        if(skuToUpdate.isEmpty()) {
-            return;
-        }
-        log.info("Updating stock for {} skus.", skuToUpdate.size());
-        skuService.updateBatchStockByIds(skuToUpdate);
+        skuListMabangService.mabangSkuStockUpdate(erpCodes);
+        log.info("Sku stock update Job has ended.");
     }
 }

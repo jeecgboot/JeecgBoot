@@ -64,4 +64,34 @@ public class SensitiveAttribute implements Serializable {
     @Excel(name = "priority", width = 15)
     @ApiModelProperty(value = "priority")
     private java.lang.Integer priority;
+    /**是否含电池:1是,2否*/
+    @Excel(name = "是否含电池:1是,2否", width = 15)
+    @ApiModelProperty(value = "是否含电池:1是,2否")
+    private java.lang.Integer hasBattery;
+    /**带磁:1:是,2:否*/
+    @Excel(name = "带磁:1:是,2:否", width = 15)
+    @ApiModelProperty(value = "带磁:1:是,2:否")
+    private java.lang.Integer magnetic;
+    /**粉末 1.是 2.否*/
+    @Excel(name = "粉末 1.是 2.否", width = 15)
+    @ApiModelProperty(value = "粉末 1.是 2.否")
+    private java.lang.Integer powder;
+    /**膏体：1是、2否*/
+    @Excel(name = "膏体：1是、2否", width = 15)
+    @ApiModelProperty(value = "膏体：1是、2否")
+    private java.lang.Integer isPaste;
+    /**0:非液体,2:液体(化妆品),1:非液体(化妆品),3:液体(非化妆品)*/
+    @Excel(name = "0:非液体,2:液体(化妆品),1:非液体(化妆品),3:液体(非化妆品)", width = 15)
+    @ApiModelProperty(value = "0:非液体,2:液体(化妆品),1:非液体(化妆品),3:液体(非化妆品)")
+    private java.lang.Integer noLiquidCosmetic;
+    /**是否为易燃品 1: 是 2：不是，默认为2*/
+    @Excel(name = "是否为易燃品 1: 是 2：不是，默认为2", width = 15)
+    @ApiModelProperty(value = "是否为易燃品 1: 是 2：不是，默认为2")
+    private java.lang.Integer isFlammable;
+    /**是否为刀具 1：是 2：不是，默认为2*/
+    @Excel(name = "是否为刀具 1：是 2：不是，默认为2", width = 15)
+    @ApiModelProperty(value = "是否为刀具 1：是 2：不是，默认为2")
+    private java.lang.Integer isKnife;
+
+
 }

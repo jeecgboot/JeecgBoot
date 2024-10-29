@@ -60,6 +60,30 @@
 	</appender>
 	<!-- 每天生成一个html格式的日志结束 -->
 
+	<!-- loki日志输出 -->
+	<appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+		<http>
+			<url>http://localhost:3100/loki/api/v1/push</url>
+		</http>
+		<format>
+			<label>
+				<pattern>app=WIA-APP,host=${HOSTNAME},level=%level</pattern>
+				<readMarkers>true</readMarkers>
+			</label>
+			<message>
+				<pattern>
+					{
+					"level":"%-5level",
+					"class":"%class{0}",
+					"thread":%.10thread,
+					"message": "%msg",
+					"exception": "%ex"
+					}
+				</pattern>
+			</message>
+		</format>
+	</appender>
+
 	<!--myibatis log configure -->
 	<logger name="com.apache.ibatis" level="TRACE" />
 	<logger name="java.sql.Connection" level="DEBUG" />
@@ -72,6 +96,7 @@
 		<appender-ref ref="FILE" />
 		<appender-ref ref="HTML" />
 		<appender-ref ref="FILE_HTML" />
+		<appender-ref ref="LOKI" />
 	</root>
 
 </configuration>

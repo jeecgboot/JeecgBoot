@@ -142,6 +142,11 @@
         SET ordered = #{isOrdered}
         WHERE invoice_number = #{invoiceNumber}
     </update>
+    <update id="updatePurchaseOrderGroupIds">
+        UPDATE purchase_order
+        SET group_id = #{groupIds}
+        WHERE invoice_number = #{invoiceNumber};
+    </update>
     <select id="countPurchaseInvoices" resultType="org.jeecg.modules.business.vo.InvoiceKpi">
         WITH purchaseEur AS (
             SELECT IFNULL(count(*),0) as qty, IFNULL(sum(final_amount),0) as total

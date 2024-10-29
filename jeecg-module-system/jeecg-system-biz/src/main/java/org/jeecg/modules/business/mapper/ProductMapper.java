@@ -8,14 +8,15 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * @Description: 商品
+ * @Description: sku product
  * @Author: jeecg-boot
- * @Date:   2021-04-01
+ * @Date:   2024-10-03
  * @Version: V1.0
  */
 @Repository
 public interface ProductMapper extends BaseMapper<Product> {
-    void updateWeightBatch(@Param("products") List<Product> product);
 
-    String searchFirstEmptyWeightProduct(@Param("skuIds") List<String> skuIds);
+    List<Product> listByCategory(@Param("categoryCode")String categoryCode);
+
+    String translateProductNameByValue(@Param("field") String field, @Param("categoryCode") String categoryCode, @Param("value") String value);
 }

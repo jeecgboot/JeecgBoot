@@ -122,6 +122,9 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     long countPurchaseOrders();
 
     void updatePurchaseOrderStatus(@Param("invoiceNumber") String invoiceNumber, @Param("isOrdered") boolean isOrdered);
+
+    void updatePurchaseOrderGroupIds(@Param("invoiceNumber") String invoiceCode, @Param("groupIds") String groupIds);
+
     InvoiceKpi countPurchaseInvoices(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end, @Param("showAllData") boolean showAllData, @Param("username") String username);
 
     void setPaid(@Param("invoiceNumbers") List<String> invoiceNumbers);

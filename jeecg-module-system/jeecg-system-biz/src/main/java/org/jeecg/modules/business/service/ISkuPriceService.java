@@ -12,5 +12,7 @@ import java.util.List;
  */
 public interface ISkuPriceService extends IService<SkuPrice> {
 
-	public List<SkuPrice> selectByMainId(String mainId);
+	List<SkuPrice> selectByMainId(String mainId);
+
+    SkuPrice getLatestBySkuId(String sku_id);
 }

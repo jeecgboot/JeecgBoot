@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -28,7 +29,7 @@ public class Sku implements Serializable {
     /**
      * 主键
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty(value = "主键")
     private java.lang.String id;
     /**
@@ -56,18 +57,23 @@ public class Sku implements Serializable {
     @ApiModelProperty(value = "更新日期")
     private java.util.Date updateTime;
     /**
-     * 商品ID
-     */
-    @Excel(name = "商品ID", width = 15, dictTable = "product", dicText = "code", dicCode = "id")
-    @Dict(dictTable = "product", dicText = "code", dicCode = "id")
-    @ApiModelProperty(value = "商品ID")
-    private java.lang.String productId;
-    /**
      * ERP中商品代码
      */
     @Excel(name = "ERP中商品代码", width = 15)
     @ApiModelProperty(value = "ERP中商品代码")
     private java.lang.String erpCode;
+    /**中文名*/
+    @Excel(name = "中文名", width = 15)
+    @ApiModelProperty(value = "中文名")
+    private String zhName;
+    /**英文名*/
+    @Excel(name = "英文名", width = 15)
+    @ApiModelProperty(value = "英文名")
+    private String enName;
+    /**发票名称*/
+    @Excel(name = "发票名称", width = 15)
+    @ApiModelProperty(value = "发票名称")
+    private String invoiceName;
     /**
      * 库存数量
      */
@@ -106,4 +112,18 @@ public class Sku implements Serializable {
     @Excel(name = "Status", width = 15)
     @ApiModelProperty(value = "Status")
     private java.lang.Integer status;
+    /**敏感属性ID*/
+    @Excel(name = "敏感属性ID", width = 15, dictTable = "sensitive_attribute", dicText = "zh_name", dicCode = "id")
+    @Dict(dictTable = "sensitive_attribute", dicText = "zh_name", dicCode = "id")
+    @ApiModelProperty(value = "敏感属性ID")
+    private String sensitiveAttributeId;
+    /**最低采购数量*/
+    @Excel(name = "最低采购数量", width = 15)
+    @ApiModelProperty(value = "最低采购数量")
+    private Integer moq;
+    /**
+     * 是否赠品1是;2否
+     */
+    @JSONField(name="isGift")
+    private Integer isGift;
 }

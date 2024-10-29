@@ -7,15 +7,22 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
 import org.apache.ibatis.plugin.*;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.dto.LogDTO;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.base.event.SkuModifiedEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * mybatis拦截器，自动注入创建人、创建时间、修改人、修改时间
@@ -27,6 +34,8 @@ import java.util.Properties;
 @Component
 @Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }) })
 public class MybatisInterceptor implements Interceptor {
+	@Autowired
+	private ApplicationEventPublisher eventPublisher;
 
 	@Override
 	public Object intercept(Invocation invocation) throws Throwable {
@@ -152,6 +161,38 @@ public class MybatisInterceptor implements Interceptor {
 				}
 			}
 		}
+		if(sqlId.contains("deleteOne")) {
+			if(parameter instanceof Map) {
+				Map<String, String> paramMap = (Map<String, String>) parameter;
+				String table = paramMap.get("tbname");
+				String id = paramMap.get("dataId");
+				if(table.equals("sku")) {
+					log.info("Publishing an event for table: {} - operation: DELETE - id: {}", table, id);
+					eventPublisher.publishEvent(new SkuModifiedEvent(this, id, "DELETE"));
+				}
+			}
+		}
+		if(sqlId.contains("saveLog")) {
+			if (parameter instanceof Map) {
+				Map<String, Object> paramMap = (Map<String, Object>) parameter;
+				if(paramMap.get("dto") instanceof LogDTO){
+					LogDTO dto = (LogDTO) paramMap.get("dto");
+					String table = dto.getLogContent().split(",")[1].substring(3);
+					String operationStatus = dto.getLogContent().split(",")[2];
+					String requestParam = dto.getRequestParam();
+					if(table.equals("sku")) {
+						if(operationStatus.equals("添加成功!")) {
+							String id = extractIdFromRequestParam(requestParam);
+							eventPublisher.publishEvent(new SkuModifiedEvent(this, id, "INSERT"));
+						}
+						if(operationStatus.equals("修改成功！")) {
+							String id = extractIdFromRequestParam(requestParam);
+							eventPublisher.publishEvent(new SkuModifiedEvent(this, id, "UPDATE"));
+						}
+					}
+				}
+			}
+		}
 		return invocation.proceed();
 	}
 
@@ -181,5 +222,32 @@ public class MybatisInterceptor implements Interceptor {
 		return sysUser;
 	}
 	//update-end--Author:scott  Date:20191213 for：关于使用Quzrtz 开启线程任务， #465
+
+	private String extractSkuId(Object parameter) {
+		// Try to extract the skuId from the parameter (assuming it's a Long or part of a Map)
+		if (parameter instanceof String) {
+			return (String) parameter;
+		} else if (parameter instanceof Map) {
+			Map<String, Object> paramMap = (Map<String, Object>) parameter;
+			return (String) paramMap.get("skuId");
+		} else if (parameter.getClass().getName().contains("org.jeecg.modules.business.entity")) {
+			Pattern idPattern = Pattern.compile("^.*\\(id=([\\w-]+),.*$");
+			Matcher idMatcher = idPattern.matcher(parameter.toString());
+			if(idMatcher.matches() &&  idMatcher.groupCount() == 1) {
+				return idMatcher.group(1);
+			}
+		}
+		// Add more handling for other cases if necessary
+		return null;
+	}
+	private String extractIdFromRequestParam(String requestParam) {
+		// Try to extract the skuId from the parameter (assuming it's a Long or part of a Map)
+		Pattern idPattern = Pattern.compile("^.*\"id\":\"(\\w+)\".*$");
+		Matcher idMatcher = idPattern.matcher(requestParam);
+		if(idMatcher.matches() &&  idMatcher.groupCount() == 1) {
+			return idMatcher.group(1);
+		}
+		return null;
+	}
 
 }

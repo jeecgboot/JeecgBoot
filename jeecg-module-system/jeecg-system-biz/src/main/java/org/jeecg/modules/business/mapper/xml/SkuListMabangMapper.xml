@@ -11,20 +11,6 @@
             #{item}
         </foreach>
     </select>
-    <select id="searchProductExistence" resultType="org.jeecg.modules.business.entity.Product">
-        SELECT *
-        FROM product
-        WHERE code
-        IN
-        <foreach collection="productCode" open="(" close=")" separator="," index="index" item="item">
-            #{item}
-        </foreach>
-    </select>
-    <select id="searchProductId" resultType="java.lang.String">
-        SELECT id
-        FROM product
-        WHERE code = #{productCode}
-    </select>
     <select id="searchSkuId" resultType="java.lang.String">
         SELECT id
         FROM sku

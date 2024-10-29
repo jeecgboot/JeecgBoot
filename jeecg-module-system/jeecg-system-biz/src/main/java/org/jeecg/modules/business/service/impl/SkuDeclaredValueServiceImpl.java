@@ -38,4 +38,9 @@ public class SkuDeclaredValueServiceImpl extends ServiceImpl<SkuDeclaredValueMap
     public List<SkuDeclaredValue> getLatestDeclaredValues() {
         return skuDeclaredValueMapper.getLatestSkuDeclaredValues();
     }
+
+    @Override
+    public SkuDeclaredValue getLatestBySkuId(String sku_id) {
+        return skuDeclaredValueMapper.getLatestBySkuId(sku_id);
+    }
 }

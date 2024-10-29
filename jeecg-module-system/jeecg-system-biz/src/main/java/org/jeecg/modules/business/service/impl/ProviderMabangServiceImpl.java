@@ -191,6 +191,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         // change status of purchase order to 'ordered' = true
         if(nbSuccesses == stockProviderMap.size()) {
             purchaseOrderService.updatePurchaseOrderStatus(metaData.getInvoiceCode(), true);
+            purchaseOrderService.updatePurchaseOrderGroupIds(metaData.getInvoiceCode(), groupIds);
             return true;
         }
         return false;

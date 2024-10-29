@@ -21,8 +21,6 @@ import java.util.Map;
  */
 public interface ISkuService extends IService<Sku> {
     List<Sku> listSkus();
-    List<Sku> selectByMainId(String mainId);
-
     /**
      * 添加一对多
      */
@@ -95,15 +93,33 @@ public interface ISkuService extends IService<Sku> {
 
     List<SkuQuantity> getSkuQuantitiesFromOrderIds(List<String> orderIds);
 
+    Integer countAllSkus();
+    List<SkuOrderPage> fetchSkuWeights(Integer pageNo, Integer pageSize, String parsedColumn, String parsedOrder);
+
+    Integer countAllClientSkus(String clientId);
     List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order);
+
+    Integer countAllSkuWeightsWithFilters(List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
+    List<SkuOrderPage> fetchSkuWeightsWithFilters(Integer pageNo, Integer pageSize, String parsedColumn, String parsedOrder, List<String> erpCodes, List<String> zhNames, List<String> enNames);
+
+    Integer countAllClientSkusWithFilters(String clientId, List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
     List<SkuOrderPage> fetchSkusByClientWithFilters(String clientId, Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames);
 
     void addSkuQuantity(Map<String, Integer> quantityPurchased);
     String getIdFromErpCode(String erpCode);
     Sku getByErpCode(String erpCode);
     void updateBatchStockByIds(List<Sku> skuToUpdate);
+
     List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber);
+    List<SkuOrderPage> getInventory(List<String> erpCodes, String invoiceNumber);
+
     List<Sku> listByClientId(String clientId);
+
+    List<SkuOrderPage> searchExistingSkuByKeywords(List<String> keywords);
+
+    List<SkuOrderPage> listSelectableSkuIdsWithFilters(String clientId, List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
+
+    List<SkuOrderPage> listSelectableSkuIds(String clientId);
 
     List<Sku> listImgUrls();
 }

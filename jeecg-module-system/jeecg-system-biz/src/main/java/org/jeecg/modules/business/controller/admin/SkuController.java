@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.CaseFormat;
+import freemarker.template.Template;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
@@ -23,11 +25,18 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -56,7 +65,15 @@ public class SkuController {
     @Autowired
     private ISkuDeclaredValueService skuDeclaredValueService;
     @Autowired
-    private IClientService clientService;
+    private ISkuListMabangService skuListMabangService;
+    @Autowired
+    private SkuMongoService skuMongoService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private FreeMarkerConfigurer freemarkerConfigurer;
+    @Autowired
+    Environment env;
 
     /**
      * 分页列表查询
@@ -352,16 +369,16 @@ public class SkuController {
         return Result.OK(skus);
     }
 
-    @GetMapping("/skusByClient")
-    public Result<?> skusByClient(@RequestParam(name = "clientId") String clientId,
+    @GetMapping("/listWithFilters")
+    public Result<?> listWithFilters(@RequestParam(name = "clientId", required = false) String clientId,
                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                   @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
                                   @RequestParam(name = "column", defaultValue = "erp_code") String column,
                                   @RequestParam(name = "order", defaultValue = "ASC") String order,
                                   @RequestParam(name = "erpCodes", required = false) String erpCodes,
                                   @RequestParam(name = "zhNames", required = false) String zhNames,
-                                  @RequestParam(name = "enNames", required = false) String enNames
-    ) {
+                                  @RequestParam(name = "enNames", required = false) String enNames,
+                                     ServletRequest servletRequest) {
         String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
         String parsedOrder = order.toUpperCase();
         if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
@@ -372,27 +389,110 @@ public class SkuController {
         } catch (RuntimeException e) {
             return Result.error("Error 400 Bad Request");
         }
-        List<SkuOrderPage> allSkuOrdersPage = new ArrayList<>();
-        List<SkuOrderPage> skuOrdersPage = new ArrayList<>();
-        int total = 0;
+        List<SkuOrderPage> skuOrdersPage;
+        int total;
         if(erpCodes != null || zhNames != null || enNames != null) {
             List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
             List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
             List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
-            allSkuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, 1, -1, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
-            skuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
-
+            if(clientId != null) {
+                total = skuService.countAllClientSkusWithFilters(clientId, erpCodeList, zhNameList, enNameList);
+                skuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+            } else {
+                total = skuService.countAllSkuWeightsWithFilters(erpCodeList, zhNameList, enNameList);
+                skuOrdersPage = skuService.fetchSkuWeightsWithFilters(pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+            }
         }
         else {
-            allSkuOrdersPage = skuService.fetchSkusByClient(clientId, 1, -1, parsedColumn, parsedOrder);
-            skuOrdersPage = skuService.fetchSkusByClient(clientId, pageNo, pageSize, parsedColumn, parsedOrder);
+            if(clientId != null) {
+                total = skuService.countAllClientSkus(clientId);
+                skuOrdersPage = skuService.fetchSkusByClient(clientId, pageNo, pageSize, parsedColumn, parsedOrder);
+            } else {
+                total = skuService.countAllSkus();
+                skuOrdersPage = skuService.fetchSkuWeights(pageNo, pageSize, parsedColumn, parsedOrder);
+            }
         }
-        total = allSkuOrdersPage.size();
         IPage<SkuOrderPage> page = new Page<>();
         page.setRecords(skuOrdersPage);
         page.setCurrent(pageNo);
         page.setSize(pageSize);
         page.setTotal(total);
         return Result.OK(page);
+    }
+    @GetMapping("/listAllSelectableSkuIds")
+    public Result<?> listAllSelectableSkuIds(@RequestParam(name = "clientId") String clientId,
+                                             @RequestParam(name = "erpCodes", required = false) String erpCodes,
+                                             @RequestParam(name = "zhNames", required = false) String zhNames,
+                                             @RequestParam(name = "enNames", required = false) String enNames
+    ) {
+        List<SkuOrderPage> selectableSkuIds;
+        if(erpCodes != null || zhNames != null || enNames != null) {
+            List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
+            List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
+            List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
+            selectableSkuIds = skuService.listSelectableSkuIdsWithFilters(clientId, erpCodeList, zhNameList, enNameList);
+        } else {
+            selectableSkuIds = skuService.listSelectableSkuIds(clientId);
+        }
+        return Result.OK(selectableSkuIds);
+    }
+    @GetMapping("/searchExistingSkuByKeywords")
+    public Result<?> searchExistingSkuByKeywords(@RequestParam("keywords") String keywords) {
+        String parsedKeywords = keywords.trim().replaceAll("[{}=$]", "");
+        if(parsedKeywords.isEmpty()) {
+            return Result.OK(new ArrayList<>());
+        }
+        return Result.OK(skuMongoService.textSearch(parsedKeywords));
+    }
+
+    @PostMapping("/createMabangSku")
+    public Result<?> createMabangSku(@RequestBody List<SkuOrderPage> skuList) {
+        skuList.forEach(sku -> sku.setStatus(3));
+        return Result.OK(skuListMabangService.publishSkuToMabang(skuList));
+    }
+    @PostMapping("syncSkus")
+    public Result<?> syncSkus(@RequestBody List<String> erpCodes) {
+        Map<Sku, String> newSkusNeedTreatmentMap;
+
+        try {
+            newSkusNeedTreatmentMap = skuListMabangService.skuSyncUpsert(erpCodes);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+        skuListMabangService.updateSkuId();
+
+        // here we send system notification with the list of new skus that need extra treatment
+        if (newSkusNeedTreatmentMap.isEmpty()) {
+            return Result.ok();
+        }
+        Properties prop = emailService.getMailSender();
+        Session session = Session.getInstance(prop, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.password"));
+            }
+        });
+
+        String subject = "Association of Sku to Client failed while creating new Sku";
+        String destEmail = env.getProperty("company.jessy.email");
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("operation", "créés");
+        templateModel.put("skusMap", newSkusNeedTreatmentMap);
+        try {
+            freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
+            Template template = freemarkerConfigurer.getConfiguration().getTemplate("admin/unknownClientForSku.ftl");
+            String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(template, templateModel);
+            emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
+            log.info("Mail sent successfully");
+        } catch (Exception e) {
+            log.error("Error sending mail: {}", e.getMessage());
+        }
+        return Result.OK();
+    }
+
+    @PostMapping("/syncSkuQty")
+    public Result<?> syncSkuQty(@RequestBody List<String> erpCodes) {
+        skuListMabangService.mabangSkuStockUpdate(erpCodes);
+        return Result.OK();
     }
 }

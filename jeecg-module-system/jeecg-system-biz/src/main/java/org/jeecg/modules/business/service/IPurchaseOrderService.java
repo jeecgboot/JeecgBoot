@@ -131,10 +131,12 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
     void setPageForList(Page<PurchaseOrderPage> page, String clientId);
 
     void updatePurchaseOrderStatus(String invoiceNumber, boolean isOrdered);
+    void updatePurchaseOrderGroupIds(String invoiceCode, List<String> groupIds);
 
     void setPaid(List<String> invoiceNumbers);
 
     PurchaseOrder getPurchaseByInvoiceNumberAndClientId(String invoiceNumber, String clientId);
 
     List<PurchaseOrder> getPurchasesByInvoices(List<Invoice> invoices);
+
 }

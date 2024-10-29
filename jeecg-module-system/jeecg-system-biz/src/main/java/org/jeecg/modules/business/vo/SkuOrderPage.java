@@ -3,10 +3,10 @@ package org.jeecg.modules.business.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.jeecg.common.aspect.annotation.Dict;
-import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
+
+import java.math.BigDecimal;
 
 /**
  * @Description: SKU采购表
@@ -28,19 +28,31 @@ public class SkuOrderPage {
      */
     @Excel(name = "商品", width = 15)
     @ApiModelProperty(value = "商品")
-    private String product;
+    private String zhName;
     /**
      * 商品ID
      */
     @Excel(name = "商品英文", width = 15)
     @ApiModelProperty(value = "商品英文")
-    private String productEn;
+    private String enName;
     /**
      * ERP中商品代码
      */
     @Excel(name = "ERP中商品代码", width = 15)
     @ApiModelProperty(value = "ERP中商品代码")
     private String erpCode;
+    /**
+     * 重量
+     */
+    @Excel(name = "重量", width = 15)
+    @ApiModelProperty(value = "重量")
+    private java.lang.Integer weight;
+    /**
+     * 重量生效日期
+     */
+    @Excel(name = "重量生效日期", width = 15)
+    @ApiModelProperty(value = "重量生效日期")
+    private java.util.Date weightEffectiveDate;
     /**
      * 库存数量
      */
@@ -90,6 +102,33 @@ public class SkuOrderPage {
     @ApiModelProperty(value = "服务费")
     private java.math.BigDecimal serviceFee;
     /**
+     * 状态
+     * 1:自动创建;2:待开发;3:正常;4:清仓;5:停止销售"
+     * default : 3
+     */
+    @Excel(name = "状态", width = 15)
+    @ApiModelProperty(value = "状态")
+    private java.lang.Integer status;
+    /**
+     * 敏感属性
+     */
+    @Excel(name = "敏感属性", width = 15)
+    @ApiModelProperty(value = "敏感属性")
+    private String sensitiveAttribute;
+    /**
+     * 起订量
+     */
+    @Excel(name = "起订量", width = 15)
+    @ApiModelProperty(value = "起订量")
+    private java.lang.Integer moq;
+    /**
+     * 是否赠品
+     * 1是 2否
+     */
+    @Excel(name = "是否赠品", width = 15)
+    @ApiModelProperty(value = "是否赠品")
+    private java.lang.Integer isGift;
+    /**
      * SKU价格
      */
     @ExcelCollection(name = "SKU价格")
@@ -108,6 +147,36 @@ public class SkuOrderPage {
     @ApiModelProperty(value = "优惠价")
     private java.math.BigDecimal discountedPrice;
     /**
+     * 价格生效日期
+     */
+    @Excel(name = "价格生效日期", width = 15)
+    @ApiModelProperty(value = "价格生效日期")
+    private java.util.Date skuPriceEffectiveDate;
+    /**
+     * 申报价格
+     */
+    @Excel(name = "申报价格", width = 15)
+    @ApiModelProperty(value = "申报价格")
+    private BigDecimal declaredValue;
+    /**
+     * 申报价格生效日期
+     */
+    @Excel(name = "申报价格生效日期", width = 15)
+    @ApiModelProperty(value = "申报价格生效日期")
+    private java.util.Date declaredValueEffectiveDate;
+    /**
+     * 申报中文名称
+     */
+    @Excel(name = "申报中文名称", width = 15)
+    @ApiModelProperty(value = "申报中文名称")
+    private String declareName;
+    /**
+     * 申报英文名称
+     */
+    @Excel(name = "申报英文名称", width = 15)
+    @ApiModelProperty(value = "申报英文名称")
+    private String declareEname;
+    /**
      * Sales last week
      */
     @Excel(name = "sales last week", width = 15)
@@ -125,4 +194,16 @@ public class SkuOrderPage {
     @Excel(name = "sales last 42 days", width = 15)
     @ApiModelProperty(value = "sales last 42 days")
     private java.lang.Integer salesSixWeeks;
+    /**
+     * 供应商
+     */
+    @Excel(name = "供应商", width = 15)
+    @ApiModelProperty(value = "供应商")
+    private String supplier;
+    /**
+     * 供应商商品网址
+     */
+    @Excel(name = "供应商商品网址", width = 15)
+    @ApiModelProperty(value = "供应商商品网址")
+    private String supplierLink;
 }

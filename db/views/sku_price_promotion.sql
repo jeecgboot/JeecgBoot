@@ -1,7 +1,7 @@
 CREATE OR REPLACE VIEW sku_price_promotion AS
 SELECT s.id                     AS sku_id,
-       p.en_name                AS name_en,
-       p.zh_name                AS name_zh,
+       s.en_name                AS name_en,
+       s.zh_name                AS name_zh,
        s.erp_code               AS erp_code,
        s.image_source           AS image_source,
        spr.promotion_id         AS promotion_id,
@@ -17,6 +17,5 @@ SELECT s.id                     AS sku_id,
 FROM sku s
          LEFT JOIN sku_promotion_relation spr ON s.id = spr.sku_id
          LEFT JOIN sku_current_price scp ON s.id = scp.sku_id
-         JOIN product p ON s.product_id = p.id
          LEFT JOIN sku_in_platform_order sipo ON s.id = sipo.sku_id
 ORDER BY sipo.quantity DESC;

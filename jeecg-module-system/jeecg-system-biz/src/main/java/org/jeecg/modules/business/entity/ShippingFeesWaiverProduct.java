@@ -73,5 +73,5 @@ public class ShippingFeesWaiverProduct implements Serializable {
     @Excel(name = "产品ID", width = 15, dictTable = "product", dicText = "code", dicCode = "id")
     @Dict(dictTable = "product", dicText = "code", dicCode = "id")
     @ApiModelProperty(value = "产品ID")
-    private java.lang.String productId;
+    private java.lang.String skuId;
 }

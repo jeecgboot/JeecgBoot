@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.SkuWeightMapper">
+<select id="getBySkuId" resultType="org.jeecg.modules.business.entity.SkuWeight">
+    SELECT *
+    FROM sku_weight
+    WHERE sku_id = #{skuId}
+    ORDER BY effective_date DESC
+    LIMIT 1;
+</select>
+<select id="searchFirstEmptyWeightSku" resultType="java.lang.String">
+    SELECT s.id
+    FROM sku s
+    LEFT JOIN sku_weight sw
+        ON sw.sku_id = s.id
+    WHERE sw.id IS NULL
+    AND s.id IN (
+        SELECT DISTINCT id
+        FROM sku
+        WHERE id IN
+        <foreach collection="skuIds" separator="," open="(" close=")" index="index" item="id">
+            #{id}
+        </foreach>
+    )
+    LIMIT 1;
+</select>
+</mapper>

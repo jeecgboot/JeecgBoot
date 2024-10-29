@@ -30,4 +30,6 @@ public interface SkuDeclaredValueMapper extends BaseMapper<SkuDeclaredValue> {
 	List<Map<String, BigDecimal>> getLatestDeclaredValues();
 
 	void insertNewDeclaredValues(@Param("items") List<SkuDeclaredValue> items);
+
+    SkuDeclaredValue getLatestBySkuId(@Param("skuId") String skuId);
 }

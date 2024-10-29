@@ -13,10 +13,12 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Slf4j
+@Component
 public class MabangOrderSyncJob implements Job {
 
     @Autowired
