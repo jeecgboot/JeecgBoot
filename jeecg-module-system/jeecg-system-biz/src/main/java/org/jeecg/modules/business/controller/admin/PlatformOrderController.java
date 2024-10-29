@@ -1,32 +1,40 @@
 package org.jeecg.modules.business.controller.admin;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import javax.mail.Authenticator;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.servlet.http.HttpServletRequest;
-
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.Lists;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.codehaus.jettison.json.JSONException;
+import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderResponse;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeWarehouseRequest;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeWarehouseRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
+import org.jeecg.modules.business.domain.api.shouman.JsonOrderCreationRequestBody;
+import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequest;
+import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequestBody;
+import org.jeecg.modules.business.domain.api.shouman.ShoumanOrderRequest;
 import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.PlatformOrder;
+import org.jeecg.modules.business.entity.PlatformOrderContent;
+import org.jeecg.modules.business.entity.Shouman.ShoumanOrder;
+import org.jeecg.modules.business.entity.ShoumanOrderContent;
+import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
@@ -35,29 +43,30 @@ import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
-import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
-import org.jeecg.modules.business.entity.PlatformOrder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.jeecg.common.aspect.annotation.AutoLog;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
+
+import javax.mail.Authenticator;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.jeecg.modules.business.vo.PlatformOrderOperation.Action.*;
 
@@ -80,6 +89,13 @@ public class PlatformOrderController {
     private IPlatformOrderService platformOrderService;
     @Autowired
     private PlatformOrderMapper platformOrderMapper;
+
+    @Autowired
+    private PlatformOrderContentMapper platformOrderContentMapper;
+
+    @Autowired
+    private IShoumanOrderService shoumanOrderService;
+
     @Autowired
     private IPlatformOrderMabangService platformOrderMabangService;
     @Autowired
@@ -104,13 +120,10 @@ public class PlatformOrderController {
      * @param req
      * @return
      */
-     @AutoLog(value = "平台订单有货未交运-分页列表查询")
+    @AutoLog(value = "平台订单有货未交运-分页列表查询")
     @ApiOperation(value = "平台订单有货未交运-分页列表查询", notes = "平台订单有货未交运-分页列表查询")
     @GetMapping(value = "/errorList")
-    public Result<?> queryPageErrorList(PlatformOrder platformOrder,
-                                        @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                        @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                        HttpServletRequest req) {
+    public Result<?> queryPageErrorList(PlatformOrder platformOrder, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
         QueryWrapper<PlatformOrder> queryWrapper = QueryGenerator.initQueryWrapper(platformOrder, req.getParameterMap());
         LambdaQueryWrapper<PlatformOrder> lambdaQueryWrapper = queryWrapper.lambda();
         lambdaQueryWrapper.in(PlatformOrder::getErpStatus, OrderStatus.Pending.getCode());
@@ -133,10 +146,7 @@ public class PlatformOrderController {
     @AutoLog(value = "平台订单表-分页列表查询")
     @ApiOperation(value = "平台订单表-分页列表查询", notes = "平台订单表-分页列表查询")
     @GetMapping(value = "/list")
-    public Result<?> queryPageList(PlatformOrder platformOrder,
-                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                   @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
-                                   HttpServletRequest req) {
+    public Result<?> queryPageList(PlatformOrder platformOrder, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
         QueryWrapper<PlatformOrder> queryWrapper = QueryGenerator.initQueryWrapper(platformOrder, req.getParameterMap());
         Page<PlatformOrder> page = new Page<>(pageNo, pageSize);
         IPage<PlatformOrder> pageList = platformOrderService.page(page, queryWrapper);
@@ -366,17 +376,17 @@ public class PlatformOrderController {
     }
 
     /**
-     *
      * @return
      */
     @GetMapping("/monthOrderQuantity")
-    public Result<List<PlatformOrderQuantity>> monthOrderNumber(){
+    public Result<List<PlatformOrderQuantity>> monthOrderNumber() {
         List<PlatformOrderQuantity> res = platformOrderService.monthOrderNumber();
         return Result.OK(res);
     }
 
     /**
      * Get all orders by shop with erp status 1, 2 and 3
+     *
      * @return
      */
     @GetMapping("/ordersByShop")
@@ -390,34 +400,28 @@ public class PlatformOrderController {
         boolean isEmployee = securityService.checkIsEmployee();
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         Client client;
-        if(!isEmployee) {
+        if (!isEmployee) {
             client = clientService.getCurrentClient();
             if (client == null) {
-                return Result.error(500,"Client not found. Please contact administrator.");
+                return Result.error(500, "Client not found. Please contact administrator.");
             }
             String shopId = orderOperations.get(0).getShopId();
             List<String> shopIds = shopService.listIdByClient(client.getId());
-            if(!shopIds.contains(shopId)) {
-                return Result.error(500,"You are not allowed to perform this operation.");
+            if (!shopIds.contains(shopId)) {
+                return Result.error(500, "You are not allowed to perform this operation.");
             }
         } else {
             client = clientService.getByShopId(orderOperations.get(0).getShopId());
         }
 
         long suspendCount = 0, cancelCount = 0, editCount = 0;
-        List<PlatformOrderOperation> ordersToSuspend = orderOperations.stream()
-                .filter(orderOperation -> orderOperation.getAction().equalsIgnoreCase(SUSPEND.getValue()))
-                .collect(Collectors.toList());
-        List<PlatformOrderOperation> ordersToCancel = orderOperations.stream()
-                .filter(orderOperation -> orderOperation.getAction().equalsIgnoreCase(CANCEL.getValue()))
-                .collect(Collectors.toList());
-        List<PlatformOrderOperation> ordersToEdit = orderOperations.stream()
-                .filter(orderOperation -> orderOperation.getAction().equalsIgnoreCase(EDIT.getValue()))
-                .collect(Collectors.toList());
-        for(PlatformOrderOperation orderOperation : ordersToSuspend) {
+        List<PlatformOrderOperation> ordersToSuspend = orderOperations.stream().filter(orderOperation -> orderOperation.getAction().equalsIgnoreCase(SUSPEND.getValue())).collect(Collectors.toList());
+        List<PlatformOrderOperation> ordersToCancel = orderOperations.stream().filter(orderOperation -> orderOperation.getAction().equalsIgnoreCase(CANCEL.getValue())).collect(Collectors.toList());
+        List<PlatformOrderOperation> ordersToEdit = orderOperations.stream().filter(orderOperation -> orderOperation.getAction().equalsIgnoreCase(EDIT.getValue())).collect(Collectors.toList());
+        for (PlatformOrderOperation orderOperation : ordersToSuspend) {
             suspendCount += orderOperation.getOrderIds().split(",").length;
         }
-        for(PlatformOrderOperation orderOperation : ordersToCancel) {
+        for (PlatformOrderOperation orderOperation : ordersToCancel) {
             cancelCount += orderOperation.getOrderIds().split(",").length;
         }
         editCount = ordersToEdit.size();
@@ -429,15 +433,10 @@ public class PlatformOrderController {
         Responses suspendResponses = new Responses();
         Responses editResponses = new Responses();
 
-        ExecutorService executor = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
-                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        ExecutorService executor = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS, MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
         // Cancel orders
-        List<CompletableFuture<Responses>> futuresCancel = ordersToCancel.stream()
-                .map(orderOperation -> CompletableFuture.supplyAsync(
-                        () -> platformOrderMabangService.cancelOrders(orderOperation),
-                        executor)
-                ).collect(Collectors.toList());
-        List<Responses>cancelResults = futuresCancel.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        List<CompletableFuture<Responses>> futuresCancel = ordersToCancel.stream().map(orderOperation -> CompletableFuture.supplyAsync(() -> platformOrderMabangService.cancelOrders(orderOperation), executor)).collect(Collectors.toList());
+        List<Responses> cancelResults = futuresCancel.stream().map(CompletableFuture::join).collect(Collectors.toList());
         cancelResults.forEach(res -> {
             cancelResponses.getSuccesses().addAll(res.getSuccesses());
             cancelResponses.getFailures().addAll(res.getFailures());
@@ -447,11 +446,7 @@ public class PlatformOrderController {
 
 
         // Suspend orders
-        List<CompletableFuture<Responses>> futuresSuspend = ordersToSuspend.stream()
-                .map(orderOperation -> CompletableFuture.supplyAsync(
-                        () -> platformOrderMabangService.suspendOrder(orderOperation),
-                        executor)
-                ).collect(Collectors.toList());
+        List<CompletableFuture<Responses>> futuresSuspend = ordersToSuspend.stream().map(orderOperation -> CompletableFuture.supplyAsync(() -> platformOrderMabangService.suspendOrder(orderOperation), executor)).collect(Collectors.toList());
         List<Responses> suspendResults = futuresSuspend.stream().map(CompletableFuture::join).collect(Collectors.toList());
         suspendResults.forEach(res -> {
             suspendResponses.getSuccesses().addAll(res.getSuccesses());
@@ -469,30 +464,25 @@ public class PlatformOrderController {
             requests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
         }
         List<Order> mabangOrders = platformOrderMabangService.getOrdersFromMabang(requests, executor);
-        for(Order mabangOrder : mabangOrders) {
-            if(mabangOrder.getTrackingNumber() == null) {
+        for (Order mabangOrder : mabangOrders) {
+            if (mabangOrder.getTrackingNumber() == null) {
                 continue;
             }
-            if(!mabangOrder.getTrackingNumber().isEmpty()) {
+            if (!mabangOrder.getTrackingNumber().isEmpty()) {
                 ordersWithTrackingNumber.add(mabangOrder);
             }
         }
         platformOrderMabangService.clearLogisticChannel(ordersWithTrackingNumber, executor);
 
-        List<CompletableFuture<Responses>> futuresEdit = ordersToEdit.stream()
-                .map(orderOperation -> CompletableFuture.supplyAsync(() -> {
-                            ChangeWarehouseRequestBody body = new ChangeWarehouseRequestBody(orderOperation);
-                            ChangeWarehouseRequest request = new ChangeWarehouseRequest(body);
-                            ChangeOrderResponse response = request.send();
-                            Responses r = new Responses();
-                            if(response.success())
-                                r.addSuccess(orderOperation.getOrderIds());
-                            else
-                                r.addFailure(orderOperation.getOrderIds());
-                            return r;
-                    },
-                    executor)
-                ).collect(Collectors.toList());
+        List<CompletableFuture<Responses>> futuresEdit = ordersToEdit.stream().map(orderOperation -> CompletableFuture.supplyAsync(() -> {
+            ChangeWarehouseRequestBody body = new ChangeWarehouseRequestBody(orderOperation);
+            ChangeWarehouseRequest request = new ChangeWarehouseRequest(body);
+            ChangeOrderResponse response = request.send();
+            Responses r = new Responses();
+            if (response.success()) r.addSuccess(orderOperation.getOrderIds());
+            else r.addFailure(orderOperation.getOrderIds());
+            return r;
+        }, executor)).collect(Collectors.toList());
         List<Responses> editResults = futuresEdit.stream().map(CompletableFuture::join).collect(Collectors.toList());
         editResults.forEach(res -> {
             editResponses.getSuccesses().addAll(res.getSuccesses());
@@ -513,17 +503,17 @@ public class PlatformOrderController {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("firstname", client.getFirstName());
         templateModel.put("lastname", client.getSurname());
-        if(cancelCount > 0) {
+        if (cancelCount > 0) {
             templateModel.put("cancelSuccessCount", cancelResponses.getSuccesses().size() + "/" + cancelCount);
             templateModel.put("cancelSuccesses", cancelResponses.getSuccesses());
             templateModel.put("cancelFailures", cancelResponses.getFailures());
         }
-        if(suspendCount > 0) {
+        if (suspendCount > 0) {
             templateModel.put("suspendSuccessCount", suspendResponses.getSuccesses().size() + "/" + suspendCount);
             templateModel.put("suspendSuccesses", suspendResponses.getSuccesses());
             templateModel.put("suspendFailures", suspendResponses.getFailures());
         }
-        if(editCount > 0) {
+        if (editCount > 0) {
             templateModel.put("editSuccessCount", editResponses.getSuccesses().size() + "/" + editCount);
             templateModel.put("editSuccesses", editResponses.getSuccesses());
             templateModel.put("editFailures", editResponses.getFailures());
@@ -537,8 +527,7 @@ public class PlatformOrderController {
         });
         try {
             freemarkerConfigurer = emailService.freemarkerClassLoaderConfig();
-            Template freemarkerTemplate = freemarkerConfigurer.getConfiguration()
-                    .getTemplate("client/orderManagementNotification.ftl");
+            Template freemarkerTemplate = freemarkerConfigurer.getConfiguration().getTemplate("client/orderManagementNotification.ftl");
             String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, templateModel);
             emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
             log.info("Mail sent successfully !");
@@ -555,6 +544,7 @@ public class PlatformOrderController {
 
         return Result.OK(result);
     }
+
     @GetMapping("/recipientInfo")
     public Result<?> getRecipientInfo(@RequestParam("orderId") String platformOrderId) {
 
@@ -562,7 +552,7 @@ public class PlatformOrderController {
         OrderListRawStream rawStream = new OrderListRawStream(body);
         OrderListStream stream = new OrderListStream(rawStream);
         List<Order> orders = stream.all();
-        if(orders.isEmpty()) {
+        if (orders.isEmpty()) {
             return Result.error(400, "Order not found.");
         }
         Order order = orders.get(0);
@@ -572,5 +562,103 @@ public class PlatformOrderController {
         recipient.put("street1", order.getAddress());
         recipient.put("street2", order.getAddress2());
         return Result.OK(recipient);
+    }
+
+    /**
+     * Fetches all potential Shouman orders
+     *
+     * @param pageNo
+     * @param pageSize
+     * @return
+     */
+    @AutoLog(value = "潜在首曼订单-分页列表查询")
+    @ApiOperation(value = "潜在首曼订单-分页列表查询", notes = "潜在首曼订单-分页列表查询")
+    @GetMapping(value = "/shouman/list")
+    public Result<?> queryPageShoumanList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, @RequestParam(name = "column") String column, @RequestParam(name = "order") String order) {
+        Page<PlatformOrderPage> page = new Page<>(pageNo, pageSize);
+        platformOrderService.pagePotentialShoumanOrders(page, CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column), order);
+        return Result.OK(page);
+    }
+
+    /**
+     * Generates remarks of a Shouman eligible order
+     *
+     * @param platformOrderId
+     * @return
+     */
+    @AutoLog(value = "潜在首曼订单-订单备注预览")
+    @ApiOperation(value = "潜在首曼订单-订单备注预览", notes = "潜在首曼订单-订单备注预览")
+    @GetMapping(value = "/shouman/preview")
+    public Result<?> generateShoumanRemarkForOrder(@RequestParam(name = "platformOrderId") String platformOrderId) {
+        List<ShoumanOrderContent> shoumanOrderContents = platformOrderContentMapper.searchShoumanOrderContentByPlatformOrderId(platformOrderId);
+        OrderCreationRequestBody requestBody = new OrderCreationRequestBody(shoumanOrderContents);
+        return Result.OK(requestBody.parameters().get("outboundInfos"));
+    }
+
+    /**
+     * Create/update Shouman Orders
+     *
+     * @param shoumanOrderRequests
+     * @return
+     */
+    @AutoLog(value = "首曼订单-生成或更新首曼订单")
+    @ApiOperation(value = "首曼订单-生成或更新首曼订单", notes = "首曼订单-生成或更新首曼订单")
+    @Transactional
+    @RequestMapping(value = "/shouman/create", method = {RequestMethod.PUT, RequestMethod.POST})
+    public Result<?> generateShoumanOrder(@RequestBody List<ShoumanOrderRequest> shoumanOrderRequests) {
+        List<ShoumanOrder> shoumanOrders = new ArrayList<>();
+        for (ShoumanOrderRequest shoumanOrderRequest : shoumanOrderRequests) {
+            List<ShoumanOrderContent> shoumanOrderContents = platformOrderContentMapper.searchShoumanOrderContentByPlatformOrderId(shoumanOrderRequest.getPlatformOrderId());
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            OrderCreationRequestBody requestBody = new OrderCreationRequestBody(shoumanOrderContents);
+            ShoumanOrder shoumanOrder = new ShoumanOrder();
+            JSONObject jsonToUpdate = requestBody.parameters();
+            // Override remarks if present
+            if (shoumanOrderRequest.getRemarks() != null) {
+                jsonToUpdate.put("outboundInfos", shoumanOrderRequest.getRemarks());
+            }
+            shoumanOrder.setOrderJson(jsonToUpdate.toJSONString());
+            shoumanOrder.setPlatformOrderId(shoumanOrderRequest.getPlatformOrderId());
+            shoumanOrder.setCreateBy(sysUser.getUsername());
+            shoumanOrders.add(shoumanOrder);
+        }
+        try {
+            shoumanOrderService.saveBatch(shoumanOrders);
+
+            log.info("{} Shouman orders to send to ShoumanAPI", shoumanOrders.size());
+
+            log.info("Started building and sending Shouman order requests");
+            for (ShoumanOrder shoumanOrder : shoumanOrders) {
+                String platformOrderId = shoumanOrder.getPlatformOrderId();
+
+                log.info("Started building Shouman Order request {}", platformOrderId);
+                OrderCreationRequest request = new OrderCreationRequest(new JsonOrderCreationRequestBody(shoumanOrder.getOrderJson()));
+                log.info("Finished building Shouman Order request {}", platformOrderId);
+
+                log.info("Started sending Shouman Order request {}", platformOrderId);
+                String resultString = request.rawSend(shoumanOrder).getBody();
+                log.info("Finished sending Shouman Order request {}", platformOrderId);
+
+                JSONObject json = JSON.parseObject(resultString);
+                Object status = json.get("status");
+                if (status != null) {
+                    if (((Integer) status) == 1) {
+                        log.info("Shouman Order {} ended with success", platformOrderId);
+                        shoumanOrder.setSuccess(status.toString());
+                    } else {
+                        log.info("Shouman Order {} failed", platformOrderId);
+                    }
+                }
+            }
+            log.info("Finished building and sending Shouman order requests");
+
+            log.info("Started updating Shouman Orders in DB");
+            shoumanOrderService.updateBatchById(shoumanOrders);
+            log.info("Finished updating Shouman Orders in DB");
+
+            return Result.OK("订单已发送成功，请前往首曼系统确认");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

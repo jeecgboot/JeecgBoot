@@ -77,4 +77,5 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<Sku> listByClientId(@Param("clientId") String clientId);
 
     List<SkuOrderPage> searchExistingSkuByKeywords(@Param("keywords") List<String> keywords);
+    List<Sku> listImgUrls();
 }

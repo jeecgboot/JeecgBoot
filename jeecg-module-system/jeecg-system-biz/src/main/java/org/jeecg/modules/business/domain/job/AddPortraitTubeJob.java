@@ -37,18 +37,27 @@ public class AddPortraitTubeJob implements Job {
     private static final List<String> DEFAULT_SHOPS = Arrays.asList("JCH3", "JCH4", "JCH5");
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
     private static final String TUBE_30_SKU_SINGLE_DOUBLE = "PJ95310032-WIA";
-    private static final String TUBE_40_SKU_SINGLE = "PJ95430032-WIA";
-    private static final String TUBE_40_SKU_MULTIPLE = "PJ95430040-WIA";
     private static final String TUBE_50_SKU_SINGLE = "PJ95530032-WIA";
-    private static final String TUBE_50_SKU_MULTIPLE = "PJ95530040-WIA";
-    private static final List<String> TUBE_SKUS = Arrays.asList(TUBE_30_SKU_SINGLE_DOUBLE, TUBE_50_SKU_MULTIPLE,
-            TUBE_50_SKU_SINGLE, TUBE_40_SKU_MULTIPLE, TUBE_40_SKU_SINGLE);
+
+    private static final String TUBE_NEW_40_SKU_SINGLE = "PJ349400032-JCH";
+    private static final String TUBE_NEW_40_SKU_MULTIPLE = "PJ349400045-JCH";
+//    private static final String TUBE_NEW_50_SKU_SINGLE = "PJ349500032-JCH";
+    private static final String TUBE_NEW_50_SKU_MULTIPLE = "PJ349500045-JCH";
+    private static final String TUBE_NEW_60_SKU_SINGLE = "PJ349600032-JCH";
+    private static final String TUBE_NEW_60_SKU_MULTIPLE = "PJ349600045-JCH";
+
+    private static final List<String> TUBE_SKUS = Arrays.asList(TUBE_30_SKU_SINGLE_DOUBLE, TUBE_50_SKU_SINGLE,
+            TUBE_NEW_40_SKU_MULTIPLE, TUBE_NEW_50_SKU_MULTIPLE, TUBE_NEW_60_SKU_SINGLE, TUBE_NEW_60_SKU_MULTIPLE,
+            TUBE_NEW_40_SKU_SINGLE);
     private static final String PREFIX_50_CANVAS = "JJ2501";
     private static final String PREFIX_50_CANVAS_CHROME = "JJ2001";
     private static final String PREFIX_40_CANVAS = "JJ2500";
     private static final String PREFIX_40_CANVAS_CHROME = "JJ2000";
     private static final String PREFIX_30_CANVAS = "JJ2502";
     private static final String PREFIX_30_CANVAS_CHROME = "JJ2002";
+    private static final String PREFIX_NEW_56_CANVAS = "JJ314VF02";
+    private static final String PREFIX_NEW_46_CANVAS = "JJ314VF01";
+    private static final String PREFIX_NEW_36_CANVAS = "JJ314VF00";
 
     @Autowired
     private IPlatformOrderService platformOrderService;
@@ -128,8 +137,8 @@ public class AddPortraitTubeJob implements Job {
             HashSet<Pair<String, Integer>> adequateTubes = currentAndAdequateTubes.getRight();
             // Do nothing if current tubes are the adequate tubes
             if (!currentTubes.containsAll(adequateTubes) || !adequateTubes.containsAll(currentTubes)) {
-                ChangeOrderRequestBody changeOrderRequestBody = new ChangeOrderRequestBody(mabangOrder.getPlatformOrderId(), null,
-                        currentTubes, adequateTubes, null);
+                ChangeOrderRequestBody changeOrderRequestBody = ChangeOrderRequestBody.buildChangeOrderRequestBody(
+                        mabangOrder.getPlatformOrderId(), null, currentTubes, adequateTubes, null);
                 changeOrderRequests.add(changeOrderRequestBody);
             }
         }
@@ -163,6 +172,9 @@ public class AddPortraitTubeJob implements Job {
         int canvas30Count = 0;
         int canvas40Count = 0;
         int canvas50Count = 0;
+        int canvasNew36Count = 0;
+        int canvasNew46Count = 0;
+        int canvasNew56Count = 0;
         HashSet<Pair<String, Integer>> currentTubes = new HashSet<>();
         HashSet<Pair<String, Integer>> adequateTubes = new HashSet<>();
         for (OrderItem orderItem : orderItems) {
@@ -176,38 +188,63 @@ public class AddPortraitTubeJob implements Job {
                 canvas40Count += quantity;
             } else if (sku.startsWith(PREFIX_30_CANVAS) || sku.startsWith(PREFIX_30_CANVAS_CHROME)) {
                 canvas30Count += quantity;
+            } else if (sku.startsWith(PREFIX_NEW_36_CANVAS)) {
+                canvasNew36Count += quantity;
+            } else if (sku.startsWith(PREFIX_NEW_46_CANVAS)) {
+                canvasNew46Count += quantity;
+            } else if (sku.startsWith(PREFIX_NEW_56_CANVAS)) {
+                canvasNew56Count += quantity;
             }
         }
 
         int canvas30RemainderCount = canvas30Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
         int canvas40RemainderCount = canvas40Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
         int canvas50RemainderCount = canvas50Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
-        int totalRemainderCount = canvas30RemainderCount + canvas40RemainderCount + canvas50RemainderCount;
+        int canvasNew36RemainderCount = canvasNew36Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
+        int canvasNew46RemainderCount = canvasNew46Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
+        int canvasNew56RemainderCount = canvasNew56Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
+        int totalRemainderCount = canvas30RemainderCount + canvas40RemainderCount + canvas50RemainderCount +
+                canvasNew36RemainderCount + canvasNew46RemainderCount + canvasNew56RemainderCount;
         int tube50SingleCount = 0;
-        int tube50MultipleCount = (int) Math.floor(canvas50Count / MAXIMUM_CANVAS_IN_TUBE);
+        int tubeNew60MultipleCount = (int) Math.floor(canvas50Count / MAXIMUM_CANVAS_IN_TUBE);
         int tube40SingleCount = 0;
-        int tube40MultipleCount = (int) Math.floor(canvas40Count / MAXIMUM_CANVAS_IN_TUBE);
+        int tubeNew50MultipleCount = (int) Math.floor(canvas40Count / MAXIMUM_CANVAS_IN_TUBE);
         int tube30SingleDoubleCount = 0;
-        // 3 canvas of 30cm also go into 40 multiple tubes
-        tube40MultipleCount += (int) Math.floor(canvas30Count / MAXIMUM_CANVAS_IN_TUBE);
+        int tubeNew40MultipleCount = (int) Math.floor(canvas30Count / MAXIMUM_CANVAS_IN_TUBE);
+
+        int tubeNew60SingleCount = 0;
+        tubeNew60MultipleCount += (int) Math.floor(canvasNew56Count / MAXIMUM_CANVAS_IN_TUBE);
+        tubeNew50MultipleCount += (int) Math.floor(canvasNew46Count / MAXIMUM_CANVAS_IN_TUBE);
+        tubeNew40MultipleCount += (int) Math.floor(canvasNew36Count / MAXIMUM_CANVAS_IN_TUBE);
+
         // When remaining 1 to 3 canvases
         if (totalRemainderCount > 0 && totalRemainderCount < 4) {
-            if (canvas50RemainderCount > 0) {
-                // It only takes one 50cm canvas with any other canvas to impose the use of 50cm multiple tube
+            if (canvas50RemainderCount > 0 || canvasNew56RemainderCount > 0) {
+                // It only takes one 50cm/56cm canvas with any other canvas to impose the use of NEW 60cm multiple tube
                 if (totalRemainderCount > 1) {
-                    tube50MultipleCount++;
+                    tubeNew60MultipleCount++;
+                } else if (canvasNew56RemainderCount > 0) {
+                    // Only NEW 60cm tubes can contain NEW 56cm canvases
+                    tubeNew60SingleCount++;
                 } else {
                     tube50SingleCount++;
                 }
             } else {
+                // No 50/56cm canvases
                 if (totalRemainderCount > 1) {
-                    if (canvas40RemainderCount > 0) {
-                        tube40MultipleCount++;
+                    // It only takes one 40cm/46cm canvas with any other canvas to impose the use of NEW 50cm multiple tube
+                    if (canvas40RemainderCount > 0 || canvasNew46RemainderCount > 0) {
+                        tubeNew50MultipleCount++;
+                    } else if (canvasNew36RemainderCount > 0) {
+                        tubeNew40MultipleCount++;
                     } else {
                         tube30SingleDoubleCount++;
                     }
                 } else {
-                    if (canvas40RemainderCount > 0) {
+                    if (canvasNew46RemainderCount > 0) {
+                        // TODO 2024-08-28 Temporarily use OLD 50cm tubes for NEW 46cm canvases
+                        tube50SingleCount++;
+                    } else if (canvas40RemainderCount > 0 || canvasNew36RemainderCount > 0) {
                         tube40SingleCount++;
                     } else if (canvas30RemainderCount > 0){
                         tube30SingleDoubleCount++;
@@ -215,49 +252,79 @@ public class AddPortraitTubeJob implements Job {
                 }
             }
         } else if (totalRemainderCount >= 4) {
-            // When remaining 4 to 6 canvases, one 50cm canvas imposes one 50cm multiple tube
-            if (canvas50RemainderCount > 0) {
-                tube50MultipleCount++;
-                if (canvas50RemainderCount > 1) {
-                    // If we have two 50cm canvases and a total of 5 of 6 canvases
+            // When remaining 4 to 6 canvases, one 50/56cm canvas imposes one NEW 60cm multiple tube
+            if (canvas50RemainderCount > 0 || canvasNew56RemainderCount > 0) {
+                tubeNew60MultipleCount++;
+                if (canvas50RemainderCount + canvasNew56RemainderCount > 1) {
+                    // If we have two 50/56cm canvases and a total of 5 of 6 canvases
                     if (totalRemainderCount > 4) {
-                        if (canvas40RemainderCount > 1) {
-                            tube40MultipleCount++;
+                        if (canvas40RemainderCount > 1 || canvasNew46RemainderCount > 1) {
+                            tubeNew50MultipleCount++;
                         } else {
                             tube30SingleDoubleCount++;
                         }
                     } else {
-                        if (canvas40RemainderCount > 1) {
+                        if (canvasNew46RemainderCount > 1) {
+                            // TODO 2024-08-28 Temporarily use OLD 50cm tubes for NEW 46cm canvases
+                            tube50SingleCount++;
+                        } else if (canvas40RemainderCount > 1) {
                             tube40SingleCount++;
                         } else {
                             tube30SingleDoubleCount++;
                         }
                     }
                 } else {
-                    tube30SingleDoubleCount++;
+                    // Only case possible : 1 * 50/56cm, 2 * 40/46cm, 2 * 30/36cm
+                    if (canvasNew36RemainderCount > 0) {
+                        tubeNew40MultipleCount++;
+                    } else {
+                        tube30SingleDoubleCount++;
+                    }
                 }
             } else {
-                // No 50cm canvases means only one combination possible: two 40cm canvases and two 30cm canvases
-                tube40MultipleCount++;
-                tube30SingleDoubleCount++;
+                // No 50/56cm canvases : only 30,36,40,46cm canvases, each type having no more than 2
+                if (canvas40RemainderCount > 0 || canvasNew46RemainderCount > 0) {
+                    // Any 40/46cm canvas means at least one NEW 50cm multiple tube is needed
+                    tubeNew50MultipleCount++;
+                    if (canvas40RemainderCount > 1 && canvasNew46RemainderCount > 1) {
+                        if (totalRemainderCount > 4) {
+                            tubeNew50MultipleCount++;
+                        } else {
+                            tubeNew40MultipleCount++;
+                        }
+                    } else if (canvasNew36RemainderCount > 0 && totalRemainderCount > 4) {
+                        tubeNew40MultipleCount++;
+                    } else {
+                        tube30SingleDoubleCount++;
+                    }
+                } else {
+                    // Only 30/36cm canvases, meaning only one possible case : two 30cm and two 36cm canvases
+                    tubeNew40MultipleCount++;
+                    tube30SingleDoubleCount++;
+                }
             }
         }
 
         if (tube50SingleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_50_SKU_SINGLE, tube50SingleCount));
         }
-        if (tube50MultipleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_50_SKU_MULTIPLE, tube50MultipleCount));
+        if (tubeNew60MultipleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_NEW_60_SKU_MULTIPLE, tubeNew60MultipleCount));
         }
         if (tube40SingleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_40_SKU_SINGLE, tube40SingleCount));
+            adequateTubes.add(Pair.of(TUBE_NEW_40_SKU_SINGLE, tube40SingleCount));
         }
-        // 2024-06-13 Temporarily replace 40cm multiple tubes by 50cm multiple tubes
-        if (tube40MultipleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_50_SKU_MULTIPLE, tube40MultipleCount));
+        if (tubeNew50MultipleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_NEW_50_SKU_MULTIPLE, tubeNew50MultipleCount));
         }
         if (tube30SingleDoubleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_30_SKU_SINGLE_DOUBLE, tube30SingleDoubleCount));
+        }
+        if (tubeNew40MultipleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_NEW_40_SKU_MULTIPLE, tubeNew40MultipleCount));
+        }
+        if (tubeNew60SingleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_NEW_60_SKU_SINGLE, tubeNew60SingleCount));
         }
         return Pair.of(currentTubes, adequateTubes);
     }

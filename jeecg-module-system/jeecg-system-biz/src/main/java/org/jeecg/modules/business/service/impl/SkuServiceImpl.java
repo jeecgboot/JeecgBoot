@@ -607,6 +607,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Override
     public List<SkuOrderPage> searchExistingSkuByKeywords(List<String> keywords) {
         return skuMapper.searchExistingSkuByKeywords(keywords);
+
+    @Override
+    public List<Sku> listImgUrls() {
+        return skuMapper.listImgUrls();
     }
 
 }

@@ -120,4 +120,6 @@ public interface ISkuService extends IService<Sku> {
     List<SkuOrderPage> listSelectableSkuIdsWithFilters(String clientId, List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
 
     List<SkuOrderPage> listSelectableSkuIds(String clientId);
+
+    List<Sku> listImgUrls();
 }

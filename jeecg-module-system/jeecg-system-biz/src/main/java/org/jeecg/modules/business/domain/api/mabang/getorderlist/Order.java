@@ -85,6 +85,11 @@ public class Order {
     @JSONField(name = "countryNameEN")
     private String country;
     /**
+     * 订单收件人城市
+     */
+    @JSONField(name = "city")
+    private String city;
+    /**
      * 订单收件人邮编
      */
     @JSONField(name = "postCode")

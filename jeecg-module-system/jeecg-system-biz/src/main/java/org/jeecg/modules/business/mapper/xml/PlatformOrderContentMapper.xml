@@ -109,39 +109,6 @@
         </constructor>
     </resultMap>
 
-    <select id="findUninvoicedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
-        SELECT poc.*
-        FROM platform_order_content poc
-        JOIN platform_order po ON poc.platform_order_id = po.id
-        WHERE po.shop_id IN
-        <foreach
-                collection="shopIDs"
-                index="index"
-                item="item"
-                open="("
-                close=")"
-                separator=",">
-            #{item}
-        </foreach>
-        AND po.shipping_time >= #{begin}
-        AND #{end} >= po.shipping_time
-        AND po.shipping_invoice_number IS NULL
-        AND poc.erp_status = 3
-    </select>
-    <select id="findUninvoicedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
-        SELECT poc.*
-        FROM platform_order_content poc
-        WHERE platform_order_id IN
-        <foreach
-                collection="orderIds"
-                index="index"
-                item="orderId"
-                open="("
-                close=")"
-                separator=",">
-            #{orderId}
-        </foreach>
-    </select>
     <select id="findUninvoicedOrderContentsForShopsAndStatus" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
         SELECT poc.*
         FROM platform_order_content poc
@@ -361,5 +328,101 @@
             AND erp_status IN ('1','2')
             AND product_available = 1
             OR virtual_product_available = 1;
+    </select>
+
+    <select id="searchShoumanOrderContent"
+            resultType="org.jeecg.modules.business.entity.ShoumanOrderContent" resultMap="shoumanOrderContentResultMap">
+        select sh.erp_code,
+               po.platform_order_id,
+               po.platform_order_number,
+               po.postcode,
+               po.recipient,
+               po.city,
+               po.country,
+               poc.id as platform_order_content_id,
+               poc.customization_data,
+               poc.quantity,
+               sc.product_name,
+               ssr.remark,
+               sc.price,
+               sc.image_url,
+               sc.sku,
+               sc.is_necklace,
+               sc.is_gem,
+               sr.content_rec_regex,
+               sr.content_ext_regex,
+               sr.prefix,
+               sr.is_size_regex
+        from platform_order_content poc
+                 join platform_order po on poc.platform_order_id = po.id
+                 join shop sh on po.shop_id = sh.id
+                 join sku s on poc.sku_id = s.id
+                 join shouman_sku_relation ssr on s.id = ssr.sku_id
+                 join shouman_category sc on ssr.shouman_category_id = sc.id
+                 join shouman_regex sr on sc.id = sr.shouman_category_id
+        where poc.erp_status in (1,2)
+          and sr.is_active = 1
+          and po.platform_order_id not in (select platform_order_id from shouman_order);
+    </select>
+
+    <resultMap id="shoumanOrderContentResultMap" type="org.jeecg.modules.business.entity.ShoumanOrderContent">
+        <id property="platformOrderContentId" column="platform_order_content_id" javaType="string"/>
+        <result property="shopErpCode" column="erp_code" javaType="string"/>
+        <result property="platformOrderId" column="platform_order_id" javaType="string"/>
+        <result property="platformOrderNumber" column="platform_order_number" javaType="string"/>
+        <result property="postcode" column="postcode" javaType="string"/>
+        <result property="recipient" column="recipient" javaType="string"/>
+        <result property="city" column="city" javaType="string"/>
+        <result property="country" column="country" javaType="string"/>
+        <result property="customizationData" column="customization_data" javaType="string"/>
+        <result property="quantity" column="quantity"/>
+        <result property="productName" column="product_name" javaType="string"/>
+        <result property="remark" column="remark" javaType="string"/>
+        <result property="price" column="price"/>
+        <result property="imageUrl" column="image_url" javaType="string"/>
+        <result property="sku" column="sku" javaType="string"/>
+        <result property="isNecklace" column="is_necklace" javaType="boolean"/>
+        <result property="isGem" column="is_gem" javaType="boolean"/>
+        <collection property="regexList" ofType="org.jeecg.modules.business.entity.ShoumanRegex">
+            <result property="contentRecRegex" column="content_rec_regex" javaType="string"/>
+            <result property="contentExtRegex" column="content_ext_regex" javaType="string"/>
+            <result property="prefix" column="prefix" javaType="string"/>
+            <result property="isSizeRegex" column="is_size_regex" javaType="string"/>
+        </collection>
+    </resultMap>
+
+    <select id="searchShoumanOrderContentByPlatformOrderId"
+            resultType="org.jeecg.modules.business.entity.ShoumanOrderContent" resultMap="shoumanOrderContentResultMap">
+        select sh.erp_code,
+               po.platform_order_id,
+               po.platform_order_number,
+               po.postcode,
+               po.recipient,
+               po.city,
+               po.country,
+               poc.id as platform_order_content_id,
+               poc.customization_data,
+               poc.quantity,
+               sc.product_name,
+               ssr.remark,
+               sc.price,
+               sc.image_url,
+               sc.sku,
+               sc.is_necklace,
+               sc.is_gem,
+               sr.content_rec_regex,
+               sr.content_ext_regex,
+               sr.prefix,
+               sr.is_size_regex
+        from platform_order_content poc
+                 join platform_order po on poc.platform_order_id = po.id
+                 join shop sh on po.shop_id = sh.id
+                 join sku s on poc.sku_id = s.id
+                 join shouman_sku_relation ssr on s.id = ssr.sku_id
+                 join shouman_category sc on ssr.shouman_category_id = sc.id
+                 join shouman_regex sr on sc.id = sr.shouman_category_id
+        where poc.erp_status in (1,2)
+          and sr.is_active = 1
+          and po.platform_order_id = #{platformOrderId};
     </select>
 </mapper>

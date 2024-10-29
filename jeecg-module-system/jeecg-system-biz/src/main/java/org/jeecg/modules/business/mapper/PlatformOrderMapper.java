@@ -8,6 +8,7 @@ import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
 import org.jeecg.modules.business.vo.OrderKpi;
 import org.jeecg.modules.business.vo.PlatformOrderOption;
+import org.jeecg.modules.business.vo.PlatformOrderPage;
 import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
@@ -236,4 +237,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<String> fetchShippedOrdersFromShopAndTransporters(@Param("shopCode")String shopCode, @Param("transporters") List<String> transporters);
 
     void updateLocalTrackingNumber(@Param("data") List<YDTrackingNumberData> data);
+
+    List<PlatformOrderPage> pagePotentialShoumanOrders(long pageNo, long pageSize, String column, String order);
+
+    Integer countPotentialShoumanOrders();
 }
