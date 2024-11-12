@@ -36,6 +36,7 @@
 
   const props = defineProps({
     title: { type: String, default: '' },
+    defaultExpan: { type: Boolean, default: true },
     loading: { type: Boolean },
     /**
      *  Can it be expanded
@@ -58,8 +59,9 @@
      */
     lazyTime: { type: Number, default: 0 },
   });
-
-  const show = ref(true);
+  // update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7402】CollapseContainer组件增加默认不展开属性
+  const show = ref(props.defaultExpan);
+  // update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7402】CollapseContainer组件增加默认不展开属性
 
   const { prefixCls } = useDesign('collapse-container');
 
