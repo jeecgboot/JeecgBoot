@@ -185,6 +185,10 @@ export function useCustomSelection(
   let bodyResizeObserver: Nullable<ResizeObserver> = null;
   // 获取首行行高
   watchEffect(() => {
+    // update-begin--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
+    // 这种写法是为了监听到 size 的变化
+    propsRef.value.size && void 0;
+    // update-end--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
     if (bodyEl.value) {
       // 监听div高度变化
       bodyResizeObserver = new ResizeObserver((entries) => {
@@ -198,13 +202,15 @@ export function useCustomSelection(
       bodyResizeObserver.observe(bodyEl.value);
       const el = bodyEl.value?.querySelector('tbody.ant-table-tbody tr.ant-table-row') as HTMLDivElement;
       if (el) {
-        rowHeight.value = el.offsetHeight;
+        // update-begin--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
+        nextTick(() => {
+          rowHeight.value = el.offsetHeight;
+        });
+        // update-end--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
         return;
       }
     }
     rowHeight.value = 50;
-    // 这种写法是为了监听到 size 的变化
-    propsRef.value.size && void 0;
   });
 
   onMountedOrActivated(async () => {
