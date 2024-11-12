@@ -222,7 +222,7 @@
         // update-end--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
       );
 
-      const { getScrollRef, redoHeight } = useTableScroll(getProps, tableElRef, getColumnsRef, getRowSelectionRef, getDataSourceRef);
+      const { getScrollRef, redoHeight } = useTableScroll(getProps, tableElRef, getColumnsRef, getRowSelectionRef, getDataSourceRef, slots);
 
       const { customRow } = useCustomRow(getProps, {
         setSelectedRowKeys,
@@ -605,7 +605,12 @@
       .ant-table > .ant-table-footer {
         padding: 12px 0 0;
       }
-
+      .ant-table > .ant-table-footer {
+        // update-begin--author:liaozhiyang---date:20241111---for：【issues/7413】合计行有点对不齐
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        // update-end--author:liaozhiyang---date:20241111---for：【issues/7413】合计行有点对不齐
+      }
       .ant-table.ant-table-bordered > .ant-table-footer {
         border: 0;
       }
