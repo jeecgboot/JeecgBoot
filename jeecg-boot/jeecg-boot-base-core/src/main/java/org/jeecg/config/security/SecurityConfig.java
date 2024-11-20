@@ -16,6 +16,7 @@ import org.jeecg.config.security.phone.PhoneGrantAuthenticationConvert;
 import org.jeecg.config.security.phone.PhoneGrantAuthenticationProvider;
 import org.jeecg.config.security.social.SocialGrantAuthenticationConvert;
 import org.jeecg.config.security.social.SocialGrantAuthenticationProvider;
+import org.jeecg.config.shiro.ignore.InMemoryIgnoreAuth;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -42,6 +43,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 
 import java.security.KeyPair;
@@ -50,6 +53,7 @@ import java.security.SecureRandom;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * spring authorization server核心配置
@@ -102,6 +106,7 @@ public class SecurityConfig {
         http
                 //设置所有请求都需要认证，未认证的请求都被重定向到login页面进行登录
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers(InMemoryIgnoreAuth.get().stream().map(AntPathRequestMatcher::antMatcher).toList().toArray(new AntPathRequestMatcher[0])).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/cas/client/validateLogin")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/randomImage/**")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/checkCaptcha")).permitAll()
