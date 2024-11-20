@@ -6,20 +6,15 @@ spring:
   main:
     allow-bean-definition-overriding: true
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+    exclude: com.baomidou.dynamic.datasource.spring.boot.autoconfigure.DynamicDataSourceAutoConfiguration
   datasource:
-    dynamic:
-      seata: true    # 开启对 seata的支持
-      primary: account
-      datasource:
-        account:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg_account?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
-          username: root
-          password: root
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          schema: classpath:sql/schema-account.sql
+    url: jdbc:mysql://127.0.0.1:3306/jeecg_account?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    schema: classpath:sql/schema-account.sql
 seata:
-  enable-auto-data-source-proxy: false
+#  enable-auto-data-source-proxy: false
   service:
     grouplist:
       default: 127.0.0.1:8091
