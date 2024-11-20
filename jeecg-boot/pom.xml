@@ -36,7 +36,6 @@
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
         <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
-		<seata.version>1.5.2</seata.version>
 
 		<xxl-job-core.version>2.4.1</xxl-job-core.version>
         <fastjson.version>2.0.43</fastjson.version>
@@ -170,11 +169,6 @@
                 <version>${spring-cloud-alibaba.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>io.seata</groupId>
-				<artifactId>seata-spring-boot-starter</artifactId>
-				<version>${seata.version}</version>
 			</dependency>
 
 			<!-- system 模块-->

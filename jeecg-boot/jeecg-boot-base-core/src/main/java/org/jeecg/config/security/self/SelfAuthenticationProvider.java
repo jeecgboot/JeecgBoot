@@ -1,17 +1,15 @@
 package org.jeecg.config.security.self;
 
-import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBoot401Exception;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.system.vo.SysDepartModel;
 import org.jeecg.common.util.RedisUtil;
-import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -48,6 +46,7 @@ public class SelfAuthenticationProvider implements AuthenticationProvider {
 
     private final OAuth2AuthorizationService authorizationService;
     private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
+    @Lazy
     @Autowired
     private CommonAPI commonAPI;
     @Autowired

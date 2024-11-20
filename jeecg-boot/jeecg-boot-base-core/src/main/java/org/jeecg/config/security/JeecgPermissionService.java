@@ -7,6 +7,8 @@ import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.config.security.utils.SecureUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.util.StringUtils;
@@ -21,14 +23,16 @@ import java.util.Set;
  * @date 2024/1/10 17:00
  */
 @Service("jps")
-@AllArgsConstructor
 @Slf4j
 public class JeecgPermissionService {
     private final String SPLIT = "::";
     private final String PERM_PREFIX = "jps" + SPLIT;
 
-    private final CommonAPI commonAPI;
-    private final RedisUtil redisUtil;
+    @Lazy
+    @Autowired
+    private CommonAPI commonAPI;
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * 判断接口是否有任意xxx，xxx权限
