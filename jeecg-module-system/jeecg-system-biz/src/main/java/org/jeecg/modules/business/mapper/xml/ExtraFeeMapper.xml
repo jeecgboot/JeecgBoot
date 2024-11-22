@@ -51,9 +51,10 @@
 </select>
 <update id="updateFee">
     UPDATE extra_fee
-    SET unit_price = #{price},
-        quantity = #{qty},
-        description = #{description}
+    SET unit_price  = #{price},
+        quantity    = #{qty},
+        description =
+            IF(option_id = (SELECT id FROM extra_fee_option WHERE en_name = 'Autres') AND invoice_number IS NULL, #{description}, description)
     WHERE id = #{id};
 </update>
 </mapper>
