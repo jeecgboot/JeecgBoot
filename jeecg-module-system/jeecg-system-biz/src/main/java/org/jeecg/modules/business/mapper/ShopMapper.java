@@ -4,6 +4,7 @@ import java.util.List;
 import org.jeecg.modules.business.entity.Shop;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.business.vo.ShopPage;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -28,4 +29,8 @@ public interface ShopMapper extends BaseMapper<Shop> {
     String getNameById(@Param("shopId") String shopId);
 
     String getCodeById(@Param("shopId") String shopId);
+
+    List<ShopPage> listShopGroupedByClient();
+
+    String getIdByCode(@Param("code") String erpCode);
 }

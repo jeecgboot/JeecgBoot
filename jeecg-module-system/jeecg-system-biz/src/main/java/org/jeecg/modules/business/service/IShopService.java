@@ -2,6 +2,8 @@ package org.jeecg.modules.business.service;
 
 import org.jeecg.modules.business.entity.Shop;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.business.vo.ShopPage;
+
 import java.util.List;
 
 /**
@@ -22,4 +24,7 @@ public interface IShopService extends IService<Shop> {
     String getNameById(String shopId);
 
     String getCodeById(String shopId);
+
+    List<ShopPage> listShopGroupedByClient();
+    String getIdByCode(String erpCode);
 }
