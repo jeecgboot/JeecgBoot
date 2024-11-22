@@ -33,7 +33,6 @@ JeecgBoot 提供了一系列`低代码模块`，实现在线开发`真正的零�
 Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，支持信创国产化（默认适配达梦和人大金仓）。尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
 
 
-
 #### 项目说明
 
 | 项目名                | 说明                     | 
@@ -41,6 +40,17 @@ Jeecg-Boot低代码开发平台，可以应用在任何J2EE项目的开发中，
 | `jeecg-boot`    | 后端源码JAVA（SpringBoot微服务架构）        |
 | `jeecgboot-vue3` | 前端源码VUE3（vue3+vite5+ts最新技术栈）  |
 | `jeecg-uniapp` | [配套APP框架](https://github.com/jeecgboot/jeecg-uniapp) 适配多个终端，支持APP、小程序、H5 |
+
+
+开源协议说明
+-----------------------------------
+JeecgBoot开源版本，底层完全开源可以自主开发，遵循Apache2.0协议，详细见 https://github.com/jeecgboot/JeecgBoot#Apache-2.0-1-ov-file
+
+开源协议中文释意如下：
+- 1.JeecgBoot开源版本无任何限制，在遵循本开源协议条款下，允许商用使用，不会造成侵权行为。
+- 2.允许基于本平台软件开展业务系统开发。
+- 3.在任何情况下，您不得使用本软件开发可能被认为与本软件竞争的软件。
+- 4.针对企业用户我们也提供“企业级版本”，详细见 https://jeecg.com/vip
 
 
 技术文档
