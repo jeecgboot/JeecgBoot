@@ -37,12 +37,7 @@ public class AddPortraitTubeJob implements Job {
     private static final List<String> DEFAULT_SHOPS = Arrays.asList("JCH3", "JCH4", "JCH5");
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
     private static final String TUBE_30_SKU_SINGLE_DOUBLE = "PJ95310032-WIA";
-    private static final String TUBE_40_SKU_SINGLE = "PJ95430032-WIA";
-    // TODO 2024-08-28 To delete when no longer in use
-    private static final String TUBE_40_SKU_MULTIPLE = "PJ95430040-WIA";
     private static final String TUBE_50_SKU_SINGLE = "PJ95530032-WIA";
-    // TODO 2024-08-28 To delete when no longer in use
-    private static final String TUBE_50_SKU_MULTIPLE = "PJ95530040-WIA";
 
     private static final String TUBE_NEW_40_SKU_SINGLE = "PJ349400032-JCH";
     private static final String TUBE_NEW_40_SKU_MULTIPLE = "PJ349400045-JCH";
@@ -52,17 +47,17 @@ public class AddPortraitTubeJob implements Job {
     private static final String TUBE_NEW_60_SKU_MULTIPLE = "PJ349600045-JCH";
 
     private static final List<String> TUBE_SKUS = Arrays.asList(TUBE_30_SKU_SINGLE_DOUBLE, TUBE_50_SKU_SINGLE,
-            TUBE_40_SKU_SINGLE, TUBE_NEW_40_SKU_MULTIPLE, TUBE_NEW_50_SKU_MULTIPLE, TUBE_NEW_60_SKU_SINGLE,
-            TUBE_NEW_60_SKU_MULTIPLE, TUBE_40_SKU_MULTIPLE, TUBE_50_SKU_MULTIPLE, TUBE_NEW_40_SKU_SINGLE);
+            TUBE_NEW_40_SKU_MULTIPLE, TUBE_NEW_50_SKU_MULTIPLE, TUBE_NEW_60_SKU_SINGLE,
+            TUBE_NEW_60_SKU_MULTIPLE, TUBE_NEW_40_SKU_SINGLE);
     private static final String PREFIX_50_CANVAS = "JJ2501";
     private static final String PREFIX_50_CANVAS_CHROME = "JJ2001";
     private static final String PREFIX_40_CANVAS = "JJ2500";
     private static final String PREFIX_40_CANVAS_CHROME = "JJ2000";
     private static final String PREFIX_30_CANVAS = "JJ2502";
     private static final String PREFIX_30_CANVAS_CHROME = "JJ2002";
-    private static final String PREFIX_NEW_56_CANVAS = "JJ314VF02";
-    private static final String PREFIX_NEW_46_CANVAS = "JJ314VF01";
-    private static final String PREFIX_NEW_36_CANVAS = "JJ314VF00";
+    private static final String REGEX_NEW_56_CANVAS = "JJ314V(F|A)02.*-JCH";
+    private static final String REGEX_NEW_46_CANVAS = "JJ314V(F|A)01.*-JCH";
+    private static final String REGEX_NEW_36_CANVAS = "JJ314V(F|A)00.*-JCH";
 
     @Autowired
     private IPlatformOrderService platformOrderService;
@@ -193,11 +188,11 @@ public class AddPortraitTubeJob implements Job {
                 canvas40Count += quantity;
             } else if (sku.startsWith(PREFIX_30_CANVAS) || sku.startsWith(PREFIX_30_CANVAS_CHROME)) {
                 canvas30Count += quantity;
-            } else if (sku.startsWith(PREFIX_NEW_36_CANVAS)) {
+            } else if (sku.matches(REGEX_NEW_36_CANVAS) ) {
                 canvasNew36Count += quantity;
-            } else if (sku.startsWith(PREFIX_NEW_46_CANVAS)) {
+            } else if (sku.matches(REGEX_NEW_46_CANVAS)) {
                 canvasNew46Count += quantity;
-            } else if (sku.startsWith(PREFIX_NEW_56_CANVAS)) {
+            } else if (sku.matches(REGEX_NEW_56_CANVAS)) {
                 canvasNew56Count += quantity;
             }
         }
