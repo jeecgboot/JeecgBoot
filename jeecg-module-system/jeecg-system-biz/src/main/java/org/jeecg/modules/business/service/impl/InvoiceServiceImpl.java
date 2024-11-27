@@ -27,6 +27,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Autowired
     private IClientService clientService;
     @Autowired
+    private IExtraFeeService extraFeeService;
+    @Autowired
     private IPlatformOrderContentService platformOrderContentService;
     @Autowired
     private IPlatformOrderService platformOrderService;
@@ -57,6 +59,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     public boolean cancelInvoice(String id, String invoiceNumber, String clientId) {
         String invoiceEntity = clientService.getById(clientId).getInvoiceEntity();
 
+        extraFeeService.cancelInvoice(invoiceNumber, clientId);
         savRefundService.cancelInvoice(invoiceNumber, clientId);
         if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name())) {
             PurchaseOrder po = purchaseOrderService.getById(id);

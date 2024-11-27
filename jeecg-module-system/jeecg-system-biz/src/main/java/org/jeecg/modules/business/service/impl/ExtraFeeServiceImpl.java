@@ -41,4 +41,24 @@ public class ExtraFeeServiceImpl extends ServiceImpl<ExtraFeeMapper, ExtraFee> i
         }
         extraFeeMapper.updateFee(feeParam.getId(), feeParam.getDescription(), feeParam.getQuantity(), feeParam.getUnitPrice());
     }
+
+    @Override
+    public List<ExtraFeeResult> findNotInvoicedByShops(List<String> shopIds) {
+        return extraFeeMapper.findNotInvoicedByShops(shopIds);
+    }
+
+    @Override
+    public void updateInvoiceNumberByIds(List<String> feeIds, String invoiceCode) {
+        extraFeeMapper.updateInvoiceNumberByIds(feeIds, invoiceCode);
+    }
+
+    @Override
+    public List<ExtraFeeResult> findByInvoiceNumber(String invoiceCode) {
+        return extraFeeMapper.findByInvoiceNumber(invoiceCode);
+    }
+
+    @Override
+    public void cancelInvoice(String invoiceNumber, String clientId) {
+        extraFeeMapper.cancelInvoice(invoiceNumber, clientId);
+    }
 }

@@ -1,10 +1,13 @@
 package org.jeecg.modules.business.domain.shippingInvoice;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.poi.ss.usermodel.*;
 import org.jeecg.modules.business.domain.invoice.AbstractInvoice;
 import org.jeecg.modules.business.domain.invoice.InvoiceStyleFactory;
 import org.jeecg.modules.business.domain.invoice.Row;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.vo.ExtraFeeResult;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,16 +23,21 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
     private final Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent;
 
     private final List<SavRefundWithDetail> savRefunds;
-
+    private final List<ExtraFeeResult> extraFees;
+    @Getter
+    @Setter
     private BigDecimal totalAmount;
 
     public ShippingInvoice(Client targetClient, String code,
                            String subject,
                            Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent,
-                           List<SavRefundWithDetail> savRefunds, BigDecimal exchangeRate) {
+                           List<SavRefundWithDetail> savRefunds,
+                           List<ExtraFeeResult> extraFees,
+                           BigDecimal exchangeRate) {
         super(targetClient, code, subject, exchangeRate);
         this.ordersToContent = ordersToContent;
         this.savRefunds = savRefunds;
+        this.extraFees = extraFees;
         totalAmount = BigDecimal.ZERO;
     }
 
@@ -144,18 +152,24 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
                 totalAmount = totalAmount.add(refundForOrder);
             }
         }
+        if(extraFees != null) {
+            for (ExtraFeeResult extraFee : extraFees) {
+                BigDecimal extraFeeAmount = extraFee.getUnitPrice().multiply(BigDecimal.valueOf(extraFee.getQuantity()));
+                Row<String, Object, Integer, Object, BigDecimal> extraFeeRow = new Row<>(
+                        extraFee.getDescription() == null ? extraFee.getEnName() : extraFee.getDescription(),
+                        extraFee.getUnitPrice(),
+                        extraFee.getQuantity(),
+                        null,
+                        extraFeeAmount
+                );
+                rows.add(extraFeeRow);
+                totalAmount = totalAmount.add(extraFeeAmount);
+            }
+        }
         totalAmount = totalAmount.add(vatForEU);
         return rows;
     }
 
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-    }
 
     public BigDecimal reducedAmount() {
         return BigDecimal.ZERO;

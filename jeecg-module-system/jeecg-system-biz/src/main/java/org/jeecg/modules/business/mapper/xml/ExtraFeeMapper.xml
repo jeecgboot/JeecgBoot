@@ -57,4 +57,54 @@
             IF(option_id = (SELECT id FROM extra_fee_option WHERE en_name = 'Autres') AND invoice_number IS NULL, #{description}, description)
     WHERE id = #{id};
 </update>
+<select id="findNotInvoicedByShops" resultType="org.jeecg.modules.business.vo.ExtraFeeResult">
+    SELECT ef.id,
+           s.erp_code as shop,
+           efo.en_name,
+           efo.zh_name,
+           ef.description,
+           ef.quantity,
+           ef.unit_price,
+           ef.invoice_number
+    FROM extra_fee ef
+    JOIN extra_fee_option efo ON efo.id = ef.option_id
+    JOIN shop s ON s.id = ef.shop_id
+    WHERE shop_id IN
+    <foreach collection="shopIds" item="shopId" open="(" separator="," close=")">
+        #{shopId}
+    </foreach>
+    AND invoice_number IS NULL;
+</select>
+<update id="updateInvoiceNumberByIds">
+    UPDATE extra_fee
+    SET invoice_number = #{invoiceNumber}
+    WHERE id IN
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+</update>
+<select id="findByInvoiceNumber" resultType="org.jeecg.modules.business.vo.ExtraFeeResult">
+    SELECT ef.id,
+           ef.create_by,
+           ef.create_time,
+           s.erp_code as shop,
+           efo.en_name,
+           efo.zh_name,
+           ef.description,
+           ef.quantity,
+           ef.unit_price,
+           ef.invoice_number
+    FROM extra_fee ef
+    JOIN extra_fee_option efo ON efo.id = ef.option_id
+    JOIN shop s ON s.id = ef.shop_id
+    WHERE invoice_number = #{invoiceNumber};
+</select>
+<update id="cancelInvoice">
+    UPDATE extra_fee
+        JOIN shop s ON extra_fee.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+    SET invoice_number = NULL
+    WHERE invoice_number = #{invoiceNumber}
+        AND c.id = #{clientId};
+</update>
 </mapper>

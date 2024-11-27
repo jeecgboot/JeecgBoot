@@ -24,6 +24,8 @@ public class SheetManager {
 
     private final Sheet savSheet;
 
+    private final Sheet extraFeeSheet;
+
     private Sheet currentSheet;
 
     private int currentRow;
@@ -32,10 +34,11 @@ public class SheetManager {
 
     private int max_col;
 
-    private SheetManager(Workbook workbook, Sheet detailSheet, Sheet savSheet) {
+    private SheetManager(Workbook workbook, Sheet detailSheet, Sheet savSheet, Sheet extraFeeSheet) {
         this.workbook = workbook;
         this.detailSheet = detailSheet;
         this.savSheet = savSheet;
+        this.extraFeeSheet = extraFeeSheet;
         this.currentRow = 0;
         this.currentCol = 0;
         max_col = 10;
@@ -48,7 +51,7 @@ public class SheetManager {
      * @return the sheetManager instance.
      */
     public static SheetManager createXLSX() {
-        return createXLSX("Détails", "SAV");
+        return createXLSX("Détails", "SAV", "Frais supplémentaires");
     }
 
     /**
@@ -58,11 +61,12 @@ public class SheetManager {
      * @param savSheetName SAV sheet name
      * @return the sheetManager object.
      */
-    public static SheetManager createXLSX(String detailSheetName, String savSheetName) {
+    public static SheetManager createXLSX(String detailSheetName, String savSheetName, String extraFeeSheetName) {
         Workbook workbook = new XSSFWorkbook();
         Sheet detailSheet = workbook.createSheet(detailSheetName);
         Sheet savSheet = workbook.createSheet(savSheetName);
-        return new SheetManager(workbook, detailSheet, savSheet);
+        Sheet extraFeeSheet = workbook.createSheet(extraFeeSheetName);
+        return new SheetManager(workbook, detailSheet, savSheet, extraFeeSheet);
     }
 
     public void startDetailsSheet() {
@@ -71,6 +75,12 @@ public class SheetManager {
 
     public void startSavSheet() {
         this.currentSheet = savSheet;
+        this.currentRow = 0;
+        this.currentCol = 0;
+    }
+
+    public void startExtraFeeSheet() {
+        this.currentSheet = extraFeeSheet;
         this.currentRow = 0;
         this.currentCol = 0;
     }
@@ -85,7 +95,7 @@ public class SheetManager {
     public static SheetManager readXLSX(Path path) throws IOException {
         FileInputStream fis = new FileInputStream(path.toFile());
         Workbook workbook = new XSSFWorkbook(fis);
-        return new SheetManager(workbook, workbook.getSheetAt(0), workbook.getSheetAt(1));
+        return new SheetManager(workbook, workbook.getSheetAt(0), workbook.getSheetAt(1), workbook.getSheetAt(2));
     }
 
     /**
@@ -204,6 +214,7 @@ public class SheetManager {
         for (int i = 0; i < max_col; i++) {
             detailSheet.autoSizeColumn(i);
             savSheet.autoSizeColumn(i);
+            extraFeeSheet.autoSizeColumn(i);
         }
         FileOutputStream fos = new FileOutputStream(target.toFile());
         workbook.write(fos);

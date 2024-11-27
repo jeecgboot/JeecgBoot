@@ -102,30 +102,30 @@ public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeServi
 	/**
 	 *   添加
 	 *
-	 * @param extraFees
+	 * @param extraFee
 	 * @return
 	 */
 	@AutoLog(value = "extra fee content-添加")
 	@ApiOperation(value="extra fee content-添加", notes="extra fee content-添加")
 	@RequiresPermissions("business:extra_fee:add")
 	@PostMapping(value = "/add")
-	public Result<String> add(@RequestBody ExtraFee extraFees) {
-		extraFeeService.save(extraFees);
+	public Result<String> add(@RequestBody ExtraFee extraFee) {
+		extraFeeService.save(extraFee);
 		return Result.OK("添加成功！");
 	}
 	
 	/**
 	 *  编辑
 	 *
-	 * @param extraFees
+	 * @param extraFee
 	 * @return
 	 */
 	@AutoLog(value = "extra fee content-编辑")
 	@ApiOperation(value="extra fee content-编辑", notes="extra fee content-编辑")
 	@RequiresPermissions("business:extra_fee:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
-	public Result<String> edit(@RequestBody ExtraFee extraFees) {
-		extraFeeService.updateById(extraFees);
+	public Result<String> edit(@RequestBody ExtraFee extraFee) {
+		extraFeeService.updateById(extraFee);
 		return Result.OK("编辑成功!");
 	}
 	
@@ -137,11 +137,17 @@ public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeServi
 	 */
 	@AutoLog(value = "extra fee content-通过id删除")
 	@ApiOperation(value="extra fee content-通过id删除", notes="extra fee content-通过id删除")
-	@RequiresPermissions("business:extra_fee:delete")
 	@DeleteMapping(value = "/delete")
-	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
+	public Result<String> delete(@RequestParam(name="id") String id) {
+		ExtraFee extraFee = extraFeeService.getById(id);
+		if(extraFee == null) {
+			return Result.error(404,"Fee not found");
+		}
+		if(extraFee.getInvoiceNumber() != null) {
+			return Result.error(403, "Cannot delete invoiced fee");
+		}
 		extraFeeService.removeById(id);
-		return Result.OK("删除成功!");
+		return Result.OK();
 	}
 	
 	/**
@@ -169,23 +175,23 @@ public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeServi
 	@ApiOperation(value="extra fee content-通过id查询", notes="extra fee content-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<ExtraFee> queryById(@RequestParam(name="id",required=true) String id) {
-		ExtraFee extraFees = extraFeeService.getById(id);
-		if(extraFees==null) {
+		ExtraFee extraFee = extraFeeService.getById(id);
+		if(extraFee==null) {
 			return Result.error("未找到对应数据");
 		}
-		return Result.OK(extraFees);
+		return Result.OK(extraFee);
 	}
 
     /**
     * 导出excel
     *
     * @param request
-    * @param extraFees
+    * @param extraFee
     */
     @RequiresPermissions("business:extra_fee:exportXls")
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, ExtraFee extraFees) {
-        return super.exportXls(request, extraFees, ExtraFee.class, "extra fee content");
+    public ModelAndView exportXls(HttpServletRequest request, ExtraFee extraFee) {
+        return super.exportXls(request, extraFee, ExtraFee.class, "extra fee content");
     }
 
     /**

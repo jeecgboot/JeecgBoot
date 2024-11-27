@@ -20,4 +20,12 @@ public interface IExtraFeeService extends IService<ExtraFee> {
     Integer countAllFees(String shop, String status);
 
     void updateFee(ExtraFeeParam feeParam) throws Exception;
+
+    List<ExtraFeeResult> findNotInvoicedByShops(List<String> shopIds);
+
+    void updateInvoiceNumberByIds(List<String> feeIds, String invoiceCode);
+
+    List<ExtraFeeResult> findByInvoiceNumber(String invoiceCode);
+
+    void cancelInvoice(String invoiceNumber, String clientId);
 }

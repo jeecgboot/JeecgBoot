@@ -28,5 +28,13 @@ public interface ExtraFeeMapper extends BaseMapper<ExtraFee> {
                          @Param("status") String status);
 
     void updateFee(@Param("id") String id, @Param("description") String description, @Param("qty") Integer quantity, @Param("price") BigDecimal unitPrice);
+
+    List<ExtraFeeResult> findNotInvoicedByShops(@Param("shopIds") List<String> shopIds);
+
+    void updateInvoiceNumberByIds(@Param("ids") List<String> feeIds, @Param("invoiceNumber") String invoiceCode);
+
+    List<ExtraFeeResult> findByInvoiceNumber(@Param("invoiceNumber") String invoiceCode);
+
+    void cancelInvoice(@Param("invoiceNumber") String invoiceNumber, @Param("clientId") String clientId);
 }
 

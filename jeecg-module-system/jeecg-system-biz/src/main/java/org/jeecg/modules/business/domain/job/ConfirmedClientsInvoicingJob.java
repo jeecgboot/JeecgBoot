@@ -6,6 +6,7 @@ import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.SavRefundWithDetail;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.BalanceData;
+import org.jeecg.modules.business.vo.ExtraFeeResult;
 import org.jeecg.modules.business.vo.FactureDetail;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.quartz.Job;
@@ -35,6 +36,8 @@ public class ConfirmedClientsInvoicingJob implements Job {
     private IClientService clientService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private IExtraFeeService extraFeeService;
     @Autowired
     private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
     @Autowired
@@ -100,8 +103,9 @@ public class ConfirmedClientsInvoicingJob implements Job {
                 invoicedMetaDataList.add(metaData);
                 List<FactureDetail> factureDetails = platformOrderShippingInvoiceService.getInvoiceDetail(metaData.getInvoiceCode());
                 List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(metaData.getInvoiceCode());
+                List<ExtraFeeResult> extraFess = extraFeeService.findByInvoiceNumber(metaData.getInvoiceCode());
                 try {
-                    platformOrderShippingInvoiceService.exportToExcel(factureDetails, refunds, metaData.getInvoiceCode(), metaData.getInvoiceEntity(), metaData.getInternalCode());
+                    platformOrderShippingInvoiceService.exportToExcel(factureDetails, refunds, extraFess, metaData.getInvoiceCode(), metaData.getInvoiceEntity(), metaData.getInternalCode());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

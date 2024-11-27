@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,6 +54,8 @@ public class PlatformOrderShippingInvoiceService {
     IClientService clientService;
     @Autowired
     ICurrencyService currencyService;
+    @Autowired
+    IExtraFeeService extraFeeService;
     @Autowired
     ShippingInvoiceMapper shippingInvoiceMapper;
     @Autowired
@@ -160,6 +163,14 @@ public class PlatformOrderShippingInvoiceService {
             "Montant total du remboursement",
             "N° de facture"
     };
+    private final static String[] EXTRA_FEE_TITLES = {
+            "Boutique",
+            "Type",
+            "Description",
+            "Quantité",
+            "Prix unitaire",
+            "N° de facture"
+    };
     private final static String[] PURCHASE_INVENTORY_TITLES = {
             "SKU",
             "Nom Anglais",
@@ -211,6 +222,7 @@ public class PlatformOrderShippingInvoiceService {
     public InvoiceMetaData makeInvoice(ShippingInvoiceParam param, String ... user) throws UserException, ParseException, IOException {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                extraFeeService,
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
@@ -242,6 +254,7 @@ public class PlatformOrderShippingInvoiceService {
     public InvoiceMetaData makeInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                extraFeeService,
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
@@ -265,6 +278,7 @@ public class PlatformOrderShippingInvoiceService {
     public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                extraFeeService,
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
@@ -287,6 +301,7 @@ public class PlatformOrderShippingInvoiceService {
     public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                extraFeeService,
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
@@ -371,6 +386,7 @@ public class PlatformOrderShippingInvoiceService {
     public List<ShippingFeesEstimation> getShippingFeesEstimation(List<String> errorMessages) {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                extraFeeService,
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
@@ -386,6 +402,7 @@ public class PlatformOrderShippingInvoiceService {
     public List<ShippingFeesEstimation> getShippingFeesEstimation(String clientId, List<String> orderIds,List<String> errorMessages) {
         // Creates factory
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                extraFeeService,
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
@@ -413,7 +430,7 @@ public class PlatformOrderShippingInvoiceService {
         return factureDetailMapper.selectList(queryWrapper);
     }
 
-    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, String invoiceNumber, String invoiceEntity, String internalCode) throws IOException {
+    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, List<ExtraFeeResult> extraFees, String invoiceNumber, String invoiceEntity, String internalCode) throws IOException {
         SheetManager sheetManager = SheetManager.createXLSX();
         sheetManager.startDetailsSheet();
         for (String title : DETAILS_TITLES) {
@@ -494,6 +511,31 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.write(refund.getTotalRefundAmount());
             sheetManager.nextCol();
             sheetManager.write(refund.getInvoiceNumber());
+            sheetManager.moveCol(0);
+            sheetManager.nextRow();
+        }
+
+        sheetManager.startExtraFeeSheet();
+        for (String title: EXTRA_FEE_TITLES) {
+            sheetManager.write(title);
+            sheetManager.nextCol();
+        }
+
+        sheetManager.moveCol(0);
+        sheetManager.nextRow();
+
+        for (ExtraFeeResult extraFee: extraFees) {
+            sheetManager.write(extraFee.getShop());
+            sheetManager.nextCol();
+            sheetManager.write(extraFee.getEnName());
+            sheetManager.nextCol();
+            sheetManager.write(extraFee.getDescription());
+            sheetManager.nextCol();
+            sheetManager.write(extraFee.getQuantity());
+            sheetManager.nextCol();
+            sheetManager.write(extraFee.getUnitPrice());
+            sheetManager.nextCol();
+            sheetManager.write(extraFee.getInvoiceNumber());
             sheetManager.moveCol(0);
             sheetManager.nextRow();
         }
@@ -750,7 +792,8 @@ public class PlatformOrderShippingInvoiceService {
                 Client client = clientService.getClientFromInvoice(invoiceNumber);
                 List<FactureDetail> details = getInvoiceDetail(invoiceNumber);
                 List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
-                exportToExcel(details, refunds, invoiceNumber, client.getInvoiceEntity(), client.getInternalCode());
+                List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
+                exportToExcel(details, refunds, extraFees, invoiceNumber, client.getInvoiceEntity(), client.getInternalCode());
                 pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
             }
             else {
@@ -834,6 +877,7 @@ public class PlatformOrderShippingInvoiceService {
 
     public List<Path> generateInvoiceExcel(String invoiceNumber, String filetype) throws UserException, IOException {
         ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                extraFeeService,
                 platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                 platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                 purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);

@@ -9,6 +9,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuWeight;
+import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.EmailService;
 import org.jeecg.modules.business.service.ISkuListMabangService;
@@ -137,8 +138,12 @@ public class MabangSkuSyncJob implements Job {
         // Mongo sync after update transaction
         for(Sku sku : updatedSkuRemarkMap.keySet()) {
             skuMongoService.updateSkuFromMabangSync(sku);
-            SkuWeight skuWeight = skuWeightService.getBySkuId(sku.getId());
-            skuMongoService.updateSkuWeight(sku.getErpCode(), skuWeight.getWeight());
+            // TODO : pb if we update weight locally and the effective date is not now, then we cannot update it on Mabang and thus creating a conflict.
+//            SkuWeight skuWeight = skuWeightService.getBySkuId(sku.getId());
+//            SkuDocument skuDocument = skuMongoService.findBySkuId(sku.getId());
+//            if(skuDocument.getLatestSkuWeight().getWeight() != skuWeight.getWeight()) {
+//                skuMongoService.upsertSkuWeight(skuWeight);
+//            }
         }
 
         Map<Sku, String> skusNeedTreatmentMap = new HashMap<>(updatedSkuRemarkMap);

@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.controller.admin.shippingInvoice;
 
 import com.alibaba.fastjson.annotation.JSONField;
+import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -11,9 +12,9 @@ public class InvoiceDatas {
     @JSONField(name = "invoiceNumber")
     private String invoiceNumber;
     @JSONField(name = "feeAndQtyPerSku")
-    private Map<String, Map.Entry<Integer, BigDecimal>> feeAndQtyPerSku;
+    private Map<String, Fee> feeAndQtyPerSku;
     @JSONField(name = "feeAndQtyPerCountry")
-    private Map<String, Map.Entry<Integer, BigDecimal>> feeAndQtyPerCountry;
+    private Map<String, Fee> feeAndQtyPerCountry;
     @JSONField(name = "vat")
     private BigDecimal vat;
     @JSONField(name = "serviceFee")
@@ -30,5 +31,13 @@ public class InvoiceDatas {
     private BigDecimal finalAmountEur;
     @JSONField(name = "finalAmount")
     private BigDecimal finalAmount;
+    @JSONField(name = "extraFees")
+    private Map<String, Fee> extraFees;
 
+}
+@Data
+@Builder
+class Fee {
+    private Integer quantity;
+    private BigDecimal unitPrice;
 }

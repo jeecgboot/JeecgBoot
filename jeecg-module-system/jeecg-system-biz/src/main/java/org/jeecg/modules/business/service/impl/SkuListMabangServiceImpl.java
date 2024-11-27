@@ -444,8 +444,11 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             String saleRemark = saleRemarkMatcher.group(1);
             int weight = (int) ceil(Double.parseDouble(saleRemark));
             if(oldSkuWeight.getWeight() != weight) {
-                oldSkuWeight.setWeight(weight);
-                skuWeightService.updateById(oldSkuWeight);
+                SkuWeight newSkuWeight = new SkuWeight();
+                newSkuWeight.setWeight(weight);
+                newSkuWeight.setSkuId(sku.getId());
+                newSkuWeight.setEffectiveDate(new Date());
+                skuWeightService.save(newSkuWeight);
                 isUpdated = true;
             }
             if(!saleRemarkMatcher.group(2).isEmpty()) {
