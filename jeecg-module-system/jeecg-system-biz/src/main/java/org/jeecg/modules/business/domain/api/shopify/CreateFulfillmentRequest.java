@@ -17,8 +17,9 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         DPD_BE("https://www.dpdgroup.com/be/mydpd/my-parcels/track?parcelNumber=%s", "DPD", "06086316[0-9]{6}"),
         DPD_DE("https://www.dpd.com/de/de/", "DPD", "0150534[0-9]{7}"),
         DPD_AT("https://www.mydpd.at", "DPD", "06215167[0-9]{6}"),
+        DPD_CH("https://www.dpdgroup.com/ch/mydpd/my-parcels/incoming?parcelNumber=%s", "DPD", "06086328[0-9]{6}"),
         CANADA_POST("https://www.canadapost-postescanada.ca/track-reperage/en#/search?searchFor=%s", "Canada Post", "(201255|732131)[0-9]{10}"),
-        SWISS_POST("https://service.post.ch/ekp-web/ui/entry/search/%s", "Swiss Post", "[0-9]{18}"),
+        SWISS_POST("https://service.post.ch/ekp-web/ui/entry/search/%s", "Swiss Post", "[0-9]{18}|LW[0-9]{9}CH"),
         EARLY_BIRD("https://earlybird.se/", "Early Bird", "[0-9]{19}"),
         DAO("https://www.dao.as/privat/find-din-pakke?stregkode=%s", "DAO", "00057151270[0-9]{10}"),
         DHL_PACKET("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "0034[0-9]{16}"),
@@ -29,8 +30,9 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         DHL_PACKET_WIA("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "CD[0-9]{9}DE"),
         DHL_PARCEL_WIA_NL("https://my.dhlparcel.nl/home/tracktrace/%s/%s?lang=nl_NL", "DHL Parcel", "3S[A-Z]{4}[0-9]{9}"),
         GLS_IT("https://gls-group.com/IT/it/servizi-online/ricerca-spedizioni.html?match=%s&type=NAT", "GLS", "LT[0-9]{9}"),
-        COLIS_PRIVE_BE_LU("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s", "Colis Privé", "Q[0-9]{11}[BL][0-9]{4}"),
-        COLIS_PRIVE_BE_WIA("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s%s", "Colis Privé", "LC[0-9]{10}"),
+        COLIS_PRIVE_BE("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%sB%s&lang=fr", "Colis Privé", "Q[0-9]{11}[B][0-9]{4}|801000[0-9]{6}"),
+        COLIS_PRIVE_LU("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s", "Colis Privé", "Q[0-9]{11}[L][0-9]{4}"),
+        COLIS_PRIVE_BE_WIA("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%sB%s", "Colis Privé", "LC[0-9]{10}"),
         COLIS_PRIVE_FR("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s", "Colis Privé", "(D|Q)[0-9]{16}"),
         POSTI("https://www.posti.fi/fi/seuranta#/lahetys/%s", "Posti", "SP[0-9]{9}FI"),
         POSTE_ITALIANE("https://www.poste.it/cerca/index.html#/risultati-spedizioni/%s", "Poste Italiane", "5P[0-9]{2}[A-Z][0-9]{8}"),
@@ -44,6 +46,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         COLI_COLI("https://www.colicoli.fr/trackings?id=%s", "Coli Coli", "CC[0-9]{14}[A-Z]*"),
         LUXEMBOURG_POST("https://www.post.lu/particuliers/colis-courrier/track-and-trace#/search", "Luxembourg Post", "LL[0-9]{9}LU"),
         CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}|5901[0-9]{8}|57476[0-9]{7}"),
+        QUICKPAC("https://quickpac.ch/de/tracking", "Quickpac", "44001091[0-9]{10}"),
         ;
 
         private final String trackingUrl;
