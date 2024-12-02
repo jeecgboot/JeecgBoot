@@ -189,20 +189,6 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
 
-    //update-begin---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------
-    @Bean
-    public FilterRegistrationBean shiroFilterRegistration() {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(new DelegatingFilterProxy("shiroFilterFactoryBean"));
-        registration.setEnabled(true);
-        registration.addUrlPatterns("/*");
-        //支持异步
-        registration.setAsyncSupported(true);
-        registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
-        return registration;
-    }
-    //update-end---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------
-
     @Bean("securityManager")
     public DefaultWebSecurityManager securityManager(ShiroRealm myRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
