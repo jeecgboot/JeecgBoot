@@ -1,6 +1,5 @@
 package org.jeecg.config.shiro;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
@@ -18,17 +17,15 @@ import org.jeecg.config.shiro.filters.CustomShiroFilterFactoryBean;
 import org.jeecg.config.shiro.filters.JwtFilter;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.*;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.env.Environment;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.core.env.Environment;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
@@ -36,7 +33,6 @@ import redis.clients.jedis.JedisCluster;
 import javax.annotation.Resource;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -127,6 +123,9 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.ttf", "anon");
         filterChainDefinitionMap.put("/**/*.woff", "anon");
         filterChainDefinitionMap.put("/**/*.woff2", "anon");
+
+        filterChainDefinitionMap.put("/**/*.glb", "anon");
+        filterChainDefinitionMap.put("/**/*.wasm", "anon");
         //update-end--Author:scott Date:20221116 for：排除静态资源后缀
 
         filterChainDefinitionMap.put("/druid/**", "anon");
@@ -190,12 +189,24 @@ public class ShiroConfig {
     }
 
     //update-begin---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------
+
+    /**
+     * spring过滤装饰器 <br/>
+     * 因为shiro的filter不支持异步请求,导致所有的异步请求都会报错. <br/>
+     * 所以需要用spring的FilterRegistrationBean再代理一下shiro的filter.为他扩展异步支持. <br/>
+     * 后续所有异步的接口都需要再这里增加registration.addUrlPatterns("/xxx/xxx");
+     * @return
+     * @author chenrui
+     * @date 2024/12/3 19:49
+     */
     @Bean
     public FilterRegistrationBean shiroFilterRegistration() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(new DelegatingFilterProxy("shiroFilterFactoryBean"));
         registration.setEnabled(true);
-        registration.addUrlPatterns("/*");
+        //update-begin---author:chenrui ---date:20241202  for：[issues/7491]运行时间好长，效率慢 ------------
+        registration.addUrlPatterns("/test/ai/chat/send");
+        //update-end---author:chenrui ---date:20241202  for：[issues/7491]运行时间好长，效率慢 ------------
         //支持异步
         registration.setAsyncSupported(true);
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
