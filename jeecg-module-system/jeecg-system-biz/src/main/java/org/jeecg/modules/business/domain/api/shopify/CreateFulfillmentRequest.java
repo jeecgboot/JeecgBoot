@@ -25,7 +25,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         DHL_PACKET("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "0034[0-9]{16}"),
         GLS_NL("https://www.gls-info.nl/tracking", "GLS", "[0-9]{20}"),
         GLS_NL_2("https://www.gls-info.nl/tracking", "GLS", "(1437|1000)[0-9]{10}"),
-        USPS("https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=%s", "USPS", "[0-9]{22,34}"),
+//        USPS("https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=%s", "USPS", "[0-9]{22,34}"),
         AUSTRIAN_POST("https://www.post.at/s/sendungsdetails?snr=%s", "Austrian Post", "15828030053[0-9]{13}"),
         DHL_PACKET_WIA("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "CD[0-9]{9}DE"),
         DHL_PARCEL_WIA_NL("https://my.dhlparcel.nl/home/tracktrace/%s/%s?lang=nl_NL", "DHL Parcel", "3S[A-Z]{4}[0-9]{9}"),
