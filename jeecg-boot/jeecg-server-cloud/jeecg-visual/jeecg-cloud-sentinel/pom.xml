@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-visual</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.7.1</version>
+        <version>3.7.2</version>
     </parent>
     <artifactId>jeecg-cloud-sentinel</artifactId>
     <name>jeecg-cloud-sentinel</name>

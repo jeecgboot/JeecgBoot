@@ -9,7 +9,7 @@ ${AnsiColor.BRIGHT_BLUE}
 
 
 ${AnsiColor.BRIGHT_GREEN}
-Jeecg  Boot Version: 3.7.1
+Jeecg  Boot Version: 3.7.2
 Spring Boot Version: ${spring-boot.version}${spring-boot.formatted-version}
 产品官网： www.jeecg.com
 版权所属： 北京国炬信息技术有限公司
