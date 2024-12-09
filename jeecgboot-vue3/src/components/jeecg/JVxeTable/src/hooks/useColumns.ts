@@ -30,7 +30,8 @@ export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: 
       // handle 方法参数
       const args: HandleArgs = { props, slots, data, methods, columns };
       let seqColumn, selectionColumn, expandColumn, dragSortColumn;
-      props.columns.forEach((column: JVxeColumn) => {
+
+      const handleColumn = (column: JVxeColumn, container: JVxeColumn[]) => {
         // 排除未授权的列 1 = 显示/隐藏； 2 = 禁用
         let auth = methods.getColAuth(column.key);
         if (auth?.type == '1' && !auth.isAuth) {
@@ -46,6 +47,15 @@ export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: 
         // 处理隐藏列
         if (col.type === JVxeTypes.hidden) {
           return handleInnerColumn(args, col, handleHiddenColumn);
+        }
+        // 处理子级列
+        // 判断是否是分组列，如果当前是父级，则无需处理 render
+        if (Array.isArray(col.children) && col.children.length > 0) {
+          const children: JVxeColumn[] = [];
+          col.children.forEach((child: JVxeColumn) => handleColumn(child, children));
+          col.children = children;
+          container.push(col);
+          return;
         }
         // 组件未注册，自动设置为 normal
         if (!isRegistered(col.type)) {
@@ -72,21 +82,25 @@ export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: 
         };
         if (col.type === JVxeTypes.rowNumber) {
           seqColumn = col;
-          columns.push(col);
+          container.push(col);
         } else if (col.type === JVxeTypes.rowRadio || col.type === JVxeTypes.rowCheckbox) {
           selectionColumn = col;
-          columns.push(col);
+          container.push(col);
         } else if (col.type === JVxeTypes.rowExpand) {
           expandColumn = col;
-          columns.push(col);
+          container.push(col);
         } else if (col.type === JVxeTypes.rowDragSort) {
           dragSortColumn = col;
-          columns.push(col);
+          container.push(col);
         } else {
           col.params = column;
+          args.columns = container;
           handlerCol(args);
         }
-      });
+      }
+
+      props.columns.forEach((column: JVxeColumn) => handleColumn(column, columns));
+
       handleInnerColumn(args, seqColumn, handleSeqColumn);
       handleInnerColumn(args, selectionColumn, handleSelectionColumn);
       handleInnerColumn(args, expandColumn, handleExpandColumn);
@@ -250,6 +264,7 @@ function handleDragSortColumn({ props, data, col, columns, renderOptions }: Hand
       align: 'center',
       // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
       params: {
+        insertRow: props.insertRow,
         notAllowDrag: props.notAllowDrag,
         ...col?.params,
       },

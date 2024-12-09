@@ -1276,12 +1276,6 @@ public class SysUserController {
             updateUser.setUpdateBy(JwtUtil.getUserNameByToken(request));
             updateUser.setUpdateTime(new Date());
             sysUserService.revertLogicDeleted(Arrays.asList(userIds.split(",")), updateUser);
-            // 用户变更，触发同步工作流
-            List<String> userNameList = sysUserService.userIdToUsername(Arrays.asList(userIds.split(",")));
-            if (!userNameList.isEmpty()) {
-                String joinedString = String.join(",", userNameList);
-            }
-           
         }
         return Result.ok("还原成功");
     }

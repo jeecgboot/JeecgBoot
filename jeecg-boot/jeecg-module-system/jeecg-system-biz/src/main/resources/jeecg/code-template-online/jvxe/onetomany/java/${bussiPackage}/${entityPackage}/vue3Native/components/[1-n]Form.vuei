@@ -179,11 +179,6 @@
     }
   });
 </script>
-<style lang="less" scoped>
-  .antd-modal-form {
-    max-height: 340px;
-    overflow: auto;
-  }
-</style>
+<style lang="less" scoped></style>
 </#if>
 </#list>

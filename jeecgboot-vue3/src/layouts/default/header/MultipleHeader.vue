@@ -1,7 +1,7 @@
 <template>
   <div :style="getPlaceholderDomStyle" v-if="getIsShowPlaceholderDom"></div>
   <div :style="getWrapStyle" :class="getClass">
-    <LayoutHeader v-if="getShowInsetHeaderRef" />
+    <LayoutHeader v-if="getShowHeader" />
     <MultipleTabs v-if="getShowTabs" />
   </div>
 </template>
@@ -11,6 +11,8 @@
   import LayoutHeader from './index.vue';
   import MultipleTabs from '../tabs/index.vue';
 
+  import { useAppStore } from "@/store/modules/app";
+  import { useGlobSetting } from "/@/hooks/setting";
   import { useHeaderSetting } from '/@/hooks/setting/useHeaderSetting';
   import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
   import { useFullContent } from '/@/hooks/web/useFullContent';
@@ -19,6 +21,7 @@
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useLayoutHeight } from '../content/useContentViewHeight';
   import { TabsThemeEnum } from '/@/enums/appEnum';
+
   // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8774】网站header区域加高
   const HEADER_HEIGHT = 60;
   // update-begin--author:liaozhiyang---date:20240407---for：【【QQYUN-8774】网站header区域加高
@@ -35,15 +38,30 @@
       const { setHeaderHeight } = useLayoutHeight();
       const { prefixCls } = useDesign('layout-multiple-header');
 
+      const appStore = useAppStore()
+      const glob = useGlobSetting()
+
       const { getCalcContentWidth, getSplit } = useMenuSetting();
       const { getIsMobile } = useAppInject();
-      const { getFixed, getShowInsetHeaderRef, getShowFullHeaderRef, getHeaderTheme, getShowHeader } = useHeaderSetting();
+      const { getFixed, getShowInsetHeaderRef, getShowFullHeaderRef, getHeaderTheme } = useHeaderSetting();
 
       const { getFullContent } = useFullContent();
 
       const { getShowMultipleTab, getTabsTheme } = useMultipleTabSetting();
 
+      const getShowHeader = computed(() => {
+        // 控制是否显示顶部
+        if (appStore.mainAppProps.hideHeader) {
+          return false;
+        }
+        return unref(getShowInsetHeaderRef);
+      })
+
       const getShowTabs = computed(() => {
+        // 控制是否显示多Tabs切换
+        if (appStore.mainAppProps.hideMultiTabs) {
+          return false;
+        }
         return unref(getShowMultipleTab) && !unref(getFullContent);
       });
 
@@ -53,7 +71,7 @@
 
       const getWrapStyle = computed((): CSSProperties => {
         const style: CSSProperties = {};
-        if (unref(getFixed)) {
+        if (unref(getFixed) && !glob.isQiankunMicro) {
           style.width = unref(getIsMobile) ? '100%' : unref(getCalcContentWidth);
         }
         if (unref(getShowFullHeaderRef)) {
@@ -83,7 +101,7 @@
         if ((unref(getShowFullHeaderRef) || !unref(getSplit)) && unref(getShowHeader) && !unref(getFullContent)) {
           height += HEADER_HEIGHT;
         }
-        if (unref(getShowMultipleTab) && !unref(getFullContent)) {
+        if (unref(getShowTabs) && !unref(getFullContent)) {
           height += unref(getTabsThemeHeight);
         }
         setHeaderHeight(height);
@@ -93,10 +111,15 @@
       });
 
       const getClass = computed(() => {
-        return [prefixCls, `${prefixCls}--${unref(getHeaderTheme)}`, { [`${prefixCls}--fixed`]: unref(getIsFixed) }];
+        return [prefixCls, `${prefixCls}--${unref(getHeaderTheme)}`, {
+          [`${prefixCls}--fixed`]: unref(getIsFixed),
+          // 【JEECG作为乾坤子应用】
+          [`${prefixCls}--qiankun-micro`]: glob.isQiankunMicro,
+        }];
       });
 
       return {
+        glob,
         getClass,
         prefixCls,
         getPlaceholderDomStyle,
@@ -104,7 +127,7 @@
         getWrapStyle,
         getIsShowPlaceholderDom,
         getShowTabs,
-        getShowInsetHeaderRef,
+        getShowHeader,
       };
     },
   });
@@ -126,5 +149,11 @@
       z-index: @multiple-tab-fixed-z-index;
       width: 100%;
     }
+
+    // 【JEECG作为乾坤子应用】
+    &--qiankun-micro {
+      position: absolute;
+    }
+
   }
 </style>

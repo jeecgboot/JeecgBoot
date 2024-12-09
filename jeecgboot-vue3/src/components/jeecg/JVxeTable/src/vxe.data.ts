@@ -42,6 +42,8 @@ export const vxeProps = () => ({
   rowExpand: propTypes.bool.def(false),
   // 展开行配置
   expandConfig: propTypes.object.def(() => ({})),
+  // 是否可插入行
+  insertRow: propTypes.bool.def(true),
   // 页面是否在加载中
   loading: propTypes.bool.def(false),
   // 表格高度
@@ -113,6 +115,11 @@ export const vxeProps = () => ({
   // 不允许拖拽的行 [{'key':field,'value':value}]
   notAllowDrag: propTypes.array.def(() => []),
   // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
+
+  // 新增按钮配置
+  addBtnCfg: propTypes.object,
+  // 删除按钮配置
+  removeBtnCfg: propTypes.object,
 });
 
 export const vxeEmits = ['save', 'added', 'removed', 'inserted', 'dragged', 'selectRowChange', 'pageChange', 'valueChange', 'blur'];

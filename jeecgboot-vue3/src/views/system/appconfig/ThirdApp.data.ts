@@ -16,6 +16,15 @@ export const thirdAppFormSchema: FormSchema[] = [
     show: false,
   },
   {
+    label: 'CorpId',
+    field: 'corpId',
+    component: 'Input',
+    ifShow: ({ values }) => {
+      return values.thirdType === 'dingtalk';
+    },
+    required: true,
+  },
+  {
     label: 'Agentld',
     field: 'agentId',
     component: 'Input',
@@ -32,12 +41,6 @@ export const thirdAppFormSchema: FormSchema[] = [
     field: 'clientSecret',
     component: 'Input',
     required: true,
-  },
-  {
-    label: 'agentAppSecret',
-    field: 'agentAppSecret',
-    component: 'Input',
-    ifShow: false,
   },{
     label: '启用',
     field: 'status',

@@ -805,7 +805,9 @@ public class QueryGenerator {
 					addEasyQuery(queryWrapper, name, rule, DateUtils.str2Date(dateStr,DateUtils.datetimeFormat.get()));
 				}
 			}else {
-				addEasyQuery(queryWrapper, name, rule, NumberUtils.parseNumber(dataRule.getRuleValue(), propertyType));
+				//update-begin---author:chenrui ---date:20241125  for：[issues/7481]多租户模式下 数据权限使用变量：#{tenant_id} 报错------------
+				addEasyQuery(queryWrapper, name, rule, NumberUtils.parseNumber(converRuleValue(dataRule.getRuleValue()), propertyType));
+				//update-end---author:chenrui ---date:20241125  for：[issues/7481]多租户模式下 数据权限使用变量：#{tenant_id} 报错------------
 			}
 		}
 	}

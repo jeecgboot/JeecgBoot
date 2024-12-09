@@ -73,6 +73,12 @@ public class JSqlParserUtils {
      * @return
      */
     private static SelectSqlInfo parseBySelectBody(SelectBody selectBody) {
+        // 判断是否使用了union等操作
+        if (selectBody instanceof SetOperationList) {
+            // 如果使用了union等操作，则只解析第一个查询
+            List<SelectBody> selectBodyList = ((SetOperationList) selectBody).getSelects();
+            return JSqlParserUtils.parseBySelectBody(selectBodyList.get(0));
+        }
         // 简单的select查询
         if (selectBody instanceof PlainSelect) {
             SelectSqlInfo sqlInfo = new SelectSqlInfo(selectBody);

@@ -147,6 +147,7 @@
            fixed:'right'
          },
          beforeFetch: (params) => {
+           params.hasQuery = "true"; 
            return Object.assign(params, queryParam);
          },
     },

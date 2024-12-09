@@ -1,7 +1,7 @@
 import { defHttp } from '/@/utils/http/axios';
 
 enum Api {
-  actuatorList = '/actuator/httptrace-new/',
+  actuatorList = '/actuator/jeecghttptrace/',
 }
 
 /**

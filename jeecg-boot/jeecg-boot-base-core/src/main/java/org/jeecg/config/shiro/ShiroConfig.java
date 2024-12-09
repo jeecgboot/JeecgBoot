@@ -17,15 +17,17 @@ import org.jeecg.config.shiro.filters.CustomShiroFilterFactoryBean;
 import org.jeecg.config.shiro.filters.JwtFilter;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.*;
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.Environment;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.filter.DelegatingFilterProxy;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
@@ -33,6 +35,7 @@ import redis.clients.jedis.JedisCluster;
 import javax.annotation.Resource;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
+import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -123,7 +126,6 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.ttf", "anon");
         filterChainDefinitionMap.put("/**/*.woff", "anon");
         filterChainDefinitionMap.put("/**/*.woff2", "anon");
-
         filterChainDefinitionMap.put("/**/*.glb", "anon");
         filterChainDefinitionMap.put("/**/*.wasm", "anon");
         //update-end--Author:scott Date:20221116 for：排除静态资源后缀
@@ -146,9 +148,15 @@ public class ShiroConfig {
         //拖拽仪表盘设计器排除
         filterChainDefinitionMap.put("/drag/view", "anon");
         filterChainDefinitionMap.put("/drag/page/queryById", "anon");
+        filterChainDefinitionMap.put("/drag/page/addVisitsNumber", "anon");
+        filterChainDefinitionMap.put("/drag/page/queryTemplateList", "anon");
+        filterChainDefinitionMap.put("/drag/share/view/**", "anon");
         filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getAllChartData", "anon");
         filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getTotalData", "anon");
         filterChainDefinitionMap.put("/drag/mock/json/**", "anon");
+        filterChainDefinitionMap.put("/jimubi/view", "anon");
+        filterChainDefinitionMap.put("/jimubi/share/view/**", "anon");
+
         //大屏模板例子
         filterChainDefinitionMap.put("/test/bigScreen/**", "anon");
         filterChainDefinitionMap.put("/bigscreen/template1/**", "anon");

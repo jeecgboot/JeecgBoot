@@ -198,17 +198,9 @@ export function useCustomSelection(
             bodyHeight.value = Math.ceil(height);
           }
         }
+        updateRowHeight();
       });
       bodyResizeObserver.observe(bodyEl.value);
-      const el = bodyEl.value?.querySelector('tbody.ant-table-tbody tr.ant-table-row') as HTMLDivElement;
-      if (el) {
-        // update-begin--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
-        nextTick(() => {
-          rowHeight.value = el.offsetHeight;
-        });
-        // update-end--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
-        return;
-      }
     }
     rowHeight.value = 50;
   });
@@ -225,6 +217,16 @@ export function useCustomSelection(
       bodyResizeObserver.disconnect();
     }
   });
+
+  // 更新首行行高
+  function updateRowHeight() {
+    const el = bodyEl.value?.querySelector('tbody.ant-table-tbody tr.ant-table-row') as HTMLDivElement;
+    if (el) {
+      // update-begin--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
+      nextTick(() => rowHeight.value = el.offsetHeight);
+      // update-end--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
+    }
+  }
 
   // 选择全部
   function onSelectAll(checked: boolean, flag = 'currentPage') {

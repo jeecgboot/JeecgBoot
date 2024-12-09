@@ -17,7 +17,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,httptrace-new
+        include: metrics,jeecghttptrace
 
 spring:
   # flyway配置
@@ -48,6 +48,8 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   mail:
+    # 定时任务发送邮件
+    timeJobSend: false
     host: smtp.163.com
     username: jeecgos@163.com
     password: ??
@@ -227,6 +229,18 @@ jeecg:
     endpoint: oss-cn-beijing.aliyuncs.com
     bucketName: jeecgdev
     staticDomain: https://static.jeecg.com
+    # 短信模板
+    sms-template:
+      # 签名
+      signature:
+      # 模板code
+      templateCode:
+        # 登录短信、忘记密码模板编码
+        SMS_175435174:
+        # 修改密码短信模板编码
+        SMS_465391221:
+        # 注册账号短信模板编码
+        SMS_175430166:
   # ElasticSearch 设置
   elasticsearch:
     cluster-name: jeecg-ES

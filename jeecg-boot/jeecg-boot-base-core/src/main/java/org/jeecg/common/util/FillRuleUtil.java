@@ -6,7 +6,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.handler.IFillRuleHandler;
+import org.jeecg.common.system.query.QueryGenerator;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -42,6 +46,30 @@ public class FillRuleUtil {
                 if (params == null) {
                     params = new JSONObject();
                 }
+
+                HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
+
+                // 解析 params 中的变量
+                // 优先级：queryString > 系统变量 > 默认值
+                for (String key : params.keySet()) {
+                    // 1. 判断 queryString 中是否有该参数，如果有就优先取值
+                    //noinspection ConstantValue
+                    if (request != null) {
+                        String parameter = request.getParameter(key);
+                        if (oConvertUtils.isNotEmpty(parameter)) {
+                            params.put(key, parameter);
+                            continue;
+                        }
+                    }
+
+                    String value = params.getString(key);
+                    // 2. 用于替换 系统变量的值 #{sys_user_code}
+                    if (value != null && value.contains(SymbolConstant.SYS_VAR_PREFIX)) {
+                        value = QueryGenerator.getSqlRuleValue(value);
+                        params.put(key, value);
+                    }
+                }
+
                 if (formData == null) {
                     formData = new JSONObject();
                 }
