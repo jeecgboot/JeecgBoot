@@ -47,6 +47,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         LUXEMBOURG_POST("https://www.post.lu/particuliers/colis-courrier/track-and-trace#/search", "Luxembourg Post", "LL[0-9]{9}LU"),
         CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}|5901[0-9]{8}|57476[0-9]{7}"),
         QUICKPAC("https://quickpac.ch/de/tracking", "Quickpac", "44001091[0-9]{10}"),
+        CTT_EXPRESS("https://www.cttexpress.com/localizador-de-envios/", "CTT Express", "0082800082909[0-9]{9}"),
         ;
 
         private final String trackingUrl;
