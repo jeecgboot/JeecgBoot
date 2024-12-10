@@ -4,15 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.base.event.SkuDeclaredValueModifiedEvent;
 import org.jeecg.modules.base.event.SkuModifiedEvent;
 import org.jeecg.modules.base.event.SkuPriceModifiedEvent;
-import org.jeecg.modules.business.entity.SensitiveAttribute;
-import org.jeecg.modules.business.entity.Sku;
-import org.jeecg.modules.business.entity.SkuDeclaredValue;
-import org.jeecg.modules.business.entity.SkuPrice;
+import org.jeecg.modules.base.event.SkuWeightModifiedEvent;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.model.SkuDocument;
-import org.jeecg.modules.business.service.ISensitiveAttributeService;
-import org.jeecg.modules.business.service.ISkuDeclaredValueService;
-import org.jeecg.modules.business.service.ISkuPriceService;
-import org.jeecg.modules.business.service.ISkuService;
+import org.jeecg.modules.business.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -28,6 +23,8 @@ public class SkuMongoSyncService {
     private ISkuDeclaredValueService skuDeclaredValueService;
     @Autowired
     private ISkuPriceService skuPriceService;
+    @Autowired
+    private ISkuWeightService skuWeightService;
     @Autowired
     private ISensitiveAttributeService sensitiveAttributeService;
 
@@ -120,6 +117,27 @@ public class SkuMongoSyncService {
                 break;
             case "DELETE":
                 skuMongoService.deleteSkuPriceBySkuId(skuPrice.getSkuId());
+                break;
+            default:
+                break;
+        }
+    }
+
+    @EventListener
+    public void handeSkuWeightModifiedEvent(SkuWeightModifiedEvent event) {
+        log.info("Received a SkuWeightModifiedEvent: {}", event);
+        String id = event.getId();
+        String operation = event.getOperation();
+
+        SkuWeight skuWeight = skuWeightService.getById(id);
+
+        switch (operation) {
+            case "INSERT":
+            case "UPDATE":
+                skuMongoService.upsertSkuWeight(skuWeight);
+                break;
+            case "DELETE":
+                skuMongoService.deleteSkuWeightBySkuId(skuWeight.getSkuId());
                 break;
             default:
                 break;

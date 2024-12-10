@@ -492,6 +492,7 @@ public class SkuController {
 
     @PostMapping("/syncSkuQty")
     public Result<?> syncSkuQty(@RequestBody List<String> erpCodes) {
+        log.info("Syncing sku stock for SKUs : {}", erpCodes);
         skuListMabangService.mabangSkuStockUpdate(erpCodes);
         return Result.OK();
     }

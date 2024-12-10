@@ -779,4 +779,11 @@
         FROM sku
         WHERE image_source IS NOT NULL
     </select>
+    <select id="fetchAllClientSkuCodes" resultType="java.lang.String">
+        SELECT erp_code
+        FROM sku
+        JOIN client_sku ON sku.id = client_sku.sku_id
+        JOIN client c ON client_sku.client_id = c.id
+        WHERE c.internal_code = #{clientCode};
+    </select>
 </mapper>

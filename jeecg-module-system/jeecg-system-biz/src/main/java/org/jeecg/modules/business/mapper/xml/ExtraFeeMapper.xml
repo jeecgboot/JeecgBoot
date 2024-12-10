@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.ExtraFeeMapper">
+<select id="listWithFilters" resultType="org.jeecg.modules.business.vo.ExtraFeeResult">
+    SELECT ef.id,
+           ef.create_by,
+           ef.create_time,
+           s.erp_code as shop,
+           efo.en_name,
+           efo.zh_name,
+           ef.description,
+           ef.quantity,
+           ef.unit_price,
+           ef.invoice_number
+    FROM extra_fee ef
+    JOIN extra_fee_option efo ON efo.id = ef.option_id
+    JOIN shop s ON s.id = ef.shop_id
+    WHERE
+    <if test="status == 0">
+        ef.invoice_number IS NULL
+    </if>
+    <if test="status == 1">
+      ef.invoice_number IS NOT NULL
+    </if>
+    <if test="status == null">
+        ef.invoice_number IS NULL OR ef.invoice_number IS NOT NULL
+    </if>
+    <if test="shop != null">
+        AND s.erp_code = #{shop}
+    </if>
+    ORDER BY ${column} ${order}
+    LIMIT #{offset}, #{size}
+</select>
+<select id="countAllFees" resultType="java.lang.Integer">
+    SELECT COUNT(*) AS total
+    FROM extra_fee ef
+    JOIN extra_fee_option efo ON efo.id = ef.option_id
+    JOIN shop s ON s.id = ef.shop_id
+    WHERE
+    <choose>
+        <when test="status == 0">
+            ef.invoice_number IS NULL
+        </when>
+        <otherwise>
+            ef.invoice_number IS NOT NULL
+        </otherwise>
+    </choose>
+    <if test="shop != null">
+        AND s.erp_code = #{shop}
+    </if>
+</select>
+<update id="updateFee">
+    UPDATE extra_fee
+    SET unit_price  = #{price},
+        quantity    = #{qty},
+        description =
+            IF(option_id = (SELECT id FROM extra_fee_option WHERE en_name = 'Autres') AND invoice_number IS NULL, #{description}, description)
+    WHERE id = #{id};
+</update>
+<select id="findNotInvoicedByShops" resultType="org.jeecg.modules.business.vo.ExtraFeeResult">
+    SELECT ef.id,
+           s.erp_code as shop,
+           efo.en_name,
+           efo.zh_name,
+           ef.description,
+           ef.quantity,
+           ef.unit_price,
+           ef.invoice_number
+    FROM extra_fee ef
+    JOIN extra_fee_option efo ON efo.id = ef.option_id
+    JOIN shop s ON s.id = ef.shop_id
+    WHERE shop_id IN
+    <foreach collection="shopIds" item="shopId" open="(" separator="," close=")">
+        #{shopId}
+    </foreach>
+    AND invoice_number IS NULL;
+</select>
+<update id="updateInvoiceNumberByIds">
+    UPDATE extra_fee
+    SET invoice_number = #{invoiceNumber}
+    WHERE id IN
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+</update>
+<select id="findByInvoiceNumber" resultType="org.jeecg.modules.business.vo.ExtraFeeResult">
+    SELECT ef.id,
+           ef.create_by,
+           ef.create_time,
+           s.erp_code as shop,
+           efo.en_name,
+           efo.zh_name,
+           ef.description,
+           ef.quantity,
+           ef.unit_price,
+           ef.invoice_number
+    FROM extra_fee ef
+    JOIN extra_fee_option efo ON efo.id = ef.option_id
+    JOIN shop s ON s.id = ef.shop_id
+    WHERE invoice_number = #{invoiceNumber};
+</select>
+<update id="cancelInvoice">
+    UPDATE extra_fee
+        JOIN shop s ON extra_fee.shop_id = s.id
+        JOIN client c ON s.owner_id = c.id
+    SET invoice_number = NULL
+    WHERE invoice_number = #{invoiceNumber}
+        AND c.id = #{clientId};
+</update>
+</mapper>

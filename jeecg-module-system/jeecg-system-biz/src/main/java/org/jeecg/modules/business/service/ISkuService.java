@@ -122,4 +122,6 @@ public interface ISkuService extends IService<Sku> {
     List<SkuOrderPage> listSelectableSkuIds(String clientId);
 
     List<Sku> listImgUrls();
+
+    List<String> fetchAllClientSkuCodes(String clientCode);
 }

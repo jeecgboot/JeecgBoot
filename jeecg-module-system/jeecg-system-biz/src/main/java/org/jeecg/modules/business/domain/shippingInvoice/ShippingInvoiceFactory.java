@@ -14,10 +14,7 @@ import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
-import org.jeecg.modules.business.vo.PromotionDetail;
-import org.jeecg.modules.business.vo.ShippingFeesEstimation;
-import org.jeecg.modules.business.vo.SkuQuantity;
-import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
+import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
 import org.jetbrains.annotations.NotNull;
 import org.simpleframework.xml.core.Complete;
@@ -45,6 +42,7 @@ import static java.util.stream.Collectors.*;
 @Component
 public class ShippingInvoiceFactory {
 
+    private final IExtraFeeService extraFeeService;
     private final IPlatformOrderService platformOrderService;
     private final ClientMapper clientMapper;
     private final ShopMapper shopMapper;
@@ -80,7 +78,7 @@ public class ShippingInvoiceFactory {
                         }
                     });
 
-    public ShippingInvoiceFactory(IPlatformOrderService platformOrderService, ClientMapper clientMapper,
+    public ShippingInvoiceFactory(IExtraFeeService extraFeeService, IPlatformOrderService platformOrderService, ClientMapper clientMapper,
                                   ShopMapper shopMapper, LogisticChannelMapper logisticChannelMapper,
                                   LogisticChannelPriceMapper logisticChannelPriceMapper,
                                   IPlatformOrderContentService platformOrderContentService,
@@ -89,6 +87,7 @@ public class ShippingInvoiceFactory {
                                   PurchaseOrderContentMapper purchaseOrderContentMapper,
                                   SkuPromotionHistoryMapper skuPromotionHistoryMapper, ISavRefundService savRefundService,
                                   ISavRefundWithDetailService savRefundWithDetailService, EmailService emailService, Environment env) {
+        this.extraFeeService = extraFeeService;
         this.platformOrderService = platformOrderService;
         this.clientMapper = clientMapper;
         this.shopMapper = shopMapper;
@@ -137,6 +136,7 @@ public class ShippingInvoiceFactory {
                 .map(PlatformOrder::getShopId)
                 .distinct()
                 .collect(Collectors.toList());
+        List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(shopIds);
         log.info("Orders to be invoiced: {}", uninvoicedOrderToContent);
         String subject;
         if(type.equals("shipping"))
@@ -147,7 +147,7 @@ public class ShippingInvoiceFactory {
             subject = String.format("Shipping fees, order time from %s to %s", start, end);
         else
             throw new UserException("Couldn't create shipping invoice of unknown type.");
-        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, subject, true);
+        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, true);
     }
 
     /**
@@ -182,6 +182,7 @@ public class ShippingInvoiceFactory {
                 .map(PlatformOrder::getShopId)
                 .distinct()
                 .collect(Collectors.toList());
+        List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(shopIds);
         log.info("Orders to be invoiced: {}", uninvoicedOrderToContent);
         String subject;
         if(shippingMethod.equals("shipping"))
@@ -194,8 +195,8 @@ public class ShippingInvoiceFactory {
             subject = String.format("Purchase and Shipping fees, order time from %s to %s", start, end);
         else throw new UserException("Couldn't create complete invoice for unknown shipping method");
         if(balance != null)
-            return createCompleteInvoiceWithBalance(username, customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, subject);
-        return createInvoice(username, customerId, null, shopIds, uninvoicedOrderToContent, savRefunds, subject);
+            return createCompleteInvoiceWithBalance(username, customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject);
+        return createInvoice(username, customerId, null, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject);
     }
 
 
@@ -224,7 +225,7 @@ public class ShippingInvoiceFactory {
     @Transactional
     public CompleteInvoice createInvoice(String username, String customerId, BigDecimal balance, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
-                                         List<SavRefundWithDetail> savRefunds, String subject) throws UserException {
+                                         List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject) throws UserException {
         Client client = clientMapper.selectById(customerId);
         log.info("User {} is creating a complete invoice for customer {}", username, client.getInternalCode());
 
@@ -261,10 +262,13 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-
+        if(extraFees != null) {
+            List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
+            extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
+        }
         updateOrdersAndContentsInDb(orderAndContent);
 
-        return new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds,
+        return new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
                 purchaseOrderSkuList, promotionDetails, eurToUsd);
     }
 
@@ -294,7 +298,7 @@ public class ShippingInvoiceFactory {
     @Transactional
     public CompleteInvoice createCompleteInvoiceWithBalance(String username, String customerId, BigDecimal balance, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
-                                         List<SavRefundWithDetail> savRefunds, String subject) throws UserException, MessagingException {
+                                         List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject) throws UserException, MessagingException {
         // sorting by order time
         orderAndContent = orderAndContent.entrySet().stream().sorted(
                 Map.Entry.comparingByKey(Comparator.comparing(PlatformOrder::getOrderTime))
@@ -394,10 +398,13 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-
+        if(extraFees != null) {
+            List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
+            extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
+        }
         updateOrdersAndContentsInDb(orderAndContent);
 
-        return new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds,
+        return new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
                 purchaseOrderSkuList, promotionDetails, eurToUsd);
     }
 
@@ -480,6 +487,7 @@ public class ShippingInvoiceFactory {
         );
         // find orders and their contents of the invoice
         Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent;
+        List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(shopIds);
         List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.findUnprocessedRefundsByClient(customerId);
         String subject;
         if(erpStatuses.toString().equals("[3]")) {
@@ -509,9 +517,9 @@ public class ShippingInvoiceFactory {
             uninvoicedOrderToContent = platformOrderService.findUninvoicedOrderContentsForShopsAndStatus(shopIds, begin, end, erpStatuses, warehouses);
         }
         if(balance != null) {
-            return createInvoiceWithBalance(customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, subject, false);
+            return createInvoiceWithBalance(customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, false);
         }
-        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, subject, false);
+        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, false);
     }
 
     /**
@@ -541,6 +549,7 @@ public class ShippingInvoiceFactory {
     public ShippingInvoice createInvoice(String customerId, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                          List<SavRefundWithDetail> savRefunds,
+                                         List<ExtraFeeResult> extraFees,
                                          String subject, boolean skipShippingTimeComparing) throws UserException {
         log.info("Orders to be invoiced: {}", orderAndContent);
         if (orderAndContent == null || orderAndContent.size() == 0) {
@@ -578,7 +587,11 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, eurToUsd);
+        if(extraFees != null) {
+            List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
+            extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
+        }
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, eurToUsd);
         updateOrdersAndContentsInDb(orderAndContent);
         return invoice;
     }
@@ -610,6 +623,7 @@ public class ShippingInvoiceFactory {
     public ShippingInvoice createInvoiceWithBalance(String customerId, BigDecimal balance, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                          List<SavRefundWithDetail> savRefunds,
+                                         List<ExtraFeeResult> extraFees,
                                          String subject, boolean skipShippingTimeComparing) throws UserException {
         log.info("Orders to be invoiced: {}", orderAndContent);
         if (orderAndContent == null || orderAndContent.isEmpty()) {
@@ -650,7 +664,7 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, eurToUsd);
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, eurToUsd);
         updateOrdersAndContentsInDb(orderAndContent);
         return invoice;
     }
@@ -1217,6 +1231,7 @@ public class ShippingInvoiceFactory {
                 shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee());
                 Map<PlatformOrder, List<PlatformOrderContent>> orders = uninvoicedOrdersByShopId.get(shop.getId());
                 try {
+                    List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(Collections.singletonList(shop.getId()));
                     Map<String, List<String>> orderIdErrorMap = calculateFees(null, logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                             latestDeclaredValues, client, shopServiceFeeMap,shopPackageMatFeeMap, null);
                     if(!orderIdErrorMap.isEmpty()) {
@@ -1224,7 +1239,7 @@ public class ShippingInvoiceFactory {
                         throw new UserException(errorEntry.getValue().toString());
                     }
                     BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
-                    ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, eurToUsd);
+                    ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, eurToUsd);
                     // Calculate total amounts
                     invoice.tableData();
                     estimations.add(new ShippingFeesEstimation(
@@ -1281,13 +1296,14 @@ public class ShippingInvoiceFactory {
             shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee());
             Map<PlatformOrder, List<PlatformOrderContent>> orders = uninvoicedOrdersByShopId.get(shop.getId());
             try {
+                List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(Collections.singletonList(shop.getId()));
                 Map<String, List<String>> platformOrderIdErrorMap = calculateFees(null, logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                         latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, null);
                 platformOrderIdErrorMap.forEach((key, value) -> errorMessages.addAll(value));
                 orders.entrySet().removeIf(entries -> platformOrderIdErrorMap.containsKey(entries.getKey().getId()));
                 List<String> estimationsOrderIds = orders.keySet().stream().map(PlatformOrder::getId).collect(Collectors.toList());
                 BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
-                ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, eurToUsd);
+                ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, eurToUsd);
                 // Calculate total amounts
                 invoice.tableData();
                 estimations.add(new ShippingFeesEstimation(
@@ -1304,6 +1320,7 @@ public class ShippingInvoiceFactory {
         log.info("Building existing shipping invoice : {} - Client ID : {}, ", invoiceCode, clientId);
         Map<PlatformOrder, List<PlatformOrderContent>> ordersMapContent = platformOrderService.fetchOrderDataByInvoiceCode(invoiceCode);
         List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceCode);
+        List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceCode);
         String subject;
         if(shippingMethod.equals("post-shipping")) {
             subject = String.format("Shipping fees from %s to %s", start, end);
@@ -1316,7 +1333,7 @@ public class ShippingInvoiceFactory {
         Client client = clientMapper.selectById(clientId);
         BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", start);
 
-        return new ShippingInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, eurToUsd);
+        return new ShippingInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees, eurToUsd);
     }
     public PurchaseInvoice buildExistingPurchaseInvoice (String invoiceCode) {
         PurchaseOrder order = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceCode);
@@ -1331,6 +1348,7 @@ public class ShippingInvoiceFactory {
         log.info("Building existing complete invoice : {} - Client ID : {}, ", invoiceCode, clientId);
         Map<PlatformOrder, List<PlatformOrderContent>> ordersMapContent = platformOrderService.fetchOrderDataByInvoiceCode(invoiceCode);
         List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceCode);
+        List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceCode);
         String subject;
         if(shippingMethod.equals("post-shipping"))
             subject = String.format("Purchase and Shipping fees from %s to %s", start, end);
@@ -1343,7 +1361,7 @@ public class ShippingInvoiceFactory {
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
 
-        return new CompleteInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds,
+        return new CompleteInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees,
                 purchaseOrderSkuList, promotionDetails, eurToUsd);
     }
 }

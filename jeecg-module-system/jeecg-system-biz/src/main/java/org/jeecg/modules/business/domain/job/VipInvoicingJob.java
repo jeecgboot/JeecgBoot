@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.BalanceData;
+import org.jeecg.modules.business.vo.ExtraFeeResult;
 import org.jeecg.modules.business.vo.FactureDetail;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.quartz.Job;
@@ -12,6 +13,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
@@ -25,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Component
 public class VipInvoicingJob implements Job {
     @Autowired
     private IBalanceService balanceService;
@@ -32,6 +35,8 @@ public class VipInvoicingJob implements Job {
     private IClientService clientService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private IExtraFeeService extraFeeService;
     @Autowired
     private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
     @Autowired
@@ -76,8 +81,9 @@ public class VipInvoicingJob implements Job {
                 invoicedMetaDataList.add(metaData);
                 List<FactureDetail> factureDetails = platformOrderShippingInvoiceService.getInvoiceDetail(metaData.getInvoiceCode());
                 List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(metaData.getInvoiceCode());
+                List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(metaData.getInvoiceCode());
                 try {
-                    platformOrderShippingInvoiceService.exportToExcel(factureDetails, refunds, metaData.getInvoiceCode(), metaData.getInvoiceEntity(), metaData.getInternalCode());
+                    platformOrderShippingInvoiceService.exportToExcel(factureDetails, refunds, extraFees, metaData.getInvoiceCode(), metaData.getInvoiceEntity(), metaData.getInternalCode());
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }

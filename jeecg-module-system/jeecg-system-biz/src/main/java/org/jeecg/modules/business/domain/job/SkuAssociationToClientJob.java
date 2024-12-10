@@ -21,8 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * A Job that retrieves all Sku from Mabang
- * if the sku is of status 3 (normal) and not in DB, then we insert it in DB
+ * A Job that pairs sku with client based on sku suffix
  */
 @Slf4j
 @Component

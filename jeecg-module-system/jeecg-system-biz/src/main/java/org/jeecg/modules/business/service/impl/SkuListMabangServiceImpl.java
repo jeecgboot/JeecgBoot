@@ -444,8 +444,11 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             String saleRemark = saleRemarkMatcher.group(1);
             int weight = (int) ceil(Double.parseDouble(saleRemark));
             if(oldSkuWeight.getWeight() != weight) {
-                oldSkuWeight.setWeight(weight);
-                skuWeightService.updateById(oldSkuWeight);
+                SkuWeight newSkuWeight = new SkuWeight();
+                newSkuWeight.setWeight(weight);
+                newSkuWeight.setSkuId(sku.getId());
+                newSkuWeight.setEffectiveDate(new Date());
+                skuWeightService.save(newSkuWeight);
                 isUpdated = true;
             }
             if(!saleRemarkMatcher.group(2).isEmpty()) {
@@ -541,7 +544,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         skuData.setDeclareNameEn(skuOrderPage.getDeclareEname());
         skuData.setSalePrice(skuOrderPage.getSkuPrice());
         skuData.setDeclareValue(skuOrderPage.getDeclaredValue());
-        skuData.setProvider(DEFAULT_WAREHOUSE_NAME);
+        skuData.setWarehouse(DEFAULT_WAREHOUSE_NAME);
         if(skuOrderPage.getWeight() != null)
             skuData.setSaleRemark(skuOrderPage.getWeight().toString());
         skuData.setHasBattery(sensitiveAttribute.getHasBattery());

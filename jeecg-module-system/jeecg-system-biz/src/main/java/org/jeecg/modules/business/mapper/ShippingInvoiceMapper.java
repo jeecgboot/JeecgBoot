@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.InvoiceKpi;
 import org.jeecg.modules.business.vo.ParcelInfos;
+import org.jeecg.modules.business.vo.Period;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,4 +29,6 @@ public interface ShippingInvoiceMapper extends BaseMapper<ShippingInvoice> {
     Client getClientByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 
     List<ParcelInfos> getPackageStatusInPeriod(@Param("period") int period);
+
+    Period getInvoicePeriod(@Param("shops") List<String> shopIdList);
 }

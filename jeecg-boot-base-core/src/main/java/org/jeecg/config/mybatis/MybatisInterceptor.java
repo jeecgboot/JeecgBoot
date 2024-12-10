@@ -12,7 +12,9 @@ import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.base.event.SkuDeclaredValueModifiedEvent;
 import org.jeecg.modules.base.event.SkuModifiedEvent;
+import org.jeecg.modules.base.event.SkuPriceModifiedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,9 @@ import java.util.regex.Pattern;
 public class MybatisInterceptor implements Interceptor {
 	@Autowired
 	private ApplicationEventPublisher eventPublisher;
+
+	private static final String INSERT_SUCCESS_MSG = "添加成功!";
+	private static final String UPDATE_SUCCESS_MSG = "修改成功！";
 
 	@Override
 	public Object intercept(Invocation invocation) throws Throwable {
@@ -181,13 +186,33 @@ public class MybatisInterceptor implements Interceptor {
 					String operationStatus = dto.getLogContent().split(",")[2];
 					String requestParam = dto.getRequestParam();
 					if(table.equals("sku")) {
-						if(operationStatus.equals("添加成功!")) {
+						if(operationStatus.equals(INSERT_SUCCESS_MSG)) {
 							String id = extractIdFromRequestParam(requestParam);
 							eventPublisher.publishEvent(new SkuModifiedEvent(this, id, "INSERT"));
 						}
-						if(operationStatus.equals("修改成功！")) {
+						if(operationStatus.equals(UPDATE_SUCCESS_MSG)) {
 							String id = extractIdFromRequestParam(requestParam);
 							eventPublisher.publishEvent(new SkuModifiedEvent(this, id, "UPDATE"));
+						}
+					}
+					if(table.equals("sku_price")) {
+						if(operationStatus.equals(INSERT_SUCCESS_MSG)) {
+							String id = extractIdFromRequestParam(requestParam);
+							eventPublisher.publishEvent(new SkuPriceModifiedEvent(this, id, "INSERT"));
+						}
+						if(operationStatus.equals(UPDATE_SUCCESS_MSG)) {
+							String id = extractIdFromRequestParam(requestParam);
+							eventPublisher.publishEvent(new SkuPriceModifiedEvent(this, id, "UPDATE"));
+						}
+					}
+					if(table.equals("sku_declared_value")) {
+						if(operationStatus.equals(INSERT_SUCCESS_MSG)) {
+							String id = extractIdFromRequestParam(requestParam);
+							eventPublisher.publishEvent(new SkuDeclaredValueModifiedEvent(this, id, "INSERT"));
+						}
+						if(operationStatus.equals(UPDATE_SUCCESS_MSG)) {
+							String id = extractIdFromRequestParam(requestParam);
+							eventPublisher.publishEvent(new SkuDeclaredValueModifiedEvent(this, id, "UPDATE"));
 						}
 					}
 				}

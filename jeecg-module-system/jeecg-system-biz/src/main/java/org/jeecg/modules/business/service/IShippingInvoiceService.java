@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service;
 
 import org.jeecg.modules.business.entity.*;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.modules.business.vo.Period;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -48,4 +49,6 @@ public interface IShippingInvoiceService extends IService<ShippingInvoice> {
     boolean deleteAttachmentFile(String filename);
 
     void setPaid(List<String> invoiceNumbers);
+
+    Period getInvoicePeriod(List<String> shopIdList);
 }

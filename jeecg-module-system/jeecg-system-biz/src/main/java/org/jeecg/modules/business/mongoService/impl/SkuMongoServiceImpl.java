@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuDeclaredValue;
 import org.jeecg.modules.business.entity.SkuPrice;
+import org.jeecg.modules.business.entity.SkuWeight;
 import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.mongoRepository.SkuRepository;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
@@ -29,20 +30,6 @@ public class SkuMongoServiceImpl implements SkuMongoService {
     private SkuRepository skuRepository;
 
     @Override
-    public void updateSkuWeight(String erpCode, Integer weight) {
-        log.info("updateSkuWeight erpCode: {}, weight: {}", erpCode, weight);
-        Query query = new Query(Criteria.where("erpCode").is(erpCode));
-        Update update = new Update().set("weight", weight);
-
-        UpdateResult result = mongoTemplate.updateFirst(query, update, SkuDocument.class);
-
-        if(result == null)
-            log.error("updateSkuWeight failed");
-        else
-            log.info("{} document(s) updated ..", result.getModifiedCount());
-    }
-
-    @Override
     public SkuDocument findByErpCode(String erpCode) {
         return skuRepository.findByErpCode(erpCode);
     }
@@ -61,6 +48,12 @@ public class SkuMongoServiceImpl implements SkuMongoService {
                 .withOptions(FindAndReplaceOptions.options().upsert())
                 .as(SkuDocument.class)
                 .findAndReplace();
+    }
+
+    @Override
+    public void deleteBySkuId(String skuId) {
+        Query query = new Query(Criteria.where("skuId").is(skuId));
+        mongoTemplate.findAndRemove(query, SkuDocument.class);
     }
 
     @Override
@@ -91,9 +84,14 @@ public class SkuMongoServiceImpl implements SkuMongoService {
     }
 
     @Override
-    public void deleteBySkuId(String skuId) {
+    public void deleteSkuPriceBySkuId(String skuId) {
         Query query = new Query(Criteria.where("skuId").is(skuId));
-        mongoTemplate.findAndRemove(query, SkuDocument.class);
+        mongoTemplate.update(SkuDocument.class)
+                .matching(query)
+                .apply(new Update()
+                        .unset("latestSkuPrice")
+                )
+                .findAndModifyValue();
     }
 
     @Override
@@ -126,16 +124,33 @@ public class SkuMongoServiceImpl implements SkuMongoService {
     }
 
     @Override
-    public void deleteSkuPriceBySkuId(String skuId) {
+    public void upsertSkuWeight(SkuWeight skuWeight) {
+        Query query = new Query(Criteria.where("skuId").is(skuWeight.getSkuId()));
+        SkuDocument.LatestSkuWeight latestSkuWeight = SkuDocument.LatestSkuWeight.builder()
+                .weight(skuWeight.getWeight())
+                .effectiveDate(skuWeight.getEffectiveDate())
+                .build();
+        mongoTemplate.update(SkuDocument.class)
+                .matching(query)
+                .apply(new Update()
+                        .set("latestSkuWeight", latestSkuWeight)
+                        .set("updateTime", skuWeight.getCreateTime())
+                        .set("updateBy", skuWeight.getCreateBy())
+                )
+                .withOptions(FindAndModifyOptions.options().upsert(true))
+                .findAndModifyValue();
+    }
+
+    @Override
+    public void deleteSkuWeightBySkuId(String skuId) {
         Query query = new Query(Criteria.where("skuId").is(skuId));
         mongoTemplate.update(SkuDocument.class)
                 .matching(query)
                 .apply(new Update()
-                        .unset("latestSkuPrice")
+                        .unset("latestSkuWeight")
                 )
                 .findAndModifyValue();
     }
-
     @Override
     public void updateStock(Sku sku) {
         Query query = new Query(Criteria.where("skuId").is(sku.getId()));
@@ -187,6 +202,7 @@ public class SkuMongoServiceImpl implements SkuMongoService {
         return skuOrderPages.stream()
                 .map(this::convertSkuDocumentToSkuOrderPage).collect(Collectors.toList());
     }
+
     public SkuOrderPage convertSkuDocumentToSkuOrderPage(SkuDocument skuDocument) {
         SkuOrderPage skuOrderPage = new SkuOrderPage();
         skuOrderPage.setId(skuDocument.getSkuId());

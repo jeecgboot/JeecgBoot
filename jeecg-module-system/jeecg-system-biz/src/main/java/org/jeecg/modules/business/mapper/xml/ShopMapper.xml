@@ -45,4 +45,19 @@
         FROM shop
         WHERE id = #{shopId};
     </select>
+    <select id="listShopGroupedByClient" resultType="org.jeecg.modules.business.vo.ShopPage">
+        SELECT s.erp_code as shop_code,
+               c.internal_code as client_code,
+               CONCAT(c.first_name, ' ' , c.surname) as client_name,
+               c.currency as currency
+        FROM shop s
+        JOIN client c
+            ON s.owner_id = c.id
+        WHERE s.active = '1'
+          AND c.active = '1'
+    </select>
+    <select id="getIdByCode" resultType="java.lang.String">
+        SELECT id FROM shop
+        WHERE erp_code = #{code};
+    </select>
 </mapper>

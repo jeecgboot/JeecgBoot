@@ -13,6 +13,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuWeight;
+import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.ISecurityService;
 import org.jeecg.modules.business.service.ISkuService;
 import org.jeecg.modules.business.service.ISkuWeightService;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.modules.business.vo.SkuWeightParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import io.swagger.annotations.Api;
@@ -49,6 +51,8 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 	private ISkuWeightService skuWeightService;
 	@Autowired
 	private ISecurityService securityService;
+	@Autowired
+	private SkuMongoService skuMongoService;
 	
 	/**
 	 * 分页列表查询
@@ -184,6 +188,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		skuWeightService.save(skuWeight);
 		return Result.OK("data.invoice.effectiveDate");
 	}
+	@Transactional
 	@PostMapping(value = "/updateBatch")
 	public Result<String> updateBatch(@RequestBody SkuWeightParam param) {
 		boolean isEmployee = securityService.checkIsEmployee();
@@ -204,6 +209,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			skuWeight.setSkuId(skuId);
 			skuWeight.setWeight(param.getWeight());
 			skuWeights.add(skuWeight);
+			skuMongoService.upsertSkuWeight(skuWeight);
 		}
 		skuWeightService.saveBatch(skuWeights);
 		return Result.OK("data.invoice.effectiveDate");

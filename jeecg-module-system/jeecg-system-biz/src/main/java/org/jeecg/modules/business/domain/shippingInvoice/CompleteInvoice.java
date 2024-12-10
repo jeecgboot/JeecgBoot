@@ -6,6 +6,7 @@ import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.entity.SavRefundWithDetail;
+import org.jeecg.modules.business.vo.ExtraFeeResult;
 import org.jeecg.modules.business.vo.PromotionDetail;
 
 import java.math.BigDecimal;
@@ -24,9 +25,10 @@ public class CompleteInvoice extends ShippingInvoice {
 
     public CompleteInvoice(Client targetClient, String code, String subject,
                            Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent,
-                           List<SavRefundWithDetail> savRefunds, List<PurchaseInvoiceEntry> purchaseInvoiceEntries,
+                           List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees,
+                           List<PurchaseInvoiceEntry> purchaseInvoiceEntries,
                            List<PromotionDetail> promotions, BigDecimal exchangeRate) {
-        super(targetClient, code, subject, ordersToContent, savRefunds, exchangeRate);
+        super(targetClient, code, subject, ordersToContent, savRefunds, extraFees,exchangeRate);
         this.purchaseInvoiceEntries = purchaseInvoiceEntries;
         this.promotions = promotions;
     }

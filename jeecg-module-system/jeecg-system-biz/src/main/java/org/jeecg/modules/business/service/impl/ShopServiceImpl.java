@@ -3,6 +3,7 @@ package org.jeecg.modules.business.service.impl;
 import org.jeecg.modules.business.entity.Shop;
 import org.jeecg.modules.business.mapper.ShopMapper;
 import org.jeecg.modules.business.service.IShopService;
+import org.jeecg.modules.business.vo.ShopPage;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -47,5 +48,15 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 	@Override
 	public String getCodeById(String shopId) {
 		return shopMapper.getCodeById(shopId);
+	}
+
+	@Override
+	public List<ShopPage> listShopGroupedByClient() {
+		return shopMapper.listShopGroupedByClient();
+	}
+
+	@Override
+	public String getIdByCode(String erpCode) {
+		return shopMapper.getIdByCode(erpCode);
 	}
 }

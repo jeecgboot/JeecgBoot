@@ -1,16 +1,18 @@
 package org.jeecg.modules.business.vo;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
 
 import java.util.Date;
 
+@Data
 public class Period {
-    @JsonProperty
+    @JsonProperty("start")
     private final Date start;
-    @JsonProperty
+    @JsonProperty("end")
     private final Date end;
 
-    @JsonProperty
+    @JsonProperty("type")
     private final String type;
 
     public Period(Date start, Date end, String type) {

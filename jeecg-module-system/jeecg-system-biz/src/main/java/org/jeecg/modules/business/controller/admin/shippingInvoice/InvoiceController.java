@@ -76,6 +76,8 @@ public class InvoiceController {
     @Autowired
     private ExchangeRatesMapper exchangeRatesMapper;
     @Autowired
+    private IExtraFeeService extraFeeService;
+    @Autowired
     private IShopService shopService;
     @Autowired
     private PlatformOrderShippingInvoiceService shippingInvoiceService;
@@ -223,6 +225,21 @@ public class InvoiceController {
     public Result<?> getValidPeriod(@RequestBody List<String> shopIDs) {
         log.info("Request for valid period for shops: {}", shopIDs.toString());
         Period period = shippingInvoiceService.getValidPeriod(shopIDs);
+        if (period.isValid())
+            return Result.OK(period);
+        else return Result.error("No package in the selected period");
+    }
+
+    /**
+     * Fetches dates of first invoice and last invoice for given shops (only return earliest and latest)
+     * @param shopIds
+     * @return
+     */
+    @GetMapping(value = "/invoicePeriod")
+    public Result<?> getInvoicePeriod(@RequestParam("shopIds") String shopIds) {
+        log.info("Request for invoice period for shops: {}", shopIds);
+        List<String> shopIdList = Arrays.asList(shopIds.split(","));
+        Period period = iShippingInvoiceService.getInvoicePeriod(shopIdList);
         if (period.isValid())
             return Result.OK(period);
         else return Result.error("No package in the selected period");
@@ -736,7 +753,22 @@ public class InvoiceController {
     public byte[] downloadInvoiceDetail(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("invoiceEntity") String invoiceEntity, @RequestParam("internalCode") String internalCode) throws IOException {
         List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(invoiceNumber);
         List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
-        return shippingInvoiceService.exportToExcel(factureDetails, refunds, invoiceNumber, invoiceEntity, internalCode);
+        List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
+        return shippingInvoiceService.exportToExcel(factureDetails, refunds, extraFees, invoiceNumber, invoiceEntity, internalCode);
+    }
+    @GetMapping(value = "/downloadInvoiceDetailByClientAndPeriod")
+    public byte[] downloadInvoiceDetailByClientAndPeriod(@RequestParam("clientId") String clientId,
+                                                         @RequestParam("shopIds[]")List<String> shopIds,
+                                                         @RequestParam("startDate") String startDate,
+                                                         @RequestParam("endDate") String endDate,
+                                                         @RequestParam("type") String type
+    ) throws IOException, UserException {
+        // TODO : fix this  + fix missing sku_price
+        System.out.println("Request for downloading invoice detail by client and period : " + clientId + " " + shopIds + " " + startDate + " " + endDate + " " + type);
+        List<FactureDetail> invoiceDetails = shippingInvoiceService.getInvoiceDetailByShopsAndPeriod(shopIds, startDate, endDate, type);
+        Client client = clientService.getById(clientId);
+        return shippingInvoiceService.exportToExcel(invoiceDetails, Collections.emptyList(), Collections.emptyList(), "", client.getInvoiceEntity(), client.getInternalCode());
+
     }
     @GetMapping(value = "/downloadInvoiceInventory")
     public byte[] downloadInvoiceInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
@@ -881,7 +913,8 @@ public class InvoiceController {
                 filenameList.add(INVOICE_DIR + "//" + metaData.getFilename());
                 List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetail(metaData.getInvoiceCode());
                 List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(metaData.getInvoiceCode());
-                shippingInvoiceService.exportToExcel(factureDetails, refunds, metaData.getInvoiceCode(), metaData.getInvoiceEntity(), metaData.getInternalCode());
+                List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(metaData.getInvoiceCode());
+                shippingInvoiceService.exportToExcel(factureDetails, refunds, extraFees, metaData.getInvoiceCode(), metaData.getInvoiceEntity(), metaData.getInternalCode());
                 filenameList.add(INVOICE_DETAIL_DIR + "//" + metaData.getInternalCode() + "_(" + metaData.getInvoiceEntity() + ")_" + metaData.getInvoiceCode() + "_Détail_calcul_de_facture.xlsx");
             }
             log.info("Generating detail files ...{}/{}", cpt++, invoiceList.size());
@@ -1088,12 +1121,29 @@ public class InvoiceController {
         List<PlatformOrder> platformOrderList = iShippingInvoiceService.getPlatformOrder(invoiceNumber);
 
         List<BigDecimal> refundList = iSavRefundService.getRefundAmount(invoiceNumber);
-        Map<String, Map.Entry<Integer, BigDecimal>> feeAndQtyPerCountry = new HashMap<>(); // it maps number of order and shipping fee per country : <France,<250, 50.30>>, <UK, <10, 2.15>>
+        List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
+        Map<String, Fee> feeAndQtyPerCountry = new HashMap<>(); // it maps number of order and shipping fee per country : <France,<250, 50.30>>, <UK, <10, 2.15>>
         BigDecimal serviceFee = BigDecimal.ZERO; // po.order_service_fee + poc.service_fee
         BigDecimal pickingFee = BigDecimal.ZERO;
         BigDecimal packagingMatFee = BigDecimal.ZERO;
         BigDecimal vat = BigDecimal.ZERO;
         BigDecimal refund = BigDecimal.ZERO;
+        Map<String, Fee> extraFeesMap = new HashMap<>(); // <"extra fee name", <quantity, amount>>, <"extra fee name", <quantity, amount>>, ...
+
+        if(extraFees != null) {
+            for(ExtraFeeResult extraFee : extraFees) {
+                if(!extraFeesMap.containsKey(extraFee.getEnName())) {
+                    Fee fee = new Fee(extraFee.getQuantity(), extraFee.getUnitPrice());
+                    extraFeesMap.put(extraFee.getEnName(), fee);
+                }
+                else {
+                    Integer existingQuantity = extraFeesMap.get(extraFee.getEnName()).getQuantity();
+                    Fee fee = new Fee(existingQuantity + extraFee.getQuantity(), extraFee.getUnitPrice());
+                    extraFeesMap.remove(extraFee.getEnName());
+                    extraFeesMap.put(extraFee.getEnName(), fee);
+                }
+            }
+        }
 
         // on parcours toutes les commandes pour récupérer : country, order_service_fee, fret_fee, picking_fee
         for(PlatformOrder p : platformOrderList) {
@@ -1115,15 +1165,18 @@ public class InvoiceController {
             // si oui on additionne la "qty" et "shipping fee"
             // sinon on ajoute juste à la map
             if(!feeAndQtyPerCountry.containsKey(country)) {
-                feeAndQtyPerCountry.put(country, new AbstractMap.SimpleEntry<>(1, shippingFee));
+                Fee fee = new Fee(1, shippingFee);
+                feeAndQtyPerCountry.put(country, fee);
             }
             else {
-                BigDecimal existingGlobalFee = feeAndQtyPerCountry.get(country).getValue();
-                Integer existingOrderQuantity = feeAndQtyPerCountry.get(country).getKey();
+                BigDecimal existingGlobalFee = feeAndQtyPerCountry.get(country).getUnitPrice();
+                Integer existingOrderQuantity = feeAndQtyPerCountry.get(country).getQuantity();
                 existingOrderQuantity ++;
                 existingGlobalFee = existingGlobalFee.add(shippingFee);
+
+                Fee fee = new Fee(existingOrderQuantity, existingGlobalFee);
                 feeAndQtyPerCountry.remove(country);
-                feeAndQtyPerCountry.put(country, new AbstractMap.SimpleEntry<>(existingOrderQuantity, existingGlobalFee));
+                feeAndQtyPerCountry.put(country, fee);
             }
         }
         // on fait la somme des remboursements
@@ -1149,6 +1202,7 @@ public class InvoiceController {
         invoiceDatas.setPickingFee(pickingFee);
         invoiceDatas.setPackagingMaterialFee(packagingMatFee);
         invoiceDatas.setFeeAndQtyPerCountry(feeAndQtyPerCountry);
+        invoiceDatas.setExtraFees(extraFeesMap);
 
         return Result.OK(invoiceDatas);
     }
@@ -1168,7 +1222,7 @@ public class InvoiceController {
             invoiceData.addAll(purchaseOrderContentMapper.selectInvoiceDataByID(order.getId()));
         }
         List<BigDecimal> refundList = iSavRefundService.getRefundAmount(invoiceNumber);
-        Map<String, Map.Entry<Integer, BigDecimal>> feeAndQtyPerSku = new HashMap<>(); // it maps number of order and purchase fee per item : <France,<250, 50.30>>, <UK, <10, 2.15>>
+        Map<String, Fee> feeAndQtyPerSku = new HashMap<>(); // it maps number of order and purchase fee per item : <France,<250, 50.30>>, <UK, <10, 2.15>>
         BigDecimal refund = BigDecimal.ZERO;
 
         // on parcours toutes les commandes pour récupérer : country, purchaseFee
@@ -1180,15 +1234,17 @@ public class InvoiceController {
             // si oui on additionne la "qty" et "purchase fee"
             // sinon on ajoute juste à la map
             if(!feeAndQtyPerSku.containsKey(sku)) {
-                feeAndQtyPerSku.put(sku, new AbstractMap.SimpleEntry<>(qty, purchaseFeePerSku));
+                Fee fee = new Fee(qty, purchaseFeePerSku);
+                feeAndQtyPerSku.put(sku, fee);
             }
             else {
-                BigDecimal existingGlobalFee = feeAndQtyPerSku.get(sku).getValue();
-                Integer existingOrderQuantity = feeAndQtyPerSku.get(sku).getKey();
+                BigDecimal existingGlobalFee = feeAndQtyPerSku.get(sku).getUnitPrice();
+                Integer existingOrderQuantity = feeAndQtyPerSku.get(sku).getQuantity();
                 existingOrderQuantity += qty;
                 existingGlobalFee = existingGlobalFee.add(purchaseFeePerSku);
+                Fee fee = new Fee(existingOrderQuantity, existingGlobalFee);
                 feeAndQtyPerSku.remove(sku);
-                feeAndQtyPerSku.put(sku, new AbstractMap.SimpleEntry<>(existingOrderQuantity, existingGlobalFee));
+                feeAndQtyPerSku.put(sku, fee);
             }
         }
         // on fait la somme des remboursements

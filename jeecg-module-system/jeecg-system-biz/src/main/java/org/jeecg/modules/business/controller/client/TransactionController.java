@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TransactionController {
     @Autowired
+    private IExtraFeeService extraFeeService;
+    @Autowired
     private EmailService emailService;
     @Autowired
     private TransactionMapper transactionMapper;
@@ -107,6 +109,7 @@ public class TransactionController {
             List<String> shippingOrderIds = shippingOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
             log.info("Estimating shipping fees for {}", shippingOrderIds.size());
             ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
+                    extraFeeService,
                     platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
                     platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
                     purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
