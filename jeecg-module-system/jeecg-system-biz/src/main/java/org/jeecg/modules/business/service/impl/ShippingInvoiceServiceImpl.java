@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ShippingInvoiceMapper;
 import org.jeecg.modules.business.service.IShippingInvoiceService;
+import org.jeecg.modules.business.vo.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -234,5 +235,10 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
     @Override
     public void setPaid(List<String> invoiceNumbers) {
         shippingInvoiceMapper.setPaid(invoiceNumbers);
+    }
+
+    @Override
+    public Period getInvoicePeriod(List<String> shopIdList) {
+        return shippingInvoiceMapper.getInvoicePeriod(shopIdList);
     }
 }

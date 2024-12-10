@@ -33,7 +33,18 @@ public class MabangSkuStockUpdateJob implements Job {
         if (parameter != null) {
             try {
                 JSONObject jsonObject = new JSONObject(parameter);
-                if (!jsonObject.isNull("skus")) {
+                if(!jsonObject.isNull("clients")) {
+                    log.info("Request to sync stock for all SKUs of clients: {}", jsonObject.getJSONArray("clients"));
+                    erpCodes.clear();
+                    JSONArray array = jsonObject.getJSONArray("clients");
+                    for(int i = 0; i < array.length(); i++) {
+                        String clientCode = array.getString(i);
+                        erpCodes.addAll(skuService.fetchAllClientSkuCodes(clientCode));
+                    }
+                }
+                if (!jsonObject.isNull("skus") && jsonObject.isNull("clients")) {
+                    log.info("Request to sync stock for specific SKUs: {}", jsonObject.getJSONArray("skus"));
+                    erpCodes.clear();
                     JSONArray array = jsonObject.getJSONArray("skus");
                     for(int i = 0; i < array.length(); i++) {
                         erpCodes.add(array.getString(i));
@@ -42,6 +53,8 @@ public class MabangSkuStockUpdateJob implements Job {
             } catch (JSONException e) {
                 log.error("Error while parsing parameter as JSON, falling back to default parameters.");
             }
+        } else {
+            log.info("No parameter provided, syncing stock for all SKUs.");
         }
         skuListMabangService.mabangSkuStockUpdate(erpCodes);
         log.info("Sku stock update Job has ended.");

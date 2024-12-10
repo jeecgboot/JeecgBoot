@@ -614,4 +614,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
         return skuMapper.listImgUrls();
     }
 
+    @Override
+    public List<String> fetchAllClientSkuCodes(String clientCode) {
+        return skuMapper.fetchAllClientSkuCodes(clientCode);
+    }
+
 }

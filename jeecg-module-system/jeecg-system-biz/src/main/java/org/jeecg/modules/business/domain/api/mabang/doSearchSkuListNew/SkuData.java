@@ -53,8 +53,8 @@ public class SkuData {
     @JSONField(name="purchasePrice")
     private BigDecimal purchasePrice;
     /**默认供应商名称,接口参数传showProvider才返回*/
-    @JSONField(name="provider")
-    private String provider;
+    @JSONField(name="warehouse")
+    private String warehouse;
     /**
      * if stockPicture is empty, we use it
      */
@@ -146,7 +146,14 @@ public class SkuData {
                 "\nStock Picture : " + this.stockPicture +
                 "\nsale Picture : " + this.salePicture +
                 "\nBattery : " + this.hasBattery +
-                "\nMagnetic : " + this.magnetic
+                "\nMagnetic : " + this.magnetic +
+                "\nPowder : " + this.powder +
+                "\nIs Paste : " + this.isPaste +
+                "\nNo Liquid Cosmetic : " + this.noLiquidCosmetic +
+                "\nIs Flammable : " + this.isFlammable +
+                "\nIs Knife : " + this.isKnife +
+                "\nIs Gift : " + this.isGift +
+                "\nProvider : " + this.supplier
                 ;
     }
 }

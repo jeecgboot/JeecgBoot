@@ -590,20 +590,33 @@ public class PurchaseOrderController {
                             .filter(entry -> entry.getValue() > 0)
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                     InvoiceMetaData metaData = purchaseOrderService.getMetaDataFromInvoiceNumbers(invoiceNumber);
-                    boolean success = providerMabangService.addPurchaseOrderToMabang(skuQtyNotEmptyMap, metaData, providersHistory);
-                    return success ? invoiceNumber : "failed";
+                    List<String> errors = providerMabangService.addPurchaseOrderToMabang(skuQtyNotEmptyMap, metaData, providersHistory);
+                    return errors.isEmpty() ? invoiceNumber : errors.toString();
                 },throttlingExecutorService))
                 .collect(Collectors.toList());
 
         List<String> results = future.stream().map(CompletableFuture::join).collect(Collectors.toList());
-        long nbSuccesses = results.stream().filter(Objects::nonNull).count();
+        long nbSuccesses = results.stream().filter(PurchaseOrderController::isInvoiceNumber).count();
         log.info("{}/{} purchase order requests have succeeded.", nbSuccesses, invoiceNumbers.size());
 
         Map<String, List<String>> data = new HashMap<>();
-        List<String> failedInvoices = results.stream().filter(s -> s.equals("failed")).collect(Collectors.toList());
-        List<String> successInvoices = results.stream().filter(s -> !s.equals("failed")).collect(Collectors.toList());
+
+        List<String> failedInvoices = new ArrayList<>();
+        List<String> successInvoices = new ArrayList<>();
+
+        results.forEach(result -> {
+            if(isInvoiceNumber(result)) {
+                successInvoices.add(result);
+            } else {
+                failedInvoices.add(result);
+            }
+        });
+
         data.put("fail", failedInvoices);
         data.put("success", successInvoices);
         return Result.OK(data);
+    }
+    public static boolean isInvoiceNumber(String invoiceNumber) {
+        return invoiceNumber.matches("^[0-9]{4}-[0-9]{2}-[127][0-9]{3}$");
     }
 }

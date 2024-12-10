@@ -229,6 +229,21 @@ public class InvoiceController {
             return Result.OK(period);
         else return Result.error("No package in the selected period");
     }
+
+    /**
+     * Fetches dates of first invoice and last invoice for given shops (only return earliest and latest)
+     * @param shopIds
+     * @return
+     */
+    @GetMapping(value = "/invoicePeriod")
+    public Result<?> getInvoicePeriod(@RequestParam("shopIds") String shopIds) {
+        log.info("Request for invoice period for shops: {}", shopIds);
+        List<String> shopIdList = Arrays.asList(shopIds.split(","));
+        Period period = iShippingInvoiceService.getInvoicePeriod(shopIdList);
+        if (period.isValid())
+            return Result.OK(period);
+        else return Result.error("No package in the selected period");
+    }
     /**
      * Make shipping invoice for shops between 2 dates and orders with specified status.
      *
@@ -740,6 +755,20 @@ public class InvoiceController {
         List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
         List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
         return shippingInvoiceService.exportToExcel(factureDetails, refunds, extraFees, invoiceNumber, invoiceEntity, internalCode);
+    }
+    @GetMapping(value = "/downloadInvoiceDetailByClientAndPeriod")
+    public byte[] downloadInvoiceDetailByClientAndPeriod(@RequestParam("clientId") String clientId,
+                                                         @RequestParam("shopIds[]")List<String> shopIds,
+                                                         @RequestParam("startDate") String startDate,
+                                                         @RequestParam("endDate") String endDate,
+                                                         @RequestParam("type") String type
+    ) throws IOException, UserException {
+        // TODO : fix this  + fix missing sku_price
+        System.out.println("Request for downloading invoice detail by client and period : " + clientId + " " + shopIds + " " + startDate + " " + endDate + " " + type);
+        List<FactureDetail> invoiceDetails = shippingInvoiceService.getInvoiceDetailByShopsAndPeriod(shopIds, startDate, endDate, type);
+        Client client = clientService.getById(clientId);
+        return shippingInvoiceService.exportToExcel(invoiceDetails, Collections.emptyList(), Collections.emptyList(), "", client.getInvoiceEntity(), client.getInternalCode());
+
     }
     @GetMapping(value = "/downloadInvoiceInventory")
     public byte[] downloadInvoiceInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {

@@ -544,7 +544,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         skuData.setDeclareNameEn(skuOrderPage.getDeclareEname());
         skuData.setSalePrice(skuOrderPage.getSkuPrice());
         skuData.setDeclareValue(skuOrderPage.getDeclaredValue());
-        skuData.setProvider(DEFAULT_WAREHOUSE_NAME);
+        skuData.setWarehouse(DEFAULT_WAREHOUSE_NAME);
         if(skuOrderPage.getWeight() != null)
             skuData.setSaleRemark(skuOrderPage.getWeight().toString());
         skuData.setHasBattery(sensitiveAttribute.getHasBattery());

@@ -100,6 +100,16 @@
           AND erp_status IN (3,4)
           AND parcel_trace.id IN (SELECT id FROM latest_parcel_trace_id)
     </select>
-    <select id="gpt">
+    <select id="getInvoicePeriod" resultType="org.jeecg.modules.business.vo.Period">
+        SELECT MIN(po.order_time) as 'start',
+               MAX(po.order_time) as 'end',
+               '' as type
+        FROM platform_order po
+        JOIN shop s ON po.shop_id = s.id
+        WHERE s.id IN
+              <foreach collection="shops" item="shopId" open="(" separator="," close=")">
+                    #{shopId}
+              </foreach>
+        AND po.shipping_invoice_number IS NOT NULL
     </select>
 </mapper>

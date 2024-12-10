@@ -430,6 +430,12 @@ public class PlatformOrderShippingInvoiceService {
         return factureDetailMapper.selectList(queryWrapper);
     }
 
+    public List<FactureDetail> getInvoiceDetailByShopsAndPeriod(List<String> shopIds, String startDate, String endDate, String type) throws UserException {
+        if(!type.equals(InvoiceType.SHIPPING_INVOICE.getCode()) && !type.equals(InvoiceType.COMPLETE_INVOICE.getCode()))
+            throw new UserException("Invalid invoice type");
+        return factureDetailMapper.selectByShopsAndPeriod(shopIds, startDate, endDate, type);
+    }
+
     public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, List<ExtraFeeResult> extraFees, String invoiceNumber, String invoiceEntity, String internalCode) throws IOException {
         SheetManager sheetManager = SheetManager.createXLSX();
         sheetManager.startDetailsSheet();

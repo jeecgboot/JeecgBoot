@@ -26,10 +26,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -79,7 +76,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
      */
     @Transactional
     @Override
-    public boolean addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData, AtomicReference<Map<String, LocalDateTime>> providersHistory) {
+    public List<String> addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData, AtomicReference<Map<String, LocalDateTime>> providersHistory) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String mabangUsername = sysUser.getMabangUsername();
         String content = metaData.getFilename();
@@ -118,7 +115,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         }
         if(skuDataList.isEmpty()) {
             log.error("Couldn't get SKU data from Mabang API for invoice : {}", metaData.getInvoiceCode());
-            return false;
+            return Collections.singletonList("Couldn't get SKU data from Mabang API for invoice : " + metaData.getInvoiceCode());
         }
 
         for(SkuData skuData : skuDataList) {
@@ -130,7 +127,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
             stockData.setStockSku(entry.getKey());
             stockData.setPrice(entry.getValue().getPurchasePrice().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ONE : entry.getValue().getPurchasePrice().setScale(2, RoundingMode.CEILING));
             stockData.setPurchaseNum(skuQuantities.get(entry.getKey()));
-            stockData.setProvider(entry.getValue().getProvider());
+            stockData.setProvider(entry.getValue().getSupplier());
             skuStockData.add(stockData);
         }
         // group by provider
@@ -150,7 +147,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
                 MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
 
-
+        List<String> errors = new ArrayList<>();
         List<String> groupIds = new ArrayList<>(); // results from Mabang API
         List<CompletableFuture<Boolean>> changeOrderFutures = stockProviderMap.entrySet().stream()
                 .map(entry -> CompletableFuture.supplyAsync(() -> {
@@ -174,9 +171,10 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
                     AddPurchaseOrderRequestBody body = new AddPurchaseOrderRequestBody(mabangUsername, providerName, content, stockDataList);
                     AddPurchaseOrderRequest request = new AddPurchaseOrderRequest(body);
                     AddPurchaseOrderResponse response = request.send();
-                    log.info("Mabang Add purchase API response | {} - {} : {}", metaData.getInvoiceCode(), providerName,response.toString());
-                    if(!response.success()) {
-                        log.error("Failed to create purchase order to Mabang for {} - {}", metaData.getInvoiceCode(), providerName);
+                    log.info("Mabang Add purchase API response | Invoice : {} - Provider : {} - Message : {}", metaData.getInvoiceCode(), providerName,response.toString());
+                    if(response.getGroupId() == null) {
+                        log.error("Failed to create purchase order to Mabang for Invoice : {} - Provider : {} - Skus : {} - Reason : {}", metaData.getInvoiceCode(), providerName, stockDataList.stream().map(SkuStockData::getStockSku).collect(Collectors.joining(",")), response.getMessage());
+                        errors.add("Failed to create purchase order to Mabang for Invoice : " + metaData.getInvoiceCode() + " - Provider : " + providerName + " - Skus : " + stockDataList.stream().map(SkuStockData::getStockSku).collect(Collectors.joining(",")) + " - Reason : " + response.getMessage());
                         return false;
                     }
                     groupIds.add(response.getGroupId());
@@ -192,8 +190,8 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         if(nbSuccesses == stockProviderMap.size()) {
             purchaseOrderService.updatePurchaseOrderStatus(metaData.getInvoiceCode(), true);
             purchaseOrderService.updatePurchaseOrderGroupIds(metaData.getInvoiceCode(), groupIds);
-            return true;
+            return Collections.emptyList();
         }
-        return false;
+        return errors;
     }
 }
