@@ -82,7 +82,6 @@
         agentId: '',
         clientId: '',
         clientSecret: '',
-        agentAppSecret: '',
       });
       //企业微信钉钉配置modal
       const [registerAppConfigModal, { openModal }] = useModal();

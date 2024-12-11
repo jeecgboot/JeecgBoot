@@ -443,4 +443,19 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param ipAddress ip地址
 	 */
 	void sendChangePhoneSms(JSONObject jsonObject, String username, String ipAddress);
+
+	/**
+	 * 发送注销用户手机号验证密码[敲敲云专用]
+	 * @param jsonObject
+	 * @param username
+	 * @param ipAddress
+	 */
+	void sendLogOffPhoneSms(JSONObject jsonObject, String username, String ipAddress);
+
+	/**
+	 * 用户注销[敲敲云专用]
+	 * @param jsonObject
+	 * @param username
+	 */
+	void userLogOff(JSONObject jsonObject, String username);
 }

@@ -101,11 +101,6 @@ const jeecgAreaData = new Area();
 // 根据code找文本
 const getAreaTextByCode = function (code) {
   let index = 3;
-  // update-begin--author:liaozhiyang---date:20240617---for：【TV360X-1210】online列表香港、澳门没翻译（香港、澳门只有两级其它省份是三级）
-  if (code && ['82', '81'].includes(code.substring(0, 2))) {
-    index = 2;
-  }
-  // update-end--author:liaozhiyang---date:20240617---for：【TV360X-1210】online列表香港、澳门没翻译（香港、澳门只有两级其它省份是三级）
   //update-begin-author:liusq---date:20220531--for: 判断code是否是多code逗号分割的字符串，是的话，获取最后一位的code ---
   if (code && code.includes(',')) {
     index = code.split(",").length;

@@ -51,10 +51,10 @@ public class SysThirdAppConfig {
     @ApiModelProperty(value = "钉钉/企业微信应用id对应的秘钥")
     private String clientSecret;
 
-    /**企业微信自建应用Secret*/
-    @Excel(name = "企业微信自建应用Secret", width = 15)
-    @ApiModelProperty(value = "企业微信自建应用Secret")
-    private String agentAppSecret;
+    /**钉钉企业id*/
+    @Excel(name = "钉钉企业id", width = 15)
+    @ApiModelProperty(value = "钉钉企业id")
+    private String corpId;
 
     /**第三方类别(dingtalk 钉钉 wechat_enterprise 企业微信)*/
     @Excel(name = "第三方类别(dingtalk 钉钉 wechat_enterprise 企业微信)", width = 15)

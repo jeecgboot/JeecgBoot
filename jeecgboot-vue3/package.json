@@ -1,6 +1,6 @@
 {
   "name": "jeecgboot-vue3",
-  "version": "3.7.1",
+  "version": "3.7.2",
   "author": {
     "name": "北京国炬信息技术有限公司",
     "email": "jeecgos@163.com",
@@ -153,11 +153,14 @@
     "vite-plugin-package-config": "^0.1.1",
     "vite-plugin-purge-icons": "^0.10.0",
     "vite-plugin-svg-icons": "^2.0.1",
+    "vite-plugin-qiankun": "^1.0.15",
     "@rys-fe/vite-plugin-theme": "^0.8.6",
     "vite-plugin-vue-setup-extend-plus": "^0.1.0",
     "unocss": "^0.58.5",
     "vue-eslint-parser": "^9.4.2",
-    "vue-tsc": "^1.8.27"
+    "vue-tsc": "^1.8.27",
+    "dingtalk-jsapi": "^3.0.25",
+    "big.js": "^6.2.2"
   },
   "repository": {
     "type": "git",

@@ -18,7 +18,7 @@ import static org.springframework.boot.actuate.endpoint.annotation.Selector.Matc
  * @Date: 2024/5/13 17:02
  */
 @Component
-@Endpoint(id = "httptrace-new")
+@Endpoint(id = "jeecghttptrace")
 public class CustomHttpTraceEndpoint{
     private final CustomInMemoryHttpTraceRepository repository;
 

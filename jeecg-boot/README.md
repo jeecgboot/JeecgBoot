@@ -2,12 +2,12 @@
 JeecgBoot 低代码开发平台
 ===============
 
-当前最新版本： 3.7.1（发布日期：2024-09-12） 
+当前最新版本： 3.7.2（发布日期：2024-12-12） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://jeecg.com/aboutusIndex)
-[![](https://img.shields.io/badge/version-3.7.1-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.7.2-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -35,7 +35,7 @@ JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端�
 
 - 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart)
-- QQ交流群 ： ⑨808791225、其他(满)
+- QQ交流群 ： ⑩716488839、⑨808791225、其他(满)
 - 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取 
 

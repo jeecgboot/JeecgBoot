@@ -10,8 +10,10 @@
         <a-menu>
           <a-menu-item key="0" :disabled="disabledMoveUp" @click="handleRowMoveUp">向上移</a-menu-item>
           <a-menu-item key="1" :disabled="disabledMoveDown" @click="handleRowMoveDown">向下移</a-menu-item>
-          <a-menu-divider />
-          <a-menu-item key="3" @click="handleRowInsertDown">插入一行</a-menu-item>
+          <template v-if="allowInsertRow">
+            <a-menu-divider />
+            <a-menu-item key="3" @click="handleRowInsertDown">插入一行</a-menu-item>
+          </template>
         </a-menu>
       </template>
     </a-dropdown>
@@ -48,6 +50,9 @@
       const disabledMoveUp = computed(() => rowIndex.value === 0);
       const disabledMoveDown = computed(() => rowIndex.value === fullDataLength.value - 1);
 
+      // 是否允许插入行
+      const allowInsertRow = computed(() => originColumn.value.insertRow);
+
       /** 向上移 */
       function handleRowMoveUp() {
         if (!disabledMoveUp.value) {
@@ -79,7 +84,8 @@
         handleRowMoveUp,
         handleRowMoveDown,
         handleRowInsertDown,
-        isAllowDrag
+        isAllowDrag,
+        allowInsertRow,
       };
     },
     // 【组件增强】注释详见：JVxeComponent.Enhanced

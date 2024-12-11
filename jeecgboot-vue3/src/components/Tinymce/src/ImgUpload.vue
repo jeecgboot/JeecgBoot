@@ -8,6 +8,7 @@
       :showUploadList="false"
       :data="getBizData()"
       :headers="getheader()"
+      :before-upload="beforeUpload"
       accept=".jpg,.jpeg,.gif,.png,.webp"
     >
       <a-button type="primary" v-bind="{ ...getButtonProps }">
@@ -37,10 +38,8 @@
         default: false,
       },
     },
-    emits: ['uploading', 'done', 'error'],
+    emits: ['uploading', 'done', 'error', 'loading'],
     setup(props, { emit }) {
-      let uploading = false;
-
       //update-begin-author:taoyan date:2022-5-13 for: 富文本上传图片不支持
       function getheader() {
         return getHeaders();
@@ -67,33 +66,37 @@
         };
       });
 
+      let uploadLength = 0;
       function handleChange({ file, fileList }) {
-        if (file.status === 'error') {
-          emit('error');
-          uploading = false;
+        // 过滤掉已经存在的文件
+        fileList = fileList.filter((file) => {
+          const existFile = uploadFileList.value.find(({ uid }) => uid === file.uid);
+          return existFile ? false : true;
+        });
+        uploadLength == 0 && (uploadLength = fileList.length);
+        if (file.status != 'uploading') {
+          emit('loading', uploadLength, true);
         }
-        let files = [] as any;
-        let noUploadingFileCount = 0;
+        // 处理上传好的文件
         if (file.status != 'uploading') {
           fileList.forEach((file) => {
             if (file.status === 'done' && file.response.success) {
-              files.push(file);
+              const name = file?.name;
+              let realUrl = getFileAccessHttpUrl(file.response.message);
+              uploadFileList.value.push(file);
+              emit('done', name, realUrl);
             }
-            if (file.status != 'uploading') {
-              noUploadingFileCount++;
-            }
-          });
-        }
-
-        if (noUploadingFileCount == fileList.length) {
-          fileList.forEach((file) => {
-            const name = file?.name;
-            let realUrl = getFileAccessHttpUrl(file.response.message);
-            emit('done', name, realUrl);
           });
         }
       }
-
+      //上传之前
+      function beforeUpload() {
+        uploadLength = 0;
+        emit('loading', null, true);
+        setTimeout(() => {
+          emit('loading', null, false);
+        }, 10000);
+      }
       return {
         prefixCls,
         handleChange,
@@ -102,7 +105,8 @@
         getBizData,
         t,
         getButtonProps,
-        uploadFileList
+        uploadFileList,
+        beforeUpload,
       };
     },
   });

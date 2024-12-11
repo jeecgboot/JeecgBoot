@@ -10,6 +10,6 @@ WORKDIR /jeecg-demo-cloud
 
 EXPOSE 7002
 
-ADD ./target/jeecg-demo-cloud-start-3.7.1.jar ./
+ADD ./target/jeecg-demo-cloud-start-3.7.2.jar ./
 
-CMD sleep 60;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-demo-cloud-start-3.7.1.jar
+CMD sleep 60;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-demo-cloud-start-3.7.2.jar

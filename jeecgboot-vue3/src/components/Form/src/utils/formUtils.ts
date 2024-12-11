@@ -36,8 +36,10 @@ export function handleRangeTimeValue(props, values) {
       timeValue = timeValue.split(',');
     }
     const [startTime, endTime]: string[] = timeValue;
-    values[startTimeKey] = dateUtil(startTime).format(format);
-    values[endTimeKey] = dateUtil(endTime).format(format);
+    //update-begin---author:wangshuai---date:2024-10-08---for:【issues/7216】当RangePicker组件值允许开始/结束为空时,表单的fieldMapToTime处理异常---
+    startTime && (values[startTimeKey] = dateUtil(startTime).format(format));
+    endTime && (values[endTimeKey] = dateUtil(endTime).format(format));
+    //update-end---author:wangshuai---date:2024-10-08---for:【issues/7216】当RangePicker组件值允许开始/结束为空时,表单的fieldMapToTime处理异常---
     Reflect.deleteProperty(values, field);
   }
   return values;

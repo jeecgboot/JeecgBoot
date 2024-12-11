@@ -1,5 +1,5 @@
 import type { BasicTableProps, TableRowSelection, BasicColumn } from '../types/table';
-import type { Ref, ComputedRef } from 'vue';
+import type { Ref, ComputedRef, Slots } from 'vue';
 import { computed, unref, ref, nextTick, watch } from 'vue';
 import { getViewportOffset } from '/@/utils/domUtils';
 import { isBoolean } from '/@/utils/is';
@@ -14,7 +14,8 @@ export function useTableScroll(
   tableElRef: Ref<ComponentRef>,
   columnsRef: ComputedRef<BasicColumn[]>,
   rowSelectionRef: ComputedRef<TableRowSelection<any> | null>,
-  getDataSourceRef: ComputedRef<Recordable[]>
+  getDataSourceRef: ComputedRef<Recordable[]>,
+  slots: Slots
 ) {
   const tableHeightRef: Ref<Nullable<number>> = ref(null);
 
@@ -175,7 +176,11 @@ export function useTableScroll(
     if (len !== 0) {
       width += len * NORMAL_WIDTH;
     }
-
+    // update-begin--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
+    if (slots.expandedRowRender) {
+      width += propsRef.value.expandColumnWidth;
+    }
+    // update-end--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
     const table = unref(tableElRef);
     const tableWidth = table?.$el?.offsetWidth ?? 0;
     return tableWidth > width ? '100%' : width;

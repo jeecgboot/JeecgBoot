@@ -202,6 +202,7 @@
         fixed: 'right',
       },
       beforeFetch: async (params) => {
+        params.hasQuery = "true";
        <#if is_range>
         let rangerQuery = await setRangeQuery();
         return Object.assign(params, rangerQuery);

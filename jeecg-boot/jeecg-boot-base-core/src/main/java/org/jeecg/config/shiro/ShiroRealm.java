@@ -168,8 +168,8 @@ public class ShiroRealm extends AuthorizingRealm {
 
                     //*********************************************
                     if(!isAuthorization){
-                        log.warn("租户异常——当前登录的租户是：" + contextTenantId);
-                        log.warn("租户异常——用户拥有的租户是：" + userTenantIds);
+                        log.info("租户异常——登录租户：" + contextTenantId);
+                        log.info("租户异常——用户拥有租户组：" + userTenantIds);
                         throw new AuthenticationException("登录租户授权变更，请重新登陆!");
                     }
                     //*********************************************

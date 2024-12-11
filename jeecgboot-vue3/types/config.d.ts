@@ -160,6 +160,11 @@ export interface GlobConfig {
   shortName: string;
   // 短标题
   shortTitle: string;
+
+  // 【JEECG作为乾坤子应用】是否以乾坤子应用模式启动
+  isQiankunMicro: boolean;
+  // 【JEECG作为乾坤子应用】乾坤子应用入口
+  qiankunMicroAppEntry?: string;
 }
 export interface GlobEnvConfig {
   // Site title
@@ -182,4 +187,9 @@ export interface GlobEnvConfig {
   VITE_GLOB_UPLOAD_URL?: string;
   // view url
   VITE_GLOB_ONLINE_VIEW_URL?: string;
+
+  // 【JEECG作为乾坤子应用】填写后将作为乾坤子应用启动，主应用注册时AppName需保持一致
+  VITE_GLOB_QIANKUN_MICRO_APP_NAME?: string;
+  // 【JEECG作为乾坤子应用】作为乾坤子应用启动时必填，需与qiankun主应用注册子应用时填写的 entry 保持一致
+  VITE_GLOB_QIANKUN_MICRO_APP_ENTRY?: string;
 }

@@ -63,7 +63,7 @@ public class JwtUtil {
             os.flush();
             os.close();
         } catch (IOException e) {
-            e.printStackTrace();
+			log.error(e.getMessage(), e);
         }
     }
 
@@ -82,7 +82,8 @@ public class JwtUtil {
 			// 效验TOKEN
 			DecodedJWT jwt = verifier.verify(token);
 			return true;
-		} catch (Exception exception) {
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 			return false;
 		}
 	}
@@ -97,6 +98,7 @@ public class JwtUtil {
 			DecodedJWT jwt = JWT.decode(token);
 			return jwt.getClaim("username").asString();
 		} catch (JWTDecodeException e) {
+			log.warn(e.getMessage(), e);
 			return null;
 		}
 	}

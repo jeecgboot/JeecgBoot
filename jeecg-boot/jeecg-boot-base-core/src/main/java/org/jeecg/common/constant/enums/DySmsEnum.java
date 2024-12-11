@@ -15,15 +15,7 @@ public enum DySmsEnum {
 	/**修改密码短信模板编码*/
 	CHANGE_PASSWORD_TEMPLATE_CODE("SMS_465391221","敲敲云","code"),
 	/**注册账号短信模板编码*/
-	REGISTER_TEMPLATE_CODE("SMS_175430166","敲敲云","code"),
-	/**会议通知*/
-	MEET_NOTICE_TEMPLATE_CODE("SMS_201480469","JEECG","username,title,minute,time"),
-	/**我的计划通知*/
-	PLAN_NOTICE_TEMPLATE_CODE("SMS_201470515","JEECG","username,title,time"),
-	/**支付成功短信通知*/
-	PAY_SUCCESS_NOTICE_CODE("SMS_461735163","敲敲云","realname,money,endTime"),
-	/**会员到期通知提醒*/
-	VIP_EXPIRE_NOTICE_CODE("SMS_461885023","敲敲云","realname,endTime");
+	REGISTER_TEMPLATE_CODE("SMS_175430166","敲敲云","code");
 
 	/**
 	 * 短信模板编码

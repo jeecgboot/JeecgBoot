@@ -67,8 +67,10 @@ export const basicProps = {
   rulesMessageJoinLabel: propTypes.bool.def(true),
   // 【jeecg】超过3列自动折叠
   autoAdvancedCol: propTypes.number.def(3),
+  // update-begin--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
   // 超过3行自动折叠
-  autoAdvancedLine: propTypes.number.def(3),
+  // autoAdvancedLine: propTypes.number.def(3),
+  // update-end--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
   // 不受折叠影响的行数
   alwaysShowLines: propTypes.number.def(1),
 

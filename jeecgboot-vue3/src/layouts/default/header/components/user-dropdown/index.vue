@@ -129,6 +129,9 @@
           // update-begin--author:liaozhiyang---date:20240124---for：【QQYUN-7970】国际化
           createMessage.success(t('layout.header.refreshCacheComplete'));
           // update-end--author:liaozhiyang---date:20240124---for：【QQYUN-7970】国际化
+          // update-begin--author:wangshuai---date:20241112---for：【issues/7433】vue3 数据字典优化建议
+          userStore.setAllDictItems(res.result);
+          // update-end--author:wangshuai---date:20241112---for：【issues/7433】vue3 数据字典优化建议
         } else {
           // update-begin--author:liaozhiyang---date:20240124---for：【QQYUN-7970】国际化
           createMessage.error(t('layout.header.refreshCacheFailure'));

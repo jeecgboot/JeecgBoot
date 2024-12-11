@@ -175,6 +175,13 @@ export function isOAuth2AppEnv() {
 }
 
 /**
+ * 判断是否是钉钉环境
+ */
+export function isOAuth2DingAppEnv() {
+  return /dingtalk/i.test(navigator.userAgent);
+}
+
+/**
  * 后台构造oauth2登录地址
  * @param source
  * @param tenantId
@@ -191,3 +198,19 @@ export function sysOAuth2Login(source) {
   window.location.href = url;
 }
 //update-end---author:wangshuai ---date:20220629  for：[issues/I5BG1I]vue3不支持auth2登录------------
+
+//update-begin---author:wangshuai ---date:20241108  for：[QQYUN-9421]vue3新版auth登录，用户不用点击登录------------
+/**
+ * 后台callBack
+ * @param code
+ */
+export function sysOAuth2Callback(code:string) {
+  let url = `${window._CONFIG['domianURL']}/sys/thirdLogin/oauth2/dingding/login`;
+  url += `?state=${encodeURIComponent(window.location.origin)}&authCode=${code}`;
+  let tenantId = getAuthCache(OAUTH2_THIRD_LOGIN_TENANT_ID);
+  if(tenantId){
+    url += `&tenantId=${tenantId}`;
+  }
+  window.location.href = url;
+}
+//update-end---author:wangshuai ---date:20241108  for：[QQYUN-9421]vue3新版auth登录，用户不用点击登录------------

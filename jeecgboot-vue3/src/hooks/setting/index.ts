@@ -13,6 +13,10 @@ export const useGlobSetting = (): Readonly<GlobConfig> => {
     VITE_GLOB_APP_OPEN_QIANKUN,
     VITE_GLOB_DOMAIN_URL,
     VITE_GLOB_ONLINE_VIEW_URL,
+
+    // 【JEECG作为乾坤子应用】
+    VITE_GLOB_QIANKUN_MICRO_APP_NAME,
+    VITE_GLOB_QIANKUN_MICRO_APP_ENTRY,
   } = getAppEnvConfig();
 
   // if (!/[a-zA-Z\_]*/.test(VITE_GLOB_APP_SHORT_NAME)) {
@@ -36,7 +40,19 @@ export const useGlobSetting = (): Readonly<GlobConfig> => {
     urlPrefix: VITE_GLOB_API_URL_PREFIX,
     uploadUrl: VITE_GLOB_DOMAIN_URL,
     viewUrl: VITE_GLOB_ONLINE_VIEW_URL,
+
+    // 【JEECG作为乾坤子应用】是否以乾坤子应用模式启动
+    isQiankunMicro: VITE_GLOB_QIANKUN_MICRO_APP_NAME != null && VITE_GLOB_QIANKUN_MICRO_APP_NAME !== '',
+    // 【JEECG作为乾坤子应用】乾坤子应用入口
+    qiankunMicroAppEntry: VITE_GLOB_QIANKUN_MICRO_APP_ENTRY,
   };
+
+  // 【JEECG作为乾坤子应用】乾坤子应用下，需要定义一下
+  if (!window['_CONFIG']) {
+    window['_CONFIG'] = {}
+  }
+
+  // @ts-ignore
   window._CONFIG['domianURL'] = VITE_GLOB_DOMAIN_URL;
   return glob as Readonly<GlobConfig>;
 };

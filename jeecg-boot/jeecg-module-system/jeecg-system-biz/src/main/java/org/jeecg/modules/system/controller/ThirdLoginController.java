@@ -557,4 +557,64 @@ public class ThirdLoginController {
 			}
 		}
 	}
+
+	/**
+	 * 新版钉钉登录
+	 *
+	 * @param authCode
+	 * @param state
+	 * @param tenantId
+	 * @param response
+	 * @return
+	 */
+	@ResponseBody
+	@GetMapping("/oauth2/dingding/login")
+	public String OauthDingDingLogin(@RequestParam(value = "authCode", required = false) String authCode,
+									 @RequestParam("state") String state,
+									 @RequestParam(name = "tenantId",defaultValue = "0") String tenantId,
+									 HttpServletResponse response) {
+		SysUser loginUser = thirdAppDingtalkService.oauthDingDingLogin(authCode,Integer.valueOf(tenantId));
+		try {
+			String redirect = "";
+			if (state.indexOf("?") > 0) {
+				String[] arr = state.split("\\?");
+				state = arr[0];
+				if(arr.length>1){
+					redirect = arr[1];
+				}
+			}
+			String token = saveToken(loginUser);
+			state += "/oauth2-app/login?oauth2LoginToken=" + URLEncoder.encode(token, "UTF-8") + "&tenantId=" + URLEncoder.encode(tenantId, "UTF-8");
+			state += "&thirdType=DINGTALK";
+			if (redirect != null && redirect.length() > 0) {
+				state += "&" + redirect;
+			}
+			log.info("OAuth2登录重定向地址: " + state);
+			try {
+				response.sendRedirect(state);
+				return "ok";
+			} catch (IOException e) {
+				log.error(e.getMessage(),e);
+				return "重定向失败";
+			}
+		} catch (UnsupportedEncodingException e) {
+			log.error(e.getMessage(),e);
+			return "解码失败";
+		}
+	}
+
+	/**
+	 * 获取企业id和应用id
+	 * @param tenantId
+	 * @return
+	 */
+	@ResponseBody
+	@GetMapping("/get/corpId/clientId")
+	public Result<SysThirdAppConfig> getCorpIdClientId(@RequestParam(value = "tenantId", defaultValue = "0") String tenantId){
+		Result<SysThirdAppConfig> result = new Result<>();
+		SysThirdAppConfig sysThirdAppConfig = thirdAppDingtalkService.getCorpIdClientId(Integer.valueOf(tenantId));
+		result.setSuccess(true);
+		result.setResult(sysThirdAppConfig);
+		return result;
+	}
 }

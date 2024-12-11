@@ -12,6 +12,7 @@
   import { ScrollContainer } from '/@/components/Container';
 
   import { useGo } from '/@/hooks/web/usePage';
+  import { useGlobSetting } from "/@/hooks/setting";
   import { useSplitMenu } from './useLayoutMenu';
   import { openWindow } from '/@/utils';
   import { propTypes } from '/@/utils/propTypes';
@@ -56,6 +57,8 @@
 
       const { prefixCls } = useDesign('layout-menu');
 
+      const glob = useGlobSetting()
+
       const { menusRef } = useSplitMenu(toRef(props, 'splitType'));
 
       const { getIsMobile } = useAppInject();
@@ -67,6 +70,11 @@
       const getIsShowLogo = computed(() => unref(getShowLogo) && unref(getIsSidebarType));
 
       const getUseScroll = computed(() => {
+        // 【JEECG作为乾坤子应用】在乾坤子应用下，菜单不固定
+        if (glob.isQiankunMicro) {
+          return false;
+        }
+
         return (
           !unref(getIsHorizontal) &&
           (unref(getIsSidebarType) || props.splitType === MenuSplitTyeEnum.LEFT || props.splitType === MenuSplitTyeEnum.NONE)
