@@ -238,6 +238,7 @@ jeecg:
     shippingInvoiceDetailDir: /wia/invoices/shippingDetail
     shippingInvoicePdfDir: /wia/invoices/pdf/shipping
     shippingInvoiceDetailPdfDir: /wia/invoices/pdf/shippingDetail
+    invoiceDetailExportDir: /wia/invoices/invoiceDetailExport
     # sku csv file for image search
     skuCsvPath: /mnt/wia/products/sku.csv
     # CDG location

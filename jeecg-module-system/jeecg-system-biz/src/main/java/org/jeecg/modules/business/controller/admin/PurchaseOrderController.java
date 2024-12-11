@@ -45,6 +45,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static org.jeecg.modules.business.entity.Invoice.isInvoiceNumber;
+
 /**
  * @Description: API Handler related admin purchase order
  * @Author: Wenke
@@ -596,7 +598,7 @@ public class PurchaseOrderController {
                 .collect(Collectors.toList());
 
         List<String> results = future.stream().map(CompletableFuture::join).collect(Collectors.toList());
-        long nbSuccesses = results.stream().filter(PurchaseOrderController::isInvoiceNumber).count();
+        long nbSuccesses = results.stream().filter(Invoice::isInvoiceNumber).count();
         log.info("{}/{} purchase order requests have succeeded.", nbSuccesses, invoiceNumbers.size());
 
         Map<String, List<String>> data = new HashMap<>();
@@ -615,8 +617,5 @@ public class PurchaseOrderController {
         data.put("fail", failedInvoices);
         data.put("success", successInvoices);
         return Result.OK(data);
-    }
-    public static boolean isInvoiceNumber(String invoiceNumber) {
-        return invoiceNumber.matches("^[0-9]{4}-[0-9]{2}-[127][0-9]{3}$");
     }
 }
