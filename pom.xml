@@ -4,7 +4,7 @@
   <artifactId>jeecg-boot-parent</artifactId>
    <version>3.6.3</version>
   <packaging>pom</packaging>
-  <name>WIA APP ${project.version}</name>
+  <name>WIA APP ${wia-app.version}</name>
 
 	<developers>
 		<developer>
@@ -117,6 +117,16 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.github.loki4j</groupId>
+			<artifactId>loki-logback-appender</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+		<dependency>
+			<!-- For MongoDB connectivity -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
