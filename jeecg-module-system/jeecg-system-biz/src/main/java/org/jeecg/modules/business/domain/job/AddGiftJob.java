@@ -176,6 +176,9 @@ public class AddGiftJob implements Job {
                         .stream()
                         .filter(orderItem -> !orderItem.getStatus().equalsIgnoreCase(OBSOLETE_STATUS_CODE))
                         .collect(groupingBy(orderItem -> giftSkuSet.contains(orderItem.getErpCode())));
+                if (orderItemMap.isEmpty()) {
+                    break;
+                }
                 for (OrderItem orderItem : orderItemMap.get(Boolean.FALSE)) {
                     String erpCode = orderItem.getErpCode();
                     if (!nonMatchingRulesApplied && nonMatchingQuantityRules != null) {
