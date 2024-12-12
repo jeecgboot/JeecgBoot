@@ -262,7 +262,7 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-        if(extraFees != null) {
+        if(extraFees != null && !extraFees.isEmpty()) {
             List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
             extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
         }
@@ -398,7 +398,7 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-        if(extraFees != null) {
+        if(extraFees != null && !extraFees.isEmpty()) {
             List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
             extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
         }
@@ -587,7 +587,7 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-        if(extraFees != null) {
+        if(extraFees != null && !extraFees.isEmpty()) {
             List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
             extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
         }
