@@ -85,7 +85,7 @@ JeecgBoot开源版本，底层完全开源可以自主开发，遵循Apache2.0�
 - 基础框架：Spring Boot 2.7.18
 - 微服务框架： Spring Cloud Alibaba 2021.0.1.0
 - 持久层框架：MybatisPlus 3.5.3.2
-- 报表工具： JimuReport 1.8.1
+- 报表工具： JimuReport 1.9.1
 - 安全框架：Apache Shiro 1.12.0，Jwt 3.11.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.1.22
