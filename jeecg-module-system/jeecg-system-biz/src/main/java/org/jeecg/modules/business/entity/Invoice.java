@@ -97,22 +97,29 @@ public class Invoice implements Serializable {
 
     @Getter
     public enum InvoiceType {
-        PURCHASE('1'),
-        SHIPPING('2'),
-        COMPLETE('7');
+        PURCHASE(1, "purchase_invoice"),
+        SHIPPING(2, "shipping_invoice"),
+        COMPLETE(7, "complete_invoice");
 
-        private final char type;
+        private final int type;
+        private final String text;
 
-        InvoiceType(char type) {
+        InvoiceType(int type, String text) {
             this.type = type;
+            this.text = text;
         }
     }
 
     public static String getType(String invoiceNumber) {
         for(InvoiceType type : InvoiceType.values()) {
-            if(type.getType() == invoiceNumber.charAt(8))
+            // you can get the int value of a decimal digit char by subtracting '0'
+            int typeNumber = invoiceNumber.charAt(8) - '0';
+            if(type.getType() == typeNumber)
                 return type.name();
         }
         throw new IllegalArgumentException("Incorrect invoice number : " + invoiceNumber);
+    }
+    public static boolean isInvoiceNumber(String invoiceNumber) {
+        return invoiceNumber.matches("^[0-9]{4}-[0-9]{2}-[127][0-9]{3}$");
     }
 }

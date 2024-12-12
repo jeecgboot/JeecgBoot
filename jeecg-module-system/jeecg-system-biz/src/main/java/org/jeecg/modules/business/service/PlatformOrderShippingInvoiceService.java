@@ -129,6 +129,8 @@ public class PlatformOrderShippingInvoiceService {
     private String INVOICE_PDF_DIR;
     @Value("${jeecg.path.shippingInvoiceDetailPdfDir}")
     private String INVOICE_DETAIL_PDF_DIR;
+    @Value("${jeecg.path.invoiceDetailExportDir}")
+    private String INVOICE_DETAIL_EXPORT_DIR;
     private static final String EXTENSION = ".xlsx";
 
     private final static String[] DETAILS_TITLES = {
@@ -431,12 +433,12 @@ public class PlatformOrderShippingInvoiceService {
     }
 
     public List<FactureDetail> getInvoiceDetailByShopsAndPeriod(List<String> shopIds, String startDate, String endDate, String type) throws UserException {
-        if(!type.equals(InvoiceType.SHIPPING_INVOICE.getCode()) && !type.equals(InvoiceType.COMPLETE_INVOICE.getCode()))
+        if(!type.equals(String.valueOf(SHIPPING.getType())) && !type.equals(String.valueOf(COMPLETE.getType())))
             throw new UserException("Invalid invoice type");
         return factureDetailMapper.selectByShopsAndPeriod(shopIds, startDate, endDate, type);
     }
 
-    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, List<ExtraFeeResult> extraFees, String invoiceNumber, String invoiceEntity, String internalCode) throws IOException {
+    public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, List<ExtraFeeResult> extraFees, String fileNameInfo, String invoiceEntity, String internalCode) throws IOException {
         SheetManager sheetManager = SheetManager.createXLSX();
         sheetManager.startDetailsSheet();
         for (String title : DETAILS_TITLES) {
@@ -545,11 +547,11 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.moveCol(0);
             sheetManager.nextRow();
         }
-
-        Path target = Paths.get(INVOICE_DETAIL_DIR, internalCode + "_(" + invoiceEntity + ")_" + invoiceNumber + "_Détail_calcul_de_facture.xlsx");
+        String dir = Invoice.isInvoiceNumber(fileNameInfo) ? INVOICE_DETAIL_DIR : INVOICE_DETAIL_EXPORT_DIR;
+        Path target = Paths.get(dir, internalCode + "_(" + invoiceEntity + ")_" + fileNameInfo + "_Détail_calcul_de_facture.xlsx");
         int i = 2;
         while (Files.exists(target)) {
-            target = Paths.get(INVOICE_DETAIL_DIR, internalCode + "_(" + invoiceEntity + ")_" + invoiceNumber + "_Détail_calcul_de_facture_(" + i + ").xlsx");
+            target = Paths.get(dir, internalCode + "_(" + invoiceEntity + ")_" + fileNameInfo + "_Détail_calcul_de_facture_(" + i + ").xlsx");
             i++;
         }
         Files.createFile(target);

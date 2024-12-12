@@ -763,11 +763,11 @@ public class InvoiceController {
                                                          @RequestParam("endDate") String endDate,
                                                          @RequestParam("type") String type
     ) throws IOException, UserException {
-        // TODO : fix this  + fix missing sku_price
-        System.out.println("Request for downloading invoice detail by client and period : " + clientId + " " + shopIds + " " + startDate + " " + endDate + " " + type);
+        log.info("Request for downloading invoice detail by client and period : \nclient : {} \nshops : {}\nstart date : {}\nend date :  {}\ntype : {}", clientId, shopIds, startDate, endDate, type);
         List<FactureDetail> invoiceDetails = shippingInvoiceService.getInvoiceDetailByShopsAndPeriod(shopIds, startDate, endDate, type);
         Client client = clientService.getById(clientId);
-        return shippingInvoiceService.exportToExcel(invoiceDetails, Collections.emptyList(), Collections.emptyList(), "", client.getInvoiceEntity(), client.getInternalCode());
+        String period = startDate + "-" + endDate;
+        return shippingInvoiceService.exportToExcel(invoiceDetails, Collections.emptyList(), Collections.emptyList(), period, client.getInvoiceEntity(), client.getInternalCode());
 
     }
     @GetMapping(value = "/downloadInvoiceInventory")
