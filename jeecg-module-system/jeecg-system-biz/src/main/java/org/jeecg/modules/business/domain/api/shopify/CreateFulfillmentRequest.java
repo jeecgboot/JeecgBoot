@@ -30,7 +30,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         DHL_PACKET_WIA("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "CD[0-9]{9}DE"),
         DHL_PARCEL_WIA_NL("https://my.dhlparcel.nl/home/tracktrace/%s/%s?lang=nl_NL", "DHL Parcel", "3S[A-Z]{4}[0-9]{9}"),
         GLS_IT("https://gls-group.com/IT/it/servizi-online/ricerca-spedizioni.html?match=%s&type=NAT", "GLS", "LT[0-9]{9}"),
-        COLIS_PRIVE_BE("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%sB%s&lang=fr", "Colis Privé", "Q[0-9]{11}[B][0-9]{4}|801000[0-9]{6}"),
+        COLIS_PRIVE_BE("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s&lang=fr", "Colis Privé", "Q[0-9]{11}[B][0-9]{4}|801000[0-9]{6}|R6700035[0-9]{4}B[0-9]{4}"),
         COLIS_PRIVE_LU("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s", "Colis Privé", "Q[0-9]{11}[L][0-9]{4}"),
         COLIS_PRIVE_BE_WIA("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%sB%s", "Colis Privé", "LC[0-9]{10}"),
         COLIS_PRIVE_FR("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s", "Colis Privé", "(D|Q)[0-9]{16}"),
