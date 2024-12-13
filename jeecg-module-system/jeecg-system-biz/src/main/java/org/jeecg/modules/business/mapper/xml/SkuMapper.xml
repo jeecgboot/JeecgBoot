@@ -183,6 +183,7 @@
             JOIN client c ON s.owner_id = c.id
             WHERE c.id = #{clientId}
                 AND po.erp_status IN ('1','2')
+                AND po.can_send = 1
                 AND poc.erp_status IN ('1','2')
             GROUP BY sku_id
         )
@@ -331,6 +332,7 @@
             JOIN client c ON s.owner_id = c.id
             WHERE c.id = #{clientId}
                 AND po.erp_status IN ('1','2')
+                AND po.can_send = 1
                 AND poc.erp_status IN ('1','2')
             GROUP BY sku_id
         )
@@ -411,6 +413,7 @@
                      JOIN client c ON s.owner_id = c.id
             WHERE c.id = #{clientId}
               AND po.erp_status IN ('1','2')
+              AND po.can_send = 1
               AND poc.erp_status IN ('1','2')
             GROUP BY sku_id
         )
@@ -475,6 +478,7 @@
             JOIN client c ON s.owner_id = c.id
             WHERE c.id = #{clientId}
             AND po.erp_status IN ('1','2')
+            AND po.can_send = 1
             AND poc.erp_status IN ('1','2')
             GROUP BY sku_id
         )
