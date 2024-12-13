@@ -258,12 +258,12 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                         skusToUpdate.add(s);
 
                     // update sku_weight
-                    String remark = updateSkuWeight(s, skuData.getSaleRemark());
+//                    String remark = updateSkuWeight(s, skuData.getSaleRemark());
                     // TODO : disabled temporarily because we are not updating the weight on Mabang, thus creating conflicts
 //                    if(!remark.isEmpty())
 //                        updatedSkusRemarkMap.put(s, remark);
 //                    else
-                        updatedSkusRemarkMap.put(s, "");
+                    updatedSkusRemarkMap.put(s, "");
                 }
                 if(!skusToUpdate.isEmpty())
                     skuService.updateBatchById(skusToUpdate);
