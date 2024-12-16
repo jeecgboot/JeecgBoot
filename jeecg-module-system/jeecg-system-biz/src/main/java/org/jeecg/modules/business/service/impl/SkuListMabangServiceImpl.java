@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.util.SpringContextUtils;
@@ -9,10 +10,14 @@ import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddRequest;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddResponse;
+import org.jeecg.modules.business.domain.api.mabang.stockDoChangeStock.SkuChangeRequest;
+import org.jeecg.modules.business.domain.api.mabang.stockDoChangeStock.SkuChangeRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.stockDoChangeStock.SkuChangeResponse;
 import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockData;
 import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockRawStream;
 import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockStream;
+import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.SkuListMabangMapper;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
@@ -36,6 +41,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -73,6 +79,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     Environment env;
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
+    private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
 
     private final static String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
 
@@ -625,5 +632,96 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         for(Sku sku : skuToUpdate) {
             skuMongoService.updateStock(sku);
         }
+    }
+
+    @Override
+    public Responses mabangSkuWeightUpdate(List<SkuWeight> skuWeights) {
+        Responses responses = new Responses();
+        List<String> failures = new ArrayList<>();
+        List<Sku> skus = skuService.listByIds(skuWeights.stream()
+                .map(SkuWeight::getSkuId).collect(toList()));
+
+        Map<String, String> remarkMappedByErpCode = new HashMap<>();
+        List<List<String>> skusPartition = Lists.partition(skus.stream().map(Sku::getErpCode).collect(toList()), 50);
+        for(List<String> skuPartition : skusPartition) {
+            SkuListRequestBody body = new SkuListRequestBody();
+            body.setStockSkuList(String.join(",", skuPartition));
+            SkuListRawStream rawStream = new SkuListRawStream(body);
+            SkuUpdateListStream stream = new SkuUpdateListStream(rawStream);
+            List<SkuData> skusFromMabang = stream.all();
+            log.info("{} skus to be updated.", skusFromMabang.size());
+            if (skusFromMabang.isEmpty()) {
+                continue;
+            }
+            skusFromMabang.stream()
+                    .filter(skuData -> skuData.getSaleRemark() != null)
+                    .forEach(skuData -> {
+                        String erpCode = skuData.getErpCode();
+                        String remark = skuData.getSaleRemark();
+                        remarkMappedByErpCode.put(erpCode, remark);
+                    });
+        }
+
+        List<SkuData> skuDataList = skuWeights.stream()
+                .map(skuWeight -> {
+                    Sku sku = skus.stream()
+                            .filter(s -> s.getId().equals(skuWeight.getSkuId()))
+                            .findFirst()
+                            .orElse(null);
+                    if(null == sku) {
+                        log.error("Sku not found : {}", skuWeight.getSkuId());
+                        failures.add(skuWeight.getSkuId());
+                        return null;
+                    }
+                    SkuData skuData = new SkuData();
+                    skuData.setErpCode(sku.getErpCode());
+                    if(remarkMappedByErpCode.containsKey(sku.getErpCode())) {
+                        StringBuilder remark = new StringBuilder();
+                        remark.append(skuWeight.getWeight());
+                        Matcher saleRemarkMatcher = saleRemarkPattern.matcher(remarkMappedByErpCode.get(sku.getErpCode()));
+                        if(saleRemarkMatcher.matches() && !saleRemarkMatcher.group(2).isEmpty()) {
+                            log.info("Sku {} has remark from Mabang : {}", sku.getErpCode(), saleRemarkMatcher.group(2));
+                            String saleRemarkNotWeight = saleRemarkMatcher.group(2);
+                            remark.append(saleRemarkNotWeight);
+                        }
+                        skuData.setSaleRemark(remark.toString());
+                    }
+                    else {
+                        skuData.setSaleRemark(String.valueOf(skuWeight.getWeight()));
+                    }
+                    skuData.setWeight(skuWeight.getWeight());
+                    return skuData;
+                })
+                .filter(Objects::nonNull)
+                .collect(toList());
+
+        ExecutorService executor = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS, MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<CompletableFuture<SkuChangeResponse>> futures = skuDataList.stream()
+                .map(skuData -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        SkuChangeRequestBody body = new SkuChangeRequestBody(skuData);
+                        SkuChangeRequest request = new SkuChangeRequest(body);
+                        return request.send();
+                    } catch (Exception e) {
+                        log.error("Error updating weight for sku {} : {}", skuData.getErpCode(), e.getMessage());
+                        return new SkuChangeResponse(Response.Code.ERROR, null, null, skuData.getErpCode());
+                    }
+                }, executor))
+                .collect(toList());
+        List<SkuChangeResponse> results = futures.stream().map(CompletableFuture::join).collect(toList());
+        long successCount = results.stream().filter(SkuChangeResponse::success).count();
+        log.info("{}/{} skus updated successfully.", successCount, skuDataList.size());
+        List<String> successes = results.stream()
+                .filter(SkuChangeResponse::success)
+                .map(SkuChangeResponse::getStockSku)
+                .collect(toList());
+        failures.addAll(results.stream()
+                .filter(response -> !response.success())
+                .map(SkuChangeResponse::getStockSku)
+                .collect(toList()));
+
+        responses.setSuccesses(successes);
+        responses.setFailures(failures);
+        return responses;
     }
 }

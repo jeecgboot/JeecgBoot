@@ -35,7 +35,7 @@ public class SkuChangeResponse extends Response {
      * @return Instance
      * @throws SkuChangeRequestErrorException if response code represents error.
      */
-    public static SkuChangeResponse parse(JSONObject json) throws SkuChangeRequestErrorException {
+    public static SkuChangeResponse parse(JSONObject json, String erpCode) throws SkuChangeRequestErrorException {
         log.debug("Constructing a response by json.");
         String code = json.getString("code");
         if (code.equals(Code.ERROR.value))
@@ -43,21 +43,20 @@ public class SkuChangeResponse extends Response {
 
         JSONObject data = json.getJSONObject("data");
         String stockId = data.getString("stockId");
-        String stockSku = data.getString("stockSku");
         if(data != null) {
             log.info("Constructed response: data contained {}", data);
         }
         else {
             log.info("Data is null");
         }
-        return new SkuChangeResponse(Code.SUCCESS, data, stockId, stockSku);
+        return new SkuChangeResponse(Code.SUCCESS, data, stockId, erpCode);
     }
 
 
 
     @Override
     public String toString() {
-        return "SkuListResponse{" +
+        return "SkuChangeResponse{" +
                 ", data=" + data +
                 '}';
     }

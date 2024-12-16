@@ -1,9 +1,6 @@
 package org.jeecg.modules.business.controller.admin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,6 +12,7 @@ import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuWeight;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.ISecurityService;
+import org.jeecg.modules.business.service.ISkuListMabangService;
 import org.jeecg.modules.business.service.ISkuService;
 import org.jeecg.modules.business.service.ISkuWeightService;
 
@@ -24,6 +22,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
+import org.jeecg.modules.business.vo.Responses;
 import org.jeecg.modules.business.vo.SkuWeightParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +44,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 @RequestMapping("/skuWeight")
 @Slf4j
 public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightService> {
+	@Autowired
+	private ISkuListMabangService skuListMabangService;
 	@Autowired
 	private ISkuService skuService;
 	@Autowired
@@ -164,7 +165,8 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
     }
 
 	 /**
-	  * Updating weight of multiple SKUs, creates new sku_weight entries with new effective_date and weight.
+	  * /!\ Not maintained use updateBatch instead.
+	  * Updating weight of a SKU, creates new sku_weight entry with new effective_date and weight.
 	  * @param param
 	  * @return
 	  */
@@ -188,16 +190,23 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		skuWeightService.save(skuWeight);
 		return Result.OK("data.invoice.effectiveDate");
 	}
+	 /**
+	  * Updating weight of multiple SKUs, creates new sku_weight entries with new effective_date and weight.
+	  * Updates the weight in Mabang.
+	  * Updates the weight in MongoDB.
+	  * @param param
+	  * @return
+	  */
 	@Transactional
 	@PostMapping(value = "/updateBatch")
-	public Result<String> updateBatch(@RequestBody SkuWeightParam param) {
+	public Result<?> updateBatch(@RequestBody SkuWeightParam param) {
 		boolean isEmployee = securityService.checkIsEmployee();
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		if(!isEmployee){
 			log.info("User {}, tried to access /skuWeight/updateBatch but is not authorized.", sysUser.getUsername());
 			return Result.error(403,"Forbidden.");
 		}
-		List<SkuWeight> skuWeights = new ArrayList<>();
+		Map<String, SkuWeight> skuWeightsMap = new HashMap<>();
 		for(String skuId : param.getIds()){
 			Sku sku = skuService.getById(skuId);
 			if(sku == null){
@@ -208,10 +217,15 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			skuWeight.setEffectiveDate(param.getEffectiveDate());
 			skuWeight.setSkuId(skuId);
 			skuWeight.setWeight(param.getWeight());
-			skuWeights.add(skuWeight);
-			skuMongoService.upsertSkuWeight(skuWeight);
+			skuWeightsMap.put(sku.getErpCode(), skuWeight);
 		}
+		List<SkuWeight> skuWeights = new ArrayList<>(skuWeightsMap.values());
+		Responses responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+		List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
+		responses.getSuccesses().forEach(skuErpCode -> skuWeightSuccesses.add(skuWeightsMap.get(skuErpCode)));
+
+		skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));
 		skuWeightService.saveBatch(skuWeights);
-		return Result.OK("data.invoice.effectiveDate");
+		return Result.OK(responses);
 	}
 }

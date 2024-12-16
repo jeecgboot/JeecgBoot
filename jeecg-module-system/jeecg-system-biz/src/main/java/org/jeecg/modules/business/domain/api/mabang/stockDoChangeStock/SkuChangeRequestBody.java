@@ -19,21 +19,12 @@ public class SkuChangeRequestBody implements RequestBody {
     private String nameEn;
     private Integer status;
     private BigDecimal salePrice;
-    private BigDecimal declareValue;
     private String declareName;
     private String declareEname;
     private String warehouse;
     private String remark;
-    private Integer hasBattery;
-    private Integer magnetic;
-    private Integer powder;
-    private Integer isPaste;
-    private Integer noLiquidCosmetic;
-    private Integer isFlammable;
-    private Integer isKnife;
+    private Integer weight;
     private Integer isGift;
-    private String supplier;
-    private String supplierLink;
 
     @Override
     public String api() {
@@ -48,32 +39,11 @@ public class SkuChangeRequestBody implements RequestBody {
         putNonNull(json, "nameEN", nameEn);
         putNonNull(json, "status", status);
         putNonNull(json, "salePrice", salePrice);
-        putNonNull(json, "declareValue", declareValue);
         putNonNull(json, "declareName", declareName);
         putNonNull(json, "declareEname", declareEname);
-        JSONArray warehouseData = new JSONArray();
-        JSONObject warehouse = new JSONObject();
-        warehouse.put("name", this.warehouse);
-        warehouseData.add(warehouse);
-        json.put("warehouseData", warehouseData.toJSONString());
-        putNonNull(json, "weight", remark);
+        putNonNull(json, "weight", weight);
         putNonNull(json, "saleRemark", remark);
-        putNonNull(json, "hasBattery", hasBattery);
-        putNonNull(json, "magnetic", magnetic);
-        putNonNull(json, "powder", powder);
-        putNonNull(json, "ispaste", isPaste);
-        putNonNull(json, "noLiquidCosmetic", noLiquidCosmetic);
-        putNonNull(json, "is_flammable", isFlammable);
-        putNonNull(json, "is_knife", isKnife);
         putNonNull(json, "isGift", isGift);
-        putNonNull(json, "autoCreateSupplier", 1);
-        JSONArray supplierData = new JSONArray();
-        JSONObject supplier = new JSONObject();
-        supplier.put("name", this.supplier);
-        supplier.put("productLinkAddress", this.supplierLink);
-        supplier.put("flag", 1);
-        supplierData.add(supplier);
-        json.put("suppliersData", supplierData.toJSONString());
         return json;
     }
 
@@ -82,21 +52,11 @@ public class SkuChangeRequestBody implements RequestBody {
         this.nameCn = data.getNameCN();
         this.nameEn = data.getNameEN();
         this.salePrice = data.getSalePrice();
-        this.declareValue = data.getDeclareValue();
         this.declareName = data.getDeclareNameZh();
         this.declareEname = data.getDeclareNameEn();
-        this.warehouse = data.getWarehouse();
         this.remark = data.getSaleRemark();
-        this.hasBattery = data.getHasBattery();
-        this.magnetic = data.getMagnetic();
-        this.powder = data.getPowder();
-        this.isPaste = data.getIsPaste();
-        this.noLiquidCosmetic = data.getNoLiquidCosmetic();
-        this.isFlammable = data.getIsFlammable();
-        this.isKnife = data.getIsKnife();
+        this.weight = data.getWeight();
         this.isGift = data.getIsGift();
-        this.supplier = data.getSupplier();
-        this.supplierLink = data.getSupplierLink();
     }
 
     private <E> void putNonNull(JSONObject json, String key, E value) {

@@ -18,15 +18,16 @@ import org.springframework.http.ResponseEntity;
  */
 @Slf4j
 public class SkuChangeRequest extends Request {
-
+    private final SkuChangeRequestBody body;
     public SkuChangeRequest(SkuChangeRequestBody body) {
         super(body);
+        this.body = body;
     }
 
 
     @Override
     public SkuChangeResponse send() {
         ResponseEntity<String> res = rawSend();
-        return SkuChangeResponse.parse(JSON.parseObject(res.getBody()));
+        return SkuChangeResponse.parse(JSON.parseObject(res.getBody()), body.getStockSku());
     }
 }
