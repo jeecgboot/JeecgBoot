@@ -48,6 +48,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}|5901[0-9]{8}|57476[0-9]{7}"),
         QUICKPAC("https://quickpac.ch/de/tracking", "Quickpac", "44001091[0-9]{10}"),
         CTT_EXPRESS("https://www.cttexpress.com/localizador-de-envios/", "CTT Express", "0082800082909[0-9]{9}"),
+        PDN_Express("https://pdn.express/nl/track/%s", "PDN Express", "PDN0003[0-9]{6}"),
         ;
 
         private final String trackingUrl;
