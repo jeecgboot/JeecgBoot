@@ -21,6 +21,7 @@
   import { useDesign } from '/@/hooks/web/useDesign';
   import { useLayoutHeight } from '../content/useContentViewHeight';
   import { TabsThemeEnum } from '/@/enums/appEnum';
+  import { MenuTypeEnum } from '/@/enums/menuEnum';
 
   // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8774】网站header区域加高
   const HEADER_HEIGHT = 60;
@@ -41,7 +42,7 @@
       const appStore = useAppStore()
       const glob = useGlobSetting()
 
-      const { getCalcContentWidth, getSplit } = useMenuSetting();
+      const { getCalcContentWidth, getSplit, getMenuType } = useMenuSetting();
       const { getIsMobile } = useAppInject();
       const { getFixed, getShowInsetHeaderRef, getShowFullHeaderRef, getHeaderTheme } = useHeaderSetting();
 
@@ -98,9 +99,11 @@
 
       const getPlaceholderDomStyle = computed((): CSSProperties => {
         let height = 0;
-        if ((unref(getShowFullHeaderRef) || !unref(getSplit)) && unref(getShowHeader) && !unref(getFullContent)) {
+        // update-begin--author:liaozhiyang---date:20241216---for：【issues/7561】主题切换为顶部混合模式时，页面顶部内容显示不出来，被遮盖
+        if ((unref(getShowFullHeaderRef) || !unref(getSplit)) && unref(getShowHeader) && !unref(getFullContent) || unref(getMenuType) == MenuTypeEnum.MIX) {
           height += HEADER_HEIGHT;
         }
+        // update-end--author:liaozhiyang---date:20241216---for：【issues/7561】主题切换为顶部混合模式时，页面顶部内容显示不出来，被遮盖
         if (unref(getShowTabs) && !unref(getFullContent)) {
           height += unref(getTabsThemeHeight);
         }
