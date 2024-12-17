@@ -29,6 +29,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         AUSTRIAN_POST("https://www.post.at/s/sendungsdetails?snr=%s", "Austrian Post", "15828030053[0-9]{13}"),
         DHL_PACKET_WIA("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "CD[0-9]{9}DE"),
         DHL_PARCEL_WIA_NL("https://my.dhlparcel.nl/home/tracktrace/%s/%s?lang=nl_NL", "DHL Parcel", "3S[A-Z]{4}[0-9]{9}"),
+        DHL_PARCEL_NL("https://my.dhlecommerce.nl/home/tracktrace/%s/%s?lang=nl_NL", "DHL Parcel", "JVGL[0-9]{20}"),
         GLS_IT("https://gls-group.com/IT/it/servizi-online/ricerca-spedizioni.html?match=%s&type=NAT", "GLS", "LT[0-9]{9}"),
         COLIS_PRIVE_BE("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s&lang=fr", "Colis Privé", "Q[0-9]{11}[B][0-9]{4}|801000[0-9]{6}|R6700035[0-9]{4}B[0-9]{4}"),
         COLIS_PRIVE_LU("https://colisprive.com/moncolis/pages/detailColis.aspx?numColis=%s", "Colis Privé", "Q[0-9]{11}[L][0-9]{4}"),
