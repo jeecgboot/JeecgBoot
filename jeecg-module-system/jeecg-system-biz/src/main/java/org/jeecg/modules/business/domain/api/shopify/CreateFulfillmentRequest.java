@@ -49,6 +49,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         QUICKPAC("https://quickpac.ch/de/tracking", "Quickpac", "44001091[0-9]{10}"),
         CTT_EXPRESS("https://www.cttexpress.com/localizador-de-envios/", "CTT Express", "0082800082909[0-9]{9}"),
         PDN_Express("https://pdn.express/nl/track/%s", "PDN Express", "PDN0003[0-9]{6}"),
+        UNI_EXPRESS("https://www.uniuni.com/tracking/#tracking-detail?no=%s", "Uni Express", "GV24CA[0-9A-Z]{12}"),
         ;
 
         private final String trackingUrl;
