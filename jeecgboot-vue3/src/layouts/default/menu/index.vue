@@ -83,7 +83,9 @@
 
       const getWrapperStyle = computed((): CSSProperties => {
         return {
-          height: `calc(100% - ${unref(getIsShowLogo) ? '48px' : '0px'})`,
+          // update-begin--author:liaozhiyang---date:20241216---for：【issues/7548】侧边栏导航模式时会导致下面菜单滚动显示不全
+          height: `calc(100% - ${unref(getIsShowLogo) ? '60px' : '0px'})`,
+          // update-end--author:liaozhiyang---date:20241216---for：【issues/7548】侧边栏导航模式时会导致下面菜单滚动显示不全
         };
       });
 
