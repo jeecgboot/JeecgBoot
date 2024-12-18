@@ -574,16 +574,17 @@ public class PurchaseOrderController {
     @GetMapping(value = "/createMabangPurchaseOrder")
     public Result<?> createMabangPurchaseOrder(@RequestParam("invoiceNumbers") List<String> invoiceNumbers) {
         log.info("Creating purchase order to Mabang for invoices : {} ", invoiceNumbers);
+        Map<String, Responses> responsesMappedByInvoiceNumber = new HashMap<>();
         ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
                 MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
         // providersHistory lists the providers that have already been processed, if the current provider is in the list and has been processed within the last 10 seconds, the thread will sleep for 10 seconds
         AtomicReference<Map<String, LocalDateTime>> providersHistory = new AtomicReference<>(new HashMap<>());
-        List<CompletableFuture<String>> future = invoiceNumbers.stream()
+        List<CompletableFuture<Boolean>> future = invoiceNumbers.stream()
                 .map(invoiceNumber -> CompletableFuture.supplyAsync(() -> {
                     log.info("Invoice number : {}", invoiceNumber);
                     List<SkuQuantity> skuQuantities = purchaseOrderService.getSkuQuantityByInvoiceNumber(invoiceNumber);
                     if(skuQuantities.isEmpty()) {
-                        return null;
+                        return false;
                     }
                     Map<String, Integer> skuQuantityMap = skuQuantities.stream()
                             .collect(Collectors.toMap(SkuQuantity::getErpCode, SkuQuantity::getQuantity));
@@ -592,30 +593,32 @@ public class PurchaseOrderController {
                             .filter(entry -> entry.getValue() > 0)
                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                     InvoiceMetaData metaData = purchaseOrderService.getMetaDataFromInvoiceNumbers(invoiceNumber);
-                    List<String> errors = providerMabangService.addPurchaseOrderToMabang(skuQtyNotEmptyMap, metaData, providersHistory);
-                    return errors.isEmpty() ? invoiceNumber : errors.toString();
+                    Responses results = providerMabangService.addPurchaseOrderToMabang(skuQtyNotEmptyMap, metaData, providersHistory);
+                    if(responsesMappedByInvoiceNumber.get(invoiceNumber) != null) {
+                        responsesMappedByInvoiceNumber.get(invoiceNumber).getFailures().addAll(results.getFailures());
+                        responsesMappedByInvoiceNumber.get(invoiceNumber).getSuccesses().addAll(results.getSuccesses());
+                    } else {
+                    responsesMappedByInvoiceNumber.put(invoiceNumber, results);
+                    }
+                    return results.getFailures().isEmpty();
                 },throttlingExecutorService))
                 .collect(Collectors.toList());
 
-        List<String> results = future.stream().map(CompletableFuture::join).collect(Collectors.toList());
-        long nbSuccesses = results.stream().filter(Invoice::isInvoiceNumber).count();
+        List<Boolean> results = future.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(Boolean::booleanValue).count();
         log.info("{}/{} purchase order requests have succeeded.", nbSuccesses, invoiceNumbers.size());
 
-        Map<String, List<String>> data = new HashMap<>();
-
-        List<String> failedInvoices = new ArrayList<>();
-        List<String> successInvoices = new ArrayList<>();
-
-        results.forEach(result -> {
-            if(isInvoiceNumber(result)) {
-                successInvoices.add(result);
-            } else {
-                failedInvoices.add(result);
+        List<String> groupIdsToDelete = new ArrayList<>();
+        for(Map.Entry<String, Responses> entry : responsesMappedByInvoiceNumber.entrySet()) {
+            if(!entry.getValue().getFailures().isEmpty()) {
+                groupIdsToDelete.addAll(entry.getValue().getSuccesses());
             }
-        });
-
-        data.put("fail", failedInvoices);
-        data.put("success", successInvoices);
-        return Result.OK(data);
+        }
+        if(!groupIdsToDelete.isEmpty()) {
+            log.info("Deleting purchase orders that have been incompletely created in Mabang : {}", groupIdsToDelete);
+            Responses groupIdsDeleteResult = providerMabangService.deletePurchaseOrderFromMabang(groupIdsToDelete);
+            responsesMappedByInvoiceNumber.put("groupIdDelete", groupIdsDeleteResult);
+        }
+        return Result.OK(responsesMappedByInvoiceNumber);
     }
 }

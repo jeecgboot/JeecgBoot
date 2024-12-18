@@ -9,6 +9,9 @@ import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.AddPurchase
 import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.AddPurchaseOrderRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.AddPurchaseOrderResponse;
 import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.SkuStockData;
+import org.jeecg.modules.business.domain.api.mabang.purDoChangePurchase.ChangePurchaseOrderRequest;
+import org.jeecg.modules.business.domain.api.mabang.purDoChangePurchase.ChangePurchaseOrderRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.purDoChangePurchase.ChangePurchaseOrderResponse;
 import org.jeecg.modules.business.domain.api.mabang.purDoGetProvider.ProviderData;
 import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.Provider;
@@ -18,6 +21,7 @@ import org.jeecg.modules.business.service.IProviderService;
 import org.jeecg.modules.business.service.IPurchaseOrderService;
 import org.jeecg.modules.business.service.ISkuService;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
+import org.jeecg.modules.business.vo.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +36,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static org.jeecg.modules.business.domain.api.mabang.purDoChangePurchase.ChangePurchaseOrderRequestBody.ActionType.CANCEL;
+import static org.jeecg.modules.business.domain.api.mabang.purDoChangePurchase.ChangePurchaseOrderRequestBody.ScrapOrder.ALL;
 
 /**
  * @Description: provider
@@ -76,9 +83,10 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
      */
     @Transactional
     @Override
-    public List<String> addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData, AtomicReference<Map<String, LocalDateTime>> providersHistory) {
+    public Responses addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData, AtomicReference<Map<String, LocalDateTime>> providersHistory) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         String mabangUsername = sysUser.getMabangUsername();
+        Responses responses = new Responses();
         String content = metaData.getFilename();
         List<String> stockSkuList = new ArrayList<>();
         String stockSkus;
@@ -115,7 +123,8 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         }
         if(skuDataList.isEmpty()) {
             log.error("Couldn't get SKU data from Mabang API for invoice : {}", metaData.getInvoiceCode());
-            return Collections.singletonList("Couldn't get SKU data from Mabang API for invoice : " + metaData.getInvoiceCode());
+            responses.addFailure("Couldn't get SKU data from Mabang API for invoice : " + metaData.getInvoiceCode());
+            return responses;
         }
 
         for(SkuData skuData : skuDataList) {
@@ -178,6 +187,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
                         return false;
                     }
                     groupIds.add(response.getGroupId());
+                    responses.addSuccess(response.getGroupId());
                     providersHistory.get().put(providerName, LocalDateTime.now());
                     return true;
                 }, throttlingExecutorService))
@@ -190,8 +200,37 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         if(nbSuccesses == stockProviderMap.size()) {
             purchaseOrderService.updatePurchaseOrderStatus(metaData.getInvoiceCode(), true);
             purchaseOrderService.updatePurchaseOrderGroupIds(metaData.getInvoiceCode(), groupIds);
-            return Collections.emptyList();
         }
-        return errors;
+        responses.setFailures(errors);
+        return responses;
+    }
+
+    @Override
+    public Responses deletePurchaseOrderFromMabang(List<String> groupIds) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String mabangUsername = sysUser.getMabangUsername();
+        Responses groupIdsDeleteResult = new Responses();
+        log.info("Deleting purchase orders from Mabang : {}", groupIds);
+            // delete purchase order from Mabang via group_id
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<CompletableFuture<Boolean>> changeOrderFutures = groupIds.stream()
+                .map(groupId -> CompletableFuture.supplyAsync(() -> {
+                    ChangePurchaseOrderRequestBody body = new ChangePurchaseOrderRequestBody(mabangUsername, groupId, CANCEL.getValue(), ALL.getValue());
+                    ChangePurchaseOrderRequest request = new ChangePurchaseOrderRequest(body);
+                    ChangePurchaseOrderResponse response = request.send();
+                    if(!response.success()) {
+                        log.error("Failed to delete purchase order from Mabang. GroupId : {} - Reason : {}", groupId, response.getMessage());
+                        groupIdsDeleteResult.addFailure(groupId);
+                    } else {
+                        groupIdsDeleteResult.addSuccess(groupId);
+                    }
+                    return response.success();
+                }, throttlingExecutorService))
+                .collect(Collectors.toList());
+        List<Boolean> results = changeOrderFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} purchase orders deleted successfully from Mabang. GroupIds : {}", nbSuccesses, groupIds.size(), groupIds);
+        return groupIdsDeleteResult;
     }
 }
