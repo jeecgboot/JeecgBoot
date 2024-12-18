@@ -206,6 +206,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     }
 
     /**
+     * Used by clients only
      * Generated a purchase order based on sku quantity, these sku are bought
      * for some platform orders, their quantity may higher than those in platform
      * orders. In case of higher, extra quantity are recorded to client's inventory.
@@ -388,6 +389,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
 
     /**
+     * Used for generating purchase order from COMPLETE invoicing
      * Generated a purchase order based on sku quantity, these sku are bought
      * for some platform orders, their quantity may higher than those in platform
      * orders. In case of higher, extra quantity are recorded to client's inventory.
