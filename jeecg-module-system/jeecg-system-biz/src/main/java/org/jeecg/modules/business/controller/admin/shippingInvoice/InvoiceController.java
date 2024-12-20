@@ -529,10 +529,15 @@ public class InvoiceController {
                                             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                             @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
                                             @RequestParam(name = "column", defaultValue = "order_time") String column,
-                                            @RequestParam(name = "order", defaultValue = "ASC") String order) {
+                                            @RequestParam(name = "order", defaultValue = "ASC") String order,
+                                            @RequestParam(name ="shippingAvailable[]", required = false) List<Integer> shippingAvailable,
+                                            @RequestParam(name ="purchaseAvailable[]", required = false) List<Integer> purchaseAvailable,
+                                            @RequestParam(name = "productAvailable[]", required = false) List<Integer> productAvailable
+    ) {
         log.info("User : {} is requesting uninvoiced orders for shops : [{}]",
                 ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername(),
                 shopIds);
+        List<Integer> productStatuses = productAvailable == null || productAvailable.isEmpty() ? Arrays.asList(Integer.valueOf(PlatformOrderFront.productStatus.Unavailable.code), Integer.valueOf(PlatformOrderFront.productStatus.Available.code), Integer.valueOf(PlatformOrderFront.productStatus.Ordered.code)) : productAvailable;
         String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText",""));
         String parsedOrder = order.toUpperCase();
         if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
@@ -545,158 +550,15 @@ public class InvoiceController {
             e.printStackTrace();
             return Result.error("Error 400 : Bad Request");
         }
-        // checking shipping data availability
+//        // checking shipping data availability
         List<String> shopIdList = Arrays.asList(shopIds.split(","));
-        // fetch order that can be invoiced either by shipping or purchase or both
-        List<PlatformOrder> allOrders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, 1, -1);
-        int total = allOrders.size();
-        List<PlatformOrder> orders = platformOrderService.findUninvoicedOrdersByShopForClient(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize);
-//        LinkedList<PlatformOrder> sortedOrders = orders.stream().sorted(Comparator.comparing(PlatformOrder::getOrderTime)).collect(Collectors.toCollection(LinkedList::new));
-        if(orders.isEmpty())
-            return Result.OK("No order to invoice.");
-        Map<String, String> shops = shopService.listByIds(shopIdList).stream().collect(Collectors.toMap(Shop::getId, Shop::getName));
-        List<String> orderIds = orders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
-        Map<PlatformOrder, List<PlatformOrderContent>> orderContentMap = platformOrderService.fetchOrderData(orderIds);
-        // some orders may not have content, so we have to re-add them
-        if(orderIds.size() != orderContentMap.size()) {
-            List<String> orderIdsInMap = orderContentMap.keySet().stream().map(PlatformOrder::getId).collect(Collectors.toList());
-            List<String> orderIdsWithoutContent = orderIds.stream().filter(id -> !orderIdsInMap.contains(id)).collect(Collectors.toList());
-            List<PlatformOrder> ordersWithoutContent = platformOrderService.listByIds(orderIdsWithoutContent);
-            Map<PlatformOrder, List<PlatformOrderContent>> orderContentMapWithoutContent = new HashMap<>();
-            for(PlatformOrder po : ordersWithoutContent) {
-                orderContentMapWithoutContent.put(po, new ArrayList<>());
-            }
-            orderContentMap.putAll(orderContentMapWithoutContent);
-        }
 
-        Map<String, String> errorMapToOrderId = new HashMap<>();
-        List<PlatformOrderFront> orderFronts = new ArrayList<>();
-
-        for(Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry : orderContentMap.entrySet()) {
-            PlatformOrderFront orderFront = new PlatformOrderFront();
-            BeanUtils.copyProperties(entry.getKey(), orderFront);
-
-            //rename shop id by shop name to prevent it to leak in front
-            orderFront.setShopId(shops.get(orderFront.getShopId()));
-            // set default value of shipping and purchase availability
-            orderFront.setShippingAvailable(Available.code);
-            orderFront.setPurchaseAvailable(Available.code);
-
-            if(entry.getValue().isEmpty()) {
-                if(!errorMapToOrderId.containsKey(entry.getKey().getPlatformOrderId()))
-                    errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : order has no content : " + entry.getKey().getPlatformOrderId());
-                else
-                    errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and has no content");
-                orderFront.setShippingAvailable(Unavailable.code);
-                orderFront.setPurchaseAvailable(Unavailable.code);
-                orderFronts.add(orderFront);
-                continue;
-            }
-
-            List<String> skuIds = entry.getValue().stream().map(PlatformOrderContent::getSkuId).distinct().collect(Collectors.toList());
-            // finds the first sku that isn't in db
-            List<Sku> skuIdsFound = skuService.listByIds(skuIds);
-            if(skuIdsFound.size() != skuIds.size()) {
-                if(!errorMapToOrderId.containsKey(entry.getKey().getPlatformOrderId()))
-                    errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more sku in db for order : " + entry.getKey().getPlatformOrderId());
-                else
-                    errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing one or more sku in db");
-
-                orderFront.setShippingAvailable(Unavailable.code);
-                orderFront.setPurchaseAvailable(Unavailable.code);
-                continue;
-            }
-
-            if(entry.getKey().getShippingInvoiceNumber() == null) {
-                // checks if logistic channel is missing
-                if(entry.getKey().getLogisticChannelName().isEmpty() && entry.getKey().getInvoiceLogisticChannelName() == null) {
-                    if(!errorMapToOrderId.containsKey(entry.getKey().getPlatformOrderId()))
-                        errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing logistic channel for order : " + entry.getKey().getPlatformOrderId());
-                    else
-                        errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing logistic channel");
-                    orderFront.setShippingAvailable(Unavailable.code);
-                }
-                // finds the first product with missing weight
-                String missingWeightSkuId = skuWeightService.searchFirstEmptyWeightSku(skuIds);
-                if(missingWeightSkuId != null) {
-                    if(!errorMapToOrderId.containsKey(entry.getKey().getPlatformOrderId()))
-                        errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more weight for order : " + entry.getKey().getPlatformOrderId());
-                    else
-                        errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing weight");
-                    orderFront.setShippingAvailable(Unavailable.code);
-                }
-            }
-            if(entry.getKey().getPurchaseInvoiceNumber() == null) {
-                // finds the first sku with missing price
-                String missingPriceSkuId = skuService.searchFirstMissingPriceSku(skuIds);
-                if(missingPriceSkuId != null) {
-                    if(!errorMapToOrderId.containsKey(entry.getKey().getPlatformOrderId()))
-                        errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), "Error : Missing one or more sku price for order : " + entry.getKey().getPlatformOrderId());
-                    else
-                        errorMapToOrderId.put(entry.getKey().getPlatformOrderId(), errorMapToOrderId.get(entry.getKey().getPlatformOrderId()) + " and missing one or more sku price");
-                    orderFront.setPurchaseAvailable(Unavailable.code);
-                }
-            }
-
-            // set purchase order status (-1 = unavailable, 0 = available, 1 = invoiced, 2 = paid)
-            if(entry.getKey().getProductAvailable() == null) {
-                orderFront.setProductAvailable(PlatformOrderFront.productStatus.Unavailable.code);
-                entry.getKey().setProductAvailable(PlatformOrderFront.productStatus.Unavailable.code);
-            }
-            if(entry.getKey().getProductAvailable().equals(PlatformOrderFront.productStatus.Unavailable.code)
-                    && entry.getKey().getVirtualProductAvailable().equals(PlatformOrderFront.productStatus.Available.code)
-                    && entry.getKey().getPurchaseInvoiceNumber() == null
-            )
-                orderFront.setProductAvailable(PlatformOrderFront.productStatus.Ordered.code);
-            if(entry.getKey().getPurchaseInvoiceNumber() != null) {
-                PurchaseOrder purchase =  purchaseOrderService.getPurchaseByInvoiceNumber(entry.getKey().getPurchaseInvoiceNumber());
-                if(purchase.getPaidAmount().compareTo(BigDecimal.ZERO) == 0)
-                    orderFront.setPurchaseAvailable(Invoiced.code);// invoiced
-                else
-                    orderFront.setPurchaseAvailable(Paid.code);// paid
-            }
-            // set shipping order status (-1 = unavailable, 0 = available, 1 = invoiced, 2 = paid)
-            if(entry.getKey().getShippingInvoiceNumber() != null) {
-                ShippingInvoice shippingInvoice = iShippingInvoiceService.getShippingInvoice(entry.getKey().getShippingInvoiceNumber());
-                if(shippingInvoice.getPaidAmount().compareTo(BigDecimal.ZERO) == 0) {
-                    orderFront.setShippingAvailable(Invoiced.code); // invoiced
-                }
-                else {
-                    orderFront.setShippingAvailable(Paid.code); // paid
-                }
-            }
-            orderFronts.add(orderFront);
-        }
-
-        List<String> errorMessages = new ArrayList<>(errorMapToOrderId.values());
-
-        // sorting by order time ascending
-        orderFronts = orderFronts.stream().sorted(Comparator.comparing(PlatformOrderFront::getOrderTime)).collect(Collectors.toList());
-        // system notification
-        String errors = SECTION_START;
-        int max_entries = 100;
-        int current_page = 0;
-        int total_page = (int) Math.ceil((double) errorMessages.size() /max_entries);
-        for(int i = 1; i <= errorMessages.size(); i++) {
-            if(i%max_entries == 1) {
-                errors = SECTION_START;
-                current_page++;
-            }
-            errors = errors.concat("<li>" + i + " : " + errorMessages.get(i-1) +"</li>");
-            if(i%max_entries==0 || i == errorMessages.size()) {
-                errors = errors.concat(SECTION_END);
-                Map<String, String> templateParam = new HashMap<>();
-                templateParam.put("nb_entries", String.valueOf(errorMessages.size()));
-                templateParam.put("errors", errors);
-                templateParam.put("current_page", String.valueOf(current_page));
-                templateParam.put("total_page", String.valueOf(total_page));
-                TemplateMessageDTO message = new TemplateMessageDTO("admin", "admin", "Self Service invoicing estimation Errors", templateParam, "expenses_overview_errors");
-                ISysBaseApi.sendTemplateAnnouncement(message);
-            }
-        }
+        List<PlatformOrderFront> orders = platformOrderService.fetchUninvoicedOrdersByShopForClientFullSQL(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize,
+                productStatuses, shippingAvailable, purchaseAvailable);
+        int total = orders.get(0).getTotalCount();
 
         IPage<PlatformOrderFront> page = new Page<>();
-        page.setRecords(orderFronts);
+        page.setRecords(orders);
         page.setSize(pageSize);
         page.setCurrent(pageNo);
         page.setTotal(total);
