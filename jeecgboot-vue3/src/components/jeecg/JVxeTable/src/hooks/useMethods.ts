@@ -740,7 +740,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
   async function removeSelection() {
     let xTable = getXTable();
     let res;
-    if (props.rowSelectionType === JVxeTypes.rowRadio) {
+    if (props.rowSelectionType === JVxeTypes.rowRadio || props.rowSelectionType === 'radio') {
       res = await xTable.removeRadioRow();
     } else {
       res = await xTable.removeCheckboxRow();
