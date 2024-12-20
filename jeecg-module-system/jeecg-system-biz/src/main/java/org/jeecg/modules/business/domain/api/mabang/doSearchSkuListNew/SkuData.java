@@ -75,7 +75,7 @@ public class SkuData {
     @JSONField(name="height")
     private String height;
     @JSONField(name="weight")
-    private Double weight;
+    private Integer weight;
     /**
      * saleRemark contains the weight
      */

@@ -176,6 +176,11 @@ spring:
     host: 127.0.0.1
     port: 6379
     password: ''
+  #MongoDB 配置
+  data:
+    mongodb:
+      authentication-database: xxx
+      uri: xxx
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
@@ -189,7 +194,7 @@ mybatis-plus:
       table-underline: true
   configuration:
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
 #jeecg专用配置
@@ -237,6 +242,9 @@ jeecg:
     shippingInvoiceDetailDir: C://dev//invoices//shippingDetail
     shippingInvoicePdfDir: C://dev//invoices//pdf//shipping
     shippingInvoiceDetailPdfDir: C://dev//invoices//pdf//shippingDetail
+    invoiceDetailExportDir: xxx
+    # sku csv file for image search
+    skuCsvPath: xxx
     #webapp文件路径
     webapp: /opt/webapp
   shiro:
@@ -346,7 +354,10 @@ justauth:
     timeout: 1h
 mabang:
   api:
-    appkey: "87a1a0c46df86eb2683e74776894dae9"
-    devid: "200809"
+    appkey: "xxx"
+    devid: "xxx"
 company:
-  orgName: "WIA"
+  orgName: "xxx"
+  jessy:
+    name: "xxx"
+    email: "xxx"

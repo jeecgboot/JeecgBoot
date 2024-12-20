@@ -55,6 +55,7 @@
             ON s.owner_id = c.id
         WHERE s.active = '1'
           AND c.active = '1'
+        ORDER BY c.internal_code, s.erp_code
     </select>
     <select id="getIdByCode" resultType="java.lang.String">
         SELECT id FROM shop
