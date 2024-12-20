@@ -6,10 +6,7 @@ import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
-import org.jeecg.modules.business.vo.OrderKpi;
-import org.jeecg.modules.business.vo.PlatformOrderOption;
-import org.jeecg.modules.business.vo.PlatformOrderPage;
-import org.jeecg.modules.business.vo.ShippingFeeBillableOrders;
+import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
 import org.springframework.stereotype.Repository;
@@ -193,7 +190,10 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrder> findUninvoicedShippingOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
     List<PlatformOrder> fetchUninvoicedPurchaseOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
     List<PlatformOrder> findUninvoicedOrdersByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses,
-                                                                  @Param("column") String column, @Param("order") String order, @Param("offset") Integer offset, @Param("size") Integer pageSize);
+                                                                 @Param("column") String column, @Param("order") String order, @Param("offset") Integer offset, @Param("size") Integer pageSize);
+    List<PlatformOrderFront> fetchUninvoicedOrdersByShopForClientFullSQL(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses,
+                                                                  @Param("column") String column, @Param("order") String order, @Param("offset") Integer offset, @Param("size") Integer pageSize,
+                                                                         @Param("productStatuses") List<Integer> productStatuses, @Param("shippingStatuses") List<Integer> shippingStatuses, @Param("purchaseStatuses") List<Integer> purchaseStatuses);
     List<String> findUninvoicedOrderIdsByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
 
     List<PlatformOrder> fetchEmptyLogisticChannelOrders(@Param("startDate") String startDate,@Param("endDate") String endDate);

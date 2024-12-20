@@ -106,6 +106,8 @@ public class PlatformOrderFront {
     @ApiModelProperty(value = "可开采购票（0=不可，1=可）")
     private String purchaseAvailable;
 
+    private Integer totalCount;
+
     public enum invoiceStatus {
         Unavailable("-1"),
         Available("0"),

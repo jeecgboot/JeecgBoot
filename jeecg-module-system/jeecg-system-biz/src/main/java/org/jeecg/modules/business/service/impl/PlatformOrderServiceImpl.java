@@ -434,6 +434,12 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         int offset = (pageNo - 1) * pageSize;
         return platformOrderMap.findUninvoicedOrdersByShopForClient(shopIds, erpStatuses, column, order, offset, pageSize);
     }
+    @Override
+    public List<PlatformOrderFront> fetchUninvoicedOrdersByShopForClientFullSQL(List<String> shopIds, List<Integer> erpStatuses, String column, String order, Integer pageNo, Integer pageSize,
+                                                                                List<Integer> productAvailable, List<Integer> shippingAvailable, List<Integer> purchaseAvailable) {
+        int offset = (pageNo - 1) * pageSize;
+        return platformOrderMap.fetchUninvoicedOrdersByShopForClientFullSQL(shopIds, erpStatuses, column, order, offset, pageSize, productAvailable, shippingAvailable, purchaseAvailable);
+    }
 
     @Override
     public List<String> findUninvoicedOrderIdsByShopForClient(List<String> shopIds, List<Integer> erpStatuses) {
