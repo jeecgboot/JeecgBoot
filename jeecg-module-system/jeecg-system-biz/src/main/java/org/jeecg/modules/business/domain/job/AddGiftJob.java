@@ -193,7 +193,6 @@ public class AddGiftJob implements Job {
                     for (GiftRule giftRule : matchingQuantityRules) {
                         if (erpCode.matches(giftRule.getRegex())) {
                             putValueInMapOrReduce(giftRule.getSku(), orderItem.getQuantity(), newGiftMap);
-                            break;
                         }
                     }
                 }
