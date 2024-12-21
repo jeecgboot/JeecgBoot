@@ -1,15 +1,10 @@
 package org.jeecg.modules.openapi.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.classmate.ResolvedType;
-import com.fasterxml.classmate.TypeBindings;
 import com.fasterxml.classmate.TypeResolver;
-import com.fasterxml.classmate.types.ResolvedObjectType;
-import com.fasterxml.jackson.databind.type.ArrayType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.collect.Lists;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -179,7 +174,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
 
         HttpHeaders httpHeaders = new HttpHeaders();
         for (OpenApiHeader header : headers) {
-            httpHeaders.put(header.getKey(), Lists.newArrayList(request.getHeader(header.getKey())));
+            httpHeaders.put(header.getHeaderKey(), Lists.newArrayList(request.getHeader(header.getHeaderKey())));
         }
 
         HttpEntity<String> httpEntity = new HttpEntity<>(json, httpHeaders);
@@ -379,10 +374,10 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
             //    body-->请求参数的获取：@RequestBody()
             //    form（不常用）
             for (OpenApiHeader openApiHeader : openapi.getHeaders()) {
-                Parameter parameter = new Parameter(openApiHeader.getKey(),
+                Parameter parameter = new Parameter(openApiHeader.getHeaderKey(),
                         openApiHeader.getNote(),
                         openApiHeader.getDefaultValue(),
-                        openApiHeader.getIsBlank() == 1,
+                        openApiHeader.getRequired() == 1,
                         false,
                         true,
                         stringModelRef,
@@ -401,10 +396,10 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
             }
 
             for (OpenApiParam openApiParam : openapi.getParams()) {
-                Parameter parameter = new Parameter(openApiParam.getKey(),
+                Parameter parameter = new Parameter(openApiParam.getParamKey(),
                         openApiParam.getNote(),
                         openApiParam.getDefaultValue(),
-                        openApiParam.getIsBlank() == 1,
+                        openApiParam.getRequired() == 1,
                         false,
                         true,
                         stringModelRef,

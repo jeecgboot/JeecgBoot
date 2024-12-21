@@ -1,0 +1,4 @@
+INSERT INTO `open_api_record` (`id`, `api_id`, `call_auth_id`, `call_time`, `used_time`, `response_time`) VALUES ('1870491654130368513', '1870486348755324929', '1870484839812517890', '2024-12-21 23:28:57', 184, '2024-12-21 23:28:57');
+INSERT INTO `open_api_record` (`id`, `api_id`, `call_auth_id`, `call_time`, `used_time`, `response_time`) VALUES ('1870492694183542786', '1870486348755324929', '1870484839812517890', '2024-12-21 23:31:04', 120717, '2024-12-21 23:33:05');
+INSERT INTO `open_api_record` (`id`, `api_id`, `call_auth_id`, `call_time`, `used_time`, `response_time`) VALUES ('1870493301040680961', '1870486348755324929', '1870484839812517890', '2024-12-21 23:35:26', 3865, '2024-12-21 23:35:30');
+INSERT INTO `open_api_record` (`id`, `api_id`, `call_auth_id`, `call_time`, `used_time`, `response_time`) VALUES ('1870493334939045889', '1870486348755324929', '1870484839812517890', '2024-12-21 23:35:38', 82, '2024-12-21 23:35:38');

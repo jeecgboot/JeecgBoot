@@ -195,4 +195,10 @@ public class ApiAuthFilter implements Filter {
         String path = uri.substring(uri.lastIndexOf("/") + 1);
         return openApiService.findByPath(path);
     }
+
+    public static void main(String[] args) {
+        long timestamp = System.currentTimeMillis();
+        System.out.println("timestamp:"  + timestamp);
+        System.out.println("signature:" + md5("ak-eAU25mrMxhtaZsyS" + "rjxMqB6YyUXpSHAz4DCIz8vZ5aozQQiV" + timestamp));
+    }
 }

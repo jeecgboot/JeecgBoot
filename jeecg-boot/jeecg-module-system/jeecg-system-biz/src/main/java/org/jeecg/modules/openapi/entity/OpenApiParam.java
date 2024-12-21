@@ -31,12 +31,12 @@ public class OpenApiParam implements Serializable {
     /**
      * key
      */
-    private String key;
+    private String paramKey;
 
     /**
      * 是否必填(0:否，1：是)
      */
-    private Integer isBlank;
+    private Integer required;
 
     /**
      * 默认值

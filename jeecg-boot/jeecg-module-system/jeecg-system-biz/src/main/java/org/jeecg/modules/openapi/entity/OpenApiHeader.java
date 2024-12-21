@@ -32,12 +32,12 @@ public class OpenApiHeader implements Serializable {
     /**
      * key
      */
-    private String key;
+    private String headerKey;
 
     /**
      * 是否必填(0:否，1：是)
      */
-    private Integer isBlank;
+    private Integer required;
 
     /**
      * 默认值

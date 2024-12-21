@@ -1,0 +1,1 @@
+INSERT INTO `open_api_auth` (`id`, `name`, `ak`, `sk`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1870484839812517890', 'openuser', 'ak-eAU25mrMxhtaZsyS', 'rjxMqB6YyUXpSHAz4DCIz8vZ5aozQQiV', NULL, '2024-12-21 23:01:52', NULL, NULL);
