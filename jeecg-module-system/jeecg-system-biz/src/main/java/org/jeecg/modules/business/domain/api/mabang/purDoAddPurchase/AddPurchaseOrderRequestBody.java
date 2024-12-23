@@ -8,19 +8,23 @@ import java.util.function.Function;
 
 public class AddPurchaseOrderRequestBody implements RequestBody {
     private String providerName;
-    private String employeeName;
-    private String content;
-    private List<SkuStockData> stockData;
+    private final String employeeName;
+    private final String content;
+    private final List<SkuStockData> stockData;
 
     private final static String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
+    private final static String TEMPORARY_PROVIDER_NAME = "临时供货商";
 
     public AddPurchaseOrderRequestBody(String employeeName, String providerName, String content, List<SkuStockData> stockData) {
         this.stockData = stockData;
-        this.providerName = providerName;
+        setProviderName(providerName);
         this.employeeName = employeeName;
         this.content = content;
     }
 
+    public void setProviderName(String providerName) {
+        this.providerName = providerName == null || providerName.isEmpty() ? TEMPORARY_PROVIDER_NAME : providerName;
+    }
     @Override
     public String api() {
         return "pur-do-add-purchase";

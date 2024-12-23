@@ -647,12 +647,31 @@ public class InvoiceController {
         String period = startDate + "-" + endDate;
         return shippingInvoiceService.exportToExcel(invoiceDetails, Collections.emptyList(), Collections.emptyList(), period, client.getInvoiceEntity(), client.getInternalCode());
     }
+
+    /**
+     * Only downloads the inventory of skus that are in the invoice
+     * Whereas downloadInventory downloads the inventory of a list of skus for the client
+     * @param invoiceCode
+     * @param internalCode
+     * @param invoiceEntity
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/downloadInvoiceInventory")
     public byte[] downloadInvoiceInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
         InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
         List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
         return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
     }
+
+    /**
+     * Downloads the inventory of skus for the client
+     * @param invoiceCode
+     * @param internalCode
+     * @param invoiceEntity
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/downloadInventory")
     public byte[] downloadInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
         InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
