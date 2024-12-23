@@ -107,7 +107,7 @@
                      JOIN client c ON s.owner_id = c.id
                      JOIN client_category cc ON c.client_category_id = cc.id
             WHERE po.erp_status IN (1,2)
-                AND cc.name = 'self-service'
+                AND cc.name IN ('self-service', 'confirmed')
                 AND po.order_time &gt;= #{start}
             ORDER BY po.order_time
         ),

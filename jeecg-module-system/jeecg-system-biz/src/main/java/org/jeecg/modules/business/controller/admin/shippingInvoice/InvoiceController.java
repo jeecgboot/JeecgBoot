@@ -11,7 +11,6 @@ import freemarker.template.TemplateException;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.dto.message.TemplateMessageDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -626,18 +625,53 @@ public class InvoiceController {
                                                          @RequestParam("type") String type
     ) throws IOException, UserException {
         log.info("Request for downloading invoice detail by client and period : \nclient : {} \nshops : {}\nstart date : {}\nend date :  {}\ntype : {}", clientId, shopIds, startDate, endDate, type);
-        List<FactureDetail> invoiceDetails = shippingInvoiceService.getInvoiceDetailByShopsAndPeriod(shopIds, startDate, endDate, type);
+        boolean isEmployee = securityService.checkIsEmployee();
         Client client = clientService.getById(clientId);
+        Client currentClient;
+        if(client == null) {
+            log.error("Client {} not found", clientId);
+            return new byte[0];
+        }
+        if (!isEmployee) {
+            currentClient = clientService.getCurrentClient();
+            if (currentClient == null) {
+                log.error("Client is not registered as a user : {}", clientId);
+                return new byte[0];
+            }
+            if(!clientId.equals(currentClient.getId())) {
+                log.error("Client {} is not authorized to download invoice detail for client {}", currentClient.getInternalCode(), client.getInternalCode());
+                return new byte[0];
+            }
+        }
+        List<FactureDetail> invoiceDetails = shippingInvoiceService.getInvoiceDetailByShopsAndPeriod(shopIds, startDate, endDate, type);
         String period = startDate + "-" + endDate;
         return shippingInvoiceService.exportToExcel(invoiceDetails, Collections.emptyList(), Collections.emptyList(), period, client.getInvoiceEntity(), client.getInternalCode());
-
     }
+
+    /**
+     * Only downloads the inventory of skus that are in the invoice
+     * Whereas downloadInventory downloads the inventory of a list of skus for the client
+     * @param invoiceCode
+     * @param internalCode
+     * @param invoiceEntity
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/downloadInvoiceInventory")
     public byte[] downloadInvoiceInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
         InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");
         List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
         return shippingInvoiceService.exportPurchaseInventoryToExcel(skuOrderPages, metaData);
     }
+
+    /**
+     * Downloads the inventory of skus for the client
+     * @param invoiceCode
+     * @param internalCode
+     * @param invoiceEntity
+     * @return
+     * @throws IOException
+     */
     @GetMapping(value = "/downloadInventory")
     public byte[] downloadInventory(@RequestParam("invoiceCode") String invoiceCode, @RequestParam("internalCode") String internalCode, @RequestParam("invoiceEntity") String invoiceEntity) throws IOException {
         InvoiceMetaData metaData = new InvoiceMetaData("", invoiceCode, internalCode, invoiceEntity, "");

@@ -715,6 +715,7 @@
             ) AS shipping_available,
             MIN(
                 CASE
+                    WHEN poc.id IS NULL OR sku.id IS NULL THEN -1
                     WHEN po.purchase_invoice_number IS NULL AND stats.price_count = 0 THEN -1
                     WHEN po.purchase_invoice_number IS NOT NULL AND pur.paid_amount > 0.00 THEN 2
                     WHEN po.purchase_invoice_number IS NOT NULL AND pur.paid_amount = 0.00 THEN 1

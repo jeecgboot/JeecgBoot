@@ -85,6 +85,8 @@ public class PlatformOrderShippingInvoiceService {
     @Autowired
     private IShopService shopService;
     @Autowired
+    private ISkuService skuService;
+    @Autowired
     CountryService countryService;
     @Autowired
     IPurchaseOrderService purchaseOrderService;
@@ -791,6 +793,10 @@ public class PlatformOrderShippingInvoiceService {
             log.info("File asked is of type invoice detail");
             pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
         }
+        if(filetype.equals("inventory")) {
+            log.info("File asked is of type inventory");
+            pathList = getPath(PURCHASE_INVENTORY_DIR, invoiceNumber);
+        }
         if(pathList.isEmpty()) {
             log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
             log.info("Generating a new invoice file ...");
@@ -803,6 +809,11 @@ public class PlatformOrderShippingInvoiceService {
                 List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
                 exportToExcel(details, refunds, extraFees, invoiceNumber, client.getInvoiceEntity(), client.getInternalCode());
                 pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
+            } else if (filetype.equals("inventory")) {
+                InvoiceMetaData metaData = purchaseOrderService.getMetaDataFromInvoiceNumbers(invoiceNumber);
+                List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());
+                exportPurchaseInventoryToExcel(skuOrderPages, metaData);
+                pathList = getPath(PURCHASE_INVENTORY_DIR, invoiceNumber);
             }
             else {
                 return "ERROR";

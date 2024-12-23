@@ -222,24 +222,23 @@ public class PurchaseOrderController {
         platformOrderService.removePurchaseInvoiceNumber(purchaseOrder.getInvoiceNumber(), purchaseOrder.getClientId());
         List<PlatformOrder> platformOrders = platformOrderService.selectByPlatformOrderIds(platformOrderIds);
         log.info("Platform orders found for attribution : {}", platformOrders.stream().map(PlatformOrder::getPlatformOrderId).collect(Collectors.toList()));
-        Map<String, List<String>> platformOrderIdUpdateMap = new HashMap<>();
+        Map<String, Responses> responsesMappedByReason = new HashMap<>();
+        Responses platformOrderIdUpdateResponse = new Responses();
         if(!platformOrders.isEmpty()) {
             for(PlatformOrder po : platformOrders) {
                 po.setPurchaseInvoiceNumber(purchaseOrder.getInvoiceNumber());
                 platformOrderIds.remove(po.getPlatformOrderId());
-                if(platformOrderIdUpdateMap.get("success") != null)
-                    platformOrderIdUpdateMap.get("success").add(po.getPlatformOrderId());
-                else
-                    platformOrderIdUpdateMap.put("success", new ArrayList<>(Collections.singletonList(po.getPlatformOrderId())));
+                platformOrderIdUpdateResponse.addSuccess(po.getPlatformOrderId());
             }
             platformOrderService.updateBatchById(platformOrders);
         }
         if(!platformOrderIds.isEmpty()) {
             log.error("Platform orders not found: {}", platformOrderIds);
-            platformOrderIdUpdateMap.put("fail", platformOrderIds);
+            platformOrderIdUpdateResponse.getFailures().addAll(platformOrderIds);
         }
         purchaseOrderService.updateById(purchaseOrder);
-        return Result.OK("sys.api.entryEditSuccess", platformOrderIdUpdateMap);
+        responsesMappedByReason.put("Platform Order IDs Update / 平台订单号码更新 : " + purchaseOrder.getInvoiceNumber(), platformOrderIdUpdateResponse);
+        return Result.OK("sys.api.entryEditSuccess", responsesMappedByReason);
     }
 
     /**
