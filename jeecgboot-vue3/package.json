@@ -70,7 +70,7 @@
     "vue-i18n": "^9.9.1",
     "vue-infinite-scroll": "^2.0.2",
     "vue-print-nb-jeecg": "^1.0.12",
-    "vue-router": "^4.3.0",
+    "vue-router": "4.3.0",
     "vue-types": "^5.1.1",
     "vuedraggable": "^4.1.0",
     "vxe-table": "4.6.17",
