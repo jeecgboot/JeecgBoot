@@ -13,20 +13,34 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
     private final static String OTHER = "Other";
 
     private enum TransportCompany {
-        LA_POSTE("https://www.laposte.fr/outils/suivre-vos-envois?code=%s", "La Poste", "[69][A-Z]{1}[0-9]{11}|LP[0-9]{9}FR"),
+        // 12 [0-9]
+        CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}|5901[0-9]{8}|57476[0-9]{7}"),
+        // 14 [0-9]
         DPD_BE("https://www.dpdgroup.com/be/mydpd/my-parcels/track?parcelNumber=%s", "DPD", "06086316[0-9]{6}"),
         DPD_DE("https://www.dpd.com/de/de/", "DPD", "0150534[0-9]{7}"),
         DPD_AT("https://www.mydpd.at", "DPD", "06215167[0-9]{6}"),
+        GLS_NL_2("https://www.gls-info.nl/tracking", "GLS", "(1437|1000)[0-9]{10}"),
         DPD_CH("https://www.dpdgroup.com/ch/mydpd/my-parcels/incoming?parcelNumber=%s", "DPD", "06086328[0-9]{6}"),
+        // 16 [0-9]
         CANADA_POST("https://www.canadapost-postescanada.ca/track-reperage/en#/search?searchFor=%s", "Canada Post", "(201255|732131|102303)[0-9]{10}"),
-        SWISS_POST("https://service.post.ch/ekp-web/ui/entry/search/%s", "Swiss Post", "[0-9]{18}|LW[0-9]{9}CH"),
+        // 18 [0-9]
+        QUICKPAC("https://quickpac.ch/de/tracking", "Quickpac", "44001091[0-9]{10}"),
+        ECO_SCOOTING("https://www.ecoscooting.com/tracking/%s", "EcoScooting", "[0-9]{5}00000[0-9]{8}"),
+        // 19 [0-9]
         EARLY_BIRD("https://earlybird.se/", "Early Bird", "[0-9]{19}"),
+        // 21 [0-9]
         DAO("https://www.dao.as/privat/find-din-pakke?stregkode=%s", "DAO", "00057151270[0-9]{10}"),
+        // 20 [0-9]
         DHL_PACKET("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "0034[0-9]{16}"),
         GLS_NL("https://www.gls-info.nl/tracking", "GLS", "[0-9]{20}"),
-        GLS_NL_2("https://www.gls-info.nl/tracking", "GLS", "(1437|1000)[0-9]{10}"),
-        USPS("https://tools.usps.com/go/TrackConfirmAction?tRef=fullpage&tLc=2&text28777=&tLabels=%s&tABt=false", "USPS", "926[0-9]{23}|420[0-9]{5}926[0-9]{23}"),
+        // 22 [0-9]
+        CTT_EXPRESS("https://www.cttexpress.com/localizador-de-envios/", "CTT Express", "0082800082909[0-9]{9}"),
+        // 24 [0-9]
         AUSTRIAN_POST("https://www.post.at/s/sendungsdetails?snr=%s", "Austrian Post", "15828030053[0-9]{13}"),
+        // 26/35 [0-9]
+        USPS("https://tools.usps.com/go/TrackConfirmAction?tRef=fullpage&tLc=2&text28777=&tLabels=%s&tABt=false", "USPS", "926[0-9]{23}|420[0-9]{5}926[0-9]{23}"),
+        LA_POSTE("https://www.laposte.fr/outils/suivre-vos-envois?code=%s", "La Poste", "[69][A-Z]{1}[0-9]{11}|LP[0-9]{9}FR"),
+        SWISS_POST("https://service.post.ch/ekp-web/ui/entry/search/%s", "Swiss Post", "[0-9]{18}|LW[0-9]{9}CH"),
         DHL_PACKET_WIA("https://www.dhl.de/en/privatkunden/pakete-empfangen/verfolgen.html?piececode=%s", "DHL Packet", "CD[0-9]{9}DE"),
         DHL_PARCEL_WIA_NL("https://my.dhlparcel.nl/home/tracktrace/%s/%s?lang=nl_NL", "DHL Parcel", "3S[A-Z]{4}[0-9]{9}"),
         DHL_PARCEL_NL("https://my.dhlecommerce.nl/home/tracktrace/%s/%s?lang=nl_NL", "DHL Parcel", "JVGL[0-9]{20}"),
@@ -46,9 +60,6 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         POST_NL("https://postnl.post/", "PostNL International Mail", "LS[0-9]{9}NL"),
         COLI_COLI("https://www.colicoli.fr/trackings?id=%s", "Coli Coli", "CC[0-9]{14}[A-Z]*"),
         LUXEMBOURG_POST("https://www.post.lu/particuliers/colis-courrier/track-and-trace#/search", "Luxembourg Post", "LL[0-9]{9}LU"),
-        CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}|5901[0-9]{8}|57476[0-9]{7}"),
-        QUICKPAC("https://quickpac.ch/de/tracking", "Quickpac", "44001091[0-9]{10}"),
-        CTT_EXPRESS("https://www.cttexpress.com/localizador-de-envios/", "CTT Express", "0082800082909[0-9]{9}"),
         PDN_Express("https://pdn.express/nl/track/%s", "PDN Express", "PDN0003[0-9]{6}"),
         UNI_EXPRESS("https://www.uniuni.com/tracking/#tracking-detail?no=%s", "Uni Express", "GV24CA[0-9A-Z]{12}"),
         ;
