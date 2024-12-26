@@ -80,6 +80,8 @@ public class ShippingInvoiceController {
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
     @Autowired
+    private ISecurityService securityService;
+    @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
     @Autowired
     private EmailService emailService;
@@ -284,6 +286,24 @@ public class ShippingInvoiceController {
      */
     @GetMapping(value = "/downloadCompleteInvoiceExcel")
     public ResponseEntity<?> download(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("filetype") String filetype) throws IOException, UserException {
+        boolean isEmployee = securityService.checkIsEmployee();
+        Client client;
+        if (!isEmployee) {
+            client = clientService.getCurrentClient();
+            if (client == null) {
+                log.error("Couldn't find the client for the invoice number : {}", invoiceNumber);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body("");
+            }
+            Client invoiceClient = clientService.getClientFromInvoice(invoiceNumber);
+            if (invoiceClient == null || !invoiceClient.getId().equals(client.getId())) {
+                log.error("Client {} is trying to download invoice {} which doesn't belong to him.", client.getInternalCode(), invoiceNumber);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body("You are not allowed to download this invoice.");
+            }
+        }
         String filename = platformOrderShippingInvoiceService.getInvoiceList(invoiceNumber, filetype);
         if(!filename.equals("ERROR")) {
             File file = new File(filename);

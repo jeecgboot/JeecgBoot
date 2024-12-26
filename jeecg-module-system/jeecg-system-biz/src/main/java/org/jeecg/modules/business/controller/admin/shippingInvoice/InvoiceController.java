@@ -348,14 +348,17 @@ public class InvoiceController {
         InvoiceMetaData metaData;
         try {
             List<SkuQuantity> skuQuantities = skuService.getSkuQuantitiesFromOrderIds(param.orderIds());
+            if(skuQuantities.isEmpty()) {
+                return Result.error("Nothing to invoice.");
+            }
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities ,param.orderIds());
             metaData = purchaseOrderService.makeInvoice(purchaseId);
             platformOrderService.updatePurchaseInvoiceNumber(param.orderIds(), metaData.getInvoiceCode());
 
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
-//            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-//                balanceService.updateBalance(param.clientID(), metaData.getCode(), "purchase");
-//            }
+            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "purchase");
+            }
             if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
                 String subject = "Self-service purchase invoice";
                 String destEmail = env.getProperty("spring.mail.username");
