@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.*;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -125,6 +126,15 @@ public class SkuMongoServiceImpl implements SkuMongoService {
 
     @Override
     public void upsertSkuWeight(SkuWeight skuWeight) {
+        SkuDocument skuDocument = findBySkuId(skuWeight.getSkuId());
+        Date latestWeightInDB = Optional.ofNullable(skuDocument.getLatestSkuWeight())
+                .map(SkuDocument.LatestSkuWeight::getEffectiveDate)
+                .orElse(null);
+        if(latestWeightInDB != null && latestWeightInDB.toInstant().isAfter(skuWeight.getEffectiveDate().toInstant())) {
+            log.error("SKU {} weight was not updated in Mongo document, as the effective date {} is older than the one in the database {}",
+                    skuDocument.getErpCode(), skuWeight.getEffectiveDate(), skuDocument.getLatestSkuWeight().getEffectiveDate());
+            return;
+        }
         Query query = new Query(Criteria.where("skuId").is(skuWeight.getSkuId()));
         SkuDocument.LatestSkuWeight latestSkuWeight = SkuDocument.LatestSkuWeight.builder()
                 .weight(skuWeight.getWeight())

@@ -1,9 +1,18 @@
 package org.jeecg.modules.business.controller.admin;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -24,9 +33,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.modules.business.vo.Responses;
 import org.jeecg.modules.business.vo.SkuWeightParam;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -54,7 +67,9 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 	private ISecurityService securityService;
 	@Autowired
 	private SkuMongoService skuMongoService;
-	
+
+	private final static Integer NUMBER_OF_SKU_EXCEL_COLUMNS = 3;
+	private final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	/**
 	 * 分页列表查询
 	 *
@@ -145,7 +160,6 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
     * @param request
     * @param skuWeight
     */
-    @RequiresPermissions("business:sku_weight:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, SkuWeight skuWeight) {
         return super.exportXls(request, skuWeight, SkuWeight.class, "sku_weight");
@@ -158,10 +172,84 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
     * @param response
     * @return
     */
-    @RequiresPermissions("business:sku_weight:importExcel")
+	@Transactional
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
-    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, SkuWeight.class);
+    public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		log.info("Importing Sku weights from Excel...");
+		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+
+		Responses responses = new Responses();
+		List<SkuWeight> skuWeights = new ArrayList<>();
+		Map<String, SkuWeight> skuWeightMappedByErpCode = new HashMap<>();
+		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+			MultipartFile file = entity.getValue();
+			try (InputStream inputStream = file.getInputStream()){
+				Workbook workbook = new XSSFWorkbook(inputStream);
+				for (Sheet sheet : workbook) {
+					int firstRow = sheet.getFirstRowNum();
+					int lastRow = sheet.getLastRowNum();
+					for (int rowIndex = firstRow + 1; rowIndex <= lastRow; rowIndex++) {
+						Row row = sheet.getRow(rowIndex);
+						SkuWeight skuWeight = new SkuWeight();
+						boolean hasError = false;
+						String erpCode = null;
+						for (int cellIndex = row.getFirstCellNum(); cellIndex < NUMBER_OF_SKU_EXCEL_COLUMNS; cellIndex++) {
+							Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+							String cellValue = cell.getStringCellValue();
+							if(hasError) continue;
+							if(cellValue.isEmpty()){
+								responses.addFailure("Row " + rowIndex + " has empty cell at index " + cellIndex);
+								hasError = true;
+								continue;
+							}
+							switch (cellIndex) {
+								case 0:
+									Sku sku = skuService.getByErpCode(cellValue);
+									if(sku == null){
+										responses.addFailure("Row " + rowIndex + " SKU not found : " + cellValue);
+										hasError = true;
+										continue;
+									}
+									erpCode = cellValue;
+									skuWeight.setSkuId(sku.getId());
+									break;
+								case 1:
+									skuWeight.setWeight((int) Double.parseDouble(cellValue));
+									break;
+								case 2:
+									Date effectiveDate = formatter.parse(cellValue);
+									skuWeight.setEffectiveDate(effectiveDate);
+									break;
+							}
+						}
+						if(hasError) continue;
+						skuWeights.add(skuWeight);
+						assert erpCode != null;
+						skuWeightMappedByErpCode.put(erpCode, skuWeight);
+					}
+				}
+				log.info("Import weights for skus: {}", skuWeightMappedByErpCode.keySet());
+				Responses mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+				List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
+				mabangResponses.getSuccesses().forEach(skuErpCode -> skuWeightSuccesses.add(skuWeightMappedByErpCode.get(skuErpCode)));
+				skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));
+				skuWeightService.saveBatch(skuWeights);
+				responses.setSuccesses(mabangResponses.getSuccesses());
+			} catch (Exception e) {
+				e.printStackTrace();
+				String msg = e.getMessage();
+				log.error(msg, e);
+				return Result.error("文件导入失败:" + e.getMessage());
+			} finally {
+				try {
+					file.getInputStream().close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return Result.OK(responses);
     }
 
 	 /**
