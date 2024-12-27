@@ -186,56 +186,59 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			MultipartFile file = entity.getValue();
 			try (InputStream inputStream = file.getInputStream()){
 				Workbook workbook = new XSSFWorkbook(inputStream);
-				for (Sheet sheet : workbook) {
-					int firstRow = sheet.getFirstRowNum();
-					int lastRow = sheet.getLastRowNum();
-					for (int rowIndex = firstRow + 1; rowIndex <= lastRow; rowIndex++) {
-						Row row = sheet.getRow(rowIndex);
-						SkuWeight skuWeight = new SkuWeight();
-						boolean hasError = false;
-						String erpCode = null;
-						for (int cellIndex = row.getFirstCellNum(); cellIndex < NUMBER_OF_SKU_EXCEL_COLUMNS; cellIndex++) {
-							Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-							String cellValue = cell.getStringCellValue();
-							if(hasError) continue;
-							if(cellValue.isEmpty()){
-								responses.addFailure("Row " + rowIndex + " has empty cell at index " + cellIndex);
-								hasError = true;
-								continue;
-							}
-							switch (cellIndex) {
-								case 0:
-									Sku sku = skuService.getByErpCode(cellValue);
-									if(sku == null){
-										responses.addFailure("Row " + rowIndex + " SKU not found : " + cellValue);
-										hasError = true;
-										continue;
-									}
-									erpCode = cellValue;
-									skuWeight.setSkuId(sku.getId());
-									break;
-								case 1:
-									skuWeight.setWeight((int) Double.parseDouble(cellValue));
-									break;
-								case 2:
-									Date effectiveDate = formatter.parse(cellValue);
-									skuWeight.setEffectiveDate(effectiveDate);
-									break;
-							}
-						}
+				Sheet firstSheet = workbook.getSheetAt(0);
+				int firstRow = firstSheet.getFirstRowNum();
+				int lastRow = firstSheet.getLastRowNum();
+				for (int rowIndex = firstRow + 1; rowIndex <= lastRow; rowIndex++) {
+					Row row = firstSheet.getRow(rowIndex);
+					SkuWeight skuWeight = new SkuWeight();
+					boolean hasError = false;
+					String erpCode = null;
+					for (int cellIndex = row.getFirstCellNum(); cellIndex < NUMBER_OF_SKU_EXCEL_COLUMNS; cellIndex++) {
+						Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+						String cellValue = cell.getStringCellValue();
 						if(hasError) continue;
-						skuWeights.add(skuWeight);
-						assert erpCode != null;
-						skuWeightMappedByErpCode.put(erpCode, skuWeight);
+						if(cellValue.isEmpty()){
+							responses.addFailure("Row " + rowIndex + " has empty cell at index " + cellIndex);
+							hasError = true;
+							continue;
+						}
+						switch (cellIndex) {
+							case 0:
+								Sku sku = skuService.getByErpCode(cellValue);
+								if(sku == null){
+									responses.addFailure("Row " + rowIndex + " SKU not found : " + cellValue);
+									hasError = true;
+									continue;
+								}
+								erpCode = cellValue;
+								skuWeight.setSkuId(sku.getId());
+								break;
+							case 1:
+								skuWeight.setWeight((int) Double.parseDouble(cellValue));
+								break;
+							case 2:
+								Date effectiveDate = formatter.parse(cellValue);
+								skuWeight.setEffectiveDate(effectiveDate);
+								break;
+						}
 					}
+					if(hasError) continue;
+					skuWeights.add(skuWeight);
+					assert erpCode != null;
+					skuWeightMappedByErpCode.put(erpCode, skuWeight);
 				}
 				log.info("Import weights for skus: {}", skuWeightMappedByErpCode.keySet());
 				Responses mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 				List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
-				mabangResponses.getSuccesses().forEach(skuErpCode -> skuWeightSuccesses.add(skuWeightMappedByErpCode.get(skuErpCode)));
+				mabangResponses.getSuccesses().forEach(skuErpCode -> {
+					String erpCode = skuErpCode.split(":")[0].trim();
+					skuWeightSuccesses.add(skuWeightMappedByErpCode.get(erpCode));
+				});
 				skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));
 				skuWeightService.saveBatch(skuWeights);
-				responses.setSuccesses(mabangResponses.getSuccesses());
+				responses.getSuccesses().addAll(mabangResponses.getSuccesses());
+				responses.getFailures().addAll(mabangResponses.getFailures());
 			} catch (Exception e) {
 				e.printStackTrace();
 				String msg = e.getMessage();
