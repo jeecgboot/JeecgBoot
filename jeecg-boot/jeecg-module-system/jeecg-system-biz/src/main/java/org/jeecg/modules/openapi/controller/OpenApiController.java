@@ -10,21 +10,30 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.modules.openapi.entity.OpenApi;
+import org.jeecg.modules.openapi.entity.OpenApiAuth;
 import org.jeecg.modules.openapi.entity.OpenApiHeader;
 import org.jeecg.modules.openapi.entity.OpenApiParam;
 import org.jeecg.modules.openapi.generator.PathGenerator;
+import org.jeecg.modules.openapi.service.OpenApiAuthService;
 import org.jeecg.modules.openapi.service.OpenApiHeaderService;
 import org.jeecg.modules.openapi.service.OpenApiParamService;
 import org.jeecg.modules.openapi.service.OpenApiService;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import springfox.documentation.schema.*;
+import springfox.documentation.schema.Model;
+import springfox.documentation.schema.ModelProperty;
+import springfox.documentation.schema.ModelRef;
+import springfox.documentation.schema.ModelReference;
 import springfox.documentation.service.*;
 import springfox.documentation.spring.web.DocumentationCache;
 
@@ -36,7 +45,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/openapi")
-public class OpenApiController extends JeecgController<OpenApi, OpenApiService> {
+public class OpenApiController extends JeecgController<OpenApi, OpenApiService> implements CommandLineRunner {
 
     @Autowired
     private RestTemplate restTemplate;
@@ -48,6 +57,10 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
     private DocumentationCache documentationCache;
     @Autowired
     private TypeResolver typeResolver;
+    @Autowired
+    private ISysUserService sysUserService;
+    @Autowired
+    private OpenApiAuthService openApiAuthService;
 
     /**
      * 分页列表查询
@@ -177,6 +190,12 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
             httpHeaders.put(header.getHeaderKey(), Lists.newArrayList(request.getHeader(header.getHeaderKey())));
         }
 
+        String appkey = request.getHeader("appkey");
+        OpenApiAuth openApiAuth = openApiAuthService.getByAppkey(appkey);
+        SysUser systemUser = sysUserService.getById(openApiAuth.getSystemUserId());
+        String token = JwtUtil.sign(systemUser.getUsername(), systemUser.getPassword());
+        httpHeaders.put("X-Access-Token", Lists.newArrayList(token));
+
         HttpEntity<String> httpEntity = new HttpEntity<>(json, httpHeaders);
 
         return restTemplate.exchange(url, HttpMethod.resolve(method), httpEntity, Result.class, request.getParameterMap()).getBody();
@@ -218,8 +237,8 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         List<ModelReference> subTypes = new ArrayList<>();
         subTypes.add(stringModelRef);
 
-        Model bodyModel = new Model("path_body", "body", mapResolvedType, "java.util.HashMap", propertyMap, "请求体结构", "", "", subTypes, null, null);
-        ModelRef bodyRef = new ModelRef("bodyModel", "bodyModel", null, null, "path_body");
+        Model bodyModel = new Model("path_body", "bodyModel", mapResolvedType, "java.util.HashMap", propertyMap, "请求体结构", "", "", subTypes, null, null);
+        ModelRef bodyRef = new ModelRef("bodyModel", "path_body", null, null,true, "path_body");
 
         Set<ResponseMessage> responseMessages = documentation.getApiListings().get("login-controller").get(0).getApis().get(2).getOperations().get(0).getResponseMessages();
 
@@ -229,7 +248,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         //    path-->请求参数的获取：@PathVariable()
         //    body-->请求参数的获取：@RequestBody()
         //    form（不常用）
-        Parameter body = new Parameter("body",
+        Parameter body = new Parameter("bodyModel",
                 "请求体",
                 "",
                 true,
@@ -329,7 +348,11 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         return r;
     }
 
-    public void resetOpenapiSwagger() {
+    /**
+     * resetOpenapiSwagger
+     */
+    @Override
+    public void run(String... args) throws Exception {
         List<OpenApi> openapis = service.list();
         Documentation documentation = documentationCache.documentationByGroup("default");
         List<ApiListing> apis = new ArrayList<>();
@@ -418,11 +441,11 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
                 parameters.add(parameter);
             }
 
-            Operation operation = new Operation(HttpMethod.resolve("GET"),
-                    "模拟第一个openapi接口",
-                    "模拟第一个openapi接口",
+            Operation operation = new Operation(HttpMethod.resolve(openapi.getRequestMethod()),
+                    openapi.getName(),
+                    openapi.getName(),
                     modelRef,
-                    "abcUsingGET",
+                    openapi.getName()+"Using"+openapi.getRequestMethod(),
                     0, tags, produces, consumes,
                     new LinkedHashSet<>(),
                     new ArrayList<>(),
@@ -436,7 +459,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
             operations.add(operation);
 
             ApiDescription apiDescription = new ApiDescription("openapi",
-                    "/jeecg-boot/openapi/call/abc", "openapi", operations, false);
+                    "/jeecg-boot/openapi/call/"+openapi.getRequestUrl(), openapi.getName(), operations, false);
 
             List<ApiDescription> apiList = new ArrayList<>();
             apiList.add(apiDescription);
@@ -446,7 +469,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
 
             ApiListing api = new ApiListing("1.0",
                     "/",
-                    "/openapi/call/abc",
+                    "/openapi/call/"+openapi.getRequestUrl(),
                     produces, consumes,
                     "", new HashSet<>(), new ArrayList<>(), apiList, responseModel, "abc", 0, apiTags);
 

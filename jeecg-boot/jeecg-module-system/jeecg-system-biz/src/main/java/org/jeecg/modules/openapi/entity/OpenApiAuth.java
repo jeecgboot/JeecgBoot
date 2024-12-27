@@ -42,6 +42,11 @@ public class OpenApiAuth implements Serializable {
     private String sk;
 
     /**
+     * 系统用户ID
+     */
+    private String systemUserId;
+
+    /**
      * 创建人
      */
     private String createBy;

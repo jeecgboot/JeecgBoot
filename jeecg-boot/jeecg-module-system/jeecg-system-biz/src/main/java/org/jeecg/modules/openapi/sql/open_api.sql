@@ -1,1 +1,0 @@
-INSERT INTO `open_api` (`id`, `name`, `request_method`, `request_url`, `black_list`, `body`, `origin_url`, `status`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1870486348755324929', '示例接口', 'GET', 'UrTk8CTk', NULL, NULL, 'http://localhost:8080/jeecg-boot/openapi/demo/index', 1, 0, NULL, '2024-12-21 23:07:52', NULL, NULL);

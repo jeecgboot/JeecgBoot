@@ -180,7 +180,7 @@ public class ShiroConfig {
         // 企业微信证书排除
         filterChainDefinitionMap.put("/WW_verify*", "anon");
 
-        filterChainDefinitionMap.put("/openapi/**", "anon");
+        filterChainDefinitionMap.put("/openapi/call/**", "anon");
 
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);

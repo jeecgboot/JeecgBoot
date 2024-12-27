@@ -1,1 +1,0 @@
-INSERT INTO `open_api_permission` (`id`, `api_id`, `api_auth_id`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1870491556923179010', '1870486348755324929', '1870484839812517890', NULL, '2024-12-21 23:28:34', NULL, NULL);
