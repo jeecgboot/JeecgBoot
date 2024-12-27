@@ -638,11 +638,38 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     public Responses mabangSkuWeightUpdate(List<SkuWeight> skuWeights) {
         Responses responses = new Responses();
         List<String> failures = new ArrayList<>();
-        List<Sku> skus = skuService.listByIds(skuWeights.stream()
-                .map(SkuWeight::getSkuId).collect(toList()));
-
+        List<String> skuIds = skuWeights.stream()
+                .map(SkuWeight::getSkuId)
+                .collect(toList());
+        List<Sku> skus = skuService.listByIds(skuIds);
+        // Map skuWeights by skuId, if skuId already in map, keep the skuWeight with the latest effective date
+        Map<String, SkuWeight> skuWeightMappedById = skuWeights.stream()
+                .collect(Collectors.toMap(SkuWeight::getSkuId, Function.identity(), (skuWeight1, skuWeight2) -> {
+                    if(skuWeight1.getEffectiveDate().after(skuWeight2.getEffectiveDate())) {
+                        log.info("The weight [{}] for sku [{}] is more recent.", skuWeight1.getWeight() ,skuWeight1.getSkuId());
+                        return skuWeight1;
+                    }
+                    log.info("The weight [{}] for sku [{}] is more recent.", skuWeight2.getWeight() ,skuWeight2.getSkuId());
+                    return skuWeight2;
+                }));
+        List<Sku> skusToUpdate = new ArrayList<>();
+        for(Sku sku : skus) {
+            SkuWeight latestSkuWeight = skuWeightService.getBySkuId(sku.getId());
+            if(latestSkuWeight == null) {
+                skusToUpdate.add(sku);
+                continue;
+            }
+            Date latestEffectiveDate = latestSkuWeight.getEffectiveDate();
+            Date effectiveDateToImport = skuWeightMappedById.get(sku.getId()).getEffectiveDate();
+            if(latestEffectiveDate.after(effectiveDateToImport)) {
+                log.info("Sku {} has a more recent weight in DB. Therefore won't be imported to Mabang", sku.getErpCode());
+                responses.addSuccess(sku.getErpCode());
+                continue;
+            }
+            skusToUpdate.add(sku);
+        }
         Map<String, String> remarkMappedByErpCode = new HashMap<>();
-        List<List<String>> skusPartition = Lists.partition(skus.stream().map(Sku::getErpCode).collect(toList()), 50);
+        List<List<String>> skusPartition = Lists.partition(skusToUpdate.stream().map(Sku::getErpCode).collect(toList()), 50);
         for(List<String> skuPartition : skusPartition) {
             SkuListRequestBody body = new SkuListRequestBody();
             body.setStockSkuList(String.join(",", skuPartition));
@@ -664,13 +691,20 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
 
         List<SkuData> skuDataList = skuWeights.stream()
                 .map(skuWeight -> {
-                    Sku sku = skus.stream()
+                    Sku sku = skusToUpdate.stream()
                             .filter(s -> s.getId().equals(skuWeight.getSkuId()))
                             .findFirst()
                             .orElse(null);
-                    if(null == sku) {
+                    Sku skuInDb = skus.stream()
+                            .filter(s -> s.getId().equals(skuWeight.getSkuId()))
+                            .findFirst()
+                            .orElse(null);
+                    if(null == skuInDb) {
                         log.error("Sku not found : {}", skuWeight.getSkuId());
                         failures.add(skuWeight.getSkuId());
+                        return null;
+                    }
+                    if(null == sku) {
                         return null;
                     }
                     SkuData skuData = new SkuData();
@@ -713,14 +747,14 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         log.info("{}/{} skus updated successfully.", successCount, skuDataList.size());
         List<String> successes = results.stream()
                 .filter(SkuChangeResponse::success)
-                .map(SkuChangeResponse::getStockSku)
+                .map(response -> response.getStockSku() + " : Mabang OK")
                 .collect(toList());
         failures.addAll(results.stream()
                 .filter(response -> !response.success())
-                .map(SkuChangeResponse::getStockSku)
+                .map(response -> response.getStockSku() + " | Mabang")
                 .collect(toList()));
 
-        responses.setSuccesses(successes);
+        responses.getSuccesses().addAll(successes);
         responses.setFailures(failures);
         return responses;
     }
