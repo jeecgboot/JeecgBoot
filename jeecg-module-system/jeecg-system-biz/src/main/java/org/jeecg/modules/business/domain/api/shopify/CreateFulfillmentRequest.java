@@ -22,7 +22,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         GLS_NL_2("https://www.gls-info.nl/tracking", "GLS", "(1437|1000)[0-9]{10}"),
         DPD_CH("https://www.dpdgroup.com/ch/mydpd/my-parcels/incoming?parcelNumber=%s", "DPD", "06086328[0-9]{6}"),
         // 16 [0-9]
-        CANADA_POST("https://www.canadapost-postescanada.ca/track-reperage/en#/search?searchFor=%s", "Canada Post", "(201255|732131|102303)[0-9]{10}"),
+        CANADA_POST("https://www.canadapost-postescanada.ca/track-reperage/en#/search?searchFor=%s", "Canada Post", "(201255|732131|102303|400864|102977)[0-9]{10}"),
         // 18 [0-9]
         QUICKPAC("https://quickpac.ch/de/tracking", "Quickpac", "44001091[0-9]{10}"),
         ECO_SCOOTING("https://www.ecoscooting.com/tracking/%s", "EcoScooting", "[0-9]{5}00000[0-9]{8}"),
