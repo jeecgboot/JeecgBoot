@@ -32,9 +32,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.SkuWeightPage;
 import org.jeecg.modules.business.vo.SkuWeightParam;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
-import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -157,12 +159,23 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
     /**
     * 导出excel
     *
-    * @param request
-    * @param skuWeight
+    * @param skuIds
     */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, SkuWeight skuWeight) {
-        return super.exportXls(request, skuWeight, SkuWeight.class, "sku_weight");
+    public ModelAndView exportXls(@RequestParam(value = "selections[]", required = false) List<String> skuIds) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		List<SkuWeightPage> skuWeightList;
+		if (skuIds == null || skuIds.isEmpty()) {
+			skuWeightList = skuWeightService.listLatestWeights();
+		} else {
+			skuWeightList = skuWeightService.listLatestWeightForSkus(skuIds);
+		}
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "SKU重量列表");
+		mv.addObject(NormalExcelConstants.CLASS, SkuWeightPage.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("SKU重量数据", "导出人:" + sysUser.getRealname(), "SKU重量"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, skuWeightList);
+		return mv;
     }
 
     /**
@@ -313,7 +326,10 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		List<SkuWeight> skuWeights = new ArrayList<>(skuWeightsMap.values());
 		Responses responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 		List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
-		responses.getSuccesses().forEach(skuErpCode -> skuWeightSuccesses.add(skuWeightsMap.get(skuErpCode)));
+		responses.getSuccesses().forEach(skuErpCode -> {
+			String erpCode = skuErpCode.split(":")[0].trim();
+			skuWeightSuccesses.add(skuWeightsMap.get(erpCode));
+		});
 
 		skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));
 		skuWeightService.saveBatch(skuWeights);
