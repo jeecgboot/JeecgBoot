@@ -57,11 +57,12 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         EVRI("https://www.evri.com/track/parcel/%s/details", "Evri", "H[0-9A-Z]{5}[0-9]{10}"),
         YODEL("https://www.yodel.co.uk/tracking/%s/%s", "Yodel", "JD[0-9]{16}"),
         UK_ROYAL_MAIL("https://www.royalmail.com/track-your-item#/tracking-results/%s", "Royal Mail", "(FJ002|WB788)[0-9]{6}GB"),
-        POST_NL("https://postnl.post/", "PostNL International Mail", "LS[0-9]{9}NL"),
+        POST_NL("https://postnl.post/", "PostNL International Mail", "L(S|R)[0-9]{9}NL"),
         COLI_COLI("https://www.colicoli.fr/trackings?id=%s", "Coli Coli", "CC[0-9]{14}[A-Z]*"),
         LUXEMBOURG_POST("https://www.post.lu/particuliers/colis-courrier/track-and-trace#/search", "Luxembourg Post", "LL[0-9]{9}LU"),
         PDN_Express("https://pdn.express/nl/track/%s", "PDN Express", "PDN0003[0-9]{6}"),
         UNI_EXPRESS("https://www.uniuni.com/tracking/#tracking-detail?no=%s", "Uni Express", "GV24CA[0-9A-Z]{12}"),
+        UPS("https://www.uniuni.com/tracking/#tracking-detail?no=%s", "UPS", "1Z88[0-9A-Z]{14}"),
         ;
 
         private final String trackingUrl;
