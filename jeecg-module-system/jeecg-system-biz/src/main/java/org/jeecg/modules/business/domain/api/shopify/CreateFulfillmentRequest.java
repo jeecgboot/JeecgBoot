@@ -13,8 +13,10 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
     private final static String OTHER = "Other";
 
     private enum TransportCompany {
+        GIULIA_SCHIAPARELLI("","Giulia Schiaparelli","^(?![69][A-Z][0-9]{11}$)(?!LP[0-9]{9}FR$).+$"),
+        LA_POSTE("https://www.laposte.fr/outils/suivre-vos-envois?code=%s", "La Poste", "[69][A-Z]{1}[0-9]{11}|LP[0-9]{9}FR"),
         // 12 [0-9]
-        CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}|5901[0-9]{8}|57476[0-9]{7}"),
+        /*CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}|5901[0-9]{8}|57476[0-9]{7}"),
         // 14 [0-9]
         DPD_BE("https://www.dpdgroup.com/be/mydpd/my-parcels/track?parcelNumber=%s", "DPD", "06086316[0-9]{6}"),
         DPD_DE("https://www.dpd.com/de/de/", "DPD", "0150534[0-9]{7}"),
@@ -62,7 +64,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
         LUXEMBOURG_POST("https://www.post.lu/particuliers/colis-courrier/track-and-trace#/search", "Luxembourg Post", "LL[0-9]{9}LU"),
         PDN_Express("https://pdn.express/nl/track/%s", "PDN Express", "PDN0003[0-9]{6}"),
         UNI_EXPRESS("https://www.uniuni.com/tracking/#tracking-detail?no=%s", "Uni Express", "GV24CA[0-9A-Z]{12}"),
-        UPS("https://www.uniuni.com/tracking/#tracking-detail?no=%s", "UPS", "1Z88[0-9A-Z]{14}"),
+        UPS("https://www.uniuni.com/tracking/#tracking-detail?no=%s", "UPS", "1Z88[0-9A-Z]{14}"),*/
         ;
 
         private final String trackingUrl;
