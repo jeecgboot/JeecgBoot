@@ -1846,6 +1846,20 @@ public class SysUserController {
     }
 
     /**
+     * 更改手机号（敲敲云个人设置专用）
+     *
+     * @param json
+     * @param request
+     */
+    @PutMapping("/changePhone")
+    public Result<String> changePhone(@RequestBody JSONObject json, HttpServletRequest request){
+        //获取登录用户名
+        String username = JwtUtil.getUserNameByToken(request);
+        sysUserService.changePhone(json,username);
+        return Result.ok("修改手机号成功！");
+    }
+    
+    /**
      * 发送短信验证码接口(修改手机号)
      *
      * @param jsonObject
