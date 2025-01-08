@@ -60,7 +60,7 @@
 		<druid.version>1.2.22</druid.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.9.1</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>1.9.2</jimureport-spring-boot-starter.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
@@ -407,12 +407,12 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimubi-spring-boot-starter</artifactId>
-				<version>${jimureport-spring-boot-starter.version}</version>
+				<version>1.9.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
-				<version>1.6.0</version>
+				<version>1.9.2</version>
 			</dependency>
 			<!-- chatgpt -->
 			<dependency>
