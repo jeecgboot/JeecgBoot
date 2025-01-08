@@ -107,9 +107,10 @@ JeecgBoot开源版本，底层完全开源可以自主开发，遵循Apache2.0�
 #### 前端环境要求
 
 *   本地环境安装 `Node.js 、npm 、pnpm`
+*   pnpm 要求`9+` 版本以上
 *   Node.js 版本建议`v20.15.0`，要求`Node 20+` 版本以上
 
- ` ( 因为Vite5 不再支持已 EOL 的 Node.js 14 / 16 / 17 / 19，现在需要 Node.js 18 / 20+ )`
+ ` ( 因为Vite6 需要 Node.js 18 / 20+ )`
 
 
 #### 支持库

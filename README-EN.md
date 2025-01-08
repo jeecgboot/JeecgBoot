@@ -216,9 +216,11 @@ Technical Architecture:
 #### Front-end environment requirements
 
 *    `Node.js 、npm 、pnpm`
+*   pnpm `v9+` is now required.
 *   Node.js Version suggestion: `v20.15.0`
- ` ( Since Vite5 no longer supports EOL Node.js 14/16/17/19, Node.js 18/20 + is now required )`
+ ` ( Since Vite6 Node.js 18/20 + is now required )`
  
+
 #### Support library
 
 |  database   |  support   |
