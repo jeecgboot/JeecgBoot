@@ -82,4 +82,30 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
         // 将所有信息存放至map 解析sql/api会根据map的键值解析
         return map;
     }
+
+    /**
+     * 将jeecgboot平台的权限传递给积木报表
+     * @param token
+     * @return
+     */
+    @Override
+    public String[] getPermissions(String token) {
+        // 获取用户信息
+        String username = JwtUtil.getUsername(token);
+        SysUserCacheInfo userInfo = null;
+        try {
+            userInfo = sysBaseApi.getCacheUser(username);
+        } catch (Exception e) {
+            log.error("获取用户信息异常:"+ e.getMessage());
+        }
+        if(userInfo == null){
+            return null;
+        }
+        // 查询权限
+        Set<String> userPermissions = sysBaseApi.getUserPermissionSet(userInfo.getSysUserId());
+        if(CollectionUtils.isEmpty(userPermissions)){
+            return null;
+        }
+        return userPermissions.toArray(new String[0]);
+    }
 }
