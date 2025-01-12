@@ -53,7 +53,9 @@
 		<!-- 国产数据库驱动 -->
 		<kingbase8.version>9.0.0</kingbase8.version>
 		<dm8.version>8.1.1.49</dm8.version>
-		
+
+		<!-- 积木报表-->
+		<jimureport-spring-boot-starter.version>1.9.3</jimureport-spring-boot-starter.version>
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.2</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
@@ -389,7 +391,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-spring-boot-starter</artifactId>
-				<version>1.9.3</version>
+				<version>${jimureport-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>autopoi-web</artifactId>
@@ -404,13 +406,13 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
-				<version>1.9.3</version>
+				<version>${jimureport-spring-boot-starter.version}</version>
 			</dependency>
-			<!-- 积木BI大屏-->
+			<!-- 积木BI大屏和仪表盘 -->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimubi-spring-boot-starter</artifactId>
-				<version>1.9.1</version>
+				<version>${jimureport-spring-boot-starter.version}</version>
 			</dependency>
 			<!-- chatgpt -->
 			<dependency>
