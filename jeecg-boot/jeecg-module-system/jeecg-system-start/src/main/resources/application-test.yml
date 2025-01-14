@@ -199,6 +199,13 @@ mybatis-plus:
 minidao:
   base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
+  # AI集成
+  ai-chat:
+    enabled: true
+    model: deepseek-chat
+    apiKey: ??
+    apiHost: https://api.deepseek.com
+    timeout: 60
   # 平台上线安全配置
   firewall:
     # 数据源安全 (开启后，Online报表和图表的数据源为必填)
@@ -241,11 +248,6 @@ jeecg:
         SMS_465391221:
         # 注册账号短信模板编码
         SMS_175430166:
-  # ElasticSearch 设置
-  elasticsearch:
-    cluster-name: jeecg-ES
-    cluster-nodes: 192.168.1.188:9200
-    check-enabled: false
   # 在线预览文件服务器地址配置
   file-view-domain: http://127.0.0.1:8012
   # minio文件上传
@@ -286,7 +288,11 @@ jeecg:
     app-id: ??
     api-key: ??
     secret-key: ??
-
+  # ElasticSearch 设置
+  elasticsearch:
+    cluster-name: jeecg-ES
+    cluster-nodes: 192.168.1.188:9200
+    check-enabled: false
 #Mybatis输出sql日志
 logging:
   level:
