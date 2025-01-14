@@ -73,7 +73,7 @@ Technical documentation
 
 - Website：  [http://www.jeecg.com](http://www.jeecg.com)
 - Demo ： [OnlineDemo](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
-- Doc：  [http://help.jeecg.com](http://help.jeecg.com)
+- Doc：  [DocumentCenter](http://help.jeecg.com) | [AI Config](https://help.jeecg.com/java/ai/aichat.html)
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart) |   [Q&A ](http://www.jeecg.com/doc/qa)  |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
 - QQ group ： ⑩716488839、⑨808791225、⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 
@@ -234,6 +234,15 @@ Technical Architecture:
 |   人大金仓   |  √   |
 |   TiDB   |  √   |
 
+
+#### AI Support
+
+| AI Model | Supported |
+| --- | --- |
+| DeepSeek | √ |
+| ChatGPT | √ |
+
+AI Config： https://help.jeecg.com/java/ai/aichat.html
 
 ## Microservice solutions
 
