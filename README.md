@@ -27,7 +27,7 @@ JeecgBoot 提供了一系列 `AI能力` `低代码模块`，实现在线开发`�
 
 `JEECG业务流程:` 采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
 
-`AI赋能低代码:` 目前JeecgBoot支持AI大模型chatgpt和deepseek，现在最新版默认使用deepseek，速度更快质量更高。目前提供了AI对话助手、AI建表、AI报表等功能。
+`AI赋能低代码:` 目前JeecgBoot支持AI大模型`ChatGPT`和`DeepSeek`，现在最新版默认使用`DeepSeek`，速度更快质量更高。目前提供了AI对话助手、AI建表、AI报表等功能。
 
 
 适用项目
@@ -81,6 +81,7 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 - 安全框架：Apache Shiro 1.12.0，Jwt 3.11.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.1.22
+- AI大模型：支持`ChatGPT``DeepSeek`切换
 - 日志打印：logback
 - 缓存：Redis
 - 其他：autopoi, fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。
