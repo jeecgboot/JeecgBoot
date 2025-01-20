@@ -4,7 +4,7 @@
 
 
 
-JEECG BOOT Low Code Development Platform
+JEECG BOOT AI Low Code Platform
 ===============
 
 Current version: 3.7.2 (Release date: 2024-12-12)
@@ -21,9 +21,9 @@ Current version: 3.7.2 (Release date: 2024-12-12)
 Project introduction
 -----------------------------------
 
-<h3 align="center">Java Low Code Platform for Enterprise web applications</h3>
+<h3 align="center">Java AI Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot is a `low code development platform` based on code `generators`! Front and back end separation architecture SpringBoot2.x, SpringCloud, Ant Design&Vue, Mybatis plus, Shiro, JWT, support for microservices. The powerful code generator makes the front and back end of the code generation, low code development! JeecgBoot leads a new low-code development paradigm (OnlineCoding-> Code Generator -> Manual MERGE) that helps resolve 70% of the duplication in Java projects and makes development more business-focused. Not only can quickly improve efficiency, save research and development costs, but also do not lose flexibility!
+JeecgBoot is a `AI low code platform` based on code `generators`! Front and back end separation architecture SpringBoot2.x, SpringCloud, Ant Design&Vue, Mybatis plus, Shiro, JWT, support for microservices. The powerful code generator makes the front and back end of the code generation, low code development! JeecgBoot leads a new low-code development paradigm (OnlineCoding-> Code Generator -> Manual MERGE) that helps resolve 70% of the duplication in Java projects and makes development more business-focused. Not only can quickly improve efficiency, save research and development costs, but also do not lose flexibility!
 
 JeecgBoot provides a series of low code modules to make Online development truly zero code: Online form development, online reports, report configuration capabilities, online chart design, large screen design, mobile configuration capabilities, form designer, online design flow, process automation configuration, plug-in capabilities (pluggable) and more!
 
@@ -32,6 +32,7 @@ The purpose of JEECG is: simple functions are implemented by OnlineCoding config
 
 JEECG Business process: Using workflow to implement and extend the task interface for developing and writing business logic, forms provides a variety of solutions: form designer, online configuration form, and coding form. At the same time, the separation design of process and form (loose coupling) is realized, and the flexible configuration of task nodes is supported, which not only ensures the confidentiality of the company's process, but also reduces the workload of developers.
 
+AI Empowering Low-Code: Currently, JeecgBoot supports AI large models such as ChatGPT and DeepSeek. The latest version defaults to using DeepSeek, which offers faster speed and higher quality. It now provides features such as AI chat assistant, AI table creation, and AI report generation.
 
 Technical support
 -----------------------------------
@@ -57,7 +58,7 @@ Download other source code
 
 For the project
 -----------------------------------
-Jeecg-Boot low code development platform can be applied in the development of any J2EE project, especially for SAAS projects, enterprise information management system (MIS), internal office system (OA), enterprise resource planning system (ERP), customer relationship management system (CRM), etc. Its semi-intelligent manual Merge development method, Can significantly improve the development efficiency of more than 70%, greatly reduce the development cost.
+Jeecg-Boot AI low code platform can be applied in the development of any J2EE project, especially for SAAS projects, enterprise information management system (MIS), internal office system (OA), enterprise resource planning system (ERP), customer relationship management system (CRM), etc. Its semi-intelligent manual Merge development method, Can significantly improve the development efficiency of more than 70%, greatly reduce the development cost.
 
 
 Starts the project
