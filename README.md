@@ -81,7 +81,7 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 - 安全框架：Apache Shiro 1.12.0，Jwt 3.11.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.1.22
-- AI大模型：支持`ChatGPT``DeepSeek`切换
+- AI大模型：支持 `ChatGPT` `DeepSeek`切换
 - 日志打印：logback
 - 缓存：Redis
 - 其他：autopoi, fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。
