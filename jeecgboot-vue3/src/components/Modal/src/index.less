@@ -19,6 +19,11 @@
     .@{namespace}-basic-title {
       cursor: default !important;
     }
+    // update-begin--author:liaozhiyang---date:20241225---for：【issues/7601】ant-design-vue@4.2.6后弹窗全屏底部有空隙
+    & > div:has( > .ant-modal-content) {
+      height: 100%;
+    }
+    // update-end--author:liaozhiyang---date:20241225---for：【issues/7601】ant-design-vue@4.2.6后弹窗全屏底部有空隙
   }
 }
 

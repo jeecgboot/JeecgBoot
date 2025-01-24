@@ -199,6 +199,13 @@ mybatis-plus:
 minidao:
   base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
+  # AI集成
+  ai-chat:
+    enabled: true
+    model: deepseek-chat
+    apiKey: ??
+    apiHost: https://api.deepseek.com
+    timeout: 60
   # 平台上线安全配置
   firewall:
     # 数据源安全 (开启后，Online报表和图表的数据源为必填)
@@ -240,11 +247,6 @@ jeecg:
         SMS_465391221:
         # 注册账号短信模板编码
         SMS_175430166:
-  # ElasticSearch 6设置
-  elasticsearch:
-    cluster-name: jeecg-ES
-    cluster-nodes: 127.0.0.1:9200
-    check-enabled: false
   # 在线预览文件服务器地址配置
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传
@@ -280,26 +282,16 @@ jeecg:
     password:
     type: STANDALONE
     enabled: true
-  # ai-chat
-  ai-chat:
-    # 是否开启；必须。
-    enabled: false
-    # openAi接口秘钥，填写自己的apiKey；必须。
-    apiKey: "？？？？"
-    # openAi域名，有代理就填代理的域名。默认：openAI官方apiHost
-    apiHost: "https://api.openai.com"
-    # 超时时间单位:s。默认 60s
-    timeout: 60
-    # 本地代理地址
-#    proxy:
-#      host: "http://127.0.0.1"
-#      port: "7890"
   # 百度开放API配置
   baidu-api:
     app-id: ??
     api-key: ??
     secret-key: ??
-
+  # ElasticSearch 6设置
+  elasticsearch:
+    cluster-name: jeecg-ES
+    cluster-nodes: 127.0.0.1:9200
+    check-enabled: false
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas

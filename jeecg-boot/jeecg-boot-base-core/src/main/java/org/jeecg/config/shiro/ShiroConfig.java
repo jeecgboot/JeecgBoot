@@ -145,7 +145,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.js.map", "anon");
         filterChainDefinitionMap.put("/**/*.css.map", "anon");
         
-        //拖拽仪表盘设计器排除
+        //积木BI大屏和仪表盘排除
         filterChainDefinitionMap.put("/drag/view", "anon");
         filterChainDefinitionMap.put("/drag/page/queryById", "anon");
         filterChainDefinitionMap.put("/drag/page/addVisitsNumber", "anon");
