@@ -62,7 +62,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "showdown": "^2.1.0",
     "sortablejs": "^1.15.6",
-    "tinymce": "6.6.2",
+    "tinymce": "6.8.4",
     "vditor": "^3.10.8",
     "vue": "^3.5.13",
     "vue-cropper": "^0.6.5",
