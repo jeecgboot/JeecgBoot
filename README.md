@@ -120,12 +120,13 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 |   人大金仓   |  √   |
 |   TiDB     |  √   |
 
-#### 支持AI
+#### 支持AI大模型
 
-|  AI模型   |  支持   |
+|  AI大模型   |  支持   |
 | --- | --- |
 |   DeepSeek   |  √   |
 |   ChatGTP   |  √   |
+|   Ollama本地搭建大模型   |  √   |
 
 AI集成文档： https://help.jeecg.com/java/ai/aichat.html
 
