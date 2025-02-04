@@ -24,7 +24,7 @@ import java.util.Map;
  */
 @Slf4j
 public abstract class Request {
-    private final static String BASE_URL = "http://xmsmdz.xyldiy.com:8012/api";
+    private final static String BASE_URL = "http://43.192.16.96:8012/api";
     private static final HttpMethod METHOD = HttpMethod.POST;
     private static final String KEY = "BpQWy6AtvKcixjePQ4ZMuvBqUyIsXWWX";
     private static final String SHOP_CODE = "8ee5c82004c44049b9f22a0ed8dc4db3";
