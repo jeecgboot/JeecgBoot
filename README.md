@@ -18,16 +18,16 @@ JeecgBoot AI低代码平台
 
 <h3 align="center">Java AI Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot 是一款基于`AI`和`代码生成器`的 AI低代码平台！前后端分离架构 SpringBoot2.x和3.x，SpringCloud，Ant Design Vue3，Mybatis-plus，Shiro，JWT，支持微服务。强大的代码生成器让前后端代码一键生成，实现低代码开发!  JeecgBoot集成AI模型能力，引领新的低代码开发模式(OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目70%的重复工作，让开发更多关注业务。既能快速提高效率，节省研发成本，同时又不失灵活性！
+JeecgBoot 是一款基于`BPM`和`代码生成器`的 AI低代码平台！前后端分离架构 SpringBoot2.x和3.x，SpringCloud，Ant Design Vue3，Mybatis-plus，Shiro，JWT，支持微服务;支持 AI 大模型 DeepSeek 和 ChatGPT、Ollama本地大模型; 强大的代码生成器让前后端代码一键生成，实现低代码开发!  JeecgBoot 引领 AI 低代码开发模式(AI生成-> OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目80%的重复工作，让开发更多关注业务。既能快速提高效率，节省研发成本，同时又不失灵活性！AIGC能力：AI 对话助手、AI建表、AI写文章、AI流程编排、AI知识库问答等.
 
-JeecgBoot 提供了一系列 `AI能力` `低代码模块`，实现在线开发`真正的零代码`：Online表单开发、Online报表、报表配置能力、在线图表设计、仪表盘设计、大屏设计、移动配置能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）、AI对话助手，AI建表、AI赋能低代码等等！
+JeecgBoot 提供了一系列 `AI能力` `低代码模块`，实现在线开发`真正的零代码`：Online表单开发、Online报表、报表配置能力、在线图表设计、仪表盘设计、大屏设计、移动配置能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）、AI对话助手，AI建表、AI写文章、AI流程编排、AI知识库问答、AI赋能低代码等等！
 
 
 `JEECG宗旨是:` 简单功能由OnlineCoding配置实现，做到`零代码开发`；复杂功能由代码生成器生成进行手工Merge 实现`低代码开发`，既保证了`智能`又兼顾`灵活`；实现了低代码开发的同时又支持灵活编码，解决了当前低代码产品普遍不灵活的弊端！
 
 `JEECG业务流程:` 采用工作流来实现、扩展出任务接口，供开发编写业务逻辑，表单提供多种解决方案： 表单设计器、online配置表单、编码表单。同时实现了流程与表单的分离设计（松耦合）、并支持任务节点灵活配置，既保证了公司流程的保密性，又减少了开发人员的工作量。
 
-`AI赋能低代码:` 目前JeecgBoot支持AI大模型`ChatGPT`和`DeepSeek`，现在最新版默认使用`DeepSeek`，速度更快质量更高。目前提供了AI对话助手、AI建表、AI报表等功能。
+`AI赋能低代码:` 目前JeecgBoot支持AI大模型`ChatGPT`和`DeepSeek`，现在最新版默认使用`DeepSeek`，速度更快质量更高。目前提供了AI对话助手、AI建表、AI报表、AI写文章、AI流程编排、AI知识库问答等功能。
 
 
 适用项目
@@ -232,9 +232,14 @@ AI集成文档： https://help.jeecg.com/java/ai/aichat.html
 ### 功能模块
 ```
 ├─AI开发
+│  ├─支持AI大模型ChatGPT和DeepSeek
 │  ├─AI对话助手
 │  ├─AI建表
-│  ├─支持AI大模型ChatGPT和DeepSeek
+│  ├─AI写文章
+│  ├─AI流程编排（研发中）
+│  ├─AI知识库问答系统（研发中）
+│  ├─AI应用开发平台（研发中）
+│  ├─AI聊天窗口支持嵌入第三方（研发中）
 ├─Online在线开发(低代码)
 │  ├─Online在线表单
 │  ├─Online代码生成器
