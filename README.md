@@ -379,6 +379,24 @@ AI集成文档： https://help.jeecg.com/java/ai/aichat.html
 
 ### 系统效果
 
+
+##### AI功能
+
+AI聊天助手
+
+![](https://oscimg.oschina.net/oscnet//65298d5710b4e6039a5f802b5f8505c5.png)
+
+AI建表
+
+![](https://oscimg.oschina.net/oscnet/up-381423599f219a67def45dfd9a99df8ef3f.png)
+
+![](https://oscimg.oschina.net/oscnet/up-1508c2b0708c365605f68893044ee11f20d.png)
+
+AI写文章
+
+![](https://oscimg.oschina.net/oscnet/up-e3ee5b1fe497308805aa5e324b72994af79.png)
+
+
 ##### PC端
 ![](https://oscimg.oschina.net/oscnet/up-000530d95df337b43089ac77e562494f454.png)
 
@@ -397,8 +415,6 @@ AI集成文档： https://help.jeecg.com/java/ai/aichat.html
 
 ![](https://oscimg.oschina.net/oscnet/up-16c07e000278329b69b228ae3189814b8e9.png)
 
-##### AI助手
-![](https://oscimg.oschina.net/oscnet/up-7c6405641a40f56638999d52da0cb5b4343.png)
 
 
 #####  仪表盘设计器
