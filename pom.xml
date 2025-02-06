@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<wia-app.version>3.0.5</wia-app.version>
+		<wia-app.version>3.0.6</wia-app.version>
 		<jeecgboot.version>3.6.3</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
