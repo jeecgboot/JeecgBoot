@@ -215,6 +215,12 @@ export const searchFormSchema: FormSchema[] = [
 </#if>
       //colProps: {span: 6},
      },
+<#elseif po.queryMode=='like'>
+  {
+    label: "${po.filedComment}",
+    field: "${po.fieldName}",
+    component: 'JInput',
+  },
 <#else>
      {
       label: "${po.filedComment}",

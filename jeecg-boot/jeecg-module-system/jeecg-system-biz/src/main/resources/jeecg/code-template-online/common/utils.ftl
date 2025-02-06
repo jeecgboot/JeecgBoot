@@ -238,7 +238,7 @@
   <#assign rangeField = "">
   <#list columns as po>
       <#if po.isQuery=='Y'>
-          <#if po.queryMode!='single'>
+          <#if po.queryMode=='group'>
               <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal' || po.classType=='time' || po.classType=='date' || po.classType=='datetime'>
                   <#assign rangeField = rangeField + "${po.fieldName},">
               </#if>

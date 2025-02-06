@@ -54,3 +54,6 @@
 <#if need_range_number>
   import JRangeNumber from "/@/components/Form/src/jeecg/components/JRangeNumber.vue";
 </#if>
+<#if is_like>
+  import JInput from "/@/components/Form/src/jeecg/components/JInput.vue";
+</#if>

@@ -23,6 +23,7 @@
     <#assign query_flag = false>
     <#assign need_range_number = false>
     <#assign is_range = false>
+    <#assign is_like = false>
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
       <a-form ref="formRef" @keyup.enter.native="reload" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -68,11 +69,14 @@
             <#if po.classType=='time'>
               <#assign need_time = true>
             </#if>
-            <#if po.queryMode!='single' && (po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal')>
+            <#if po.queryMode='group' && (po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal')>
               <#assign need_range_number = true>
             </#if>
-            <#if po.queryMode!='single'>
+            <#if po.queryMode='group'>
               <#assign is_range = true>
+            </#if>
+            <#if po.queryMode='like'>
+              <#assign is_like = true>
             </#if>
             <#include "/common/form/native/vue3NativeSearch.ftl">
           </#list>

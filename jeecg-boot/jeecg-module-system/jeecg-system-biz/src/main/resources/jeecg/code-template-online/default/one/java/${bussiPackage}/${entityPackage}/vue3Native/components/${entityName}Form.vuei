@@ -25,6 +25,7 @@
 <#assign need_checkbox = false>
 <#assign hasOnlyValidate = false> 
 <#assign need_range_number = false>
+<#assign is_like = false>
 <#assign form_span = 24>
 <#if tableVo.fieldRowNum==2>
 <#assign form_span = 12>
