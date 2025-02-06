@@ -371,7 +371,9 @@
 
         if (props.column.dataIndex) {
           if (!props.record.editValueRefs) props.record.editValueRefs = {};
-          props.record.editValueRefs[props.column.dataIndex] = currentValueRef;
+          // update-begin--author:liaozhiyang---date:20250206---for：【issues/7709】当dataSource是响应式时，单元格编辑输入会自动关闭
+          props.record.editValueRefs[props.column.dataIndex] = unref(currentValueRef);
+          // update-end--author:liaozhiyang---date:20250206---for：【issues/7709】当dataSource是响应式时，单元格编辑输入会自动关闭
         }
         /* eslint-disable  */
         props.record.onCancelEdit = () => {
