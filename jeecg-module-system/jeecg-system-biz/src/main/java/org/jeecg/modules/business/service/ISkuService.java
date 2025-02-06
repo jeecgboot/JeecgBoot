@@ -124,4 +124,8 @@ public interface ISkuService extends IService<Sku> {
     List<Sku> listImgUrls();
 
     List<String> fetchAllClientSkuCodes(String clientCode);
+
+    List<String> fetchUnpairedSkus(String shopId, int offset, Integer pageSize, String column, String order);
+
+    int countUnpairedSkus(String shopId);
 }

@@ -15,13 +15,14 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel(value = "skuOrderPage对象", description = "SKU表")
-public class SkuOrderPage {
+public class NewSkuPage {
 
     /**
      * 主键
      */
-    @ApiModelProperty(value = "主键")
-    private String id;
+    @Excel(name = "马帮动创建Sku", width = 15)
+    @ApiModelProperty(value = "马帮动创建Sku")
+    private String mabangSku;
     /**
      * 商品ID
      */
@@ -45,43 +46,7 @@ public class SkuOrderPage {
      */
     @Excel(name = "重量", width = 15)
     @ApiModelProperty(value = "重量")
-    private java.lang.Integer weight;
-    /**
-     * 重量生效日期
-     */
-    @Excel(name = "重量生效日期", width = 15)
-    @ApiModelProperty(value = "重量生效日期")
-    private java.util.Date weightEffectiveDate;
-    /**
-     * 库存数量
-     */
-    @Excel(name = "库存数量", width = 15)
-    @ApiModelProperty(value = "库存数量")
-    private Integer availableAmount;
-    /**
-     * 在途数量
-     */
-    @Excel(name = "在途数量", width = 15)
-    @ApiModelProperty(value = "在途数量")
-    private Integer purchasingAmount;
-    /**
-     * 采购中数量
-     */
-    @Excel(name = "采购中数量", width = 15)
-    @ApiModelProperty(value = "采购中数量")
-    private Integer qtyOrdered;
-    /**
-     * 未发货数量
-     */
-    @Excel(name = "未发货数量", width = 15)
-    @ApiModelProperty(value = "未发货数量")
-    private Integer qtyInOrdersNotShipped;
-    /**
-     * stock
-     */
-    @Excel(name = "stock", width = 15)
-    @ApiModelProperty(value = "stock")
-    private Integer stock;
+    private Integer weight;
     /**
      * 图片链接
      */
@@ -93,13 +58,13 @@ public class SkuOrderPage {
      */
     @Excel(name = "运费折扣", width = 15)
     @ApiModelProperty(value = "运费折扣")
-    private java.math.BigDecimal shippingDiscount;
+    private BigDecimal shippingDiscount;
     /**
      * 服务费
      */
     @Excel(name = "服务费", width = 15)
     @ApiModelProperty(value = "服务费")
-    private java.math.BigDecimal serviceFee;
+    private BigDecimal serviceFee;
     /**
      * 状态
      * 1:自动创建;2:待开发;3:正常;4:清仓;5:停止销售"
@@ -107,7 +72,7 @@ public class SkuOrderPage {
      */
     @Excel(name = "状态", width = 15)
     @ApiModelProperty(value = "状态")
-    private java.lang.Integer status;
+    private Integer status;
     /**
      * 敏感属性
      */
@@ -115,53 +80,23 @@ public class SkuOrderPage {
     @ApiModelProperty(value = "敏感属性")
     private String sensitiveAttribute;
     /**
-     * 起订量
-     */
-    @Excel(name = "起订量", width = 15)
-    @ApiModelProperty(value = "起订量")
-    private java.lang.Integer moq;
-    /**
      * 是否赠品
      * 1是 2否
      */
     @Excel(name = "是否赠品", width = 15)
     @ApiModelProperty(value = "是否赠品")
-    private java.lang.Integer isGift;
+    private Integer isGift;
     /**
      * SKU价格
      */
     @ApiModelProperty(value = "SKU价格")
-    private java.math.BigDecimal skuPrice;
-    /**
-     * 优惠价起订量
-     */
-    @Excel(name = "优惠价起订量", width = 15)
-    @ApiModelProperty(value = "优惠价起订量")
-    private java.lang.Integer discountMoq;
-    /**
-     * 优惠价
-     */
-    @Excel(name = "优惠价", width = 15)
-    @ApiModelProperty(value = "优惠价")
-    private java.math.BigDecimal discountedPrice;
-    /**
-     * 价格生效日期
-     */
-    @Excel(name = "价格生效日期", width = 15)
-    @ApiModelProperty(value = "价格生效日期")
-    private java.util.Date skuPriceEffectiveDate;
+    private BigDecimal skuPrice;
     /**
      * 申报价格
      */
     @Excel(name = "申报价格", width = 15)
     @ApiModelProperty(value = "申报价格")
     private BigDecimal declaredValue;
-    /**
-     * 申报价格生效日期
-     */
-    @Excel(name = "申报价格生效日期", width = 15)
-    @ApiModelProperty(value = "申报价格生效日期")
-    private java.util.Date declaredValueEffectiveDate;
     /**
      * 申报中文名称
      */
@@ -174,24 +109,6 @@ public class SkuOrderPage {
     @Excel(name = "申报英文名称", width = 15)
     @ApiModelProperty(value = "申报英文名称")
     private String declareEname;
-    /**
-     * Sales last week
-     */
-    @Excel(name = "sales last week", width = 15)
-    @ApiModelProperty(value = "sales last week")
-    private java.lang.Integer salesLastWeek;
-    /**
-     * Sales last four week
-     */
-    @Excel(name = "sales last 28 days", width = 15)
-    @ApiModelProperty(value = "sales last 28 days")
-    private java.lang.Integer salesFourWeeks;
-    /**
-     * Sales last six weeks
-     */
-    @Excel(name = "sales last 42 days", width = 15)
-    @ApiModelProperty(value = "sales last 42 days")
-    private java.lang.Integer salesSixWeeks;
     /**
      * 供应商
      */

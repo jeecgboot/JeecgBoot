@@ -35,4 +35,14 @@ public class SensitiveAttributeServiceImpl extends ServiceImpl<SensitiveAttribut
     public List<SensitiveAttribute> listIdAndPriority() {
         return sensitiveAttributeMapper.listIdAndPriority();
     }
+
+    @Override
+    public String getNameByAttributes(SensitiveAttribute sensitiveAttribute) {
+        return sensitiveAttributeMapper.getNameByAttributes(sensitiveAttribute);
+    }
+
+    @Override
+    public SensitiveAttribute getByZhName(String zhName) {
+        return sensitiveAttributeMapper.getByZhName(zhName);
+    }
 }

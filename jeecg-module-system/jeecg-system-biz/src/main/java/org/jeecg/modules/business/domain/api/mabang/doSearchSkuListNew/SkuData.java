@@ -40,6 +40,11 @@ public class SkuData {
     private Integer status;
     @JSONField(name="originalSku")
     private String originalSku;
+    /**
+     * if multiple virtual skus, they need to be separated by ";"
+     */
+    @JSONField(name="virtualSkus")
+    private String virtualSkus;
     @JSONField(name="salePrice")
     private BigDecimal salePrice;
     @JSONField(name="declareValue")
@@ -54,7 +59,10 @@ public class SkuData {
     private BigDecimal purchasePrice;
     /**默认供应商名称,接口参数传showProvider才返回*/
     @JSONField(name="warehouse")
-    private String warehouse;
+    private Warehouse[] warehouse;
+
+    @JSONField(name="warehouseName")
+    private String warehouseName;
     /**
      * if stockPicture is empty, we use it
      */
@@ -109,7 +117,7 @@ public class SkuData {
     /**
      * 是否为易燃品 1: 是 2：不是，默认为2
      */
-    @JSONField(name="is_flammable")
+    @JSONField(name="is_flammables")
     private Integer isFlammable;
     /**
      * 是否为刀具 1：是 2：不是，默认为2

@@ -80,4 +80,8 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<Sku> listImgUrls();
 
     List<String> fetchAllClientSkuCodes(@Param("clientCode") String clientCode);
+
+    List<String> fetchUnpairedSkus(@Param("shopId") String shopId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
+
+    int countUnpairedSkus(@Param("shopId") String shopId);
 }

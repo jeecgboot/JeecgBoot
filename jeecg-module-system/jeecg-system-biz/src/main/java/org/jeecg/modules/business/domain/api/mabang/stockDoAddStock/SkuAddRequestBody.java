@@ -85,7 +85,7 @@ public class SkuAddRequestBody implements RequestBody {
         this.declareValue = data.getDeclareValue();
         this.declareName = data.getDeclareNameZh();
         this.declareEname = data.getDeclareNameEn();
-        this.warehouse = data.getWarehouse();
+        this.warehouse = data.getWarehouseName();
         this.remark = data.getSaleRemark();
         this.hasBattery = data.getHasBattery();
         this.magnetic = data.getMagnetic();

@@ -40,6 +40,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,6 +58,8 @@ import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDict
 @RequestMapping("/sku")
 @Slf4j
 public class SkuController {
+    @Autowired
+    private IShopService shopService;
     @Autowired
     private ISkuService skuService;
     @Autowired
@@ -447,8 +451,87 @@ public class SkuController {
 
     @PostMapping("/createMabangSku")
     public Result<?> createMabangSku(@RequestBody List<SkuOrderPage> skuList) {
-        skuList.forEach(sku -> sku.setStatus(3));
+        log.info("Request to create {} new skus in Mabang", skuList.size());
+        skuList.forEach(sku -> {
+            if(sku.getId() != null && !sku.getId().isEmpty()) {
+                log.info("Request to pair sku [{}] with old sku [{}]", sku.getErpCode(), sku.getId());
+            }
+            if(sku.getShippingDiscount() == null) {
+                sku.setShippingDiscount(BigDecimal.ZERO);
+            } else {
+                BigDecimal oldValue = sku.getShippingDiscount().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                sku.setShippingDiscount(BigDecimal.ONE.subtract(oldValue));
+            }
+            sku.setStatus(3);
+        });
         return Result.OK(skuListMabangService.publishSkuToMabang(skuList));
+    }
+    @RequestMapping(value = "/exportNewMabangSkusXls")
+    public ModelAndView exportXls(@RequestParam Map<String, String> params) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<NewSkuPage> skuList = parseSkuList(params);
+        log.info("Request to create {} new skus in Mabang", skuList.size());
+        skuList.forEach(sku -> {
+            if(sku.getShippingDiscount() == null) {
+                sku.setShippingDiscount(BigDecimal.ONE);
+            } else {
+                BigDecimal oldValue = sku.getShippingDiscount().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+                sku.setShippingDiscount(BigDecimal.ONE.subtract(oldValue));
+            }
+            sku.setStatus(3);
+        });
+
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        mv.addObject(NormalExcelConstants.FILE_NAME, "新增库存SKU表");
+        mv.addObject(NormalExcelConstants.CLASS, NewSkuPage.class);
+        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("新增库存SKU表数据", "导出人:" + sysUser.getRealname(), "新增库存SKU表"));
+        mv.addObject(NormalExcelConstants.DATA_LIST, skuList);
+        return mv;
+    }
+    private List<NewSkuPage> parseSkuList(Map<String, String> params) {
+        // Group parameters by "selections[index]"
+        Map<Integer, Map<String, String>> grouped = new HashMap<>();
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+
+            if (key.startsWith("selections[")) {
+                int indexStart = key.indexOf("[") + 1;
+                int indexEnd = key.indexOf("]");
+                int index = Integer.parseInt(key.substring(indexStart, indexEnd));
+
+                String field = key.substring(key.indexOf("][") + 2, key.length() - 1);
+                grouped.computeIfAbsent(index, k -> new HashMap<>()).put(field, value);
+            }
+        }
+
+        // Convert maps to SkuOrderPage objects
+        return grouped.values().stream()
+                .map(this::mapToSkuOrderPage)
+                .collect(Collectors.toList());
+    }
+
+    private NewSkuPage mapToSkuOrderPage(Map<String, String> map) {
+        NewSkuPage sku = new NewSkuPage();
+        sku.setMabangSku(map.get("id"));
+        sku.setZhName(map.get("zhName"));
+        sku.setEnName(map.get("enName"));
+        sku.setDeclareEname(map.get("declareEname"));
+        sku.setDeclareName(map.get("declareName"));
+        sku.setErpCode(map.get("erpCode"));
+        sku.setWeight(map.get("weight") != null ? Integer.parseInt(map.get("weight")) : null);
+        sku.setStatus(map.get("status") != null ? Integer.parseInt(map.get("status")) : 3);
+        sku.setSensitiveAttribute(map.get("sensitiveAttribute"));
+        sku.setIsGift(map.get("isGift") != null ? Integer.parseInt(map.get("isGift")) : 2);
+        sku.setSkuPrice(map.get("skuPrice") != null ? new BigDecimal(map.get("skuPrice")) : BigDecimal.ZERO);
+        sku.setDeclaredValue(map.get("declaredValue") != null ? new BigDecimal(map.get("declaredValue")) : null);
+        sku.setShippingDiscount(map.get("shippingDiscount") != null ? new BigDecimal(map.get("shippingDiscount")) : BigDecimal.ZERO);
+        sku.setServiceFee(map.get("serviceFee") != null ? new BigDecimal(map.get("serviceFee")) : BigDecimal.ZERO);
+        sku.setWarehouse(map.get("warehouse"));
+        sku.setSupplier(map.get("supplier"));
+        sku.setSupplierLink(map.get("supplierLink"));
+        sku.setImageSource(map.get("imageSource"));
+        return sku;
     }
     @PostMapping("syncSkus")
     public Result<?> syncSkus(@RequestBody List<String> erpCodes) {
@@ -495,5 +578,35 @@ public class SkuController {
         log.info("Syncing sku stock for SKUs : {}", erpCodes);
         skuListMabangService.mabangSkuStockUpdate(erpCodes);
         return Result.OK();
+    }
+
+    @GetMapping("/unpairedSkus")
+    public Result<?> unpairedSkus(@RequestParam(name = "shop") String shopCode,
+                                  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                  @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
+                                  @RequestParam(name = "column", defaultValue = "erp_code") String column,
+                                  @RequestParam(name = "order", defaultValue = "ASC") String order
+    ) {
+        String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
+        String parsedOrder = order.toUpperCase();
+        if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
+            return Result.error("Error 400 Bad Request");
+        }
+        try {
+            specialFilterContentForDictSql(parsedColumn);
+        } catch (RuntimeException e) {
+            return Result.error("Error 400 Bad Request");
+        }
+        String shopId = shopService.getIdByCode(shopCode);
+        if (shopId == null) return Result.error(404, "Shop not found");
+        int total = skuListMabangService.countUnpairedSkus(shopId);
+        List<SkuOrderPage> unpairedSkus = skuListMabangService.unpairedSkus(shopId, pageNo, pageSize, parsedColumn, parsedOrder);
+
+        IPage<SkuOrderPage> page = new Page<>();
+        page.setRecords(unpairedSkus);
+        page.setCurrent(pageNo);
+        page.setSize(pageSize);
+        page.setTotal(total);
+        return Result.OK(page);
     }
 }
