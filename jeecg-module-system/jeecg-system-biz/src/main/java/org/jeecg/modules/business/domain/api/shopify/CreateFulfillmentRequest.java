@@ -13,7 +13,7 @@ public class CreateFulfillmentRequest extends ShopifyRequest {
     private final static String OTHER = "Other";
 
     private enum TransportCompany {
-        GIULIA_SCHIAPARELLI("","Giulia Schiaparelli","^(?![69][A-Z][0-9]{11}$)(?!LP[0-9]{9}FR$).+$"),
+        GIULIA_SCHIAPARELLI("https://giuliaschiaparelli.com/apps/parcelpanel?nums=%s","Giulia Schiaparelli","^(?![69][A-Z][0-9]{11}$)(?!LP[0-9]{9}FR$).+$"),
         LA_POSTE("https://www.laposte.fr/outils/suivre-vos-envois?code=%s", "La Poste", "[69][A-Z]{1}[0-9]{11}|LP[0-9]{9}FR"),
         // 12 [0-9]
         /*CJ_LOGISTICS("https://www.cjlogistics.com/ko/tool/parcel/tracking", "CJ대한통운", "57575[0-9]{7}|58476[0-9]{7}|5901[0-9]{8}|57476[0-9]{7}"),
