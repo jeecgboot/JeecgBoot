@@ -491,10 +491,6 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         List<SkuAddResponse> results = futures.stream().map(CompletableFuture::join).collect(toList());
         long successCount = results.stream().filter(SkuAddResponse::success).count();
         log.info("{}/{} skus published successfully.", successCount, skuDataList.size());
-        List<String> successes = results.stream()
-                .filter(SkuAddResponse::success)
-                .map(SkuAddResponse::getStockSku)
-                .collect(toList());
         results.forEach(response -> {
             if(response.success()) {
                 responses.addSuccess(response.getStockSku());
