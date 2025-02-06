@@ -93,12 +93,15 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 //		queryWrapper.in("depart_id",deptIds);
 
 		//我的部门，选中部门只能看当前部门下的角色
+		//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
 		if(oConvertUtils.isNotEmpty(deptId)){
 			queryWrapper.eq("depart_id",deptId);
+			IPage<SysDepartRole> pageList = sysDepartRoleService.page(page, queryWrapper);
+			return Result.ok(pageList);
+		}else{
+			return Result.ok(null);
 		}
-		
-		IPage<SysDepartRole> pageList = sysDepartRoleService.page(page, queryWrapper);
-		return Result.ok(pageList);
+		//update-end---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
 	}
 	
 	/**

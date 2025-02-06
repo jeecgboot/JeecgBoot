@@ -748,7 +748,10 @@ public class SysUserController {
         if(oConvertUtils.isEmpty(depId)){
             LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             int userIdentity = user.getUserIdentity() != null?user.getUserIdentity():CommonConstant.USER_IDENTITY_1;
-            if(oConvertUtils.isNotEmpty(userIdentity) && userIdentity == CommonConstant.USER_IDENTITY_2 ){
+            //update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
+            if(oConvertUtils.isNotEmpty(userIdentity) && userIdentity == CommonConstant.USER_IDENTITY_2
+                    && oConvertUtils.isNotEmpty(user.getDepartIds())) {
+            //update-end---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
                 subDepids = sysDepartService.getMySubDepIdsByDepId(user.getDepartIds());
             }
         }else{
@@ -1872,5 +1875,29 @@ public class SysUserController {
         String ipAddress = IpUtils.getIpAddr(request);
         sysUserService.sendChangePhoneSms(jsonObject, username, ipAddress);
         return Result.ok("发送验证码成功！");
+    }
+
+    /**
+     * 发送注销用户手机号验证密码[敲敲云专用]
+     *
+     * @param jsonObject
+     * @return
+     */
+    @PostMapping(value = "/sendLogOffPhoneSms")
+    public Result<String> sendLogOffPhoneSms(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
+        Result<String> result = new Result<>();
+        //获取登录用户名
+        String username = JwtUtil.getUserNameByToken(request);
+        String name = jsonObject.getString("username");
+        if (oConvertUtils.isEmpty(name) || !name.equals(username)) {
+            result.setSuccess(false);
+            result.setMessage("发送验证码失败，用户不匹配！");
+            return result;
+        }
+        String ipAddress = IpUtils.getIpAddr(request);
+        sysUserService.sendLogOffPhoneSms(jsonObject, username, ipAddress);
+        result.setSuccess(true);
+        result.setMessage("发送验证码成功！");
+        return result;
     }
 }
