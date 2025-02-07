@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.7.2</version>
+  <version>3.7.3</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.7.2</jeecgboot.version>
+		<jeecgboot.version>3.7.3</jeecgboot.version>
 		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -407,6 +407,12 @@
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
 				<version>${jimureport-spring-boot-starter.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.apache.calcite</groupId>
+						<artifactId>calcite-elasticsearch</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<!-- 积木BI大屏和仪表盘 -->
 			<dependency>
