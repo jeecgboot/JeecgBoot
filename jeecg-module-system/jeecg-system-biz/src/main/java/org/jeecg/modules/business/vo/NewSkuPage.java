@@ -125,4 +125,8 @@ public class NewSkuPage {
     @Excel(name = "仓库", width = 15)
     @ApiModelProperty(value = "仓库")
     private String warehouse;
+
+    @Excel(name = "自定义分类", width = 15)
+    @ApiModelProperty(value = "自定义分类")
+    private String labelData;
 }

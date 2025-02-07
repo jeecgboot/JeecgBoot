@@ -470,7 +470,7 @@ public class SkuController {
     public ModelAndView exportXls(@RequestParam Map<String, String> params) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         List<NewSkuPage> skuList = parseSkuList(params);
-        log.info("Request to create {} new skus in Mabang", skuList.size());
+        log.info("Exporting new skus to excel ...");
         skuList.forEach(sku -> {
             if(sku.getShippingDiscount() == null) {
                 sku.setShippingDiscount(BigDecimal.ONE);
@@ -531,6 +531,7 @@ public class SkuController {
         sku.setSupplier(map.get("supplier"));
         sku.setSupplierLink(map.get("supplierLink"));
         sku.setImageSource(map.get("imageSource"));
+        sku.setLabelData(map.get("labelData"));
         return sku;
     }
     @PostMapping("syncSkus")

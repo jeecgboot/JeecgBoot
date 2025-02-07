@@ -49,7 +49,7 @@ public class SkuListRequestBody implements RequestBody {
         putNonNull(json, "showVirtualSku", showVirtualSku);
         putNonNull(json, "showProvider", showProvider);
         putNonNull(json, "showWarehouse", String.valueOf(showWarehouse));
-        putNonNull(json, "showLabel", showLabel);
+        putNonNull(json, "showLabel", String.valueOf(showLabel));
         putNonNull(json, "showAttributes", showAttributes);
         return json;
     }

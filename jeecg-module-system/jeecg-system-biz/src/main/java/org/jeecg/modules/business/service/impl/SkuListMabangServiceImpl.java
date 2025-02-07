@@ -555,6 +555,13 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         skuData.setSalePrice(skuOrderPage.getSkuPrice());
         skuData.setDeclareValue(skuOrderPage.getDeclaredValue());
         skuData.setWarehouseName(DEFAULT_WAREHOUSE_NAME);
+        List<Label> labels = new ArrayList<>();
+        for(String labelName : skuOrderPage.getLabelData().split(",")) {
+            Label label = new Label();
+            label.setName(labelName);
+            labels.add(label);
+        }
+        skuData.setLabelData(labels.toArray(new Label[0]));
         if(skuOrderPage.getWeight() != null)
             skuData.setSaleRemark(skuOrderPage.getWeight().toString());
         skuData.setHasBattery(sensitiveAttribute.getHasBattery());
@@ -567,6 +574,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         skuData.setIsGift(skuOrderPage.getIsGift());
         skuData.setSupplier(skuOrderPage.getSupplier());
         skuData.setSupplierLink(skuOrderPage.getSupplierLink());
+        skuData.setSalePicture(skuOrderPage.getImageSource());
         return skuData;
     }
 
@@ -590,6 +598,13 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         sop.setSkuPrice(skuData.getSalePrice());
         if(skuData.getWarehouse() != null)
             sop.setWarehouse(skuData.getWarehouse()[0].getWarehouseName());
+        if(skuData.getLabelData() != null) {
+            StringBuilder labelDataString = new StringBuilder();
+            for(Label labelData : skuData.getLabelData()) {
+                labelDataString.append(labelData.getName()).append(",");
+            }
+            sop.setLabelData(labelDataString.toString());
+        }
         sop.setImageSource(skuData.getSalePicture());
         sop.setIsGift(skuData.getIsGift());
         sop.setSupplier(skuData.getSupplier());
@@ -791,6 +806,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         for(List<String> skuPartition : skusPartition) {
             SkuListRequestBody body = new SkuListRequestBody();
             body.setShowWarehouse(1);
+            body.setShowLabel(1);
             body.setStockSkuList(String.join(",", skuPartition));
             SkuListRawStream rawStream = new SkuListRawStream(body);
             UnpairedSkuListStream stream = new UnpairedSkuListStream(rawStream);

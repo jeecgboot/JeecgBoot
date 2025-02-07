@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.jeecg.modules.business.domain.api.mabang.RequestBody;
+import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.Label;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
 
 import java.math.BigDecimal;
@@ -24,6 +25,7 @@ public class SkuAddRequestBody implements RequestBody {
     private String declareEname;
     private String warehouse;
     private String remark;
+    private Label[] labelData;
     private Integer hasBattery;
     private Integer magnetic;
     private Integer powder;
@@ -34,6 +36,7 @@ public class SkuAddRequestBody implements RequestBody {
     private Integer isGift;
     private String supplier;
     private String supplierLink;
+    private String picture;
 
     @Override
     public String api() {
@@ -51,6 +54,15 @@ public class SkuAddRequestBody implements RequestBody {
         putNonNull(json, "declareValue", declareValue);
         putNonNull(json, "declareName", declareName);
         putNonNull(json, "declareEname", declareEname);
+        if(labelData != null) {
+            JSONArray labelDataArray = new JSONArray();
+            for(Label label : labelData) {
+                JSONObject labelJson = new JSONObject();
+                labelJson.put("name", label.getName());
+                labelDataArray.add(labelJson);
+            }
+            json.put("labelData", labelDataArray.toJSONString());
+        }
         JSONArray warehouseData = new JSONArray();
         JSONObject warehouse = new JSONObject();
         warehouse.put("name", this.warehouse);
@@ -74,6 +86,7 @@ public class SkuAddRequestBody implements RequestBody {
         supplier.put("flag", 1);
         supplierData.add(supplier);
         json.put("suppliersData", supplierData.toJSONString());
+        putNonNull(json, "picture", picture);
         return json;
     }
 
@@ -87,6 +100,7 @@ public class SkuAddRequestBody implements RequestBody {
         this.declareEname = data.getDeclareNameEn();
         this.warehouse = data.getWarehouseName();
         this.remark = data.getSaleRemark();
+        this.labelData = data.getLabelData();
         this.hasBattery = data.getHasBattery();
         this.magnetic = data.getMagnetic();
         this.powder = data.getPowder();
@@ -97,6 +111,7 @@ public class SkuAddRequestBody implements RequestBody {
         this.isGift = data.getIsGift();
         this.supplier = data.getSupplier();
         this.supplierLink = data.getSupplierLink();
+        this.picture = data.getSalePicture();
     }
 
     private <E> void putNonNull(JSONObject json, String key, E value) {

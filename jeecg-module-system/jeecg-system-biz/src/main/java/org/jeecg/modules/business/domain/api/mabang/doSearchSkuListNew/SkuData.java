@@ -60,7 +60,9 @@ public class SkuData {
     /**默认供应商名称,接口参数传showProvider才返回*/
     @JSONField(name="warehouse")
     private Warehouse[] warehouse;
-
+    /** 自定义分类,接口参数传showLabel才返回*/
+    @JSONField(name="label")
+    private Label[] label;
     @JSONField(name="warehouseName")
     private String warehouseName;
     /**
@@ -89,6 +91,11 @@ public class SkuData {
      */
     @JSONField(name="saleRemark")
     private String saleRemark;
+    /**
+     * 自定义分类json格式
+     */
+    @JSONField(name="labelData")
+    private Label[] labelData;
     /**
      * 是否含电池:1是;2否
      */
