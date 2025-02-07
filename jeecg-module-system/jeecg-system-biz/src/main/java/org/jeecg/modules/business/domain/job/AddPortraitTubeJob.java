@@ -37,18 +37,18 @@ public class AddPortraitTubeJob implements Job {
     private static final List<String> DEFAULT_SHOPS = Arrays.asList("JCH3", "JCH4", "JCH5");
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
     private static final String TUBE_30_SKU_SINGLE_DOUBLE = "PJ95310032-WIA";
-    private static final String TUBE_50_SKU_SINGLE = "PJ95530032-WIA";
 
     private static final String TUBE_NEW_40_SKU_SINGLE = "PJ349400032-JCH";
     private static final String TUBE_NEW_40_SKU_MULTIPLE = "PJ349400045-JCH";
     private static final String TUBE_NEW_50_SKU_SINGLE = "PJ349500032-JCH";
     private static final String TUBE_NEW_50_SKU_MULTIPLE = "PJ349500045-JCH";
     private static final String TUBE_NEW_60_SKU_SINGLE = "PJ349600032-JCH";
-    private static final String TUBE_NEW_60_SKU_MULTIPLE = "PJ349600045-JCH";
+    private static final String TUBE_NEW_60_SKU_DOUBLE = "PJ349600045-JCH";
+    private static final String TUBE_NEW_60_SKU_TREBLE = "PJ349600048-JCH";
 
-    private static final List<String> TUBE_SKUS = Arrays.asList(TUBE_30_SKU_SINGLE_DOUBLE, TUBE_50_SKU_SINGLE,
-            TUBE_NEW_40_SKU_MULTIPLE, TUBE_NEW_50_SKU_MULTIPLE, TUBE_NEW_60_SKU_SINGLE, TUBE_NEW_50_SKU_SINGLE,
-            TUBE_NEW_60_SKU_MULTIPLE, TUBE_NEW_40_SKU_SINGLE);
+    private static final List<String> TUBE_SKUS = Arrays.asList(TUBE_30_SKU_SINGLE_DOUBLE, TUBE_NEW_40_SKU_MULTIPLE,
+            TUBE_NEW_50_SKU_MULTIPLE, TUBE_NEW_60_SKU_SINGLE, TUBE_NEW_50_SKU_SINGLE,
+            TUBE_NEW_60_SKU_DOUBLE, TUBE_NEW_40_SKU_SINGLE, TUBE_NEW_60_SKU_TREBLE);
     private static final String PREFIX_50_CANVAS = "JJ2501";
     private static final String PREFIX_50_CANVAS_CHROME = "JJ2001";
     private static final String PREFIX_40_CANVAS = "JJ2500";
@@ -205,15 +205,16 @@ public class AddPortraitTubeJob implements Job {
         int canvasNew56RemainderCount = canvasNew56Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
         int totalRemainderCount = canvas30RemainderCount + canvas40RemainderCount + canvas50RemainderCount +
                 canvasNew36RemainderCount + canvasNew46RemainderCount + canvasNew56RemainderCount;
-        int tube50SingleCount = 0;
-        int tubeNew60MultipleCount = (int) Math.floor(canvas50Count / MAXIMUM_CANVAS_IN_TUBE);
+        int tubeNew50SingleCount = 0;
         int tube40SingleCount = 0;
-        int tubeNew50MultipleCount = (int) Math.floor(canvas40Count / MAXIMUM_CANVAS_IN_TUBE);
         int tube30SingleDoubleCount = 0;
+        int tubeNew60TrebleCount = (int) Math.floor(canvas50Count / MAXIMUM_CANVAS_IN_TUBE);
+        int tubeNew50MultipleCount = (int) Math.floor(canvas40Count / MAXIMUM_CANVAS_IN_TUBE);
         int tubeNew40MultipleCount = (int) Math.floor(canvas30Count / MAXIMUM_CANVAS_IN_TUBE);
 
         int tubeNew60SingleCount = 0;
-        tubeNew60MultipleCount += (int) Math.floor(canvasNew56Count / MAXIMUM_CANVAS_IN_TUBE);
+        int tubeNew60DoubleCount = 0;
+        tubeNew60TrebleCount += (int) Math.floor(canvasNew56Count / MAXIMUM_CANVAS_IN_TUBE);
         tubeNew50MultipleCount += (int) Math.floor(canvasNew46Count / MAXIMUM_CANVAS_IN_TUBE);
         tubeNew40MultipleCount += (int) Math.floor(canvasNew36Count / MAXIMUM_CANVAS_IN_TUBE);
 
@@ -222,12 +223,17 @@ public class AddPortraitTubeJob implements Job {
             if (canvas50RemainderCount > 0 || canvasNew56RemainderCount > 0) {
                 // It only takes one 50cm/56cm canvas with any other canvas to impose the use of NEW 60cm multiple tube
                 if (totalRemainderCount > 1) {
-                    tubeNew60MultipleCount++;
+                    // Only if there are 3 56cm/46cm canvases, we need a 60cm TREBLE tube, otherwise 60cm DOUBLE tube suffice
+                    if (canvasNew56RemainderCount + canvasNew46RemainderCount == 3) {
+                        tubeNew60TrebleCount++;
+                    } else {
+                        tubeNew60DoubleCount++;
+                    }
                 } else if (canvasNew56RemainderCount > 0) {
                     // Only NEW 60cm tubes can contain NEW 56cm canvases
                     tubeNew60SingleCount++;
                 } else {
-                    tube50SingleCount++;
+                    tubeNew50SingleCount++;
                 }
             } else {
                 // No 50/56cm canvases
@@ -242,8 +248,7 @@ public class AddPortraitTubeJob implements Job {
                     }
                 } else {
                     if (canvasNew46RemainderCount > 0) {
-                        // TODO 2024-08-28 Temporarily use OLD 50cm tubes for NEW 46cm canvases
-                        tube50SingleCount++;
+                        tubeNew50SingleCount++;
                     } else if (canvas40RemainderCount > 0 || canvasNew36RemainderCount > 0) {
                         tube40SingleCount++;
                     } else if (canvas30RemainderCount > 0){
@@ -254,7 +259,12 @@ public class AddPortraitTubeJob implements Job {
         } else if (totalRemainderCount >= 4) {
             // When remaining 4 to 6 canvases, one 50/56cm canvas imposes one NEW 60cm multiple tube
             if (canvas50RemainderCount > 0 || canvasNew56RemainderCount > 0) {
-                tubeNew60MultipleCount++;
+                // If there are 3 or more 56cm/46cm canvases, we need a 60cm TREBLE tube, otherwise 60cm DOUBLE tube suffice
+                if (canvasNew56RemainderCount + canvasNew46RemainderCount >= 3) {
+                    tubeNew60TrebleCount++;
+                } else {
+                    tubeNew60DoubleCount++;
+                }
                 if (canvas50RemainderCount + canvasNew56RemainderCount > 1) {
                     // If we have two 50/56cm canvases and a total of 5 of 6 canvases
                     if (totalRemainderCount > 4) {
@@ -265,8 +275,7 @@ public class AddPortraitTubeJob implements Job {
                         }
                     } else {
                         if (canvasNew46RemainderCount > 1) {
-                            // TODO 2024-08-28 Temporarily use OLD 50cm tubes for NEW 46cm canvases
-                            tube50SingleCount++;
+                            tubeNew50SingleCount++;
                         } else if (canvas40RemainderCount > 1) {
                             tube40SingleCount++;
                         } else {
@@ -305,26 +314,29 @@ public class AddPortraitTubeJob implements Job {
             }
         }
 
-        if (tube50SingleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_NEW_50_SKU_SINGLE, tube50SingleCount));
-        }
-        if (tubeNew60MultipleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_NEW_60_SKU_MULTIPLE, tubeNew60MultipleCount));
+        if (tube30SingleDoubleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_30_SKU_SINGLE_DOUBLE, tube30SingleDoubleCount));
         }
         if (tube40SingleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_NEW_40_SKU_SINGLE, tube40SingleCount));
         }
-        if (tubeNew50MultipleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_NEW_50_SKU_MULTIPLE, tubeNew50MultipleCount));
-        }
-        if (tube30SingleDoubleCount > 0) {
-            adequateTubes.add(Pair.of(TUBE_30_SKU_SINGLE_DOUBLE, tube30SingleDoubleCount));
-        }
         if (tubeNew40MultipleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_NEW_40_SKU_MULTIPLE, tubeNew40MultipleCount));
         }
+        if (tubeNew50SingleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_NEW_50_SKU_SINGLE, tubeNew50SingleCount));
+        }
+        if (tubeNew50MultipleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_NEW_50_SKU_MULTIPLE, tubeNew50MultipleCount));
+        }
         if (tubeNew60SingleCount > 0) {
             adequateTubes.add(Pair.of(TUBE_NEW_60_SKU_SINGLE, tubeNew60SingleCount));
+        }
+        if (tubeNew60DoubleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_NEW_60_SKU_DOUBLE, tubeNew60DoubleCount));
+        }
+        if (tubeNew60TrebleCount > 0) {
+            adequateTubes.add(Pair.of(TUBE_NEW_60_SKU_TREBLE, tubeNew60TrebleCount));
         }
         return Pair.of(currentTubes, adequateTubes);
     }
