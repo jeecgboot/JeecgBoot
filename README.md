@@ -66,7 +66,8 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 - [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick.html)
 
 
-##### AIGC功能清单
+AIGC功能清单
+-----------------------------------
 
 - AI对聊天助手
 - AI建表（Online表单）
