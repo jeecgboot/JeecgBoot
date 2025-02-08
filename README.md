@@ -18,7 +18,7 @@ JeecgBoot AI低代码平台
 
 <h3 align="center">Java AI Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot 是一款基于`BPM`和`代码生成器`的 AI低代码平台！前后端分离架构 SpringBoot2.x和3.x，SpringCloud，Ant Design Vue3，Mybatis-plus，Shiro，JWT，支持微服务;支持 AI 大模型 DeepSeek 和 ChatGPT、Ollama本地大模型; 强大的代码生成器让前后端代码一键生成，实现低代码开发!  JeecgBoot 引领 AI 低代码开发模式(AI生成-> OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目80%的重复工作，让开发更多关注业务。既能快速提高效率，节省研发成本，同时又不失灵活性！AIGC能力：AI 对话助手、AI建表、AI写文章、AI流程编排、AI知识库问答等.
+JeecgBoot 是一款基于`BPM`和`代码生成器`的 AI低代码平台！前后端分离架构 SpringBoot2.x/3.x，SpringCloud，Ant Design Vue3，Mybatis-plus，Shiro，JWT，支持微服务、多租户;支持 AI 大模型 DeepSeek 和 ChatGPT、Ollama本地模型; 强大的代码生成器让前后端代码一键生成，无需写任何代码!  JeecgBoot 引领 AI 低代码开发模式(AI生成-> OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目80%的重复工作，让开发更多关注业务。既能快速提高效率，节省成本，同时又不失灵活性！AIGC能力：AI对话助手、AI建表、AI写文章、AI流程编排、AI知识库问答等等.
 
 JeecgBoot 提供了一系列 `AI能力` `低代码模块`，实现在线开发`真正的零代码`：Online表单开发、Online报表、报表配置能力、在线图表设计、仪表盘设计、大屏设计、移动配置能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）、AI对话助手，AI建表、AI写文章、AI流程编排、AI知识库问答、AI赋能低代码等等！
 
@@ -40,7 +40,7 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
 | `jeecg-boot`    | 后端源码JAVA（SpringBoot微服务架构）        |
-| `jeecgboot-vue3` | 前端源码VUE3（vue3+vite5+ts最新技术栈）  |
+| `jeecgboot-vue3` | 前端源码VUE3（vue3+vite6+ts最新技术栈）  |
 | `jeecg-uniapp` | [配套APP框架](https://github.com/jeecgboot/jeecg-uniapp) 适配多个终端，支持APP、小程序、H5 |
 
 
@@ -79,9 +79,9 @@ AIGC功能清单
 - AI聊天窗口支持嵌入第三方（研发中）
 
 
-<b>关注公众号新版抢先看</b>
+<b>关注公众号获取最新版资讯</b>
 
-![微服务架构图](https://jeecg.com/images/jeecg/qrcode_ai_8.jpg "在这里输入图片标题")
+![公众号](https://jeecg.com/images/jeecg/qrcode_ai_8.jpg "在这里输入图片标题")
 
 
 技术架构：
@@ -95,7 +95,7 @@ AIGC功能清单
 - 基础框架：Spring Boot 2.7.18
 - 微服务框架： Spring Cloud Alibaba 2021.0.1.0
 - 持久层框架：MybatisPlus 3.5.3.2
-- 报表工具： JimuReport 1.9.1
+- 报表工具： JimuReport 1.9.3
 - 安全框架：Apache Shiro 1.12.0，Jwt 3.11.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.1.22
@@ -110,8 +110,8 @@ AIGC功能清单
 #### 前端
 
 - 前端IDE建议：WebStorm、Vscode
-- 采用 Vue3.0+TypeScript+Vite5+Ant-Design-Vue等新技术方案，包括二次封装组件、utils、hooks、动态菜单、权限校验、按钮级别权限控制等功能
-- 最新技术栈：Vue3.0 + TypeScript + Vite5 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6
+- 采用 Vue3.0+TypeScript+Vite6+Ant-Design-Vue等新技术方案，包括二次封装组件、utils、hooks、动态菜单、权限校验、按钮级别权限控制等功能
+- 最新技术栈：Vue3.0 + TypeScript + Vite6 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6
 - 依赖管理：node、npm、pnpm
 
 

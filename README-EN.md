@@ -197,7 +197,7 @@ Technical Architecture:
 
 - Persistence layer framework: MybatisPlus 3.5.3.2
 
-- Report tool: JimuReport 1.9.1
+- Report tool: JimuReport 1.9.3
 
 - Security framework: Apache Shiro 1.12.0, Jwt 3.11.0
 
