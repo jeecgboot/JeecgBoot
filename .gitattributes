@@ -1,8 +1,6 @@
 *.js linguist-language=Java
 *.css linguist-language=Java
-*.vue linguist-language=Java
 *.ts linguist-language=vue
 *.html linguist-language=vue
 *.sql linguist-language=Java
 *.ftl linguist-language=Java
-*.ts linguist-language=Java
