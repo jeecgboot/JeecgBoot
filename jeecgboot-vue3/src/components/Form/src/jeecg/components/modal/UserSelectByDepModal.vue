@@ -31,11 +31,11 @@
   import { defineComponent, unref, ref } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicTree } from '/@/components/Tree/index';
-  import { queryTreeList, getTableList } from '/@/api/common/api';
+  import { queryTreeList, getTableList as getTableListOrigin } from '/@/api/common/api';
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
   import { useSelectBiz } from '/@/components/Form/src/jeecg/hooks/useSelectBiz';
   import { useAttrs } from '/@/hooks/core/useAttrs';
-  import { queryDepartTreeSync } from '/@/views/system/depart/depart.api';
+  import { queryDepartTreeSync as queryDepartTreeSyncOrigin } from '/@/views/system/depart/depart.api';
   import { selectProps } from '/@/components/Form/src/jeecg/props/props';
   export default defineComponent({
     name: 'UserSelectByDepModal',
@@ -132,6 +132,31 @@
       };
       const getBindValue = Object.assign({}, unref(props), unref(attrs), tableProps);
       const [{ rowSelection, visibleChange, indexColumnProps, getSelectResult, reset }] = useSelectBiz(getTableList, getBindValue);
+
+      function getTableList(params) {
+        params = parseParams(params);
+        return getTableListOrigin({...params});
+      }
+
+      function queryDepartTreeSync(params) {
+        params = parseParams(params);
+        return queryDepartTreeSyncOrigin({...params});
+      }
+
+      /**
+       * 解析参数
+       * @param params
+       */
+      function parseParams(params) {
+        if (props?.params) {
+          return {
+            ...params,
+            ...props.params,
+          }
+        }
+        return params;
+      }
+
       /**
        * 加载树形数据
        */
