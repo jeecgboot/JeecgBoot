@@ -79,9 +79,9 @@ AIGC功能清单
 - AI聊天窗口支持嵌入第三方（研发中）
 
 
-<b>关注公众号获取最新版资讯</b>
+<b>关注公众号了解官方动态</b>
 
-![公众号](https://jeecg.com/images/jeecg/qrcode_ai_8.jpg "在这里输入图片标题")
+![公众号](https://jeecg.com/images/jeecg/qrcode_jeecgboot.jpg "在这里输入图片标题")
 
 
 技术架构：
