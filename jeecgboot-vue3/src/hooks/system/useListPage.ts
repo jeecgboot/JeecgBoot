@@ -15,7 +15,10 @@ interface ListPageOptions {
   // 样式作用域范围
   designScope?: string;
   // 【必填】表格参数配置
-  tableProps: TableProps;
+  tableProps: TableProps & {
+    // 添加 defSort 类型定义
+    defSort?: DefSort;
+  };
   // 是否分页
   pagination?: boolean;
   // 导出配置
@@ -44,6 +47,10 @@ interface IDoRequestOptions {
   // 是否自动清空选择，默认 true
   clearSelection?: boolean;
 }
+interface DefSort {
+  column: string;
+  order: 'asc' | 'desc';
+}
 
 /**
  * listPage页面公共方法
@@ -69,20 +76,27 @@ export function useListPage(options: ListPageOptions) {
     if (realUrl) {
       let title = typeof name === 'function' ? name() : name;
       //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
-      let paramsForm:any = {};
+      let paramsForm: any = {};
       try {
         paramsForm = await getForm().validate();
       } catch (e) {
         console.error(e);
       }
-      //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
-      
-      //update-begin-author:liusq date:20230410 for:[/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
-      if(!paramsForm?.column){
-         Object.assign(paramsForm,{column:'createTime',order:'desc'});
+
+      // 获取表格的默认排序
+      const { defSort } = options?.tableProps ?? {};
+      if (defSort && !paramsForm?.column) {
+        // 使用类型断言确保 defSort 类型正确
+        Object.assign(paramsForm, {
+          column: (defSort as DefSort).column,
+          order: (defSort as DefSort).order,
+        });
+      } else if (!paramsForm?.column) {
+        // 如果没有默认排序,则使用创建时间倒序
+        Object.assign(paramsForm, { column: 'createTime', order: 'desc' });
       }
       //update-begin-author:liusq date:20230410 for: [/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
-      
+
       //如果参数不为空，则整合到一起
       //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导出动态设置mainId
       if (params) {
@@ -277,7 +291,7 @@ export function useListTable(tableProps: TableProps): [
   // 合并用户个性化配置
   if (tableProps) {
     //update-begin---author:wangshuai---date:2024-04-28---for:【issues/6180】前端代码配置表变查询条件显示列不生效---
-    if(tableProps.formConfig){
+    if (tableProps.formConfig) {
       setTableProps(tableProps.formConfig);
     }
     //update-end---author:wangshuai---date:2024-04-28---for:【issues/6180】前端代码配置表变查询条件显示列不生效---
@@ -332,11 +346,11 @@ export function useListTable(tableProps: TableProps): [
    * @param formConfig
    */
   function setTableProps(formConfig: any) {
-    const replaceAttributeArray: string[] = ['baseColProps','labelCol'];
+    const replaceAttributeArray: string[] = ['baseColProps', 'labelCol'];
     for (let item of replaceAttributeArray) {
-      if(formConfig && formConfig[item]){
-        if(defaultTableProps.formConfig){
-          let defaultFormConfig:any = defaultTableProps.formConfig;
+      if (formConfig && formConfig[item]) {
+        if (defaultTableProps.formConfig) {
+          let defaultFormConfig: any = defaultTableProps.formConfig;
           defaultFormConfig[item] = formConfig[item];
         }
         formConfig[item] = {};
