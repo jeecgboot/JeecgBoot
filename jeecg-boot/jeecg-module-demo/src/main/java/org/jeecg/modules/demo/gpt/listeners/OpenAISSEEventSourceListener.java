@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 //update-begin---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------
+
 /**
  * OpenAI的SSE监听
  * @author chenrui
@@ -49,7 +50,7 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
         this.sseEmitter = sseEmitter;
     }
 
-    public OpenAISSEEventSourceListener(String topicId,SseEmitter sseEmitter){
+    public OpenAISSEEventSourceListener(String topicId, SseEmitter sseEmitter){
         this.topicId = topicId;
         this.sseEmitter = sseEmitter;
     }
@@ -102,40 +103,44 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
         try {
             //update-begin---author:chenrui ---date:20250207  for：[QQYUN-11102/QQYUN-11109]兼容deepseek模型,支持think标签------------
             // 兼容think标签
-            Message delta = completionResponse.getChoices().get(0).getDelta();
-            if (null != delta) {
-                String content = delta.getContent();
-                if("<think>".equals(content)){
-                    isThinking = true;
-                    content = "> ";
-                    delta.setContent(content);
-                }
-                if("</think>".equals(content)){
-                    isThinking = false;
-                    content = "\n\n";
-                    delta.setContent(content);
-                }
-                if (isThinking) {
-                    if (null != content && content.contains("\n")) {
-                        content = "\n> ";
+            //update-begin---author:chenrui ---date:20250210  for：判断空,防止反悔的内容为空报错.------------
+            if(null != completionResponse.getChoices()
+                    && !completionResponse.getChoices().isEmpty()
+                    && null != completionResponse.getChoices().get(0)) {
+            //update-end---author:chenrui ---date:20250210  for：判断空,防止反悔的内容为空报错.------------
+                Message delta = completionResponse.getChoices().get(0).getDelta();
+                if (null != delta) {
+                    String content = delta.getContent();
+                    if ("<think>".equals(content)) {
+                        isThinking = true;
+                        content = "> ";
                         delta.setContent(content);
                     }
-                }else {
-                    // 响应消息体不记录思考过程
-                    messageContent += null == content ? "" : content;
+                    if ("</think>".equals(content)) {
+                        isThinking = false;
+                        content = "\n\n";
+                        delta.setContent(content);
+                    }
+                    if (isThinking) {
+                        if (null != content && content.contains("\n")) {
+                            content = "\n> ";
+                            delta.setContent(content);
+                        }
+                    } else {
+                        // 响应消息体不记录思考过程
+                        messageContent += null == content ? "" : content;
+                    }
+                    log.info("ai-chat返回数据,发送给前端:" + content);
+                    sseEmitter.send(SseEmitter.event()
+                            .id(this.topicId)
+                            .data(delta)
+                            .reconnectTime(3000));
                 }
-
-
-
-                log.info("ai-chat返回数据,发送给前端:" + content);
-                sseEmitter.send(SseEmitter.event()
-                        .id(this.topicId)
-                        .data(delta)
-                        .reconnectTime(3000));
             }
             //update-end---author:chenrui ---date:20250207  for：[QQYUN-11102/QQYUN-11109]兼容deepseek模型,支持think标签------------
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error("ai-chat返回数据,发生异常"+e.getMessage(),e);
+            sseEmitter.completeWithError(e);
             eventSource.cancel();
         }
     }

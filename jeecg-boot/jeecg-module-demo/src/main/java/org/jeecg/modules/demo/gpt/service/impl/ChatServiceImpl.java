@@ -104,6 +104,7 @@ public class ChatServiceImpl implements ChatService {
         //超时回调
         sseEmitter.onTimeout(() -> {
             log.info("[{}]连接超时...................", uid);
+            LocalCache.CACHE.remove(uid);
         });
         //异常回调
         sseEmitter.onError(
@@ -115,7 +116,7 @@ public class ChatServiceImpl implements ChatService {
                                 .name("发生异常！")
                                 .data(Message.builder().content("发生异常请重试！").build())
                                 .reconnectTime(3000));
-                        LocalCache.CACHE.put(uid, sseEmitter);
+                        LocalCache.CACHE.remove(uid);
                     } catch (IOException e) {
                         log.error(e.getMessage(),e);
                     }
@@ -179,6 +180,7 @@ public class ChatServiceImpl implements ChatService {
                 finalMsgHistory.add(tempMessage);
                 redisTemplate.opsForHash().put(cacheKey, CACHE_KEY_MSG_CONTEXT, JSONUtil.toJsonStr(finalMsgHistory));
             });
+            log.info("话题:{},开始发送消息~~~", topicId);
             ChatCompletion completion = ChatCompletion
                     .builder()
                     .messages(msgHistory)
