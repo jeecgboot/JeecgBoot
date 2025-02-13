@@ -7,12 +7,12 @@
 JEECG BOOT AI Low Code Platform
 ===============
 
-Current version: 3.7.2 (Release date: 2024-12-12)
+Current version: 3.7.3 (Release date: 2025-02-10)
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-3.7.2-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.7.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -197,7 +197,7 @@ Technical Architecture:
 
 - Persistence layer framework: MybatisPlus 3.5.3.2
 
-- Report tool: JimuReport 1.9.1
+- Report tool: JimuReport 1.9.3
 
 - Security framework: Apache Shiro 1.12.0, Jwt 3.11.0
 

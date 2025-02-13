@@ -861,7 +861,9 @@ public class QueryGenerator {
 			return null;
 		}
 		Set<String> varParams = new HashSet<String>();
-		String regex = "\\#\\{\\w+\\}";
+		//update-begin---author:chenrui ---date:20250108  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
+		String regex = "#\\{\\[*\\w+]*}";
+		//update-end---author:chenrui ---date:20250108  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 		
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(sql);

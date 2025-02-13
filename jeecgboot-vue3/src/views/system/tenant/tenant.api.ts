@@ -20,6 +20,7 @@ enum Api {
   recycleBinPageList = '/sys/tenant/recycleBinPageList',
   deleteLogicDeleted = '/sys/tenant/deleteLogicDeleted',
   revertTenantLogic = '/sys/tenant/revertTenantLogic',
+  syncDefaultPack = '/sys/tenant/syncDefaultPack',
   //用户产品包关系api
   queryTenantPackUserList = '/sys/tenant/queryTenantPackUserList',
   deleteTenantPackUser = '/sys/tenant/deleteTenantPackUser',
@@ -152,6 +153,17 @@ export const editPackPermission = (params) => {
  */
 export const deleteTenantPack = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.deleteTenantPack, data: params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+};
+
+/**
+ * 初始化套餐包
+ * @param params
+ * @param handleSuccess
+ */
+export const syncDefaultTenantPack = (params, handleSuccess) => {
+  return defHttp.post({ url: Api.syncDefaultPack, data: params }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
 };

@@ -115,7 +115,7 @@
               fieldMapToNumber: [
               <#list columns as po>
               <#if po.isQuery=='Y'>
-              <#if po.queryMode!='single'>
+              <#if po.queryMode=='group'>
               <#-- update-begin---author:chenrui ---date:20240527  for：[TV360X-388]时间范围查询控件---------- -->
               <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal' || po.classType=='time'>
               <#-- update-end---author:chenrui ---date:20240527  for：[TV360X-388]时间范围查询控件---------- -->
@@ -128,7 +128,7 @@
               fieldMapToTime: [
               <#list columns as po>
               <#if po.isQuery=='Y'>
-              <#if po.queryMode!='single'>
+              <#if po.queryMode=='group'>
               <#if po.classType=='date'>
                  ['${po.fieldName}', ['${po.fieldName}_begin', '${po.fieldName}_end'], 'YYYY-MM-DD'],
               <#elseif po.classType=='datetime'>

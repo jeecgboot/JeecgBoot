@@ -251,10 +251,10 @@ export const userSearchFormSchema: FormSchema[] = [
   },
 ];
 
-//产品包列表
+//套餐包列表
 export const packColumns: BasicColumn[] = [
   {
-    title: '产品包名称',
+    title: '套餐包名称',
     dataIndex: 'packName',
     width: 100,
   },
@@ -277,21 +277,21 @@ export const packColumns: BasicColumn[] = [
   },
 ];
 
-//产品包搜索表单
+//套餐包搜索表单
 export const packFormSchema: FormSchema[] = [
   {
     field: 'packName',
-    label: '产品包名称',
+    label: '套餐包名称',
     component: 'JInput',
     colProps: { xxl: 8 },
   },
 ];
 
-//产品包表单
+//套餐包表单
 export const packMenuFormSchema: FormSchema[] = [
   {
     field: 'packName',
-    label: '产品包名称',
+    label: '套餐包名称',
     component: 'Input',
   },
   {
@@ -377,7 +377,7 @@ export const searchRecycleFormSchema : FormSchema[] = [
   },
 ]
 
-//产品包用户列表
+//套餐包用户列表
 export const tenantPackUserColumns: BasicColumn[] = [
   {
     title: '用户',

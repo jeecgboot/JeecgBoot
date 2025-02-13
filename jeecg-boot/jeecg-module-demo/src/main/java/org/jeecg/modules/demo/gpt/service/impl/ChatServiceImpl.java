@@ -173,13 +173,18 @@ public class ChatServiceImpl implements ChatService {
         //update-begin---author:chenrui ---date:20240625  for：[TV360X-1570]给于更友好的提示，提示未配置ai------------
         if (null != openAiStreamClient) {
             OpenAISSEEventSourceListener openAIEventSourceListener = new OpenAISSEEventSourceListener(topicId, sseEmitter);
+            List<Message> finalMsgHistory = msgHistory;
+            openAIEventSourceListener.onDone(respMessage -> {
+                Message tempMessage = Message.builder().content(respMessage).role(Message.Role.ASSISTANT).build();
+                finalMsgHistory.add(tempMessage);
+                redisTemplate.opsForHash().put(cacheKey, CACHE_KEY_MSG_CONTEXT, JSONUtil.toJsonStr(finalMsgHistory));
+            });
             ChatCompletion completion = ChatCompletion
                     .builder()
                     .messages(msgHistory)
                     .model(aiChatProperties.getModel())
                     .build();
             openAiStreamClient.streamChatCompletion(completion, openAIEventSourceListener);
-            redisTemplate.opsForHash().put(cacheKey, CACHE_KEY_MSG_CONTEXT, JSONUtil.toJsonStr(msgHistory));
             //update-end---author:chenrui ---date:20240223  for：[QQYUN-8225]聊天记录保存------------
         }
         //update-end---author:chenrui ---date:20240625  for：[TV360X-1570]给于更友好的提示，提示未配置ai------------
