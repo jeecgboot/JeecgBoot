@@ -1978,15 +1978,50 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			}
 		}
 		//step4 发送短信验证码
-		this.sendPhoneSms(phone, ipAddress);
+		String redisKey = CommonConstant.CHANGE_PHONE_REDIS_KEY_PRE+phone;
+		this.sendPhoneSms(phone, ipAddress,redisKey);
+	}
+
+	@Override
+	public void sendLogOffPhoneSms(JSONObject jsonObject, String username, String ipAddress) {
+		String phone = jsonObject.getString("phone");
+		//通过用户名查询数据库中的手机号
+		SysUser userByNameAndPhone = userMapper.getUserByNameAndPhone(phone, username);
+		if (null == userByNameAndPhone) {
+			throw new JeecgBootException("当前用户手机号不匹配，无法修改！");
+		}
+		String code = CommonConstant.LOG_OFF_PHONE_REDIS_KEY_PRE + phone;
+		this.sendPhoneSms(phone, ipAddress, code);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void userLogOff(JSONObject jsonObject, String username) {
+		String phone = jsonObject.getString("phone");
+		String smsCode = jsonObject.getString("smscode");
+		//通过用户名查询数据库中的手机号
+		SysUser userByNameAndPhone = userMapper.getUserByNameAndPhone(phone, username);
+		if (null == userByNameAndPhone) {
+			throw new JeecgBootException("当前用户手机号不匹配，无法注销！");
+		}
+		String code = CommonConstant.LOG_OFF_PHONE_REDIS_KEY_PRE + phone;
+		Object redisSmdCode = redisUtil.get(code);
+		if (null == redisSmdCode) {
+			throw new JeecgBootException("验证码失效，无法注销！");
+		}
+		if (!redisSmdCode.toString().equals(smsCode)) {
+			throw new JeecgBootException("验证码不匹配，无法注销！");
+		}
+		this.deleteUser(userByNameAndPhone.getId());
+		redisUtil.removeAll(code);
+		redisUtil.removeAll(CacheConstant.SYS_USERS_CACHE + phone);
 	}
 
 	/**
 	 * 发送短信验证码
 	 * @param phone
 	 */
-	private void sendPhoneSms(String phone, String clientIp) {
-		String redisKey = CommonConstant.CHANGE_PHONE_REDIS_KEY_PRE+phone;
+	private void sendPhoneSms(String phone, String clientIp,String redisKey) {
 		Object object = redisUtil.get(redisKey);
 
 		if (object != null) {

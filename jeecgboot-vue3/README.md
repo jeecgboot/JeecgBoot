@@ -1,10 +1,10 @@
 JeecgBoot 企业级低代码开发平台
 ===============
-当前最新版本： 3.7.1（发布时间：2024-09-12）
+当前最新版本： 3.7.3（发布时间：2025-02-10）
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://jeecg.com/aboutusIndex)
-[![](https://img.shields.io/badge/version-3.7.1-brightgreen.svg)](https://github.com
+[![](https://img.shields.io/badge/version-3.7.3-brightgreen.svg)](https://github.com
 /zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
@@ -27,7 +27,7 @@ JeecgBoot-Vue3采用 Vue3.0、Vite、 Ant-Design-Vue4、TypeScript 等新技术�
 
 -   官方文档：[https://help.jeecg.com](https://help.jeecg.com)
 -   快速入门：[快速入门](http://jeecg.com/doc/quickstart) | [常见问题](http://help.jeecg.com/qa.html) 
--   QQ交流群：⑨808791225、其他满
+-   QQ交流群：⑩716488839、⑨808791225、其他满
 -   在线演示 ：  [系统演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取
 

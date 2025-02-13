@@ -84,6 +84,12 @@ public class MessageDTO implements Serializable {
      * 邮件抄送地址
      */
     protected Set<String> ccEmailList;
+
+    /**
+     * 是否为定时任务推送email
+     */
+    private Boolean isTimeJob = false;
+    
     //---【邮件相关参数】-------------------------------------------------------------
     
     public MessageDTO(){

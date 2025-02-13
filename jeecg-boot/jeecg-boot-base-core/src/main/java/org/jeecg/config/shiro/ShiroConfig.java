@@ -1,6 +1,5 @@
 package org.jeecg.config.shiro;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
@@ -127,6 +126,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.ttf", "anon");
         filterChainDefinitionMap.put("/**/*.woff", "anon");
         filterChainDefinitionMap.put("/**/*.woff2", "anon");
+        filterChainDefinitionMap.put("/**/*.glb", "anon");
+        filterChainDefinitionMap.put("/**/*.wasm", "anon");
         //update-end--Author:scott Date:20221116 for：排除静态资源后缀
 
         filterChainDefinitionMap.put("/druid/**", "anon");
@@ -144,12 +145,18 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/**/*.js.map", "anon");
         filterChainDefinitionMap.put("/**/*.css.map", "anon");
         
-        //拖拽仪表盘设计器排除
+        //积木BI大屏和仪表盘排除
         filterChainDefinitionMap.put("/drag/view", "anon");
         filterChainDefinitionMap.put("/drag/page/queryById", "anon");
+        filterChainDefinitionMap.put("/drag/page/addVisitsNumber", "anon");
+        filterChainDefinitionMap.put("/drag/page/queryTemplateList", "anon");
+        filterChainDefinitionMap.put("/drag/share/view/**", "anon");
         filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getAllChartData", "anon");
         filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getTotalData", "anon");
         filterChainDefinitionMap.put("/drag/mock/json/**", "anon");
+        filterChainDefinitionMap.put("/jimubi/view", "anon");
+        filterChainDefinitionMap.put("/jimubi/share/view/**", "anon");
+
         //大屏模板例子
         filterChainDefinitionMap.put("/test/bigScreen/**", "anon");
         filterChainDefinitionMap.put("/bigscreen/template1/**", "anon");
@@ -190,12 +197,24 @@ public class ShiroConfig {
     }
 
     //update-begin---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------
+
+    /**
+     * spring过滤装饰器 <br/>
+     * 因为shiro的filter不支持异步请求,导致所有的异步请求都会报错. <br/>
+     * 所以需要用spring的FilterRegistrationBean再代理一下shiro的filter.为他扩展异步支持. <br/>
+     * 后续所有异步的接口都需要再这里增加registration.addUrlPatterns("/xxx/xxx");
+     * @return
+     * @author chenrui
+     * @date 2024/12/3 19:49
+     */
     @Bean
     public FilterRegistrationBean shiroFilterRegistration() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(new DelegatingFilterProxy("shiroFilterFactoryBean"));
         registration.setEnabled(true);
-        registration.addUrlPatterns("/*");
+        //update-begin---author:chenrui ---date:20241202  for：[issues/7491]运行时间好长，效率慢 ------------
+        registration.addUrlPatterns("/test/ai/chat/send");
+        //update-end---author:chenrui ---date:20241202  for：[issues/7491]运行时间好长，效率慢 ------------
         //支持异步
         registration.setAsyncSupported(true);
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);

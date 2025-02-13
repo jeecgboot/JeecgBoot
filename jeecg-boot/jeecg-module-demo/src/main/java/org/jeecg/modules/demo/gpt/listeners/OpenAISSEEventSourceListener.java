@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 //update-begin---author:chenrui ---date:20240126  for：【QQYUN-7932】AI助手------------
 /**
@@ -29,6 +30,20 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
     private SseEmitter sseEmitter;
 
     private String topicId;
+    /**
+     * 回复消息内容
+     */
+    private String messageContent = "";
+
+    /**
+     * 完成回复回调
+     */
+    private Consumer<String> doneCallback;
+
+    /**
+     * 是否正在思考
+     */
+    private boolean isThinking = false;
 
     public OpenAISSEEventSourceListener(SseEmitter sseEmitter) {
         this.sseEmitter = sseEmitter;
@@ -40,11 +55,22 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
     }
 
     /**
+     * 设置消息完成响应时的回调
+     * for [QQYUN-11102/QQYUN-11109]兼容deepseek模型,支持tink标签
+     * @param doneCallback
+     * @author chenrui
+     * @date 2025/2/7 18:14
+     */
+    public void onDone(Consumer<String> doneCallback){
+        this.doneCallback = doneCallback;
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public void onOpen(@NotNull EventSource eventSource, @NotNull Response response) {
-        log.info("OpenAI建立sse连接...");
+        log.info("ai-chat建立sse连接...");
     }
 
     /**
@@ -53,10 +79,12 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
     @SneakyThrows
     @Override
     public void onEvent(@NotNull EventSource eventSource, String id, String type, @NotNull String data) {
-        log.debug("OpenAI返回数据：{}", data);
+        log.debug("ai-chat返回数据：{}", data);
         tokens += 1;
         if (data.equals("[DONE]")) {
-            log.info("OpenAI返回数据结束了");
+            log.info("ai-chat返回数据结束了");
+            this.doneCallback.accept(messageContent);
+            messageContent = "";
             sseEmitter.send(SseEmitter.event()
                     .id("[TOKENS]")
                     .data("<br/><br/>tokens：" + tokens())
@@ -72,10 +100,40 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
         ObjectMapper mapper = new ObjectMapper();
         ChatCompletionResponse completionResponse = mapper.readValue(data, ChatCompletionResponse.class); // 读取Json
         try {
-            sseEmitter.send(SseEmitter.event()
-                    .id(this.topicId)
-                    .data(completionResponse.getChoices().get(0).getDelta())
-                    .reconnectTime(3000));
+            //update-begin---author:chenrui ---date:20250207  for：[QQYUN-11102/QQYUN-11109]兼容deepseek模型,支持think标签------------
+            // 兼容think标签
+            Message delta = completionResponse.getChoices().get(0).getDelta();
+            if (null != delta) {
+                String content = delta.getContent();
+                if("<think>".equals(content)){
+                    isThinking = true;
+                    content = "> ";
+                    delta.setContent(content);
+                }
+                if("</think>".equals(content)){
+                    isThinking = false;
+                    content = "\n\n";
+                    delta.setContent(content);
+                }
+                if (isThinking) {
+                    if (null != content && content.contains("\n")) {
+                        content = "\n> ";
+                        delta.setContent(content);
+                    }
+                }else {
+                    // 响应消息体不记录思考过程
+                    messageContent += null == content ? "" : content;
+                }
+
+
+
+                log.info("ai-chat返回数据,发送给前端:" + content);
+                sseEmitter.send(SseEmitter.event()
+                        .id(this.topicId)
+                        .data(delta)
+                        .reconnectTime(3000));
+            }
+            //update-end---author:chenrui ---date:20250207  for：[QQYUN-11102/QQYUN-11109]兼容deepseek模型,支持think标签------------
         } catch (Exception e) {
             log.error(e.getMessage(),e);
             eventSource.cancel();
@@ -86,7 +144,7 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
     @Override
     public void onClosed(@NotNull EventSource eventSource) {
         log.info("流式输出返回值总共{}tokens", tokens() - 2);
-        log.info("OpenAI关闭sse连接...");
+        log.info("ai-chat关闭sse连接...");
     }
 
 
@@ -96,10 +154,10 @@ public class OpenAISSEEventSourceListener extends EventSourceListener {
         String errMsg = "";
         ResponseBody body = null == response ? null:response.body();
         if (Objects.nonNull(body)) {
-            log.error("OpenAI  sse连接异常data：{}，异常：{}", body.string(), t.getMessage());
+            log.error("ai-chat  sse连接异常data：{}，异常：{}", body.string(), t.getMessage());
             errMsg = body.string();
         } else {
-            log.error("OpenAI  sse连接异常data：{}，异常：{}", response, t.getMessage());
+            log.error("ai-chat  sse连接异常data：{}，异常：{}", response, t.getMessage());
             errMsg = t.getMessage();
         }
         eventSource.cancel();

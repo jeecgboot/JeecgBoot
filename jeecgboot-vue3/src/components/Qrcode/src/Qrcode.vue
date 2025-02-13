@@ -48,6 +48,11 @@
           const renderValue = String(value);
           const wrapEl = unref(wrapRef);
 
+          // 无值不生成
+          if (renderValue == null || renderValue === '') {
+            return;
+          }
+
           if (!wrapEl) return;
 
           if (tag === 'canvas') {

@@ -206,6 +206,12 @@ export const searchFormSchema: FormSchema[] = [
 </#if>
       //colProps: {span: 6},
  	},
+<#elseif po.queryMode=='like'>
+  {
+    label: "${po.filedComment}",
+    field: "${po.fieldName}",
+    component: 'JInput',
+  },
 <#else>
      {
       label: "${po.filedComment}",
@@ -868,6 +874,11 @@ export const ${sub.entityName?uncap_first}Columns: JVxeColumn[] = [
         <#else>
       customValue: ${col.dictField},
         </#if>
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
+<#elseif col.classType=='pca'>
+      type: JVxeTypes.pca,
       <#if col.readonly=='Y'>
       disabled:true,
       </#if>

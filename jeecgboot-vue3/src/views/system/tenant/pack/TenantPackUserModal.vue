@@ -43,7 +43,7 @@
         return tenantPackData.tenantId;
       })
       
-      //产品包信息
+      //套餐包信息
       const tenantPackData = reactive<any>({});
       //表单赋值
       const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {

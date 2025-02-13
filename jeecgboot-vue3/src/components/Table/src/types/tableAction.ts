@@ -29,5 +29,5 @@ export interface PopConfirm {
   icon?: string;
   placement?: string;
   overlayClassName?: string;
-  getPopupContainer: Fn;
+  getPopupContainer?: Fn;
 }

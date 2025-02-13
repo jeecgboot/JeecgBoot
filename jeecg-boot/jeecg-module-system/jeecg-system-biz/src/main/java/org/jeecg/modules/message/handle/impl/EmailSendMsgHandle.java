@@ -5,12 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.StaticConfig;
+import org.jeecg.modules.message.entity.SysMessage;
 import org.jeecg.modules.message.handle.ISendMsgHandle;
+import org.jeecg.modules.message.mapper.SysMessageMapper;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,9 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
 
     @Autowired
     private RedisUtil redisUtil;
+    
+    @Autowired
+    private SysMessageMapper sysMessageMapper;
 
     /**
      * 真实姓名变量
@@ -78,6 +84,23 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
 
     @Override
     public void sendMessage(MessageDTO messageDTO) {
+        String content = messageDTO.getContent();
+        String title = messageDTO.getTitle();
+        //update-begin---author:wangshuai---date:2024-11-20---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
+        boolean timeJobSendEmail = this.isTimeJobSendEmail(messageDTO.getToUser(), title, content);
+        if(timeJobSendEmail){
+            return;
+        }
+        //update-end---author:wangshuai---date:2024-11-20---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
+        this.sendEmailMessage(messageDTO);
+    }
+
+    /**
+     * 直接发送邮件
+     * 
+     * @param messageDTO
+     */
+    public void sendEmailMessage(MessageDTO messageDTO) {
         String[] arr = messageDTO.getToUser().split(",");
         LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<SysUser>().in(SysUser::getUsername, arr);
         List<SysUser> list = sysUserMapper.selectList(query);
@@ -212,5 +235,36 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
         // 设置超时时间 1个小时
         redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 1 / 1000);
         return token;
+    }
+
+    /**
+     * 是否定时发送邮箱
+     * @param toUser
+     * @param title
+     * @param content
+     * @return
+     */
+    private boolean isTimeJobSendEmail(String toUser, String title, String content) {
+        StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
+        Boolean timeJobSend = staticConfig.getTimeJobSend();
+        if(null != timeJobSend && timeJobSend){
+            this.addSysSmsSend(toUser,title,content);
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * 保存到短信发送表
+     */
+    private void addSysSmsSend(String toUser, String title, String content) {
+        SysMessage sysMessage = new SysMessage();
+        sysMessage.setEsTitle(title);
+        sysMessage.setEsContent(content);
+        sysMessage.setEsReceiver(toUser);
+        sysMessage.setEsSendStatus("0");
+        sysMessage.setEsSendNum(0);
+        sysMessage.setEsType(MessageTypeEnum.YJ.getType());
+        sysMessageMapper.insert(sysMessage);
     }
 }

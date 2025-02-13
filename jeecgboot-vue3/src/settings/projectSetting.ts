@@ -109,6 +109,10 @@ const setting: ProjectConfig = {
     type: MenuTypeEnum.SIDEBAR,
     // 菜单主题
     theme: ThemeEnum.DARK,
+    // update-begin--author:liaozhiyang---date:20241203---for：【issues/7522】解决menuSetting ts警告
+    // 左侧导航栏文字颜色调整区分彩色和暗黑 (不对应配置)
+    isThemeBright: false,
+    // update-end--author:liaozhiyang---date:20241203---for：【issues/7522】解决menuSetting ts警告
     // 分割菜单
     split: false,
     // 顶部菜单布局
@@ -146,7 +150,7 @@ const setting: ProjectConfig = {
   // 动画配置
   transitionSetting: {
     //  是否开启切换动画
-    // The disabled state will also disable pageLoadinng
+    // The disabled state will also disable pageLoading
     enable: true,
 
     // 动画名 Route basic switching animation

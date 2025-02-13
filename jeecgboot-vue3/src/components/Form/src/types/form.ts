@@ -99,7 +99,9 @@ export interface FormProps {
   // 【jeecg】如果 showAdvancedButton 为 true，超过指定列数默认折叠，默认为3
   autoAdvancedCol?: number;
   // 如果 showAdvancedButton 为 true，超过指定行数行默认折叠
-  autoAdvancedLine?: number;
+  // update-begin--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
+  // autoAdvancedLine?: number;
+  // update-end--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
   // 折叠时始终保持显示的行数
   alwaysShowLines?: number;
   // Whether to show the operation button
