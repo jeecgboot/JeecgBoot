@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.controller.admin;
 
 import java.util.*;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,6 +9,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuWeight;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
@@ -24,6 +26,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.modules.business.vo.Responses;
 import org.jeecg.modules.business.vo.SkuWeightParam;
+import org.jeecgframework.poi.excel.def.NormalExcelConstants;
+import org.jeecgframework.poi.excel.entity.ExportParams;
+import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -54,6 +59,8 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 	private ISecurityService securityService;
 	@Autowired
 	private SkuMongoService skuMongoService;
+	@Resource
+	private JeecgBaseConfig jeecgBaseConfig;
 	
 	/**
 	 * 分页列表查询
@@ -143,12 +150,27 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
     * 导出excel
     *
     * @param request
-    * @param skuWeight
     */
-    @RequiresPermissions("business:sku_weight:exportXls")
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request, SkuWeight skuWeight) {
-        return super.exportXls(request, skuWeight, SkuWeight.class, "sku_weight");
+    public ModelAndView exportXls(HttpServletRequest request) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+		List<String> selections = new ArrayList<>();
+		request.getParameterMap().forEach((k,v) -> {
+			if(k.equals("selections[]")) {
+				selections.addAll(Arrays.asList(v));
+			}
+		});
+		List<SkuWeight> exportList = skuWeightService.exportToExcel(selections);
+
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "SKU重量");
+		mv.addObject(NormalExcelConstants.CLASS, SkuWeight.class);
+		ExportParams exportParams=new ExportParams("SKU重量报表", "导出人:" + sysUser.getRealname(), "SKU重量");
+		exportParams.setImageBasePath(jeecgBaseConfig.getPath().getUpload());
+		mv.addObject(NormalExcelConstants.PARAMS,exportParams);
+		mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+		return mv;
     }
 
     /**

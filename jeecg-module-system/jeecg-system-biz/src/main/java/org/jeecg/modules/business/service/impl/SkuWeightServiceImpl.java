@@ -32,4 +32,9 @@ public class SkuWeightServiceImpl extends ServiceImpl<SkuWeightMapper, SkuWeight
     public String searchFirstEmptyWeightSku(List<String> skuIds) {
         return skuWeightMapper.searchFirstEmptyWeightSku(skuIds);
     }
+
+    @Override
+    public List<SkuWeight> exportToExcel(List<String> skuIds) {
+        return skuWeightMapper.exportToExcel(skuIds);
+    }
 }

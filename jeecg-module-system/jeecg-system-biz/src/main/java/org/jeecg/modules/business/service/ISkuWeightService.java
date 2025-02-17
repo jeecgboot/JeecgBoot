@@ -15,4 +15,6 @@ public interface ISkuWeightService extends IService<SkuWeight> {
     SkuWeight getBySkuId(String skuId);
 
     String searchFirstEmptyWeightSku(List<String> skuIds);
+
+    List<SkuWeight> exportToExcel(List<String> skuIds);
 }

@@ -24,4 +24,22 @@
     )
     LIMIT 1;
 </select>
+<select id="exportToExcel" resultType="org.jeecg.modules.business.entity.SkuWeight">
+    WITH latestSkuWeights AS (
+        SELECT
+            sku_id,
+            weight,
+            effective_date,
+        ROW_NUMBER() OVER (PARTITION BY sku_id ORDER BY effective_date DESC) AS rn
+        FROM sku_weight sw
+    )
+    SELECT s.erp_code as sku_id, lsw.weight, lsw.effective_date
+    FROM latestSkuWeights lsw
+    JOIN sku s ON s.id = lsw.sku_id
+    WHERE lsw.sku_id IN
+    <foreach collection="skuIds" separator="," open="(" close=")" index="index" item="id">
+        #{id}
+    </foreach>
+    AND lsw.rn = 1;
+</select>
 </mapper>

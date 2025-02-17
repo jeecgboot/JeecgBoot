@@ -18,4 +18,6 @@ public interface SkuWeightMapper extends BaseMapper<SkuWeight> {
     SkuWeight getBySkuId(@Param("skuId") String skuId);
 
     String searchFirstEmptyWeightSku(@Param("skuIds") List<String> skuIds);
+
+    List<SkuWeight> exportToExcel(@Param("skuIds") List<String> skuIds);
 }
