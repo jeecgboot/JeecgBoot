@@ -588,12 +588,12 @@ public class SkuController {
         String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
         String parsedOrder = order.toUpperCase();
         if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
-            return Result.error("Error 400 Bad Request");
+            return Result.error(400, "Bad Request");
         }
         try {
             specialFilterContentForDictSql(parsedColumn);
         } catch (RuntimeException e) {
-            return Result.error("Error 400 Bad Request");
+            return Result.error(400, "Bad Request");
         }
         String shopId = shopService.getIdByCode(shopCode);
         if (shopId == null) return Result.error(404, "Shop not found");
