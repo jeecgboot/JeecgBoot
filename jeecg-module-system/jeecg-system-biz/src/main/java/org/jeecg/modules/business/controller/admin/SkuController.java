@@ -453,9 +453,6 @@ public class SkuController {
     public Result<?> createMabangSku(@RequestBody List<SkuOrderPage> skuList) {
         log.info("Request to create {} new skus in Mabang", skuList.size());
         skuList.forEach(sku -> {
-            if(sku.getId() != null && !sku.getId().isEmpty()) {
-                log.info("Request to pair sku [{}] with old sku [{}]", sku.getErpCode(), sku.getId());
-            }
             if(sku.getShippingDiscount() == null) {
                 sku.setShippingDiscount(BigDecimal.ZERO);
             } else {
