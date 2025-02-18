@@ -17,6 +17,7 @@ public interface ISkuWeightService extends IService<SkuWeight> {
 
     String searchFirstEmptyWeightSku(List<String> skuIds);
 
+    List<SkuWeight> exportToExcel(List<String> skuIds);
     /**
      * used to export all latest weights for front, so instead of fetching skuId, we fetch erpCode
      * @return

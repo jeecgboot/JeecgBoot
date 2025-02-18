@@ -557,7 +557,7 @@ public class InvoiceController {
 
         List<PlatformOrderFront> orders = platformOrderService.fetchUninvoicedOrdersByShopForClientFullSQL(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize,
                 productStatuses, shippingAvailable, purchaseAvailable);
-        int total = orders.get(0).getTotalCount();
+        int total = !order.isEmpty() ? orders.get(0).getTotalCount() : 0;
 
         IPage<PlatformOrderFront> page = new Page<>();
         page.setRecords(orders);

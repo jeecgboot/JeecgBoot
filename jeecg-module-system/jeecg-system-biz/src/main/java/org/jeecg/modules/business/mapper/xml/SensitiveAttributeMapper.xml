@@ -25,8 +25,24 @@
     WHERE po.id = #{orderId}
     ORDER BY sa.priority DESC LIMIT 1;
 </select>
-    <select id="listIdAndPriority" resultType="org.jeecg.modules.business.entity.SensitiveAttribute">
-        SELECT id, priority, zh_name
-        FROM wia_app.sensitive_attribute
-    </select>
+<select id="listIdAndPriority" resultType="org.jeecg.modules.business.entity.SensitiveAttribute">
+    SELECT id, priority, zh_name
+    FROM wia_app.sensitive_attribute
+</select>
+<select id="getNameByAttributes" resultType="java.lang.String">
+    SELECT zh_name
+    FROM sensitive_attribute sa
+    WHERE sa.is_paste = #{attribute.isPaste}
+    AND sa.is_knife = #{attribute.isKnife}
+    AND sa.is_flammable = #{attribute.isFlammable}
+    AND sa.powder = #{attribute.powder}
+    AND sa.has_battery = #{attribute.hasBattery}
+    AND sa.magnetic = #{attribute.magnetic}
+    AND sa.no_liquid_cosmetic = #{attribute.noLiquidCosmetic}
+</select>
+<select id="getByZhName" resultType="org.jeecg.modules.business.entity.SensitiveAttribute">
+    SELECT *
+    FROM sensitive_attribute sa
+    WHERE sa.zh_name = #{zhName};
+</select>
 </mapper>

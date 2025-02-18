@@ -20,11 +20,20 @@ public class SkuAddResponse extends Response {
 
     private final String stockSku;
 
+    private String message;
+
     public SkuAddResponse(Code code, JSONObject data, String stockId, String stockSku) {
         super(code);
         this.data = data;
         this.stockId = stockId;
         this.stockSku = stockSku;
+    }
+    public SkuAddResponse(Code code, JSONObject data, String stockId, String stockSku, String message) {
+        super(code);
+        this.data = data;
+        this.stockId = stockId;
+        this.stockSku = stockSku;
+        this.message = message;
     }
 
     /**

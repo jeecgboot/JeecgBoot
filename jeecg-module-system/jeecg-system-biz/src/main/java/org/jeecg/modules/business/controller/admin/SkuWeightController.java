@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,6 +18,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuWeight;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
@@ -31,7 +33,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.SkuWeightPage;
 import org.jeecg.modules.business.vo.SkuWeightParam;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -69,9 +71,12 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 	private ISecurityService securityService;
 	@Autowired
 	private SkuMongoService skuMongoService;
+	@Resource
+	private JeecgBaseConfig jeecgBaseConfig;
 
 	private final static Integer NUMBER_OF_SKU_EXCEL_COLUMNS = 3;
 	private final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+  
 	/**
 	 * 分页列表查询
 	 *
@@ -159,23 +164,28 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
     /**
     * 导出excel
     *
-    * @param skuIds
+    * @param request
     */
     @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(@RequestParam(value = "selections[]", required = false) List<String> skuIds) {
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		List<SkuWeightPage> skuWeightList;
-		if (skuIds == null || skuIds.isEmpty()) {
-			skuWeightList = skuWeightService.listLatestWeights();
-		} else {
-			skuWeightList = skuWeightService.listLatestWeightForSkus(skuIds);
-		}
-		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-		mv.addObject(NormalExcelConstants.FILE_NAME, "SKU重量列表");
-		mv.addObject(NormalExcelConstants.CLASS, SkuWeightPage.class);
-		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("SKU重量数据", "导出人:" + sysUser.getRealname(), "SKU重量"));
-		mv.addObject(NormalExcelConstants.DATA_LIST, skuWeightList);
-		return mv;
+    public ModelAndView exportXls(HttpServletRequest request) {
+      LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+
+      List<String> selections = new ArrayList<>();
+      request.getParameterMap().forEach((k,v) -> {
+        if(k.equals("selections[]")) {
+          selections.addAll(Arrays.asList(v));
+        }
+      });
+      List<SkuWeight> exportList = skuWeightService.exportToExcel(selections);
+
+      ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+      mv.addObject(NormalExcelConstants.FILE_NAME, "SKU重量");
+      mv.addObject(NormalExcelConstants.CLASS, SkuWeight.class);
+      ExportParams exportParams=new ExportParams("SKU重量报表", "导出人:" + sysUser.getRealname(), "SKU重量");
+      exportParams.setImageBasePath(jeecgBaseConfig.getPath().getUpload());
+      mv.addObject(NormalExcelConstants.PARAMS,exportParams);
+      mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+      return mv;
     }
 
     /**
@@ -185,14 +195,14 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
     * @param response
     * @return
     */
-	@Transactional
+	  @Transactional
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		log.info("Importing Sku weights from Excel...");
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
 
-		Responses responses = new Responses();
+		ResponsesWithMsg responses = new ResponsesWithMsg();
 		List<SkuWeight> skuWeights = new ArrayList<>();
 		Map<String, SkuWeight> skuWeightMappedByErpCode = new HashMap<>();
 		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
@@ -242,16 +252,16 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 					skuWeightMappedByErpCode.put(erpCode, skuWeight);
 				}
 				log.info("Import weights for skus: {}", skuWeightMappedByErpCode.keySet());
-				Responses mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+				ResponsesWithMsg mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 				List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
-				mabangResponses.getSuccesses().forEach(skuErpCode -> {
-					String erpCode = skuErpCode.split(":")[0].trim();
-					skuWeightSuccesses.add(skuWeightMappedByErpCode.get(erpCode));
+				mabangResponses.getSuccesses().forEach((skuErpCode, messages) -> {
+					skuWeightSuccesses.add(skuWeightMappedByErpCode.get(skuErpCode));
 				});
 				skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));
 				skuWeightService.saveBatch(skuWeights);
-				responses.getSuccesses().addAll(mabangResponses.getSuccesses());
-				responses.getFailures().addAll(mabangResponses.getFailures());
+
+				mabangResponses.getSuccesses().forEach(responses::addSuccess);
+				mabangResponses.getFailures().forEach(responses::addFailure);
 			} catch (Exception e) {
 				e.printStackTrace();
 				String msg = e.getMessage();
@@ -324,11 +334,10 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			skuWeightsMap.put(sku.getErpCode(), skuWeight);
 		}
 		List<SkuWeight> skuWeights = new ArrayList<>(skuWeightsMap.values());
-		Responses responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+		ResponsesWithMsg responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 		List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
-		responses.getSuccesses().forEach(skuErpCode -> {
-			String erpCode = skuErpCode.split(":")[0].trim();
-			skuWeightSuccesses.add(skuWeightsMap.get(erpCode));
+		responses.getSuccesses().forEach((skuErpCode, messages) -> {
+			skuWeightSuccesses.add(skuWeightsMap.get(skuErpCode));
 		});
 
 		skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));

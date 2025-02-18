@@ -35,6 +35,11 @@ public class SkuWeightServiceImpl extends ServiceImpl<SkuWeightMapper, SkuWeight
     }
 
     @Override
+    public List<SkuWeight> exportToExcel(List<String> skuIds) {
+        return skuWeightMapper.exportToExcel(skuIds);
+    }
+  
+    @Override
     public List<SkuWeightPage> listLatestWeights() {
         return skuWeightMapper.listLatestWeights();
     }

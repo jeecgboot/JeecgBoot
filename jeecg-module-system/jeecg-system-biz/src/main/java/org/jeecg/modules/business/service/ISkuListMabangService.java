@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuWeight;
-import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.SkuOrderPage;
 
 import java.util.List;
@@ -33,12 +33,18 @@ public interface ISkuListMabangService extends IService<SkuData> {
     List<String> parseSkuListToProductCodeList(List<SkuData> erpCodeList) throws Exception;
     Map<Sku, String> createSkus(List<SkuData> skuDataList);
 
-    Responses publishSkuToMabang(List<SkuOrderPage> skuList);
+    ResponsesWithMsg publishSkuToMabang(List<SkuOrderPage> skuList);
 
     Map<Sku, String> skuSyncUpsert(List<String> erpCodes);
     void updateSkuId();
 
     void mabangSkuStockUpdate(List<String> erpCodes);
 
-    Responses mabangSkuWeightUpdate(List<SkuWeight> skuWeights);
+    ResponsesWithMsg mabangSkuWeightUpdate(List<SkuWeight> skuWeights);
+
+    List<SkuData> fetchUnpairedSkus(List<String> stockSkuList);
+
+    List<SkuOrderPage> unpairedSkus(String shopId, Integer pageNo, Integer pageSize, String column, String order);
+
+    int countUnpairedSkus(String shopId);
 }
