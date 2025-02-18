@@ -348,14 +348,17 @@ public class InvoiceController {
         InvoiceMetaData metaData;
         try {
             List<SkuQuantity> skuQuantities = skuService.getSkuQuantitiesFromOrderIds(param.orderIds());
+            if(skuQuantities.isEmpty()) {
+                return Result.error("Nothing to invoice.");
+            }
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities ,param.orderIds());
             metaData = purchaseOrderService.makeInvoice(purchaseId);
             platformOrderService.updatePurchaseInvoiceNumber(param.orderIds(), metaData.getInvoiceCode());
 
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
-//            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-//                balanceService.updateBalance(param.clientID(), metaData.getCode(), "purchase");
-//            }
+            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "purchase");
+            }
             if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
                 String subject = "Self-service purchase invoice";
                 String destEmail = env.getProperty("spring.mail.username");
@@ -554,7 +557,7 @@ public class InvoiceController {
 
         List<PlatformOrderFront> orders = platformOrderService.fetchUninvoicedOrdersByShopForClientFullSQL(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize,
                 productStatuses, shippingAvailable, purchaseAvailable);
-        int total = orders.get(0).getTotalCount();
+        int total = !order.isEmpty() ? orders.get(0).getTotalCount() : 0;
 
         IPage<PlatformOrderFront> page = new Page<>();
         page.setRecords(orders);

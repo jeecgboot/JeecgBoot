@@ -31,7 +31,7 @@ public class SkuListRawStream implements NetworkDataStream<SkuListResponse> {
     public SkuListResponse attempt() {
         log.info("Begin the first request");
         this.currentResponse = new SkuListRequest(toSend).send();
-        if (currentResponse.getData().isEmpty()) {
+        if (currentResponse.getData() == null || currentResponse.getData().isEmpty()) {
             return null;
         }
         began = true;

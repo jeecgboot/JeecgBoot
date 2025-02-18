@@ -24,6 +24,45 @@
     )
     LIMIT 1;
 </select>
+<select id="listLatestWeights" resultType="org.jeecg.modules.business.vo.SkuWeightPage">
+    WITH latestSkuWeights AS (
+        SELECT
+            sku_id,
+            weight,
+            effective_date,
+            ROW_NUMBER() OVER (PARTITION BY sku_id ORDER BY effective_date DESC) AS rn
+        FROM sku_weight
+    )
+    SELECT s.erp_code,
+           lsw.effective_date,
+           lsw.weight
+    FROM sku s
+             LEFT JOIN latestSkuWeights lsw ON s.id = lsw.sku_id AND lsw.rn = 1
+    WHERE s.status = 3
+    ORDER BY erp_code;
+</select>
+<select id="listLatestWeightForSkus" resultType="org.jeecg.modules.business.vo.SkuWeightPage">
+    WITH latestSkuWeights AS (
+        SELECT
+            sku_id,
+            weight,
+            effective_date,
+            ROW_NUMBER() OVER (PARTITION BY sku_id ORDER BY effective_date DESC) AS rn
+        FROM sku_weight
+    )
+    SELECT s.erp_code,
+           lsw.effective_date,
+           lsw.weight
+    FROM sku s
+             LEFT JOIN latestSkuWeights lsw ON s.id = lsw.sku_id AND lsw.rn = 1
+    WHERE s.status = 3
+    AND sku_id IN
+    <foreach collection="skuIds" item="skuId" open="(" separator="," close=")">
+        #{skuId}
+    </foreach>
+    ORDER BY erp_code;
+</select>
+  
 <select id="exportToExcel" resultType="org.jeecg.modules.business.entity.SkuWeight">
     WITH latestSkuWeights AS (
         SELECT

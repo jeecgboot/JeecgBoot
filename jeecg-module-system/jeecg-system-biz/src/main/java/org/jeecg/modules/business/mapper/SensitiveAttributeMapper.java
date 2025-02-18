@@ -19,4 +19,8 @@ public interface SensitiveAttributeMapper extends BaseMapper<SensitiveAttribute>
     String getHighestPriorityAttributeId(@Param("orderId") String orderId);
 
     List<SensitiveAttribute> listIdAndPriority();
+
+    String getNameByAttributes(@Param("attribute") SensitiveAttribute sensitiveAttribute);
+
+    SensitiveAttribute getByZhName(@Param("zhName") String zhName);
 }

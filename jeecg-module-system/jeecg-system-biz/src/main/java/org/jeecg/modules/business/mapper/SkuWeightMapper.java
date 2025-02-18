@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.SkuWeight;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.business.vo.SkuWeightPage;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,4 +21,9 @@ public interface SkuWeightMapper extends BaseMapper<SkuWeight> {
     String searchFirstEmptyWeightSku(@Param("skuIds") List<String> skuIds);
 
     List<SkuWeight> exportToExcel(@Param("skuIds") List<String> skuIds);
+
+    List<SkuWeightPage> listLatestWeights();
+
+    List<SkuWeightPage> listLatestWeightForSkus(@Param("skuIds") List<String> skuIds);
+
 }

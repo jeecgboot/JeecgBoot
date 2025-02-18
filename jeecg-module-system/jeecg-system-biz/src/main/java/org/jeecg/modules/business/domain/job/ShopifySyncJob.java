@@ -61,7 +61,7 @@ public class ShopifySyncJob implements Job {
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         List<PlatformOrderShopSync> ordersReadyForShopifySync = platformOrderService.fetchOrderInShopsReadyForShopifySync(shops);
         Map<String, PlatformOrderShopSync> syncMap = ordersReadyForShopifySync.stream()
-                .collect(toMap(PlatformOrderShopSync::getPlatformOrderId, Function.identity()));
+                .collect(toMap(sync -> sync.getPlatformOrderId().split("_")[0], Function.identity()));
 
         List<FulfillmentOrder> fulfillmentOrders = new ArrayList<>();
 

@@ -212,9 +212,13 @@ public class PurchaseOrderController {
         BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder);
         purchaseOrder.setPaymentDocumentString(new String(purchaseOrderPage.getPaymentDocument()));
         purchaseOrder.setInventoryDocumentString(new String(purchaseOrderPage.getInventoryDocument()));
+        Map<String, Responses> responsesMappedByReason = new HashMap<>();
         if(purchaseOrderPage.getPlatformOrderId() == null) {
+            Responses purchaseUpdateResponse = new Responses();
             purchaseOrderService.updateById(purchaseOrder);
-            return Result.OK("sys.api.entryEditSuccess");
+            purchaseUpdateResponse.addSuccess("updated");
+            responsesMappedByReason.put("orderUpdate : " + purchaseOrder.getInvoiceNumber(), purchaseUpdateResponse);
+            return Result.OK("sys.api.entryEditSuccess", responsesMappedByReason);
         }
         List<String> platformOrderIds = new ArrayList<>(Arrays.asList(purchaseOrderPage.getPlatformOrderId().split(",")));
         log.info("Editing purchase order and attributing it to orders : {}", platformOrderIds);
@@ -222,7 +226,7 @@ public class PurchaseOrderController {
         platformOrderService.removePurchaseInvoiceNumber(purchaseOrder.getInvoiceNumber(), purchaseOrder.getClientId());
         List<PlatformOrder> platformOrders = platformOrderService.selectByPlatformOrderIds(platformOrderIds);
         log.info("Platform orders found for attribution : {}", platformOrders.stream().map(PlatformOrder::getPlatformOrderId).collect(Collectors.toList()));
-        Map<String, Responses> responsesMappedByReason = new HashMap<>();
+
         Responses platformOrderIdUpdateResponse = new Responses();
         if(!platformOrders.isEmpty()) {
             for(PlatformOrder po : platformOrders) {
@@ -237,7 +241,7 @@ public class PurchaseOrderController {
             platformOrderIdUpdateResponse.getFailures().addAll(platformOrderIds);
         }
         purchaseOrderService.updateById(purchaseOrder);
-        responsesMappedByReason.put("Platform Order IDs Update / 平台订单号码更新 : " + purchaseOrder.getInvoiceNumber(), platformOrderIdUpdateResponse);
+        responsesMappedByReason.put("orderIdUpdate : " + purchaseOrder.getInvoiceNumber(), platformOrderIdUpdateResponse);
         return Result.OK("sys.api.entryEditSuccess", responsesMappedByReason);
     }
 

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.SkuWeight;
 import org.jeecg.modules.business.mapper.SkuWeightMapper;
 import org.jeecg.modules.business.service.ISkuWeightService;
+import org.jeecg.modules.business.vo.SkuWeightPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +37,15 @@ public class SkuWeightServiceImpl extends ServiceImpl<SkuWeightMapper, SkuWeight
     @Override
     public List<SkuWeight> exportToExcel(List<String> skuIds) {
         return skuWeightMapper.exportToExcel(skuIds);
+    }
+  
+    @Override
+    public List<SkuWeightPage> listLatestWeights() {
+        return skuWeightMapper.listLatestWeights();
+    }
+
+    @Override
+    public List<SkuWeightPage> listLatestWeightForSkus(List<String> skuIds) {
+        return skuWeightMapper.listLatestWeightForSkus(skuIds);
     }
 }

@@ -4,19 +4,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
+import org.jeecg.modules.business.service.ISkuListMabangService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @Component
 public class MabangUnpairedSkuJob implements Job {
+    @Autowired
+    private ISkuListMabangService skuListMabangService;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         JobDataMap jobDataMap = context.getMergedJobDataMap();
@@ -40,11 +44,7 @@ public class MabangUnpairedSkuJob implements Job {
             return;
         }
 
-        SkuListRequestBody body = new SkuListRequestBody();
-        body.setStockSkuList(String.join(",", skuList));
-        SkuListRawStream rawStream = new SkuListRawStream(body);
-        UnpairedSkuListStream stream = new UnpairedSkuListStream(rawStream);
-        List<SkuData> skusFromMabang = stream.all();
+        List<SkuData> skuDatas = skuListMabangService.fetchUnpairedSkus(skuList);
 //        System.out.println("skus from mabang : " + skusFromMabang);
     }
 }
