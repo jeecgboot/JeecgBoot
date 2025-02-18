@@ -59,8 +59,6 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Autowired
     private ILogisticChannelPriceService logisticChannelPriceService;
     @Autowired
-    private CountryService countryService;
-    @Autowired
     private IPlatformOrderContentService platformOrderContentService;
     @Autowired
     private ISkuLogisticChoiceService skuLogisticChoiceService;
@@ -619,4 +617,13 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
         return skuMapper.fetchAllClientSkuCodes(clientCode);
     }
 
+    @Override
+    public List<String> fetchUnpairedSkus(String shopId, int offset, Integer pageSize, String column, String order) {
+        return skuMapper.fetchUnpairedSkus(shopId, offset, pageSize, column, order);
+    }
+
+    @Override
+    public int countUnpairedSkus(String shopId) {
+        return skuMapper.countUnpairedSkus(shopId);
+    }
 }

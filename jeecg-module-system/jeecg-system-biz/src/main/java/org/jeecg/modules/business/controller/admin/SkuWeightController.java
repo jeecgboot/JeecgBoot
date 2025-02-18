@@ -31,7 +31,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.SkuWeightPage;
 import org.jeecg.modules.business.vo.SkuWeightParam;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -192,7 +192,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
 
-		Responses responses = new Responses();
+		ResponsesWithMsg responses = new ResponsesWithMsg();
 		List<SkuWeight> skuWeights = new ArrayList<>();
 		Map<String, SkuWeight> skuWeightMappedByErpCode = new HashMap<>();
 		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
@@ -242,16 +242,16 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 					skuWeightMappedByErpCode.put(erpCode, skuWeight);
 				}
 				log.info("Import weights for skus: {}", skuWeightMappedByErpCode.keySet());
-				Responses mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+				ResponsesWithMsg mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 				List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
-				mabangResponses.getSuccesses().forEach(skuErpCode -> {
-					String erpCode = skuErpCode.split(":")[0].trim();
-					skuWeightSuccesses.add(skuWeightMappedByErpCode.get(erpCode));
+				mabangResponses.getSuccesses().forEach((skuErpCode, messages) -> {
+					skuWeightSuccesses.add(skuWeightMappedByErpCode.get(skuErpCode));
 				});
 				skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));
 				skuWeightService.saveBatch(skuWeights);
-				responses.getSuccesses().addAll(mabangResponses.getSuccesses());
-				responses.getFailures().addAll(mabangResponses.getFailures());
+
+				mabangResponses.getSuccesses().forEach(responses::addSuccess);
+				mabangResponses.getFailures().forEach(responses::addFailure);
 			} catch (Exception e) {
 				e.printStackTrace();
 				String msg = e.getMessage();
@@ -324,11 +324,10 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			skuWeightsMap.put(sku.getErpCode(), skuWeight);
 		}
 		List<SkuWeight> skuWeights = new ArrayList<>(skuWeightsMap.values());
-		Responses responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+		ResponsesWithMsg responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 		List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
-		responses.getSuccesses().forEach(skuErpCode -> {
-			String erpCode = skuErpCode.split(":")[0].trim();
-			skuWeightSuccesses.add(skuWeightsMap.get(erpCode));
+		responses.getSuccesses().forEach((skuErpCode, messages) -> {
+			skuWeightSuccesses.add(skuWeightsMap.get(skuErpCode));
 		});
 
 		skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));

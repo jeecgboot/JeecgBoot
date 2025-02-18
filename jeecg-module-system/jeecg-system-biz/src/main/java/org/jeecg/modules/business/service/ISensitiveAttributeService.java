@@ -17,4 +17,8 @@ public interface ISensitiveAttributeService extends IService<SensitiveAttribute>
     String getHighestPriorityAttributeId(String orderId);
 
     List<SensitiveAttribute> listIdAndPriority();
+
+    String getNameByAttributes(SensitiveAttribute sensitiveAttribute);
+
+    SensitiveAttribute getByZhName(String zhName);
 }

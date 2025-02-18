@@ -22,7 +22,7 @@ import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.SkuListMabangMapper;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
-import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.SkuOrderPage;
 import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -466,7 +466,8 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         }
         return remark;
     }
-    public Responses publishSkuToMabang(List<SkuOrderPage> skuList) {
+    public ResponsesWithMsg publishSkuToMabang(List<SkuOrderPage> skuList) {
+        ResponsesWithMsg responses = new ResponsesWithMsg();
         List<SkuData> skuDataList = skuList.stream()
                 .map(this::SkuOrderPageToSkuData)
                 .collect(toList());
@@ -483,24 +484,20 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                         return request.send();
                     } catch (Exception e) {
                         log.error("Error publishing sku {} to mabang : {}", requestBody.getStockSku(), e.getMessage());
-                        return new SkuAddResponse(Response.Code.ERROR, null, null, requestBody.getStockSku());
+                        return new SkuAddResponse(Response.Code.ERROR, null, null, requestBody.getStockSku(), e.getMessage());
                     }
                 }, executor))
                 .collect(toList());
         List<SkuAddResponse> results = futures.stream().map(CompletableFuture::join).collect(toList());
         long successCount = results.stream().filter(SkuAddResponse::success).count();
         log.info("{}/{} skus published successfully.", successCount, skuDataList.size());
-        List<String> successes = results.stream()
-                .filter(SkuAddResponse::success)
-                .map(SkuAddResponse::getStockSku)
-                .collect(toList());
-        List<String> failures = results.stream()
-                .filter(response -> !response.success())
-                .map(SkuAddResponse::getStockSku)
-                .collect(toList());
-        Responses responses = new Responses();
-        responses.setSuccesses(successes);
-        responses.setFailures(failures);
+        results.forEach(response -> {
+            if(response.success()) {
+                responses.addSuccess(response.getStockSku());
+            } else {
+                responses.addFailure(response.getStockSku(), response.getMessage());
+            }
+        });
         return responses;
     }
 
@@ -544,7 +541,12 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
 
     public SkuData SkuOrderPageToSkuData(SkuOrderPage skuOrderPage) {
         SensitiveAttribute sensitiveAttribute = sensitiveAttributeService.getById(skuOrderPage.getSensitiveAttribute());
+        if(sensitiveAttribute == null) {
+            sensitiveAttribute = sensitiveAttributeService.getByZhName(skuOrderPage.getSensitiveAttribute());
+        }
         SkuData skuData = new SkuData();
+        if(skuOrderPage.getId() != null)
+            skuData.setVirtualSkus(skuOrderPage.getId());
         skuData.setErpCode(skuOrderPage.getErpCode());
         skuData.setNameCN(skuOrderPage.getZhName());
         skuData.setNameEN(skuOrderPage.getEnName());
@@ -552,7 +554,14 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         skuData.setDeclareNameEn(skuOrderPage.getDeclareEname());
         skuData.setSalePrice(skuOrderPage.getSkuPrice());
         skuData.setDeclareValue(skuOrderPage.getDeclaredValue());
-        skuData.setWarehouse(DEFAULT_WAREHOUSE_NAME);
+        skuData.setWarehouseName(DEFAULT_WAREHOUSE_NAME);
+        List<Label> labels = new ArrayList<>();
+        for(String labelName : skuOrderPage.getLabelData().split(",")) {
+            Label label = new Label();
+            label.setName(labelName);
+            labels.add(label);
+        }
+        skuData.setLabelData(labels.toArray(new Label[0]));
         if(skuOrderPage.getWeight() != null)
             skuData.setSaleRemark(skuOrderPage.getWeight().toString());
         skuData.setHasBattery(sensitiveAttribute.getHasBattery());
@@ -565,9 +574,44 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         skuData.setIsGift(skuOrderPage.getIsGift());
         skuData.setSupplier(skuOrderPage.getSupplier());
         skuData.setSupplierLink(skuOrderPage.getSupplierLink());
+        skuData.setSalePicture(skuOrderPage.getImageSource());
         return skuData;
     }
 
+    public SkuOrderPage SkuDataToSkuOrderPage(SkuData skuData) {
+        SkuOrderPage sop = new SkuOrderPage();
+        SensitiveAttribute sensitiveAttribute = new SensitiveAttribute();
+        sensitiveAttribute.setHasBattery(skuData.getHasBattery());
+        sensitiveAttribute.setPowder(skuData.getPowder());
+        sensitiveAttribute.setIsFlammable(skuData.getIsFlammable());
+        sensitiveAttribute.setIsKnife(skuData.getIsKnife());
+        sensitiveAttribute.setIsPaste(skuData.getIsPaste());
+        sensitiveAttribute.setMagnetic(skuData.getMagnetic());
+        sensitiveAttribute.setNoLiquidCosmetic(skuData.getNoLiquidCosmetic());
+        String sensitiveAttributeName = sensitiveAttributeService.getNameByAttributes(sensitiveAttribute);
+        sop.setSensitiveAttribute(sensitiveAttributeName);
+        sop.setId(String.valueOf(skuData.getStockSkuId()));
+        sop.setErpCode(skuData.getErpCode());
+        sop.setZhName(skuData.getNameCN());
+        sop.setEnName(skuData.getNameEN());
+        sop.setDeclaredValue(skuData.getDeclareValue());
+        sop.setSkuPrice(skuData.getSalePrice());
+        if(skuData.getWarehouse() != null)
+            sop.setWarehouse(skuData.getWarehouse()[0].getWarehouseName());
+        if(skuData.getLabelData() != null) {
+            StringBuilder labelDataString = new StringBuilder();
+            for(Label labelData : skuData.getLabelData()) {
+                labelDataString.append(labelData.getName()).append(",");
+            }
+            sop.setLabelData(labelDataString.toString());
+        }
+        sop.setImageSource(skuData.getSalePicture());
+        sop.setIsGift(skuData.getIsGift());
+        sop.setSupplier(skuData.getSupplier());
+        sop.setSupplierLink(skuData.getSupplierLink());
+        sop.setStatus(skuData.getStatusValue());
+        return sop;
+    }
 
     /**
      * Call a routine to replace SKU codes (from MabangAPI)
@@ -635,9 +679,8 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     }
 
     @Override
-    public Responses mabangSkuWeightUpdate(List<SkuWeight> skuWeights) {
-        Responses responses = new Responses();
-        List<String> failures = new ArrayList<>();
+    public ResponsesWithMsg mabangSkuWeightUpdate(List<SkuWeight> skuWeights) {
+        ResponsesWithMsg responses = new ResponsesWithMsg();
         List<String> skuIds = skuWeights.stream()
                 .map(SkuWeight::getSkuId)
                 .collect(toList());
@@ -701,7 +744,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                             .orElse(null);
                     if(null == skuInDb) {
                         log.error("Sku not found : {}", skuWeight.getSkuId());
-                        failures.add(skuWeight.getSkuId());
+                        responses.addFailure(skuWeight.getSkuId(), "Sku not found");
                         return null;
                     }
                     if(null == sku) {
@@ -745,17 +788,48 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         List<SkuChangeResponse> results = futures.stream().map(CompletableFuture::join).collect(toList());
         long successCount = results.stream().filter(SkuChangeResponse::success).count();
         log.info("{}/{} skus updated successfully.", successCount, skuDataList.size());
-        List<String> successes = results.stream()
-                .filter(SkuChangeResponse::success)
-                .map(response -> response.getStockSku() + " : Mabang OK")
-                .collect(toList());
-        failures.addAll(results.stream()
-                .filter(response -> !response.success())
-                .map(response -> response.getStockSku() + " | Mabang")
-                .collect(toList()));
-
-        responses.getSuccesses().addAll(successes);
-        responses.setFailures(failures);
+        results.forEach(response -> {
+            if(response.success()) {
+                responses.addSuccess(response.getStockSku(), "Mabang");
+            }
+            else {
+                responses.addFailure(response.getStockSku(), "Mabang");
+            }
+        });
         return responses;
+    }
+
+    @Override
+    public List<SkuData> fetchUnpairedSkus(List<String> stockSkuList) {
+        List<List<String>> skusPartition = Lists.partition(new ArrayList<>(stockSkuList), 50);
+        List<SkuData> skuDataList = new ArrayList<>();
+        for(List<String> skuPartition : skusPartition) {
+            SkuListRequestBody body = new SkuListRequestBody();
+            body.setShowWarehouse(1);
+            body.setShowLabel(1);
+            body.setStockSkuList(String.join(",", skuPartition));
+            SkuListRawStream rawStream = new SkuListRawStream(body);
+            UnpairedSkuListStream stream = new UnpairedSkuListStream(rawStream);
+            skuDataList.addAll(stream.all());
+        }
+        return skuDataList;
+    }
+
+    @Override
+    public List<SkuOrderPage> unpairedSkus(String shopId, Integer pageNo, Integer pageSize, String column, String order) {
+        int offset = (pageNo - 1) * pageSize;
+        List<String> stockSkuList = skuService.fetchUnpairedSkus(shopId, offset, pageSize, column, order);
+        if(stockSkuList.isEmpty()){
+            return new ArrayList<>();
+        }
+        List<SkuData> skuDataList = fetchUnpairedSkus(stockSkuList);
+        return skuDataList.stream()
+                .map(this::SkuDataToSkuOrderPage)
+                .collect(toList());
+    }
+
+    @Override
+    public int countUnpairedSkus(String shopId) {
+        return skuService.countUnpairedSkus(shopId);
     }
 }
