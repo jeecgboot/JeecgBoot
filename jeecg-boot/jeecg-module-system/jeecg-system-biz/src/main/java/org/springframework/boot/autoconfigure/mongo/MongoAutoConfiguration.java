@@ -58,7 +58,7 @@ public class MongoAutoConfiguration {
 
         @Bean
         MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties, Environment environment) {
-            return new MongoPropertiesClientSettingsBuilderCustomizer(properties, environment);
+            return new MongoPropertiesClientSettingsBuilderCustomizer(properties);
         }
     }
 }

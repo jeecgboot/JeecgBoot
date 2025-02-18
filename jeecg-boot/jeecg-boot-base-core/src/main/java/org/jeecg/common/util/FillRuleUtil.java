@@ -10,7 +10,7 @@ import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.handler.IFillRuleHandler;
 import org.jeecg.common.system.query.QueryGenerator;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**

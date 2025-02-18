@@ -41,7 +41,7 @@
 		<!-- 积木BI -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimubi-spring-boot-starter</artifactId>
+			<artifactId>jimubi-spring-boot3-starter</artifactId>
 		</dependency>
 	</dependencies>
 	
