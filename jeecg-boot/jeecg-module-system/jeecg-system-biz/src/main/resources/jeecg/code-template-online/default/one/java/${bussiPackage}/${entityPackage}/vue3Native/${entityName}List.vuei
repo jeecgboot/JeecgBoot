@@ -23,6 +23,7 @@
 <#assign need_range_number = false>
 <#assign is_range = false>
 <#assign query_flag = false>
+<#assign is_like = false>
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
       <a-form ref="formRef" @keyup.enter.native="searchQuery" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
