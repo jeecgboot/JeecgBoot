@@ -15,6 +15,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.YouBianCodeUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
@@ -65,6 +66,8 @@ public class SysDepartController {
 	private ISysUserService sysUserService;
 	@Autowired
 	private ISysUserDepartService sysUserDepartService;
+	@Autowired
+	private RedisUtil redisUtil;
 	/**
 	 * 查询数据 查出我的部门,并以树结构数据格式响应给前端
 	 *
@@ -470,8 +473,8 @@ public class SysDepartController {
 				//update-end---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
 				
 				//清空部门缓存
-				Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
-				Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
+				List<String> keys3 = redisUtil.scan(CacheConstant.SYS_DEPARTS_CACHE + "*");
+				List<String> keys4 = redisUtil.scan(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
 				redisTemplate.delete(keys3);
 				redisTemplate.delete(keys4);
 				return ImportExcelUtil.imporReturnRes(errorMessageList.size(), listSysDeparts.size() - errorMessageList.size(), errorMessageList);
@@ -664,8 +667,8 @@ public class SysDepartController {
 				listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), ExportDepartVo.class, params);
 				sysDepartService.importExcel(listSysDeparts,errorMessageList);
 				//清空部门缓存
-				Set keys3 = redisTemplate.keys(CacheConstant.SYS_DEPARTS_CACHE + "*");
-				Set keys4 = redisTemplate.keys(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
+				List<String> keys3 = redisUtil.scan(CacheConstant.SYS_DEPARTS_CACHE + "*");
+				List<String> keys4 = redisUtil.scan(CacheConstant.SYS_DEPART_IDS_CACHE + "*");
 				redisTemplate.delete(keys3);
 				redisTemplate.delete(keys4);
 				return ImportExcelUtil.imporReturnRes(errorMessageList.size(), listSysDeparts.size() - errorMessageList.size(), errorMessageList);
