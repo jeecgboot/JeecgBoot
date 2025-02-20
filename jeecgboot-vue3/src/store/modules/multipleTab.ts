@@ -3,6 +3,7 @@ import type { RouteLocationNormalized, RouteLocationRaw, Router } from 'vue-rout
 import { toRaw, unref } from 'vue';
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
+import { PAGE_NOT_FOUND_NAME_404 } from '/@/router/constant';
 
 import { useGo, useRedo } from '/@/hooks/web/usePage';
 import { Persistent } from '/@/utils/cache/persistent';
@@ -152,15 +153,17 @@ export const useMultipleTabStore = defineStore({
 
     async addTab(route: RouteLocationNormalized) {
       const { path, name, fullPath, params, query, meta } = getRawRoute(route);
+      // update-begin--author:liaozhiyang---date:202401127---for：【issues/7500】vue-router4.5.0版本路由name:PageNotFound同名导致登录进不去
       // 404  The page does not need to add a tab
       if (
         path === PageEnum.ERROR_PAGE ||
         path === PageEnum.BASE_LOGIN ||
         !name ||
-        [REDIRECT_ROUTE.name, PAGE_NOT_FOUND_ROUTE.name].includes(name as string)
+        [REDIRECT_ROUTE.name, PAGE_NOT_FOUND_NAME_404].includes(name as string)
       ) {
         return;
       }
+      // update-end--author:liaozhiyang---date:202401127---for：【issues/7500】vue-router4.5.0版本路由name:PageNotFound同名导致登录进不去
 
       let updateIndex = -1;
       // Existing pages, do not add tabs repeatedly

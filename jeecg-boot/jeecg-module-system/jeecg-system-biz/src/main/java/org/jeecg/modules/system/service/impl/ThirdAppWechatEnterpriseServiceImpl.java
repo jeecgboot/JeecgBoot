@@ -119,12 +119,9 @@ public class ThirdAppWechatEnterpriseServiceImpl implements IThirdAppService {
     public String getAppAccessToken(SysThirdAppConfig config) {
         //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         String corpId = config.getClientId();
-        String secret = config.getAgentAppSecret();
         // 如果没有配置APP秘钥，就说明是老企业，可以通用秘钥
-        if (oConvertUtils.isEmpty(secret)) {
-            secret = config.getClientSecret();
+        String secret = config.getClientSecret();
         //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
-        }
 
         AccessToken accessToken = JwAccessTokenAPI.getAccessToken(corpId, secret);
         if (accessToken != null) {

@@ -1,3 +1,12 @@
+---
+name: 提交 Bug
+about: 请告诉我框架存在的问题，我会协助你解决此问题！
+labels: bug
+assignees: getActivity
+
+---
+
+
 ##### 版本号：
 
 

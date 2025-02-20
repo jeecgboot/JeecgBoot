@@ -70,9 +70,12 @@
 // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
 .ant-modal {
   .ant-modal-close {
-    position: absolute;
-    top: 0;
-    right: 0;
+    // update-begin--author:liaozhiyang---date:20241010---for：【issues/7260】原生a-modal关闭按钮位置偏移
+    // position: absolute;
+    // top: 0;
+    // right: 0;
+    top: 13px;
+    // update-end--author:liaozhiyang---date:20241010---for：【issues/7260】原生a-modal关闭按钮位置偏移
     width: auto;
     height: auto;
   }

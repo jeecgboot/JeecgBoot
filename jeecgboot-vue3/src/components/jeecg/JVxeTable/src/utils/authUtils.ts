@@ -1,13 +1,12 @@
 /* JVxeTable 行编辑 权限 */
 import { usePermissionStoreWithOut } from '/@/store/modules/permission';
 
-const permissionStore = usePermissionStoreWithOut();
-
 /**
  * JVxe 专用，获取权限
  * @param prefix
  */
 export function getJVxeAuths(prefix) {
+  const permissionStore = usePermissionStoreWithOut();
   prefix = getPrefix(prefix);
   let { authList, allAuthList } = permissionStore;
   let authsMap = new Map<string, typeof allAuthList[0]>();

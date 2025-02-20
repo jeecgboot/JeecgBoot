@@ -748,7 +748,10 @@ public class SysUserController {
         if(oConvertUtils.isEmpty(depId)){
             LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             int userIdentity = user.getUserIdentity() != null?user.getUserIdentity():CommonConstant.USER_IDENTITY_1;
-            if(oConvertUtils.isNotEmpty(userIdentity) && userIdentity == CommonConstant.USER_IDENTITY_2 ){
+            //update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
+            if(oConvertUtils.isNotEmpty(userIdentity) && userIdentity == CommonConstant.USER_IDENTITY_2
+                    && oConvertUtils.isNotEmpty(user.getDepartIds())) {
+            //update-end---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
                 subDepids = sysDepartService.getMySubDepIdsByDepId(user.getDepartIds());
             }
         }else{
@@ -1276,12 +1279,6 @@ public class SysUserController {
             updateUser.setUpdateBy(JwtUtil.getUserNameByToken(request));
             updateUser.setUpdateTime(new Date());
             sysUserService.revertLogicDeleted(Arrays.asList(userIds.split(",")), updateUser);
-            // 用户变更，触发同步工作流
-            List<String> userNameList = sysUserService.userIdToUsername(Arrays.asList(userIds.split(",")));
-            if (!userNameList.isEmpty()) {
-                String joinedString = String.join(",", userNameList);
-            }
-           
         }
         return Result.ok("还原成功");
     }
@@ -1849,5 +1846,58 @@ public class SysUserController {
     @RequestMapping(value = "/importAppUser", method = RequestMethod.POST)
     public Result<?> importAppUser(HttpServletRequest request, HttpServletResponse response)throws IOException {
         return sysUserService.importAppUser(request);
+    }
+
+    /**
+     * 更改手机号（敲敲云个人设置专用）
+     *
+     * @param json
+     * @param request
+     */
+    @PutMapping("/changePhone")
+    public Result<String> changePhone(@RequestBody JSONObject json, HttpServletRequest request){
+        //获取登录用户名
+        String username = JwtUtil.getUserNameByToken(request);
+        sysUserService.changePhone(json,username);
+        return Result.ok("修改手机号成功！");
+    }
+    
+    /**
+     * 发送短信验证码接口(修改手机号)
+     *
+     * @param jsonObject
+     * @return
+     */
+    @PostMapping(value = "/sendChangePhoneSms")
+    public Result<String> sendChangePhoneSms(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
+        //获取登录用户名
+        String username = JwtUtil.getUserNameByToken(request);
+        String ipAddress = IpUtils.getIpAddr(request);
+        sysUserService.sendChangePhoneSms(jsonObject, username, ipAddress);
+        return Result.ok("发送验证码成功！");
+    }
+
+    /**
+     * 发送注销用户手机号验证密码[敲敲云专用]
+     *
+     * @param jsonObject
+     * @return
+     */
+    @PostMapping(value = "/sendLogOffPhoneSms")
+    public Result<String> sendLogOffPhoneSms(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
+        Result<String> result = new Result<>();
+        //获取登录用户名
+        String username = JwtUtil.getUserNameByToken(request);
+        String name = jsonObject.getString("username");
+        if (oConvertUtils.isEmpty(name) || !name.equals(username)) {
+            result.setSuccess(false);
+            result.setMessage("发送验证码失败，用户不匹配！");
+            return result;
+        }
+        String ipAddress = IpUtils.getIpAddr(request);
+        sysUserService.sendLogOffPhoneSms(jsonObject, username, ipAddress);
+        result.setSuccess(true);
+        result.setMessage("发送验证码成功！");
+        return result;
     }
 }

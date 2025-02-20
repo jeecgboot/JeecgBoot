@@ -21,6 +21,12 @@ public class StaticConfig {
     @Value(value = "${spring.mail.username:}")
     private String emailFrom;
 
+    /**
+     * 是否开启定时发送
+     */
+    @Value(value = "${spring.mail.timeJobSend:false}")
+    private Boolean timeJobSend;
+
 //    /**
 //     * 签名密钥串
 //     */

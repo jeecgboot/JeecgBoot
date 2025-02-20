@@ -52,7 +52,7 @@ public class SysUserOnlineController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result<Page<SysUserOnlineVO>> list(@RequestParam(name="username", required=false) String username,
                                               @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,@RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-        Collection<String> keys = redisTemplate.keys(CommonConstant.PREFIX_USER_TOKEN + "*");
+        Collection<String> keys = redisUtil.scan(CommonConstant.PREFIX_USER_TOKEN + "*");
         List<SysUserOnlineVO> onlineList = new ArrayList<SysUserOnlineVO>();
         for (String key : keys) {
             String token = (String)redisUtil.get(key);

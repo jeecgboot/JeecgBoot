@@ -26,12 +26,12 @@
           >邀请用户加入</a-button
         >
         <a-button
-          preIcon="ant-design:plus-outlined"
+          preIcon="ant-design:sliders-outlined"
           type="primary"
           @click="handlePack"
           style="margin-right: 5px"
           :disabled="selectedRowKeys.length === 0"
-          >套餐</a-button
+          >套餐管理</a-button
         >
         <a-button type="primary" @click="recycleBinClick" preIcon="ant-design:hdd-outlined">回收站</a-button>
       </template>

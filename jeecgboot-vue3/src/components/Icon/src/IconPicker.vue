@@ -1,10 +1,23 @@
 <template>
-  <a-input :disabled="disabled" :style="{ width }" readOnly :placeholder="t('component.icon.placeholder')" :class="prefixCls" v-model:value="currentSelect">
+  <a-input
+      :class="prefixCls"
+      :value="currentSelect"
+      readOnly
+      :disabled="disabled"
+      :placeholder="t('component.icon.placeholder')"
+      :style="{ width }"
+      @click="currentSelectClick"
+  >
     <template #addonAfter>
       <span class="cursor-pointer px-2 py-1 flex items-center" v-if="isSvgMode && currentSelect">
         <SvgIcon :name="currentSelect" @click="currentSelectClick"/>
       </span>
-      <Icon :icon="currentSelect || 'ion:apps-outline'" class="cursor-pointer px-2 py-1" v-else @click="currentSelectClick"/>
+      <Icon v-else :icon="currentSelect || 'ion:apps-outline'" :class="['px-2 py-1', {
+          'cursor-pointer': !disabled,
+          'cursor-not-allowed': disabled,
+        }]"
+        @click="currentSelectClick"
+      />
     </template>
   </a-input>
   <a-modal :bodyStyle="{ padding: '24px'}" v-bind="$attrs" v-model:open="iconOpen" :keyboard="false" :width="800" @ok="handleOk" :ok-text="t('common.okText')" :cancel-text="t('common.cancelText')">
@@ -84,7 +97,7 @@
     width: propTypes.string.def('100%'),
     copy: propTypes.bool.def(false),
     mode: propTypes.oneOf<('svg' | 'iconify')[]>(['svg', 'iconify']).def('iconify'),
-    disabled: propTypes.bool.def(true),
+    disabled: propTypes.bool.def(false),
     clearSelect: propTypes.bool.def(false),
     iconPrefixSave: propTypes.bool.def(true),
   });
@@ -149,6 +162,9 @@
    * 图标点击重置页数
    */
   function currentSelectClick() {
+    if (props.disabled) {
+      return
+    }
     iconOpen.value = true;
     setTimeout(()=>{
       iconListRef.value.currentSelectClick();
@@ -185,6 +201,12 @@
   @prefix-cls: ~'@{namespace}-icon-picker';
 
   .@{prefix-cls} {
+
+    // 输入框手势图标
+    .ant-input:not([disabled]) {
+      cursor: pointer;
+    }
+
     .ant-input-group-addon {
       padding: 0;
     }

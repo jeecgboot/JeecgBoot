@@ -4,7 +4,7 @@
       <BasicForm @register="register" />
     </CollapseContainer>
 
-    <CollapseContainer title="超过3行自动收起，折叠时保留2行" class="mt-4">
+    <CollapseContainer title="超过5列自动收起，折叠时保留2行" class="mt-4">
       <BasicForm @register="register1" />
     </CollapseContainer>
   </PageWrapper>
@@ -175,11 +175,12 @@
         labelWidth: 120,
         schemas: [...getSchamas(), ...getAppendSchemas(), { field: '', component: 'Divider', label: '更多字段' }, ...extraSchemas],
         actionColOptions: {
-          span: 24,
+          span: 8,
         },
         compact: true,
         showAdvancedButton: true,
-        alwaysShowLines: 2,
+        autoAdvancedCol: 2,
+        alwaysShowLines: 1,
       });
       return {
         register,

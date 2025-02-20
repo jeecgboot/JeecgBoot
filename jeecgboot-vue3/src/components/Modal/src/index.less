@@ -19,6 +19,11 @@
     .@{namespace}-basic-title {
       cursor: default !important;
     }
+    // update-begin--author:liaozhiyang---date:20241225---for：【issues/7601】ant-design-vue@4.2.6后弹窗全屏底部有空隙
+    & > div:has( > .ant-modal-content) {
+      height: 100%;
+    }
+    // update-end--author:liaozhiyang---date:20241225---for：【issues/7601】ant-design-vue@4.2.6后弹窗全屏底部有空隙
   }
 }
 
@@ -76,10 +81,12 @@
   }
 
   .ant-modal-close-x {
-    display: inline-block;
-    width: 96px;
-    height: 56px;
-    line-height: 56px;
+    // update-begin--author:liaozhiyang---date:20241010---for：【issues/7260】原生a-modal关闭按钮位置偏移
+    // display: inline-block;
+    // width: 96px;
+    // height: 56px;
+    // line-height: 56px;
+    // update-end--author:liaozhiyang---date:20241010---for：【issues/7260】原生a-modal关闭按钮位置偏移
   }
 
   .ant-modal-confirm-body {

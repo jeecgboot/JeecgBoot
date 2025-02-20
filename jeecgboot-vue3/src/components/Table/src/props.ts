@@ -108,6 +108,9 @@ export const basicProps = {
   },
   minHeight: propTypes.number,
   maxHeight: propTypes.number,
+  // update-begin--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
+  expandColumnWidth: propTypes.number.def(48),
+  // update-end--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
   // 统一设置列最大宽度
   maxColumnWidth: propTypes.number,
   dataSource: {

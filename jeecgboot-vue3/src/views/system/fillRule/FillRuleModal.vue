@@ -10,6 +10,9 @@
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { formSchema } from './fill.rule.data';
   import { saveFillRule, updateFillRule } from './fill.rule.api';
+  import {useMessage} from "@/hooks/web/useMessage";
+
+  const { createMessage: $message } = useMessage();
 
   //设置标题
   const title = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));
@@ -43,6 +46,20 @@
   async function handleSubmit() {
     try {
       let formValue = await validate();
+
+      // 检查参数是否合法
+      let ruleParams = formValue.ruleParams;
+      if (!!ruleParams) {
+        ruleParams = JSON.parse(ruleParams);
+        for (const key of Object.keys(ruleParams)) {
+          // online 保留字检查
+          if (key === 'onl_watch') {
+            $message.error('参数名称不能是onl_watch');
+            return
+          }
+        }
+      }
+
       setModalProps({ confirmLoading: true });
       if (isUpdate.value) {
         let allFieldsValue = getFieldsValue();

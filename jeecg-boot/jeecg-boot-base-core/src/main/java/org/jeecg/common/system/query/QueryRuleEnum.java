@@ -54,8 +54,10 @@ public enum QueryRuleEnum {
     NOT_EMPTY("NOT_EMPTY","not_empty","值不为空"),
     /**查询规则 不包含*/
     NOT_IN("NOT_IN","not_in","不包含"),
-    /**查询规则 多词匹配*/
+    /**查询规则 多词精确匹配*/
     ELE_MATCH("ELE_MATCH","elemMatch","多词匹配"),
+    /**查询规则 多词精确不匹配*/
+    ELE_NOT_MATCH("ELE_NOT_MATCH","elemNotMatch","多词精确不匹配"),
     /**查询规则 范围查询*/
     RANGE("RANGE","range","范围查询"),
     /**查询规则 不在范围内查询*/

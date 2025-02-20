@@ -23,11 +23,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
-import org.jeecg.modules.system.service.ISysTenantPackService;
-import org.jeecg.modules.system.service.ISysTenantService;
-import org.jeecg.modules.system.service.ISysUserService;
-import org.jeecg.modules.system.service.ISysUserTenantService;
-import org.jeecg.modules.system.service.ISysDepartService;
+import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.vo.SysUserTenantVo;
 import org.jeecg.modules.system.vo.tenant.TenantDepartAuthInfo;
 import org.jeecg.modules.system.vo.tenant.TenantPackModel;
@@ -146,6 +142,21 @@ public class SysTenantController {
             result.error500("操作失败");
         }
         return result;
+    }
+
+    /**
+     * [QQYUN-11032]【jeecg】租户套餐管理增加初始化套餐包按钮
+     * @param tenantId
+     * @return
+     * @author chenrui
+     * @date 2025/2/6 18:24
+     */
+    @RequiresPermissions("system:tenant:syncDefaultPack")
+    @PostMapping(value = "/syncDefaultPack")
+    public Result<?> syncDefaultPack(@RequestParam(name="tenantId",required=true) Integer tenantId) {
+        //同步默认产品包
+        sysTenantPackService.syncDefaultPack(tenantId);
+        return Result.OK("操作成功");
     }
 
     /**

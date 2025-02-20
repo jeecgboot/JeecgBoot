@@ -161,11 +161,8 @@ export function useColumns(
     const viewColumns = sortFixedColumn(unref(getColumnsRef));
 
     const columns = cloneDeep(viewColumns);
-    const result = columns
-      .filter((column) => {
-        return hasPermission(column.auth) && isIfShow(column);
-      })
-      .map((column) => {
+    const formatEditColumn = (columns) => {
+      return columns.map((column) => {
         // update-begin--author:liaozhiyang---date:20230718---for: 【issues-179】antd3 一些警告以及报错(针对表格)
         if(column.slots?.customRender) {
           // slots的备份，兼容老的写法，转成新写法避免控制台警告
@@ -198,8 +195,17 @@ export function useColumns(
         if ((edit || editRow) && !isDefaultAction) {
           column.customRender = renderEditCell(column);
         }
+        // update-begin--author:liaozhiyang---date:20241021---for：【pull/7333】修复分组表头可编辑表格失效问题
+        if (column.children?.length) {
+          formatEditColumn(column.children.filter((item) => hasPermission(column.auth) && isIfShow(column)));
+        }
+        // update-end--author:liaozhiyang---date:20241021---for：【pull/7333】修复分组表头可编辑表格失效问题
         return reactive(column);
       });
+    };
+    // update-begin--author:liaozhiyang---date:20241021---for：【pull/7333】修复分组表头可编辑表格失效问题
+    const result = formatEditColumn(columns.filter((item) => hasPermission(item.auth) && isIfShow(item)));
+    // update-end--author:liaozhiyang---date:20241021---for：【pull/7333】修复分组表头可编辑表格失效问题
     // update-begin--author:liaozhiyang---date:20230919---for：【QQYUN-6387】展开写法（去掉报错）
     if (propsRef.value.expandedRowKeys && !propsRef.value.isTreeTable) {
       let index = 0;

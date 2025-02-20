@@ -395,7 +395,14 @@
           // update-end--author:liaozhiyang---date:20240809---for：【TV360X-2062】下拉搜索选择第二页数据后，第一次点击时(得到焦点)滚动条没复原到初始位置且数据会加载第二页数据(应该只加载第一页数据)
           initDictTableData();
         }
-        // update-end--author:liaozhiyang---date:20240709---for：【issues/6681】异步查询不生效
+        // update-begin--author:liaozhiyang---date:20240919---for：【TV360X-2348】得到焦点时options选项显示第一页内容（解决新增时显示非第一页内容）
+        if (Array.isArray(selectedAsyncValue.value) && selectedAsyncValue.value.length === 0 && isDictTable.value && props.async) {
+          if (pageNo > 2) {
+            options.value = [];
+            initDictTableData();
+          }
+        }
+        // update-end--author:liaozhiyang---date:20240919---for：【TV360X-2348】得到焦点时options选项显示第一页内容（解决新增时显示非第一页内容）
         attrs.onFocus?.();
       };
       // update-end--author:liaozhiyang---date:20240523---for：【TV360X-26】下拉搜索控件选中选项后再次点击下拉应该显示初始的下拉选项，而不是只展示选中结果

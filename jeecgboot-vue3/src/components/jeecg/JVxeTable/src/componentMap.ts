@@ -94,4 +94,15 @@ export function definedComponent() {
   // addComponent(JVxeTypes.userSelect, JVxeUserSelectCell)
 }
 
+/**
+ * 清空注册的组件
+ */
+export function clearComponent() {
+  componentMap.clear();
+
+  // update-begin--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
+  import.meta.env.DEV && (window[JVxeComponents] = componentMap);
+  // update-end--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
+}
+
 export { componentMap };

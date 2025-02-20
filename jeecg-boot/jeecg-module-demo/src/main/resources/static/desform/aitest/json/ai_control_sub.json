@@ -1,0 +1,370 @@
+{
+  "list": [
+    {
+      "key": "1717072932495_439966",
+      "type": "card",
+      "isAutoGrid": true,
+      "isContainer": true,
+      "list": [
+        {
+          "type": "input",
+          "name": "名称",
+          "className": "form-input",
+          "icon": "icon-input",
+          "hideTitle": false,
+          "options": {
+            "width": "100%",
+            "defaultValue": "",
+            "required": true,
+            "dataType": null,
+            "pattern": "",
+            "placeholder": "",
+            "clearable": false,
+            "readonly": false,
+            "disabled": false,
+            "fillRuleCode": "",
+            "showPassword": false,
+            "unique": false,
+            "hidden": false,
+            "hiddenOnAdd": false,
+            "fieldNote": "",
+            "autoWidth": 50
+          },
+          "advancedSetting": {
+            "defaultValue": {
+              "type": "compose",
+              "value": "",
+              "format": "string",
+              "allowFunc": true,
+              "valueSplit": "",
+              "customConfig": false
+            }
+          },
+          "remoteAPI": {
+            "url": "",
+            "executed": false
+          },
+          "key": "1717072932495_556479",
+          "model": "input_1717072932495_556479",
+          "modelType": "main",
+          "rules": [
+            {
+              "required": true,
+              "message": "${title}必须填写"
+            }
+          ],
+          "isSubItem": false
+        },
+        {
+          "type": "number",
+          "name": "数字",
+          "className": "form-number",
+          "icon": "icon-number",
+          "hideTitle": false,
+          "options": {
+            "width": "",
+            "required": false,
+            "defaultValue": 0,
+            "placeholder": "",
+            "controls": false,
+            "min": 0,
+            "minUnlimited": true,
+            "max": 100,
+            "maxUnlimited": true,
+            "step": 1,
+            "disabled": false,
+            "controlsPosition": "right",
+            "unitText": "",
+            "unitPosition": "suffix",
+            "showPercent": false,
+            "align": "left",
+            "hidden": false,
+            "hiddenOnAdd": false,
+            "fieldNote": "",
+            "autoWidth": 50
+          },
+          "advancedSetting": {
+            "defaultValue": {
+              "type": "compose",
+              "value": "",
+              "format": "number",
+              "allowFunc": true,
+              "valueSplit": "",
+              "customConfig": false
+            }
+          },
+          "remoteAPI": {
+            "url": "",
+            "executed": false
+          },
+          "key": "1717072985868_606195",
+          "model": "number_1717072985868_606195",
+          "modelType": "main",
+          "rules": [],
+          "isSubItem": false
+        }
+      ],
+      "options": {
+        "required": false,
+        "hiddenOnAdd": false,
+        "hidden": false,
+        "fieldNote": ""
+      },
+      "model": "card_1717072932495_439966",
+      "hideTitle": false,
+      "modelType": "main"
+    },
+    {
+      "key": "1717072988159_545097",
+      "type": "card",
+      "isAutoGrid": true,
+      "isContainer": true,
+      "list": [
+        {
+          "type": "money",
+          "name": "金额",
+          "className": "form-money",
+          "icon": "icon-money",
+          "hideTitle": false,
+          "options": {
+            "width": "180px",
+            "placeholder": "请输入金额",
+            "required": false,
+            "unitText": "元",
+            "unitPosition": "suffix",
+            "precision": 2,
+            "hidden": false,
+            "disabled": false,
+            "hiddenOnAdd": false,
+            "fieldNote": "",
+            "autoWidth": 50
+          },
+          "advancedSetting": {
+            "defaultValue": {
+              "type": "compose",
+              "value": "",
+              "format": "number",
+              "allowFunc": true,
+              "valueSplit": "",
+              "customConfig": false
+            }
+          },
+          "remoteAPI": {
+            "url": "",
+            "executed": false
+          },
+          "key": "1717072988159_568693",
+          "model": "money_1717072988159_568693",
+          "modelType": "main",
+          "rules": [],
+          "isSubItem": false
+        },
+        {
+          "type": "select",
+          "name": "下拉选择框",
+          "className": "form-select",
+          "icon": "icon-select",
+          "hideTitle": false,
+          "options": {
+            "defaultValue": "",
+            "multiple": false,
+            "disabled": false,
+            "clearable": true,
+            "placeholder": "",
+            "required": false,
+            "showLabel": false,
+            "showType": "default",
+            "width": "",
+            "useColor": false,
+            "colorIteratorIndex": 3,
+            "options": [
+              {
+                "value": "下拉框1",
+                "itemColor": "#2196F3"
+              },
+              {
+                "value": "下拉框2",
+                "itemColor": "#08C9C9"
+              },
+              {
+                "value": "下拉框3",
+                "itemColor": "#00C345"
+              }
+            ],
+            "remote": false,
+            "filterable": false,
+            "remoteOptions": [],
+            "props": {
+              "value": "value",
+              "label": "label"
+            },
+            "remoteFunc": "",
+            "hidden": false,
+            "hiddenOnAdd": false,
+            "fieldNote": "",
+            "autoWidth": 50
+          },
+          "advancedSetting": {
+            "defaultValue": {
+              "type": "compose",
+              "value": "",
+              "format": "string",
+              "allowFunc": true,
+              "valueSplit": ",",
+              "customConfig": true
+            }
+          },
+          "remoteAPI": {
+            "url": "",
+            "executed": false
+          },
+          "key": "1717072991431_622198",
+          "model": "select_1717072991431_622198",
+          "modelType": "main",
+          "rules": [],
+          "isSubItem": false
+        }
+      ],
+      "options": {
+        "required": false,
+        "hiddenOnAdd": false,
+        "hidden": false,
+        "fieldNote": ""
+      },
+      "model": "card_1717072988159_545097",
+      "hideTitle": false,
+      "modelType": "main"
+    },
+    {
+      "key": "1717072932495_382575",
+      "type": "card",
+      "isAutoGrid": true,
+      "isContainer": true,
+      "list": [
+        {
+          "type": "imgupload",
+          "name": "图片上传",
+          "className": "form-tupian",
+          "icon": "icon-tupian",
+          "hideTitle": false,
+          "options": {
+            "defaultValue": [],
+            "size": {
+              "width": 100,
+              "height": 100
+            },
+            "width": "",
+            "tokenFunc": "funcGetToken",
+            "token": "",
+            "domain": "http://img.h5huodong.com",
+            "disabled": false,
+            "length": 9,
+            "multiple": true,
+            "hidden": false,
+            "hiddenOnAdd": false,
+            "required": false,
+            "fieldNote": "",
+            "autoWidth": 50
+          },
+          "key": "1717072996509_795340",
+          "model": "imgupload_1717072996509_795340",
+          "modelType": "main",
+          "rules": [],
+          "isSubItem": false
+        },
+        {
+          "type": "file-upload",
+          "name": "附件",
+          "className": "form-file-upload",
+          "icon": "icon-shangchuan",
+          "hideTitle": false,
+          "options": {
+            "defaultValue": [],
+            "token": "",
+            "length": 1,
+            "drag": false,
+            "multiple": false,
+            "disabled": false,
+            "buttonText": "添加附件",
+            "tokenFunc": "funcGetToken",
+            "hidden": false,
+            "hiddenOnAdd": false,
+            "required": false,
+            "fieldNote": "",
+            "autoWidth": 50
+          },
+          "key": "1717072932495_669325",
+          "model": "file_upload_1717072932495_669325",
+          "modelType": "main",
+          "rules": [],
+          "isSubItem": false
+        }
+      ],
+      "options": {
+        "required": false,
+        "hiddenOnAdd": false,
+        "hidden": false,
+        "fieldNote": ""
+      },
+      "model": "card_1717072932495_382575",
+      "hideTitle": false,
+      "modelType": "main"
+    }
+  ],
+  "config": {
+    "titleField": "input_1717072932495_556479",
+    "showHeaderTitle": true,
+    "labelWidth": 100,
+    "labelPosition": "top",
+    "size": "small",
+    "dialogOptions": {
+      "top": 20,
+      "width": 1000,
+      "padding": {
+        "top": 25,
+        "right": 25,
+        "bottom": 30,
+        "left": 25
+      }
+    },
+    "disabledAutoGrid": false,
+    "designMobileView": false,
+    "enableComment": true,
+    "hasWidgets": [
+      "input",
+      "number",
+      "card",
+      "money",
+      "select",
+      "imgupload",
+      "file-upload"
+    ],
+    "expand": {
+      "js": "",
+      "css": "",
+      "url": {
+        "js": "",
+        "css": ""
+      }
+    },
+    "transactional": true,
+    "customRequestURL": [
+      {
+        "url": ""
+      }
+    ],
+    "allowExternalLink": false,
+    "externalLinkShowData": false,
+    "headerImgUrl": "",
+    "externalTitle": "",
+    "enableNotice": false,
+    "noticeMode": "external",
+    "noticeType": "system",
+    "noticeReceiver": "",
+    "allowPrint": false,
+    "allowJmReport": false,
+    "jmReportURL": "",
+    "bizRuleConfig": [],
+    "bigDataMode": false
+  }
+}

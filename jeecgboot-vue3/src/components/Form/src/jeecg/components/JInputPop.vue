@@ -13,9 +13,9 @@
       </span>
     </template>
     <template #content>
-      <a-textarea ref="textareaRef" :value="innerValue" :disabled="disabled" :style="textareaStyle" v-bind="attrs" @input="onInputChange" />
+      <a-textarea ref="textareaRef" :value="innerValue" :disabled="disabled" :style="textareaStyle" v-bind="attrs" @input="onInputChange" @blur="onInputBlur" />
     </template>
-    <a-input :class="`${prefixCls}-input`" :value="innerValue" :disabled="disabled" v-bind="attrs" @change="onInputChange">
+    <a-input :class="`${prefixCls}-input`" :value="innerValue" :disabled="disabled" v-bind="attrs" @change="onInputChange" @blur="onInputBlur">
       <template #suffix>
         <Icon icon="ant-design:fullscreen-outlined" @click.stop="onShowPopup" />
       </template>
@@ -44,7 +44,7 @@
     popContainer: propTypes.oneOfType([propTypes.string, propTypes.func]).def(''),
   });
   const attrs = useAttrs();
-  const emit = defineEmits(['change', 'update:value']);
+  const emit = defineEmits(['change', 'update:value', 'blur']);
 
   const visible = ref<boolean>(false);
   const innerValue = ref<string>('');
@@ -91,6 +91,10 @@
   function emitValue(value) {
     emit('change', value);
     emit('update:value', value);
+  }
+
+  const onInputBlur = (event) => {
+    emit('blur', event);
   }
 </script>
 
