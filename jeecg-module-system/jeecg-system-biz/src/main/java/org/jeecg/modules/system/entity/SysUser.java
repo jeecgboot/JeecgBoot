@@ -190,6 +190,8 @@ public class SysUser implements Serializable {
     private String clientId;
     /**Mabang username*/
     private String mabangUsername;
+    /** User code is used to identify who created a sku*/
+    private String code;
 
     /**
      * 登录首页地址

@@ -128,5 +128,7 @@ public class LoginUser {
 	private String clientId;
 	/**Mabang username*/
 	private String mabangUsername;
+	/**User code*/
+	private String code;
 
 }

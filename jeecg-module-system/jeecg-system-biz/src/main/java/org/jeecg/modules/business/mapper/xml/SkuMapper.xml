@@ -816,4 +816,9 @@
           AND poc.erp_status &lt;&gt; 5
           AND s.id = #{shopId};
     </select>
+    <select id="latestSkuCounter" resultType="java.lang.String">
+        SELECT erp_code
+        FROM sku s
+        WHERE erp_code LIKE CONCAT(#{date}, #{userCode}, '%%%-', #{clientCode});
+    </select>
 </mapper>
