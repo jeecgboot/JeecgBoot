@@ -1830,4 +1830,11 @@ public class SysUserController {
             return Result.error("Mabang username not found");
         return Result.ok(sysUser.getMabangUsername());
     }
+    @GetMapping(value = "/userCode")
+    public Result<?> getUserCode() {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if(sysUser.getCode() == null || sysUser.getCode().isEmpty())
+            return Result.error(404,"User code not found");
+        return Result.ok(sysUser.getCode());
+    }
 }

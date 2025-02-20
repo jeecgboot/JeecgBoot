@@ -626,4 +626,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     public int countUnpairedSkus(String shopId) {
         return skuMapper.countUnpairedSkus(shopId);
     }
+
+    @Override
+    public int latestSkuCounter(String userCode, String clientCode, String date) {
+        List<String> skus = skuMapper.latestSkuCounter(userCode, clientCode, date);
+        List<Integer> counters = skus.stream().map(sku -> {
+            String counter = sku.split("-")[0].substring(8 + userCode.length());
+            return Integer.parseInt(counter);
+        }).collect(Collectors.toList());
+        return counters.stream().max(Integer::compareTo).orElse(0) + 1;
+    }
 }

@@ -531,7 +531,7 @@ public class SkuController {
         sku.setLabelData(map.get("labelData"));
         return sku;
     }
-    @PostMapping("syncSkus")
+    @PostMapping("/syncSkus")
     public Result<?> syncSkus(@RequestBody List<String> erpCodes) {
         Map<Sku, String> newSkusNeedTreatmentMap;
 
@@ -606,5 +606,12 @@ public class SkuController {
         page.setSize(pageSize);
         page.setTotal(total);
         return Result.OK(page);
+    }
+
+    @GetMapping(value = "/latestSkuCounter")
+    public Result<?> latestSkuCounter(@RequestParam(name= "userCode") String userCode,
+                                      @RequestParam(name= "clientCode") String clientCode,
+                                      @RequestParam(name= "date") String date) {
+        return Result.OK(skuService.latestSkuCounter(userCode, clientCode, date));
     }
 }

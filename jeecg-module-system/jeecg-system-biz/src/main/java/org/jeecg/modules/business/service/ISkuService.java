@@ -128,4 +128,6 @@ public interface ISkuService extends IService<Sku> {
     List<String> fetchUnpairedSkus(String shopId, int offset, Integer pageSize, String column, String order);
 
     int countUnpairedSkus(String shopId);
+
+    int latestSkuCounter(String userCode, String clientCode, String date);
 }

@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.codeGeneration.CompleteInvoiceCodeRule;
@@ -17,9 +16,7 @@ import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
 import org.jetbrains.annotations.NotNull;
-import org.simpleframework.xml.core.Complete;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Component;
@@ -61,6 +58,7 @@ public class ShippingInvoiceFactory {
     private final Environment env;
 
     private final SimpleDateFormat SUBJECT_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private final SimpleDateFormat CREATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final List<String> EU_COUNTRY_LIST = Arrays.asList("Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus",
             "Czech", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy",
@@ -1341,7 +1339,7 @@ public class ShippingInvoiceFactory {
         Client client = clientMapper.getClientFromPurchase(purchaseId);
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseId);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseId);
-        BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", order.getCreateTime().toString());
+        BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", CREATE_TIME_FORMAT.format(order.getCreateTime()));
         return new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
     }
     public CompleteInvoice buildExistingCompleteInvoice(String invoiceCode, String clientId, String start, String end, String filetype, String shippingMethod) throws UserException {

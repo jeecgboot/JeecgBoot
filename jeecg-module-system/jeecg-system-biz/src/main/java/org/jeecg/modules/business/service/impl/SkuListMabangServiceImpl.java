@@ -510,11 +510,19 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     @Override
     public Map<Sku, String> skuSyncUpsert(List<String> erpCodes) {
         Map<Sku, String> newSkusNeedTreatmentMap = new HashMap<>();
-        SkuListRequestBody body = new SkuListRequestBody();
-        body.setStockSkuList(String.join(",", erpCodes));
-        SkuListRawStream rawStream = new SkuListRawStream(body);
-        SkuListStream stream = new SkuListStream(rawStream);
-        List<SkuData> skusFromMabang = stream.all();
+        List<SkuData> skusFromMabang = new ArrayList<>();
+        List<List<String>> skusPartition = Lists.partition(erpCodes, 50);
+        for(List<String> skuPartition : skusPartition) {
+            SkuListRequestBody body = new SkuListRequestBody();
+            body.setStockSkuList(String.join(",", skuPartition));
+            SkuListRawStream rawStream = new SkuListRawStream(body);
+            SkuListStream stream = new SkuListStream(rawStream);
+            List<SkuData> partialSkusFromMabang = stream.all();
+            if(!partialSkusFromMabang.isEmpty()) {
+                skusFromMabang.addAll(partialSkusFromMabang);
+            }
+        }
+
         if (!skusFromMabang.isEmpty()) {
             // we save the skuDatas in DB
             // and store skus that need manual treatment
