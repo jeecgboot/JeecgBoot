@@ -195,11 +195,13 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
                 }
             }
             else {// on dépasse forcément le format A4 d'un PDF
-                if(((TOTAL_ROW - 44) % 63) < 13) {
+                if(((TOTAL_ROW - 44) % 63) < 16) {
+                    int dataSizeAfterFirstPage = data.size() - 44;
+                    int shift = (int) Math.ceil((double) (dataSizeAfterFirstPage) / 63) * 63; // we shift the footer to the next page
                     // Not enough space for footer
-                    sheet.shiftRows(startRow, fileLastRow, TOTAL_ROW - LAST_ROW + ((TOTAL_ROW-44)%63), true, false);
-                    imgShift = TOTAL_ROW-44 + ((TOTAL_ROW-44)%63) -1;
-                    TOTAL_ROW += ((TOTAL_ROW-44)%63) + 1;
+                    sheet.shiftRows(startRow, fileLastRow, shift + 20, true, false); // why 20 ? no idea, it just works
+                    imgShift = shift + 16; // 16 is the number of lines of footer
+                    TOTAL_ROW = 63 + shift; // we just yeet the total row to next page
                     footerRow = TOTAL_ROW+1;
                     situation = 4;
                 }
@@ -256,7 +258,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
         for (int i = 0; i < data.size(); i++) {
             lineNum = i + FIRST_ROW;
             rowValue = data.get(i);
-            log.info("Writing line {} with data {}", lineNum, rowValue);
+//            log.info("Writing line {} with data {}", lineNum, rowValue);
             configCell("C", lineNum, String.format("%06d", i + 1), factory.leftSideStyle());
             configCell("D", lineNum, rowValue.getCol1(), factory.leftSideStyle());
             configCell("E", lineNum, rowValue.getCol2(), factory.rightSideDecimalStyle());
@@ -342,15 +344,8 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
 
         if (targetClient.getCurrency().equals("USD")) {
             org.apache.poi.ss.usermodel.Row dollarRow;
-            String formula;
-            if ((((LAST_ROW + additionalRowNum - 44) % 63) < 13) && ((LAST_ROW + additionalRowNum - 44) % 63) > 0) {
-                dollarRow = sheet.getRow(TOTAL_ROW + 2);
-                formula = "H"+ (TOTAL_ROW + 2) +" *" + exchangeRate;
-            }
-            else {
-                dollarRow = sheet.getRow(data.size() >= 44 ? TOTAL_ROW + 3 : TOTAL_ROW + 2);
-                formula = "H" + (data.size() >= 44 ? TOTAL_ROW + 3 : TOTAL_ROW + 2) + " *" + exchangeRate;
-            }
+            dollarRow = sheet.getRow(TOTAL_ROW + 2);
+            String formula = "H"+ (TOTAL_ROW + 2) +" *" + exchangeRate;
             Cell dollarCell = dollarRow.createCell(7); // column H
             CellStyle cellStyle = factory.getWorkbook().createCellStyle();
             DataFormat format = factory.getWorkbook().createDataFormat();
