@@ -1231,4 +1231,56 @@ public class InvoiceController {
             }
         }
     }
+
+    @PostMapping("/makeShippingTest")
+    public Result<?> createShippingTestInvoice(@RequestBody int nbOfLines) throws UserException {
+        InvoiceMetaData metaData;
+        if(nbOfLines < 5)
+            throw new UserException("Number of lines must be at least 5");
+        try {
+            metaData = shippingInvoiceService.makeShippingInvoiceTest(nbOfLines);
+            return Result.OK(metaData);
+        } catch (UserException e) {
+            return Result.error(e.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Result.error("Sorry, server error, please try later");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @PostMapping("/makePurchaseTest")
+    public Result<?> createPurchaseTestInvoice(@RequestBody int nbOfLines) throws UserException {
+        InvoiceMetaData metaData;
+        if(nbOfLines < 5)
+            throw new UserException("Number of lines must be at least 5");
+        try {
+            metaData = purchaseOrderService.makeInvoiceTest(nbOfLines);
+            return Result.OK(metaData);
+        } catch (UserException e) {
+            return Result.error(e.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Result.error("Sorry, server error, please try later");
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @PostMapping("/makeCompleteTest")
+    public Result<?> createCompleteTestInvoice(@RequestBody int nbOfLines) throws UserException {
+        InvoiceMetaData metaData;
+        if(nbOfLines < 5)
+            throw new UserException("Number of lines must be at least 5");
+        try {
+            metaData = shippingInvoiceService.makeCompleteInvoiceTest(nbOfLines);
+            return Result.OK(metaData);
+        } catch (UserException e) {
+            return Result.error(e.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return Result.error("Sorry, server error, please try later");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

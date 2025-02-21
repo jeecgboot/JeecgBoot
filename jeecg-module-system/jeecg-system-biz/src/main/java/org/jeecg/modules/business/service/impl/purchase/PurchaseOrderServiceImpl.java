@@ -79,6 +79,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String INVOICE_DIR;
+    @Value("${jeecg.path.purchaseInvoiceTestDir}")
+    private String INVOICE_TEST_DIR;
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_DIR;
     @Value("${jeecg.path.shippingInvoicePdfDir}")
@@ -551,6 +553,29 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         String filename = "Invoice N°" + invoiceCode + " (" + client.getInvoiceEntity() + ").xlsx";
         Path template = Paths.get(INVOICE_TEMPLATE);
         Path newInvoice = Paths.get(INVOICE_DIR, filename);
+        Files.copy(template, newInvoice, StandardCopyOption.REPLACE_EXISTING);
+        PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
+        pv.toExcelFile(newInvoice);
+        return new InvoiceMetaData(filename,invoiceCode, pv.client().getInternalCode(), pv.client().getInvoiceEntity(), "");
+    }
+    @Override
+    public InvoiceMetaData makeInvoiceTest(int nbOfLines) throws IOException, UserException {
+        Client client = clientService.getClientBySku("test");
+        List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
+        // -5 because we have at least 5 lines of promotions
+        for (int i = 0; i < nbOfLines - 5; i++) {
+            purchaseOrderSkuList.add(new PurchaseInvoiceEntry("SKU" + i, "SKU" + i, 1, BigDecimal.ONE));
+        }
+        List<PromotionDetail> promotionDetails = new ArrayList<>();
+        for(int i = 0; i < 5; i++) {
+            promotionDetails.add(new PromotionDetail(1, BigDecimal.valueOf(0.5), "Test Promotion " + i));
+        }
+        String invoiceCode = "P-TEST-CODE-" + nbOfLines;
+        BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
+
+        String filename = "Invoice N°" + invoiceCode + " (" + client.getInvoiceEntity() + ")_" + nbOfLines + ".xlsx";
+        Path template = Paths.get(INVOICE_TEMPLATE);
+        Path newInvoice = Paths.get(INVOICE_TEST_DIR, filename);
         Files.copy(template, newInvoice, StandardCopyOption.REPLACE_EXISTING);
         PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
         pv.toExcelFile(newInvoice);
