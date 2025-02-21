@@ -107,6 +107,7 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * @throws IOException IO error while reading the file.
      */
     InvoiceMetaData makeInvoice(String purchaseID) throws IOException, URISyntaxException, UserException;
+    InvoiceMetaData makeInvoiceTest(int nbOfLines) throws IOException, URISyntaxException, UserException;
 
     byte[] getInvoiceByte(String invoiceCode) throws IOException;
 

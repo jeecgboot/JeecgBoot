@@ -8,6 +8,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.excel.SheetManager;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoice;
+import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry;
 import org.jeecg.modules.business.domain.shippingInvoice.CompleteInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
@@ -119,9 +120,13 @@ public class PlatformOrderShippingInvoiceService {
 
     @Value("${jeecg.path.shippingInvoiceDir}")
     private String INVOICE_DIR;
+    @Value("${jeecg.path.shippingInvoiceTestDir}")
+    private String INVOICE_TEST_DIR;
 
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String PURCHASE_INVOICE_DIR;
+    @Value("${jeecg.path.purchaseInvoiceTestDir}")
+    private String PURCHASE_INVOICE_TEST_DIR;
     @Value("${jeecg.path.purchaseInventoryDir}")
     private String PURCHASE_INVENTORY_DIR;
 
@@ -929,5 +934,158 @@ public class PlatformOrderShippingInvoiceService {
             }
         }
         return Collections.singletonList(out);
+    }
+
+    @Transactional
+    public InvoiceMetaData makeShippingInvoiceTest(int nbOfLines) throws Exception {
+        // Creates invoice by factory
+        Client client = clientService.getClientBySku("TEST");
+        Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent = new HashMap<>();
+        List<SavRefundWithDetail> savRefunds = new ArrayList<>();
+        List<ExtraFeeResult> extraFees = new ArrayList<>();
+        BigDecimal exchangeRate = BigDecimal.ONE;
+        String invoiceCode = "SI-TEST-2" + nbOfLines;
+
+        List<PlatformOrderContent> poc = new ArrayList<>();
+        PlatformOrderContent content = new PlatformOrderContent();
+        content.setSkuId("TEST");
+        content.setErpStatus("3");
+        content.setQuantity(1);
+        content.setVat(BigDecimal.ZERO);
+        content.setShippingFee(BigDecimal.ZERO);
+        content.setPickingFee(BigDecimal.ZERO);
+        content.setShippingFee(BigDecimal.ZERO);
+        content.setServiceFee(BigDecimal.ONE);
+        poc.add(content);
+
+        for(int i = 0; i < nbOfLines - 4; i++) {
+            PlatformOrder po = new PlatformOrder();
+            po.setCountry("Country" + i);
+            po.setPickingFee(BigDecimal.ZERO);
+            po.setOrderServiceFee(BigDecimal.ZERO);
+            po.setPackagingMaterialFee(BigDecimal.ZERO);
+            po.setFretFee(BigDecimal.ZERO);
+            po.setPlatformOrderId("TEST" + i);
+            poc.get(0).setPlatformOrderId("TEST" + i);
+            ordersToContent.put(po, poc);
+        }
+
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, exchangeRate);
+        Path src;
+        src = Paths.get(SHIPPING_INVOICE_TEMPLATE_US);
+//        src = Paths.get(SHIPPING_INVOICE_TEMPLATE_EU);
+
+        // Writes invoice content to a new excel file
+        String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ")_" + nbOfLines +".xlsx";
+        Path out = Paths.get(INVOICE_TEST_DIR, filename);
+        Files.copy(src, out, StandardCopyOption.REPLACE_EXISTING);
+        invoice.toExcelFile(out);
+        convertToPdfTest(invoiceCode, "invoice");
+
+        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
+    }
+    @Transactional
+    public InvoiceMetaData makeCompleteInvoiceTest(int nbOfLines) throws Exception {
+        // Creates invoice by factory
+        Client client = clientService.getClientBySku("TEST");
+        Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent = new HashMap<>();
+        List<SavRefundWithDetail> savRefunds = new ArrayList<>();
+        List<ExtraFeeResult> extraFees = new ArrayList<>();
+        List<PromotionDetail> promotionDetails = new ArrayList<>();
+        List<PurchaseInvoiceEntry> purchaseInvoiceEntries = new ArrayList<>();
+        BigDecimal exchangeRate = BigDecimal.ONE;
+
+        String invoiceCode = "CI-TEST-7-" + nbOfLines;
+
+        List<PlatformOrderContent> poc = new ArrayList<>();
+        PlatformOrderContent content = new PlatformOrderContent();
+        content.setSkuId("TEST");
+        content.setErpStatus("3");
+        content.setQuantity(1);
+        content.setVat(BigDecimal.ZERO);
+        content.setShippingFee(BigDecimal.ZERO);
+        content.setPickingFee(BigDecimal.ZERO);
+        content.setShippingFee(BigDecimal.ZERO);
+        content.setServiceFee(BigDecimal.ONE);
+        poc.add(content);
+
+        PlatformOrder po = new PlatformOrder();
+        po.setCountry("Country");
+        po.setPickingFee(BigDecimal.ZERO);
+        po.setOrderServiceFee(BigDecimal.ZERO);
+        po.setPackagingMaterialFee(BigDecimal.ZERO);
+        po.setFretFee(BigDecimal.ZERO);
+        po.setPlatformOrderId("TEST");
+        poc.get(0).setPlatformOrderId("TEST");
+        ordersToContent.put(po, poc);
+        for(int i = 0; i < nbOfLines - 5; i++) {
+            PurchaseInvoiceEntry entry = new PurchaseInvoiceEntry("SKU" + i, "Product" + i, 1, BigDecimal.ONE);
+            purchaseInvoiceEntries.add(entry);
+        }
+
+        CompleteInvoice invoice = new CompleteInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, purchaseInvoiceEntries, promotionDetails, exchangeRate);
+        Path src;
+//        src = Paths.get(COMPLETE_INVOICE_TEMPLATE_US);
+        src = Paths.get(COMPLETE_INVOICE_TEMPLATE_EU);
+
+        // Writes invoice content to a new excel file
+        String filename = "Complete invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ") _" + nbOfLines + ".xlsx";
+        Path out = Paths.get(INVOICE_TEST_DIR, filename);
+        Files.copy(src, out, StandardCopyOption.REPLACE_EXISTING);
+        invoice.toExcelFile(out);
+        convertToPdfTest(invoiceCode, "invoice");
+        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
+    }
+    public void convertToPdfTest(String invoiceNumber, String fileType) throws Exception {
+        String excelFilePath = getInvoiceListTest(invoiceNumber, fileType);// (C:\PATH\filename.xlsx)
+
+        if(!excelFilePath.equals("ERROR")) {
+            String pdfFilePath= INVOICE_PDF_DIR + "/" + invoiceNumber + ".pdf";
+            pdfFilePath = INVOICE_PDF_DIR + "/Invoice N°" + invoiceNumber + ".pdf";
+
+
+            Pattern p = Pattern.compile("^(.*)[\\/\\\\](.*)(\\.[a-z]+)"); //group(1): "C:\PATH" , group(2) : "filename", group(3): ".xlsx"
+            Matcher m = p.matcher(excelFilePath);
+            if (m.matches()) {
+                pdfFilePath = INVOICE_PDF_DIR + "/" + m.group(2) + ".pdf";
+            }
+            // Créé un classeur pour charger le fichier Excel
+            PdfSaveOptions saveOptions = new PdfSaveOptions();
+            saveOptions.setDefaultFont("Arial");
+            saveOptions.setCheckWorkbookDefaultFont(false);
+            Workbook workbook = new Workbook(excelFilePath);
+            Worksheet sheet = workbook.getWorksheets().get(0);
+            // get number of lines
+            Cells cells = sheet.getCells();
+            int maxRow = cells.getMaxDataRow();
+            PageSetup pageSetup = sheet.getPageSetup();
+            // Setting the number of pages to which the length of the worksheet will
+            if(maxRow < 63) {
+                // be spanned
+                pageSetup.setFitToPagesTall(1);
+
+                // Setting the number of pages to which the width of the worksheet will be spanned
+                pageSetup.setFitToPagesWide(1);
+            }
+            // On enregistre le document au format PDF
+            workbook.save(pdfFilePath, saveOptions);
+        }
+    }
+    public String getInvoiceListTest(String invoiceNumber, String filetype) throws UserException, IOException {
+        log.info("Invoice number : " + invoiceNumber);
+        List<Path> pathList = new ArrayList<>();
+        log.info("File asked is of type invoice");
+        if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name()))
+            pathList = getPath(PURCHASE_INVOICE_TEST_DIR, invoiceNumber);
+        else
+            pathList = getPath(INVOICE_TEST_DIR, invoiceNumber);
+        if(pathList.isEmpty()) {
+            log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
+            return "ERROR";
+        }
+        for (Path path : pathList) {
+            log.info(path.toString());
+        }
+        return pathList.get(0).toString();
     }
 }

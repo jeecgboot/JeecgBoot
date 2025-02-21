@@ -224,6 +224,7 @@ jeecg:
     purchaseTemplatePath: /wia/files/Purchase_Invoice_Template.xlsx
     # where to store generated file
     purchaseInvoiceDir: /wia/invoices/purchase
+    purchaseInvoiceTestDir: /wia/invoices/test/purchase
     purchaseInventoryDir: /wia/invoices/inventory
 
     # shipping invoice template
@@ -235,6 +236,7 @@ jeecg:
     completeTemplatePath_US: /wia/files/Complete_Invoice_Template_US.xlsx
     # where to store generated file
     shippingInvoiceDir: /wia/invoices/shipping
+    shippingInvoiceTestDir: /wia/invoices/test/shipping
     shippingInvoiceDetailDir: /wia/invoices/shippingDetail
     shippingInvoicePdfDir: /wia/invoices/pdf/shipping
     shippingInvoiceDetailPdfDir: /wia/invoices/pdf/shippingDetail
