@@ -60,9 +60,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Autowired
     private PlatformOrderMapper platformOrderMapper;
     @Autowired
-    private IPlatformOrderContentService platformOrderContentService;
-    @Autowired
-    private IShippingInvoiceService shippingInvoiceService;
+    private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
     @Autowired
     private ISkuService skuService;
     @Autowired
@@ -559,7 +557,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         return new InvoiceMetaData(filename,invoiceCode, pv.client().getInternalCode(), pv.client().getInvoiceEntity(), "");
     }
     @Override
-    public InvoiceMetaData makeInvoiceTest(int nbOfLines) throws IOException, UserException {
+    public InvoiceMetaData makeInvoiceTest(int nbOfLines) throws Exception {
         Client client = clientService.getClientBySku("test");
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
         // -5 because we have at least 5 lines of promotions
@@ -570,7 +568,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         for(int i = 0; i < 5; i++) {
             promotionDetails.add(new PromotionDetail(1, BigDecimal.valueOf(0.5), "Test Promotion " + i));
         }
-        String invoiceCode = "P-TEST-CODE-" + nbOfLines;
+        String invoiceCode = "PI-TEST-1" + nbOfLines;
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
 
         String filename = "Invoice N°" + invoiceCode + " (" + client.getInvoiceEntity() + ")_" + nbOfLines + ".xlsx";
@@ -579,6 +577,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         Files.copy(template, newInvoice, StandardCopyOption.REPLACE_EXISTING);
         PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
         pv.toExcelFile(newInvoice);
+        platformOrderShippingInvoiceService.convertToPdfTest(invoiceCode, "invoice");
         return new InvoiceMetaData(filename,invoiceCode, pv.client().getInternalCode(), pv.client().getInvoiceEntity(), "");
     }
 

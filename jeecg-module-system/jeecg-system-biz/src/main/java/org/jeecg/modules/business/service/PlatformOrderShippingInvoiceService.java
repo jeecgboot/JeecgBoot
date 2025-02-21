@@ -988,6 +988,7 @@ public class PlatformOrderShippingInvoiceService {
     public InvoiceMetaData makeCompleteInvoiceTest(int nbOfLines) throws Exception {
         // Creates invoice by factory
         Client client = clientService.getClientBySku("TEST");
+        client.setCurrency("USD");
         Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent = new HashMap<>();
         List<SavRefundWithDetail> savRefunds = new ArrayList<>();
         List<ExtraFeeResult> extraFees = new ArrayList<>();
@@ -1025,8 +1026,11 @@ public class PlatformOrderShippingInvoiceService {
 
         CompleteInvoice invoice = new CompleteInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, purchaseInvoiceEntries, promotionDetails, exchangeRate);
         Path src;
-//        src = Paths.get(COMPLETE_INVOICE_TEMPLATE_US);
-        src = Paths.get(COMPLETE_INVOICE_TEMPLATE_EU);
+        if(client.getCurrency().equals("USD")) {
+            src = Paths.get(COMPLETE_INVOICE_TEMPLATE_US);
+        } else {
+            src = Paths.get(COMPLETE_INVOICE_TEMPLATE_EU);
+        }
 
         // Writes invoice content to a new excel file
         String filename = "Complete invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ") _" + nbOfLines + ".xlsx";
@@ -1060,11 +1064,16 @@ public class PlatformOrderShippingInvoiceService {
             int maxRow = cells.getMaxDataRow();
             PageSetup pageSetup = sheet.getPageSetup();
             // Setting the number of pages to which the length of the worksheet will
+            System.out.println("maxRow : " + maxRow);
             if(maxRow < 63) {
                 // be spanned
                 pageSetup.setFitToPagesTall(1);
 
                 // Setting the number of pages to which the width of the worksheet will be spanned
+                pageSetup.setFitToPagesWide(1);
+            }
+            else {
+                pageSetup.setFitToPagesTall((int) Math.ceil((double) maxRow /63));
                 pageSetup.setFitToPagesWide(1);
             }
             // On enregistre le document au format PDF

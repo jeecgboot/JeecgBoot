@@ -1262,7 +1262,7 @@ public class InvoiceController {
         } catch (IOException e) {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
