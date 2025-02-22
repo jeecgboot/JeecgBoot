@@ -154,7 +154,7 @@ public class SysTenantController {
      * @author chenrui
      * @date 2025/2/6 18:24
      */
-    @RequiresPermissions("system:tenant:syncDefaultPack")
+    @PreAuthorize("@jps.requiresPermissions('system:tenant:syncDefaultPack')")
     @PostMapping(value = "/syncDefaultPack")
     public Result<?> syncDefaultPack(@RequestParam(name="tenantId",required=true) Integer tenantId) {
         //同步默认产品包
