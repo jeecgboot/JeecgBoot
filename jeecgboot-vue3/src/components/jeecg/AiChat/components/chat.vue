@@ -153,6 +153,7 @@
   import presetQuestion from './presetQuestion.vue';
   import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons-vue';
   import { message, Modal, Tabs } from 'ant-design-vue';
+  import { isObject, isString } from '/@/utils/is';
   import '../style/github-markdown.less';
   import '../style/highlight.less';
   import '../style/style.less';
@@ -250,40 +251,46 @@
         // 当从事件源接收到数据时触发
         evtSource.onmessage = function (e) {
           const data = e.data;
-          // console.log(e);
-          if (data === '[DONE]') {
-            updateChatSome(uuid, props.chatData.length - 1, { loading: false });
-            scrollToBottom();
-            handleStop();
-            evtSource.close(); // 关闭连接
-          } else {
-            try {
-              const _data = JSON.parse(data);
-              const content = _data.content;
-              if (content != undefined) {
-                lastText += content;
-                updateChat(uuid.value, props.chatData.length - 1, {
-                  dateTime: new Date().toLocaleString(),
-                  text: lastText,
-                  inversion: false,
-                  error: false,
-                  loading: true,
-                  conversationOptions: e.lastEventId == '[ERR]' ? null : { conversationId: data.conversationId, parentMessageId: e.lastEventId },
-                  requestOptions: { prompt: message, options: { ...options } },
-                });
-                scrollToBottom();
-              } else {
-                updateChatSome(uuid.value, props.chatData.length - 1, { loading: false });
-                scrollToBottom();
-                handleStop();
-              }
-            } catch (error) {
-              updateChatSome(uuid.value, props.chatData.length - 1, { loading: false });
+          let delay = 0;
+          setTimeout(() => {
+            if (data === '[DONE]') {
+              updateChatSome(uuid, props.chatData.length - 1, { loading: false });
               scrollToBottom();
               handleStop();
               evtSource.close(); // 关闭连接
+            } else {
+              try {
+                const _data = JSON.parse(data);
+                const content = _data.content;
+                if (content != undefined) {
+                  lastText += content;
+                  updateChat(uuid.value, props.chatData.length - 1, {
+                    dateTime: new Date().toLocaleString(),
+                    text: lastText,
+                    inversion: false,
+                    error: false,
+                    loading: true,
+                    conversationOptions: e.lastEventId == '[ERR]' ? null : { conversationId: data.conversationId, parentMessageId: e.lastEventId },
+                    requestOptions: { prompt: message, options: { ...options } },
+                  });
+                  scrollToBottom();
+                } else {
+                  // updateChatSome(uuid.value, props.chatData.length - 1, { loading: false });
+                  // scrollToBottom();
+                  // handleStop();
+                }
+              } catch (error: any) {
+                console.log('ai 聊天:::', error);
+                if (isObject(error) && isString(error.message) && error.message.endsWith('is not valid JSON')) {
+                  return;
+                }
+                updateChatSome(uuid.value, props.chatData.length - 1, { loading: false });
+                scrollToBottom();
+                handleStop();
+                evtSource.close(); // 关闭连接
+              }
             }
-          }
+          }, delay);
         };
         // 与事件源的连接无法打开时触发
         evtSource.onerror = function (e) {
@@ -347,6 +354,7 @@
   };
   // 停止响应
   const handleStop = () => {
+    console.log('ai 聊天：：：---停止响应');
     if (loading.value) {
       loading.value = false;
     }

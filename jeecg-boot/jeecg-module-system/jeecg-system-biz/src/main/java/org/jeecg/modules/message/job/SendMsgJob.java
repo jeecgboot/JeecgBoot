@@ -51,6 +51,9 @@ public class SendMsgJob implements Job {
 				md.setToUser(sysMessage.getEsReceiver());
 				md.setType(sysMessage.getEsType());
 				md.setToAll(false);
+				//update-begin---author:wangshuai---date:2024-11-12---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
+				md.setIsTimeJob(true);
+				//update-end---author:wangshuai---date:2024-11-12---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
 				sysBaseAPI.sendTemplateMessage(md);
 				//发送消息成功
 				sysMessage.setEsSendStatus(SendMsgStatusEnum.SUCCESS.getCode());

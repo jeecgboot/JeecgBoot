@@ -79,13 +79,8 @@
       function transform(arr) {
         let result: any = [];
         if (props.saveCode === 'region') {
-          // 81 香港、82 澳门
           const regionCode = arr[0];
-          if (['82', '81'].includes(regionCode.substring(0, 2))) {
-            result = [`${regionCode.substring(0, 2)}0000`, regionCode];
-          } else {
-            result = [`${regionCode.substring(0, 2)}0000`, `${regionCode.substring(0, 2)}${regionCode.substring(2, 4)}00`, regionCode];
-          }
+          result = [`${regionCode.substring(0, 2)}0000`, `${regionCode.substring(0, 2)}${regionCode.substring(2, 4)}00`, regionCode];
         } else if (props.saveCode === 'city') {
           const cityCode = arr[0];
           result = [`${cityCode.substring(0, 2)}0000`, cityCode];

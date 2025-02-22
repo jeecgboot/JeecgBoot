@@ -30,12 +30,15 @@
 
   import { MenuModeEnum, MenuSplitTyeEnum } from '/@/enums/menuEnum';
 
+  import { useAppStore } from "@/store/modules/app";
+  import { useGlobSetting } from "/@/hooks/setting";
   import { useMenuSetting } from '/@/hooks/setting/useMenuSetting';
   import { useTrigger, useDragLine, useSiderEvent } from './useLayoutSider';
   import { useAppInject } from '/@/hooks/web/useAppInject';
   import { useDesign } from '/@/hooks/web/useDesign';
 
   import DragBar from './DragBar.vue';
+
   export default defineComponent({
     name: 'LayoutSideBar',
     components: { Sider: Layout.Sider, LayoutMenu, DragBar, LayoutTrigger },
@@ -47,6 +50,9 @@
         useMenuSetting();
 
       const { prefixCls } = useDesign('layout-sideBar');
+
+      const glob = useGlobSetting()
+      const appStore = useAppStore()
 
       const { getIsMobile } = useAppInject();
 
@@ -65,6 +71,10 @@
       });
 
       const showClassSideBarRef = computed(() => {
+        // 控制是否显示侧边栏
+        if (appStore.mainAppProps.hideSider) {
+          return false;
+        }
         return unref(getSplit) ? !unref(getMenuHidden) : true;
       });
 
@@ -74,6 +84,8 @@
           {
             [`${prefixCls}--fixed`]: unref(getMenuFixed),
             [`${prefixCls}--mix`]: unref(getIsMixMode) && !unref(getIsMobile),
+            // 【JEECG作为乾坤子应用】
+            [`${prefixCls}--qiankun-micro`]: glob.isQiankunMicro,
           },
         ];
       });
@@ -129,6 +141,11 @@
       top: 0;
       left: 0;
       height: 100%;
+    }
+
+    // 【JEECG作为乾坤子应用】
+    &--qiankun-micro {
+      position: absolute !important;
     }
 
     &--mix {

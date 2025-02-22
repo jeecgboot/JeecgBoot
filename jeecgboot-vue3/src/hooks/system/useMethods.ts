@@ -34,13 +34,19 @@ export function useMethods() {
     reader.onload = async () => {
       if(reader.result){
         if(reader.result.toString().indexOf("success") !=-1){
-          const { success, message } = JSON.parse(reader.result.toString());
-          if (!success) {
-            createMessage.warning("导出失败，失败原因："+ message);
-          }else{
+          // update-begin---author:liaozhiyang---date:2025-02-11---for:【issues/7738】文件中带"success"导出报错 ---
+          try {
+            const { success, message } = JSON.parse(reader.result.toString());
+            if (!success) {
+              createMessage.warning('导出失败，失败原因：' + message);
+            } else {
+              exportExcel(name, isXlsx, data);
+            }
+            return;
+          } catch (error) {
             exportExcel(name, isXlsx, data);
           }
-          return;
+          // update-end---author:liaozhiyang---date:2025-02-11---for:【issues/7738】文件中带"success"导出报错 ---
         }
       }
       exportExcel(name, isXlsx, data);

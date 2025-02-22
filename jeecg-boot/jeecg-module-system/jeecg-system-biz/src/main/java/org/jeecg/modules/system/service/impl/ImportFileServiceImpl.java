@@ -27,6 +27,12 @@ public class ImportFileServiceImpl implements ImportFileServiceI {
 
     @Override
     public String doUpload(byte[] data, String saveUrl) {
-        return CommonUtils.uploadOnlineImage(data, upLoadPath, "import", uploadType);
+        //update-begin---author:chenrui ---date:20250114  for：[QQYUN-10902]AutoPoi Excel表格导入有问题，还会报个错。 #7703------------
+        String bizPath = "import";
+        if(null != saveUrl && !saveUrl.isEmpty()){
+            bizPath = saveUrl;
+        }
+        return CommonUtils.uploadOnlineImage(data, upLoadPath, bizPath, uploadType);
+        //update-end---author:chenrui ---date:20250114  for：[QQYUN-10902]AutoPoi Excel表格导入有问题，还会报个错。 #7703------------
     }
 }

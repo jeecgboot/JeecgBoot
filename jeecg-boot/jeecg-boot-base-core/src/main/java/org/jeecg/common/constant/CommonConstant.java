@@ -604,6 +604,11 @@ public interface CommonConstant {
     */
    String CHANGE_PHONE_REDIS_KEY_PRE = "sys:cache:phone:change_phone_msg:";
 
+  /**
+   * 手机号短信验证码redis-key的前缀
+   */
+   String LOG_OFF_PHONE_REDIS_KEY_PRE = "sys:cache:phone:qqy_log_off_user_msg:";
+
     /**
      * 缓存用户最后一次收到消息通知的时间 KEY
      */
