@@ -431,4 +431,46 @@ public class ShippingInvoiceController {
             shippingInvoiceService.setPaid(shippingNumbers);
         return Result.ok("Invoice set to paid.");
     }
+
+    @GetMapping(value = "/downloadCustomFile")
+    public ResponseEntity<?> downloadCustomFile(@RequestParam("input") String input) throws IOException, UserException {
+        boolean isEmployee = securityService.checkIsEmployee();
+        Client client;
+        if (!isEmployee) {
+            client = clientService.getCurrentClient();
+            if (client == null) {
+                log.error("Couldn't find the client");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body("");
+            }
+            log.error("Client {} is trying to download excel from string converter tool", client.getInternalCode());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body("You are not allowed to download this invoice.");
+        }
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String filename = platformOrderShippingInvoiceService.getCustomExcelPath(sysUser.getUsername(), input);
+        File file = new File(filename);
+
+        log.info("Filename : {}", file);
+
+        HttpHeaders header = new HttpHeaders();
+        header.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + filename);
+        header.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        header.add("Pragma", "no-cache");
+        header.add("Expires", "0");
+
+        Path path = Paths.get(file.getAbsolutePath());
+
+        log.info("Absolute Path : {} \nLength : {}", path, file.length());
+        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+
+        return ResponseEntity.ok()
+                .headers(header)
+                .contentLength(file.length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .body(resource);
+
+    }
 }

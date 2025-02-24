@@ -138,6 +138,9 @@ public class PlatformOrderShippingInvoiceService {
     private String INVOICE_DETAIL_PDF_DIR;
     @Value("${jeecg.path.invoiceDetailExportDir}")
     private String INVOICE_DETAIL_EXPORT_DIR;
+
+    @Value("${jeecg.path.customFileDir}")
+    private String CUSTOM_FILE_DIR;
     private static final String EXTENSION = ".xlsx";
 
     private final static String[] DETAILS_TITLES = {
@@ -193,6 +196,9 @@ public class PlatformOrderShippingInvoiceService {
             "Ventes 28j",
             "Ventes 42j",
             "Prix à l'unité",
+    };
+    private final static String[] CUSTOM_FILE_TITLES = {
+            "SKU",
     };
 
     public Period getValidPeriod(List<String> shopIDs) {
@@ -618,6 +624,34 @@ public class PlatformOrderShippingInvoiceService {
         System.gc();
         return Files.readAllBytes(target);
     }
+    public byte[] exportCustomExcel(String username, String data) throws IOException {
+        SheetManager sheetManager = SheetManager.createXLSX();
+        sheetManager.startDetailsSheet();
+        for (String title : CUSTOM_FILE_TITLES) {
+            sheetManager.write(title);
+            sheetManager.nextCol();
+        }
+        sheetManager.moveCol(0);
+        sheetManager.nextRow();
+        List<String> skuList = Stream.of(data.split("\n")).collect(Collectors.toList());
+        for (String sku : skuList) {
+            sheetManager.write(sku);
+            sheetManager.moveCol(0);
+            sheetManager.nextRow();
+        }
+
+        Path target = Paths.get(CUSTOM_FILE_DIR, "Custom_" + username + ".xlsx");
+        int i = 2;
+        while (Files.exists(target)) {
+            target = Paths.get(CUSTOM_FILE_DIR, "Custom_" + username + "_" + i + ".xlsx");
+            i++;
+        }
+        Files.createFile(target);
+        sheetManager.export(target);
+        sheetManager.getWorkbook().close();
+        System.gc();
+        return Files.readAllBytes(target);
+    }
 
     /**
      * make shipping invoice by client and type (shipping or complete)
@@ -828,6 +862,10 @@ public class PlatformOrderShippingInvoiceService {
             log.info(path.toString());
         }
         return pathList.get(0).toString();
+    }
+    public String getCustomExcelPath(String username, String data) throws IOException {
+        exportCustomExcel(username, data);
+        return getPath(CUSTOM_FILE_DIR, username).get(0).toString();
     }
     public String convertToPdf(String invoiceNumber, String fileType) throws Exception {
         String excelFilePath = getInvoiceList(invoiceNumber, fileType);// (C:\PATH\filename.xlsx)
