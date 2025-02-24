@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-module-system</artifactId>
-		<version>3.7.1</version>
+		<version>3.7.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -36,13 +36,13 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimureport-dashboard-spring-boot3-starter</artifactId>
+			<artifactId>jimureport-nosql-starter</artifactId>
 		</dependency>
-	<!-- 积木报表 mongo redis 支持包 
+		<!-- 积木BI -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimureport-nosql-starter</artifactId>
-		</dependency>-->
+			<artifactId>jimubi-spring-boot3-starter</artifactId>
+		</dependency>
 	</dependencies>
 	
 </project>

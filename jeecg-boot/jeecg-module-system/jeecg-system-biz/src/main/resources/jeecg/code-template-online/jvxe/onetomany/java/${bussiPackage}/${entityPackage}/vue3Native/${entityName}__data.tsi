@@ -187,6 +187,11 @@ export const ${sub.entityName?uncap_first}Columns: JVxeColumn[] = [
       <#if col.readonly=='Y'>
       disabled:true,
       </#if>
+<#elseif col.classType=='pca'>
+      type: JVxeTypes.pca,
+      <#if col.readonly=='Y'>
+      disabled:true,
+      </#if>
 <#elseif col.classType =='popup'>
 <#if popupBackFields?length gt 0>
     <#assign popupBackFields = "${popupBackFields}"+","+"${col.dictText}">

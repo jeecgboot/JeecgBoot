@@ -26,72 +26,74 @@
       </a-tabs>
       <a-divider />
       <!-- 执行时间预览 -->
-      <a-row :gutter="8">
-        <a-col :span="18" style="margin-top: 22px">
-          <a-row :gutter="8">
-            <a-col :span="8" style="margin-bottom: 12px">
-              <a-input v-model:value="inputValues.second" @blur="onInputBlur">
-                <template #addonBefore>
-                  <span class="allow-click" @click="activeKey = 'second'">秒</span>
-                </template>
-              </a-input>
-            </a-col>
-            <a-col :span="8" style="margin-bottom: 12px">
-              <a-input v-model:value="inputValues.minute" @blur="onInputBlur">
-                <template #addonBefore>
-                  <span class="allow-click" @click="activeKey = 'minute'">分</span>
-                </template>
-              </a-input>
-            </a-col>
-            <a-col :span="8" style="margin-bottom: 12px">
-              <a-input v-model:value="inputValues.hour" @blur="onInputBlur">
-                <template #addonBefore>
-                  <span class="allow-click" @click="activeKey = 'hour'">时</span>
-                </template>
-              </a-input>
-            </a-col>
-            <a-col :span="8" style="margin-bottom: 12px">
-              <a-input v-model:value="inputValues.day" @blur="onInputBlur">
-                <template #addonBefore>
-                  <span class="allow-click" @click="activeKey = 'day'">日</span>
-                </template>
-              </a-input>
-            </a-col>
-            <a-col :span="8" style="margin-bottom: 12px">
-              <a-input v-model:value="inputValues.month" @blur="onInputBlur">
-                <template #addonBefore>
-                  <span class="allow-click" @click="activeKey = 'month'">月</span>
-                </template>
-              </a-input>
-            </a-col>
-            <a-col :span="8" style="margin-bottom: 12px">
-              <a-input v-model:value="inputValues.week" @blur="onInputBlur">
-                <template #addonBefore>
-                  <span class="allow-click" @click="activeKey = 'week'">周</span>
-                </template>
-              </a-input>
-            </a-col>
-            <a-col :span="8">
-              <a-input v-model:value="inputValues.year" @blur="onInputBlur">
-                <template #addonBefore>
-                  <span class="allow-click" @click="activeKey = 'year'">年</span>
-                </template>
-              </a-input>
-            </a-col>
-            <a-col :span="16">
-              <a-input v-model:value="inputValues.cron" @blur="onInputCronBlur">
-                <template #addonBefore>
-                  <a-tooltip title="Cron表达式">式</a-tooltip>
-                </template>
-              </a-input>
-            </a-col>
-          </a-row>
-        </a-col>
-        <a-col :span="6">
-          <div>近十次执行时间（不含年）</div>
-          <a-textarea type="textarea" :value="preTimeList" :rows="5" />
-        </a-col>
-      </a-row>
+      <div style="overflow: hidden">
+        <a-row :gutter="8">
+          <a-col :span="18" style="margin-top: 22px">
+            <a-row :gutter="8">
+              <a-col :span="8" style="margin-bottom: 12px">
+                <a-input v-model:value="inputValues.second" @blur="onInputBlur">
+                  <template #addonBefore>
+                    <span class="allow-click" @click="activeKey = 'second'">秒</span>
+                  </template>
+                </a-input>
+              </a-col>
+              <a-col :span="8" style="margin-bottom: 12px">
+                <a-input v-model:value="inputValues.minute" @blur="onInputBlur">
+                  <template #addonBefore>
+                    <span class="allow-click" @click="activeKey = 'minute'">分</span>
+                  </template>
+                </a-input>
+              </a-col>
+              <a-col :span="8" style="margin-bottom: 12px">
+                <a-input v-model:value="inputValues.hour" @blur="onInputBlur">
+                  <template #addonBefore>
+                    <span class="allow-click" @click="activeKey = 'hour'">时</span>
+                  </template>
+                </a-input>
+              </a-col>
+              <a-col :span="8" style="margin-bottom: 12px">
+                <a-input v-model:value="inputValues.day" @blur="onInputBlur">
+                  <template #addonBefore>
+                    <span class="allow-click" @click="activeKey = 'day'">日</span>
+                  </template>
+                </a-input>
+              </a-col>
+              <a-col :span="8" style="margin-bottom: 12px">
+                <a-input v-model:value="inputValues.month" @blur="onInputBlur">
+                  <template #addonBefore>
+                    <span class="allow-click" @click="activeKey = 'month'">月</span>
+                  </template>
+                </a-input>
+              </a-col>
+              <a-col :span="8" style="margin-bottom: 12px">
+                <a-input v-model:value="inputValues.week" @blur="onInputBlur">
+                  <template #addonBefore>
+                    <span class="allow-click" @click="activeKey = 'week'">周</span>
+                  </template>
+                </a-input>
+              </a-col>
+              <a-col :span="8">
+                <a-input v-model:value="inputValues.year" @blur="onInputBlur">
+                  <template #addonBefore>
+                    <span class="allow-click" @click="activeKey = 'year'">年</span>
+                  </template>
+                </a-input>
+              </a-col>
+              <a-col :span="16">
+                <a-input v-model:value="inputValues.cron" @blur="onInputCronBlur">
+                  <template #addonBefore>
+                    <a-tooltip title="Cron表达式">式</a-tooltip>
+                  </template>
+                </a-input>
+              </a-col>
+            </a-row>
+          </a-col>
+          <a-col :span="6">
+            <div>近十次执行时间（不含年）</div>
+            <a-textarea type="textarea" :value="preTimeList" :rows="5" />
+          </a-col>
+        </a-row>
+      </div>
     </div>
   </div>
 </template>

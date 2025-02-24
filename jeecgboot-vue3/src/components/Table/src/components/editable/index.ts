@@ -73,6 +73,8 @@ export type EditRecordRow<T = Recordable> = Partial<
     submitCbs: Cbs[];
     cancelCbs: Cbs[];
     validCbs: Cbs[];
-    editValueRefs: Recordable<Ref>;
+    // update-begin--author:liaozhiyang---date:20250206---for：【issues/7709】当dataSource是响应式时，单元格编辑输入会自动关闭
+    editValueRefs: Recordable;
+    // update-end--author:liaozhiyang---date:20250206---for：【issues/7709】当dataSource是响应式时，单元格编辑输入会自动关闭
   } & T
 >;

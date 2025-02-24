@@ -230,11 +230,15 @@
       defaultCheckedKeys.value = permResult;
     }
   }
-  
+
   // VUE角色授权重复保存 #352
   async function doSave(params) {
     loading.value = true;
-    await saveRolePermission(params);
+    try {
+      await saveRolePermission(params);
+    } catch (e) {
+      loading.value = false;
+    }
     setTimeout(()=>{
       loading.value = false;
     }, 500)

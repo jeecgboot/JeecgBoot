@@ -9,9 +9,10 @@ import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 
 import { RootRoute } from '/@/router/routes';
 
-import { isOAuth2AppEnv } from '/@/views/sys/login/useLogin';
+import {isOAuth2AppEnv, isOAuth2DingAppEnv} from '/@/views/sys/login/useLogin';
 import { OAUTH2_THIRD_LOGIN_TENANT_ID } from "/@/enums/cacheEnum";
 import { setAuthCache } from "/@/utils/auth";
+import { PAGE_NOT_FOUND_NAME_404 } from '/@/router/constant';
 
 const LOGIN_PATH = PageEnum.BASE_LOGIN;
 //auth2登录路由
@@ -158,16 +159,23 @@ export function createPermissionGuard(router: Router) {
     //==============================【首次登录并且是企业微信或者钉钉的情况下才会调用】==================
     //判断是免登录页面,如果页面包含/tenantId/,那么就直接前往主页
     if(isOAuth2AppEnv() && to.path.indexOf("/tenantId/") != -1){
-      next(userStore.getUserInfo.homePath || PageEnum.BASE_HOME);
+      //update-begin---author:wangshuai---date:2024-11-08---for:【TV360X-2958】钉钉登录后打开了敲敲云，换其他账号登录后，再打开敲敲云显示的是原来账号的应用---
+      if (isOAuth2DingAppEnv()) {
+        next(OAUTH2_LOGIN_PAGE_PATH);
+      } else {
+        next(userStore.getUserInfo.homePath || PageEnum.BASE_HOME);
+      }
+      //update-end---author:wangshuai---date:2024-11-08---for:【TV360X-2958】钉钉登录后打开了敲敲云，换其他账号登录后，再打开敲敲云显示的是原来账号的应用---
       return;
     }
     //==============================【首次登录并且是企业微信或者钉钉的情况下才会调用】==================
-    
+    // update-begin--author:liaozhiyang---date:202401127---for：【issues/7500】vue-router4.5.0版本路由name:PageNotFound同名导致登录进不去
     // Jump to the 404 page after processing the login
-    if (from.path === LOGIN_PATH && to.name === PAGE_NOT_FOUND_ROUTE.name && to.fullPath !== (userStore.getUserInfo.homePath || PageEnum.BASE_HOME)) {
+    if (from.path === LOGIN_PATH && to.name === PAGE_NOT_FOUND_NAME_404 && to.fullPath !== (userStore.getUserInfo.homePath || PageEnum.BASE_HOME)) {
       next(userStore.getUserInfo.homePath || PageEnum.BASE_HOME);
       return;
     }
+    // update-end--author:liaozhiyang---date:202401127---for：【issues/7500】vue-router4.5.0版本路由name:PageNotFound同名导致登录进不去
 
     //update-begin---author:scott ---date:2024-02-21  for：【QQYUN-8326】刷新首页，不需要重新获取用户信息---
     // // get userinfo while last fetch time is empty
@@ -199,8 +207,8 @@ export function createPermissionGuard(router: Router) {
 
     router.addRoute(PAGE_NOT_FOUND_ROUTE as unknown as RouteRecordRaw);
     permissionStore.setDynamicAddedRoute(true);
-
-    if (to.name === PAGE_NOT_FOUND_ROUTE.name) {
+    // update-begin--author:liaozhiyang---date:202401127---for：【issues/7500】vue-router4.5.0版本路由name:PageNotFound同名导致登录进不去
+    if (to.name === PAGE_NOT_FOUND_NAME_404) {
       // 动态添加路由后，此处应当重定向到fullPath，否则会加载404页面内容
       next({ path: to.fullPath, replace: true, query: to.query });
     } else {
@@ -209,5 +217,6 @@ export function createPermissionGuard(router: Router) {
       const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect };
       next(nextData);
     }
+    // update-end--author:liaozhiyang---date:202401127---for：【issues/7500】vue-router4.5.0版本路由name:PageNotFound同名导致登录进不去
   });
 }

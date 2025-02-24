@@ -1,19 +1,21 @@
 <template>
-  <Table
-    v-if="summaryFunc || summaryData"
-    :showHeader="false"
-    :bordered="bordered"
-    :pagination="false"
-    :dataSource="getDataSource"
-    :rowKey="(r) => r[rowKey]"
-    :columns="getColumns"
-    tableLayout="fixed"
-    :scroll="scroll"
-  />
+  <div ref="tableFooter">
+    <Table
+      v-if="summaryFunc || summaryData"
+      :showHeader="false"
+      :bordered="bordered"
+      :pagination="false"
+      :dataSource="getDataSource"
+      :rowKey="(r) => r[rowKey]"
+      :columns="getColumns"
+      tableLayout="fixed"
+      :scroll="scroll"
+    />
+  </div>
 </template>
 <script lang="ts">
   import type { PropType } from 'vue';
-  import { defineComponent, unref, computed, toRaw } from 'vue';
+  import { defineComponent, unref, computed, toRaw, onMounted, onUnmounted, ref } from 'vue';
   import { Table } from 'ant-design-vue';
   import { cloneDeep } from 'lodash-es';
   import { isFunction } from '/@/utils/is';
@@ -47,7 +49,7 @@
     },
     setup(props) {
       const table = useTableContext();
-
+      const tableFooter = ref<any>(null);
       const getDataSource = computed((): Recordable[] => {
         const { summaryFunc, summaryData } = props;
         if (summaryData?.length) {
@@ -119,7 +121,24 @@
         }
         return columns;
       });
-      return { getColumns, getDataSource };
+      // update-begin--author:liaozhiyang---date:20250218---for：【issues/7773】合计没有跟着左右滚动条滚动
+      let mainTableBody, footerTable;
+      const handleSroll = () => {
+        const scrollLeft = mainTableBody.scrollLeft;
+        footerTable.scrollLeft = scrollLeft;
+      };
+      onMounted(() => {
+        setTimeout(() => {
+          mainTableBody = tableFooter.value?.parentNode?.parentNode?.querySelector('.ant-table-body');
+          footerTable = tableFooter.value?.querySelector('.ant-table-body');
+          mainTableBody?.addEventListener('scroll', handleSroll, false);
+        }, 1e3);
+      });
+      onUnmounted(() => {
+        mainTableBody?.addEventListener('scroll', handleSroll);
+      });
+      // update-end--author:liaozhiyang---date:20250218---for：【issues/7773】合计没有跟着左右滚动条滚动
+      return { getColumns, getDataSource, tableFooter };
     },
   });
 </script>

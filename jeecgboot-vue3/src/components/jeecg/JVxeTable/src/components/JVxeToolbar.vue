@@ -5,15 +5,17 @@
       <template #buttons>
         <div :class="`${prefixCls}-button div`" :size="btnSize">
           <slot v-if="showPrefix" name="toolbarPrefix" :size="btnSize" />
-          <a-button v-if="showAdd" type="primary" preIcon="ant-design:plus-outlined" :disabled="disabled" :loading="deleting" @click="trigger('add')">
-            <span>新增</span>
+          <a-button v-if="addBtnCfg.enabled && showAdd" type="primary" :preIcon="addBtnCfg.buttonIcon" :disabled="disabled" :loading="deleting" @click="trigger('add')">
+            <span>{{ addBtnCfg.buttonName }}</span>
           </a-button>
           <a-button v-if="showSave" preIcon="ant-design:save-outlined" :disabled="disabled" @click="trigger('save')">
             <span>保存</span>
           </a-button>
           <template v-if="deleting || selectedRowIds.length > 0">
-            <Popconfirm v-if="showRemove" :title="`确定要删除这 ${selectedRowIds.length} 项吗?`" :disabled="deleting" @confirm="onRemove">
-              <a-button preIcon="ant-design:minus-outlined" :disabled="disabled" :loading="deleting">删除</a-button>
+            <Popconfirm v-if="removeBtnCfg.enabled && showRemove" :title="`确定要删除这 ${selectedRowIds.length} 项吗?`" :disabled="deleting" @confirm="onRemove">
+              <a-button :preIcon="removeBtnCfg.buttonIcon" :disabled="disabled" :loading="deleting">
+                <span>{{ removeBtnCfg.buttonName }}</span>
+              </a-button>
             </Popconfirm>
             <template v-if="showClearSelection">
               <a-button preIcon="ant-design:delete-outlined" @click="trigger('clearSelection')">清空选择</a-button>
@@ -46,6 +48,16 @@
     disabledRows: propTypes.object,
     hasBtnAuth: propTypes.func,
     selectedRowIds: propTypes.array.def(() => []),
+    addBtnCfg: propTypes.object.def(() => ({
+      enabled: true,
+      buttonIcon: 'ant-design:plus-outlined',
+      buttonName: '新增',
+    })),
+    removeBtnCfg: propTypes.object.def(() => ({
+      enabled: true,
+      buttonIcon: 'ant-design:minus-outlined',
+      buttonName: '删除',
+    })),
   });
   const emit = defineEmits(['save', 'add', 'remove', 'clearSelection', 'register']);
   const xToolbarRef = ref({} as VxeToolbarInstance);

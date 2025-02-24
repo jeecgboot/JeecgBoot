@@ -123,6 +123,13 @@
           window.open(key);
           return;
         }
+        // update-begin--author:liaozhiyang---date:20250114---for:【issues/7706】顶部栏导航内部路由也可以支持采用新浏览器tab打开
+        const findItem = getMatchingMenu(props.items, key);
+        if (findItem?.internalOrExternal == true) {
+          window.open(location.origin + key);
+          return;
+        }
+        // update-end--author:liaozhiyang---date:20250114---for:【issues/7706】顶部栏导航内部路由也可以支持采用新浏览器tab打开
         // update-end--author:liaozhiyang---date:20240402---for:【QQYUN-8773】配置外部网址在顶部菜单模式和搜索打不开
         if (beforeClickFn && isFunction(beforeClickFn)) {
           const flag = await beforeClickFn(key);
@@ -218,6 +225,25 @@
         }
         return null;
       }
+      /**
+       * 2025-01-14
+       * liaozhiyang
+       * 获取菜单中匹配的path所在的项
+       */
+      const getMatchingMenu = (menus, path) => {
+        for (let i = 0, len = menus.length; i < len; i++) {
+          const item = menus[i];
+          if (item.path === path && !item.redirect && !item.paramPath) {
+            return item;
+          } else if (item.children?.length) {
+            const result = getMatchingMenu(item.children, path);
+            if (result) {
+              return result;
+            }
+          }
+        }
+        return '';
+      };
 
       return {
         handleMenuClick,

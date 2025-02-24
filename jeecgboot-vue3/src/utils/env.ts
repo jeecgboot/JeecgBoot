@@ -3,6 +3,7 @@ import type { GlobEnvConfig } from '/#/config';
 import { warn } from '/@/utils/log';
 import pkg from '../../package.json';
 import { getConfigFileName } from '../../build/getConfigFileName';
+import { getGlobal } from "@/qiankun/micro";
 
 export function getCommonStoragePrefix() {
   const { VITE_GLOB_APP_SHORT_NAME } = getAppEnvConfig();
@@ -17,10 +18,12 @@ export function getStorageShortName() {
 export function getAppEnvConfig() {
   const ENV_NAME = getConfigFileName(import.meta.env);
 
+  const global = getGlobal();
+
   const ENV = (import.meta.env.DEV
     ? // Get the global configuration (the configuration will be extracted independently when packaging)
       (import.meta.env as unknown as GlobEnvConfig)
-    : window[ENV_NAME as any]) as unknown as GlobEnvConfig;
+    : global[ENV_NAME as any]) as unknown as GlobEnvConfig;
 
   const {
     VITE_GLOB_APP_TITLE,
@@ -33,6 +36,10 @@ export function getAppEnvConfig() {
     VITE_GLOB_APP_CAS_BASE_URL,
     VITE_GLOB_DOMAIN_URL,
     VITE_GLOB_ONLINE_VIEW_URL,
+
+    // 【JEECG作为乾坤子应用】
+    VITE_GLOB_QIANKUN_MICRO_APP_NAME,
+    VITE_GLOB_QIANKUN_MICRO_APP_ENTRY,
   } = ENV;
 
   // if (!/^[a-zA-Z\_]*$/.test(VITE_GLOB_APP_SHORT_NAME)) {
@@ -52,6 +59,10 @@ export function getAppEnvConfig() {
     VITE_GLOB_APP_CAS_BASE_URL,
     VITE_GLOB_DOMAIN_URL,
     VITE_GLOB_ONLINE_VIEW_URL,
+
+    // 【JEECG作为乾坤子应用】
+    VITE_GLOB_QIANKUN_MICRO_APP_NAME,
+    VITE_GLOB_QIANKUN_MICRO_APP_ENTRY,
   };
 }
 

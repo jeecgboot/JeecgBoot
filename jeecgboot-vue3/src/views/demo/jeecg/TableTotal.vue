@@ -1,27 +1,17 @@
 <template>
   <PageWrapper>
-    <a-card :bordered="false">
-      <BasicTable @register="registerTable" />
-    </a-card>
+    <BasicTable @register="registerTable" :striped="true" />
   </PageWrapper>
 </template>
 
 <script lang="ts" setup>
+  import { ref } from 'vue';
   import { PageWrapper } from '/@/components/Page';
   import { BasicTable, useTable } from '/@/components/Table';
   import { mapTableTotalSummary } from '/@/utils/common/compUtils';
-
-  const [registerTable] = useTable({
-    rowKey: 'id',
-    bordered: true,
-    canResize: false,
-    columns: [
-      { title: '姓名', dataIndex: 'name' },
-      { title: '贡献点', dataIndex: 'point' },
-      { title: '等级', dataIndex: 'level' },
-      { title: '更新时间', dataIndex: 'updateTime' },
-    ],
-    dataSource: [
+  const dataSource = ref<any>([]);
+  setTimeout(() => {
+    dataSource.value = [
       { id: 0, name: '张三', point: 23, level: 3, updateTime: '2019-8-14' },
       { id: 1, name: '小鹿', point: 33, level: 9, updateTime: '2019-8-10' },
       { id: 2, name: '小王', point: 6, level: 1, updateTime: '2019-8-13' },
@@ -35,9 +25,22 @@
       { id: 10, name: '小赵', point: 33, level: 2, updateTime: '2019-8-10' },
       { id: 11, name: '李华', point: 33, level: 8, updateTime: '2019-8-10' },
       { id: 12, name: '小康', point: 33, level: 5, updateTime: '2019-8-10' },
+    ];
+  }, 1e3);
+  const [registerTable] = useTable({
+    rowKey: 'id',
+    bordered: true,
+    canResize: true,
+    columns: [
+      { title: '姓名', width: 500, dataIndex: 'name' },
+      { title: '贡献点', width: 500, dataIndex: 'point' },
+      { title: '等级', width: 500, dataIndex: 'level' },
+      { title: '更新时间', width: 500, dataIndex: 'updateTime' },
     ],
+    dataSource: dataSource,
     // 显示底部合计
     showSummary: true,
+    striped: true,
     // 底部合计计算方法
     summaryFunc: onSummary,
   });

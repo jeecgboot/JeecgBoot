@@ -32,6 +32,7 @@
 <#assign need_checkbox = false>
 <#assign need_range_number = false>
 <#assign is_range = false>
+<#assign is_like = false>
 <#assign query_flag = false>
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
@@ -75,11 +76,14 @@
 <#if po.classType=='time'>
 <#assign need_time = true>
 </#if>
-<#if po.queryMode!='single' && (po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal')>
+<#if po.queryMode=='group' && (po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal')>
 <#assign need_range_number = true>
 </#if>
-<#if po.queryMode!='single'>
+<#if po.queryMode=='group'>
 <#assign is_range = true>
+</#if>
+<#if po.queryMode=='like'>
+<#assign is_like = true>
 </#if>
   <#include "/common/form/native/vue3NativeSearch.ftl">
 </#list>
@@ -202,6 +206,7 @@
         fixed: 'right',
       },
       beforeFetch: async (params) => {
+        params.hasQuery = "true";
        <#if is_range>
         let rangerQuery = await setRangeQuery();
         return Object.assign(params, rangerQuery);

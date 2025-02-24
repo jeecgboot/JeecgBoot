@@ -4,15 +4,15 @@
 
 
 
-JEECG BOOT Low Code Development Platform
+JEECG BOOT AI Low Code Platform
 ===============
 
-Current version: 3.7.1 (Release date: 2024-09-12)
+Current version: 3.7.3 (Release date: 2025-02-10)
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-3.7.1-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.7.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -21,9 +21,9 @@ Current version: 3.7.1 (Release date: 2024-09-12)
 Project introduction
 -----------------------------------
 
-<h3 align="center">Java Low Code Platform for Enterprise web applications</h3>
+<h3 align="center">Java AI Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot is a `low code development platform` based on code `generators`! Front and back end separation architecture SpringBoot2.x, SpringCloud, Ant Design&Vue, Mybatis plus, Shiro, JWT, support for microservices. The powerful code generator makes the front and back end of the code generation, low code development! JeecgBoot leads a new low-code development paradigm (OnlineCoding-> Code Generator -> Manual MERGE) that helps resolve 70% of the duplication in Java projects and makes development more business-focused. Not only can quickly improve efficiency, save research and development costs, but also do not lose flexibility!
+JeecgBoot is a `AI low code platform` based on code `generators`! Front and back end separation architecture SpringBoot2.x, SpringCloud, Ant Design&Vue, Mybatis plus, Shiro, JWT, support for microservices. The powerful code generator makes the front and back end of the code generation, low code development! JeecgBoot leads a new low-code development paradigm (OnlineCoding-> Code Generator -> Manual MERGE) that helps resolve 70% of the duplication in Java projects and makes development more business-focused. Not only can quickly improve efficiency, save research and development costs, but also do not lose flexibility!
 
 JeecgBoot provides a series of low code modules to make Online development truly zero code: Online form development, online reports, report configuration capabilities, online chart design, large screen design, mobile configuration capabilities, form designer, online design flow, process automation configuration, plug-in capabilities (pluggable) and more!
 
@@ -32,6 +32,7 @@ The purpose of JEECG is: simple functions are implemented by OnlineCoding config
 
 JEECG Business process: Using workflow to implement and extend the task interface for developing and writing business logic, forms provides a variety of solutions: form designer, online configuration form, and coding form. At the same time, the separation design of process and form (loose coupling) is realized, and the flexible configuration of task nodes is supported, which not only ensures the confidentiality of the company's process, but also reduces the workload of developers.
 
+AI Empowering Low-Code: Currently, JeecgBoot supports AI large models such as ChatGPT and DeepSeek. The latest version defaults to using DeepSeek, which offers faster speed and higher quality. It now provides features such as AI chat assistant, AI table creation, and AI report generation.
 
 Technical support
 -----------------------------------
@@ -57,7 +58,7 @@ Download other source code
 
 For the project
 -----------------------------------
-Jeecg-Boot low code development platform can be applied in the development of any J2EE project, especially for SAAS projects, enterprise information management system (MIS), internal office system (OA), enterprise resource planning system (ERP), customer relationship management system (CRM), etc. Its semi-intelligent manual Merge development method, Can significantly improve the development efficiency of more than 70%, greatly reduce the development cost.
+Jeecg-Boot AI low code platform can be applied in the development of any J2EE project, especially for SAAS projects, enterprise information management system (MIS), internal office system (OA), enterprise resource planning system (ERP), customer relationship management system (CRM), etc. Its semi-intelligent manual Merge development method, Can significantly improve the development efficiency of more than 70%, greatly reduce the development cost.
 
 
 Starts the project
@@ -73,9 +74,9 @@ Technical documentation
 
 - Website：  [http://www.jeecg.com](http://www.jeecg.com)
 - Demo ： [OnlineDemo](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
-- Doc：  [http://help.jeecg.com](http://help.jeecg.com)
+- Doc：  [DocumentCenter](http://help.jeecg.com) | [AI Config](https://help.jeecg.com/java/ai/aichat.html)
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart) |   [Q&A ](http://www.jeecg.com/doc/qa)  |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
-- QQ group ： ⑨808791225、⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
+- QQ group ： ⑩716488839、⑨808791225、⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
 
 
 
@@ -196,7 +197,7 @@ Technical Architecture:
 
 - Persistence layer framework: MybatisPlus 3.5.3.2
 
-- Report tool: JimuReport 1.8.1
+- Report tool: JimuReport 1.9.3
 
 - Security framework: Apache Shiro 1.12.0, Jwt 3.11.0
 
@@ -216,9 +217,11 @@ Technical Architecture:
 #### Front-end environment requirements
 
 *    `Node.js 、npm 、pnpm`
+*   pnpm `v9+` is now required.
 *   Node.js Version suggestion: `v20.15.0`
- ` ( Since Vite5 no longer supports EOL Node.js 14/16/17/19, Node.js 18/20 + is now required )`
+ ` ( Since Vite6 Node.js 18/20 + is now required )`
  
+
 #### Support library
 
 |  database   |  support   |
@@ -232,6 +235,15 @@ Technical Architecture:
 |   人大金仓   |  √   |
 |   TiDB   |  √   |
 
+
+#### AI Support
+
+| AI Model | Supported |
+| --- | --- |
+| DeepSeek | √ |
+| ChatGPT | √ |
+
+AI Config： https://help.jeecg.com/java/ai/aichat.html
 
 ## Microservice solutions
 

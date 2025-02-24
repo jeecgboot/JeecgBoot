@@ -18,6 +18,7 @@
 <#assign need_editor = false>
 <#assign need_checkbox = false>
 <#assign need_range_number = false>
+<#assign is_like = false>
 <#assign form_span = 24>
 <#if tableVo.fieldRowNum==2>
     <#assign form_span = 12>
@@ -53,9 +54,13 @@
     </JFormContainer>
 
 		<!-- 子表单区域 -->
-    <a-tabs v-model:activeKey="activeKey" animated>
+    <a-tabs v-model:activeKey="activeKey" animated style="overflow:hidden;">
 <#list subTables as sub><#rt/>
+      <#if sub.foreignRelationType =='1'>
+      <a-tab-pane class="sub-one-form" tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" :forceRender="true">
+      <#else>
       <a-tab-pane tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" :forceRender="true">
+      </#if>
 			  <#if sub.foreignRelationType =='1'>
         <${Format.humpToShortbar(sub.entityName)}-form ref="${sub.entityName?uncap_first}FormRef" :disabled="disabled"></${Format.humpToShortbar(sub.entityName)}-form>
 			  <#else>
@@ -354,4 +359,9 @@
     }
   });
 </script>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .ant-tabs-tabpane.sub-one-form {
+    max-height: 340px;
+    overflow: auto;
+  }
+</style>

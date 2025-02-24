@@ -3,3 +3,4 @@
 *.ts linguist-language=vue
 *.html linguist-language=vue
 *.sql linguist-language=Java
+*.ftl linguist-language=Java

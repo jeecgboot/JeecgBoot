@@ -20,7 +20,7 @@
   });
   //租户
   const tenantId = ref<number>();
-  //产品包类型
+  //套餐包类型
   const packType = ref<number>();
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
@@ -36,14 +36,14 @@
       console.log(data.record)
       await setFieldsValue({ ...data.record });
     }
-    //update-begin---author:wangshuai ---date:20230705  for：【QQYUN-5685】2 产品包增加一个查看：添加底部有没有按钮及表单禁用------------
+    //update-begin---author:wangshuai ---date:20230705  for：【QQYUN-5685】2 套餐包增加一个查看：添加底部有没有按钮及表单禁用------------
     setModalProps({ confirmLoading: false, showCancelBtn:!!data?.showFooter, showOkBtn:!!data?.showFooter });
     // 隐藏底部时禁用整个表单
     setProps({ disabled: !data?.showFooter })
-    //update-end---author:wangshuai ---date:20230705  for：【QQYUN-5685】2 产品包增加一个查看：添加底部有没有按钮及表单禁用------------
+    //update-end---author:wangshuai ---date:20230705  for：【QQYUN-5685】2 套餐包增加一个查看：添加底部有没有按钮及表单禁用------------
   });
   //设置标题
-  const title = computed(() => (unref(isUpdate) ? '编辑租户产品包' : '新增租户产品包'));
+  const title = computed(() => (unref(isUpdate) ? '编辑租户套餐包' : '新增租户套餐包'));
   //表单提交事件
   async function handleSubmit(v) {
     const values = await validate();

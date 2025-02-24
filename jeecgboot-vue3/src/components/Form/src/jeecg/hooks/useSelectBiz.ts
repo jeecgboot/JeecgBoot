@@ -31,7 +31,9 @@ export function useSelectBiz(getList, props, emit?) {
       if (selectValues['change'] == false && !isEmpty(selectValues['value'])) {
         //update-end-author:liusq---date:2023-10-19--for: [issues/788]判断有设置数值才去加载
         //update-begin---author:wangshuai ---date:20220412  for：[VUEN-672]发文草稿箱编辑时拟稿人显示用户名------------
-        let params = { isMultiTranslate: 'true' };
+        // update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7405】部门选择用户同时全部选择两页用户，回显到父页面。第二页用户显示的不是真是姓名
+        let params = { isMultiTranslate: 'true', pageSize: selectValues.value?.length };
+        // update-end-author:liaozhiyang---date:2024-10-11--for:【issues/7405】部门选择用户同时全部选择两页用户，回显到父页面。第二页用户显示的不是真是姓名
         params[props.rowKey] = selectValues['value'].join(',');
         //update-end---author:wangshuai ---date:20220412  for：[VUEN-672]发文草稿箱编辑时拟稿人显示用户名--------------
         loadingEcho.value = isFirstLoadEcho;

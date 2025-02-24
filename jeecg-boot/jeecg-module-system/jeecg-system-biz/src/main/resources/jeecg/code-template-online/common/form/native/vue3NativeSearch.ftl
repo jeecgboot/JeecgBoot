@@ -81,6 +81,13 @@
           </#if>
             <#if query_field_no gt 1>  </#if></a-form-item>
           <#if query_field_no gt 1>  </#if></a-col>
+    <#elseif po.queryMode=='like'>
+        <#if query_field_no gt 1>  </#if><a-col :lg="6">
+        <#if query_field_no gt 1>  </#if><a-form-item name="${autoStringSuffixForModel(po)}">
+        <#if query_field_no gt 1>  </#if><template #label><span title="${po.filedComment}"><#if po.filedComment?default("")?trim?length gt 4>${po.filedComment?substring(0,4)}<#else>${po.filedComment}</#if></span></template>
+            <#if query_field_no gt 1>  </#if><JInput v-model:value="queryParam.${po.fieldName}"/>
+        <#if query_field_no gt 1>  </#if></a-form-item>
+        <#if query_field_no gt 1>  </#if></a-col>
 	<#else>
           <#if query_field_no gt 1>  </#if><a-col :lg="6">
             <#if query_field_no gt 1>  </#if><a-form-item name="${autoStringSuffixForModel(po)}">

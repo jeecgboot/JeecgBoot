@@ -28,7 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -239,19 +241,54 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         query.eq(SysTenantPack::getPackType,"default");
         List<SysTenantPack> sysTenantPacks = sysTenantPackMapper.selectList(query);
         for (SysTenantPack sysTenantPack: sysTenantPacks) {
-            SysTenantPack pack = new SysTenantPack();
-            BeanUtils.copyProperties(sysTenantPack,pack);
-            pack.setTenantId(tenantId);
-            pack.setPackType("custom");
-            pack.setId("");
-            sysTenantPackMapper.insert(pack);
-            List<String> permissionsByPackId = sysPackPermissionMapper.getPermissionsByPackId(sysTenantPack.getId());
-            for (String permission:permissionsByPackId) {
-                SysPackPermission packPermission = new SysPackPermission();
-                packPermission.setPackId(pack.getId());
-                packPermission.setPermissionId(permission);
-                sysPackPermissionMapper.insert(packPermission);
-            }   
+            syncDefaultPack2CurrentTenant(tenantId, sysTenantPack);
+        }
+    }
+
+    @Override
+    public void syncDefaultPack(Integer tenantId) {
+        // 查询默认套餐包
+        LambdaQueryWrapper<SysTenantPack> query = new LambdaQueryWrapper<>();
+        query.eq(SysTenantPack::getPackType,"default");
+        List<SysTenantPack> sysDefaultTenantPacks = sysTenantPackMapper.selectList(query);
+        // 查询当前租户套餐包
+        query = new LambdaQueryWrapper<>();
+        query.eq(SysTenantPack::getPackType,"custom");
+        query.eq(SysTenantPack::getTenantId, tenantId);
+        List<SysTenantPack> currentTenantPacks = sysTenantPackMapper.selectList(query);
+        Map<String, SysTenantPack> currentTenantPackMap = new HashMap<String, SysTenantPack>();
+        if (oConvertUtils.listIsNotEmpty(currentTenantPacks)) {
+            currentTenantPackMap = currentTenantPacks.stream().collect(Collectors.toMap(SysTenantPack::getPackName, o -> o, (existing, replacement) -> existing));
+        }
+        // 添加不存在的套餐包
+        for (SysTenantPack defaultPacks : sysDefaultTenantPacks) {
+            if(!currentTenantPackMap.containsKey(defaultPacks.getPackName())){
+                syncDefaultPack2CurrentTenant(tenantId, defaultPacks);
+            }
+        }
+    }
+
+    /**
+     * 同步默认套餐包到当前租户
+     * for [QQYUN-11032]【jeecg】租户套餐管理增加初始化套餐包按钮
+     * @param tenantId 目标租户
+     * @param defaultPacks 默认套餐包
+     * @author chenrui
+     * @date 2025/2/5 19:41
+     */
+    private void syncDefaultPack2CurrentTenant(Integer tenantId, SysTenantPack defaultPacks) {
+        SysTenantPack pack = new SysTenantPack();
+        BeanUtils.copyProperties(defaultPacks,pack);
+        pack.setTenantId(tenantId);
+        pack.setPackType("custom");
+        pack.setId("");
+        sysTenantPackMapper.insert(pack);
+        List<String> permissionsByPackId = sysPackPermissionMapper.getPermissionsByPackId(defaultPacks.getId());
+        for (String permission:permissionsByPackId) {
+            SysPackPermission packPermission = new SysPackPermission();
+            packPermission.setPackId(pack.getId());
+            packPermission.setPermissionId(permission);
+            sysPackPermissionMapper.insert(packPermission);
         }
     }
 
