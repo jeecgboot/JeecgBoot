@@ -60,8 +60,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Autowired
     private PlatformOrderMapper platformOrderMapper;
     @Autowired
-    private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
-    @Autowired
     private ISkuService skuService;
     @Autowired
     private ICurrencyService currencyService;
@@ -577,7 +575,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         Files.copy(template, newInvoice, StandardCopyOption.REPLACE_EXISTING);
         PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
         pv.toExcelFile(newInvoice);
-        platformOrderShippingInvoiceService.convertToPdfTest(invoiceCode, "invoice");
         return new InvoiceMetaData(filename,invoiceCode, pv.client().getInternalCode(), pv.client().getInvoiceEntity(), "");
     }
 
