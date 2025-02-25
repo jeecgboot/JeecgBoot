@@ -10,11 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -215,28 +211,39 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 					String erpCode = null;
 					for (int cellIndex = row.getFirstCellNum(); cellIndex < NUMBER_OF_SKU_EXCEL_COLUMNS; cellIndex++) {
 						Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
-						String cellValue = cell.getStringCellValue();
 						if(hasError) continue;
-						if(cellValue.isEmpty()){
+						if(cell.getCellType().equals(CellType.BLANK)){
 							responses.addFailure("Row " + rowIndex + " has empty cell at index " + cellIndex);
 							hasError = true;
 							continue;
 						}
 						switch (cellIndex) {
 							case 0:
-								Sku sku = skuService.getByErpCode(cellValue);
+								String skuCode = cell.getStringCellValue();
+								Sku sku = skuService.getByErpCode(skuCode);
 								if(sku == null){
-									responses.addFailure("Row " + rowIndex + " SKU not found : " + cellValue);
+									responses.addFailure("Row " + rowIndex + " SKU not found : " + skuCode);
 									hasError = true;
 									continue;
 								}
-								erpCode = cellValue;
+								erpCode = skuCode;
 								skuWeight.setSkuId(sku.getId());
 								break;
 							case 1:
-								skuWeight.setWeight((int) Double.parseDouble(cellValue));
+								int weight;
+								if(cell.getCellType().equals(CellType.STRING))
+									weight = Integer.parseInt(cell.getStringCellValue());
+								else if(cell.getCellType().equals(CellType.NUMERIC))
+									weight = (int) cell.getNumericCellValue();
+								else {
+									responses.addFailure("Row " + rowIndex + " Weight is not a number - Sku : " + erpCode);
+									hasError = true;
+									continue;
+								}
+								skuWeight.setWeight(weight);
 								break;
 							case 2:
+								String cellValue = cell.getStringCellValue();
 								Date effectiveDate = formatter.parse(cellValue);
 								skuWeight.setEffectiveDate(effectiveDate);
 								break;

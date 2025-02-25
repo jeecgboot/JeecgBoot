@@ -68,4 +68,9 @@ public class ClientSkuServiceImpl extends ServiceImpl<ClientSkuMapper, ClientSku
 		clientSku.setSkuId(skuId);
 		clientSkuMapper.insert(clientSku);
 	}
+
+	@Override
+	public List<Sku> getUnpairedSkus() {
+		return clientSkuMapper.getUnpairedSkus();
+	}
 }

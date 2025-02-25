@@ -19,4 +19,6 @@ public interface IClientSkuService extends IService<ClientSku> {
 	List<String> saveClientSku(List<Sku> newSkus);
 
 	void addClientSku(String clientId, String skuId);
+
+	List<Sku> getUnpairedSkus();
 }

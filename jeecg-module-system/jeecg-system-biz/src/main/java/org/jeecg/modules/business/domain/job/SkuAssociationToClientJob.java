@@ -42,11 +42,9 @@ public class SkuAssociationToClientJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         log.info("SkuAssociationToClientJob start");
-        List<String> allSkusIds = skuService.list().stream().map(Sku::getId).collect(Collectors.toList());
-        List<String> allClientSkuIds = clientSkuService.list().stream().map(ClientSku::getSkuId).collect(Collectors.toList());
-        List<String> newSkusIds = allSkusIds.stream().filter(skuId -> !allClientSkuIds.contains(skuId)).collect(Collectors.toList());
-        List<Sku> newSkus = skuService.listByIds(newSkusIds);
-        List<String> unknownClientSkus = clientSkuService.saveClientSku(newSkus);
+        List<Sku> unpairedSkus = clientSkuService.getUnpairedSkus();
+        System.out.println("There is " + unpairedSkus.size() + "Unpaired Skus.");
+        List<String> unknownClientSkus = clientSkuService.saveClientSku(unpairedSkus);
 
         // send email for manual check
         if(!unknownClientSkus.isEmpty()) {
