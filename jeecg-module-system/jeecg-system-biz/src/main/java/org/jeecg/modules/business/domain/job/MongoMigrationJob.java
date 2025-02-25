@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.entity.Sku;
+import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.ISkuService;
-import org.jeecg.modules.business.service.MigrationService;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -19,11 +19,10 @@ import java.util.List;
 @Slf4j
 @Component
 public class MongoMigrationJob implements Job {
-
-    @Autowired
-    private MigrationService migrationService;
     @Autowired
     private ISkuService skuService;
+    @Autowired
+    private SkuMongoService skuMongoService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -45,13 +44,13 @@ public class MongoMigrationJob implements Job {
         }
         if(skuList.isEmpty()) {
             log.info("Migrating all skus ..");
-            migrationService.migrateSkuData();
+            skuMongoService.migrateSkuData();
         }
         else {
             log.info("Migrating skus: {}", skuList);
             for(String erpCode : skuList) {
                 Sku sku = skuService.getByErpCode(erpCode);
-                migrationService.migrateOneSku(sku);
+                skuMongoService.migrateOneSku(sku);
             }
         }
         log.info("MongoMigrationJob end ..");

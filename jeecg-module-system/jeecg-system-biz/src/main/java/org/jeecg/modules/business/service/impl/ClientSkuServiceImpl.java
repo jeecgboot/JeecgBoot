@@ -50,14 +50,27 @@ public class ClientSkuServiceImpl extends ServiceImpl<ClientSkuMapper, ClientSku
 			}
 			String internalCode = erpCode.substring(index+1);
 			String clientId = clientService.getClientIdByCode(internalCode);
-			if(clientId == null) {
+            if (clientId != null) {
+				log.info("Associating sku \"{}\" with client \"{}\" : \"{}\". ", sku.getErpCode(), internalCode, clientId);
+				addClientSku(clientId, sku.getId());
+				continue;
+            }
+			if(!internalCode.equals("MD")) {
 				log.info("Couldn't associate sku \"{}\" with any client. ", erpCode);
 				unknownSkuErpCode.add(erpCode);
 				continue;
 			}
-			log.info("Associating sku \"{}\" with client \"{}\" : \"{}\". ", sku.getErpCode(),internalCode, clientId);
-			addClientSku(clientId, sku.getId());
-		}
+			if(sku.getZhName().contains("灯")) {
+				clientId = clientService.getClientIdByCode("MD-Lumiart");
+				log.info("Associating sku \"{}\" with client \"{}\" : \"{}\". ", sku.getErpCode(), internalCode, "MD-Lumiart");
+				addClientSku(clientId, sku.getId());
+			}
+			if(sku.getZhName().contains("袜")) {
+				clientId = clientService.getClientIdByCode("MD-Lou");
+				log.info("Associating sku \"{}\" with client \"{}\" : \"{}\". ", sku.getErpCode(), internalCode, "MD-Lou");
+				addClientSku(clientId, sku.getId());
+			}
+        }
 		return unknownSkuErpCode;
 	}
 

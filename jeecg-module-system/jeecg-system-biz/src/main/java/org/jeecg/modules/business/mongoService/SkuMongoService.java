@@ -6,12 +6,13 @@ import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.entity.SkuWeight;
 import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.vo.SkuOrderPage;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public interface SkuMongoService {
-    SkuDocument findByErpCode(String erpCode);
-    SkuDocument findBySkuId(String skuId);
+    List<SkuDocument> findByErpCode(String erpCode);
+    List<SkuDocument> findBySkuId(String skuId);
 
     void findAndReplace(String field, String value, SkuDocument skuDocument);
 
@@ -34,4 +35,9 @@ public interface SkuMongoService {
     void updateSkuFromMabangSync(Sku sku);
 
     List<SkuOrderPage> textSearch(String keywords);
+
+    @Transactional
+    void migrateSkuData();
+
+    void migrateOneSku(Sku sku);
 }
