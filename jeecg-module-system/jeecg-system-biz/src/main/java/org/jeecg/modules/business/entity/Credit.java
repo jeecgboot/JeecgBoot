@@ -2,12 +2,10 @@ package org.jeecg.modules.business.entity;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.math.BigDecimal;
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -57,6 +55,9 @@ public class Credit implements Serializable {
     @Dict(dictTable = "client WHERE active = '1'", dicText = "internal_code", dicCode = "id")
     @ApiModelProperty(value = "client_id")
     private java.lang.String clientId;
+    @Excel(name = "description", width = 15)
+    @ApiModelProperty(value = "description")
+    private java.lang.String description;
     /**amount*/
     @Excel(name = "amount", width = 15)
     @ApiModelProperty(value = "amount")

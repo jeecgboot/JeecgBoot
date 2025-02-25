@@ -9,6 +9,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -164,29 +165,24 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
     /**
     * 导出excel
     *
-    * @param request
+    * @param skuIds
     */
-    @RequestMapping(value = "/exportXls")
-    public ModelAndView exportXls(HttpServletRequest request) {
-      LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-
-      List<String> selections = new ArrayList<>();
-      request.getParameterMap().forEach((k,v) -> {
-        if(k.equals("selections[]")) {
-          selections.addAll(Arrays.asList(v));
-        }
-      });
-      List<SkuWeight> exportList = skuWeightService.exportToExcel(selections);
-
-      ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
-      mv.addObject(NormalExcelConstants.FILE_NAME, "SKU重量");
-      mv.addObject(NormalExcelConstants.CLASS, SkuWeight.class);
-      ExportParams exportParams=new ExportParams("SKU重量报表", "导出人:" + sysUser.getRealname(), "SKU重量");
-      exportParams.setImageBasePath(jeecgBaseConfig.getPath().getUpload());
-      mv.addObject(NormalExcelConstants.PARAMS,exportParams);
-      mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
-      return mv;
-    }
+	@RequestMapping(value = "/exportXls")
+	public ModelAndView exportXls(@RequestParam(value = "selections[]", required = false) List<String> skuIds) {
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		List<SkuWeightPage> skuWeightList;
+		if (skuIds == null || skuIds.isEmpty()) {
+			skuWeightList = skuWeightService.listLatestWeights();
+		} else {
+			skuWeightList = skuWeightService.listLatestWeightForSkus(skuIds);
+		}
+		ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+		mv.addObject(NormalExcelConstants.FILE_NAME, "SKU重量列表");
+		mv.addObject(NormalExcelConstants.CLASS, SkuWeightPage.class);
+		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("SKU重量数据", "导出人:" + sysUser.getRealname(), "SKU重量"));
+		mv.addObject(NormalExcelConstants.DATA_LIST, skuWeightList);
+		return mv;
+	}
 
     /**
       * 通过excel导入数据
@@ -208,7 +204,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
 			MultipartFile file = entity.getValue();
 			try (InputStream inputStream = file.getInputStream()){
-				Workbook workbook = new XSSFWorkbook(inputStream);
+				Workbook workbook = new HSSFWorkbook(inputStream);
 				Sheet firstSheet = workbook.getSheetAt(0);
 				int firstRow = firstSheet.getFirstRowNum();
 				int lastRow = firstSheet.getLastRowNum();
