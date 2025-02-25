@@ -17,7 +17,7 @@ public class SkuWeightPage {
     @Excel(name = "重量", width = 15)
     @ApiModelProperty(value = "重量")
     private Integer weight;
-    @Excel(name = "生效日期", width = 15)
+    @Excel(name = "生效日期", width = 15, format = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "生效日期")
     private Date effectiveDate;
 }
