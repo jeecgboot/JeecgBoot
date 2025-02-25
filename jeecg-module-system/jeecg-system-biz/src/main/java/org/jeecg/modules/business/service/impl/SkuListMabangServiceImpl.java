@@ -70,8 +70,6 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     @Autowired
     private EmailService emailService;
     @Autowired
-    private MigrationService migrationService;
-    @Autowired
     private SkuMongoService skuMongoService;
     @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
@@ -537,7 +535,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             // mongo sync after transaction
             for(Sku sku : newSkusMap.keySet()) {
                 try {
-                    migrationService.migrateOneSku(sku);
+                    skuMongoService.migrateOneSku(sku);
                 } catch (Exception e) {
                     log.error("Error while migrating skuId: {}", sku.getId());
                     log.error(e.getMessage());

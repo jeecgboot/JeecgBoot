@@ -1,14 +1,11 @@
 package org.jeecg.modules.business.mongoService.impl;
 
-import com.mongodb.client.result.UpdateResult;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.modules.business.entity.Sku;
-import org.jeecg.modules.business.entity.SkuDeclaredValue;
-import org.jeecg.modules.business.entity.SkuPrice;
-import org.jeecg.modules.business.entity.SkuWeight;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.mongoRepository.SkuRepository;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
+import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.SkuOrderPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -16,6 +13,7 @@ import org.springframework.data.mongodb.core.FindAndReplaceOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.*;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -26,17 +24,27 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SkuMongoServiceImpl implements SkuMongoService {
     @Autowired
+    private ISkuService skuService;
+    @Autowired
     private MongoTemplate mongoTemplate;
     @Autowired
     private SkuRepository skuRepository;
+    @Autowired
+    private ISkuWeightService skuWeightService;
+    @Autowired
+    private ISkuDeclaredValueService skuDeclaredValueService;
+    @Autowired
+    private ISkuPriceService skuPriceService;
+    @Autowired
+    private ISensitiveAttributeService sensitiveAttributeService;
 
     @Override
-    public SkuDocument findByErpCode(String erpCode) {
+    public List<SkuDocument> findByErpCode(String erpCode) {
         return skuRepository.findByErpCode(erpCode);
     }
 
     @Override
-    public SkuDocument findBySkuId(String skuId) {
+    public List<SkuDocument> findBySkuId(String skuId) {
         return skuRepository.findBySkuId(skuId);
     }
 
@@ -126,7 +134,26 @@ public class SkuMongoServiceImpl implements SkuMongoService {
 
     @Override
     public void upsertSkuWeight(SkuWeight skuWeight) {
-        SkuDocument skuDocument = findBySkuId(skuWeight.getSkuId());
+        List<SkuDocument> skuDocuments = findBySkuId(skuWeight.getSkuId());
+        SkuDocument skuDocument;
+        if(skuDocuments == null || skuDocuments.isEmpty()) {
+            log.error(" SkuDocument with skuId was {} not found.", skuWeight.getSkuId());
+            String obsoleteErpCode = skuService.getById(skuWeight.getSkuId()).getErpCode();
+            List<SkuDocument> obsoleteDocuments = findByErpCode(obsoleteErpCode);
+            if(obsoleteDocuments != null && !obsoleteDocuments.isEmpty()) {
+                log.error("Deleting obsolete SkuDocuments with erpCode : {} ", obsoleteErpCode);
+                obsoleteDocuments.forEach(obsoleteDocument -> deleteBySkuId(obsoleteDocument.getSkuId()));
+            }
+            log.info("Pulling Sku from DB to Mongo");
+            migrateOneSku(skuService.getById(skuWeight.getSkuId()));
+        }
+        else if(skuDocuments.size() > 1) {
+            log.error("Multiple SkuDocument with skuId was {} found.", skuWeight.getSkuId());
+            skuDocuments.forEach(document -> deleteBySkuId(document.getSkuId()));
+            log.info("Pulling Sku from DB to Mongo");
+            migrateOneSku(skuService.getById(skuWeight.getSkuId()));
+        }
+        skuDocument = findBySkuId(skuWeight.getSkuId()).get(0);
         Date latestWeightInDB = Optional.ofNullable(skuDocument.getLatestSkuWeight())
                 .map(SkuDocument.LatestSkuWeight::getEffectiveDate)
                 .orElse(null);
@@ -254,5 +281,118 @@ public class SkuMongoServiceImpl implements SkuMongoService {
                             .map(SkuDocument.LatestDeclaredValue::getEffectiveDate)
                             .orElse(null));
         return skuOrderPage;
+    }
+
+    @Transactional
+    @Override
+    public void migrateSkuData() {
+        List<Sku> skuList = skuService.listSkus();
+        log.info("MigrateSkuData: migrating {} skus.", skuList.size());
+
+        int count = 0;
+        for(Sku sku : skuList) {
+            if(count == 0) {
+                log.info("MigrateSkuData progressions: [----------] 0%");
+            }
+            if(count == skuList.size() / 10) {
+                log.info("MigrateSkuData progressions: [█---------] 10%");
+            }
+            if(count == skuList.size() / 5) {
+                log.info("MigrateSkuData progressions: [██--------] 20%");
+            }
+            if(count == skuList.size() / 10 * 3) {
+                log.info("MigrateSkuData progressions: [███-------] 30%");
+            }
+            if(count == skuList.size() / 10 * 4) {
+                log.info("MigrateSkuData progressions: [████------] 40%");
+            }
+            if(count == skuList.size() / 2) {
+                log.info("MigrateSkuData progressions: [█████-----] 50%");
+            }
+            if(count == skuList.size() / 10 * 6) {
+                log.info("MigrateSkuData progressions: [██████----] 60%");
+            }
+            if(count == skuList.size() / 10 * 7) {
+                log.info("MigrateSkuData progressions: [███████---] 70%");
+            }
+            if(count == skuList.size() / 10 * 8) {
+                log.info("MigrateSkuData progressions: [█████████-] 90%");
+            }
+            if(count == skuList.size() - 1) {
+                log.info("MigrateSkuData progressions: [██████████] 100%");
+            }
+            count++;
+            try {
+                migrateOneSku(sku);
+            } catch (Exception e) {
+                log.error("Error while migrating skuId: {}", sku.getId());
+                log.error(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void migrateOneSku(Sku sku) {
+
+        SkuWeight latestWeight = skuWeightService.getBySkuId(sku.getId());
+        SkuDeclaredValue latestDeclaredValue = skuDeclaredValueService.getLatestBySkuId(sku.getId());
+        SkuPrice latestPrice = skuPriceService.getLatestBySkuId(sku.getId());
+        SensitiveAttribute sensitiveAttribute = sensitiveAttributeService.getById(sku.getSensitiveAttributeId());
+
+        if(sensitiveAttribute == null) {
+            log.error("SensitiveAttribute not found for skuId: {}", sku.getId());
+            throw new RuntimeException("SensitiveAttribute not found for skuId: " + sku.getId());
+        }
+
+        SkuDocument skuDocument = SkuDocument.builder()
+                .skuId(sku.getId())
+                .createBy(sku.getCreateBy())
+                .createTime(sku.getCreateTime())
+                .updateBy(sku.getUpdateBy())
+                .updateTime(sku.getUpdateTime())
+                .erpCode(sku.getErpCode())
+                .zhName(sku.getZhName())
+                .enName(sku.getEnName())
+                .invoiceName(sku.getInvoiceName())
+                .availableAmount(sku.getAvailableAmount())
+                .purchasingAmount(sku.getPurchasingAmount())
+                .imageSource(sku.getImageSource())
+                .shippingDiscount(sku.getShippingDiscount())
+                .serviceFee(sku.getServiceFee())
+                .status(sku.getStatus())
+                .moq(sku.getMoq())
+                .isGift(sku.getIsGift())
+                .sensitiveAttribute(SkuDocument.SensitiveAttribute.builder()
+                        .zhName(sensitiveAttribute.getZhName())
+                        .enName(sensitiveAttribute.getEnName())
+                        .build()
+                )
+                .build();
+        if(latestWeight != null) {
+            skuDocument.setLatestSkuWeight(SkuDocument.LatestSkuWeight.builder()
+                    .weight(latestWeight.getWeight())
+                    .effectiveDate(latestWeight.getEffectiveDate())
+                    .build()
+            );
+        }
+        if(latestPrice != null) {
+            skuDocument.setLatestSkuPrice(SkuDocument.LatestSkuPrice.builder()
+                    .date(latestPrice.getDate())
+                    .price(latestPrice.getPrice())
+                    .discountedPrice(latestPrice.getDiscountedPrice())
+                    .threshold(latestPrice.getThreshold())
+                    .priceRmb(latestPrice.getPriceRmb())
+                    .discountedPriceRmb(latestPrice.getDiscountedPriceRmb())
+                    .build()
+            );
+        }
+        if(latestDeclaredValue != null) {
+            skuDocument.setLatestDeclaredValue(SkuDocument.LatestDeclaredValue.builder()
+                    .declaredValue(latestDeclaredValue.getDeclaredValue())
+                    .effectiveDate(latestDeclaredValue.getEffectiveDate())
+                    .build()
+            );
+        }
+        findAndReplace("erpCode", sku.getErpCode(), skuDocument);
     }
 }

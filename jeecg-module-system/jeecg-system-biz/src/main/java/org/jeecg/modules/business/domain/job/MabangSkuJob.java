@@ -8,6 +8,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -39,8 +40,6 @@ public class MabangSkuJob implements Job {
     @Setter
     private ISkuListMabangService skuListMabangService;
     @Autowired
-    private MigrationService migrationService;
-    @Autowired
     private EmailService emailService;
     @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
@@ -48,6 +47,8 @@ public class MabangSkuJob implements Job {
     Environment env;
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;
     private static final DateType DEFAULT_DATE_TYPE = DateType.CREATE;
+    @Autowired
+    private SkuMongoService skuMongoService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -114,7 +115,7 @@ public class MabangSkuJob implements Job {
                         // mongo sync after transaction
                         for(Sku sku : newSkusMap.keySet()) {
                             try {
-                                migrationService.migrateOneSku(sku);
+                                skuMongoService.migrateOneSku(sku);
                             } catch (Exception e) {
                                 log.error("Error while migrating skuId: {}", sku.getId());
                                 log.error(e.getMessage());
