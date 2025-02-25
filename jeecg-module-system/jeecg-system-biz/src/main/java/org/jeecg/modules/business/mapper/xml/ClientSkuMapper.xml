@@ -13,4 +13,11 @@
 		FROM  client_sku
 		WHERE
 			 client_id = #{mainId} 	</select>
+
+	<select id="getUnpairedSkus" resultType="org.jeecg.modules.business.entity.Sku">
+		SELECT s.*
+		FROM sku s
+		LEFT JOIN client_sku cs ON s.id = cs.sku_id
+		WHERE cs.sku_id IS NULL;
+	</select>
 </mapper>
