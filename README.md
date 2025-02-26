@@ -51,7 +51,7 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 - 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 - 快速体验： [一分钟体验低代码](https://jeecg.blog.csdn.net/article/details/106079007?spm=1001.2014.3001.5502 "一分钟体验零代码") | [在线体验零代码](https://app.qiaoqiaoyun.com/myapps/index "在线体验零代码")
-- 开发文档：  [文档中心](https://help.jeecg.com) | [AI集成配置(支持DeepSeek)](https://help.jeecg.com/java/ai/aichat.html)
+- 开发文档：  [文档中心](https://help.jeecg.com) | [AI集成配置(支持DeepSeek)](https://help.jeecg.com/java/ai/aichat)
 - 反馈问题：  [在Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video)
 - QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
@@ -62,8 +62,8 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 启动项目
 -----------------------------------
 
-- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
-- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick.html)
+- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
+- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
 
 
 AIGC功能清单
@@ -146,7 +146,7 @@ AIGC功能清单
 |   ChatGTP   |  √   |
 |   Ollama本地搭建大模型   |  √   |
 
-AI集成文档： https://help.jeecg.com/java/ai/aichat.html
+AI集成文档： https://help.jeecg.com/java/ai/aichat
 
  
 ## 微服务解决方案
@@ -160,7 +160,7 @@ AI集成文档： https://help.jeecg.com/java/ai/aichat.html
 - 6、分布式文件 Minio、阿里OSS √ 
 - 7、统一权限控制 JWT + Shiro √
 - 8、服务监控 SpringBootAdmin√
-- 9、链路跟踪 Skywalking   [参考文档](https://help.jeecg.com/java/springcloud/super/skywarking.html)
+- 9、链路跟踪 Skywalking   [参考文档](https://help.jeecg.com/java/springcloud/super/skywarking)
 - 10、消息中间件 RabbitMQ  √
 - 11、分布式任务 xxl-job  √ 
 - 12、分布式事务 Seata
@@ -172,8 +172,8 @@ AI集成文档： https://help.jeecg.com/java/ai/aichat.html
 
 #### 微服务方式启动
 
-- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-- [Docker一键启动微服务前后端](https://help.jeecg.com/java/docker/quickcloud.html)
+- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
+- [Docker一键启动微服务前后端](https://help.jeecg.com/java/docker/quickcloud)
 
 
 #### 微服务架构图

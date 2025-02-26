@@ -44,14 +44,14 @@ JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端�
 启动项目
 -----------------------------------
 
-- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup.html)
-- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick.html)
+- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
+- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
 
 
 微服务启动
 -----------------------------------
-- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer.html)
-- [Docker启动微服务后台](https://help.jeecg.com/java/docker/springcloud.html)
+- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
+- [Docker启动微服务后台](https://help.jeecg.com/java/docker/springcloud)
 
 
 
@@ -113,7 +113,7 @@ JeecgBoot 是一款基于代码生成器的`低代码开发平台`！前后端�
 - 6、分布式文件 Minio、阿里OSS √ 
 - 7、统一权限控制 JWT + Shiro √
 - 8、服务监控 SpringBootAdmin√
-- 9、链路跟踪 Skywalking   [参考文档](https://help.jeecg.com/java/springcloud/super/skywarking.html)
+- 9、链路跟踪 Skywalking   [参考文档](https://help.jeecg.com/java/springcloud/super/skywarking)
 - 10、消息中间件 RabbitMQ  √
 - 11、分布式任务 xxl-job  √ 
 - 12、分布式事务 Seata
