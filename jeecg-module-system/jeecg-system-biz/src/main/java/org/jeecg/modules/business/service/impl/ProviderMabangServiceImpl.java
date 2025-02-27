@@ -19,7 +19,6 @@ import org.jeecg.modules.business.mapper.ProviderMabangMapper;
 import org.jeecg.modules.business.service.IProviderMabangService;
 import org.jeecg.modules.business.service.IProviderService;
 import org.jeecg.modules.business.service.IPurchaseOrderService;
-import org.jeecg.modules.business.service.ISkuService;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.jeecg.modules.business.vo.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +52,8 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
     private IProviderService providerService;
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
-    @Autowired
-    ISkuService skuService;
+
+    private final static String TEMPORARY_PROVIDER_NAME = "临时供货商";
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
@@ -136,7 +135,11 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
             stockData.setStockSku(entry.getKey());
             stockData.setPrice(entry.getValue().getPurchasePrice().compareTo(BigDecimal.ZERO) == 0 ? BigDecimal.ONE : entry.getValue().getPurchasePrice().setScale(2, RoundingMode.CEILING));
             stockData.setPurchaseNum(skuQuantities.get(entry.getKey()));
-            stockData.setProvider(entry.getValue().getSupplier());
+            if(entry.getValue().getSupplier() == null || entry.getValue().getSupplier().isEmpty()) {
+                stockData.setProvider(TEMPORARY_PROVIDER_NAME);
+            } else {
+                stockData.setProvider(entry.getValue().getSupplier());
+            }
             skuStockData.add(stockData);
         }
         // group by provider
