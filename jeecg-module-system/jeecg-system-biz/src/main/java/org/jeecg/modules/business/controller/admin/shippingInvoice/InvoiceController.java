@@ -27,7 +27,6 @@ import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -56,7 +55,6 @@ import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDict
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 import static org.jeecg.modules.business.entity.Task.TaskCode.SI_G;
 import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
-import static org.jeecg.modules.business.vo.PlatformOrderFront.invoiceStatus.*;
 
 /**
  * Controller for request related to shipping invoice
@@ -713,7 +711,20 @@ public class InvoiceController {
                 calendar.setTime(period.start());
                 String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
                 calendar.setTime(period.end());
-                String end = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH) + 1);
+                if (calendar.get(Calendar.DAY_OF_MONTH) == calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                    if(calendar.get(Calendar.MONTH) == Calendar.DECEMBER) { // Si on est le 31 décembre
+                        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 1);
+                        calendar.set(Calendar.MONTH, 0);
+                    } else {
+                        calendar.add(Calendar.MONTH, 1); // Passer au mois suivant
+                        calendar.set(Calendar.DAY_OF_MONTH, 1); // Définir le jour au 1er
+                    }
+                } else {
+                    calendar.add(Calendar.DAY_OF_MONTH, 1); // Passer simplement au jour suivant
+                }
+                String end = calendar.get(Calendar.YEAR) + "-" +
+                        (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" +
+                        (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + calendar.get(Calendar.DAY_OF_MONTH);
 
                 List<String> orderIds = shippingInvoiceService.getShippingOrderIdBetweenDate(shopIds, start, end, Arrays.asList("0", "1"));
                 ShippingInvoiceOrderParam param = new ShippingInvoiceOrderParam(clientId, orderIds, "post");
