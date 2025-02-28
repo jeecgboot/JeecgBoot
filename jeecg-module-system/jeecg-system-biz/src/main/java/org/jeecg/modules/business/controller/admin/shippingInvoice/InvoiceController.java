@@ -141,7 +141,6 @@ public class InvoiceController {
      */
     @PostMapping(value = "/checkSkuPrices")
     public Result<?> checkSkuPrices(@RequestBody ShippingInvoiceOrderParam param) {
-        System.out.println("Request for checking prices for order : " + param.orderIds());
         List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(param.orderIds());
         Set<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toSet());
         List<String> skusWithoutPrice = platformOrderContentMap.searchSkuDetail(new ArrayList<>(skuIds))
