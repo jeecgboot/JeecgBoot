@@ -243,8 +243,17 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 								skuWeight.setWeight(weight);
 								break;
 							case 2:
-								String cellValue = cell.getStringCellValue();
-								Date effectiveDate = formatter.parse(cellValue);
+								String date;
+								if(cell.getCellType().equals(CellType.STRING))
+									date = cell.getStringCellValue();
+								else if(cell.getCellType().equals(CellType.NUMERIC))
+									date = formatter.format(cell.getDateCellValue());
+								else {
+									responses.addFailure("Row " + rowIndex + " Date is not a date - Sku : " + erpCode);
+									hasError = true;
+									continue;
+								}
+								Date effectiveDate = formatter.parse(date);
 								skuWeight.setEffectiveDate(effectiveDate);
 								break;
 						}
