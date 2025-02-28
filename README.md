@@ -52,7 +52,7 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 - 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 - 快速体验： [一分钟体验低代码](https://jeecg.blog.csdn.net/article/details/106079007?spm=1001.2014.3001.5502 "一分钟体验零代码") | [在线体验零代码](https://app.qiaoqiaoyun.com/myapps/index "在线体验零代码")
 - 开发文档：  [文档中心](https://help.jeecg.com) | [AI集成配置(支持DeepSeek)](https://help.jeecg.com/java/ai/aichat)
-- 反馈问题：  [在Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
+- 反馈问题：  [在Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video)
 - QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
 

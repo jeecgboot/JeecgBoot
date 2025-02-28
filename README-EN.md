@@ -37,7 +37,7 @@ AI Empowering Low-Code: Currently, JeecgBoot supports AI large models such as Ch
 Technical support
 -----------------------------------
 
-Problems or bugs in use can be found in [Making on the Issues](https://github.com/jeecgboot/JeecgBoot/issues/new)
+Problems or bugs in use can be found in [Making on the Issues](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
 
 
 ##### Project description
