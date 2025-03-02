@@ -176,7 +176,7 @@ Technical Architecture:
 
 #### Development Environment
 
-- Language: Java 8+ (17)
+- Language: Java (jdk8、jdk17)
 
 - IDE(JAVA) : IDEA (lombok plug-in must be installed)
 

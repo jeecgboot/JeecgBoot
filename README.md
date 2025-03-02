@@ -90,7 +90,7 @@ AIGC功能清单
 #### 后端
 
 - IDE建议： IDEA (必须安装lombok插件 )
-- 语言：Java 8+ (支持8、17)
+- 语言：Java (支持jdk8、jdk17)
 - 依赖管理：Maven
 - 基础框架：Spring Boot 2.7.18
 - 微服务框架： Spring Cloud Alibaba 2021.0.1.0
