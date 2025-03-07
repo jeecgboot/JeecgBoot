@@ -55,8 +55,9 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 - 反馈问题：  [在Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
 - 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video)
 - QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
+- <b>关注微信公众号，获取最新动态</b>
 
-
+![公众号](https://jeecg.com/images/jeecg/qrcode_jeecgboot.jpg "在这里输入图片标题")
 
 
 启动项目
@@ -66,25 +67,53 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 - [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
 
 
-AIGC功能清单
+AI 平台支持
 -----------------------------------
+#### 已集成能力
 
-- AI对聊天助手
+- AI聊天助手(智能问答)
 - AI建表（Online表单）
 - AI写文章（CMS）
 - AI表单建议（表单设计器）
+
+#### 支持AI大模型
+
+|  AI大模型   |  支持   |
+| --- | --- |
+|   DeepSeek   |  √   |
+|   ChatGTP   |  √   |
+|   Ollama本地搭建大模型   |  √   |
+
+AI集成文档： https://help.jeecg.com/java/ai/aichat
+
+
+AIGC应用平台+知识库（研发中，即将发布）
+-----------------------------------
+> JeecgBoot 研发的AIGC应用平台+知识库大模块，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
+其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
+
+#### 功能特点
+
+- AI流程: 提供强大的AI流程设计器引擎，支持编排 AI 工作过程，满足复杂业务场景，支持画布上构建和实时运行查看 AI流程运行情况。
+- AI流程即服务: 通过AI流程编排你需要的智能体，结合AI+自定义开发节点 实现功能性 API，让你瞬间拥有各种智能体API。
+- AI助手对话功能: 集成 ChatGPT、Deepseek、智普、私有大模型 等 AI 模型，提供智能对话和生成式 AI 功能，深度与知识库结合提供更精准的知识。
+- RAG 功能: 涵盖从文档摄入到检索的所有内容，支持从 PDF、PPT 和其他常见文档格式中提取文本，支持检索增强生成（RAG），将未训练数据与 AI 模型集成，提升智能交互能力。
+- AI 知识库: 通过导入文档或已有问答对进行训练，让 AI 模型能根据文档以交互式对话方式回答问题。
+- 模型管理：支持对接各种大模型，包括本地私有大模型（Deepseek/ Llama 3 / Qwen 2 等）、国内公共大模型（通义千问 / 腾讯混元 / 字节豆包 / 百度千帆 / 智谱 AI / Kimi 等）和国外公共大模型（OpenAI / Claude / Gemini 等）；
+- 无缝嵌入：Iframe一键嵌入,支持将AI聊天助手快速嵌入到第三方系统，让系统快速拥有智能问答能力，提高用户满意度。
+
+
+#### 功能列表
 - AI模型管理（研发中）
 - AI知识库（研发中）
 - AI应用平台(普通、高级流程)（研发中）
 - AI流程编排（研发中）
 - AI聊天支持嵌入第三方（研发中）
 - AI向量库对接
+- AI大模型支持（DeepSeek、ChatGTP、Ollama本地私有大模型等等）
 
 
 
-<b>关注公众号了解官方动态</b>
-
-![公众号](https://jeecg.com/images/jeecg/qrcode_jeecgboot.jpg "在这里输入图片标题")
 
 
 技术架构：
@@ -141,15 +170,7 @@ AIGC功能清单
 |   人大金仓   |  √   |
 |   TiDB     |  √   |
 
-#### 支持AI大模型
 
-|  AI大模型   |  支持   |
-| --- | --- |
-|   DeepSeek   |  √   |
-|   ChatGTP   |  √   |
-|   Ollama本地搭建大模型   |  √   |
-
-AI集成文档： https://help.jeecg.com/java/ai/aichat
 
  
 ## 微服务解决方案
