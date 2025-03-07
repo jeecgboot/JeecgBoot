@@ -104,6 +104,7 @@ public class SysUserController {
 
     @Autowired
     private JeecgRedisClient jeecgRedisClient;
+    private final String ROLE_CODE_ADMIN = "admin";
     
     /**
      * 获取租户下用户数据（支持租户隔离）
@@ -352,6 +353,9 @@ public class SysUserController {
         SysUser u = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, sysUser.getUsername()));
         if (u == null) {
             return Result.error("用户不存在！");
+        }
+        if (unAuthorized(sysUser.getUsername())) {
+            return Result.error("用户密码修改失败，权限不足。");
         }
         sysUser.setId(u.getId());
         //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
@@ -1134,6 +1138,11 @@ public class SysUserController {
             return result;
         }
 
+        if (unAuthorized(username)) {
+            result.setMessage("用户密码修改失败，权限不足。");
+            result.setSuccess(false);
+            return result;
+        }
         SysUser sysUser=new SysUser();
         //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
         String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
@@ -1899,5 +1908,35 @@ public class SysUserController {
         result.setSuccess(true);
         result.setMessage("发送验证码成功！");
         return result;
+    }
+
+    /**
+     * 用户是否未授权更改，用户默认只能修改自己密码，admin可以修改所有人密码
+     * @param username 用户名
+     * @return 是否未授权更改密码，true：未授权，false：已授权
+     */
+    private boolean unAuthorized(String username) {
+        final LoginUser loginUser;
+        try {
+            loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            if (loginUser == null || loginUser.getRoleCode() == null || loginUser.getRoleCode().isEmpty()) {
+                throw new JeecgBootException("获取用户信息失败");
+            }
+        } catch (Exception e) {
+            throw new JeecgBootException("获取用户信息失败", e);
+        }
+        // 修改自己密码的情况
+        if (username.equals(loginUser.getUsername())) {
+            return false;
+        }
+
+        final String loginUserRoleCode = loginUser.getRoleCode();
+
+        // 管理员直接放行
+        if (ROLE_CODE_ADMIN.equals(loginUserRoleCode)) {
+            return false;
+        }
+
+        return true;
     }
 }
