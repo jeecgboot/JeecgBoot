@@ -188,7 +188,7 @@ public class SysRoleController {
 				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 				Integer tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 				String username = "admin";
-				if (!tenantId.equals(role.getTenantId()) && !username.equals(sysUser.getUsername())) {
+				if (!tenantId.equals(sysrole.getTenantId()) && !username.equals(sysUser.getUsername())) {
 					baseCommonService.addLog("未经授权，修改非本租户下的角色ID：" + role.getId() + "，操作人：" + sysUser.getUsername(), CommonConstant.LOG_TYPE_2, CommonConstant.OPERATE_TYPE_3);
 					return Result.error("修改角色失败,当前角色不在此租户中。");
 				}
