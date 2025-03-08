@@ -30,7 +30,7 @@
     "@tinymce/tinymce-vue": "4.0.7",
     "@zxcvbn-ts/core": "^3.0.4",
     "ant-design-vue": "^4.2.6",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "china-area-data": "^5.0.1",
     "@vant/area-data": "^1.5.2",
     "clipboard": "^2.0.11",
