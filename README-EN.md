@@ -49,6 +49,11 @@ Problems or bugs in use can be found in [Making on the Issues](https://github.co
 | `jeecg-uniapp` | [APP development framework, a code multi terminal adaptation, and support APP, small program, H5](https://github.com/jeecgboot/jeecg-uniapp) |
 
 
+### Video Introduction
+
+[![](https://upload.jeecg.com/jeecg/qiaoqiaoyunsite/jeecgvideo02.png)](https://www.bilibili.com/video/BV1Nk4y1o7Qc)
+
+
 
 Download other source code
 -----------------------------------
