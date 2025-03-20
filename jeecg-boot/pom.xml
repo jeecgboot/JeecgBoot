@@ -78,7 +78,7 @@
 		<baidu-java-sdk.version>4.16.19</baidu-java-sdk.version>
 		<!-- Log4j2爆雷漏洞 -->
 		<log4j2.version>2.17.0</log4j2.version>
-		<logback.version>1.2.9</logback.version>
+		<logback.version>1.2.13</logback.version>
 	</properties>
 
 	<modules>
