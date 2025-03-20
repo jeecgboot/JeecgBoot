@@ -41,7 +41,7 @@
         default: () => {},
       },
     },
-    emits: ['options-change', 'change'],
+    emits: ['options-change', 'change', 'update:value'],
     setup(props, { emit, refs }) {
       const emitData = ref<any[]>();
       //注册model
@@ -118,6 +118,9 @@
         //emitData.value = values.join(",");
         state.value = values;
         selectValues.value = values;
+        // update-begin--author:liaozhiyang---date:20250318---for：【issues/7948】修复JselectRole组件不支持双向绑定
+        emit('update:value', values);
+        // update-end--author:liaozhiyang---date:20250318---for：【issues/7948】修复JselectRole组件不支持双向绑定
       }
       const getBindValue = Object.assign({}, unref(props), unref(attrs));
       return {
