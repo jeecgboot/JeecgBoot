@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.util.Map;
 
@@ -35,7 +36,7 @@ public class FlywayConfig {
      */
     @Value("${spring.flyway.enabled:false}")
     private Boolean enabled;
-    
+
     /**
      * 编码格式，默认UTF-8
      */
@@ -95,13 +96,13 @@ public class FlywayConfig {
      */
     @Value("${spring.flyway.clean-disabled:true}")
     private Boolean cleanDisabled;
-    
-    @Bean
+
+    @PostConstruct
     public void migrate() {
         if(!enabled){
             return;
         }
-        
+
         DynamicRoutingDataSource ds = (DynamicRoutingDataSource) dataSource;
         Map<String, DataSource> dataSources = ds.getDataSources();
         dataSources.forEach((k, v) -> {
