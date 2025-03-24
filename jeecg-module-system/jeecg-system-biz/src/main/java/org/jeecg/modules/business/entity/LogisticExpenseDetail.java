@@ -153,6 +153,12 @@ public class LogisticExpenseDetail implements Serializable {
     @ApiModelProperty(value = "附加费用")
     private BigDecimal additionalFee;
     /**
+     * 附加费用备注
+     */
+    @Excel(name = "附加费用备注", width = 15)
+    @ApiModelProperty(value = "附加费用备注")
+    private BigDecimal additionalFeeRemark;
+    /**
      * 总费用
      */
     @Excel(name = "总费用", width = 15)
@@ -171,4 +177,10 @@ public class LogisticExpenseDetail implements Serializable {
     @Excel(name = "货物赔偿", width = 15)
     @ApiModelProperty(value = "货物赔偿")
     private BigDecimal compensation;
+    /**
+     * 货物赔偿备注
+     */
+    @Excel(name = "货物赔偿备注", width = 15)
+    @ApiModelProperty(value = "货物赔偿备注")
+    private BigDecimal compensationRemark;
 }

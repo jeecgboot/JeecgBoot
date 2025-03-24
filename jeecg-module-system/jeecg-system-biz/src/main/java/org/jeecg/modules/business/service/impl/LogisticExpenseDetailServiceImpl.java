@@ -2,17 +2,23 @@ package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sun.istack.NotNull;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.business.entity.LogisticExpense.*;
 import org.jeecg.modules.business.entity.LogisticExpenseDetail;
 import org.jeecg.modules.business.mapper.LogisticExpenseDetailMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.ILogisticExpenseDetailService;
+import org.jeecg.modules.business.vo.LogisticCompanyEnum;
 import org.jeecg.modules.business.vo.LogisticExpenseProportion;
 import org.jeecg.modules.business.vo.PlatformOrderLogisticExpenseDetail;
+import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.dashboard.PeriodLogisticProfit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -29,6 +35,7 @@ import java.util.stream.Stream;
  * @Date: 2021-07-22
  * @Version: V1.0
  */
+@Slf4j
 @Service
 public class LogisticExpenseDetailServiceImpl extends ServiceImpl<LogisticExpenseDetailMapper, LogisticExpenseDetail> implements ILogisticExpenseDetailService {
 
@@ -203,6 +210,77 @@ public class LogisticExpenseDetailServiceImpl extends ServiceImpl<LogisticExpens
     @Override
     public boolean saveBatch(Collection<LogisticExpenseDetail> expenseDetails) {
         return this.executeBatch((sqlSession) -> logisticExpenseDetailMapper.insertOrMerge(expenseDetails));
+    }
+
+    @Override
+    public void importExcel(MultipartFile file, LogisticCompanyEnum logisticCompanyEnum) {
+        ResponsesWithMsg responses = new ResponsesWithMsg();
+        Class<?> clazz = LogisticExpenseDetail.class;
+        switch (logisticCompanyEnum) {
+            case DISIFANG:
+
+                break;
+            case CNE:
+                log.info("Importing CNE expense detail excel");
+                clazz = CNEExpenseDetail.class;
+                break;
+            case CHUKOUYI:
+
+                break;
+            case ANTU:
+                log.info("Importing AnTu expense detail excel");
+                clazz = AnTuExpenseDetail.class;
+                break;
+            case MIAOXIN:
+
+                break;
+            case YUNTU:
+
+                break;
+            case JITU:
+
+                break;
+            case WANGUOYOULIAN:
+
+                break;
+            case WANGYISUDA:
+
+                break;
+            case YIDA:
+                log.info("Importing Yida expense detail excel");
+                clazz = YDHExpenseDetail.class;
+                break;
+            case UBI:
+
+                break;
+            case JIEHANG:
+
+                break;
+            case WANBANG:
+                log.info("Importing WanBang expense detail excel");
+                clazz = WanBangExpenseDetail.class;
+                break;
+            case WIA:
+
+                break;
+            case CHENMINGKUNXIAOBAO:
+
+                break;
+            case CAINIAO:
+                log.info("Importing CaiNiao expense detail excel");
+                clazz = CaiNiaoExpenseDetail.class;
+                break;
+            case SHENZHENYUANPENG:
+
+                break;
+            case WEIKELU:
+
+                break;
+            case WANTONGWULIU:
+
+                break;
+        }
+
     }
 
     @Override
