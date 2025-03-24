@@ -2,9 +2,13 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.entity.LogisticExpenseDetail;
+import org.jeecg.modules.business.vo.LogisticCompanyEnum;
 import org.jeecg.modules.business.vo.LogisticExpenseProportion;
 import org.jeecg.modules.business.vo.dashboard.PeriodLogisticProfit;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -35,4 +39,6 @@ public interface ILogisticExpenseDetailService extends IService<LogisticExpenseD
     List<String> allChannels();
 
     boolean saveBatch(Collection<LogisticExpenseDetail> expenseDetails);
+
+    void importExcel(MultipartFile file, LogisticCompanyEnum logisticCompanyEnum);
 }
