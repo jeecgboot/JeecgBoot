@@ -35,4 +35,6 @@ public interface ClientMapper extends BaseMapper<Client> {
     void anonymizePersonalData(@Param("period") int directClientAnonymizationPeriod);
 
     Client getByShopId(@Param("shopId") String shopId);
+
+    Client getClientFromCredit(@Param("invoiceNumber") String invoiceNumber);
 }

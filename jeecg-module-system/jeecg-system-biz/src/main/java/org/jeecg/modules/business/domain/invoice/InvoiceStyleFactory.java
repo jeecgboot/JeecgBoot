@@ -15,6 +15,8 @@ public class InvoiceStyleFactory {
     private CellStyle rightSideDecimalStyle;
     private CellStyle otherStyle;
     private CellStyle subjectStyle;
+    private CellStyle fullBorderLeftStyle;
+    private CellStyle fullBorderRightStyle;
     public InvoiceStyleFactory(Workbook workbook) {
         this.workbook = workbook;
     }
@@ -118,7 +120,38 @@ public class InvoiceStyleFactory {
         subjectStyle.setFont(font);
         return subjectStyle;
     }
+    public CellStyle fullBorderLeftStyle() {
+        fullBorderLeftStyle = workbook.createCellStyle();
+        fullBorderLeftStyle.setBorderBottom(BorderStyle.THIN);
+        fullBorderLeftStyle.setBorderLeft(BorderStyle.THIN);
+        fullBorderLeftStyle.setBorderRight(BorderStyle.THIN);
+        fullBorderLeftStyle.setBorderTop(BorderStyle.THIN);
 
+        fullBorderLeftStyle.setAlignment(HorizontalAlignment.LEFT);
+        fullBorderLeftStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+        Font font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 11);
+        fullBorderLeftStyle.setFont(font);
+        return fullBorderLeftStyle;
+    }
+    public CellStyle fullBorderRightStyle() {
+        fullBorderRightStyle = workbook.createCellStyle();
+        fullBorderRightStyle.setBorderBottom(BorderStyle.THIN);
+        fullBorderRightStyle.setBorderLeft(BorderStyle.THIN);
+        fullBorderRightStyle.setBorderRight(BorderStyle.THIN);
+        fullBorderRightStyle.setBorderTop(BorderStyle.THIN);
+
+        fullBorderRightStyle.setAlignment(HorizontalAlignment.RIGHT);
+        fullBorderRightStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+        Font font = workbook.createFont();
+        font.setFontName("Arial");
+        font.setFontHeightInPoints((short) 11);
+        fullBorderRightStyle.setFont(font);
+        return fullBorderRightStyle;
+    }
     public CellStyle otherStyle() {
         if (otherStyle != null)
             return otherStyle;

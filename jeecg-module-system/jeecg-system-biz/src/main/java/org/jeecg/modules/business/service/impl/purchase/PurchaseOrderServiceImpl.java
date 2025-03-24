@@ -28,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -552,7 +551,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         Files.copy(template, newInvoice, StandardCopyOption.REPLACE_EXISTING);
         PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
         pv.toExcelFile(newInvoice);
-        return new InvoiceMetaData(filename,invoiceCode, pv.client().getInternalCode(), pv.client().getInvoiceEntity(), "");
+        return new InvoiceMetaData(filename,invoiceCode, pv.getTargetClient().getInternalCode(), pv.getTargetClient().getInvoiceEntity(), "");
     }
     @Override
     public InvoiceMetaData makeInvoiceTest(int nbOfLines) throws Exception {
@@ -575,7 +574,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         Files.copy(template, newInvoice, StandardCopyOption.REPLACE_EXISTING);
         PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
         pv.toExcelFile(newInvoice);
-        return new InvoiceMetaData(filename,invoiceCode, pv.client().getInternalCode(), pv.client().getInvoiceEntity(), "");
+        return new InvoiceMetaData(filename,invoiceCode, pv.getTargetClient().getInternalCode(), pv.getTargetClient().getInvoiceEntity(), "");
     }
 
     @Override
@@ -590,13 +589,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     }
 
     @Override
-    public void cancelInvoice(String invoiceNumber, String clientId) {
-        purchaseOrderMapper.deleteInvoice(invoiceNumber, clientId);
-    }
-
-    @Override
-    public void cancelBatchInvoice(List<String> invoiceNumbers) {
-        purchaseOrderMapper.deleteBatchInvoice(invoiceNumbers);
+    public void cancelInvoice(String invoiceId) {
+        purchaseOrderMapper.cancelInvoice(invoiceId);
     }
 
     @Override

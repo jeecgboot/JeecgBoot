@@ -194,7 +194,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 		Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
 
-		ResponsesWithMsg responses = new ResponsesWithMsg();
+		ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
 		List<SkuWeight> skuWeights = new ArrayList<>();
 		Map<String, SkuWeight> skuWeightMappedByErpCode = new HashMap<>();
 		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
@@ -264,7 +264,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 					skuWeightMappedByErpCode.put(erpCode, skuWeight);
 				}
 				log.info("Import weights for skus: {}", skuWeightMappedByErpCode.keySet());
-				ResponsesWithMsg mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+				ResponsesWithMsg<String> mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 				List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
 				mabangResponses.getSuccesses().forEach((skuErpCode, messages) -> {
 					skuWeightSuccesses.add(skuWeightMappedByErpCode.get(skuErpCode));
@@ -346,7 +346,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			skuWeightsMap.put(sku.getErpCode(), skuWeight);
 		}
 		List<SkuWeight> skuWeights = new ArrayList<>(skuWeightsMap.values());
-		ResponsesWithMsg responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+		ResponsesWithMsg<String> responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 		List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
 		responses.getSuccesses().forEach((skuErpCode, messages) -> {
 			skuWeightSuccesses.add(skuWeightsMap.get(skuErpCode));

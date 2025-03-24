@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
@@ -101,6 +102,13 @@ public class ShippingInvoice implements Serializable {
     @Excel(name = "currencyID", width = 15)
     @ApiModelProperty(value = "currency ID")
     private java.lang.String currencyId;
+    /**
+     * status
+     * 0: cancelled, 1: normal (default)
+     */
+    @Excel(name = "status", width = 15)
+    @ApiModelProperty(value = "status")
+    private java.lang.Integer status;
 
     public ShippingInvoice() {
 //        this.id = null;
@@ -150,5 +158,15 @@ public class ShippingInvoice implements Serializable {
     ) {
         return new ShippingInvoice(null, username, new Date(), username, new Date(), clientId,
                 invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paidAmount, currencyId);
+    }
+    @Getter
+    public enum Status {
+        Cancelled (0),
+        Normal (1);
+
+        private final int code;
+        Status(int code) {
+            this.code = code;
+        }
     }
 }

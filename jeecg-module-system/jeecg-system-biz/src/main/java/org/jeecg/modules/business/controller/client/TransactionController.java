@@ -32,51 +32,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TransactionController {
     @Autowired
-    private IExtraFeeService extraFeeService;
-    @Autowired
-    private EmailService emailService;
-    @Autowired
     private TransactionMapper transactionMapper;
     @Autowired
     private IPlatformOrderService platformOrderService;
     @Autowired
     private IShopService shopService;
     @Autowired
-    ShippingInvoiceMapper shippingInvoiceMapper;
-    @Autowired
-    PlatformOrderMapper platformOrderMapper;
-    @Autowired
     PlatformOrderContentMapper platformOrderContentMapper;
-    @Autowired
-    ClientMapper clientMapper;
-    @Autowired
-    ShopMapper shopMapper;
-    @Autowired
-    LogisticChannelPriceMapper logisticChannelPriceMapper;
-    @Autowired
-    LogisticChannelMapper logisticChannelMapper;
-    @Autowired
-    IPlatformOrderContentService platformOrderContentService;
-    @Autowired
-    ISkuDeclaredValueService skuDeclaredValueService;
-    @Autowired
-    FactureDetailMapper factureDetailMapper;
-    @Autowired
-    CountryService countryService;
-    @Autowired
-    IPurchaseOrderService purchaseOrderService;
-    @Autowired
-    PurchaseOrderContentMapper purchaseOrderContentMapper;
-    @Autowired
-    SkuPromotionHistoryMapper skuPromotionHistoryMapper;
     @Autowired
     ExchangeRatesMapper exchangeRatesMapper;
     @Autowired
-    ISavRefundWithDetailService savRefundWithDetailService;
-    @Autowired
-    ISavRefundService savRefundService;
-    @Autowired
     private ISysBaseAPI ISysBaseApi;
+    @Autowired
+    private ShippingInvoiceFactory factory;
     @Autowired
     Environment env;
 
@@ -108,11 +76,6 @@ public class TransactionController {
             endDate = shippingOrders.stream().map(PlatformOrder::getOrderTime).max(Date::compareTo).get();
             List<String> shippingOrderIds = shippingOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
             log.info("Estimating shipping fees for {}", shippingOrderIds.size());
-            ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                    extraFeeService,
-                    platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                    platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                    purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
             shippingFeesEstimations = factory.getEstimations(clientId, shippingOrderIds, errorMessages);
             for (ShippingFeesEstimation estimation : shippingFeesEstimations) {
                 shippingFeesEstimation = shippingFeesEstimation.add(estimation.getDueForProcessedOrders());

@@ -220,6 +220,12 @@ jeecg:
     upload: /wia/upload
     save: /wia/save
 
+    # credit invoice template
+    creditTemplatePath_EU: /wia/files/Credit_Invoice_Template_EU.xlsx
+    creditTemplatePath_US: /wia/files/Credit_Invoice_Template_US.xlsx
+    # where to store generated credit file
+    creditInvoiceDir: wia/invoices/credit
+
     # purchase invoice template
     purchaseTemplatePath: /wia/files/Purchase_Invoice_Template.xlsx
     # where to store generated file

@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.domain.invoice;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
@@ -19,15 +20,18 @@ import java.util.Map;
 
 @Slf4j
 public abstract class AbstractInvoice<E, F, G, H, I> {
+    @Getter
     protected final Client targetClient;
 
+    @Getter
     private final String code;
 
     private final String subject;
 
     protected Workbook workbook;
 
-    private final BigDecimal exchangeRate;
+    @Getter
+    protected final BigDecimal exchangeRate;
 
     public AbstractInvoice(Client targetClient,
                            String code, String subject, BigDecimal exchangeRate) {
@@ -47,7 +51,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
     private final static String MAIL_LOCATION = "F13";
     private final static String SUBJECT_LOCATION = "C16";
     private final static String[] NUM_COL = {"C", "D", "E", "F", "G", "H"};
-    private final static int FIRST_ROW = 20;
+    protected final static int FIRST_ROW = 20;
     private final static int LAST_ROW = 42;
     private int TOTAL_ROW = LAST_ROW + 1;
     // the max number of rows in A4 page
@@ -80,18 +84,6 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
             workbook.close();
             file.close();
         }
-    }
-
-    public Client client() {
-        return targetClient;
-    }
-
-    public String code() {
-        return code;
-    }
-
-    public BigDecimal getExchangeRate() {
-        return exchangeRate;
     }
 
     /**

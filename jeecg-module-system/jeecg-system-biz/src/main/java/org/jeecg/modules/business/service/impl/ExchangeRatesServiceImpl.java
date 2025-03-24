@@ -22,13 +22,15 @@ import java.math.BigDecimal;
 public class ExchangeRatesServiceImpl extends ServiceImpl<ExchangeRatesMapper, ExchangeRates> implements IExchangeRatesService {
     @Autowired
     private ExchangeRatesMapper exchangeRatesMapper;
-    @Autowired
-    public ExchangeRatesServiceImpl(ExchangeRatesMapper exchangeRatesMapper) {
-        this.exchangeRatesMapper = exchangeRatesMapper;
-    }
+
     @Override
     @Transactional
     public BigDecimal getExchangeRate(String originalCurrency, String targetCurrency) {
         return exchangeRatesMapper.getLatestExchangeRate(originalCurrency, targetCurrency);
+    }
+
+    @Override
+    public BigDecimal getExchangeRateFromDate(String originalCurrency, String targetCurrency, String dateTime) {
+        return exchangeRatesMapper.getExchangeRateFromDate(originalCurrency, targetCurrency, dateTime);
     }
 }

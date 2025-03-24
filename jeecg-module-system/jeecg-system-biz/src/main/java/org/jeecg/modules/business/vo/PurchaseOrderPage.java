@@ -2,12 +2,10 @@ package org.jeecg.modules.business.vo;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import org.jeecg.modules.business.entity.PurchaseOrder;
+
 import org.jeecg.modules.business.entity.PurchaseOrderSku;
-import org.jeecg.modules.business.entity.SkuPromotionHistory;
 import lombok.Data;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecgframework.poi.excel.annotation.ExcelEntity;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -80,6 +78,10 @@ public class PurchaseOrderPage {
 	@Excel(name = "采购批次号", width = 15)
 	@ApiModelProperty(value = "采购批次号")
 	private String groupId;
+	/** status */
+	@Excel(name = "status", width = 15)
+	@ApiModelProperty(value = "status")
+	private Integer status;
 
 	/**
 	 * Payment document

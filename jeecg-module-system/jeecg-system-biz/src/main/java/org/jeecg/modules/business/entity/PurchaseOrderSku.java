@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 
@@ -15,8 +16,6 @@ import java.util.Date;
 import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.UnsupportedEncodingException;
 
 /**
  * @Description: 商品采购订单SKU
@@ -84,4 +83,22 @@ public class PurchaseOrderSku implements Serializable {
      */
     @ApiModelProperty(value = "采购总价")
     private java.math.BigDecimal totalAmount;
+    /**
+     * status
+     * 0: cancelled, 1: normal (default)
+     */
+    @Excel(name = "status", width = 15)
+    @ApiModelProperty(value = "status")
+    private java.lang.Integer status;
+
+    @Getter
+    public enum Status {
+        Cancelled (0),
+        Normal (1);
+
+        private final int code;
+        Status(int code) {
+            this.code = code;
+        }
+    }
 }

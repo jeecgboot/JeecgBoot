@@ -68,18 +68,6 @@ public class PlatformOrderShippingInvoiceService {
     @Autowired
     IClientCategoryService clientCategoryService;
     @Autowired
-    EmailService emailService;
-    @Autowired
-    ShopMapper shopMapper;
-    @Autowired
-    LogisticChannelPriceMapper logisticChannelPriceMapper;
-    @Autowired
-    LogisticChannelMapper logisticChannelMapper;
-    @Autowired
-    IPlatformOrderContentService platformOrderContentService;
-    @Autowired
-    ISkuDeclaredValueService skuDeclaredValueService;
-    @Autowired
     FactureDetailMapper factureDetailMapper;
     @Autowired
     IPlatformOrderService platformOrderService;
@@ -88,19 +76,13 @@ public class PlatformOrderShippingInvoiceService {
     @Autowired
     private ISkuService skuService;
     @Autowired
-    CountryService countryService;
-    @Autowired
     IPurchaseOrderService purchaseOrderService;
-    @Autowired
-    PurchaseOrderContentMapper purchaseOrderContentMapper;
-    @Autowired
-    SkuPromotionHistoryMapper skuPromotionHistoryMapper;
-    @Autowired
-    ExchangeRatesMapper exchangeRatesMapper;
     @Autowired
     ISavRefundWithDetailService savRefundWithDetailService;
     @Autowired
-    ISavRefundService savRefundService;
+    private ShippingInvoiceFactory factory;
+    @Autowired
+    private ICreditService creditService;
     @Autowired
     Environment env;
     @Value("${jeecg.path.shippingTemplatePath_EU}")
@@ -139,6 +121,9 @@ public class PlatformOrderShippingInvoiceService {
     @Value("${jeecg.path.invoiceDetailExportDir}")
     private String INVOICE_DETAIL_EXPORT_DIR;
 
+    @Value("${jeecg.path.creditInvoiceDir}")
+    private String CREDIT_INVOICE_DIR;
+
     @Value("${jeecg.path.customFileDir}")
     private String CUSTOM_FILE_DIR;
     private static final String EXTENSION = ".xlsx";
@@ -162,6 +147,7 @@ public class PlatformOrderShippingInvoiceService {
             "Frais de service",
             "Frais de préparation",
             "Frais de matériel d'emballage",
+            "Frais d'assurance produits",
             "TVA",
             "N° de facture"
     };
@@ -235,12 +221,6 @@ public class PlatformOrderShippingInvoiceService {
      */
     @Transactional
     public InvoiceMetaData makeInvoice(ShippingInvoiceParam param, String ... user) throws UserException, ParseException, IOException {
-        // Creates factory
-        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                extraFeeService,
-                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         String username = user.length > 0 ? user[0] : ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         ShippingInvoice invoice = factory.createInvoice(param.clientID(),
@@ -267,12 +247,6 @@ public class PlatformOrderShippingInvoiceService {
      */
     @Transactional
     public InvoiceMetaData makeInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException {
-        // Creates factory
-        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                extraFeeService,
-                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         ShippingInvoice invoice = factory.createShippingInvoice(param.clientID(), param.orderIds(), param.getType(), param.getStart(), param.getEnd());
@@ -291,12 +265,6 @@ public class PlatformOrderShippingInvoiceService {
      */
     @Transactional
     public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException {
-        // Creates factory
-        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                extraFeeService,
-                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), null, param.orderIds(), param.getType(), param.getStart(), param.getEnd());
@@ -314,12 +282,6 @@ public class PlatformOrderShippingInvoiceService {
      */
     @Transactional
     public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException {
-        // Creates factory
-        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                extraFeeService,
-                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         String username = user.length > 0 ? user[0] : ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         List<PlatformOrder> platformOrderList;
         if(method.equals("post")) {
@@ -338,12 +300,12 @@ public class PlatformOrderShippingInvoiceService {
     @NotNull
     private InvoiceMetaData getInvoiceMetaDataAndInsert(String username, ShippingInvoice invoice) throws IOException {
         InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
-        String currencyId = currencyService.getIdByCode(invoice.client().getCurrency());
+        String currencyId = currencyService.getIdByCode(invoice.getTargetClient().getCurrency());
         // save to DB
         org.jeecg.modules.business.entity.ShippingInvoice shippingInvoiceEntity = org.jeecg.modules.business.entity.ShippingInvoice.of(
                 username,
-                invoice.client().getId(),
-                invoice.code(),
+                invoice.getTargetClient().getId(),
+                invoice.getCode(),
                 invoice.getTotalAmount(),
                 invoice.reducedAmount(),
                 invoice.paidAmount(),
@@ -357,13 +319,13 @@ public class PlatformOrderShippingInvoiceService {
         // Chooses invoice template based on client's preference on currency
         Path src;
         if (invoice instanceof CompleteInvoice) {
-            if (invoice.client().getCurrency().equals("USD")) {
+            if (invoice.getTargetClient().getCurrency().equals("USD")) {
                 src = Paths.get(COMPLETE_INVOICE_TEMPLATE_US);
             } else {
                 src = Paths.get(COMPLETE_INVOICE_TEMPLATE_EU);
             }
         } else {
-            if (invoice.client().getCurrency().equals("USD")) {
+            if (invoice.getTargetClient().getCurrency().equals("USD")) {
                 src = Paths.get(SHIPPING_INVOICE_TEMPLATE_US);
             } else {
                 src = Paths.get(SHIPPING_INVOICE_TEMPLATE_EU);
@@ -371,12 +333,12 @@ public class PlatformOrderShippingInvoiceService {
         }
 
         // Writes invoice content to a new excel file
-        String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
+        String filename = "Invoice N°" + invoice.getCode() + " (" + invoice.getTargetClient().getInvoiceEntity() + ").xlsx";
         Path out = Paths.get(INVOICE_DIR, filename);
         Files.copy(src, out, StandardCopyOption.REPLACE_EXISTING);
         invoice.toExcelFile(out);
 
-        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
+        return new InvoiceMetaData(filename, invoice.getCode(), invoice.getTargetClient().getInternalCode(), invoice.getTargetClient().getInvoiceEntity(), "");
     }
     @NotNull
     private InvoiceMetaData getInvoiceMetaData(PurchaseInvoice invoice) throws IOException {
@@ -384,12 +346,12 @@ public class PlatformOrderShippingInvoiceService {
         Path template = Paths.get(PURCHASE_INVOICE_TEMPLATE );
 
         // Writes invoice content to a new excel file
-        String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
+        String filename = "Invoice N°" + invoice.getCode() + " (" + invoice.getTargetClient().getInvoiceEntity() + ").xlsx";
         Path out = Paths.get(PURCHASE_INVOICE_DIR, filename);
         Files.copy(template, out, StandardCopyOption.REPLACE_EXISTING);
         invoice.toExcelFile(out);
 
-        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
+        return new InvoiceMetaData(filename, invoice.getCode(), invoice.getTargetClient().getInternalCode(), invoice.getTargetClient().getInvoiceEntity(), "");
     }
 
     /**
@@ -399,12 +361,6 @@ public class PlatformOrderShippingInvoiceService {
      * @param errorMessages List of error messages to be filled
      */
     public List<ShippingFeesEstimation> getShippingFeesEstimation(List<String> errorMessages) {
-        // Creates factory
-        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                extraFeeService,
-                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         return factory.getEstimations(errorMessages);
     }
 
@@ -415,12 +371,6 @@ public class PlatformOrderShippingInvoiceService {
      * @param errorMessages List of error messages to be filled
      */
     public List<ShippingFeesEstimation> getShippingFeesEstimation(String clientId, List<String> orderIds,List<String> errorMessages) {
-        // Creates factory
-        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                extraFeeService,
-                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         return factory.getEstimations(clientId, orderIds, errorMessages);
     }
 
@@ -497,6 +447,8 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.write(detail.getPickingFee());
             sheetManager.nextCol();
             sheetManager.write(detail.getPackagingMaterialFee());
+            sheetManager.nextCol();
+            sheetManager.write(detail.getInsuranceFee());
             sheetManager.nextCol();
             sheetManager.write(detail.getTVA());
             sheetManager.nextCol();
@@ -689,13 +641,13 @@ public class PlatformOrderShippingInvoiceService {
                     metaData = makeInvoice(param);
                     if(client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.VIP.getName()))
                         || client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.CONFIRMED.getName())))
-                        balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "shipping");
+                        balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), SHIPPING.name());
                 }
                 else {
                     metaData = makeCompleteInvoicePostShipping(param, "post");
                     if(client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.VIP.getName()))
                             || client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.CONFIRMED.getName())))
-                        balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), "complete");
+                        balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), COMPLETE.name());
                 }
                 convertToPdf(metaData.getInvoiceCode(), "invoice");
                 invoiceList.add(metaData);
@@ -746,11 +698,11 @@ public class PlatformOrderShippingInvoiceService {
                 InvoiceMetaData metaData;
                 if(invoiceType == 0) {
                     metaData = makeInvoice(param, "system");
-                    balanceService.updateBalance(clientId, metaData.getInvoiceCode(), "shipping");
+                    balanceService.updateBalance(clientId, metaData.getInvoiceCode(), SHIPPING.name());
                 }
                 else {
                     metaData = makeCompleteInvoicePostShipping(param, "pre-shipping", "system");
-                    balanceService.updateBalance(clientId, metaData.getInvoiceCode(), "complete");
+                    balanceService.updateBalance(clientId, metaData.getInvoiceCode(), COMPLETE.name());
                 }
                 platformOrderMapper.updateErpStatusByCode(metaData.getInvoiceCode(), 2);
                 invoiceList.add(metaData);
@@ -823,8 +775,11 @@ public class PlatformOrderShippingInvoiceService {
         List<Path> pathList = new ArrayList<>();
         if(filetype.equals("invoice")) {
             log.info("File asked is of type invoice");
-            if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name()))
+            String invoiceType = Invoice.getType(invoiceNumber);
+            if(invoiceType.equalsIgnoreCase(PURCHASE.name()))
                 pathList = getPath(PURCHASE_INVOICE_DIR, invoiceNumber);
+            else if(invoiceType.equalsIgnoreCase(CREDIT.name()))
+                pathList = getPath(CREDIT_INVOICE_DIR, invoiceNumber);
             else
                 pathList = getPath(INVOICE_DIR, invoiceNumber);
         }
@@ -837,10 +792,17 @@ public class PlatformOrderShippingInvoiceService {
             pathList = getPath(PURCHASE_INVENTORY_DIR, invoiceNumber);
         }
         if(pathList.isEmpty()) {
-            log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
+            log.error("NO INVOICE FILE FOUND : {}", invoiceNumber);
             log.info("Generating a new invoice file ...");
-            if(filetype.equals("invoice"))
-                pathList = generateInvoiceExcel(invoiceNumber, filetype);
+            if(filetype.equals("invoice")) {
+                String invoiceType = Invoice.getType(invoiceNumber);
+                if(invoiceType.equals(CREDIT.name())) {
+                    creditService.generateInvoiceExcel(invoiceNumber);
+                    pathList = getPath(CREDIT_INVOICE_DIR, invoiceNumber);
+                } else
+                    pathList = generateInvoiceExcel(invoiceNumber, filetype);
+
+            }
             else if(filetype.equals("detail")){
                 Client client = clientService.getClientFromInvoice(invoiceNumber);
                 List<FactureDetail> details = getInvoiceDetail(invoiceNumber);
@@ -938,18 +900,12 @@ public class PlatformOrderShippingInvoiceService {
     }
 
     public List<Path> generateInvoiceExcel(String invoiceNumber, String filetype) throws UserException, IOException {
-        ShippingInvoiceFactory factory = new ShippingInvoiceFactory(
-                extraFeeService,
-                platformOrderService, clientMapper, shopMapper, logisticChannelMapper, logisticChannelPriceMapper,
-                platformOrderContentService, skuDeclaredValueService, countryService, exchangeRatesMapper,
-                purchaseOrderService, purchaseOrderContentMapper, skuPromotionHistoryMapper, savRefundService, savRefundWithDetailService, emailService, env);
         Path out = null;
         if(filetype.equals("invoice")) {
             if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name())) {
                 PurchaseInvoice invoice = factory.buildExistingPurchaseInvoice(invoiceNumber);
                 InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
-                String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
-                out = Paths.get(PURCHASE_INVOICE_DIR, filename);
+                out = Paths.get(PURCHASE_INVOICE_DIR, invoiceMetaData.getFilename());
             }
             if(Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name())) {
                 Client client = shippingInvoiceMapper.getClientByInvoiceNumber(invoiceNumber);
@@ -958,8 +914,7 @@ public class PlatformOrderShippingInvoiceService {
 
                 ShippingInvoice invoice = factory.buildExistingShippingInvoice(invoiceNumber, clientId, period.get("startDate"), period.get("endDate"), filetype, period.get("type"));
                 InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
-                String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
-                out = Paths.get(INVOICE_DIR, filename);
+                out = Paths.get(INVOICE_DIR, invoiceMetaData.getFilename());
             }
             if(Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name())) {
                 Client client = shippingInvoiceMapper.getClientByInvoiceNumber(invoiceNumber);
@@ -967,8 +922,7 @@ public class PlatformOrderShippingInvoiceService {
                 String clientId = client.getId();
                 CompleteInvoice invoice = factory.buildExistingCompleteInvoice(invoiceNumber, clientId, period.get("startDate"), period.get("endDate"), filetype, period.get("type"));
                 InvoiceMetaData invoiceMetaData = getInvoiceMetaData(invoice);
-                String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ").xlsx";
-                out = Paths.get(INVOICE_DIR, filename);
+                out = Paths.get(INVOICE_DIR, invoiceMetaData.getFilename());
             }
         }
         return Collections.singletonList(out);
@@ -1013,14 +967,14 @@ public class PlatformOrderShippingInvoiceService {
         src = Paths.get(SHIPPING_INVOICE_TEMPLATE_US);
 //        src = Paths.get(SHIPPING_INVOICE_TEMPLATE_EU);
 
-        // Writes invoice content to a new excel file
-        String filename = "Invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ")_" + nbOfLines +".xlsx";
+        // Writes invoice content to a new Excel file
+        String filename = "Invoice N°" + invoice.getCode() + " (" + invoice.getTargetClient().getInvoiceEntity() + ")_" + nbOfLines +".xlsx";
         Path out = Paths.get(INVOICE_TEST_DIR, filename);
         Files.copy(src, out, StandardCopyOption.REPLACE_EXISTING);
         invoice.toExcelFile(out);
         convertToPdfTest(invoiceCode, "invoice");
 
-        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
+        return new InvoiceMetaData(filename, invoice.getCode(), invoice.getTargetClient().getInternalCode(), invoice.getTargetClient().getInvoiceEntity(), "");
     }
     @Transactional
     public InvoiceMetaData makeCompleteInvoiceTest(int nbOfLines) throws Exception {
@@ -1071,12 +1025,12 @@ public class PlatformOrderShippingInvoiceService {
         }
 
         // Writes invoice content to a new excel file
-        String filename = "Complete invoice N°" + invoice.code() + " (" + invoice.client().getInvoiceEntity() + ") _" + nbOfLines + ".xlsx";
+        String filename = "Complete invoice N°" + invoice.getCode() + " (" + invoice.getTargetClient().getInvoiceEntity() + ") _" + nbOfLines + ".xlsx";
         Path out = Paths.get(INVOICE_TEST_DIR, filename);
         Files.copy(src, out, StandardCopyOption.REPLACE_EXISTING);
         invoice.toExcelFile(out);
         convertToPdfTest(invoiceCode, "invoice");
-        return new InvoiceMetaData(filename, invoice.code(), invoice.client().getInternalCode(), invoice.client().getInvoiceEntity(), "");
+        return new InvoiceMetaData(filename, invoice.getCode(), invoice.getTargetClient().getInternalCode(), invoice.getTargetClient().getInvoiceEntity(), "");
     }
     public void convertToPdfTest(String invoiceNumber, String fileType) throws Exception {
         String excelFilePath = getInvoiceListTest(invoiceNumber, fileType);// (C:\PATH\filename.xlsx)
@@ -1102,7 +1056,6 @@ public class PlatformOrderShippingInvoiceService {
             int maxRow = cells.getMaxDataRow();
             PageSetup pageSetup = sheet.getPageSetup();
             // Setting the number of pages to which the length of the worksheet will
-            System.out.println("maxRow : " + maxRow);
             if(maxRow < 63) {
                 // be spanned
                 pageSetup.setFitToPagesTall(1);
@@ -1119,7 +1072,7 @@ public class PlatformOrderShippingInvoiceService {
         }
     }
     public String getInvoiceListTest(String invoiceNumber, String filetype) throws UserException, IOException {
-        log.info("Invoice number : " + invoiceNumber);
+        log.info("Invoice number : {}",invoiceNumber);
         List<Path> pathList = new ArrayList<>();
         log.info("File asked is of type invoice");
         if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name()))
@@ -1127,7 +1080,7 @@ public class PlatformOrderShippingInvoiceService {
         else
             pathList = getPath(INVOICE_TEST_DIR, invoiceNumber);
         if(pathList.isEmpty()) {
-            log.error("NO INVOICE FILE FOUND : " + invoiceNumber);
+            log.error("NO INVOICE FILE FOUND : {}", invoiceNumber);
             return "ERROR";
         }
         for (Path path : pathList) {

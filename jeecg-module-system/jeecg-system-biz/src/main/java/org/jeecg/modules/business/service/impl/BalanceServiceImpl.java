@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
+
 /**
  * @Description: balance
  * @Author: jeecg-boot
@@ -36,8 +38,6 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     @Autowired
     private ICurrencyService currencyService;
     @Autowired
-    private IPlatformOrderService platformOrderService;
-    @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
     IShippingInvoiceService shippingInvoiceService;
@@ -49,7 +49,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     @Override
     public void updateBalance(String clientId, String invoiceCode, String invoiceType) {
         // balance update
-        if(invoiceType.equals("shipping")) {
+        if(invoiceType.equals(SHIPPING.name())) {
             ShippingInvoice invoice = shippingInvoiceService.getShippingInvoice(invoiceCode);
             String currency = currencyService.getCodeById(invoice.getCurrencyId());
             BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
@@ -58,7 +58,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
             Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);
             balanceMapper.insert(balance);
         }
-        if(invoiceType.equals("complete")) {
+        if(invoiceType.equals(COMPLETE.name())) {
             ShippingInvoice invoice = shippingInvoiceService.getShippingInvoice(invoiceCode);
             String currency = currencyService.getCodeById(invoice.getCurrencyId());
             BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
@@ -69,7 +69,7 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
             Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);
             balanceMapper.insert(balance);
         }
-        if(invoiceType.equals("purchase")) {
+        if(invoiceType.equals(PURCHASE.name())) {
             PurchaseOrder invoice = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceCode);
             String currency = currencyService.getCodeById(invoice.getCurrencyId());
             BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
@@ -136,4 +136,18 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         return lowBalanceDataList;
     }
 
+    @Override
+    public void cancelBalance(String invoiceId, String originalOperationType, String operationType, BigDecimal amount, String currencyId, String clientId) {
+        String currency = currencyService.getCodeById(currencyId);
+        BigDecimal balanceAmount = balanceMapper.getBalanceByClientIdAndCurrency(clientId, currency);
+        if(balanceAmount == null) {
+            return;
+        }
+        Balance balanceEntryToCancel = balanceMapper.getBalanceByOperation(invoiceId, originalOperationType);
+        if(balanceEntryToCancel == null) {
+            return;
+        }
+        Balance balanceAdjustment = Balance.of("system", clientId, currencyId, operationType, invoiceId, balanceAmount.subtract(amount));
+        balanceMapper.insert(balanceAdjustment);
+    }
 }

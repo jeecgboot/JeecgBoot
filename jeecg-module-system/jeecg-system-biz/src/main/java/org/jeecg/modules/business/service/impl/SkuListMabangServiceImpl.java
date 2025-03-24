@@ -464,8 +464,8 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         }
         return remark;
     }
-    public ResponsesWithMsg publishSkuToMabang(List<SkuOrderPage> skuList) {
-        ResponsesWithMsg responses = new ResponsesWithMsg();
+    public ResponsesWithMsg<String> publishSkuToMabang(List<SkuOrderPage> skuList) {
+        ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
         List<SkuData> skuDataList = skuList.stream()
                 .map(this::SkuOrderPageToSkuData)
                 .collect(toList());
@@ -685,8 +685,8 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     }
 
     @Override
-    public ResponsesWithMsg mabangSkuWeightUpdate(List<SkuWeight> skuWeights) {
-        ResponsesWithMsg responses = new ResponsesWithMsg();
+    public ResponsesWithMsg<String> mabangSkuWeightUpdate(List<SkuWeight> skuWeights) {
+        ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
         List<String> skuIds = skuWeights.stream()
                 .map(SkuWeight::getSkuId)
                 .collect(toList());

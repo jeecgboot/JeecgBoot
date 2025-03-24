@@ -17,6 +17,7 @@ import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Component;
@@ -39,23 +40,42 @@ import static java.util.stream.Collectors.*;
 @Component
 public class ShippingInvoiceFactory {
 
-    private final IExtraFeeService extraFeeService;
-    private final IPlatformOrderService platformOrderService;
-    private final ClientMapper clientMapper;
-    private final ShopMapper shopMapper;
-    private final LogisticChannelPriceMapper logisticChannelPriceMapper;
-    private final LogisticChannelMapper logisticChannelMapper;
-    private final IPlatformOrderContentService platformOrderContentService;
-    private final ISkuDeclaredValueService skuDeclaredValueService;
-    private final CountryService countryService;
-    private final ExchangeRatesMapper exchangeRatesMapper;
-    private final IPurchaseOrderService purchaseOrderService;
-    private final PurchaseOrderContentMapper purchaseOrderContentMapper;
-    private final SkuPromotionHistoryMapper skuPromotionHistoryMapper;
-    private final ISavRefundService savRefundService;
-    private final ISavRefundWithDetailService savRefundWithDetailService;
-    private final EmailService emailService;
-    private final Environment env;
+    @Autowired
+    private IExtraFeeService extraFeeService;
+    @Autowired
+    private IPlatformOrderService platformOrderService;
+    @Autowired
+    private ClientMapper clientMapper;
+    @Autowired
+    private ShopMapper shopMapper;
+    @Autowired
+    private LogisticChannelPriceMapper logisticChannelPriceMapper;
+    @Autowired
+    private LogisticChannelMapper logisticChannelMapper;
+    @Autowired
+    private IPlatformOrderContentService platformOrderContentService;
+    @Autowired
+    private ISkuDeclaredValueService skuDeclaredValueService;
+    @Autowired
+    private CountryService countryService;
+    @Autowired
+    private ExchangeRatesMapper exchangeRatesMapper;
+    @Autowired
+    private IPurchaseOrderService purchaseOrderService;
+    @Autowired
+    private PurchaseOrderContentMapper purchaseOrderContentMapper;
+    @Autowired
+    private SkuPromotionHistoryMapper skuPromotionHistoryMapper;
+    @Autowired
+    private ISavRefundService savRefundService;
+    @Autowired
+    private ISavRefundWithDetailService savRefundWithDetailService;
+    @Autowired
+    private ILogisticInsuranceService logisticInsuranceService;
+    @Autowired
+    private EmailService emailService;
+    @Autowired
+    private Environment env;
 
     private final SimpleDateFormat SUBJECT_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     private final SimpleDateFormat CREATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -75,34 +95,6 @@ public class ShippingInvoiceFactory {
                             return skuDeclaredValueService.getDeclaredValueForDate(skuIdAndDate.getLeft(), skuIdAndDate.getRight());
                         }
                     });
-
-    public ShippingInvoiceFactory(IExtraFeeService extraFeeService, IPlatformOrderService platformOrderService, ClientMapper clientMapper,
-                                  ShopMapper shopMapper, LogisticChannelMapper logisticChannelMapper,
-                                  LogisticChannelPriceMapper logisticChannelPriceMapper,
-                                  IPlatformOrderContentService platformOrderContentService,
-                                  ISkuDeclaredValueService skuDeclaredValueService, CountryService countryService,
-                                  ExchangeRatesMapper exchangeRatesMapper, IPurchaseOrderService purchaseOrderService,
-                                  PurchaseOrderContentMapper purchaseOrderContentMapper,
-                                  SkuPromotionHistoryMapper skuPromotionHistoryMapper, ISavRefundService savRefundService,
-                                  ISavRefundWithDetailService savRefundWithDetailService, EmailService emailService, Environment env) {
-        this.extraFeeService = extraFeeService;
-        this.platformOrderService = platformOrderService;
-        this.clientMapper = clientMapper;
-        this.shopMapper = shopMapper;
-        this.logisticChannelMapper = logisticChannelMapper;
-        this.logisticChannelPriceMapper = logisticChannelPriceMapper;
-        this.platformOrderContentService = platformOrderContentService;
-        this.skuDeclaredValueService = skuDeclaredValueService;
-        this.countryService = countryService;
-        this.exchangeRatesMapper = exchangeRatesMapper;
-        this.purchaseOrderService = purchaseOrderService;
-        this.purchaseOrderContentMapper = purchaseOrderContentMapper;
-        this.skuPromotionHistoryMapper = skuPromotionHistoryMapper;
-        this.savRefundService = savRefundService;
-        this.savRefundWithDetailService = savRefundWithDetailService;
-        this.emailService = emailService;
-        this.env = env;
-    }
 
     /**
      * Creates an invoice for a client according to type
@@ -407,10 +399,11 @@ public class ShippingInvoiceFactory {
     }
 
     private BigDecimal calculateAndUpdateContentFees(Map<String, BigDecimal> skuRealWeights, Map<String, BigDecimal> skuServiceFees,
-                                               PlatformOrder uninvoicedOrder, BigDecimal contentWeight, BigDecimal totalShippingFee,
-                                               BigDecimal clientVatPercentage, Map<PlatformOrderContent, BigDecimal> contentDeclaredValueMap,
-                                               BigDecimal totalDeclaredValue, BigDecimal totalVAT, boolean vatApplicable,
-                                               BigDecimal pickingFeePerItem, PlatformOrderContent content, BigDecimal remainingShippingFee) {
+                                                     PlatformOrder uninvoicedOrder, BigDecimal contentWeight, BigDecimal totalShippingFee,
+                                                     BigDecimal clientVatPercentage, Map<PlatformOrderContent, BigDecimal> contentDeclaredValueMap,
+                                                     BigDecimal totalDeclaredValue, BigDecimal totalVAT, boolean vatApplicable,
+                                                     BigDecimal pickingFeePerItem, PlatformOrderContent content, BigDecimal remainingShippingFee,
+                                                     LogisticInsurance contentSkuInsurance) {
         String skuId = content.getSkuId();
         BigDecimal realWeight = skuRealWeights.get(skuId);
         // Each content will share the total shipping fee proportionally, because minimum price and unit price
@@ -435,6 +428,11 @@ public class ShippingInvoiceFactory {
                 .multiply(BigDecimal.valueOf(content.getQuantity()))
                 .setScale(2, RoundingMode.UP)
         );
+        content.setInsuranceFee(contentSkuInsurance == null ?
+                BigDecimal.ZERO :
+                contentSkuInsurance.getPrice().
+                        multiply(BigDecimal.valueOf(content.getQuantity()))
+                        .setScale(2, RoundingMode.UP));
         BigDecimal vat = BigDecimal.ZERO;
         if (vatApplicable) {
             BigDecimal contentDeclaredValue = contentDeclaredValueMap.get(content);
@@ -627,7 +625,6 @@ public class ShippingInvoiceFactory {
         if (orderAndContent == null || orderAndContent.isEmpty()) {
             throw new UserException("No platform order in the selected period!");
         }
-        // TODO : check why invoicing total changes everytime
         Map<String, BigDecimal> skuRealWeights = new HashMap<>();
         Map<String, BigDecimal> skuServiceFees = new HashMap<>();
         skuDataPreparation(skuRealWeights, skuServiceFees);
@@ -741,8 +738,13 @@ public class ShippingInvoiceFactory {
         orderContentMap = orderContentMap.entrySet().stream().sorted(
                 Map.Entry.comparingByKey(Comparator.comparing(PlatformOrder::getOrderTime))
         ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+        Map<String, List<LogisticInsurance>> skuInsuranceFees = new HashMap<>();
+
+        // TODO optimize
+        Map<String, String> logisticChannelNameToId = logisticChannelMapper.getAll().stream().collect(toMap(LogisticChannel::getInternalName, LogisticChannel::getId));
         // find logistic channel price for each order based on its content
         for (PlatformOrder uninvoicedOrder : orderContentMap.keySet()) {
+            String logisticChannelId = logisticChannelNameToId.get(uninvoicedOrder.getLogisticChannelName());
             if(skip) {
                 platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList("Skipped"));
                 continue;
@@ -783,6 +785,34 @@ public class ShippingInvoiceFactory {
             }
             LogisticChannelPrice price = logisticChannelPair.getRight();
 
+            // retrieve all insurance fees already fetched
+            List<String> skuIdsInMemory = new ArrayList<>(skuInsuranceFees.keySet());
+            // fetch the ones not in memory
+            List<String> skuIds = contentSkuQtyMap.keySet().stream().filter(skuId -> !skuIdsInMemory.contains(skuId)).collect(toList());
+            List<LogisticInsurance> orderSkuInsuranceFees = logisticInsuranceService.getInsuranceFeesBySkuIds(skuIds, logisticChannelId);
+            for(LogisticInsurance insurance: orderSkuInsuranceFees) {
+                if(skuInsuranceFees.containsKey(insurance.getSkuId())) {
+                    skuInsuranceFees.get(insurance.getSkuId()).add(insurance);
+                }
+                else {
+                    skuInsuranceFees.put(insurance.getSkuId(), new ArrayList<>(Collections.singletonList(insurance)));
+                }
+            }
+            BigDecimal orderInsuranceFee = BigDecimal.ZERO;
+            // TODO refactor
+            for(Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry: orderContentMap.entrySet()) {
+                if (!entry.getKey().getId().equals(uninvoicedOrder.getId())) {
+                    continue;
+                }
+                for(PlatformOrderContent content: entry.getValue()) {
+                    if(skuInsuranceFees.containsKey(content.getSkuId())) {
+                        for(LogisticInsurance insurance: skuInsuranceFees.get(content.getSkuId())) {
+                            orderInsuranceFee = orderInsuranceFee.add(insurance.getPrice().multiply(BigDecimal.valueOf(content.getQuantity())));
+                        }
+                    }
+
+                }
+            }
             BigDecimal packageMatFee = shopPackageMatFeeMap.get(uninvoicedOrder.getShopId());
             BigDecimal fretFee = price.getRegistrationFee();
             BigDecimal pickingFee = price.getAdditionalCost();
@@ -812,6 +842,7 @@ public class ShippingInvoiceFactory {
                         .subtract(pickingFee)
                         .subtract(orderServiceFee)
                         .subtract(totalShippingFee)
+                        .subtract(orderInsuranceFee)
                         .subtract(totalVAT);
                 if (virtualBalance.compareTo(BigDecimal.ZERO) < 0) {
                     if(client.getIsChronologicalOrder().equals("1")) {
@@ -830,15 +861,19 @@ public class ShippingInvoiceFactory {
             uninvoicedOrder.setFretFee(fretFee);
             uninvoicedOrder.setPickingFee(pickingFee);
             uninvoicedOrder.setOrderServiceFee(orderServiceFee);
+            uninvoicedOrder.setInsuranceFee(orderInsuranceFee);
             uninvoicedOrder.setShippingInvoiceNumber(invoiceCode);
             // Since we always round up when distributing shipping fees to contents, sometimes the final total sum
             // is bigger than initial total shipping fee, the remedy is to deduct from the initial total, so we never go
             // above it
             BigDecimal remainingShippingFee = totalShippingFee;
             for (PlatformOrderContent content : contents) {
+                List<LogisticInsurance> skuInsuranceList = skuInsuranceFees.get(content.getSkuId());
+                LogisticInsurance contentSkuInsurance = skuInsuranceList == null ? null :
+                        skuInsuranceList.stream().filter(insuranceFee -> insuranceFee.getLogisticChannelId().equals(logisticChannelId)).findFirst().orElse(null);
                 remainingShippingFee = calculateAndUpdateContentFees(skuRealWeights, skuServiceFees, uninvoicedOrder, contentWeight,
                         totalShippingFee, clientVatPercentage, contentDeclaredValueMap, totalDeclaredValue, totalVAT,
-                        vatApplicable, pickingFeePerItem, content, remainingShippingFee);
+                        vatApplicable, pickingFeePerItem, content, remainingShippingFee, contentSkuInsurance);
             }
         }
         if(!insufficientBalanceOrders.isEmpty()) {
@@ -905,12 +940,24 @@ public class ShippingInvoiceFactory {
         }
         log.info("Calculating price for {} of order {}", contents, order);
         Map<String, Integer> contentSkuQtyMap = new HashMap<>();
+        List<String> skuIds = contents.stream().map(PlatformOrderContent::getSkuId).collect(toList());
+        String logisticChannelId = logisticChannelMap.values().stream().filter(logisticChannel -> logisticChannel.getInternalName().equals(order.getInvoiceLogisticChannelName())).findFirst().get().getId();
+        List<LogisticInsurance> orderSkuInsurance = logisticInsuranceService.getInsuranceFeesBySkuIds(skuIds, logisticChannelId);
+        Map<String, List<LogisticInsurance>> orderSkuInsuranceMap = orderSkuInsurance.stream().collect(groupingBy(LogisticInsurance::getSkuId));
+        BigDecimal orderInsuranceFees = BigDecimal.ZERO;
         for (PlatformOrderContent content : contents) {
             String skuId = content.getSkuId();
             if (contentSkuQtyMap.containsKey(skuId)) {
                 contentSkuQtyMap.put(skuId, contentSkuQtyMap.get(skuId) + content.getQuantity());
             } else {
                 contentSkuQtyMap.put(skuId, content.getQuantity());
+            }
+            // calculate insurance fees
+            LogisticInsurance contentSkuInsurance = orderSkuInsuranceMap.get(content.getSkuId()).stream().filter(logisticInsurance -> logisticInsurance.getLogisticChannelId().equals(logisticChannelId)).findFirst().orElse(null);
+            if (contentSkuInsurance != null) {
+                BigDecimal contentInsuranceFee = contentSkuInsurance.getPrice().multiply(BigDecimal.valueOf(content.getQuantity()));
+                orderInsuranceFees = orderInsuranceFees.add(contentInsuranceFee);
+                content.setInsuranceFee(contentInsuranceFee);
             }
         }
 
@@ -963,6 +1010,7 @@ public class ShippingInvoiceFactory {
                     .subtract(pickingFee)
                     .subtract(orderServiceFee)
                     .subtract(totalShippingFee)
+                    .subtract(orderInsuranceFees)
                     .subtract(totalVAT);
             if (virtualBalance.compareTo(BigDecimal.ZERO) < 0) {
                 return virtualBalance;
@@ -989,6 +1037,7 @@ public class ShippingInvoiceFactory {
         order.setPickingFee(pickingFee);
         order.setOrderServiceFee(orderServiceFee);
         order.setShippingInvoiceNumber(invoiceCode);
+        order.setInsuranceFee(orderInsuranceFees);
         // Since we always round up when distributing shipping fees to contents, sometimes the final total sum
         // is bigger than initial total shipping fee, the remedy is to deduct from the initial total, so we never go
         // above it
@@ -996,7 +1045,7 @@ public class ShippingInvoiceFactory {
         for (PlatformOrderContent content : contents) {
             remainingShippingFee = calculateAndUpdateContentFees(skuRealWeights, skuServiceFees, order, contentWeight,
                     totalShippingFee, clientVatPercentage, contentDeclaredValueMap, totalDeclaredValue, totalVAT,
-                    vatApplicable, pickingFeePerItem, content, remainingShippingFee);
+                    vatApplicable, pickingFeePerItem, content, remainingShippingFee,  null);
         }
         return virtualBalance;
     }

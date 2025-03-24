@@ -2,17 +2,15 @@ package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.jeecg.modules.business.entity.Balance;
-import org.jeecg.modules.business.entity.Invoice;
-import org.jeecg.modules.business.entity.PurchaseOrder;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.InvoiceMapper;
-import org.jeecg.modules.business.mapper.PurchaseOrderContentMapper;
 import org.jeecg.modules.business.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +25,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Autowired
     private IClientService clientService;
     @Autowired
+    private ICreditService creditService;
+    @Autowired
     private IExtraFeeService extraFeeService;
     @Autowired
     private IPlatformOrderContentService platformOrderContentService;
@@ -38,6 +38,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     private ISavRefundService savRefundService;
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
+
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String PURCHASE_INVOICE_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDir}")
@@ -47,9 +48,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
     /**
      * Cancel invoice and deletes generated files.
-     * shipping : deletes shipping_invoice, resets data in platform_order_content, platform_order, sav_refund, and balance
-     * purchase : deletes purchase_invoice, removes attachment files, removes number from platform_order
-     * complete : deletes purchase_invoice, removes attachment files, resets data in platform_order_content, platform_order, sav_refund, and balance
+     * shipping : cancels shipping_invoice by setting status to 0, resets data in platform_order_content, platform_order, sav_refund, and balance
+     * purchase : cancels purchase_invoice by setting status to 0, removes attachment files, removes number from platform_order
+     * complete : cancels purchase_invoice by setting status to 0, removes attachment files, resets data in platform_order_content, platform_order, sav_refund, and balance
+     * credit : cancels credit, creates a new credit with negative amount, resets data in balance by adding the negative amount
      * @param id for shipping and complete invoices, it is the shipping_invoice id, for purchase invoices, it is the purchase_order id
      * @param invoiceNumber invoice number to be cancelled
      * @param clientId client id
@@ -57,26 +59,61 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
      */
     @Override
     public boolean cancelInvoice(String id, String invoiceNumber, String clientId) {
-        String invoiceEntity = clientService.getById(clientId).getInvoiceEntity();
+        String operationType = Balance.OperationType.DebitCancellation.name();
+        String originalOperationType = Balance.OperationType.Debit.name();
+        BigDecimal amount = BigDecimal.ZERO;
+        String currencyId;
 
+        String invoiceEntity = clientService.getById(clientId).getInvoiceEntity();
+        String invoiceType = Invoice.getType(invoiceNumber);
         extraFeeService.cancelInvoice(invoiceNumber, clientId);
         savRefundService.cancelInvoice(invoiceNumber, clientId);
-        if(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name())) {
+        if(invoiceType.equalsIgnoreCase(PURCHASE.name())) {
             PurchaseOrder po = purchaseOrderService.getById(id);
+            if(po == null) {
+                log.error("Error while cancelling purchase order : order not found for id : {}", id);
+                return false;
+            }
+            if(po.getStatus() == PurchaseOrder.Status.Cancelled.getCode()) {
+                log.error("Purchase order already cancelled : {}", id);
+                return false;
+            }
+            currencyId = po.getCurrencyId();
             if (po.getInventoryDocumentString() != null && !po.getInventoryDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(po.getInventoryDocumentString());
             if (po.getPaymentDocumentString() != null && !po.getPaymentDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
             platformOrderService.removePurchaseInvoiceNumber(invoiceNumber, clientId);
-            purchaseOrderService.delMain(id);
+            purchaseOrderService.cancelInvoice(id);
         }
-        if(Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name())) {
+        else if(invoiceType.equalsIgnoreCase(SHIPPING.name())) {
+            ShippingInvoice si = shippingInvoiceService.getById(id);
+            if(si == null) {
+                log.error("Error while cancelling shipping invoice : invoice not found for id : {}", id);
+                return false;
+            }
+            if(si.getStatus() == ShippingInvoice.Status.Cancelled.getCode()) {
+                log.error("Shipping invoice already cancelled : {}", id);
+                return false;
+            }
             platformOrderContentService.cancelInvoice(invoiceNumber, clientId);
             platformOrderService.cancelInvoice(invoiceNumber, clientId);
-            shippingInvoiceService.delMain(id);
+            shippingInvoiceService.cancelInvoice(id);
+
+            amount = si.getFinalAmount();
+            currencyId = si.getCurrencyId();
         }
-        if(Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name())) {
+        else if(invoiceType.equalsIgnoreCase(COMPLETE.name())) {
+            ShippingInvoice shippingInvoice = shippingInvoiceService.getById(id);
             PurchaseOrder purchase = purchaseOrderService.getPurchaseByInvoiceNumberAndClientId(invoiceNumber, clientId);
+            if(shippingInvoice == null || purchase == null) {
+                log.error("Error while cancelling complete invoice : invoice or purchase not found for id : {}", id);
+                return false;
+            }
+            if(shippingInvoice.getStatus() == ShippingInvoice.Status.Cancelled.getCode()) {
+                log.error("Complete invoice already cancelled : {}", id);
+                return false;
+            }
             if(purchase.getInventoryDocumentString() != null && !purchase.getInventoryDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(purchase.getInventoryDocumentString());
             if(purchase.getPaymentDocumentString() != null && !purchase.getPaymentDocumentString().isEmpty())
@@ -84,12 +121,38 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             platformOrderContentService.cancelInvoice(invoiceNumber, clientId);
             platformOrderService.removePurchaseInvoiceNumber(invoiceNumber, clientId);
             platformOrderService.cancelInvoice(invoiceNumber, clientId);
-            purchaseOrderService.delMain(purchase.getId());
-            shippingInvoiceService.delMain(id);
+            purchaseOrderService.cancelInvoice(purchase.getId());
+            shippingInvoiceService.cancelInvoice(id);
+
+            // reminder : in complete invoicing balance is updated only once with shipping invoice ID and the amount is the sum of shipping fees and purchase fees
+            amount = shippingInvoice.getFinalAmount().add(purchase.getFinalAmount());
+            currencyId = shippingInvoice.getCurrencyId();
+        }
+        else if(invoiceType.equalsIgnoreCase(CREDIT.name())) {
+            Credit credit = creditService.getById(id);
+            if(credit == null) {
+                log.error("Error while cancelling credit : credit not found for id : {}", id);
+                return false;
+            }
+            if(credit.getStatus() == Credit.Status.CANCELLED.getCode()) {
+                log.error("Credit already cancelled : {}", id);
+                return false;
+            }
+            if(credit.getPaymentProofString() != null && !credit.getPaymentProofString().isEmpty())
+                shippingInvoiceService.deleteAttachmentFile(credit.getPaymentProofString());
+            creditService.cancelCredit(id);
+
+            originalOperationType = Balance.OperationType.Credit.name();
+            operationType = Balance.OperationType.CreditCancellation.name();
+            amount = credit.getAmount();
+            currencyId = credit.getCurrencyId();
+        } else {
+            log.error("Invalid invoice type : {}", invoiceType);
+            return false;
         }
 
         log.info("Updating balance ...");
-        balanceService.deleteBalance(id, Balance.OperationType.Debit.name());
+        balanceService.cancelBalance(id, originalOperationType, operationType, amount, currencyId, clientId);
 
         log.info("Deleting invoice files ...");
         boolean invoiceDeleted = deleteInvoice(invoiceNumber, invoiceEntity);

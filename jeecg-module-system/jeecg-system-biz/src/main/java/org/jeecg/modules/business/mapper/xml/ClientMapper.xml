@@ -96,4 +96,10 @@
             JOIN shop s ON c.id = s.owner_id
         WHERE s.id = #{shopId};
     </select>
+    <select id="getClientFromCredit" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+            JOIN credit ON c.id = credit.client_id
+        WHERE credit.invoice_number = #{invoiceNumber};
+    </select>
 </mapper>

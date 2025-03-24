@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.LogisticInsuranceMapper">
+<select id="getInsuranceFeesBySkuIds" resultType="org.jeecg.modules.business.entity.LogisticInsurance">
+    WITH latest_logistic_insurance_fees AS (
+        SELECT li.logistic_channel_id,
+        li.sku_id,
+        li.price,
+        ROW_NUMBER() OVER (PARTITION BY sku_id ORDER BY effective_date DESC) AS rn
+        FROM logistic_insurance li
+        WHERE li.sku_id IN
+            <foreach collection="skuIds" item="skuId" open="(" separator="," close=")">
+              #{skuId}
+            </foreach>
+        AND li.logistic_channel_id = #{logisticChannelId}
+        AND li.effective_date &lt;= NOW()
+    )
+    SELECT lli.logistic_channel_id,
+           lli.sku_id,
+           lli.price
+    FROM latest_logistic_insurance_fees lli
+    WHERE lli.rn = 1
+</select>
+</mapper>

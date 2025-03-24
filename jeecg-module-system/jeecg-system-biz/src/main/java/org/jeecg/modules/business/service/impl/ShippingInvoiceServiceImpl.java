@@ -36,6 +36,7 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
 
     @Autowired
     private ShippingInvoiceMapper shippingInvoiceMapper;
+    @Getter
     private static enum EXTENSION {
         XLSX(".xlsx"),
         XLS(".xls"),
@@ -44,7 +45,6 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
         JPG(".jpg"),
         PNG(".png"),
         JPEG(".jpeg");
-        @Getter
         private final String extension;
 
         EXTENSION(String extension) {
@@ -240,5 +240,10 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
     @Override
     public Period getInvoicePeriod(List<String> shopIdList) {
         return shippingInvoiceMapper.getInvoicePeriod(shopIdList);
+    }
+
+    @Override
+    public void cancelInvoice(String invoiceId) {
+        shippingInvoiceMapper.cancelInvoice(invoiceId);
     }
 }

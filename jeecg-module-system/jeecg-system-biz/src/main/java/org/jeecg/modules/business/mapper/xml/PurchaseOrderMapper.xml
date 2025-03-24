@@ -69,20 +69,13 @@
         FROM purchase_order
         WHERE invoice_number = #{invoiceCode};
     </select>
-    <delete id="deleteInvoice">
-        DELETE
-        FROM purchase_order
-        WHERE invoice_number = #{invoiceNumber}
-            AND purchase_order.client_id = #{clientId}
-    </delete>
-    <delete id="deleteBatchInvoice">
-        DELETE
-        FROM purchase_order
-        WHERE invoice_number IN
-        <foreach collection="invoiceNumbers" item="invoiceNumber" index="index" open="(" separator="," close=")">
-            #{invoiceNumber}
-        </foreach>
-    </delete>
+    <update id="cancelInvoice">
+        UPDATE purchase_order po
+        JOIN purchase_order_sku pos ON po.id = pos.purchase_order_id
+        SET po.status = 0,
+            pos.status = 0
+        WHERE po.id = #{id};
+    </update>
     <select id="getInvoiceId" resultType="java.lang.String">
         SELECT id
         FROM purchase_order

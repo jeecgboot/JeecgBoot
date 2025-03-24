@@ -134,7 +134,7 @@ public class PurchaseOrderController {
 
         String clientCategory = clientCategoryService.getClientCategoryByClientId(client.getId());
         if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-            balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), "purchase");
+            balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), Invoice.InvoiceType.PURCHASE.name());
         }
 
         // No need to attribute purchase order to platform orders, probably just buying stock

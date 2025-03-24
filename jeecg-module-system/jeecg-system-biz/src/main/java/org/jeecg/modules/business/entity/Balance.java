@@ -73,7 +73,9 @@ public class Balance implements Serializable {
 
     public enum OperationType {
         Credit,
+        CreditCancellation,
         Debit,
+        DebitCancellation,
         Init,
     }
     public Balance() {
