@@ -113,9 +113,7 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
 
     BigDecimal getPurchaseFeesByInvoiceCode(String invoiceCode);
 
-    void cancelInvoice(String invoiceNumber, String clientId);
-
-    void cancelBatchInvoice(List<String> invoiceNumbers);
+    void cancelInvoice(String invoiceId);
 
     String getInvoiceId(String invoiceNumber);
 

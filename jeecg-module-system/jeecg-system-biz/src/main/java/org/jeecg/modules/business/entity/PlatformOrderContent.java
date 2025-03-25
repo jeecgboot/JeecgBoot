@@ -96,6 +96,12 @@ public class PlatformOrderContent implements Serializable {
     @ApiModelProperty(value = "服务总费用")
     private java.math.BigDecimal serviceFee;
     /**
+     * 物流保险费
+     */
+    @Excel(name = "物流保险费", width = 15)
+    @ApiModelProperty(value = "物流保险费")
+    private java.math.BigDecimal insuranceFee;
+    /**
      * 增值税
      */
     @Excel(name = "增值税", width = 15)

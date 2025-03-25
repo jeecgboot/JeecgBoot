@@ -15,12 +15,12 @@
         WHERE invoice_number = #{invoiceNumber}
     </select>
     <select id="fetchShippingInvoice" resultType="org.jeecg.modules.business.entity.ShippingInvoice">
-        SELECT id, total_amount, discount_amount, final_amount, paid_amount, currency_id
+        SELECT id, total_amount, discount_amount, final_amount, paid_amount, currency_id, client_id, create_time
         FROM shipping_invoice s
         WHERE s.invoice_number = #{invoiceNumber}
     </select>
     <select id="fetchPlatformOrder" resultType="org.jeecg.modules.business.entity.PlatformOrder">
-        SELECT id, fret_fee, country, order_service_fee, packaging_material_fee
+        SELECT id, fret_fee, country, order_service_fee, packaging_material_fee, insurance_fee
         FROM platform_order p
         WHERE p.shipping_invoice_number = #{invoiceNumber}
     </select>
@@ -112,4 +112,9 @@
               </foreach>
         AND po.shipping_invoice_number IS NOT NULL
     </select>
+    <update id="cancelInvoice">
+        UPDATE shipping_invoice
+        SET status = 0
+        WHERE id = #{id};
+    </update>
 </mapper>

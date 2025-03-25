@@ -11,7 +11,8 @@ WITH shipping AS (
         IFNULL(s.discount_amount + p.discount_amount, s.discount_amount) AS discount_amount,
         IFNULL(s.final_amount + p.final_amount, s.final_amount) AS final_amount,
         IFNULL(s.paid_amount + p.paid_amount, s.paid_amount) AS paid_amount,
-        IF(SUBSTRING(s.invoice_number,9,1) = '2', 'shipping', 'complete') AS 'type'
+        IF(SUBSTRING(s.invoice_number,9,1) = '2', 'shipping', 'complete') AS 'type',
+        s.status AS status
     FROM shipping_invoice s
              LEFT JOIN purchase_order p ON s.invoice_number = p.invoice_number
         AND s.client_id = p.client_id
@@ -28,7 +29,8 @@ WITH shipping AS (
              p.discount_amount AS discount_amount,
              p.final_amount AS final_amount,
              p.paid_amount AS paid_amount,
-             IF(SUBSTRING(p.invoice_number,9,1) = '1', 'purchase', 'error') AS 'type'
+             IF(SUBSTRING(p.invoice_number,9,1) = '1', 'purchase', 'error') AS 'type',
+             p.status AS status
          FROM purchase_order p
          WHERE p.invoice_number NOT IN (SELECT invoice_number FROM shipping_invoice)
      )

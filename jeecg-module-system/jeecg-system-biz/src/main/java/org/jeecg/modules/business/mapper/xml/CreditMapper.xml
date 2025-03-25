@@ -4,6 +4,75 @@
     <select id="getLastCredit" resultType="org.jeecg.modules.business.entity.Credit">
         SELECT * FROM credit
         WHERE currency_id = #{currencyId}
+            AND client_id = #{clientId}
+            AND status = 1
         ORDER BY create_time DESC LIMIT 1;
     </select>
+    <select id="getLatestInvoiceNumber" resultType="java.lang.String">
+        SELECT invoice_number
+        FROM credit
+        WHERE MONTH(create_time) = MONTH(CURRENT_DATE())
+          AND YEAR(create_time) = YEAR(CURRENT_DATE())
+          AND invoice_number LIKE '%%%%-%%-8%%%'
+        ORDER BY invoice_number DESC
+        LIMIT 1
+    </select>
+    <select id="getByInvoiceNumber" resultType="org.jeecg.modules.business.entity.Credit">
+        SELECT * FROM credit
+        WHERE invoice_number = #{invoiceNumber};
+    </select>
+    <update id="updateButAmount">
+        UPDATE credit c
+        SET c.update_time = NOW(),
+            c.update_by = #{username},
+            c.description =#{credit.description},
+            c.payment_proof = #{credit.paymentProofString}
+        WHERE c.id = #{id};
+    </update>
+    <select id="countAllWithFilters" resultType="java.lang.Integer">
+        SELECT COUNT(id)
+        FROM credit
+        <if test = "clientId != null || invoiceNumber != null || currencyId != null">
+            <where>
+                <if test = "clientId != null">
+                    AND client_id = #{clientId}
+                </if>
+                <if test = "invoiceNumber != null">
+                    AND invoice_number = #{invoiceNumber}
+                </if>
+                <if test = "currencyId != null">
+                    AND currency_id = #{currencyId}
+                </if>
+            </where>
+        </if>
+
+    </select>
+    <select id="listWithFilters" resultType="org.jeecg.modules.business.vo.CreditPage">
+        SELECT *,
+               ROW_NUMBER() over ( PARTITION BY client_id, currency_id, status ORDER BY create_time DESC ) AS row_num
+        FROM credit
+        <if test = "clientId != null || invoiceNumber != null || currencyId != null">
+            <where>
+                <if test = "clientId != null">
+                    AND client_id = #{clientId}
+                </if>
+                <if test = "invoiceNumber != null">
+                    AND invoice_number = #{invoiceNumber}
+                </if>
+                <if test = "currencyId != null">
+                    AND currency_id = #{currencyId}
+                </if>
+            </where>
+        </if>
+        ORDER BY create_time DESC
+        LIMIT #{limit} OFFSET #{offset};
+    </select>
+    <update id="cancelCredit">
+        UPDATE credit
+        SET status = 0,
+            description = CONCAT('CANCELED : ', description),
+            update_time = NOW(),
+            update_by = #{username}
+        WHERE id = #{id};
+    </update>
 </mapper>

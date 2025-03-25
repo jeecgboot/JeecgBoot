@@ -15,6 +15,8 @@ public class InvoiceDatas {
     private Map<String, Fee> feeAndQtyPerSku;
     @JSONField(name = "feeAndQtyPerCountry")
     private Map<String, Fee> feeAndQtyPerCountry;
+    @JSONField(name = "description")
+    private String description;
     @JSONField(name = "vat")
     private BigDecimal vat;
     @JSONField(name = "serviceFee")
@@ -23,6 +25,8 @@ public class InvoiceDatas {
     private BigDecimal pickingFee;
     @JSONField(name = "packagingMaterialFee")
     private BigDecimal packagingMaterialFee;
+    @JSONField(name = "insuranceFee")
+    private BigDecimal insuranceFee;
     @JSONField(name = "discount")
     private BigDecimal discount;
     @JSONField(name = "refund")

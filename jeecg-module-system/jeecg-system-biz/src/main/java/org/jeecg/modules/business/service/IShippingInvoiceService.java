@@ -20,35 +20,37 @@ public interface IShippingInvoiceService extends IService<ShippingInvoice> {
     /**
      * 添加一对多
      */
-    public void saveMain(ShippingInvoice shippingInvoice);
+     void saveMain(ShippingInvoice shippingInvoice);
 
     /**
      * 修改一对多
      */
-    public void updateMain(ShippingInvoice shippingInvoice);
+     void updateMain(ShippingInvoice shippingInvoice);
 
     /**
      * 删除一对多
      */
-    public void delMain(String id);
+     void delMain(String id);
 
     /**
      * 批量删除一对多
      */
-    public void delBatchMain(Collection<? extends Serializable> idList);
-    public String getShippingInvoiceId(String invoiceNumber);
-    public ShippingInvoice getShippingInvoice(String invoiceNumber);
-    public List<PlatformOrder> getPlatformOrder(String invoiceNumber);
-    public List<PlatformOrderContent> getPlatformOrderContent(String platformOrderId);
-    public Client getShopOwnerFromInvoiceNumber(String invoiceNumber);
+    void delBatchMain(Collection<? extends Serializable> idList);
+     String getShippingInvoiceId(String invoiceNumber);
+     ShippingInvoice getShippingInvoice(String invoiceNumber);
+     List<PlatformOrder> getPlatformOrder(String invoiceNumber);
+     List<PlatformOrderContent> getPlatformOrderContent(String platformOrderId);
+     Client getShopOwnerFromInvoiceNumber(String invoiceNumber);
     Currency getInvoiceCurrencyByCode(String invoiceCode);
 
     // Utils
-    public List<Path> getPath(String dirPath, String invoiceNumber);
-    public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity);
+     List<Path> getPath(String dirPath, String invoiceNumber);
+     List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity);
     boolean deleteAttachmentFile(String filename);
 
     void setPaid(List<String> invoiceNumbers);
 
     Period getInvoicePeriod(List<String> shopIdList);
+
+    void cancelInvoice(String invoiceId);
 }

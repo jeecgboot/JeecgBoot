@@ -62,4 +62,6 @@ public interface IClientService extends IService<Client> {
     void anonymizePersonalData(int directClientAnonymizationPeriod);
 
 	Client getByShopId(String shopId);
+
+	Client getClientFromCredit(String invoiceNumber);
 }

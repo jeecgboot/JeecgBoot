@@ -13,4 +13,6 @@ import java.math.BigDecimal;
  */
 public interface IExchangeRatesService extends IService<ExchangeRates> {
     BigDecimal getExchangeRate(String originalCurrency, String targetCurrency);
+
+    BigDecimal getExchangeRateFromDate(String originalCurrency, String targetCurrency, String dateTime);
 }

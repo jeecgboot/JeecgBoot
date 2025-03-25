@@ -33,14 +33,14 @@ public interface ISkuListMabangService extends IService<SkuData> {
     List<String> parseSkuListToProductCodeList(List<SkuData> erpCodeList) throws Exception;
     Map<Sku, String> createSkus(List<SkuData> skuDataList);
 
-    ResponsesWithMsg publishSkuToMabang(List<SkuOrderPage> skuList);
+    ResponsesWithMsg<String> publishSkuToMabang(List<SkuOrderPage> skuList);
 
     Map<Sku, String> skuSyncUpsert(List<String> erpCodes);
     void updateSkuId();
 
     void mabangSkuStockUpdate(List<String> erpCodes);
 
-    ResponsesWithMsg mabangSkuWeightUpdate(List<SkuWeight> skuWeights);
+    ResponsesWithMsg<String> mabangSkuWeightUpdate(List<SkuWeight> skuWeights);
 
     List<SkuData> fetchUnpairedSkus(List<String> stockSkuList);
 

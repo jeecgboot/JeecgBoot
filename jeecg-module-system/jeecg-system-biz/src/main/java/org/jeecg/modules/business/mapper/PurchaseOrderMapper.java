@@ -3,7 +3,6 @@ package org.jeecg.modules.business.mapper;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Invoice;
@@ -102,10 +101,6 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
 
     BigDecimal getPurchaseFeesByInvoiceCode(@Param("invoiceCode") String invoiceCode);
 
-    void deleteInvoice(@Param("invoiceNumber") String invoiceNumber, @Param("clientId") String clientId);
-
-    void deleteBatchInvoice(@Param("invoiceNumbers") List<String> invoiceNumbers);
-
     String getInvoiceId(@Param("invoiceNumber") String invoiceNumber);
 
     PurchaseOrder getPurchaseByInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
@@ -132,4 +127,6 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     PurchaseOrder getPurchaseByInvoiceNumberAndClientId(@Param("invoiceNumber") String invoiceNumber, @Param("clientId") String clientId);
 
     List<PurchaseOrder> getPurchasesByInvoices(@Param("invoices") List<Invoice> invoices);
+
+    void cancelInvoice(@Param("id") String invoiceId);
 }

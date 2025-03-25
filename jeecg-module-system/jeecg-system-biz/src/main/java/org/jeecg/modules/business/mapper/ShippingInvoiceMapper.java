@@ -31,4 +31,6 @@ public interface ShippingInvoiceMapper extends BaseMapper<ShippingInvoice> {
     List<ParcelInfos> getPackageStatusInPeriod(@Param("period") int period);
 
     Period getInvoicePeriod(@Param("shops") List<String> shopIdList);
+
+    void cancelInvoice(@Param("id") String invoiceId);
 }

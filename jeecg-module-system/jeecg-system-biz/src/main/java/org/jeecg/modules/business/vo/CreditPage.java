@@ -1,21 +1,20 @@
-package org.jeecg.modules.business.entity;
-
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+package org.jeecg.modules.business.vo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.aspect.annotation.Dict;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 
 /**
  * @Description: credit
@@ -28,16 +27,16 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
 @ApiModel(value="credit对象", description="credit")
-public class Credit implements Serializable {
+public class CreditPage implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**主键*/
     @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty(value = "主键")
-    private java.lang.String id;
+    private String id;
     /**创建人*/
     @ApiModelProperty(value = "创建人")
-    private java.lang.String createBy;
+    private String createBy;
     /**创建日期*/
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -45,7 +44,7 @@ public class Credit implements Serializable {
     private java.util.Date createTime;
     /**更新人*/
     @ApiModelProperty(value = "更新人")
-    private java.lang.String updateBy;
+    private String updateBy;
     /**更新日期*/
     @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
@@ -55,15 +54,15 @@ public class Credit implements Serializable {
     @Excel(name = "client_id", width = 15, dictTable = "client WHERE active = '1'", dicText = "internal_code", dicCode = "id")
     @Dict(dictTable = "client WHERE active = '1'", dicText = "internal_code", dicCode = "id")
     @ApiModelProperty(value = "client_id")
-    private java.lang.String clientId;
+    private String clientId;
     /**description*/
     @Excel(name = "description", width = 15)
     @ApiModelProperty(value = "description")
-    private java.lang.String description;
+    private String description;
     /**发票号*/
     @Excel(name = "invoice_number", width = 15)
     @ApiModelProperty(value = "invoice_number")
-    private java.lang.String invoiceNumber;
+    private String invoiceNumber;
     /**amount*/
     @Excel(name = "amount", width = 15)
     @ApiModelProperty(value = "amount")
@@ -72,15 +71,22 @@ public class Credit implements Serializable {
     @Excel(name = "currency_id", width = 15, dictTable = "currency WHERE code <> 'RMB'", dicText = "code", dicCode = "id")
     @Dict(dictTable = "currency WHERE code <> 'RMB'", dicText = "code", dicCode = "id")
     @ApiModelProperty(value = "currency_id")
-    private java.lang.String currencyId;
+    private String currencyId;
     /**status*/
     @Excel(name = "status", width = 15)
     @ApiModelProperty(value = "status")
-    private java.lang.Integer status;
+    private Integer status;
+
+    /**
+     * rowNum
+     */
+    @Excel(name = "rowNum", width = 15)
+    @ApiModelProperty(value = "rowNum")
+    private Integer rowNum;
 
     /**proof*/
     @Excel(name = "proof", width = 15)
-    private transient java.lang.String paymentProofString;
+    private transient String paymentProofString;
 
     private byte[] paymentProof;
 
@@ -107,9 +113,9 @@ public class Credit implements Serializable {
         }
         return "";
     }
-    @Getter
     public enum Status {
-        CANCELLED(0),
+        CANCELLATION(3),
+        CANCELLED(2),
         NORMAL(1);
 
         public final int code;

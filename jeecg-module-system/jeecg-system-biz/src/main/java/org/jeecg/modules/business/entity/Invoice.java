@@ -95,11 +95,20 @@ public class Invoice implements Serializable {
     @ApiModelProperty(value = "type")
     private String type;
 
+    /**
+     * status
+     * 0: cancelled, 1: normal (default)
+     */
+    @Excel(name = "status", width = 15)
+    @ApiModelProperty(value = "status")
+    private java.lang.Integer status;
+
     @Getter
     public enum InvoiceType {
         PURCHASE(1, "purchase_invoice"),
         SHIPPING(2, "shipping_invoice"),
-        COMPLETE(7, "complete_invoice");
+        COMPLETE(7, "complete_invoice"),
+        CREDIT(8, "credit_invoice");
 
         private final int type;
         private final String text;
@@ -107,6 +116,17 @@ public class Invoice implements Serializable {
         InvoiceType(int type, String text) {
             this.type = type;
             this.text = text;
+        }
+    }
+
+    @Getter
+    public enum Status {
+        Cancelled (0),
+        Normal (1);
+
+        private final int code;
+        Status(int code) {
+            this.code = code;
         }
     }
 

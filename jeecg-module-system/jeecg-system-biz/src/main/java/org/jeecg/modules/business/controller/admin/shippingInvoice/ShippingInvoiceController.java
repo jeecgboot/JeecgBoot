@@ -328,7 +328,7 @@ public class ShippingInvoiceController {
                     .body(resource);
         }
         else {
-            log.error("Couldn't find the invoice file for : " + invoiceNumber);
+            log.error("Couldn't find the invoice file for : {}", invoiceNumber);
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .contentType(MediaType.TEXT_PLAIN)
                     .body("Couldn't find the invoice file for : " + invoiceNumber);

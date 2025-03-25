@@ -12,7 +12,6 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
@@ -45,6 +44,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -71,6 +71,8 @@ public class InvoiceController {
     @Autowired
     private IClientService clientService;
     @Autowired
+    private ICurrencyService currencyService;
+    @Autowired
     private ExchangeRatesMapper exchangeRatesMapper;
     @Autowired
     private IExtraFeeService extraFeeService;
@@ -84,8 +86,6 @@ public class InvoiceController {
     private IPlatformOrderService platformOrderService;
     @Autowired
     private PlatformOrderContentMapper platformOrderContentMap;
-    @Autowired
-    private ISkuWeightService skuWeightService;
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
@@ -109,11 +109,11 @@ public class InvoiceController {
     @Autowired
     private EmailService emailService;
     @Autowired
-    private ISysBaseAPI ISysBaseApi;
-    @Autowired
     private ISecurityService securityService;
     @Autowired
     private IUserClientService userClientService;
+    @Autowired
+    private ICreditService creditService;
     @Autowired
     Environment env;
 
@@ -125,8 +125,8 @@ public class InvoiceController {
     @Value("${jeecg.path.shippingInvoicePdfDir}")
     private String INVOICE_PDF_DIR;
 
-    private final String SECTION_START = "<section><ul>";
-    private final String SECTION_END = "</ul></section>";
+    private final SimpleDateFormat CREATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
     @GetMapping(value = "/shopsByClient")
     public Result<List<Shop>> getShopsByClient(@RequestParam("clientID") String clientID) {
@@ -253,7 +253,7 @@ public class InvoiceController {
     public Result<?> makeInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
             InvoiceMetaData metaData = shippingInvoiceService.makeInvoice(param);
-            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "shipping");
+            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), SHIPPING.name());
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
@@ -273,7 +273,7 @@ public class InvoiceController {
         try {
             String method = param.getErpStatuses().toString().equals("[3]") ? "post" : param.getErpStatuses().toString().equals("[1, 2]") ? "pre-shipping" : "all";
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
-            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "complete");
+            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), COMPLETE.name());
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
@@ -299,7 +299,7 @@ public class InvoiceController {
             InvoiceMetaData metaData = shippingInvoiceService.makeInvoice(param);
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "shipping");
+                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), SHIPPING.name());
             }
             if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
                 String subject = "Self-service shipping invoice";
@@ -355,7 +355,7 @@ public class InvoiceController {
 
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "purchase");
+                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), PURCHASE.name());
             }
             if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
                 String subject = "Self-service purchase invoice";
@@ -404,7 +404,7 @@ public class InvoiceController {
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoice(param);
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), "complete");
+                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), COMPLETE.name());
             }
             if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
                 String subject = "Self-service complete invoice";
@@ -450,7 +450,7 @@ public class InvoiceController {
             PurchaseOrder purchaseOrder = purchaseOrderService.getById(purchaseId);
             String clientCategory = clientCategoryService.getClientCategoryByClientId(purchaseOrder.getClientId());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-                balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), "purchase");
+                balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), PURCHASE.name());
             }
             metaData = purchaseOrderService.makeInvoice(purchaseId);
             return Result.OK(metaData);
@@ -973,21 +973,36 @@ public class InvoiceController {
         String email = sysUser.getEmail();
         String invoiceID;
         String customerFullName;
-        boolean isShippingInvoice = Invoice.getType(invoiceNumber).equalsIgnoreCase(COMPLETE.name()) || Invoice.getType(invoiceNumber).equalsIgnoreCase(SHIPPING.name());
-        if(isShippingInvoice)
-            invoiceID = iShippingInvoiceService.getShippingInvoiceId(invoiceNumber);
-        else
-            invoiceID = purchaseOrderService.getInvoiceId(invoiceNumber);
+        String invoiceType = Invoice.getType(invoiceNumber);
+        String invoiceCurrencyId, invoiceCurrency, clientId;
+        if(invoiceType.equals(SHIPPING.name()) || invoiceType.equals(COMPLETE.name())) {
+            ShippingInvoice invoice = iShippingInvoiceService.getShippingInvoice(invoiceNumber);
+            invoiceID = invoice.getId();
+            invoiceCurrencyId = invoice.getCurrencyId();
+            clientId = invoice.getClientId();
+        }
+        else if(invoiceType.equals(PURCHASE.name())) {
+            PurchaseOrder purchase = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
+            invoiceID = purchase.getId();
+            invoiceCurrencyId = purchase.getCurrencyId();
+            clientId = purchase.getClientId();
+        }
+        else if(invoiceType.equals(CREDIT.name())) {
+            Credit credit = creditService.getByInvoiceNumber(invoiceNumber);
+            invoiceID = credit.getInvoiceNumber();
+            invoiceCurrencyId = credit.getCurrencyId();
+            clientId = credit.getClientId();
+        }
+        else {
+            return Result.error(404,"Error 404 page not found.");
+        }
         // if invoice exists
         if (invoiceID == null) {
             return Result.error(404,"Error 404 page not found.");
         }
         // if user is a customer, we check if he's the owner of the shops
-        Client client;
-        if(isShippingInvoice)
-            client = iShippingInvoiceService.getShopOwnerFromInvoiceNumber(invoiceNumber);
-        else
-            client = clientService.getClientFromPurchase(invoiceID);
+        Client client = clientService.getById(clientId);
+        invoiceCurrency = currencyService.getCodeById(invoiceCurrencyId);
         customerFullName = client.fullName();
         String destEmail;
         if(!isEmployee) {
@@ -1010,6 +1025,7 @@ public class InvoiceController {
         json.put("invoiceEntity", client.getInvoiceEntity());
         json.put("invoiceNumber", invoiceNumber);
         json.put("currency", client.getCurrency());
+        json.put("invoiceCurrency", invoiceCurrency);
         return Result.OK(json);
     }
 
@@ -1036,6 +1052,7 @@ public class InvoiceController {
         BigDecimal serviceFee = BigDecimal.ZERO; // po.order_service_fee + poc.service_fee
         BigDecimal pickingFee = BigDecimal.ZERO;
         BigDecimal packagingMatFee = BigDecimal.ZERO;
+        BigDecimal insuranceFee = BigDecimal.ZERO;
         BigDecimal vat = BigDecimal.ZERO;
         BigDecimal refund = BigDecimal.ZERO;
         Map<String, Fee> extraFeesMap = new HashMap<>(); // <"extra fee name", <quantity, amount>>, <"extra fee name", <quantity, amount>>, ...
@@ -1063,6 +1080,7 @@ public class InvoiceController {
             serviceFee = p.getOrderServiceFee() == null ? serviceFee : serviceFee.add(p.getOrderServiceFee()) ;
             pickingFee = p.getPickingFee() == null ? pickingFee : pickingFee.add(p.getPickingFee());
             packagingMatFee = p.getPackagingMaterialFee() == null ? packagingMatFee : packagingMatFee.add(p.getPackagingMaterialFee());
+            insuranceFee = p.getInsuranceFee() == null ? insuranceFee : insuranceFee.add(p.getInsuranceFee());
             List<PlatformOrderContent> poc = iShippingInvoiceService.getPlatformOrderContent(p.getId());
             // le contenu des commandes pour la vat, service_fee, quantity et picking_fee
             for(PlatformOrderContent pc : poc) {
@@ -1098,7 +1116,8 @@ public class InvoiceController {
 
         // si la monnaie utilisé par le client n'est pas l'euro on calcul le total dans sa monnaie
         if(!targetCurrency.equals(originalCurrency)) {
-            BigDecimal exchangeRate = iExchangeRatesService.getExchangeRate(originalCurrency,targetCurrency);
+            BigDecimal exchangeRate = iExchangeRatesService.getExchangeRateFromDate(originalCurrency,targetCurrency, CREATE_TIME_FORMAT.format(invoice.getCreateTime()));
+            insuranceFee = insuranceFee.multiply(exchangeRate);
             BigDecimal finalAmount = invoice.getFinalAmount().multiply(exchangeRate);
             finalAmount = finalAmount.setScale(2, RoundingMode.DOWN);
             invoiceDatas.setFinalAmount(finalAmount);
@@ -1111,6 +1130,7 @@ public class InvoiceController {
         invoiceDatas.setServiceFee(serviceFee);
         invoiceDatas.setPickingFee(pickingFee);
         invoiceDatas.setPackagingMaterialFee(packagingMatFee);
+        invoiceDatas.setInsuranceFee(insuranceFee);
         invoiceDatas.setFeeAndQtyPerCountry(feeAndQtyPerCountry);
         invoiceDatas.setExtraFees(extraFeesMap);
 

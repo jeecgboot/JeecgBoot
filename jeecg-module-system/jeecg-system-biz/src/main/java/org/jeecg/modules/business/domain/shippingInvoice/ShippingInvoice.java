@@ -2,7 +2,6 @@ package org.jeecg.modules.business.domain.shippingInvoice;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.poi.ss.usermodel.*;
 import org.jeecg.modules.business.domain.invoice.AbstractInvoice;
 import org.jeecg.modules.business.domain.invoice.InvoiceStyleFactory;
 import org.jeecg.modules.business.domain.invoice.Row;
@@ -61,7 +60,8 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
         BigDecimal vatForEU = BigDecimal.ZERO;
         BigDecimal totalServiceFees = BigDecimal.ZERO;
         BigDecimal totalPickingFees = BigDecimal.ZERO;
-         BigDecimal totalPackageMatFeePerOrder = BigDecimal.ZERO;
+        BigDecimal totalPackageMatFeePerOrder = BigDecimal.ZERO;
+        BigDecimal totalInsuranceFees = BigDecimal.ZERO;
         for (Map.Entry<String, List<PlatformOrder>> entry : countryPackageMap.entrySet()) {
             String country = entry.getKey();
             List<PlatformOrder> orders = entry.getValue();
@@ -73,11 +73,13 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
             BigDecimal countryPickingFeesPerOrder = BigDecimal.ZERO;
             BigDecimal countryPickingFeesPerSKU = BigDecimal.ZERO;
             BigDecimal countryPackageMatFeePerOrder = BigDecimal.ZERO;
+            BigDecimal countryInsuranceFees = BigDecimal.ZERO;
             for (PlatformOrder po : orders) {
                 countryFretFees = countryFretFees.add(po.getFretFee());
                 countryServiceFeesPerOrder = countryServiceFeesPerOrder.add(po.getOrderServiceFee());
                 countryPickingFeesPerOrder = countryPickingFeesPerOrder.add(po.getPickingFee());
                 countryPackageMatFeePerOrder = countryPackageMatFeePerOrder.add(po.getPackagingMaterialFee());
+                countryInsuranceFees = po.getInsuranceFee() != null ?  countryInsuranceFees.add(po.getInsuranceFee()) : countryInsuranceFees;
                 for (PlatformOrderContent poc : orderMap.get(po.getPlatformOrderId())) {
                     countryShippingFees = countryShippingFees.add(poc.getShippingFee());
                     vatForEU = vatForEU.add(poc.getVat());
@@ -88,6 +90,7 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
             totalServiceFees = totalServiceFees.add(countryServiceFeesPerOrder).add(countryServiceFeesPerSKU);
             totalPickingFees = totalPickingFees.add(countryPickingFeesPerOrder).add(countryPickingFeesPerSKU);
             totalPackageMatFeePerOrder = totalPackageMatFeePerOrder.add(countryPackageMatFeePerOrder);
+            totalInsuranceFees = totalInsuranceFees.add(countryInsuranceFees);
             Row<String, Object, Integer, Object, BigDecimal> row = new Row<>(
                     String.format("Total shipping cost for %s", country),
                     null,
@@ -103,7 +106,8 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
                     .add(countryServiceFeesPerSKU)
                     .add(countryPickingFeesPerOrder)
                     .add(countryPickingFeesPerSKU)
-                    .add(countryPackageMatFeePerOrder);
+                    .add(countryPackageMatFeePerOrder)
+                    .add(countryInsuranceFees);
         }
         Row<String, Object, Integer, Object, BigDecimal> vatRow = new Row<>(
                 "Total VAT fee for EU",
@@ -137,6 +141,14 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
                 totalPackageMatFeePerOrder
         );
         rows.add(packageMatFeeRow);
+        Row<String, Object, Integer, Object, BigDecimal> insuranceFeeRow = new Row<>(
+                "Total product insurance fee",
+                null,
+                null,
+                null,
+                totalInsuranceFees
+        );
+        rows.add(insuranceFeeRow);
         if (savRefunds != null) {
             for (SavRefundWithDetail savRefund : savRefunds) {
                 BigDecimal refundForOrder = BigDecimal.ZERO
