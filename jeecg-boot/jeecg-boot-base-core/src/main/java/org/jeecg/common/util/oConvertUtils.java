@@ -463,7 +463,7 @@ public class oConvertUtils {
 			return false;
 		}
 
-		List<String> childs = childArray.toJavaList(String.class);
+		String[] childs = childArray.toArray(new String[]{});
 		for (String v : childs) {
 			if (!isIn(v, all)) {
 				return false;
