@@ -109,7 +109,7 @@ public class ${entityName}Page {
 	
 	<#list subTables as sub>
 	@ExcelCollection(name="${sub.ftlDescription}")
-	@ApiModelProperty(value = "${sub.ftlDescription}")
+	@Schema(description = "${sub.ftlDescription}")
 	private List<${sub.entityName}> ${sub.entityName?uncap_first}List;
 	</#list>
 	
