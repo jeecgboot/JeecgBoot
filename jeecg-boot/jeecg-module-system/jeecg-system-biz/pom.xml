@@ -27,7 +27,7 @@
 		<!-- 企业微信/钉钉 api -->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
-			<artifactId>jeewx-api</artifactId>
+			<artifactId>weixin4j</artifactId>
 		</dependency>
 		<!-- 积木报表 -->
 		<dependency>
