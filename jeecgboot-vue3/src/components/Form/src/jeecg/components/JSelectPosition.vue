@@ -48,11 +48,8 @@
     },
     emits: ['options-change', 'change', 'update:value'],
     setup(props, { emit, refs }) {
-      const emitData = ref<any[]>();
       //注册model
       const [regModal, { openModal }] = useModal();
-      //表单值
-      const [state] = useRuleFormItem(props, 'value', 'change', emitData);
       //下拉框选项值
       const selectOptions = ref<SelectValue>([]);
       //下拉框选中值
@@ -80,15 +77,6 @@
       });
 
       /**
-       * 监听selectValues变化
-       */
-      watch(selectValues, () => {
-        if (selectValues) {
-          state.value = selectValues.value;
-        }
-      });
-
-      /**
        * 打卡弹出框
        */
       function handleOpen() {
@@ -104,7 +92,6 @@
       function initValue() {
         let value = props.value ? props.value : [];
         if (value && typeof value === 'string' && value != 'null' && value != 'undefined') {
-          state.value = value.split(',');
           selectValues.value = value.split(',');
         }
       }
@@ -114,8 +101,6 @@
        */
       function setValue(options, values) {
         selectOptions.value = options;
-        //emitData.value = values.join(",");
-        state.value = values;
         selectValues.value = values;
         //update-begin-author:liusq date:20230517 for:选择职务组件v-model方式绑定值不生效
         emit('update:value', values.join(','));
@@ -125,7 +110,6 @@
 
       const getBindValue = Object.assign({}, unref(props), unref(attrs));
       return {
-        state,
         getBindValue,
         attrs,
         selectOptions,
