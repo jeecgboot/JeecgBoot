@@ -129,7 +129,7 @@ AIGC应用平台+知识库（研发中，即将发布）
 #### 后端
 
 - IDE建议： IDEA (必须安装lombok插件 )
-- 语言：Java 默认jdk17(支持jdk8)
+- 语言：Java 默认jdk17(支持jdk8、jdk21)
 - 依赖管理：Maven
 - 基础框架：Spring Boot 2.7.18
 - 微服务框架： Spring Cloud Alibaba 2021.0.6.2
