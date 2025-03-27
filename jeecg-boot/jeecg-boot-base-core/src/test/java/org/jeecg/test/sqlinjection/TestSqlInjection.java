@@ -2,7 +2,7 @@ package org.jeecg.test.sqlinjection;
 
 import com.baomidou.mybatisplus.core.toolkit.sql.SqlInjectionUtils;
 import org.jeecg.common.util.SqlInjectionUtil;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;

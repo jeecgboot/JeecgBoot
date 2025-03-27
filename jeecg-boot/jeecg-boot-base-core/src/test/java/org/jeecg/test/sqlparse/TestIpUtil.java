@@ -1,16 +1,11 @@
 package org.jeecg.test.sqlparse;
 
-import net.sf.jsqlparser.JSQLParserException;
 import org.jeecg.common.util.IpUtils;
 import org.jeecg.common.util.oConvertUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author: scott
