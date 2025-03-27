@@ -35,11 +35,6 @@ JeecgBoot 提供了一系列 `AI能力` `低代码模块`，实现在线开发`�
 JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支持信创国产化（默认适配达梦和人大金仓）。尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
 
 
-### 视频介绍
-
-[![](https://upload.jeecg.com/jeecg/qiaoqiaoyunsite/jeecgvideo02.png)](https://www.bilibili.com/video/BV1Nk4y1o7Qc)
-
-
 #### 项目说明
 
 | 项目名                | 说明                     | 
@@ -63,6 +58,11 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 - <b>关注微信公众号，获取最新动态</b>
 
 ![公众号](https://jeecg.com/images/jeecg/qrcode_jeecgboot.jpg "在这里输入图片标题")
+
+
+### 视频介绍
+
+[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/flow_video.png)](https://www.bilibili.com/video/BV1Nk4y1o7Qc)
 
 
 启动项目
