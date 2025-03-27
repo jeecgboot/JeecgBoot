@@ -7,12 +7,12 @@
 JEECG BOOT AI Low Code Platform
 ===============
 
-Current version: 3.7.3 (Release date: 2025-02-10)
+Current version: 3.7.4 (Release date: 2025-04-10)
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-3.7.3-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.7.4-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -81,7 +81,7 @@ Technical documentation
 - Demo ： [OnlineDemo](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
 - Doc：  [DocumentCenter](http://help.jeecg.com) | [AI Config](https://help.jeecg.com/java/ai/aichat)
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart) |   [Q&A ](http://www.jeecg.com/doc/qa)  |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
-- QQ group ： ⑩716488839、⑨808791225、⑧825232878、⑦791696430、⑥730954414(full)、683903138(full)、⑤860162132(full)、④774126647(full)、③816531124(full)、②769925425(full)、①284271917(full)
+- QQ group ： ⑩716488839、⑨808791225
 
 
 
@@ -181,7 +181,7 @@ Technical Architecture:
 
 #### Development Environment
 
-- Language: Java (jdk8、jdk17)
+- Language: Java jdk17(support jdk8)
 
 - IDE(JAVA) : IDEA (lombok plug-in must be installed)
 
@@ -198,17 +198,17 @@ Technical Architecture:
 
 - Basic framework: Spring Boot 2.7.18
 
-- Microservice framework: Spring Cloud Alibaba 2021.0.1.0
+- Microservice framework: Spring Cloud Alibaba 2021.0.6.2
 
 - Persistence layer framework: MybatisPlus 3.5.3.2
 
-- Report tool: JimuReport 1.9.3
+- Report tool: JimuReport 1.9.5
 
-- Security framework: Apache Shiro 1.12.0, Jwt 3.11.0
+- Security framework: Apache Shiro 1.13.0, Jwt 3.11.0
 
 - Microservice technology stack: Spring Cloud Alibaba, Nacos, Gateway, Sentinel, Skywalking
 
-- Database connection pool: Alibaba Druid 1.1.22
+- Database connection pool: Alibaba Druid 1.1.24
 
 - Log printing: logback
 

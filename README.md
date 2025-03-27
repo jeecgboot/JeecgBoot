@@ -2,12 +2,12 @@
 JeecgBoot AI低代码平台
 ===============
 
-当前最新版本： 3.7.3（发布日期：2025-02-10） 
+当前最新版本： 3.7.4（发布日期：2025-04-10） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://guojusoft.com)
-[![](https://img.shields.io/badge/version-3.7.3-brightgreen.svg)](https://github.com/jeecgboot/JeecgBoot)
+[![](https://img.shields.io/badge/version-3.7.4-brightgreen.svg)](https://github.com/jeecgboot/JeecgBoot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/jeecgboot/JeecgBoot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/jeecgboot/JeecgBoot)
 
@@ -129,13 +129,13 @@ AIGC应用平台+知识库（研发中，即将发布）
 #### 后端
 
 - IDE建议： IDEA (必须安装lombok插件 )
-- 语言：Java (支持jdk8、jdk17)
+- 语言：Java 默认jdk17(支持jdk8)
 - 依赖管理：Maven
 - 基础框架：Spring Boot 2.7.18
-- 微服务框架： Spring Cloud Alibaba 2021.0.1.0
+- 微服务框架： Spring Cloud Alibaba 2021.0.6.2
 - 持久层框架：MybatisPlus 3.5.3.2
-- 报表工具： JimuReport 1.9.4
-- 安全框架：Apache Shiro 1.12.0，Jwt 3.11.0
+- 报表工具： JimuReport 1.9.5
+- 安全框架：Apache Shiro 1.13.0，Jwt 3.11.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.1.24
 - AI大模型：支持 `ChatGPT` `DeepSeek`切换
