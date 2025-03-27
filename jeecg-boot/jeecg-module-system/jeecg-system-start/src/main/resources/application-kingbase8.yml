@@ -20,7 +20,6 @@ management:
         include: metrics,httptrace-new
 
 spring:
-  # flyway配置
   flyway:
     # 是否启用flyway
     enabled: false
