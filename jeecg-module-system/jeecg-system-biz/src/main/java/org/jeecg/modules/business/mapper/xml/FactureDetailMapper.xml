@@ -35,6 +35,7 @@
         po.order_service_fee + SUM(poc.service_fee) AS 'Frais de service',
         po.picking_fee + SUM(poc.picking_fee)       AS 'Frais de préparation',
         po.packaging_material_fee                   AS 'Frais de matériel d\'emballage',
+        COALESCE(po.insurance_fee, 0.00)            AS 'Frais d\'assurance produits',
         SUM(poc.vat)                                AS 'TVA',
         po.shipping_invoice_number                  AS 'N° de facture'
         FROM platform_order po
