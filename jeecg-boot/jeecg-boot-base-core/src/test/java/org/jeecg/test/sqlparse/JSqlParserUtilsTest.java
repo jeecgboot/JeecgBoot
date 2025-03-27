@@ -4,7 +4,7 @@ import net.sf.jsqlparser.JSQLParserException;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.common.util.sqlparse.JSqlParserUtils;
 import org.jeecg.common.util.sqlparse.vo.SelectSqlInfo;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
