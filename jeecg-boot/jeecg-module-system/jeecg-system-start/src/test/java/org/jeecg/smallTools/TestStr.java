@@ -2,7 +2,7 @@ package org.jeecg.smallTools;
 
 import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
