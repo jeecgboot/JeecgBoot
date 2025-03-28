@@ -163,7 +163,9 @@ AIGC应用平台+知识库（研发中，即将发布）
  ` ( 因为Vite6 需要 Node.js 18 / 20+ )`
 
 
-#### 支持库
+#### 平台支持数据库
+
+> jeecgboot平台支持以下数据库，默认我们只提供mysql脚本，其他数据库可以参考[转库文档](https://my.oschina.net/jeecg/blog/4905722)自己转。
 
 |  数据库   |  支持   |
 | --- | --- |
@@ -172,12 +174,11 @@ AIGC应用平台+知识库（研发中，即将发布）
 |  Sqlserver2017   |  √   |
 |   PostgreSQL   |  √   |
 |   MariaDB   |  √   |
-|   MariaDB   |  √   |
 |   达梦   |  √   |
 |   人大金仓   |  √   |
 |   TiDB     |  √   |
-
-
+|   kingbase8   |  √   |
+  
 
  
 ## 微服务解决方案
