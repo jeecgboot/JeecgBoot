@@ -119,7 +119,8 @@ export function useSelectBiz(getList, props, emit?) {
   async function visibleChange(visible) {
     if (visible) {
       //设置列表默认选中
-      props.showSelected && initSelectRows();
+      //和右侧是否右侧显示选中列表无关，显示时都需要初始化，否则点取消按钮缓存遗留。
+      await initSelectRows();
     } else {
       // update-begin--author:liaozhiyang---date:20240517---for：【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
       emit?.('close');
