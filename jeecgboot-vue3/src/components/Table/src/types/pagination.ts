@@ -7,6 +7,8 @@ interface PaginationRenderProps {
   originalElement: any;
 }
 
+type Position = 'topLeft' | 'topCenter' | 'topRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
+
 export declare class PaginationConfig extends Pagination {
   position?: 'top' | 'bottom' | 'both';
 }
@@ -96,4 +98,10 @@ export interface PaginationProps {
    * @type Function
    */
   itemRender?: (props: PaginationRenderProps) => VNodeChild | JSX.Element;
+
+  /**
+   * specify the position of Pagination
+   * @type Position[]
+   */
+  position?: Position[];
 }
