@@ -2,7 +2,7 @@
 JeecgBoot AI低代码平台
 ===============
 
-当前最新版本： 3.7.4（发布日期：2025-04-10） 
+当前最新版本： 3.7.4（预计发布日期：2025-04-10，代码逐步提交） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)
