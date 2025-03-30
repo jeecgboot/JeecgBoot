@@ -217,6 +217,10 @@ public class ShiroConfig {
         //update-begin---author:chenrui ---date:20241202  for：[issues/7491]运行时间好长，效率慢 ------------
         registration.addUrlPatterns("/test/ai/chat/send");
         //update-end---author:chenrui ---date:20241202  for：[issues/7491]运行时间好长，效率慢 ------------
+        registration.addUrlPatterns("/airag/flow/run");
+        registration.addUrlPatterns("/airag/flow/debug");
+        registration.addUrlPatterns("/airag/chat/send");
+        registration.addUrlPatterns("/airag/app/debug");
         //支持异步
         registration.setAsyncSupported(true);
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);

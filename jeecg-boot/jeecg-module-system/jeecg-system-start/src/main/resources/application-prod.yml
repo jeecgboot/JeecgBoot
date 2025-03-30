@@ -1,7 +1,7 @@
 server:
   port: 8080
-  tomcat:
-    max-swallow-size: -1
+  undertow:
+    worker-threads: 16
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -22,7 +22,7 @@ management:
 spring:
   flyway:
     # 是否启用flyway
-    enabled: false
+    enabled: true
     # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
     clean-disabled: true
   servlet:
@@ -230,11 +230,7 @@ jeecg:
         SMS_465391221:
         # 注册账号短信模板编码
         SMS_175430166:
-  # ElasticSearch 设置
-  elasticsearch:
-    cluster-name: jeecg-ES
-    cluster-nodes: 127.0.0.1:9200
-    check-enabled: false
+        SMS_461885023:
   # 在线预览文件服务器地址配置
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传

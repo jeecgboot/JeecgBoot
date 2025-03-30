@@ -26,8 +26,11 @@ public class CodeTemplateInitListener implements ApplicationListener<Application
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         try {
-            log.info(" Init Code Generate Template [ 检测如果是JAR启动环境，Copy模板到config目录 ] ");
+            long startTime = System.currentTimeMillis(); // 记录开始时间
+            log.info(" Init Code Generate Template [ 检测如果是JAR启动，Copy模板到config目录 ] ");
             this.initJarConfigCodeGeneratorTemplate();
+            long endTime = System.currentTimeMillis(); // 记录结束时间
+            log.info(" Init Code Generate Template completed in " + (endTime - startTime) + " ms"); // 计算并记录耗时
         } catch (Exception e) {
             e.printStackTrace();
         }

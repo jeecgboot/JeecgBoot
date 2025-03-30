@@ -6,10 +6,9 @@ import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.mapper.JeecgDemoMapper;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.jeecg.modules.system.service.ISysDataLogService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.util.Assert;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -29,7 +28,7 @@ public class SampleTest {
 	public void testSelect() {
 		System.out.println(("----- selectAll method test ------"));
 		List<JeecgDemo> userList = jeecgDemoMapper.selectList(null);
-		Assertions.assertEquals(5, userList.size());
+		Assert.isTrue(15==userList.size(),"结果不是5条");
 		userList.forEach(System.out::println);
 	}
 

@@ -101,7 +101,13 @@ public class SysRoleController {
 	public Result<IPage<SysRole>> queryPageList(SysRole role,
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									  @RequestParam(name="isMultiTranslate", required = false) Boolean isMultiTranslate,
 									  HttpServletRequest req) {
+        //update-begin---author:wangshuai---date:2025-03-26---for:【issues/7948】角色解决根据id查询回显不对---
+        if(null != isMultiTranslate && isMultiTranslate){
+            pageSize = 100;
+        }
+        //update-end---author:wangshuai---date:2025-03-26---for:【issues/7948】角色解决根据id查询回显不对---
 		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
 		//QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
 		//IPage<SysRole> pageList = sysRoleService.page(page, queryWrapper);

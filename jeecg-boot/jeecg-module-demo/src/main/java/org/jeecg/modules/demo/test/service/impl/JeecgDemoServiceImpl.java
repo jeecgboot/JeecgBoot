@@ -71,6 +71,22 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 	}
 
 
+	/**
+	 * @Cacheable自定义TTL：#60（单位是秒，目前只支持这一种格式）
+	 * 通过注解方式，指定缓存有效期60秒
+	 * 
+	 * 参考博客：https://www.cnblogs.com/h2285409/p/18324396
+	 */
+	@Override
+	@Cacheable(cacheNames = "ceshi:redis:ttl#60", key = "#id")
+	public JeecgDemo getByIdCacheableTTL(String id) {
+		JeecgDemo t = jeecgDemoMapper.selectById(id);
+		System.err.println("---未读缓存，读取数据库---");
+		System.err.println(t);
+		return t;
+	}
+
+
 	@Override
 	public IPage<JeecgDemo> queryListWithPermission(int pageSize,int pageNo) {
 		Page<JeecgDemo> page = new Page<>(pageNo, pageSize);

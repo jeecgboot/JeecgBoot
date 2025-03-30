@@ -36,7 +36,7 @@ public class FlywayConfig {
      */
     @Value("${spring.flyway.enabled:false}")
     private Boolean enabled;
-
+    
     /**
      * 编码格式，默认UTF-8
      */
@@ -102,7 +102,7 @@ public class FlywayConfig {
         if(!enabled){
             return;
         }
-
+        
         DynamicRoutingDataSource ds = (DynamicRoutingDataSource) dataSource;
         Map<String, DataSource> dataSources = ds.getDataSources();
         dataSources.forEach((k, v) -> {

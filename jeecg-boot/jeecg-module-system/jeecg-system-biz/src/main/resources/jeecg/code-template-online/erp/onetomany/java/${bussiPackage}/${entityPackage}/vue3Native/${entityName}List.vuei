@@ -234,7 +234,11 @@
     exportConfig: {
       name:"${tableVo.ftlDescription}",
       url: getExportUrl,
+      <#if is_range>
+      params: setRangeQuery,
+      <#else>
       params: queryParam,
+      </#if>
     },
     importConfig: {
       url: getImportUrl,

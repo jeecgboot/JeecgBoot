@@ -1,7 +1,7 @@
 server:
   port: 8080
-  tomcat:
-    max-swallow-size: -1
+  undertow:
+    worker-threads: 16
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -22,9 +22,9 @@ management:
 spring:
   flyway:
     # 是否启用flyway
-    enabled: false
-    # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
-    clean-disabled: true
+    enabled: true
+    # 迁移sql脚本存放路径
+    locations: classpath:flyway/sql/mysql
   servlet:
     multipart:
       max-file-size: 10MB
@@ -270,11 +270,6 @@ jeecg:
     app-id: ??
     api-key: ??
     secret-key: ??
-  # ElasticSearch 设置
-  elasticsearch:
-    cluster-name: jeecg-ES
-    cluster-nodes: 192.168.1.188:9200
-    check-enabled: false
 #Mybatis输出sql日志
 logging:
   level:

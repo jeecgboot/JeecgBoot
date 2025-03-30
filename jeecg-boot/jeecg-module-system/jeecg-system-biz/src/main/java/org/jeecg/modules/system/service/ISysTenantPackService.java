@@ -1,7 +1,7 @@
 package org.jeecg.modules.system.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysTenantPack;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
 
 import java.util.List;

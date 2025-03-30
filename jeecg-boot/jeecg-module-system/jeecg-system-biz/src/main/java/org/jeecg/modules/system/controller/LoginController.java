@@ -88,8 +88,10 @@ public class LoginController {
         }
         String lowerCaseCaptcha = captcha.toLowerCase();
 		// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
-        String origin = lowerCaseCaptcha+sysLoginModel.getCheckKey()+jeecgBaseConfig.getSignatureSecret();
-		String realKey = Md5Util.md5Encode(origin, "utf-8");
+		//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
+		String keyPrefix = Md5Util.md5Encode(sysLoginModel.getCheckKey()+jeecgBaseConfig.getSignatureSecret(), "utf-8");
+		String realKey = keyPrefix + lowerCaseCaptcha;
+		//update-end---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
 		Object checkCode = redisUtil.get(realKey);
 		//当进入登录页时，有一定几率出现验证码错误 #1714
 		if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
@@ -533,10 +535,12 @@ public class LoginController {
 			
 			//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 			// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
-			String origin = lowerCaseCode+key+jeecgBaseConfig.getSignatureSecret();
-			String realKey = Md5Util.md5Encode(origin, "utf-8");
+			//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
+			String keyPrefix = Md5Util.md5Encode(key+jeecgBaseConfig.getSignatureSecret(), "utf-8");
+			String realKey = keyPrefix + lowerCaseCode;
 			//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-            
+			redisUtil.removeAll(keyPrefix);
+			//update-end---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
 			redisUtil.set(realKey, lowerCaseCode, 60);
 			log.info("获取验证码，Redis key = {}，checkCode = {}", realKey, code);
 			//返回前端
