@@ -89,7 +89,6 @@
             opt.getContainer = `.${prefixVar}-layout-content` as any;
           }
         }
-        console.log('getProps:opt',opt);
         return opt as DrawerProps;
       });
 

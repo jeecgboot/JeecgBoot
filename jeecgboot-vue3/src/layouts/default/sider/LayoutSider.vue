@@ -72,7 +72,7 @@
 
       const showClassSideBarRef = computed(() => {
         // 控制是否显示侧边栏
-        if (appStore.mainAppProps.hideSider) {
+        if (appStore.getLayoutHideSider) {
           return false;
         }
         return unref(getSplit) ? !unref(getMenuHidden) : true;

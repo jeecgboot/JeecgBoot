@@ -189,6 +189,12 @@
                 selectType: 'sys_role',
               });
             }
+            // 根据 ids 的顺序对 arr 进行排序
+            if (props.store === 'code') {
+              arr.sort((a, b) => ids.indexOf(a.code) - ids.indexOf(b.code));
+            } else {
+              arr.sort((a, b) => ids.indexOf(a.id) - ids.indexOf(b.id));
+            }
           }
           selectedList.value = arr;
         } else {

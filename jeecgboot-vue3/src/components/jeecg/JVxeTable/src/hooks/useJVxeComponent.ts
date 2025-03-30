@@ -140,11 +140,15 @@ export function useJVxeComponent(props: JVxeComponent.Props) {
   const ctx = { props, context };
 
   // 获取组件增强
-  const enhanced = getEnhanced(props.type);
+  let enhanced = getEnhanced(props.type);
 
   watch(
     value,
     (newValue) => {
+      // -update-begin--author:liaozhiyang---date:20241210---for：【issues/7497】隐藏某一列后，字典没翻译，恢复后正常
+      // TODO 先这样修复解决问题，根因后期再看看
+      enhanced = getEnhanced(props.type);
+      // -update-end--author:liaozhiyang---date:20241210---for：【issues/7497】隐藏某一列后，字典没翻译，恢复后
       // 验证值格式
       let getValue = enhanced.getValue(newValue, ctx);
       if (newValue !== getValue) {

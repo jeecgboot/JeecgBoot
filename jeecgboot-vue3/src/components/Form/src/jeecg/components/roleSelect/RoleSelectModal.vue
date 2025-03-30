@@ -132,13 +132,23 @@
         }
         return list.filter(item=>item.name.indexOf(text)>=0)
       });
-  
+
+      const selectedKeys = ref<string[]>([]);
       const selectedList = computed(()=>{
         let list = dataList.value;
         if(!list || list.length ==0 ){
           return []
         }
-        return list.filter(item=>item.checked)
+        list = list.filter(item=>item.checked)
+        // 根据 selectedKeys 的顺序排序
+        let arr: any[] = [];
+        for (let key of selectedKeys.value) {
+          let item = list.find(item => item.id == key);
+          if (item) {
+            arr.push(item);
+          }
+        }
+        return arr;
       });
 
       function unSelect(id) {
@@ -192,6 +202,11 @@
           }
         }
         item.checked = !item.checked;
+        if (item.checked) {
+          selectedKeys.value.push(item.id);
+        } else {
+          selectedKeys.value = selectedKeys.value.filter((k) => k != item.id);
+        }
       }
 
       function prevent(e) {

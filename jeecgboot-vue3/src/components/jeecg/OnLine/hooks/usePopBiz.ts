@@ -10,6 +10,7 @@ import { useMethods } from '/@/hooks/system/useMethods';
 import { importViewsFile, _eval } from '/@/utils';
 import {getToken} from "@/utils/auth";
 import {replaceUserInfoByExpression} from "@/utils/common/compUtils";
+import { isString } from '/@/utils/is';
 
 export function usePopBiz(ob, tableRef?) {
   // update-begin--author:liaozhiyang---date:20230811---for：【issues/675】子表字段Popup弹框数据不更新
@@ -211,6 +212,15 @@ export function usePopBiz(ob, tableRef?) {
             currColumns[a].sortOrder = unref(iSorter).order === 'asc' ? 'ascend' : 'descend';
           }
         }
+        // update-begin--author:liaozhiyang---date:20250114---for：【issues/946】popup列宽和在线报表列宽读取配置
+        currColumns.forEach((item) => {
+          if (item.fieldWidth != null) {
+            if (isString(item.fieldWidth) && item.fieldWidth.trim().length == 0) return;
+            item.width = item.fieldWidth;
+            delete item.fieldWidth;
+          }
+        });
+        // update-end--author:liaozhiyang---date:20250114---for：【issues/946】popup列宽和在线报表列宽读取配置
         if (currColumns[0].key !== 'rowIndex') {
           currColumns.unshift({
             title: '序号',
@@ -258,7 +268,16 @@ export function usePopBiz(ob, tableRef?) {
         // href 跳转
         const fieldHrefSlotKeysMap = {};
         fieldHrefSlots.forEach((item) => (fieldHrefSlotKeysMap[item.slotName] = item));
-        let currColumns = handleColumnHrefAndDict(metaColumnList, fieldHrefSlotKeysMap);
+        let currColumns: any = handleColumnHrefAndDict(metaColumnList, fieldHrefSlotKeysMap);
+        // update-begin--author:liaozhiyang---date:20250114---for：【issues/946】popup列宽和在线报表列宽读取配置
+        currColumns.forEach((item) => {
+          if (isString(item.fieldWidth) && item.fieldWidth.trim().length == 0) return;
+          if (item.fieldWidth != null) {
+            item.width = item.fieldWidth;
+            delete item.fieldWidth;
+          }
+        });
+        // update-end--author:liaozhiyang---date:20250114---for：【issues/946】popup列宽和在线报表列宽读取配置
 
         // popup需要序号， 普通列表不需要
         if (clickThenCheckFlag === true) {

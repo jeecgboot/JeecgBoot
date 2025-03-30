@@ -3,7 +3,7 @@ import type { App, Plugin } from 'vue';
 import type { FormSchema } from "@/components/Form";
 
 import { unref } from 'vue';
-import { isObject, isFunction } from '/@/utils/is';
+import { isObject, isFunction, isString } from '/@/utils/is';
 import Big from 'big.js';
 // update-begin--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
 export const URL_HASH_TAB = `__AGWE4H__HASH__TAG__PWHRG__`;
@@ -595,4 +595,40 @@ export const getUrlParams = (url) => {
     });
   }
   return result;
+};
+
+/* 20250325
+ * liaozhiyang
+ * 分割url字符成数组
+ * 【issues/7990】图片参数中包含逗号会错误的识别成多张图
+ * */
+export const split = (str) => {
+  if (isString(str)) {
+    const text = str.trim();
+    if (text.startsWith('http')) {
+      const parts = str.split(',');
+      const urls: any = [];
+      let currentUrl = '';
+      for (const part of parts) {
+        if (part.startsWith('http://') || part.startsWith('https://')) {
+          // 如果遇到新的URL开头，保存当前URL并开始新的URL
+          if (currentUrl) {
+            urls.push(currentUrl);
+          }
+          currentUrl = part;
+        } else {
+          // 否则，是当前URL的一部分（如参数）
+          currentUrl += ',' + part;
+        }
+      }
+      // 添加最后一个URL
+      if (currentUrl) {
+        urls.push(currentUrl);
+      }
+      return urls;
+    } else {
+      return str.split(',');
+    }
+  }
+  return str;
 };

@@ -36,6 +36,8 @@ export function getAppEnvConfig() {
     VITE_GLOB_APP_CAS_BASE_URL,
     VITE_GLOB_DOMAIN_URL,
     VITE_GLOB_ONLINE_VIEW_URL,
+    // 全局隐藏哪些布局，多个用逗号隔开
+    VITE_GLOB_HIDE_LAYOUT_TYPES,
 
     // 【JEECG作为乾坤子应用】
     VITE_GLOB_QIANKUN_MICRO_APP_NAME,
@@ -59,6 +61,7 @@ export function getAppEnvConfig() {
     VITE_GLOB_APP_CAS_BASE_URL,
     VITE_GLOB_DOMAIN_URL,
     VITE_GLOB_ONLINE_VIEW_URL,
+    VITE_GLOB_HIDE_LAYOUT_TYPES,
 
     // 【JEECG作为乾坤子应用】
     VITE_GLOB_QIANKUN_MICRO_APP_NAME,
@@ -101,4 +104,12 @@ export function isDevMode(): boolean {
  */
 export function isProdMode(): boolean {
   return import.meta.env.PROD;
+}
+
+export function getHideLayoutTypes(): string[] {
+  const {VITE_GLOB_HIDE_LAYOUT_TYPES} = getAppEnvConfig();
+  if (typeof VITE_GLOB_HIDE_LAYOUT_TYPES !== 'string') {
+    return [];
+  }
+  return VITE_GLOB_HIDE_LAYOUT_TYPES.split(',');
 }
