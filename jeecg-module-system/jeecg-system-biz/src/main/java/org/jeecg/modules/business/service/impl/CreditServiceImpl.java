@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.modules.business.domain.codeGeneration.CreditInvoiceCodeRule;
 import org.jeecg.modules.business.domain.credit.CreditInvoice;
 import org.jeecg.modules.business.domain.credit.CreditInvoiceFactory;
 import org.jeecg.modules.business.entity.Balance;
@@ -32,6 +31,8 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.CREDIT;
+
 /**
  * @Description: credit
  * @Author: jeecg-boot
@@ -55,6 +56,8 @@ public class CreditServiceImpl extends ServiceImpl<CreditMapper, Credit> impleme
     private CreditInvoiceFactory factory;
     @Autowired
     private ICurrencyService currencyService;
+    @Autowired
+    private IInvoiceNumberReservationService invoiceNumberReservationService;
 
     @Override
     public Credit getLastCredit(String clientId,String currencyId) {
@@ -85,8 +88,7 @@ public class CreditServiceImpl extends ServiceImpl<CreditMapper, Credit> impleme
             res.setStatus(HttpStatus.SC_NOT_FOUND);
             return res;
         }
-        String lastInvoiceNumber = getLatestInvoiceNumber();
-        String invoiceNumber = new CreditInvoiceCodeRule().next(lastInvoiceNumber);
+        String invoiceNumber =  invoiceNumberReservationService.getLatestInvoiceNumberByType(CREDIT.getType());
         credit.setInvoiceNumber(invoiceNumber);
         save(credit);
         balanceService.updateBalance(credit.getClientId(), credit.getId(), credit.getAmount(), credit.getCurrencyId());

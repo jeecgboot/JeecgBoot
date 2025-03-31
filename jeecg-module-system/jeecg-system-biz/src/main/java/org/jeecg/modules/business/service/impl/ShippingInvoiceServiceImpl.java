@@ -246,4 +246,14 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
     public void cancelInvoice(String invoiceId) {
         shippingInvoiceMapper.cancelInvoice(invoiceId);
     }
+
+    @Override
+    public String findLatestInvoiceNumber() {
+        return shippingInvoiceMapper.findLatestInvoiceNumber();
+    }
+
+    @Override
+    public String findLatestCompleteInvoiceNumber() {
+        return shippingInvoiceMapper.findLatestCompleteInvoiceNumber();
+    }
 }
