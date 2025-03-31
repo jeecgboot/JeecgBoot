@@ -53,4 +53,8 @@ public interface IShippingInvoiceService extends IService<ShippingInvoice> {
     Period getInvoicePeriod(List<String> shopIdList);
 
     void cancelInvoice(String invoiceId);
+
+    String findLatestInvoiceNumber();
+
+    String findLatestCompleteInvoiceNumber();
 }

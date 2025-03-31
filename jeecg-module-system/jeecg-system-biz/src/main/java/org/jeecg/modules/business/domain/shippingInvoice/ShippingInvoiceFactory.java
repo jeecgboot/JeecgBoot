@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 
 import static cn.hutool.core.date.DateTime.now;
 import static java.util.stream.Collectors.*;
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 
 @Slf4j
 @Component
@@ -74,6 +75,8 @@ public class ShippingInvoiceFactory {
     private ILogisticInsuranceService logisticInsuranceService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private IInvoiceNumberReservationService invoiceNumberReservationService;
     @Autowired
     private Environment env;
 
@@ -237,7 +240,7 @@ public class ShippingInvoiceFactory {
         Map<String, BigDecimal> shopPackageMatFeeMap = new HashMap<>();
         shops.forEach(shop -> shopServiceFeeMap.put(shop.getId(), shop.getOrderServiceFee()));
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
-        String invoiceCode = generateCompleteInvoiceCode();
+        String invoiceCode = invoiceNumberReservationService.getLatestInvoiceNumberByType(COMPLETE.getType());
         log.info("New invoice code: {}", invoiceCode);
         calculateFees(balance, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
@@ -317,7 +320,7 @@ public class ShippingInvoiceFactory {
         Map<String, BigDecimal> shopPackageMatFeeMap = new HashMap<>();
         shops.forEach(shop -> shopServiceFeeMap.put(shop.getId(), shop.getOrderServiceFee()));
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
-        String invoiceCode = generateCompleteInvoiceCode();
+        String invoiceCode = invoiceNumberReservationService.getLatestInvoiceNumberByType(COMPLETE.getType());
 
         log.info("New invoice code: {}", invoiceCode);
 
@@ -572,7 +575,7 @@ public class ShippingInvoiceFactory {
         Map<String, BigDecimal> shopPackageMatFeeMap = new HashMap<>();
         shops.forEach(shop -> shopServiceFeeMap.put(shop.getId(), shop.getOrderServiceFee()));
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
-        String invoiceCode = generateInvoiceCode();
+        String invoiceCode = invoiceNumberReservationService.getLatestInvoiceNumberByType(SHIPPING.getType());
         log.info("New invoice code: {}", invoiceCode);
         Map<String, List<String>> errorMsg = calculateFees(null, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
@@ -646,7 +649,7 @@ public class ShippingInvoiceFactory {
         Map<String, BigDecimal> shopPackageMatFeeMap = new HashMap<>();
         shops.forEach(shop -> shopServiceFeeMap.put(shop.getId(), shop.getOrderServiceFee()));
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
-        String invoiceCode = generateInvoiceCode();
+        String invoiceCode = invoiceNumberReservationService.getLatestInvoiceNumberByType(SHIPPING.getType());
         log.info("New invoice code: {}", invoiceCode);
         Map<String, List<String>> ordersWithPB = calculateFees(balance, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);

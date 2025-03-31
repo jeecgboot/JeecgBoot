@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
-import org.jeecg.modules.business.domain.codeGeneration.PurchaseInvoiceCodeRule;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoice;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry;
 import org.jeecg.modules.business.entity.*;
@@ -34,6 +33,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.COMPLETE;
 
 /**
  * @Description: 商品采购订单
@@ -62,6 +63,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     private ISkuService skuService;
     @Autowired
     private ICurrencyService currencyService;
+    @Autowired
+    private IInvoiceNumberReservationService invoiceNumberReservationService;
 
     /**
      * Directory where payment documents are put
@@ -233,8 +236,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
         String purchaseID = UUID.randomUUID().toString();
 
-        String lastInvoiceNumber = purchaseOrderMapper.lastInvoiceNumber();
-        String invoiceNumber = new PurchaseInvoiceCodeRule().next(lastInvoiceNumber);
+        String invoiceNumber = invoiceNumberReservationService.getLatestInvoiceNumberByType(COMPLETE.getType());
         // 1. save purchase itself
         purchaseOrderMapper.addPurchase(
                 purchaseID,
@@ -321,8 +323,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
         String purchaseID = UUID.randomUUID().toString();
 
-        String lastInvoiceNumber = purchaseOrderMapper.lastInvoiceNumber();
-        String invoiceNumber = new PurchaseInvoiceCodeRule().next(lastInvoiceNumber);
+        String invoiceNumber = invoiceNumberReservationService.getLatestInvoiceNumberByType(COMPLETE.getType());
         // 1. save purchase itself
         purchaseOrderMapper.addPurchase(
                 purchaseID,

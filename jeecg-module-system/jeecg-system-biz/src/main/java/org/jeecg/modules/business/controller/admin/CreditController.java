@@ -145,7 +145,6 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 			log.error("User {}, tried to access /credit/edit but is not authorized.", loginUser.getUsername());
 			return Result.error(HttpStatus.SC_FORBIDDEN,"Access denied");
 		}
-		// we want the balance to update so we can use it later when we generate the invoice
 		log.info("editing credit");
 		Credit lastCredit = creditService.getLastCredit(credit.getClientId(), credit.getCurrencyId());
 		Credit creditToEdit = creditService.getById(credit.getId());

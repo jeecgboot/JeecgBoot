@@ -117,4 +117,20 @@
         SET status = 0
         WHERE id = #{id};
     </update>
+    <select id="findLatestInvoiceNumber" resultType="java.lang.String">
+        SELECT invoice_number
+        FROM shipping_invoice
+        WHERE invoice_number IS NOT NULL
+        AND invoice_number LIKE '2%%%-%%-2%%%'
+        ORDER BY invoice_number DESC
+        LIMIT 1
+    </select>
+    <select id="findLatestCompleteInvoiceNumber" resultType="java.lang.String">
+        SELECT invoice_number
+        FROM shipping_invoice
+        WHERE invoice_number IS NOT NULL
+        AND invoice_number LIKE '2%%%-%%-7%%%'
+        ORDER BY invoice_number DESC
+        LIMIT 1
+    </select>
 </mapper>
