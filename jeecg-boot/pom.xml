@@ -68,7 +68,7 @@
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
 		<!-- shiro -->
 		<shiro.version>1.13.0</shiro.version>
-		<java-jwt.version>3.11.0</java-jwt.version>
+		<java-jwt.version>4.5.0</java-jwt.version>
 		<shiro-redis.version>3.2.3</shiro-redis.version>
 		<codegenerate.version>1.4.9</codegenerate.version>
 		<autopoi-web.version>1.4.11</autopoi-web.version>
