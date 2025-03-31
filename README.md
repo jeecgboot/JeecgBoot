@@ -2,7 +2,7 @@
 JeecgBoot AI低代码平台
 ===============
 
-当前最新版本： 3.7.4（预计发布日期：2025-04-10，代码逐步提交） 
+当前最新版本： 3.7.4（预计发布日期：2025-04-10） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)
@@ -135,7 +135,7 @@ AIGC应用平台+知识库（研发中，即将发布）
 - 微服务框架： Spring Cloud Alibaba 2021.0.6.2
 - 持久层框架：MybatisPlus 3.5.3.2
 - 报表工具： JimuReport 1.9.5
-- 安全框架：Apache Shiro 1.13.0，Jwt 3.11.0
+- 安全框架：Apache Shiro 1.13.0，Jwt 4.5.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.1.24
 - AI大模型：支持 `ChatGPT` `DeepSeek`切换

@@ -204,7 +204,7 @@ Technical Architecture:
 
 - Report tool: JimuReport 1.9.5
 
-- Security framework: Apache Shiro 1.13.0, Jwt 3.11.0
+- Security framework: Apache Shiro 1.13.0, Jwt 4.5.0
 
 - Microservice technology stack: Spring Cloud Alibaba, Nacos, Gateway, Sentinel, Skywalking
 
