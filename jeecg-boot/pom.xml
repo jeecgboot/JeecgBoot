@@ -254,7 +254,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.7.1-RC</version>
+				<version>3.7.4-beta</version>
 			</dependency>
 
 			<!--mongon db-->
