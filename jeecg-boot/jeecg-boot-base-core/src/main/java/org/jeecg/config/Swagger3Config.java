@@ -73,7 +73,7 @@ public class Swagger3Config implements WebMvcConfigurer {
             // 全局添加鉴权参数
             if (openApi.getPaths() != null) {
                 openApi.getPaths().forEach((path, pathItem) -> {
-                    log.info("path: {}", path);
+                    //log.debug("path: {}", path);
                     // 检查当前路径是否在排除列表中
                     boolean isExcluded = excludedPaths.stream().anyMatch(excludedPath ->
                             excludedPath.equals(path) ||
