@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fasterxml.classmate.TypeResolver;
 import com.google.common.collect.Lists;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -31,7 +30,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import springfox.documentation.spring.web.DocumentationCache;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -49,10 +47,6 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
     private OpenApiParamService openApiParamService;
     @Autowired
     private OpenApiHeaderService openApiHeaderService;
-    @Autowired
-    private DocumentationCache documentationCache;
-    @Autowired
-    private TypeResolver typeResolver;
     @Autowired
     private ISysUserService sysUserService;
     @Autowired

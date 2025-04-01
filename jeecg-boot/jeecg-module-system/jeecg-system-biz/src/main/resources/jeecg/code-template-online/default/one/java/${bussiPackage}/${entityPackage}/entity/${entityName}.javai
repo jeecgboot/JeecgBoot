@@ -16,8 +16,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
@@ -31,7 +31,7 @@ import lombok.experimental.Accessors;
 @TableName("${tableName}")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@ApiModel(value="${tableName}对象", description="${tableVo.ftlDescription}")
+@Schema(description="${tableVo.ftlDescription}")
 public class ${entityName} implements Serializable {
     private static final long serialVersionUID = 1L;
 

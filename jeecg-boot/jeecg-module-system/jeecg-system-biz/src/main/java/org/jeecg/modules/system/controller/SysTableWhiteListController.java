@@ -3,8 +3,8 @@ package org.jeecg.modules.system.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
  * @Version: V1.0
  */
 @Slf4j
-@Api(tags = "系统表白名单")
+@Tag(name = "系统表白名单")
 @RestController
 @RequestMapping("/sys/tableWhiteList")
 public class SysTableWhiteListController extends JeecgController<SysTableWhiteList, ISysTableWhiteListService> {
@@ -65,7 +65,7 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      * @return
      */
     @AutoLog(value = "系统表白名单-添加")
-    @ApiOperation(value = "系统表白名单-添加", notes = "系统表白名单-添加")
+    @Operation(summary = "系统表白名单-添加")
     //@RequiresRoles("admin")
     @RequiresPermissions("system:tableWhite:add")
     @PostMapping(value = "/add")
@@ -84,7 +84,7 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      * @return
      */
     @AutoLog(value = "系统表白名单-编辑")
-    @ApiOperation(value = "系统表白名单-编辑", notes = "系统表白名单-编辑")
+    @Operation(summary = "系统表白名单-编辑")
     //@RequiresRoles("admin")
     @RequiresPermissions("system:tableWhite:edit")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
@@ -103,7 +103,7 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      * @return
      */
     @AutoLog(value = "系统表白名单-通过id删除")
-    @ApiOperation(value = "系统表白名单-通过id删除", notes = "系统表白名单-通过id删除")
+    @Operation(summary = "系统表白名单-通过id删除")
 //    @RequiresRoles("admin")
     @RequiresPermissions("system:tableWhite:delete")
     @DeleteMapping(value = "/delete")
@@ -122,7 +122,7 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      * @return
      */
     @AutoLog(value = "系统表白名单-批量删除")
-    @ApiOperation(value = "系统表白名单-批量删除", notes = "系统表白名单-批量删除")
+    @Operation(summary = "系统表白名单-批量删除")
 //    @RequiresRoles("admin")
     @RequiresPermissions("system:tableWhite:deleteBatch")
     @DeleteMapping(value = "/deleteBatch")
@@ -141,7 +141,7 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      * @return
      */
     @AutoLog(value = "系统表白名单-通过id查询")
-    @ApiOperation(value = "系统表白名单-通过id查询", notes = "系统表白名单-通过id查询")
+    @Operation(summary = "系统表白名单-通过id查询")
 //    @RequiresRoles("admin")
     @RequiresPermissions("system:tableWhite:queryById")
     @GetMapping(value = "/queryById")

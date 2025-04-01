@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -30,7 +30,7 @@ import java.util.Arrays;
  * @Version: V1.0
  */
 @Slf4j
-@Api(tags = "编码校验规则")
+@Tag(name = "编码校验规则")
 @RestController
 @RequestMapping("/sys/checkRule")
 public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCheckRuleService> {
@@ -48,7 +48,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @return
      */
     @AutoLog(value = "编码校验规则-分页列表查询")
-    @ApiOperation(value = "编码校验规则-分页列表查询", notes = "编码校验规则-分页列表查询")
+    @Operation(summary = "编码校验规则-分页列表查询")
     @GetMapping(value = "/list")
     public Result queryPageList(
             SysCheckRule sysCheckRule,
@@ -70,7 +70,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @return
      */
     @AutoLog(value = "编码校验规则-通过Code校验传入的值")
-    @ApiOperation(value = "编码校验规则-通过Code校验传入的值", notes = "编码校验规则-通过Code校验传入的值")
+    @Operation(summary = "编码校验规则-通过Code校验传入的值")
     @GetMapping(value = "/checkByCode")
     public Result checkByCode(
             @RequestParam(name = "ruleCode") String ruleCode,
@@ -97,7 +97,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @return
      */
     @AutoLog(value = "编码校验规则-添加")
-    @ApiOperation(value = "编码校验规则-添加", notes = "编码校验规则-添加")
+    @Operation(summary = "编码校验规则-添加")
     @PostMapping(value = "/add")
     public Result add(@RequestBody SysCheckRule sysCheckRule) {
         sysCheckRuleService.save(sysCheckRule);
@@ -111,7 +111,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @return
      */
     @AutoLog(value = "编码校验规则-编辑")
-    @ApiOperation(value = "编码校验规则-编辑", notes = "编码校验规则-编辑")
+    @Operation(summary = "编码校验规则-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result edit(@RequestBody SysCheckRule sysCheckRule) {
         sysCheckRuleService.updateById(sysCheckRule);
@@ -125,7 +125,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @return
      */
     @AutoLog(value = "编码校验规则-通过id删除")
-    @ApiOperation(value = "编码校验规则-通过id删除", notes = "编码校验规则-通过id删除")
+    @Operation(summary = "编码校验规则-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result delete(@RequestParam(name = "id", required = true) String id) {
         sysCheckRuleService.removeById(id);
@@ -139,7 +139,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @return
      */
     @AutoLog(value = "编码校验规则-批量删除")
-    @ApiOperation(value = "编码校验规则-批量删除", notes = "编码校验规则-批量删除")
+    @Operation(summary = "编码校验规则-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.sysCheckRuleService.removeByIds(Arrays.asList(ids.split(",")));
@@ -153,7 +153,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @return
      */
     @AutoLog(value = "编码校验规则-通过id查询")
-    @ApiOperation(value = "编码校验规则-通过id查询", notes = "编码校验规则-通过id查询")
+    @Operation(summary = "编码校验规则-通过id查询")
     @GetMapping(value = "/queryById")
     public Result queryById(@RequestParam(name = "id", required = true) String id) {
         SysCheckRule sysCheckRule = sysCheckRuleService.getById(id);

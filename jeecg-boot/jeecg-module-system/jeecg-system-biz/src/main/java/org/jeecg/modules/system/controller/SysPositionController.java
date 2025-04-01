@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * @Version: V1.0
  */
 @Slf4j
-@Api(tags = "职务表")
+@Tag(name = "职务表")
 @RestController
 @RequestMapping("/sys/position")
 public class SysPositionController {
@@ -76,7 +76,7 @@ public class SysPositionController {
      * @return
      */
     @AutoLog(value = "职务表-分页列表查询")
-    @ApiOperation(value = "职务表-分页列表查询", notes = "职务表-分页列表查询")
+    @Operation(summary = "职务表-分页列表查询")
     @GetMapping(value = "/list")
     public Result<IPage<SysPosition>> queryPageList(SysPosition sysPosition,
                                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -104,7 +104,7 @@ public class SysPositionController {
      * @return
      */
     @AutoLog(value = "职务表-添加")
-    @ApiOperation(value = "职务表-添加", notes = "职务表-添加")
+    @Operation(summary = "职务表-添加")
     @PostMapping(value = "/add")
     public Result<SysPosition> add(@RequestBody SysPosition sysPosition) {
         Result<SysPosition> result = new Result<SysPosition>();
@@ -132,7 +132,7 @@ public class SysPositionController {
      * @return
      */
     @AutoLog(value = "职务表-编辑")
-    @ApiOperation(value = "职务表-编辑", notes = "职务表-编辑")
+    @Operation(summary = "职务表-编辑")
     @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<SysPosition> edit(@RequestBody SysPosition sysPosition) {
         Result<SysPosition> result = new Result<SysPosition>();
@@ -157,7 +157,7 @@ public class SysPositionController {
      * @return
      */
     @AutoLog(value = "职务表-通过id删除")
-    @ApiOperation(value = "职务表-通过id删除", notes = "职务表-通过id删除")
+    @Operation(summary = "职务表-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         try {
@@ -178,7 +178,7 @@ public class SysPositionController {
      * @return
      */
     @AutoLog(value = "职务表-批量删除")
-    @ApiOperation(value = "职务表-批量删除", notes = "职务表-批量删除")
+    @Operation(summary = "职务表-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<SysPosition> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         Result<SysPosition> result = new Result<SysPosition>();
@@ -198,7 +198,7 @@ public class SysPositionController {
      * @return
      */
     @AutoLog(value = "职务表-通过id查询")
-    @ApiOperation(value = "职务表-通过id查询", notes = "职务表-通过id查询")
+    @Operation(summary = "职务表-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<SysPosition> queryById(@RequestParam(name = "id", required = true) String id) {
         Result<SysPosition> result = new Result<SysPosition>();
@@ -303,7 +303,7 @@ public class SysPositionController {
      * @return
      */
     @AutoLog(value = "职务表-通过code查询")
-    @ApiOperation(value = "职务表-通过code查询", notes = "职务表-通过code查询")
+    @Operation(summary = "职务表-通过code查询")
     @GetMapping(value = "/queryByCode")
     public Result<SysPosition> queryByCode(@RequestParam(name = "code", required = true) String code) {
         Result<SysPosition> result = new Result<SysPosition>();
@@ -327,7 +327,7 @@ public class SysPositionController {
      * @return
      */
     @AutoLog(value = "职务表-通过多个查询")
-    @ApiOperation(value = "职务表-通过多个id查询", notes = "职务表-通过多个id查询")
+    @Operation(summary = "职务表-通过多个id查询")
     @GetMapping(value = "/queryByIds")
     public Result<List<SysPosition>> queryByIds(@RequestParam(name = "ids") String ids) {
         Result<List<SysPosition>> result = new Result<>();

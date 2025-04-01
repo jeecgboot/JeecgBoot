@@ -9,10 +9,9 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
-import com.google.common.collect.Lists;
+import com.alibaba.nacos.common.utils.StringUtils;
+import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.util.RedisUtil;
@@ -32,6 +31,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -170,9 +170,9 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
                 dynamicRouteService.add(definition);
             }
         }
-        if(ObjectUtils.isNotEmpty(baseMap)){
+        if(!ObjectUtils.isEmpty(baseMap)){
             String delRouterId = baseMap.get("delRouterId");
-            if (ObjectUtils.isNotEmpty(delRouterId)) {
+            if (!ObjectUtils.isEmpty(delRouterId)) {
                 dynamicRouteService.delete(delRouterId);
             }
         }

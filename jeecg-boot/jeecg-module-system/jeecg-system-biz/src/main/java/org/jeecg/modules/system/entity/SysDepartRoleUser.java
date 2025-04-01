@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -25,20 +24,20 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 @TableName("sys_depart_role_user")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="sys_depart_role_user对象", description="部门角色人员信息")
+@Schema(description="部门角色人员信息")
 public class SysDepartRoleUser {
     
 	/**主键id*/
 	@TableId(type = IdType.ASSIGN_ID)
-    @ApiModelProperty(value = "主键id")
+    @Schema(description = "主键id")
 	private java.lang.String id;
 	/**用户id*/
 	@Excel(name = "用户id", width = 15)
-    @ApiModelProperty(value = "用户id")
+    @Schema(description = "用户id")
 	private java.lang.String userId;
 	/**角色id*/
 	@Excel(name = "角色id", width = 15)
-    @ApiModelProperty(value = "角色id")
+    @Schema(description = "角色id")
 	private java.lang.String droleId;
 
 	public SysDepartRoleUser() {
