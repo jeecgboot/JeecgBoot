@@ -73,7 +73,7 @@
         <!-- Swagger API文档 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
-            <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
+            <artifactId>knife4j-gateway-spring-boot-starter</artifactId>
             <version>${knife4j-spring-boot-starter.version}</version>
         </dependency>
         <dependency>
