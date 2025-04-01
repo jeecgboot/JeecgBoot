@@ -11,9 +11,9 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.jeecg.common.constant.CommonConstant;
 import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
@@ -43,7 +43,24 @@ public class Swagger3Config implements WebMvcConfigurer {
                 .packagesToExclude("org.jeecg.modules.drag", "org.jeecg.modules.online", "org.jeecg.modules.jmreport")
                 // 加了Operation注解的方法，才生成接口文档
                 .addOpenApiMethodFilter(method -> method.isAnnotationPresent(Operation.class))
+                .addOpenApiCustomiser(globalOpenApiCustomizer())
                 .build();
+    }
+
+    @Bean
+    public GlobalOpenApiCustomizer globalOpenApiCustomizer() {
+        return openApi -> {
+            // 全局添加鉴权参数
+            if (openApi.getPaths() != null) {
+                openApi.getPaths().forEach((s, pathItem) -> {
+                    // 接口添加鉴权参数
+                    pathItem.readOperations()
+                            .forEach(operation ->
+                                    operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
+                            );
+                });
+            }
+        };
     }
 
     @Bean
@@ -56,8 +73,8 @@ public class Swagger3Config implements WebMvcConfigurer {
                         .description( "后台API接口")
                         .termsOfService("NO terms of service")
                         .license(new License().name("Apache 2.0").url("http://www.apache.org/licenses/LICENSE-2.0.html")))
-                .addSecurityItem(new SecurityRequirement().addList(HttpHeaders.AUTHORIZATION))
-                .components(new Components().addSecuritySchemes(HttpHeaders.AUTHORIZATION,
-                        new SecurityScheme().name(HttpHeaders.AUTHORIZATION).type(SecurityScheme.Type.HTTP)));
+                .addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
+                .components(new Components().addSecuritySchemes(CommonConstant.X_ACCESS_TOKEN,
+                        new SecurityScheme().name(CommonConstant.X_ACCESS_TOKEN).type(SecurityScheme.Type.HTTP)));
     }
 }

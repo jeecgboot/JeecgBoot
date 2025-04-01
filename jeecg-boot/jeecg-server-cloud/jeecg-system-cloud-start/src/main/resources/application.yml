@@ -1,6 +1,11 @@
 server:
   port: 7001
-  
+
+springdoc:
+  packages-to-exclude:
+    - org.jeecg.modules.drag
+    - org.jeecg.modules.online
+    - org.jeecg.modules.jmreport
 spring:
   application:
     name: jeecg-system
