@@ -1259,4 +1259,16 @@
           AND p.platform_order_id NOT IN (SELECT platform_order_id FROM shouman_order)
           AND p.create_time > '2024-10-01'
     </select>
+    <select id="getPlatformOrderIdsByInvoiceNumbers" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order
+        WHERE shipping_invoice_number IN
+        <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
+            #{invoiceNumber}
+        </foreach>
+           OR purchase_invoice_number IN
+        <foreach collection="invoiceNumbers" separator="," open="(" close=")" index="index" item="invoiceNumber">
+            #{invoiceNumber}
+        </foreach>
+    </select>
 </mapper>

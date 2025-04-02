@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -14,6 +15,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.controller.UserException;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.UpdateResult;
 import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.service.*;
@@ -44,8 +46,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-
-import static org.jeecg.modules.business.entity.Invoice.isInvoiceNumber;
 
 /**
  * @Description: API Handler related admin purchase order
@@ -208,6 +208,7 @@ public class PurchaseOrderController {
     @ApiOperation(value="purchase_order-编辑", notes="purchase_order-编辑")
     @RequestMapping(value = "/editPurchaseAndOrder", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<?> editPurchaseAndOrder(@RequestBody PurchaseOrderPage purchaseOrderPage) {
+        // TODO : refacto using Reponses
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder);
         purchaseOrder.setPaymentDocumentString(new String(purchaseOrderPage.getPaymentDocument()));
@@ -601,7 +602,7 @@ public class PurchaseOrderController {
                         responsesMappedByInvoiceNumber.get(invoiceNumber).getFailures().addAll(results.getFailures());
                         responsesMappedByInvoiceNumber.get(invoiceNumber).getSuccesses().addAll(results.getSuccesses());
                     } else {
-                    responsesMappedByInvoiceNumber.put(invoiceNumber, results);
+                        responsesMappedByInvoiceNumber.put(invoiceNumber, results);
                     }
                     return results.getFailures().isEmpty();
                 },throttlingExecutorService))
@@ -621,6 +622,28 @@ public class PurchaseOrderController {
             log.info("Deleting purchase orders that have been incompletely created in Mabang : {}", groupIdsToDelete);
             Responses groupIdsDeleteResult = providerMabangService.deletePurchaseOrderFromMabang(groupIdsToDelete);
             responsesMappedByInvoiceNumber.put("groupIdDelete", groupIdsDeleteResult);
+        } else {
+            log.info("Updating order erp status to 2 in Mabang");
+            List<String> platformOrderIds = platformOrderService.getPlatformOrderIdsByInvoiceNumbers(invoiceNumbers);
+            Response<List<UpdateResult>, List<UpdateResult>> updateResponse = providerMabangService.updateOrderStatusToPreparing(platformOrderIds);
+            Responses updateOrderStatusResponse = new Responses();
+            if(updateResponse.getStatus() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+                String errMsg = updateResponse.getError().get(0).getReason();
+                updateOrderStatusResponse.addFailure(errMsg);
+                responsesMappedByInvoiceNumber.put("UpdateOrderStatusError", updateOrderStatusResponse);
+            }
+            else {
+                List<String> updateOrderStatusSuccess = updateResponse.getData().stream()
+                        .map(UpdateResult::getPlatformOrderId)
+                        .collect(Collectors.toList());
+                List<String> updateOrderStatusFailure = updateResponse.getError().stream()
+                        .map(UpdateResult::getPlatformOrderId)
+                        .collect(Collectors.toList());
+                log.info("Update order errors : {}", updateResponse.getError());
+                updateOrderStatusResponse.getSuccesses().addAll(updateOrderStatusSuccess);
+                updateOrderStatusResponse.getFailures().addAll(updateOrderStatusFailure);
+                responsesMappedByInvoiceNumber.put("UpdateOrderStatus", updateOrderStatusResponse);
+            }
         }
         return Result.OK(responsesMappedByInvoiceNumber);
     }

@@ -35,6 +35,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.COMPLETE;
+import static org.jeecg.modules.business.entity.Invoice.InvoiceType.PURCHASE;
 
 /**
  * @Description: 商品采购订单
@@ -236,7 +237,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
         String purchaseID = UUID.randomUUID().toString();
 
-        String invoiceNumber = invoiceNumberReservationService.getLatestInvoiceNumberByType(COMPLETE.getType());
+        String invoiceNumber = invoiceNumberReservationService.getLatestInvoiceNumberByType(PURCHASE.getType());
         // 1. save purchase itself
         purchaseOrderMapper.addPurchase(
                 purchaseID,
