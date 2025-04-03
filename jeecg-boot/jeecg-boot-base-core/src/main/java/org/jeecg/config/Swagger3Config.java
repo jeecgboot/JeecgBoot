@@ -14,6 +14,7 @@ import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
 import org.springdoc.core.filters.GlobalOpenApiMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -26,6 +27,7 @@ import java.util.Set;
  */
 @Slf4j
 @Configuration
+@PropertySource("classpath:config/default-spring-doc.properties")
 public class Swagger3Config implements WebMvcConfigurer {
     // 定义不需要注入安全要求的路径集合
     Set<String> excludedPaths = new HashSet<>(Arrays.asList(
