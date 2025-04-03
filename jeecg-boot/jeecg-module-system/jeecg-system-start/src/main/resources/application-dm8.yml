@@ -143,6 +143,10 @@ spring:
     host: 127.0.0.1
     port: 6379
     password: ''
+# springdoc-openapi项目配置
+springdoc:
+  auto-tag-classes: false
+  packages-to-scan: org.jeecg
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
