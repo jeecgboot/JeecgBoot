@@ -5,7 +5,7 @@ AIGC应用平台介绍
 其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
 
 
-#### Dify `VS` JEECG AI
+## Dify `VS` JEECG AI
 
 | 功能         | Dify             | Jeecg AI                                |
 |------------|------------------|-----------------------------------------|
@@ -19,7 +19,7 @@ AIGC应用平台介绍
 | AI业务流      | 侧重AI逻辑流程         | AI流程编排作为低代码的业务引擎，用户可以通过AI流程配置各种业务流和AI流程 |
 | 实现语言       | python + react | JAVA + vue3                             |
 
-#### 功能特点
+## 功能特点
 
 - AI流程: 提供强大的AI流程设计器引擎，支持编排 AI 工作过程，满足复杂业务场景，支持画布上构建和实时运行查看 AI流程运行情况。
 - AI流程即服务: 通过AI流程编排你需要的智能体，结合AI+自定义开发节点 实现功能性 API，让你瞬间拥有各种智能体API。
@@ -31,13 +31,13 @@ AIGC应用平台介绍
 
 
 
-#### 产品体验
+## 产品体验
 
 - 使用手册：https://help.jeecg.com/aigc 
 - 演示地址：https://boot3.jeecg.com
 
 
-#### 功能列表
+## 功能列表
 
 - AI应用管理(普通应用、高级流程应用)
 - AI模型管理
@@ -49,7 +49,7 @@ AIGC应用平台介绍
 
 
 
-#### 支持AI模型
+## 支持AI模型
 
 | AI大模型         |  支持   |
 |---------------| --- |
@@ -64,7 +64,7 @@ AIGC应用平台介绍
 ![](/static/jimuImages/142766045373000.png =600)
 
 
-####  AIGC能做什么
+##  AIGC能做什么
 
 AIGC模块是一个基于AI的自动化流程编排工具和聊天应用搭建平台，它可以帮助用户快速生成AI流程接口和聊天应用，提高效率。
 以下是一些具体的应用场景和示例：
@@ -76,3 +76,51 @@ AIGC模块是一个基于AI的自动化流程编排工具和聊天应用搭建�
 - 你可能需要一个自动化处理文件的流程，可以通过AI流程结合python脚本实现操作电脑，文件等。
 
 
+## AI应用平台功能展示
+
+AI模型列表
+
+![](https://oscimg.oschina.net/oscnet//a5fb3e0d69ca1706b0de221535c7acaa.png)
+
+选择AI模型，配置你的参数
+
+![](https://oscimg.oschina.net/oscnet//1f941472758a5fc227f54f2683953b8e.png)
+
+
+AI知识库支持手工录入文本，导入pdf\\word\\excel等文档，支持问答对训练
+
+![](https://oscimg.oschina.net/oscnet//150bb33f48d6c8e2ae059e2a58f4200b.png)
+
+![](https://oscimg.oschina.net/oscnet//032d16c915b0f79318935484c81df260.png)
+
+
+
+AI流程，提供强大的AI流程设计器引擎，支持编排 AI 工作过程，满足复杂业务场景，支持画布上构建和实时运行查看 AI流程运行情况。
+
+![](https://oscimg.oschina.net/oscnet//f40f9aa275cd4aea94e1c209513151e2.png)
+
+
+目前支持的节点有：开始、结束、AI知识库节点、AI节点、分类节点、分支节点、JAVA节点、脚本节点、子流程节点、http请求节点、直接回复节点等节点
+
+![](https://oscimg.oschina.net/oscnet//6d86480ab1bbfab5b2e6992b416b2152.png)
+
+节点项配置
+
+![](https://oscimg.oschina.net/oscnet//90a5f76b6b4fc406e2e2b87245b35459.png)
+
+在线运行看结果
+
+![](https://oscimg.oschina.net/oscnet//bc9817a7bbd94936a5a3e885abe3cb38.png)
+
+
+AI应用配置，支持AI流程配置和简单的AI配置
+
+![](https://oscimg.oschina.net/oscnet//a853d9be4d3756806799ad025e722df8.png)![](https://oscimg.oschina.net/oscnet//d3bcbf5977c6fb75a8f996e1e40590be.png)
+
+可以关联多个知识库，右侧是AI智能回复，你可以搭建自己的智能体，比如搭建一个 “诗词达人” “翻译助手”
+
+![](https://oscimg.oschina.net/oscnet//c26a848136be3e22ec1e0651e78976c2.png)
+
+可以将创建的聊天应用，集成到第三方系统中
+
+![](https://oscimg.oschina.net/oscnet//39c6f589ef46f0454b229915ffa263f4.png)
