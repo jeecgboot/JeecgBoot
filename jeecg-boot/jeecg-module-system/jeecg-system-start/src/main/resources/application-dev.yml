@@ -306,7 +306,10 @@ logging:
   level:
     org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
-#swagger
+# springdoc-openapi项目配置
+springdoc:
+  auto-tag-classes: false
+  packages-to-scan: org.jeecg
 knife4j:
   #开启增强配置
   enable: true
