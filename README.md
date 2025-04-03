@@ -97,7 +97,7 @@ AIGC应用平台介绍
 |   ChatGTP   |  √   |
 |   Ollama本地搭建大模型   |  √   |
 
-AI集成文档： https://help.jeecg.com/java/ai/aichat
+AIGC文档： https://help.jeecg.com/aigc
 
 
 
