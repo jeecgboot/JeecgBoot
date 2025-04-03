@@ -7,7 +7,7 @@
 JEECG BOOT AI Low Code Platform
 ===============
 
-Current version: 3.7.4 (Release date: 2025-04-10)
+Current version: 3.7.4 (Release date: 2025-04-07)
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
@@ -247,8 +247,16 @@ Technical Architecture:
 | --- | --- |
 | DeepSeek | √ |
 | ChatGPT | √ |
+| Qwq | √ |
+| 智库 | √ |
+| Ollama本地搭建大模型 | √ |
+| 等等。。 | √ |
+
 
 AI Config： https://help.jeecg.com/java/ai/aichat
+
+AI APP: https://help.jeecg.com/aigc
+
 
 ## Microservice solutions
 
