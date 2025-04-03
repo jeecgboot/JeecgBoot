@@ -46,7 +46,7 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 |--------------------|------------------------|
 | `jeecg-boot`    | 后端源码JAVA（SpringBoot微服务架构）        |
 | `jeecgboot-vue3` | 前端源码VUE3（vue3+vite6+ts最新技术栈）  |
-| `jeecg-uniapp` | [配套APP框架](https://github.com/jeecgboot/jeecg-uniapp) 适配多个终端，支持APP、小程序、H5 |
+| `JeecgUniapp` | [配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5 |
 
 
 
