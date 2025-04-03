@@ -30,6 +30,11 @@ JeecgBoot 提供了一系列 `AI能力` `低代码模块`，实现在线开发`�
 `AI赋能低代码:` 目前JeecgBoot支持AI大模型`ChatGPT`和`DeepSeek`，现在最新版默认使用`DeepSeek`，速度更快质量更高。目前提供了AI对话助手、AI建表、AI报表、AI写文章、AI流程编排、AI知识库问答等功能。
 
 
+### 视频介绍
+
+[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/flow_video.png)](https://www.bilibili.com/video/BV1Nk4y1o7Qc)
+
+
 适用项目
 -----------------------------------
 JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支持信创国产化（默认适配达梦和人大金仓）。尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
@@ -60,10 +65,6 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 ![公众号](https://jeecg.com/images/jeecg/qrcode_jeecgboot.jpg "在这里输入图片标题")
 
 
-### 视频介绍
-
-[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/flow_video.png)](https://www.bilibili.com/video/BV1Nk4y1o7Qc)
-
 
 启动项目
 -----------------------------------
@@ -79,6 +80,7 @@ AIGC应用平台介绍
 其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
 
 - [详细点击AI专题介绍页](README-AI.md)
+- AIGC文档： https://help.jeecg.com/aigc
 
 #### 已集成能力
 
@@ -97,7 +99,7 @@ AIGC应用平台介绍
 |   ChatGTP   |  √   |
 |   Ollama本地搭建大模型   |  √   |
 
-AIGC文档： https://help.jeecg.com/aigc
+
 
 
 
