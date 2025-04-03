@@ -27,7 +27,7 @@
              <a-tabs tabPosition="top">
    <#list subTables as sub>
                <a-tab-pane tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" forceRender>
-                  <${sub.entityName?uncap_first}SubTable :id="expandedRowKeys[0]"/>
+                  <${sub.entityName?uncap_first}SubTable v-if="expandedRowKeys.includes(record.id)" :id="record.id" />
                </a-tab-pane>
    </#list>
              </a-tabs>
