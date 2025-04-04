@@ -3,7 +3,6 @@ package org.jeecg.config;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
@@ -11,10 +10,11 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
-import org.springdoc.core.GroupedOpenApi;
 import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
+import org.springdoc.core.filters.GlobalOpenApiMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -27,6 +27,7 @@ import java.util.Set;
  */
 @Slf4j
 @Configuration
+@PropertySource("classpath:config/default-spring-doc.properties")
 public class Swagger3Config implements WebMvcConfigurer {
     // 定义不需要注入安全要求的路径集合
     Set<String> excludedPaths = new HashSet<>(Arrays.asList(
@@ -55,16 +56,8 @@ public class Swagger3Config implements WebMvcConfigurer {
     }
 
     @Bean
-    public GroupedOpenApi swaggerOpenApi() {
-        return GroupedOpenApi.builder()
-                .group("default")
-                .packagesToScan("org.jeecg")
-                // 剔除以下几个包路径的接口生成文档
-                .packagesToExclude("org.jeecg.modules.drag", "org.jeecg.modules.online", "org.jeecg.modules.jmreport")
-                // 加了Operation注解的方法，才生成接口文档
-                .addOpenApiMethodFilter(method -> method.isAnnotationPresent(Operation.class))
-                .addOpenApiCustomiser(globalOpenApiCustomizer())
-                .build();
+    public GlobalOpenApiMethodFilter globalOpenApiMethodFilter() {
+        return method -> method.isAnnotationPresent(Operation.class);
     }
 
     @Bean
