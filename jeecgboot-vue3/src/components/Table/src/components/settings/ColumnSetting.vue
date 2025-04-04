@@ -188,7 +188,7 @@
       const sortableOrder = ref<string[]>();
       const localeStore = useLocaleStoreWithOut();
       // 列表字段配置缓存
-      const { saveSetting, resetSetting } = useColumnsCache(
+      const { saveSetting, resetSetting, getCache } = useColumnsCache(
         {
           state,
           popoverVisible,
@@ -204,8 +204,7 @@
 
       watchEffect(() => {
         setTimeout(() => {
-          const columns = table.getColumns();
-          if (columns.length && !state.isInit) {
+          if (!state.isInit) {
             init();
           }
         }, 0);
@@ -227,7 +226,13 @@
 
       function getColumns() {
         const ret: Options[] = [];
-        table.getColumns({ ignoreIndex: true, ignoreAction: true }).forEach((item) => {
+        // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+        let t = table.getColumns({ ignoreIndex: true, ignoreAction: true });
+        if (!t.length) {
+          t = table.getCacheColumns();
+        }
+        // update-end--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+        t.forEach((item) => {
           ret.push({
             label: (item.title as string) || (item.customTitle as string),
             value: (item.dataIndex || item.title) as string,
@@ -237,7 +242,7 @@
         return ret;
       }
 
-      function init() {
+      async function init() {
         const columns = getColumns();
 
         const checkList = table
@@ -249,11 +254,22 @@
             return item.dataIndex || item.title;
           })
           .filter(Boolean) as string[];
-
+        // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+        const { sortedList = [] } = getCache() || {};
+        await nextTick();
+        // update-end--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
         if (!plainOptions.value.length) {
-          plainOptions.value = columns;
-          plainSortOptions.value = columns;
-          cachePlainOptions.value = columns;
+          // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+          let tmp = columns;
+          if (sortedList?.length) {
+            tmp = columns.sort((prev, next) => {
+              return sortedList.indexOf(prev.value) - sortedList.indexOf(next.value);
+            });
+          }
+          // update-end--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+          plainOptions.value = tmp;
+          plainSortOptions.value = tmp;
+          cachePlainOptions.value = tmp;
           state.defaultCheckList = checkList;
         } else {
           // const fixedColumns = columns.filter((item) =>
@@ -266,6 +282,13 @@
               item.fixed = findItem.fixed;
             }
           });
+          // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+          if (sortedList?.length) {
+            plainOptions.value.sort((prev, next) => {
+              return sortedList.indexOf(prev.value) - sortedList.indexOf(next.value);
+            });
+          }
+          // update-end--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
         }
         state.isInit = true;
         state.checkedList = checkList;
