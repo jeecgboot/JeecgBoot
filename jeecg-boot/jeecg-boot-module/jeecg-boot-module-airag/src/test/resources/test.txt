@@ -1,0 +1,97 @@
+常见问题
+1.pnpm安装依赖报错
+错误: node\_modules\\vite\\node\_modules\\esbuild\\esbuild.exe ENOENT
+解决方案：https://blog.csdn.net/weixin_41760500/article/details/119885574 命令：node ./node_modules/esbuild/install.js
+2.pnpm安装后，访问提示缺少依赖
+ 解决方案： https://stackoverflow.com/questions/70597494/pnpm-does-not-resolve-dependencies
+3.pnpm install出现错误
+错误：ERR\_PNPM\_PEER\_DEP\_ISSUES Unmet peer dependencies
+http://ms521.cn/index.php/Home/Index/article/aid/271
+4.项目安装依赖无问题，访问页面报错
+前端部分报错：
+[plugin:vite:vue-jsx] Cannot find package 'C:\Users\123\Desktop\JeecgBoot-master\pincone_system\jeecgboot-vue3\node_modules\.pnpm\@vitejs+plugin-vue-jsx@3.1.0_vite@5.4.9_@types+node@20.16.13_less@4.2.0_terser@5.36.0__vue@3.5.12_typescript@4.9.5_\node_modules\@babel\plugin-transform-typescript\lib\index.js' imported from C:\Users\123\Desktop\JeecgBoot-master\pincone_system\jeecgboot-vue3\node_modules\.pnpm\@vitejs+plugin-vue-jsx@3.1.0_vite@5.4.9_@types+node@20.16.13_less@4.2.0_terser@5.36.0__vue@3.5.12_typescript@4.9.5_\node_modules\@vitejs\plugin-vue-jsx\dist\index.cjs Did you mean to import "@babel/plugin-transform-typescript/lib/index.js"? #7396
+回答： 是因为项目的路径太长导致 ，相关问题Issues，查看相关博客
+	•	https://blog.csdn.net/weixin_43235500/article/details/142144989
+	•	https://blog.csdn.net/qq_25996219/article/details/140328092
+5. 通过npm install启动报错
+建议：请使用pnpm i 可以避免更多问题
+错误情况:
+ 解决：进入提示的路径 \node_modules\vite-plugin-mock\node_modules\esbuild\ 执行命令: node install.js 再启动就好了
+6. 前端刷新进不了登录页面
+报错props.ts:15 Uncaught (in promise) SyntaxError: Unexpected token '=' 错误截图：
+原因：谷歌浏览器版本过低，升级浏览器 比如这边版本就过低了
+
+7.表单如何全部禁用
+加上这个属性就可以了 
+效果 
+8.table列表如何自定义排序
+  defSort: {
+        column: 'id',
+        order: 'desc',
+      },
+参考示例：
+
+9.idea编写js时爆红，提示statement expected
+https://blog.csdn.net/mlsama/article/details/80633009
+10.抽屉的setDrawerProps不好使（值会还原）
+
+11. 如何删除不需要的demo，制作一个精简版本
+精简项目，删除demo等非必须功能
+12.vue3 暗黑模式下显示不完整
+错误示例：
+
+解决方案：
+在样式中的字体颜色和背景颜色使用@变量名称来代替
+color: @text-color;
+background-color: @component-background;
+
+[info] 通用样式变量名称可以在在目录bulid->vite->plugin->themes.ts中找到,darkModifyVars是重写antd中的样式
+
+[info]更多样式变量名称请参考目录node_modules/es/style/themes/default.less
+ 改造完成之后的效果
+
+13.操作列“删除按钮”界面布局异常
+相关issue
+https://github.com/jeecgboot/jeecgboot-vue3/issues/458
+问题截图：
+
+解决方案：找到popConfirm填写属性placement: 'left'
+placement: 'left',
+
+效果截图
+
+14.在centos7中下载依赖pnpm i时 mozjpeg依赖下载不下来
+https://github.com/jeecgboot/jeecgboot-vue3/issues/433#issuecomment-1510470534
+15.日期遮挡问题
+问题截图： 下拉显示组件，页面滚动时，页面出现错位遮挡问题
+
+解决方案：将组件挂载到父节点上
+getPopupContainer: (node) => node.parentNode,
+效果截图
+
+16.nextTick作用
+在 Vue 3 中，nextTick 方法用于在 DOM 更新之后执行回调函数。它的作用是在下次 DOM 更新循环结束后执行一些操作，以确保你在操作更新的 DOM 元素时能够获取到最新的结果。 nextTick 方法可以用于以下情况：
+	1	在更新数据后立即操作 DOM 元素。
+	2	在更新组件后执行某些逻辑或触发一些副作用。
+	3	在更新后获取更新后的 DOM 元素的尺寸或位置等信息。
+使用nextTick 方法有两种方式： 1.使用回调函数：
+nextTick(()=>
+//在DOM更新后执行的操作
+}):
+2.使用Promise:
+nextTick().then(()=>
+//在DOM更新后执行的操作
+})
+无论使用哪种方式，传入的回调函数或Promisel回调都会在下一次DOM更新周期之后被调用。这样可以确保在数据变化后，Vue已经完成了相应的DOM更新。
+需要注意的是，nextTick 方法是异步执行的，因此不能保证回调函数会立即执行。如果需要等待nextTick执行完成，可以使用await关键字或者. then()方法来等待Promise的完成。
+17. 一个页面多个表格，列的展示会互相影响
+[info] 相关issue
+https://github.com/jeecgboot/jeecgboot-vue3/issues/1064
+[info]问题截图
+
+[info] 解决方案：在不同的tableProps下设置不同的checkKey即可解决
+
+tableSetting: { cacheKey: 'depart_user_departInfo' },
+18. 通过npm install启动报错
+ 可以使用这个命令：
+npm install --ignore-scripts
