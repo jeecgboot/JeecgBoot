@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.jeecgframework.boot</groupId>
         <artifactId>jeecg-boot-module</artifactId>
-        <version>3.7.4</version>
+        <version>3.8.0</version>
     </parent>
 
     <artifactId>jeecg-boot-module-airag</artifactId>
