@@ -13,9 +13,11 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -148,6 +150,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
      * 解决metrics端点不显示jvm信息的问题(zyf)
      */
     @Bean
+    @ConditionalOnBean(name = "meterRegistryPostProcessor")
     InitializingBean forcePrometheusPostProcessor(BeanPostProcessor meterRegistryPostProcessor) {
         return () -> meterRegistryPostProcessor.postProcessAfterInitialization(prometheusMeterRegistry, "");
     }
