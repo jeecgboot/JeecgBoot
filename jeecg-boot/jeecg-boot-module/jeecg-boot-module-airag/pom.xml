@@ -53,28 +53,16 @@
             <artifactId>jeecg-system-cloud-api</artifactId>
         </dependency>-->
 
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>aiflow</artifactId>
-            <version>3.7.4-beta</version>
-        </dependency>
-        <dependency>
-            <groupId>com.yomahub</groupId>
-            <artifactId>liteflow-spring-boot-starter</artifactId>
-            <version>2.12.4.1</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-lang</artifactId>
-                    <groupId>commons-lang</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
         <!-- langChain4j model support -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-ollama</artifactId>
             <version>${langchain4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-aiflow</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
