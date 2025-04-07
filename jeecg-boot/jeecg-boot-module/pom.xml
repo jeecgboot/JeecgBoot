@@ -9,13 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>jeecg-module-demo</artifactId>
+    <artifactId>jeecg-boot-module</artifactId>
+    <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-base-core</artifactId>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>jeecg-module-demo</module>
+        <module>jeecg-boot-module-airag</module>
+    </modules>
+
 
 </project>
