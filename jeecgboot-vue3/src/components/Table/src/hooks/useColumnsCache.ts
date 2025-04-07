@@ -144,5 +144,6 @@ export function useColumnsCache(opt, setColumns, handleColumnFixed) {
   return {
     saveSetting,
     resetSetting,
+    getCache: () => $ls.get(cacheKey.value),
   };
 }
