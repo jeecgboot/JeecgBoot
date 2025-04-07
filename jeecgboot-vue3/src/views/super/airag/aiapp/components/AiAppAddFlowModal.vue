@@ -59,6 +59,8 @@
   import { useModal, useModalInner } from '@/components/Modal';
   import { Pagination } from 'ant-design-vue';
   import { list } from '@/views/super/airag/aiknowledge/AiKnowledgeBase.api';
+  // import {pageApi} from "@/views/super/airag/aiflow/pages/api";
+  import { defHttp } from "@/utils/http/axios";
   import knowledge from '/@/views/super/airag/aiknowledge/icon/knowledge.png';
   import { cloneDeep } from 'lodash-es';
   import { getFileAccessHttpUrl } from "@/utils/common/compUtils";
@@ -135,7 +137,7 @@
           name: searchText.value,
           status:'enable'
         };
-        pageApi.list(params).then((res) =>{
+        getAiFlowList(params).then((res) =>{
           if(res){
             for (const data of res.records) {
               data.metadata = getMetadata(data.metadata);
@@ -147,6 +149,10 @@
             total.value = 0;
           }
         });
+      }
+
+      async function getAiFlowList(params?: any) {
+        return defHttp.get({url: '/airag/flow/list', params});
       }
 
       /**
