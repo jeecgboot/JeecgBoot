@@ -25,6 +25,8 @@ spring:
     enabled: true
     # 迁移sql脚本存放路径
     locations: classpath:flyway/sql/mysql
+    # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
+    clean-disabled: true
   servlet:
     multipart:
       max-file-size: 10MB
