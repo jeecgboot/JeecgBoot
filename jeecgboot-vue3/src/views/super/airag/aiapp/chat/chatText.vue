@@ -1,6 +1,6 @@
 <template>
-  <div class="textWrap" :class="[inversion ? 'self' : 'chatgpt']" ref="textRef">
-    <div v-if="!inversion">
+  <div v-if="text != ''" class="textWrap" :class="[inversion === 'user' ? 'self' : 'chatgpt']" ref="textRef">
+    <div v-if="inversion != 'user'">
       <div class="markdown-body" :class="{ 'markdown-body-generate': loading }" v-html="text" />
     </div>
     <div v-else class="msg" v-text="text" />
@@ -13,6 +13,9 @@
   import mdKatex from '@traptitech/markdown-it-katex';
   import mila from 'markdown-it-link-attributes';
   import hljs from 'highlight.js';
+  import './style/github-markdown.less';
+  import './style/highlight.less';
+  import './style/style.less';
 
   const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'loading']);
   const textRef = ref();
@@ -34,7 +37,7 @@
 
   const text = computed(() => {
     const value = props.text ?? '';
-    if (!props.inversion) return mdi.render(value);
+    if (props.inversion != 'user') return mdi.render(value);
     return value;
   });
 

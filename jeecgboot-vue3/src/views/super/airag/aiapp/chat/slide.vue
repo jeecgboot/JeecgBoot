@@ -1,16 +1,20 @@
 <template>
   <div class="slide-wrap">
+    <div class="header">
+      <img class="header-image" :src="getImage()" />
+      <div class="header-name">{{ appData.name || 'AI助手' }}</div>
+    </div>
     <div class="createArea">
       <a-button type="dashed" @click="handleCreate">新建聊天</a-button>
     </div>
     <div class="historyArea">
       <ul>
         <li
-          v-for="item in dataSource.history"
-          :key="item.uuid"
+          v-for="(item, index) in dataSource.history"
+          :key="item.id"
           class="list"
-          :class="[item.uuid == dataSource.active ? 'active' : 'normal', dataSource.history.length == 1 ? 'last' : '']"
-          @click="handleToggleChat(item)"
+          :class="[item.id == dataSource.active ? 'active' : 'normal', dataSource.history.length == 1 ? 'last' : '']"
+          @click="handleToggleChat(item, index)"
         >
           <i class="icon message">
             <svg
@@ -36,62 +40,33 @@
             :defaultValue="item.title"
             placeholder="请输入标题"
             @change="handleInputChange"
-            @blur="inputBlur(item)"
+            @keyup.enter="inputBlur(item)"
           />
           <span class="title" v-else>{{ item.title }}</span>
-          <span class="icon edit" @click="handleEdit(item)" v-if="!item.isEdit">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              aria-hidden="true"
-              role="img"
-              class="iconify iconify--ri"
-              width="1em"
-              height="1em"
-              viewBox="0 0 24 24"
-            >
+          <span class="icon edit" @click.stop="handleEdit(item)" v-if="!item.isEdit && !item.disabled">
+            <svg xmlns="http://www.w3.org/2000/svg" role="img" class="iconify iconify--ri" width="1em" height="1em" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
                 d="M6.414 15.89L16.556 5.748l-1.414-1.414L5 14.476v1.414zm.829 2H3v-4.243L14.435 2.212a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414zM3 19.89h18v2H3z"
               ></path>
             </svg>
           </span>
-          <span class="icon del" v-if="!item.isEdit">
-            <a-popconfirm title="确定删除此记录？" placement="bottom" ok-text="确定" cancel-text="取消" @confirm="handleDel(item)">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                aria-hidden="true"
-                role="img"
-                class="iconify iconify--ri"
-                width="1em"
-                height="1em"
-                viewBox="0 0 24 24"
-                @click.stop=""
-              >
+          <span class="icon del">
+            <a-popconfirm
+              :overlayStyle="{ 'z-index': 9999 }"
+              title="确定删除此记录？"
+              placement="bottom"
+              ok-text="确定"
+              cancel-text="取消"
+              @confirm.stop="handleDel(item)"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" role="img" class="iconify iconify--ri" width="1em" height="1em" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
                   d="M17 6h5v2h-2v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8H2V6h5V3a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1zm1 2H6v12h12zm-9 3h2v6H9zm4 0h2v6h-2zM9 4v2h6V4z"
                 ></path>
               </svg>
             </a-popconfirm>
-          </span>
-          <span class="icon save" v-if="item.isEdit" @click="handleSave(item)">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              aria-hidden="true"
-              role="img"
-              class="iconify iconify--ri"
-              width="1em"
-              height="1em"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="currentColor"
-                d="M7 19v-6h10v6h2V7.828L16.172 5H5v14zM4 3h13l4 4v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1m5 12v4h6v-4z"
-              ></path>
-            </svg>
           </span>
         </li>
       </ul>
@@ -101,28 +76,28 @@
 
 <script setup lang="ts">
   import { ref, watch } from 'vue';
-  const props = defineProps(['dataSource']);
-  const emit = defineEmits(['save']);
+  import { useRouter } from 'vue-router';
+  import { defHttp } from '@/utils/http/axios';
+  import { getFileAccessHttpUrl } from '@/utils/common/compUtils';
+  import defaultImg from '../img/ailogo.png';
+  const props = defineProps(['dataSource', 'appData']);
+  const emit = defineEmits(['save', 'click', 'reloadRight', 'prologue']);
   const inputRef = ref(null);
+  const router = useRouter();
   let inputValue = '';
   //新建聊天
   const handleCreate = () => {
     const uuid = getUuid();
-    props.dataSource.history.unshift({ title: '新建聊天', uuid, isEdit: false });
-    props.dataSource.chat.unshift({ uuid, data: [] });
+    props.dataSource.history.unshift({ title: '新建聊天', id: uuid, isEdit: false, disabled: true });
     // 新建第一个(需要高亮选中)
-    if (props.dataSource.history.length == 1) {
-      props.dataSource.active = uuid;
-    }
+    props.dataSource.active = uuid;
+    emit('click', "新建聊天", 0);
   };
   // 切换聊天
-  const handleToggleChat = (item) => {
-    if (item.uuid != props.dataSource.active) {
-      props.dataSource.active = item.uuid;
-      const findItem = props.dataSource.history.find((item) => item.isEdit);
-      if (findItem) {
-        handleSave(findItem);
-      }
+  const handleToggleChat = (item, index) => {
+    if (item.id != props.dataSource.active) {
+      props.dataSource.active = item.id;
+      emit('click', item.title, index);
     }
   };
   const handleInputChange = (e) => {
@@ -132,9 +107,19 @@
   const inputBlur = (item) => {
     item.isEdit = false;
     item.title = inputValue;
+    defHttp
+      .put(
+        {
+          url: '/airag/chat/conversation/update/title',
+          params: { id: item.id, title: inputValue },
+        },
+        { joinParamsToUrl: true }
+      )
+      .then((res) => {});
   };
   // 编辑
   const handleEdit = (item) => {
+    console.log(item);
     item.isEdit = true;
     inputValue = item.title;
   };
@@ -143,28 +128,48 @@
     item.isEdit = false;
     item.title = inputValue;
   };
-  // 删除
-  const handleDel = (data) => {
-    const findIndex = props.dataSource.history.findIndex((item) => item.uuid == data.uuid);
+
+  /**
+   * 删除
+   * @param data
+   */
+  function handleDel(data) {
+    const findIndex = props.dataSource.history.findIndex((item) => item.id == data.id);
     if (findIndex != -1) {
       props.dataSource.history.splice(findIndex, 1);
-      props.dataSource.chat.splice(findIndex, 1);
       // 删除的是当前active的，active往前移，前面没了往后移。
       if (props.dataSource.history.length) {
-        if (props.dataSource.active == data.uuid) {
+        if (props.dataSource.active == data.id) {
           if (findIndex > 0) {
-            props.dataSource.active = props.dataSource.history[findIndex - 1].uuid;
+            props.dataSource.active = props.dataSource.history[findIndex - 1].id;
           } else {
-            props.dataSource.active = props.dataSource.history[0].uuid;
+            props.dataSource.active = props.dataSource.history[0].id;
           }
         }
+        emit('click', props.dataSource.history[0].title, findIndex);
       } else {
         //  删没了（删除了最后一个）
         props.dataSource.active = null;
+        emit('click', "", -1);
       }
-      emit('save');
     }
-  };
+    //update-begin---author:wangshuai---date:2025-03-12---for:【QQYUN-11560】新建聊天内容为空，无法删除---
+    if(data.disabled){
+      return;
+    }
+    //update-end---author:wangshuai---date:2025-03-12---for:【QQYUN-11560】新建聊天内容为空，无法删除---
+    defHttp.delete({
+      url: '/airag/chat/conversation/' + data.id,
+    },{ isTransformResponse: false });
+  }
+
+  /**
+   * 获取图片
+   */
+  function getImage() {
+    return props.appData.icon ? getFileAccessHttpUrl(props.appData.icon) : defaultImg;
+  }
+
   watch(
     () => inputRef.value,
     (newVal: any) => {
@@ -174,6 +179,7 @@
     },
     { deep: true }
   );
+
   // 指定长度和基数
   const getUuid = (len = 10, radix = 16) => {
     var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
@@ -215,8 +221,8 @@
         height: 8px;
       }
     }
-    .historyArea ul li:hover{
-      .del{
+    .historyArea ul li:hover {
+      .del {
         display: block;
       }
     }
@@ -285,6 +291,29 @@
     }
     svg {
       vertical-align: middle;
+    }
+  }
+  :deep(.ant-popover) {
+    z-index: 9999 !important;
+  }
+  :deep(.ant-popconfirm) {
+    z-index: 9999 !important;
+  }
+  .header {
+    display: flex;
+    padding: 20px 4px 0 4px;
+    margin-left: 16px;
+    .header-image {
+      height: 35px;
+      width: 35px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+    .header-name {
+      align-self: center;
+      color: #1d2939;
+      font-weight: 600;
+      font-size: 16px;
     }
   }
 </style>
