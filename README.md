@@ -79,8 +79,8 @@ AIGC应用平台介绍
 > JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
 其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
 
-- [详细点击AI专题介绍页](README-AI.md)
-- AIGC文档： https://help.jeecg.com/aigc
+- [AIGC产品专题介绍页](README-AI.md)
+- [AIGC使用文档](https://help.jeecg.com/aigc)
 
 
 #### AI视频介绍
@@ -88,24 +88,35 @@ AIGC应用平台介绍
 [![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
 
 
-#### 已集成能力
+#### Dify `VS` JEECG AI
+
+> JEECG AI与Dify相比，在多个方面展现出显著的优势，特别是在文档处理、格式和图片保持方面。以下是一些具体的优点：
+> - Markdown文档库导入：
+> JEECG AI允许用户直接导入整个Markdown文档库，这不仅保留markdown格式，还支持图片的导入，确保文档内容的完整性和可视化效果。
+> - 对话回复格式美观：
+> 在对话过程中，JEECG AI能够保持回复内容的原格式，也不丢失图片，使得输出的文章更加美观，不会出现格式错乱的情况，还支持图片的渲染。
+> - PDF文档导入与格式转换：
+> JEECG AI在处理PDF文档时，能够更好地保持原始格式和图片，确保转换后的内容与原始文档一致。这哥功能在许多AI产品中表现不佳，而JEECG AI在这方面做出了显著的优化
+
+#### 功能大模块
 
 - AI应用开发平台
 - AI知识库系统
-- AI聊天助手(智能问答)
+- AI对话支持图片
+- AI对话助手(智能问答)
 - AI建表（Online表单）
 - AI写文章（CMS）
 - AI表单字段建议（表单设计器）
 
 #### AI大模型支持
 
-|  AI大模型   |  支持   |
+| AI大模型   |  支持   |
 | --- | --- |
-|   DeepSeek   |  √   |
-|   ChatGTP   |  √   |
+| DeepSeek   |  √   |
+| ChatGTP   |  √   |
 | Qwq 		  | √ |
 | 智库 		  | √ |
-|   Ollama本地搭建大模型   |  √   |
+| Ollama本地模型   |  √   |
 | 等等。。 | √ |
 
 
