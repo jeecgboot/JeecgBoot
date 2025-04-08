@@ -79,8 +79,8 @@ AIGC应用平台介绍
 > JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
 其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
 
-- [AIGC产品专题介绍页](README-AI.md)
-- [AIGC使用文档](https://help.jeecg.com/aigc)
+- [AIGC专题介绍页](README-AI.md)
+- [AIGC开发文档](https://help.jeecg.com/aigc)
 
 
 #### AI视频介绍
@@ -102,6 +102,8 @@ AIGC应用平台介绍
 
 - AI应用开发平台
 - AI知识库系统
+- AI大模型管理
+- AI流程编排
 - AI对话支持图片
 - AI对话助手(智能问答)
 - AI建表（Online表单）
