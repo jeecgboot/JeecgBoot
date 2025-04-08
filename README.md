@@ -41,6 +41,35 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 
 
 
+项目说明
+-----------------------------------
+
+| 项目名                | 说明                     | 
+|--------------------|------------------------|
+| `jeecg-boot`    | 后端源码JAVA（SpringBoot微服务架构）        |
+| `jeecgboot-vue3` | 前端源码VUE3（vue3+vite6+ts最新技术栈）  |
+| `JeecgUniapp` | [配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5 |
+
+
+
+技术文档
+-----------------------------------
+
+- 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
+- 在线演示 ：  [平台演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex) | [体验低代码](https://jeecg.blog.csdn.net/article/details/106079007) | [体验零代码](https://app.qiaoqiaoyun.com/myapps/index)
+- 开发文档：  [文档中心](https://help.jeecg.com) | [AIGC大模块](https://help.jeecg.com/aigc)
+- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video) | [如何反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
+- QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
+
+
+
+启动项目
+-----------------------------------
+
+- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
+- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
+
+
 
 AIGC应用平台介绍
 -----------------------------------
@@ -90,34 +119,6 @@ AIGC应用平台介绍
 | Ollama本地模型   |  √   |
 | 等等。。 | √ |
 
-
-项目说明
------------------------------------
-
-| 项目名                | 说明                     | 
-|--------------------|------------------------|
-| `jeecg-boot`    | 后端源码JAVA（SpringBoot微服务架构）        |
-| `jeecgboot-vue3` | 前端源码VUE3（vue3+vite6+ts最新技术栈）  |
-| `JeecgUniapp` | [配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5 |
-
-
-
-技术文档
------------------------------------
-
-- 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
-- 在线演示 ：  [平台演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex) | [体验低代码](https://jeecg.blog.csdn.net/article/details/106079007) | [体验零代码](https://app.qiaoqiaoyun.com/myapps/index)
-- 开发文档：  [文档中心](https://help.jeecg.com) | [AIGC大模块](https://help.jeecg.com/aigc)
-- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video) | [如何反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
-- QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
-
-
-
-启动项目
------------------------------------
-
-- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
-- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
 
 
 
