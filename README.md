@@ -52,12 +52,12 @@ AIGC应用平台介绍
 - [AIGC开发文档](https://help.jeecg.com/aigc)
 
 
-#### AI视频介绍
+##### AI视频介绍
 
 [![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
 
 
-#### Dify `VS` JEECG AI
+##### Dify `VS` JEECG AI
 
 > JEECG AI与Dify相比，在多个方面展现出显著的优势，特别是在文档处理、格式和图片保持方面。以下是一些具体的优点：
 > - Markdown文档库导入：
@@ -67,7 +67,7 @@ AIGC应用平台介绍
 > - PDF文档导入与格式转换：
 > JEECG AI在处理PDF文档时，能够更好地保持原始格式和图片，确保转换后的内容与原始文档一致。这哥功能在许多AI产品中表现不佳，而JEECG AI在这方面做出了显著的优化
 
-#### 功能大模块
+##### 功能大模块
 
 - AI应用开发平台
 - AI知识库系统
@@ -79,7 +79,7 @@ AIGC应用平台介绍
 - AI写文章（CMS）
 - AI表单字段建议（表单设计器）
 
-#### AI大模型支持
+##### AI大模型支持
 
 | AI大模型   |  支持   |
 | --- | --- |
@@ -91,7 +91,8 @@ AIGC应用平台介绍
 | 等等。。 | √ |
 
 
-#### 项目说明
+项目说明
+-----------------------------------
 
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
