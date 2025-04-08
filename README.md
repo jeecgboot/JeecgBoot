@@ -40,7 +40,59 @@ JeecgBoot 提供了一系列 `AI能力` `低代码模块`，实现在线开发`�
 JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支持信创国产化（默认适配达梦和人大金仓）。尤其适合SAAS项目、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）等，其半智能手工Merge的开发方式，可以显著提高开发效率70%以上，极大降低开发成本。
 
 
-#### 项目说明
+
+
+AIGC应用平台介绍
+-----------------------------------
+
+> JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
+其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
+
+- [AIGC专题介绍页](README-AI.md)
+- [AIGC开发文档](https://help.jeecg.com/aigc)
+
+
+##### AI视频介绍
+
+[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
+
+
+##### Dify `VS` JEECG AI
+
+> JEECG AI与Dify相比，在多个方面展现出显著的优势，特别是在文档处理、格式和图片保持方面。以下是一些具体的优点：
+> - Markdown文档库导入：
+> JEECG AI允许用户直接导入整个Markdown文档库，这不仅保留markdown格式，还支持图片的导入，确保文档内容的完整性和可视化效果。
+> - 对话回复格式美观：
+> 在对话过程中，JEECG AI能够保持回复内容的原格式，也不丢失图片，使得输出的文章更加美观，不会出现格式错乱的情况，还支持图片的渲染。
+> - PDF文档导入与格式转换：
+> JEECG AI在处理PDF文档时，能够更好地保持原始格式和图片，确保转换后的内容与原始文档一致。这哥功能在许多AI产品中表现不佳，而JEECG AI在这方面做出了显著的优化
+
+##### 功能大模块
+
+- AI应用开发平台
+- AI知识库系统
+- AI大模型管理
+- AI流程编排
+- AI对话支持图片
+- AI对话助手(智能问答)
+- AI建表（Online表单）
+- AI写文章（CMS）
+- AI表单字段建议（表单设计器）
+
+##### AI大模型支持
+
+| AI大模型   |  支持   |
+| --- | --- |
+| DeepSeek   |  √   |
+| ChatGTP   |  √   |
+| Qwq 		  | √ |
+| 智库 		  | √ |
+| Ollama本地模型   |  √   |
+| 等等。。 | √ |
+
+
+项目说明
+-----------------------------------
 
 | 项目名                | 说明                     | 
 |--------------------|------------------------|
@@ -54,15 +106,10 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 -----------------------------------
 
 - 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
-- 在线演示 ：  [在线演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
-- 快速体验： [一分钟体验低代码](https://jeecg.blog.csdn.net/article/details/106079007?spm=1001.2014.3001.5502 "一分钟体验零代码") | [在线体验零代码](https://app.qiaoqiaoyun.com/myapps/index "在线体验零代码")
-- 开发文档：  [文档中心](https://help.jeecg.com) | [AI集成配置(支持DeepSeek)](https://help.jeecg.com/java/ai/aichat)
-- 反馈问题：  [在Github上提Issues](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
-- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video)
+- 在线演示 ：  [平台演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex) | [体验低代码](https://jeecg.blog.csdn.net/article/details/106079007) | [体验零代码](https://app.qiaoqiaoyun.com/myapps/index)
+- 开发文档：  [文档中心](https://help.jeecg.com) | [AIGC大模块](https://help.jeecg.com/aigc)
+- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video) | [如何反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
 - QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
-- <b>关注微信公众号，获取最新动态</b>
-
-![公众号](https://jeecg.com/images/jeecg/qrcode_jeecgboot.jpg "在这里输入图片标题")
 
 
 
@@ -71,39 +118,6 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 
 - [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
 - [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
-
-
-AIGC应用平台介绍
------------------------------------
-
-> JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
-其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
-
-- [详细点击AI专题介绍页](README-AI.md)
-- AIGC文档： https://help.jeecg.com/aigc
-
-#### 已集成能力
-
-- AI应用开发平台
-- AI知识库系统
-- AI聊天助手(智能问答)
-- AI建表（Online表单）
-- AI写文章（CMS）
-- AI表单字段建议（表单设计器）
-
-#### AI大模型支持
-
-|  AI大模型   |  支持   |
-| --- | --- |
-|   DeepSeek   |  √   |
-|   ChatGTP   |  √   |
-| Qwq 		  | √ |
-| 智库 		  | √ |
-|   Ollama本地搭建大模型   |  √   |
-| 等等。。 | √ |
-
-
-
 
 
 
