@@ -8,6 +8,13 @@ AIGC应用平台介绍
 其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
 
 
+### AI视频介绍
+
+[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
+
+
+
+
 ## Dify `VS` JEECG AI
 
 | 功能         | Dify             | Jeecg AI                                |

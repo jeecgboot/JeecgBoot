@@ -82,6 +82,12 @@ AIGC应用平台介绍
 - [详细点击AI专题介绍页](README-AI.md)
 - AIGC文档： https://help.jeecg.com/aigc
 
+
+#### AI视频介绍
+
+[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
+
+
 #### 已集成能力
 
 - AI应用开发平台
