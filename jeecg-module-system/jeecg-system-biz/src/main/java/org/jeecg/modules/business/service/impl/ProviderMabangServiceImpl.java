@@ -1,10 +1,16 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.OrderUpdateOrderNewOrderRequest;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.OrderUpdateOrderNewOrderRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.OrderUpdateOrderNewOrderResponse;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.UpdateResult;
 import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.AddPurchaseOrderRequest;
 import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.AddPurchaseOrderRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.purDoAddPurchase.AddPurchaseOrderResponse;
@@ -20,6 +26,7 @@ import org.jeecg.modules.business.service.IProviderMabangService;
 import org.jeecg.modules.business.service.IProviderService;
 import org.jeecg.modules.business.service.IPurchaseOrderService;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
+import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.Responses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -235,5 +242,43 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         long nbSuccesses = results.stream().filter(b -> b).count();
         log.info("{}/{} purchase orders deleted successfully from Mabang. GroupIds : {}", nbSuccesses, groupIds.size(), groupIds);
         return groupIdsDeleteResult;
+    }
+
+    @Override
+    public Response<List<UpdateResult>, List<UpdateResult>> updateOrderStatusToPreparing(List<String> platformOrderIds) {
+        Response<List<UpdateResult>, List<UpdateResult>> updateResponse = new Response<>();
+        updateResponse.setData(new ArrayList<>());
+        updateResponse.setError(new ArrayList<>());
+        List<List<String>> platformOrderIdsPartition = Lists.partition(platformOrderIds, 50);
+
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<CompletableFuture<Boolean>> updateOrderFutures = platformOrderIdsPartition.stream()
+                .map(platformOrderIdList -> CompletableFuture.supplyAsync(() -> {
+                    log.info("Updating order status on Mabang for PlatformOrderIds : {}", platformOrderIdList);
+                    OrderUpdateOrderNewOrderRequestBody body = new OrderUpdateOrderNewOrderRequestBody(platformOrderIdList);
+                    OrderUpdateOrderNewOrderRequest request = new OrderUpdateOrderNewOrderRequest(body);
+                    OrderUpdateOrderNewOrderResponse response = request.send();
+
+                    if(!response.success()) {
+                        log.error("Failed to update order status on Mabang. PlatformOrderIds : {} - Reason : {}", platformOrderIdList, response.getMessage());
+                        UpdateResult error = new UpdateResult();
+                        error.setReason(response.getMessage());
+                        updateResponse.setError(Collections.singletonList(error));
+                        updateResponse.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                        return false;
+                    } else {
+                        updateResponse.getData().addAll(response.getSuccessOrders());
+                        updateResponse.getError().addAll(response.getOrdersNotFound());
+                        updateResponse.setStatus(!response.getOrdersNotFound().isEmpty() ? HttpStatus.SC_NOT_FOUND : HttpStatus.SC_OK);
+                        return true;
+                    }
+                }, throttlingExecutorService)).collect(Collectors.toList());
+
+        List<Boolean> results = updateOrderFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} platform orders status updated successfully on Mabang. PlatformOrderIds : {}", nbSuccesses, platformOrderIds.size(), platformOrderIds);
+
+        return updateResponse;
     }
 }

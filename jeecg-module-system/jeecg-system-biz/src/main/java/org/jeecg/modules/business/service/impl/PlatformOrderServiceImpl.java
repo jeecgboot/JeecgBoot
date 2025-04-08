@@ -551,4 +551,9 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         page.setTotal(platformOrderMap.countPotentialShoumanOrders());
     }
 
+    @Override
+    public List<String> getPlatformOrderIdsByInvoiceNumbers(List<String> invoiceNumbers) {
+        return platformOrderMap.getPlatformOrderIdsByInvoiceNumbers(invoiceNumbers);
+    }
+
 }

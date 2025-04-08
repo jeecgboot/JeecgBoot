@@ -241,4 +241,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrderPage> pagePotentialShoumanOrders(long pageNo, long pageSize, String column, String order);
 
     Integer countPotentialShoumanOrders();
+
+    List<String> getPlatformOrderIdsByInvoiceNumbers(@Param("invoiceNumbers") List<String> invoiceNumbers);
 }
