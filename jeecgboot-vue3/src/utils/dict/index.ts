@@ -25,6 +25,21 @@ export const getDictItemsByCode = (code) => {
 
 };
 /**
+ * Popup字典翻译方法
+ * @param text
+ * @param code
+ */
+export const getPopDictByCode = (text, codeStr) => {
+  const [code, dictCode, dictText] = codeStr.split(',');
+  if (!code || !dictCode || !dictText) {
+    return [];
+  }
+  return defHttp.get(
+    { url: `/online/api/cgreportGetDataPackage`, params: { code, dictText, dictCode, dataList: text } },
+    { isTransformResponse: false }
+  );
+};
+/**
  * 获取字典数组
  * @param dictCode 字典Code
  * @return List<Map>
