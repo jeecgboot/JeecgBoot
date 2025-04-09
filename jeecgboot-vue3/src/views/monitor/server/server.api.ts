@@ -30,6 +30,11 @@ enum Api {
   tomcatSessionsRejected = '/actuator/metrics/tomcat.sessions.rejected',
 
   memoryInfo = '/sys/actuator/memory/info',
+  // undertow 监控
+  undertowSessionsCreated = '/actuator/metrics/undertow.sessions.created',
+  undertowSessionsExpired = '/actuator/metrics/undertow.sessions.expired',
+  undertowSessionsActiveCurrent = '/actuator/metrics/undertow.sessions.active.current',
+  undertowSessionsActiveMax = '/actuator/metrics/undertow.sessions.active.max',
 }
 
 /**
@@ -208,6 +213,34 @@ export const getTomcatSessionsRejected = () => {
 };
 
 /**
+ *undertow 已创建 session 数
+ */
+export const getUndertowSessionsCreated = () => {
+  return defHttp.get({ url: Api.undertowSessionsCreated }, { isTransformResponse: false });
+};
+
+/**
+ *undertow 已过期 session 数
+ */
+export const getUndertowSessionsExpired = () => {
+  return defHttp.get({ url: Api.undertowSessionsExpired }, { isTransformResponse: false });
+};
+
+/**
+ *undertow 当前活跃 session 数
+ */
+export const getUndertowSessionsActiveCurrent = () => {
+  return defHttp.get({ url: Api.undertowSessionsActiveCurrent }, { isTransformResponse: false });
+};
+
+/**
+ *undertow 活跃 session 数峰值
+ */
+export const getUndertowSessionsActiveMax = () => {
+  return defHttp.get({ url: Api.undertowSessionsActiveMax }, { isTransformResponse: false });
+};
+
+/**
  * 内存信息
  */
 export const getMemoryInfo = () => {
@@ -228,6 +261,9 @@ export const getMoreInfo = (infoType) => {
     };
   }
   if (infoType == '5') {
+    return {};
+  }
+  if (infoType == '6') {
     return {};
   }
 };
@@ -293,6 +329,16 @@ export const getTextInfo = (infoType) => {
       'memory.runtime.usage': { color: 'purple', text: 'JVM内存使用率', unit: '%', valueType: 'Number' },
     };
   }
+  if (infoType == '6') {
+    // undertow 监控
+    return {
+      'undertow.sessions.created': { color: 'green', text: 'undertow 已创建 session 数', unit: '个' },
+      'undertow.sessions.expired': { color: 'green', text: 'undertow 已过期 session 数', unit: '个' },
+      'undertow.sessions.active.current': { color: 'green', text: 'undertow 当前活跃 session 数', unit: '个' },
+      'undertow.sessions.active.max': { color: 'green', text: 'undertow 活跃 session 数峰值', unit: '个' },
+      'undertow.sessions.rejected': { color: 'green', text: '超过session 最大配置后，拒绝的 session 个数', unit: '个' },
+    };
+  }
 };
 
 /**
@@ -333,5 +379,14 @@ export const getServerInfo = (infoType) => {
   }
   if (infoType == '5') {
     return Promise.all([getMemoryInfo()]);
+  }
+  // undertow监控
+  if (infoType == '6') {
+    return Promise.all([
+      getUndertowSessionsActiveCurrent(),
+      getUndertowSessionsActiveMax(),
+      getUndertowSessionsCreated(),
+      getUndertowSessionsExpired(),
+    ]);
   }
 };

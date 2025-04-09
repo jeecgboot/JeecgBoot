@@ -4,7 +4,8 @@
       <a-tabs v-model:activeKey="activeKey" @change="tabChange">
         <a-tab-pane key="1" tab="服务器信息"></a-tab-pane>
         <a-tab-pane key="2" tab="JVM信息" force-render></a-tab-pane>
-        <a-tab-pane key="3" tab="Tomcat信息"></a-tab-pane>
+        <!-- <a-tab-pane key="3" tab="Tomcat信息"></a-tab-pane> -->
+        <a-tab-pane key="6" tab="Undertow信息"></a-tab-pane>
         <a-tab-pane key="4" tab="磁盘监控">
           <DiskInfo v-if="activeKey == 4" style="height: 100%"></DiskInfo>
         </a-tab-pane>
