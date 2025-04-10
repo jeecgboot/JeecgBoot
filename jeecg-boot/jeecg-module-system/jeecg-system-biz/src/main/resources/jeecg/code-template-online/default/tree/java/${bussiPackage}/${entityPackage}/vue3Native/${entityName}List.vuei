@@ -181,6 +181,10 @@
 <#if need_pca>
   import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
 </#if>
+  <#if need_popup_dict>
+ import {getPopDictByCode} from "@/utils/dict";
+ import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
+  </#if>
 <#if is_range>
   import { cloneDeep } from "lodash-es";
 </#if>
@@ -214,6 +218,9 @@
         return Object.assign(params, queryParam.value);
        </#if>
       },
+      <#if need_popup_dict>
+      afterFetch: afterFetch
+      </#if>
     },
     exportConfig: {
       name: "${tableVo.ftlDescription}",
@@ -622,6 +629,28 @@
     }
     return queryParamClone;
   }
+  </#if>
+
+   <#if need_popup_dict>
+     /**
+      * 翻译Popup字典配置
+     */
+      async function afterFetch(records){
+   <#list columns as po>
+      <#if po.isQuery=='Y' || po.isShowList=='Y'>
+        <#if po.classType=='popup_dict'>
+        const ${po.fieldName}Keys = [...new Set(records.map((item) => item['${po.fieldName}']).flatMap((item) => item && item.split(',')))];
+        if(${po.fieldName}Keys && ${po.fieldName}Keys.length){
+         const dictOptions = await getPopDictByCode(${po.fieldName}Keys.join(','), '${po.dictTable},${po.dictField},${po.dictText}');
+         records.forEach((item) => {
+           item['${po.fieldName}_dictText'] = filterMultiDictText(dictOptions, item['${po.fieldName}']);
+         });
+        }
+        </#if>
+      </#if>
+   </#list>
+       return records;
+     }
   </#if>
 </script>
 

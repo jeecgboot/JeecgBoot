@@ -339,7 +339,7 @@
  <#list columns as po>
     <#if po.isQuery=='Y' || po.isShowList=='Y'>
       <#if po.classType=='popup_dict' && list_has_popup_dict==true>
-      const ${po.fieldName}Keys = [...new Set(records.map((item) => item['${po.fieldName}']).flatMap((item) => item.split(',')))];
+      const ${po.fieldName}Keys = [...new Set(records.map((item) => item['${po.fieldName}']).flatMap((item) => item && item.split(',')))];
       if(${po.fieldName}Keys && ${po.fieldName}Keys.length){
        const dictOptions = await getPopDictByCode(${po.fieldName}Keys.join(','), '${po.dictTable},${po.dictField},${po.dictText}');
        records.forEach((item) => {
