@@ -53,16 +53,17 @@
             <artifactId>jeecg-system-cloud-api</artifactId>
         </dependency>-->
 
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-aiflow-jdk8</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- langChain4j model support -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-ollama</artifactId>
             <version>${langchain4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-aiflow-jdk8</artifactId>
-            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
@@ -117,11 +118,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.tika</groupId>-->
-<!--            <artifactId>tika-parser-digest-commons</artifactId>-->
-<!--            <version>${apache-tika.version}</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parser-html-module</artifactId>
