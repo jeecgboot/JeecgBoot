@@ -694,7 +694,11 @@ public class AiragChatServiceImpl implements IAiragChatService {
         HttpServletRequest httpRequest = SpringContextUtils.getHttpServletRequest();
         TokenStream chatStream;
         try {
-            chatStream = aiChatHandler.chat(modelId,messages, aiChatParams);
+            if (oConvertUtils.isNotEmpty(modelId)) {
+                chatStream = aiChatHandler.chat(modelId, messages, aiChatParams);
+            } else {
+                chatStream = aiChatHandler.chatByDefaultModel(messages, aiChatParams);
+            }
         } catch (Exception e) {
             log.error(e.getMessage(),e);
             throw new JeecgBootBizTipException("调用大模型接口失败:" + e.getMessage());
