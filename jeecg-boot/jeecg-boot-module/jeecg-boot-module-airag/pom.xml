@@ -61,7 +61,7 @@
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-aiflow</artifactId>
+            <artifactId>jeecg-aiflow-jdk8</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
