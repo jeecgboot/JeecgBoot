@@ -15,7 +15,6 @@ import java.util.Date;
 import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
 /**
  * @Description: ${tableVo.ftlDescription}
  * @Author: jeecg-boot

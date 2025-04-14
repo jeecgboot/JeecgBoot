@@ -16,8 +16,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import java.util.Date;
 import org.jeecg.common.aspect.annotation.Dict;
-import io.swagger.v3.oas.annotations.media.Schema;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.UnsupportedEncodingException;
 
 /**
