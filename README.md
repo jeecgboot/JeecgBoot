@@ -18,9 +18,13 @@ JeecgBoot AI低代码平台
 
 <h3 align="center">Java AI Low Code Platform for Enterprise web applications</h3>
 
-JeecgBoot 是一款基于`BPM`和`代码生成器`的 AI低代码平台！前后端分离架构 SpringBoot2.x/3.x，SpringCloud，Ant Design Vue3，Mybatis-plus，Shiro，JWT，支持微服务、多租户;支持 AI 大模型 DeepSeek 和 ChatGPT、Ollama本地模型; 强大的代码生成器让前后端代码一键生成，无需写任何代码!  JeecgBoot 引领 AI 低代码开发模式(AI生成-> OnlineCoding-> 代码生成器-> 手工MERGE)， 帮助解决Java项目80%的重复工作，让开发更多关注业务。既能快速提高效率，节省成本，同时又不失灵活性！AIGC能力：AI对话助手、AI建表、AI写文章、AI流程编排、AI知识库问答等等.
+JeecgBoot是一款基于AIGC和低代码功能的AI低代码平台，旨在帮助开发者快速实现低代码开发和构建、部署个性化的 AI 应用。
+前后端分离架构Ant Design&Vue3，SpringBoot，SpringCloud Alibaba，Mybatis-plus，Shiro，强大的代码生成器让前后端代码一键生成，无需写任何代码！
+成套AI大模型功能: AI模型管理、AI应用、知识库、AI流程编排、AI对话助手等；
+引领AI低代码开发模式: AIGC生成->OnlineCoding-> 代码生成-> 手工MERGE， 帮助Java项目解决80%的重复工作，让开发更多关注业务，快速提高效率 节省成本，同时又不失灵活性！
 
-JeecgBoot 提供了一系列 `AI能力` `低代码模块`，实现在线开发`真正的零代码`：Online表单开发、Online报表、报表配置能力、在线图表设计、仪表盘设计、大屏设计、移动配置能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）、AI对话助手，AI建表、AI写文章、AI流程编排、AI知识库问答、AI赋能低代码等等！
+
+JeecgBoot 提供了一系列 `AI能力` `低代码能力`，实现在线开发`真正的零代码`：Online表单开发、Online报表、复杂报表设计、打印设计、在线图表设计、仪表盘设计、大屏设计、移动图表能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）、AI应用、AI流程编排、AI对话助手，AI建表、AI写文章、AI知识库 等等！支持各种AI大模型ChatGPT、DeepSeek、Ollama、智普等
 
 
 `JEECG宗旨是:` 简单功能由OnlineCoding配置实现，做到`零代码开发`；复杂功能由代码生成器生成进行手工Merge 实现`低代码开发`，既保证了`智能`又兼顾`灵活`；实现了低代码开发的同时又支持灵活编码，解决了当前低代码产品普遍不灵活的弊端！
