@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.config.TenantContext;
+import org.jeecg.common.config.mqtoken.UserTokenContext;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.filter.SsrfFileTypeFilter;
@@ -110,7 +112,7 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
         return rebuildDocument(docIds);
     }
 
-    @Transactional(rollbackFor = {Exception.class})
+    @Transactional(rollbackFor = {java.lang.Exception.class})
     @Override
     public Result<?> rebuildDocument(String docIds) {
         AssertUtils.assertNotEmpty("请选择要重建的文档", docIds);
@@ -123,38 +125,65 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
         String baseUrl = CommonUtils.getBaseUrl(request);
         // 检查状态
         List<AiragKnowledgeDoc> knowledgeDocs = docList.stream()
-                .filter(doc -> !KNOWLEDGE_DOC_STATUS_BUILDING.equalsIgnoreCase(doc.getStatus()))
+                .filter(doc -> {
+                    //update-begin---author:chenrui ---date:20250410  for：[QQYUN-11943]【ai】ai知识库 上传完文档 一直显示构建中？------------
+                    if(KNOWLEDGE_DOC_STATUS_BUILDING.equalsIgnoreCase(doc.getStatus())){
+                        Date updateTime = doc.getUpdateTime();
+                        if (updateTime != null) {
+                            // 向量化超过了5分钟,重新向量化
+                            long timeDifference = System.currentTimeMillis() - updateTime.getTime();
+                            return timeDifference > 5 * 60 * 1000;
+                        }else{
+                            return true;
+                        }
+                    } else {
+                        return true;
+                    }
+                    //update-end---author:chenrui ---date:20250410  for：[QQYUN-11943]【ai】ai知识库 上传完文档 一直显示构建中？------------
+                })
                 .peek(doc -> {
                     doc.setStatus(KNOWLEDGE_DOC_STATUS_BUILDING);
                     doc.setBaseUrl(baseUrl);
                 })
                 .collect(Collectors.toList());
         if (oConvertUtils.isObjectEmpty(knowledgeDocs)) {
-            return Result.ok("向量化成功");
+            return Result.ok("操作成功");
         }
         if (oConvertUtils.isObjectEmpty(knowledgeDocs)) {
-            return Result.ok("向量化成功");
+            return Result.ok("操作成功");
         }
         // 更新状态
         this.updateBatchById(knowledgeDocs);
         // 异步重建文档
+        String tenantId = TenantContext.getTenant();
+        String token = TokenUtils.getTokenByRequest();
         knowledgeDocs.forEach((doc) -> {
             CompletableFuture.runAsync(() -> {
+                UserTokenContext.setToken(token);
+                TenantContext.setTenant(tenantId);
                 String knowId = doc.getKnowledgeId();
                 log.info("开始重建文档, 知识库id: {}, 文档id: {}", knowId, doc.getId());
                 doc.setStatus(KNOWLEDGE_DOC_STATUS_BUILDING);
                 this.updateById(doc);
-                Map<String, Object> metadata = embeddingHandler.embeddingDocument(knowId, doc);
-                // 更新数据 date:2025/2/18
-                if (null != metadata) {
-                    doc.setStatus(KNOWLEDGE_DOC_STATUS_COMPLETE);
-                    this.updateById(doc);
-                    log.info("重建文档成功, 知识库id: {}, 文档id: {}", knowId, doc.getId());
-                } else {
+                //update-begin---author:chenrui ---date:20250410  for：[QQYUN-11943]【ai】ai知识库 上传完文档 一直显示构建中？------------
+                try {
+                    Map<String, Object> metadata = embeddingHandler.embeddingDocument(knowId, doc);
+                    // 更新数据 date:2025/2/18
+                    if (null != metadata) {
+                        doc.setStatus(KNOWLEDGE_DOC_STATUS_COMPLETE);
+                        this.updateById(doc);
+                        log.info("重建文档成功, 知识库id: {}, 文档id: {}", knowId, doc.getId());
+                    } else {
+                        doc.setStatus(KNOWLEDGE_DOC_STATUS_DRAFT);
+                        this.updateById(doc);
+                        log.info("重建文档失败, 知识库id: {}, 文档id: {}", knowId, doc.getId());
+                    }
+                }catch (Throwable t){
                     doc.setStatus(KNOWLEDGE_DOC_STATUS_DRAFT);
                     this.updateById(doc);
-                    log.info("重建文档失败, 知识库id: {}, 文档id: {}", knowId, doc.getId());
+                    log.error("重建文档失败:" + t.getMessage() + ", 知识库id: " + knowId + ", 文档id: " + doc.getId(), t);
                 }
+                //update-end---author:chenrui ---date:20250410  for：[QQYUN-11943]【ai】ai知识库 上传完文档 一直显示构建中？------------
             }, buildDocExecutorService);
         });
         log.info("返回操作成功");
@@ -201,7 +230,7 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
         return Result.ok("success");
     }
 
-    @Transactional(rollbackFor = {Exception.class})
+    @Transactional(rollbackFor = {java.lang.Exception.class})
     @Override
     public Result<?> importDocumentFromZip(String knowId, MultipartFile zipFile) {
         AssertUtils.assertNotEmpty("请先选择知识库", knowId);
@@ -238,8 +267,17 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
                 doc.setTitle(baseName);
                 doc.setType(LLMConsts.KNOWLEDGE_DOC_TYPE_FILE);
                 doc.setStatus(LLMConsts.KNOWLEDGE_DOC_STATUS_DRAFT);
+
+                String relativePath;
+                if (File.separator.equals("\\")) {
+                    // Windows path handling
+                    String escapedPath = uploadpath.replace("//", "\\\\");
+                    relativePath = uploadedFile.getPath().replaceFirst("^" + escapedPath, "");
+                } else {
+                    // Unix path handling
+                    relativePath = uploadedFile.getPath().replaceFirst("^" + uploadpath, "");
+                }
                 JSONObject metadata = new JSONObject();
-                String relativePath = uploadedFile.getPath().replaceFirst("^" + uploadpath, "");
                 metadata.put(LLMConsts.KNOWLEDGE_DOC_METADATA_FILEPATH, relativePath);
                 metadata.put(LLMConsts.KNOWLEDGE_DOC_METADATA_SOURCES_PATH, sourcesPath);
                 doc.setMetadata(metadata.toJSONString());

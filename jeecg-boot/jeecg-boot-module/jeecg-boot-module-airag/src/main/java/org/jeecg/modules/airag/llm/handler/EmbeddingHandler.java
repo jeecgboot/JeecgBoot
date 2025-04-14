@@ -451,10 +451,16 @@ public class EmbeddingHandler implements IEmbeddingHandler {
                     // 如果是md文件，查找所有图片语法，如果是本地图片，替换成网络图片
                     String baseUrl = doc.getBaseUrl() + "/sys/common/static/";
                     String sourcePath = metadataJson.getString(LLMConsts.KNOWLEDGE_DOC_METADATA_SOURCES_PATH);
-                    sourcePath = sourcePath.replaceFirst("^" + uploadpath, "").replace("\\", "/");
-                    baseUrl = baseUrl + sourcePath + "/";
-                    StringBuffer sb = replaceImageUrl(content, baseUrl);
-                    content = sb.toString();
+                    if(oConvertUtils.isNotEmpty(sourcePath)) {
+                        String escapedPath = uploadpath;
+                        if (File.separator.equals("\\")){
+                            escapedPath = uploadpath.replace("//", "\\\\");
+                        }
+                        sourcePath = sourcePath.replaceFirst("^" + escapedPath, "").replace("\\", "/");
+                        baseUrl = baseUrl + sourcePath + "/";
+                        StringBuffer sb = replaceImageUrl(content, baseUrl);
+                        content = sb.toString();
+                    }
                 }
                 return content;
             }
