@@ -188,6 +188,15 @@ jeecg:
     apiKey: ??
     apiHost: https://api.deepseek.com
     timeout: 60
+  # AIRag向量库
+  ai-rag:
+    embed-store:
+      host: 127.0.0.1
+      port: 5432
+      database: postgres
+      user: postgres
+      password: postgres
+      table: embeddings
   # 平台上线安全配置
   firewall:
     # 数据源安全 (开启后，Online报表和图表的数据源为必填)
