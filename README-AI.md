@@ -14,8 +14,6 @@ AIGC应用平台介绍
 
 
 
-
-
 #### Dify `VS` JEECG AI
 
 > JEECG AI与Dify相比，在多个方面展现出显著的优势，特别是在文档处理、格式和图片保持方面。以下是一些具体的优点：
@@ -56,6 +54,10 @@ AIGC应用平台介绍
 | AI对话支持发图和展示图片 | 支持 | 支持 |
 
 
+### 安装向量库 pgvector
+
+- https://help.jeecg.com/aigc/config
+
 
 ## 功能特点
 
@@ -73,6 +75,7 @@ AIGC应用平台介绍
 
 - 使用手册：https://help.jeecg.com/aigc 
 - 演示地址：https://boot3.jeecg.com
+
 
 
 ## 功能列表

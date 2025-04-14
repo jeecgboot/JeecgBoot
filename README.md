@@ -79,6 +79,7 @@ AIGC应用平台介绍
 
 - [AIGC专题介绍页](README-AI.md)
 - [AIGC开发文档](https://help.jeecg.com/aigc)
+- [配置向量库pgvector](https://help.jeecg.com/aigc/config)
 
 
 ##### AI视频介绍
