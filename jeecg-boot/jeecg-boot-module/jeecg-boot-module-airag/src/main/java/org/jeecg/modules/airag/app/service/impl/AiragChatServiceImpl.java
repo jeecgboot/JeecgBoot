@@ -7,6 +7,7 @@ import dev.langchain4j.model.output.FinishReason;
 import dev.langchain4j.service.TokenStream;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.exception.JeecgBootBizTipException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.*;
@@ -691,7 +692,13 @@ public class AiragChatServiceImpl implements IAiragChatService {
         aiChatParams.setKnowIds(chatConversation.getApp().getKnowIds());
         aiChatParams.setMaxMsgNumber(oConvertUtils.getInt(chatConversation.getApp().getMsgNum(), 5));
         HttpServletRequest httpRequest = SpringContextUtils.getHttpServletRequest();
-        TokenStream chatStream = aiChatHandler.chatByDefaultModel(messages, aiChatParams);
+        TokenStream chatStream;
+        try {
+            chatStream = aiChatHandler.chat(modelId,messages, aiChatParams);
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            throw new JeecgBootBizTipException("调用大模型接口失败:" + e.getMessage());
+        }
         /**
          * 是否正在思考
          */
