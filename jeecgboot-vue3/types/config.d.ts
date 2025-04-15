@@ -104,6 +104,8 @@ export interface ProjectConfig {
   colorWeak: boolean;
   // Theme color
   themeColor: string;
+  // Theme Mode
+  themeMode: string;
 
   // The main interface is displayed in full screen, the menu is not displayed, and the top
   fullContent: boolean;
