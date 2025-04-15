@@ -78,14 +78,14 @@ JeecgBoot AI低代码平台，可以应用在任何J2EE项目的开发中，支�
 AIGC应用平台介绍
 -----------------------------------
 
-> JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
+JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
 其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
 
-JDK说明：AI流程编排引擎暂时不支持jdk21，所以目前只能使用jdk8或者jdk17启动项目。
+> JDK说明：AI流程编排引擎暂时不支持jdk21，所以目前只能使用jdk8或者jdk17启动项目。
 
 - [AIGC专题介绍页](README-AI.md)
 - [AIGC开发文档](https://help.jeecg.com/aigc)
-- [配置向量库pgvector](https://help.jeecg.com/aigc/config)
+- [配置向量库PGVector](https://help.jeecg.com/aigc/config)
 
 
 ##### AI视频介绍
