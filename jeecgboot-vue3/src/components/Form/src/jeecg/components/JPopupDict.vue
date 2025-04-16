@@ -12,6 +12,8 @@
         @register="regModal"
         :code="code"
         :multi="multi"
+        :selected="selected"
+        :rowkey="valueFiled"
         :sorter="sorter"
         :groupId="''"
         :param="param"
@@ -72,6 +74,7 @@
       const code = props.dictCode.split(',')[0];
       const labelFiled = props.dictCode.split(',')[1];
       const valueFiled = props.dictCode.split(',')[2];
+      const selected = ref([]);
       if (!code || !valueFiled || !labelFiled) {
         createMessage.error('popupDict参数未正确配置!');
       }
@@ -159,6 +162,7 @@
               options.value = data.records.map((item) => {
                 return { value: item[valueFiled], text: item[labelFiled] };
               });
+              selected.value = data.records;
             }
           })
           .finally(() => {
@@ -200,6 +204,8 @@
         code,
         options,
         loading,
+        selected,
+        valueFiled,
       };
     },
   });

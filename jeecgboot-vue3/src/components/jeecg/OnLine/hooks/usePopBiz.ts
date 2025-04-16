@@ -179,10 +179,16 @@ export function usePopBiz(ob, tableRef?) {
    */
   function combineRowKey(record) {
     let res = record?.id || '';
-    Object.keys(record).forEach((key) => {
-      res = key == 'rowIndex' ? record[key] + res : res + record[key];
-    });
-    res = res.length > 50 ? res.substring(0, 50) : res;
+    if (props?.rowkey) {
+      // update-begin--author:liaozhiyang---date:20250415--for：【issues/3656】popupdict回显
+      res = record[props.rowkey];
+      // update-end--author:liaozhiyang---date:20250415--for：【issues/3656】popupdict回显
+    } else {
+      Object.keys(record).forEach((key) => {
+        res = key == 'rowIndex' ? record[key] + res : res + record[key];
+      });
+      res = res.length > 50 ? res.substring(0, 50) : res;
+    }
     return res;
   }
 
