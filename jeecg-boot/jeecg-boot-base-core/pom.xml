@@ -112,7 +112,15 @@
 		<!-- mybatis-plus -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+			<version>${mybatis-plus.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<!--JDK 11+-->
+			<artifactId>mybatis-plus-jsqlparser</artifactId>
+			<!--JDK 8+-->
+			<!--<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>-->
 			<version>${mybatis-plus.version}</version>
 		</dependency>
 

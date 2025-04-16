@@ -19,10 +19,10 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>hibernate-re</artifactId>
-		</dependency>
+		</dependency>-->
 
 		<!-- 企业微信/钉钉 api -->
 		<dependency>
@@ -30,7 +30,7 @@
 			<artifactId>weixin4j</artifactId>
 		</dependency>
 		<!-- 积木报表 -->
-		<dependency>
+		<!--<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
 		</dependency>
@@ -38,11 +38,11 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>
 		</dependency>
-		<!-- 积木BI -->
+		&lt;!&ndash; 积木BI &ndash;&gt;
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimubi-spring-boot3-starter</artifactId>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 	
 </project>
