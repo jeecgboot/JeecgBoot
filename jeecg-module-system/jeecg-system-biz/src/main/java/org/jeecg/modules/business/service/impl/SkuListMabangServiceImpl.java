@@ -757,6 +757,15 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                         return null;
                     }
                     SkuData skuData = new SkuData();
+
+                    //不设置null\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+                    if (sku.getErpCode() == null) {
+                        log.error("ERP code is null for skuId: {}", sku.getId());
+                        responses.addFailure("UNKNOWN_ERP_CODE_" + sku.getId(), "ERP code is null");
+                        return null;
+                    }
+                    //不设置null\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
                     skuData.setErpCode(sku.getErpCode());
                     if(remarkMappedByErpCode.containsKey(sku.getErpCode())) {
                         StringBuilder remark = new StringBuilder();
