@@ -193,7 +193,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
                                                                  @Param("column") String column, @Param("order") String order, @Param("offset") Integer offset, @Param("size") Integer pageSize);
     List<PlatformOrderFront> fetchUninvoicedOrdersByShopForClientFullSQL(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses,
                                                                   @Param("column") String column, @Param("order") String order, @Param("offset") Integer offset, @Param("size") Integer pageSize,
-                                                                         @Param("productStatuses") List<Integer> productStatuses, @Param("shippingStatuses") List<Integer> shippingStatuses, @Param("purchaseStatuses") List<Integer> purchaseStatuses);
+                                                                         @Param("productStatuses") List<Integer> productStatuses, @Param("shippingStatuses") List<Integer> shippingStatuses, @Param("purchaseStatuses") List<Integer> purchaseStatuses,
+                                                                         @Param("startDate") Date startDate, @Param("endDate") Date endDate);
     List<String> findUninvoicedOrderIdsByShopForClient(@Param("shopIds") List<String> shopIds, @Param("erpStatuses") List<Integer> erpStatuses);
 
     List<PlatformOrder> fetchEmptyLogisticChannelOrders(@Param("startDate") String startDate,@Param("endDate") String endDate);
