@@ -221,7 +221,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<PlatformOrder> findUninvoicedOrdersByShopForClient(List<String> shopIds, List<Integer> erpStatuses, String column, String order, Integer pageNo, Integer pageSize);
 
     List<PlatformOrderFront> fetchUninvoicedOrdersByShopForClientFullSQL(List<String> shopIds, List<Integer> erpStatuses, String column, String order, Integer pageNo, Integer pageSize,
-                                                                         List<Integer> productAvailable, List<Integer> shippingAvailable, List<Integer> purchaseAvailable);
+                                                                         List<Integer> productAvailable, List<Integer> shippingAvailable, List<Integer> purchaseAvailable, Date startDate, Date endDate);
 
     /**
      * Get ids of all order that can be invoiced by small clients (type 2) themselves.

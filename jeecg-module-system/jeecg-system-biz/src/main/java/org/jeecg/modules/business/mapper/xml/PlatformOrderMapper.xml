@@ -747,6 +747,10 @@
             #{erpStatus}
         </foreach>
         AND poc.erp_status &lt;&gt; 5
+        <if test = "startDate != null and endDate != null">
+            AND po.order_time &gt;= #{startDate}
+            AND po.order_time &lt;= #{endDate}
+        </if>
         AND (po.shipping_invoice_number IS NULL
             OR (po.shipping_invoice_number LIKE '%%%%-%%-2%%%'
                     AND po.purchase_invoice_number IS NULL

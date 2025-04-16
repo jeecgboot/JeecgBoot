@@ -29,6 +29,7 @@ import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
@@ -532,7 +533,9 @@ public class InvoiceController {
                                             @RequestParam(name = "order", defaultValue = "ASC") String order,
                                             @RequestParam(name ="shippingAvailable[]", required = false) List<Integer> shippingAvailable,
                                             @RequestParam(name ="purchaseAvailable[]", required = false) List<Integer> purchaseAvailable,
-                                            @RequestParam(name = "productAvailable[]", required = false) List<Integer> productAvailable
+                                            @RequestParam(name = "productAvailable[]", required = false) List<Integer> productAvailable,
+                                            @RequestParam(name = "startDate" , required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                            @RequestParam(name = "endDate" , required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
     ) {
         log.info("User : {} is requesting uninvoiced orders for shops : [{}]",
                 ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername(),
@@ -541,7 +544,7 @@ public class InvoiceController {
         String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText",""));
         String parsedOrder = order.toUpperCase();
         if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
-            return Result.error("Error 400 Bad Request");
+            return Result.error(400,"Error 400 Bad Request");
         }
         try {
             specialFilterContentForDictSql(parsedColumn);
@@ -553,8 +556,14 @@ public class InvoiceController {
 //        // checking shipping data availability
         List<String> shopIdList = Arrays.asList(shopIds.split(","));
 
+        if(startDate != null && endDate != null) {
+            if (startDate.after(endDate)) {
+                return Result.error("startDate can not after endDate!");
+            }
+        }
+
         List<PlatformOrderFront> orders = platformOrderService.fetchUninvoicedOrdersByShopForClientFullSQL(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize,
-                productStatuses, shippingAvailable, purchaseAvailable);
+                productStatuses, shippingAvailable, purchaseAvailable, startDate, endDate);
         int total = !order.isEmpty() ? orders.get(0).getTotalCount() : 0;
 
         IPage<PlatformOrderFront> page = new Page<>();
