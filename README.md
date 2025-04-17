@@ -16,7 +16,7 @@ JeecgBoot AI低代码平台
 项目介绍
 -----------------------------------
 
-<h3 align="center">Java AI Low Code Platform for Enterprise web applications</h3>
+<h3 align="center">Java AI Low Code Platform</h3>
 
 JeecgBoot是一款基于AIGC和低代码引擎的AI低代码平台，旨在帮助开发者快速实现低代码开发和构建、部署个性化的 AI 应用。
 前后端分离架构Ant Design&Vue3，SpringBoot，SpringCloud Alibaba，Mybatis-plus，Shiro，强大的代码生成器让前后端代码一键生成，无需写任何代码！
