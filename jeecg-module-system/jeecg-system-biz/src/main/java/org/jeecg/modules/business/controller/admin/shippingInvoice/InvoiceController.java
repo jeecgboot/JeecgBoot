@@ -911,7 +911,7 @@ public class InvoiceController {
             // only calculate purchase estimation if products are not available and purchaseInvoiceNumber is null, else it's already been paid
             List<String> orderIdsWithProductUnavailable = entry.getValue().stream()
                     .filter(
-                        order -> order.getProductAvailable().equals("0")
+                        order -> (order.getProductAvailable() == null || order.getProductAvailable().equals("0"))
                                 && order.getPurchaseInvoiceNumber() == null
                                 && order.getVirtualProductAvailable().equals("0"))
                     .map(PlatformOrder::getId).collect(Collectors.toList());
