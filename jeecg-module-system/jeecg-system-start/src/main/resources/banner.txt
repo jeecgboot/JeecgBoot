@@ -8,7 +8,7 @@ ${AnsiColor.BRIGHT_BLUE}
 
 
 ${AnsiColor.BRIGHT_GREEN}
-WIA APP Version: 3.3.3
+WIA APP Version: 3.3.4
 Spring Boot Version: ${spring-boot.version}${spring-boot.formatted-version}
 Website: www.wia-sourcing.com
 ${AnsiColor.BLACK}
