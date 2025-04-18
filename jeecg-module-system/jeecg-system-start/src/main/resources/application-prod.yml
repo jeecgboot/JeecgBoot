@@ -223,6 +223,8 @@ jeecg:
     # credit invoice template
     creditTemplatePath_EU: /wia/files/Credit_Invoice_Template_EU.xlsx
     creditTemplatePath_US: /wia/files/Credit_Invoice_Template_US.xlsx
+    creditTemplatePath_balance_EU: /wia/files/Credit_Invoice_Template_balance_EU.xlsx
+    creditTemplatePath_balance_US: /wia/files/Credit_Invoice_Template_balance_US.xlsx
     # where to store generated credit file
     creditInvoiceDir: /wia/invoices/credit
 
