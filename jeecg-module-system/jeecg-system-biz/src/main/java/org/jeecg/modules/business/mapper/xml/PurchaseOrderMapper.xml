@@ -106,6 +106,7 @@
             JOIN sku
                 ON pos.sku_id = sku.id
         WHERE po.invoice_number = #{invoiceNumber}
+        AND sku.is_gift = 2
         GROUP BY pos.sku_id;
 
     </select>
