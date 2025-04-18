@@ -26,7 +26,8 @@
         SET c.update_time = NOW(),
             c.update_by = #{username},
             c.description =#{credit.description},
-            c.payment_proof = #{credit.paymentProofString}
+            c.payment_proof = #{credit.paymentProofString},
+            c.show_balance = #{credit.showBalance}
         WHERE c.id = #{id};
     </update>
     <select id="countAllWithFilters" resultType="java.lang.Integer">

@@ -15,6 +15,7 @@ import java.util.List;
 public class CreditInvoice extends AbstractInvoice<String, Object, Integer, Object, BigDecimal> {
 
     private final BigDecimal balance;
+    @Getter
     private final Credit credit;
     @Getter
     private final String currency;
@@ -46,14 +47,16 @@ public class CreditInvoice extends AbstractInvoice<String, Object, Integer, Obje
         cellStyle.setFont(arial);
         cellStyle.setDataFormat(format.getFormat("#,##0.00")); // to get decimal format eg : "1234,56" and not "1234,5678" by default
 
-        String cellLocation = currency.equals("USD") ? BALANCE_LOCATION_USD : BALANCE_LOCATION_EUR;
-        configCell(cellLocation, balance, cellStyle);
+        if(credit.getShowBalance() == 1) {
+            String cellLocation = currency.equals("USD") ? BALANCE_LOCATION_USD : BALANCE_LOCATION_EUR;
+            configCell(cellLocation, balance, cellStyle);
+        }
     }
     @Override
     protected List<Row<String, Object, Integer, Object, BigDecimal>> tableData() {
         List<Row<String, Object, Integer, Object, BigDecimal>> rows = new ArrayList<>();
         Row<String, Object, Integer, Object, BigDecimal> row = new Row<>(
-                credit.getDescription().isEmpty() ? "Credit" : credit.getDescription(),
+                credit.getDescription() == null || credit.getDescription().isEmpty() ? "Credit" : credit.getDescription(),
                 null,
                 null,
                 null,
