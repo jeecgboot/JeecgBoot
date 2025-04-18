@@ -86,4 +86,6 @@ public interface SkuMapper extends BaseMapper<Sku> {
     int countUnpairedSkus(@Param("shopId") String shopId);
 
     List<String> latestSkuCounter(@Param("userCode") String userCode, @Param("clientCode") String clientCode, @Param("date") String date);
+
+    void setDesynced(@Param("erpCodes") List<String> erpCodes);
 }

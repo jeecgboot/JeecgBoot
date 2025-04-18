@@ -821,4 +821,12 @@
         FROM sku s
         WHERE erp_code LIKE CONCAT(#{date}, #{userCode}, '%%%-', #{clientCode});
     </select>
+    <update id="setDesynced">
+        UPDATE sku
+        SET is_synced = 0
+        WHERE erp_code IN
+        <foreach collection="erpCodes" item="erpCode" index="index" separator="," open="(" close=")">
+            #{erpCode}
+        </foreach>;
+    </update>
 </mapper>

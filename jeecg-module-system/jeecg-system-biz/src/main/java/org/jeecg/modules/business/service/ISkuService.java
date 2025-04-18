@@ -130,4 +130,6 @@ public interface ISkuService extends IService<Sku> {
     int countUnpairedSkus(String shopId);
 
     int latestSkuCounter(String userCode, String clientCode, String date);
+
+    void setDesynced(List<String> erpCodes);
 }

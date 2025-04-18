@@ -636,4 +636,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
         }).collect(Collectors.toList());
         return counters.stream().max(Integer::compareTo).orElse(0) + 1;
     }
+
+    @Override
+    public void setDesynced(List<String> erpCodes) {
+        skuMapper.setDesynced(erpCodes);
+    }
 }

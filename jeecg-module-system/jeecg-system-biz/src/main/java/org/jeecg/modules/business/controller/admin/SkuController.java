@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.Lists;
 import freemarker.template.Template;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,7 +15,12 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
+import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuListRawStream;
+import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuListRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuUpdateListStream;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
@@ -42,6 +48,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,6 +69,8 @@ public class SkuController {
     private IShopService shopService;
     @Autowired
     private ISkuService skuService;
+    @Autowired
+    private ISkuWeightService skuWeightService;
     @Autowired
     private ISkuPriceService skuPriceService;
     @Autowired
@@ -613,5 +622,52 @@ public class SkuController {
                                       @RequestParam(name= "clientCode") String clientCode,
                                       @RequestParam(name= "date") String date) {
         return Result.OK(skuService.latestSkuCounter(userCode, clientCode, date));
+    }
+
+    @GetMapping(value = "/compare")
+    public Result<?> compareClientSkuWithMabang(@RequestParam(name="clientId") String clientId) {
+        List<String> skuIds = skuService.listByClientId(clientId).stream()
+                .map(Sku::getId)
+                .collect(Collectors.toList());
+        List<SkuDocument> clientSkus = new ArrayList<>();
+        for(String skuId: skuIds) {
+            List<SkuDocument> skus = skuMongoService.findBySkuId(skuId);
+            if(skus.size() > 1) {
+                SkuDocument latestSkuDocument = skus.stream().map(sku -> sku.getLatestSkuWeight().getEffectiveDate())
+                        .max(Date::compareTo)
+                        .flatMap(date -> skus.stream().filter(sku -> sku.getLatestSkuWeight().getEffectiveDate().equals(date)).findFirst())
+                        .orElse(null);
+
+                clientSkus.add(latestSkuDocument);
+            } else {
+                clientSkus.add(skus.get(0));
+            }
+        }
+
+        List<List<String>> erpCodes = Lists.partition(clientSkus, 50)
+                .stream()
+                .map(skus -> skus.stream().map(SkuDocument::getErpCode).collect(Collectors.toList()))
+                .collect(Collectors.toList());
+        List<SkuData> skusFromMabang = new ArrayList<>();
+        for(List<String> skuPartition : erpCodes) {
+            SkuListRequestBody body = new SkuListRequestBody();
+            body.setStockSkuList(String.join(",", skuPartition));
+            SkuListRawStream rawStream = new SkuListRawStream(body);
+            SkuUpdateListStream stream = new SkuUpdateListStream(rawStream);
+            skusFromMabang.addAll(stream.all());
+        }
+        List<String> desyncedSkus = new ArrayList<>();
+        for(SkuDocument sku : clientSkus) {
+            skusFromMabang.stream().filter(skuData -> skuData.getErpCode().equals(sku.getErpCode()))
+                    .findFirst()
+                    .ifPresent(skuData -> {
+                        if(!Objects.equals(skuData.getWeight(), sku.getLatestSkuWeight().getWeight()) || !Objects.equals(skuData.getSalePrice(), sku.getLatestSkuPrice().getPrice())) {
+                            desyncedSkus.add(skuData.getErpCode());
+                        }
+                    });
+        }
+        skuService.setDesynced(desyncedSkus);
+
+        return Result.OK();
     }
 }
