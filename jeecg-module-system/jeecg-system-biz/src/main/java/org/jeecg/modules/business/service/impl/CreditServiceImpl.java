@@ -75,6 +75,10 @@ public class CreditServiceImpl extends ServiceImpl<CreditMapper, Credit> impleme
     private String INVOICE_TEMPLATE_EU;
     @Value("${jeecg.path.creditTemplatePath_US}")
     private String INVOICE_TEMPLATE_US;
+    @Value("${jeecg.path.creditTemplatePath_balance_EU}")
+    private String INVOICE_TEMPLATE_BALANCE_EU;
+    @Value("${jeecg.path.creditTemplatePath_balance_US}")
+    private String INVOICE_TEMPLATE_BALANCE_US;
 
     @Value("${jeecg.path.creditInvoiceDir}")
     private String INVOICE_DIR;
@@ -125,9 +129,14 @@ public class CreditServiceImpl extends ServiceImpl<CreditMapper, Credit> impleme
     public InvoiceMetaData getInvoiceMetaData(CreditInvoice invoice) throws IOException {
         Path template;
         if(invoice.getCurrency().equals("USD")) {
-            template = Paths.get(INVOICE_TEMPLATE_US);
+            if(invoice.getCredit().getShowBalance() == 0)
+                template = Paths.get(INVOICE_TEMPLATE_US);
+            else template = Paths.get(INVOICE_TEMPLATE_BALANCE_US);
         } else {
-            template = Paths.get(INVOICE_TEMPLATE_EU);
+            if(invoice.getCredit().getShowBalance() == 0)
+                template = Paths.get(INVOICE_TEMPLATE_EU);
+            else
+                template = Paths.get(INVOICE_TEMPLATE_BALANCE_EU);
         }
         String filename = "Invoice N°" + invoice.getCode() + "(" + invoice.getTargetClient().getInvoiceEntity() + ").xlsx";
         Path out = Paths.get(INVOICE_DIR, filename);

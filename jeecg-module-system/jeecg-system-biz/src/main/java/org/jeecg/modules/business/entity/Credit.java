@@ -77,7 +77,10 @@ public class Credit implements Serializable {
     @Excel(name = "status", width = 15)
     @ApiModelProperty(value = "status")
     private java.lang.Integer status;
-
+    /**show balance 0: false, 1 : true*/
+    @Excel(name= "show_balance", width = 15)
+    @ApiModelProperty(value = "show balance")
+    private java.lang.Integer showBalance;
     /**proof*/
     @Excel(name = "proof", width = 15)
     private transient java.lang.String paymentProofString;

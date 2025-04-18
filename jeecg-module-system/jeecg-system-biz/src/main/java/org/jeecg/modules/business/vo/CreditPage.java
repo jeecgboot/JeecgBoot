@@ -76,6 +76,10 @@ public class CreditPage implements Serializable {
     @Excel(name = "status", width = 15)
     @ApiModelProperty(value = "status")
     private Integer status;
+    /**show balance 0: false, 1: true*/
+    @Excel(name="show_balance", width=15)
+    @ApiModelProperty(value="show_balance")
+    private Integer showBalance;
 
     /**
      * rowNum
