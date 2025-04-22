@@ -19,7 +19,7 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
-		<!--<dependency>
+<!--		<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>hibernate-re</artifactId>
 		</dependency>-->
@@ -30,19 +30,31 @@
 			<artifactId>weixin4j</artifactId>
 		</dependency>
 		<!-- 积木报表 -->
-		<!--<dependency>
+		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.github.jsqlparser</groupId>
+					<artifactId>jsqlparser</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>
 		</dependency>
-		&lt;!&ndash; 积木BI &ndash;&gt;
+		<!-- 积木BI -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimubi-spring-boot3-starter</artifactId>
-		</dependency>-->
+			<exclusions>
+				<exclusion>
+					<groupId>com.github.jsqlparser</groupId>
+					<artifactId>jsqlparser</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 	
 </project>

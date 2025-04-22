@@ -1,6 +1,11 @@
 package org.jeecg.config.firewall.SqlInjection.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.schema.Table;
+import net.sf.jsqlparser.statement.select.PlainSelect;
+import net.sf.jsqlparser.statement.select.Select;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgSqlInjectionException;
 import org.jeecg.common.util.oConvertUtils;
@@ -12,8 +17,11 @@ import org.jeecg.config.firewall.interceptor.LowCodeModeInterceptor;
 import org.jeecg.modules.system.entity.SysTableWhiteList;
 import org.jeecg.modules.system.security.DictQueryBlackListHandler;
 import org.jeecg.modules.system.service.ISysTableWhiteListService;
+import org.jeecgframework.minidao.sqlparser.AbstractSqlProcessor;
+import org.jeecgframework.minidao.sqlparser.impl.JsqlparserSqlProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.jeecgframework.minidao.util.MiniDaoUtil;
 
 import java.net.URLDecoder;
 import java.util.*;
@@ -63,32 +71,40 @@ public class DictTableWhiteListHandlerImpl implements IDictTableWhiteListHandler
 
     @Override
     public boolean isPassBySql(String sql) {
-//        Map<String, SelectSqlInfo> parsedMap = null;
-//        try {
-//            parsedMap = JSqlParserUtils.parseAllSelectTable(sql);
-//        } catch (Exception e) {
-//            log.warn("校验sql语句，解析报错：{}", e.getMessage());
-//        }
-//        // 如果sql有问题，则肯定执行不了，所以直接返回true
-//        if (parsedMap == null) {
-//            return true;
-//        }
-//        log.info("获取select sql信息 ：{} ", parsedMap);
-//        // 遍历当前sql中的所有表名，如果有其中一个表或表的字段不在白名单中，则不通过
-//        for (Map.Entry<String, SelectSqlInfo> entry : parsedMap.entrySet()) {
-//            SelectSqlInfo sqlInfo = entry.getValue();
-//            if (sqlInfo.isSelectAll()) {
-//                log.warn("查询语句中包含 * 字段，暂时先通过");
-//                continue;
-//            }
-//            Set<String> queryFields = sqlInfo.getAllRealSelectFields();
-//            // 校验表名和字段是否允许查询
-//            String tableName = entry.getKey();
-//            if (!this.checkWhiteList(tableName, queryFields)) {
-//                return false;
-//            }
-//        }
+        Select select = null;
+
+        try {
+            select = (Select) CCJSqlParserUtil.parse(sql, (parser) -> {
+                parser.withSquareBracketQuotation(true);
+            });
+        } catch (JSQLParserException var10) {
+            JSQLParserException jsqlParserException = var10;
+            jsqlParserException.printStackTrace();
+        }
+
+        String tableName = ((Table)((PlainSelect)select.getSelectBody()).getFromItem()).getName();
+
+        List<Map<String, Object>> parsedMap = null;
+        try {
+            parsedMap = MiniDaoUtil.parseSqlFields(sql);
+        } catch (Exception e) {
+            log.warn("校验sql语句，解析报错：{}", e.getMessage());
+        }
+        // 如果sql有问题，则肯定执行不了，所以直接返回true
+        if (parsedMap == null) {
+            return true;
+        }
+        log.info("获取select sql信息 ：{} ", parsedMap);
+        // 遍历当前sql中的所有表名，如果有其中一个表或表的字段不在白名单中，则不通过
+        if (!this.checkWhiteList(tableName, parsedMap.get(0).keySet())) {
+            return false;
+        }
         return true;
+    }
+
+    public static void main(String[] args) {
+        String sql = "select id,name,page from dual;";
+        System.out.println(MiniDaoUtil.parseSqlFields(sql));
     }
 
     @Override
@@ -120,21 +136,22 @@ public class DictTableWhiteListHandlerImpl implements IDictTableWhiteListHandler
         if (oConvertUtils.isEmpty(tableName)) {
             return true;
         }
-//        if (fields == null || fields.length == 0) {
-//            fields = new String[]{"*"};
-//        }
-//        String sql = "select " + String.join(",", fields) + " from " + tableName;
-//        log.info("字典拼接的查询SQL：{}", sql);
-//        try {
-//            // 进行SQL解析
+        if (fields == null || fields.length == 0) {
+            fields = new String[]{"*"};
+        }
+        String sql = "select " + String.join(",", fields) + " from " + tableName;
+        log.info("字典拼接的查询SQL：{}", sql);
+        try {
+            // 进行SQL解析
+            MiniDaoUtil.parseSqlFields(sql);
 //            JSqlParserUtils.parseSelectSqlInfo(sql);
-//        } catch (Exception e) {
-//            // 如果SQL解析失败，则通过字段名和表名进行校验
-//            return checkWhiteList(tableName, new HashSet<>(Arrays.asList(fields)));
-//        }
-//        // 通过SQL解析进行校验，可防止SQL注入
-//        return this.isPassBySql(sql);
-        return true;
+        } catch (Exception e) {
+            // 如果SQL解析失败，则通过字段名和表名进行校验
+            return checkWhiteList(tableName, new HashSet<>(Arrays.asList(fields)));
+        }
+        // 通过SQL解析进行校验，可防止SQL注入
+        return this.isPassBySql(sql);
+//        return true;
     }
 
     /**
