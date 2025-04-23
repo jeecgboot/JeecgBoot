@@ -63,11 +63,17 @@ JeecgBoot平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 
 
 
-## 产品体验
 
-- 使用手册：https://help.jeecg.com/aigc 
-- 演示地址：https://boot3.jeecg.com
+#### 在线体验
 
+- JeecgBoot演示：  https://boot3.jeecg.com
+- 敲敲云在线搭建AI知识库：https://app.qiaoqiaoyun.com
+
+
+## 技术交流
+
+- 开发文档：https://help.jeecg.com/aigc 
+- QQ群：716488839
 
 
 ## 功能列表

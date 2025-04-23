@@ -105,6 +105,11 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 [![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
 
 
+##### 在线体验
+
+- JeecgBoot演示：  https://boot3.jeecg.com
+- 敲敲云在线搭建AI知识库：https://app.qiaoqiaoyun.com
+
 ##### Dify `VS` JEECG AI
 
 > JEECG AI与Dify相比，在多个方面展现出显著的优势，特别是在文档处理、格式和图片保持方面。以下是一些具体的优点：
