@@ -1,7 +1,7 @@
 <!--职务选择组件-->
 <template>
   <div class="JSelectPosition">
-    <JSelectBiz @handleOpen="handleOpen" :loading="loadingEcho" v-bind="attrs"></JSelectBiz>
+    <JSelectBiz @handleOpen="handleOpen" :loading="loadingEcho" v-bind="attrs" @change="(changeValue) => $emit('update:value', changeValue)"></JSelectBiz>
     <!-- update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
     <a-form-item>
       <PositionSelectModal @register="regModal" @getSelectResult="setValue" v-bind="getBindValue"></PositionSelectModal>
@@ -70,9 +70,15 @@
       /**
        * 监听组件值
        */
-      watchEffect(() => {
-        props.value && initValue();
-      });
+      // update-begin--author:liaozhiyang---date:20250423---for：【pull/8014】插槽方式弹窗中取消该数据checkbox的选中状态，需要点击第二次才生效。
+      watch(
+        () => props.value,
+        () => {
+          props.value && initValue();
+        },
+        { deep: true }
+      );
+      // update-end--author:liaozhiyang---date:20250423---for：【pull/8014】插槽方式弹窗中取消该数据checkbox的选中状态，需要点击第二次才生效。
 
       /**
        * 监听selectValues变化
