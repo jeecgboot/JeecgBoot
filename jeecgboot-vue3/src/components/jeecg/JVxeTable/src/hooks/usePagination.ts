@@ -52,7 +52,9 @@ export function usePagination(props: JVxeTableProps, methods: JVxeTableMethods) 
         [
           h(Pagination, {
             ...bindProps.value,
-            disabled: props.disabled,
+            // update-begin--author:liaozhiyang---date:20250423---for：【issues/8137】vxetable表格禁用后分页隐藏了
+            disabled: false,
+            // update-end--author:liaozhiyang---date:20250423---for：【issues/8137】vxetable表格禁用后分页隐藏了
             onChange: handleChange,
             onShowSizeChange: handleShowSizeChange,
           }),
