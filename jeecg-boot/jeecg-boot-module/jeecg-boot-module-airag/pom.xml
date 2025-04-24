@@ -55,8 +55,8 @@
 
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-aiflow-jdk8</artifactId>
-            <version>1.0.0</version>
+            <artifactId>jeecg-aiflow</artifactId>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- langChain4j model support -->
