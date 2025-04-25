@@ -76,7 +76,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<SkuOrderPage> getInventory(@Param("erpCodes") List<String> erpCodes, @Param("invoiceNumber") String invoiceNumber);
 
     @MapKey("id")
-    Map<String, Sku> listByClientId(@Param("clientId") String clientId);
+    Map<String, Sku> listInUninvoicedOrders(@Param("clientId") String clientId, @Param("erpStatuses") List<String> erpStatuses);
 
     List<SkuOrderPage> searchExistingSkuByKeywords(@Param("keywords") List<String> keywords);
     List<Sku> listImgUrls();

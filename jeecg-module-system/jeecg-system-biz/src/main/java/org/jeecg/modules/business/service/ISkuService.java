@@ -113,7 +113,7 @@ public interface ISkuService extends IService<Sku> {
     List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber);
     List<SkuOrderPage> getInventory(List<String> erpCodes, String invoiceNumber);
 
-    Map<String, Sku> listByClientId(String clientId);
+    Map<String, Sku> listInUninvoicedOrders(String clientId, List<String> erpStatuses);
 
     List<SkuOrderPage> searchExistingSkuByKeywords(List<String> keywords);
 

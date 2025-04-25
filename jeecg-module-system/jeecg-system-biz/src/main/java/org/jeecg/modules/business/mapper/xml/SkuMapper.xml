@@ -723,12 +723,22 @@
             #{sku.id}
         </foreach>
     </update>
-    <select id="listByClientId" resultType="org.jeecg.modules.business.entity.Sku">
-        SELECT *
+    <select id="listInUninvoicedOrders" resultType="org.jeecg.modules.business.entity.Sku">
+        SELECT DISTINCT s.*
         FROM sku s
-             JOIN client_sku ON s.id = client_sku.sku_id
+            JOIN client_sku ON s.id = client_sku.sku_id
+            JOIN platform_order_content poc ON s.id = poc.sku_id
+            JOIN platform_order po ON poc.platform_order_id = po.id
         WHERE client_sku.client_id = #{clientId}
-        AND s.status = 3;
+          AND po.shipping_invoice_number IS NULL
+          AND poc.erp_status &lt;&gt; 5
+          AND po.erp_status IN
+          <foreach collection="erpStatuses" item="erpStatus" index="index" separator="," open="(" close=")">
+              #{erpStatus}
+          </foreach>
+          AND po.order_time &gt;= '2024-01-01 00:00:00'
+          AND s.status = 3
+        ;
     </select>
     <select id="searchExistingSkuByKeywords" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         SELECT

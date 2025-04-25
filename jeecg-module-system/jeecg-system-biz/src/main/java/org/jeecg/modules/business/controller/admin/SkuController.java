@@ -619,8 +619,9 @@ public class SkuController {
     }
 
     @GetMapping(value = "/compare")
-    public Result<?> compareClientSkuWithMabang(@RequestParam(name="clientId") String clientId) {
-        Map<String, Sku> clientSkus = skuService.listByClientId(clientId);
+    public Result<?> compareClientSkuWithMabang(@RequestParam(name="clientId") String clientId,
+                                                @RequestParam(name="erpStatuses[]") List<String> erpStatuses) {
+        Map<String, Sku> clientSkus = skuService.listInUninvoicedOrders(clientId, erpStatuses);
         List<String> skuIds = new ArrayList<>(clientSkus.keySet());
         List<SkuDocument> clientSkuDocs = new ArrayList<>();
         for(String skuId: skuIds) {
