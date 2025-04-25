@@ -76,7 +76,7 @@
         () => {
           props.value && initValue();
         },
-        { deep: true }
+        { deep: true, immediate: true }
       );
       // update-end--author:liaozhiyang---date:20250423---for：【pull/8014】插槽方式弹窗中取消该数据checkbox的选中状态，需要点击第二次才生效。
 
