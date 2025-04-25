@@ -71,18 +71,7 @@ public class DictTableWhiteListHandlerImpl implements IDictTableWhiteListHandler
 
     @Override
     public boolean isPassBySql(String sql) {
-        Select select = null;
-
-        try {
-            select = (Select) CCJSqlParserUtil.parse(sql, (parser) -> {
-                parser.withSquareBracketQuotation(true);
-            });
-        } catch (JSQLParserException var10) {
-            JSQLParserException jsqlParserException = var10;
-            jsqlParserException.printStackTrace();
-        }
-
-        String tableName = ((Table)((PlainSelect)select.getSelectBody()).getFromItem()).getName();
+        String tableName = MiniDaoUtil.parseTable(sql);
 
         List<Map<String, Object>> parsedMap = null;
         try {
