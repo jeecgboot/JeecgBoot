@@ -56,6 +56,7 @@ import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDict
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 import static org.jeecg.modules.business.entity.Task.TaskCode.SI_G;
 import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
+import static org.jeecg.modules.business.vo.PlatformOrderFront.*;
 
 /**
  * Controller for request related to shipping invoice
@@ -157,67 +158,40 @@ public class InvoiceController {
     @GetMapping(value = "/orders")
     public Result<?> getOrdersByClientAndShops(PlatformOrder platformOrder,
                                                @RequestParam("clientId") String clientId,
-                                               @RequestParam(name = "shopIds[]", required = false) List<String> shopIDs,
-                                               @RequestParam(name = "start", required = false) String start,
-                                               @RequestParam(name = "end", required = false) String end,
+                                               @RequestParam(name = "shopIds[]") List<String> shopIDs,
+                                               @RequestParam(name = "start") String start,
+                                               @RequestParam(name = "end") String end,
                                                @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                @RequestParam(name = "type") String type,
                                                @RequestParam(name = "warehouses[]") List<String> warehouses,
-                                               HttpServletRequest req) {
-        String warehouseString = String.join(",", warehouses);
-        QueryWrapper<PlatformOrder> queryWrapper = QueryGenerator.initQueryWrapper(platformOrder, req.getParameterMap());
-        LambdaQueryWrapper<PlatformOrder> lambdaQueryWrapper = queryWrapper.lambda();
-        switch (type) {
-            case "shipping":
-                lambdaQueryWrapper.in(PlatformOrder::getErpStatus, OrderStatus.Shipped.getCode());
-                break;
-            case "pre-shipping":
-                lambdaQueryWrapper.in(PlatformOrder::getErpStatus, Arrays.asList(OrderStatus.Pending.getCode(), OrderStatus.Preparing.getCode()));
-                break;
-            case "all":
-                lambdaQueryWrapper.in(PlatformOrder::getErpStatus, Arrays.asList(OrderStatus.Pending.getCode(), OrderStatus.Preparing.getCode(), OrderStatus.Shipped.getCode()));
-                break;
-            default:
-                return Result.error("Error 404 : page not found.");
+                                               @RequestParam(name = "column", defaultValue = "shop_id") String column,
+                                               @RequestParam(name = "order", defaultValue = "ASC") String order
+    ) {
+        log.info("Request for {} orders from client : {} between {} and {} for shops : {}", type, clientId, start, end, shopIDs);
+
+        String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
+        String parsedOrder = order.toUpperCase();
+        if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
+            return Result.error("Error 400 Bad Request");
         }
-        lambdaQueryWrapper.isNull(PlatformOrder::getShippingInvoiceNumber);
-        Page<PlatformOrder> page = new Page<>(pageNo, pageSize);
-        IPage<PlatformOrder> pageList;
-        log.info("Request for " + type + " orders from client : " + clientId);
-        if (shopIDs == null || shopIDs.isEmpty()) { // obsolete, used in old pages only
-            lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
-                    " JOIN shop s ON po.shop_id = s.id\n" +
-                    " JOIN client c ON s.owner_id = c.id WHERE c.id = '" + clientId + "'");
-            pageList = platformOrderMapper.selectPage(page, lambdaQueryWrapper);
-        } else {
-            log.info("Specified shop IDs : " + shopIDs);
-            lambdaQueryWrapper.in(PlatformOrder::getShopId, shopIDs);
-            if(start != null || end != null){
-                log.info("Specified period between " + start + " and " + end);
-                if (type.equals("shipping"))
-                    lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
-                            "LEFT JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
-                            "WHERE po.shipping_time between '" + start + "' AND '" + end + "'\n" +
-                            "AND (lc.warehouse_in_china IN (" + warehouseString + ") OR po.logistic_channel_name = '' OR po.logistic_channel_name IS NULL)");
-                else
-                    lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
-                            "LEFT JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
-                            "WHERE po.order_time between '" + start + "' AND '" + end + "'\n" +
-                            "AND (lc.warehouse_in_china IN (" + warehouseString + ") OR po.logistic_channel_name = '' OR po.logistic_channel_name IS NULL)");
-            }
-            else {// obsolete
-                lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT po.id FROM platform_order po\n" +
-                        "JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name\n" +
-                        "WHERE (lc.warehouse_in_china IN (" + warehouseString + ") OR po.logistic_channel_name = '' OR po.logistic_channel_name IS NULL)");
-            }
-            pageList = platformOrderMapper.selectPage(page, lambdaQueryWrapper);
-            return Result.OK(pageList);
+        try {
+            specialFilterContentForDictSql(parsedColumn);
+        } catch (RuntimeException e) {
+            return Result.error("Error 400 Bad Request");
         }
-        if (pageList.getSize() > 0) {
-            return Result.OK(pageList);
+
+        List<PlatformOrderFront> orders = platformOrderService.listByClientAndShops(clientId, shopIDs, start, end, type, pageNo, pageSize, warehouses, order, parsedColumn);
+        int total = platformOrderService.countListByClientAndShops(clientId, shopIDs, start, end, type, warehouses);
+        if (!orders.isEmpty()) {
+            IPage<PlatformOrderFront> page = new Page<>();
+            page.setRecords(orders);
+            page.setCurrent(pageNo);
+            page.setSize(pageSize);
+            page.setTotal(total);
+            return Result.OK(page);
         }
-        return Result.error("No orders for selected client/shops");
+        return Result.error(404, "No orders for selected client/shops");
     }
     @PostMapping(value = "/period")
     public Result<?> getValidPeriod(@RequestBody List<String> shopIDs) {
@@ -540,7 +514,7 @@ public class InvoiceController {
         log.info("User : {} is requesting uninvoiced orders for shops : [{}]",
                 ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername(),
                 shopIds);
-        List<Integer> productStatuses = productAvailable == null || productAvailable.isEmpty() ? Arrays.asList(Integer.valueOf(PlatformOrderFront.productStatus.Unavailable.code), Integer.valueOf(PlatformOrderFront.productStatus.Available.code), Integer.valueOf(PlatformOrderFront.productStatus.Ordered.code)) : productAvailable;
+        List<Integer> productStatuses = productAvailable == null || productAvailable.isEmpty() ? Arrays.asList(Integer.valueOf(productStatus.Unavailable.code), Integer.valueOf(productStatus.Available.code), Integer.valueOf(productStatus.Ordered.code)) : productAvailable;
         String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText",""));
         String parsedOrder = order.toUpperCase();
         if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {

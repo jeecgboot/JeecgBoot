@@ -723,14 +723,12 @@
             #{sku.id}
         </foreach>
     </update>
-    <select id="listByClientId" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
-        SELECT s.id,
-               s.erp_code,
-               s.en_name,
-               s.zh_name
+    <select id="listByClientId" resultType="org.jeecg.modules.business.entity.Sku">
+        SELECT *
         FROM sku s
              JOIN client_sku ON s.id = client_sku.sku_id
-        WHERE client_sku.client_id = #{clientId};
+        WHERE client_sku.client_id = #{clientId}
+        AND s.status = 3;
     </select>
     <select id="searchExistingSkuByKeywords" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         SELECT
@@ -821,9 +819,9 @@
         FROM sku s
         WHERE erp_code LIKE CONCAT(#{date}, #{userCode}, '%%%-', #{clientCode});
     </select>
-    <update id="setDesynced">
+    <update id="setIsSynced">
         UPDATE sku
-        SET is_synced = 0
+        SET is_synced = IF(#{isSynced} = true, 1, 0)
         WHERE erp_code IN
         <foreach collection="erpCodes" item="erpCode" index="index" separator="," open="(" close=")">
             #{erpCode}

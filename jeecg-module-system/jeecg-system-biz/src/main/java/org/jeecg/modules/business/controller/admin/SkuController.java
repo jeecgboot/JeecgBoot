@@ -48,7 +48,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -376,11 +375,6 @@ public class SkuController {
                         .collect(Collectors.toList())
         );
     }
-    @GetMapping("/skuListByClient")
-    public Result<?> skusListByClient(@RequestParam("clientId") String clientId) {
-        List<Sku> skus = skuService.listByClientId(clientId);
-        return Result.OK(skus);
-    }
 
     @GetMapping("/listWithFilters")
     public Result<?> listWithFilters(@RequestParam(name = "clientId", required = false) String clientId,
@@ -626,47 +620,71 @@ public class SkuController {
 
     @GetMapping(value = "/compare")
     public Result<?> compareClientSkuWithMabang(@RequestParam(name="clientId") String clientId) {
-        List<String> skuIds = skuService.listByClientId(clientId).stream()
-                .map(Sku::getId)
-                .collect(Collectors.toList());
-        List<SkuDocument> clientSkus = new ArrayList<>();
+        Map<String, Sku> clientSkus = skuService.listByClientId(clientId);
+        List<String> skuIds = new ArrayList<>(clientSkus.keySet());
+        List<SkuDocument> clientSkuDocs = new ArrayList<>();
         for(String skuId: skuIds) {
             List<SkuDocument> skus = skuMongoService.findBySkuId(skuId);
-            if(skus.size() > 1) {
-                SkuDocument latestSkuDocument = skus.stream().map(sku -> sku.getLatestSkuWeight().getEffectiveDate())
-                        .max(Date::compareTo)
-                        .flatMap(date -> skus.stream().filter(sku -> sku.getLatestSkuWeight().getEffectiveDate().equals(date)).findFirst())
-                        .orElse(null);
-
-                clientSkus.add(latestSkuDocument);
-            } else {
-                clientSkus.add(skus.get(0));
+            if(skus.isEmpty()) {
+                skuMongoService.migrateOneSku(clientSkus.get(skuId));
+                skus = skuMongoService.findBySkuId(skuId);
             }
+            SkuDocument sku = skus.get(0);
+            clientSkuDocs.add(sku);
         }
 
-        List<List<String>> erpCodes = Lists.partition(clientSkus, 50)
+        List<List<String>> erpCodePartition = Lists.partition(clientSkuDocs, 50)
                 .stream()
                 .map(skus -> skus.stream().map(SkuDocument::getErpCode).collect(Collectors.toList()))
                 .collect(Collectors.toList());
         List<SkuData> skusFromMabang = new ArrayList<>();
-        for(List<String> skuPartition : erpCodes) {
+        for(List<String> partition : erpCodePartition) {
             SkuListRequestBody body = new SkuListRequestBody();
-            body.setStockSkuList(String.join(",", skuPartition));
+            body.setStockSkuList(String.join(",", partition));
             SkuListRawStream rawStream = new SkuListRawStream(body);
             SkuUpdateListStream stream = new SkuUpdateListStream(rawStream);
             skusFromMabang.addAll(stream.all());
         }
         List<String> desyncedSkus = new ArrayList<>();
-        for(SkuDocument sku : clientSkus) {
-            skusFromMabang.stream().filter(skuData -> skuData.getErpCode().equals(sku.getErpCode()))
-                    .findFirst()
-                    .ifPresent(skuData -> {
-                        if(!Objects.equals(skuData.getWeight(), sku.getLatestSkuWeight().getWeight()) || !Objects.equals(skuData.getSalePrice(), sku.getLatestSkuPrice().getPrice())) {
-                            desyncedSkus.add(skuData.getErpCode());
-                        }
-                    });
+        List<String> syncedSkus = new ArrayList<>();
+        for(SkuDocument sku : clientSkuDocs) {
+            SkuData skuData = skusFromMabang.stream().filter(s -> s.getErpCode().equals(sku.getErpCode()))
+                    .findFirst().orElse(null);
+            if(skuData != null) {
+                boolean isDesynced = false;
+                BigDecimal mabangPrice = skuData.getSalePrice().setScale(2, RoundingMode.HALF_UP); // because price from mabang has 4 decimal places, so Objects.equals will always return false
+                if(skuData.getWeight() == null && sku.getLatestSkuWeight() != null) {
+                    log.info("sku {} doesn't have a weight on Mabang but has one in Mongo", skuData.getErpCode());
+                    isDesynced = true;
+                }
+                if (sku.getLatestSkuWeight() != null && !Objects.equals(skuData.getWeight(), sku.getLatestSkuWeight().getWeight())) {
+                    log.info("sku {} has a different weight on Mabang and in Mongo : mabang :{}; mongo :{}", skuData.getErpCode() ,skuData.getWeight(), sku.getLatestSkuWeight().getWeight());
+                    isDesynced = true;
+                }
+                if(skuData.getSalePrice() == null && sku.getLatestSkuPrice() != null) {
+                    log.info("sku {} doesn't have a price on Mabang but has one in mongo", skuData.getErpCode());
+                    isDesynced = true;
+                }
+                if(sku.getLatestSkuPrice() != null && !Objects.equals(mabangPrice, sku.getLatestSkuPrice().getPrice())) {
+                    log.info("sku {} has a different price on Mabang and in Mongo : mabang :{}; mongo :{}", skuData.getErpCode() ,skuData.getSalePrice(), sku.getLatestSkuPrice().getPrice());
+                    isDesynced = true;
+                }
+                if(isDesynced)
+                    desyncedSkus.add(skuData.getErpCode());
+                else
+                    syncedSkus.add(skuData.getErpCode());
+            } else {
+                desyncedSkus.add(sku.getErpCode());
+            }
         }
-        skuService.setDesynced(desyncedSkus);
+        if(!desyncedSkus.isEmpty()) {
+            log.info("Desynced skus : {}", desyncedSkus);
+            skuService.setIsSynced(desyncedSkus, false);
+        }
+        if(!syncedSkus.isEmpty()) {
+            log.info("Synced skus : {}", syncedSkus);
+            skuService.setIsSynced(syncedSkus, true);
+        }
 
         return Result.OK();
     }

@@ -598,7 +598,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
-    public List<Sku> listByClientId(String clientId) {
+    public Map<String, Sku> listByClientId(String clientId) {
         return skuMapper.listByClientId(clientId);
     }
 
@@ -638,7 +638,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
-    public void setDesynced(List<String> erpCodes) {
-        skuMapper.setDesynced(erpCodes);
+    public void setIsSynced(List<String> erpCodes, boolean isSynced) {
+        skuMapper.setIsSynced(erpCodes, isSynced);
     }
 }

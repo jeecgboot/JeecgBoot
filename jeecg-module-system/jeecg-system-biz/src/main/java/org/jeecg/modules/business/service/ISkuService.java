@@ -113,7 +113,7 @@ public interface ISkuService extends IService<Sku> {
     List<SkuOrderPage> getInventoryByInvoiceNumber(String invoiceNumber);
     List<SkuOrderPage> getInventory(List<String> erpCodes, String invoiceNumber);
 
-    List<Sku> listByClientId(String clientId);
+    Map<String, Sku> listByClientId(String clientId);
 
     List<SkuOrderPage> searchExistingSkuByKeywords(List<String> keywords);
 
@@ -131,5 +131,5 @@ public interface ISkuService extends IService<Sku> {
 
     int latestSkuCounter(String userCode, String clientCode, String date);
 
-    void setDesynced(List<String> erpCodes);
+    void setIsSynced(List<String> erpCodes, boolean isSynced);
 }

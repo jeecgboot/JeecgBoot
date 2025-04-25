@@ -6,6 +6,7 @@ import org.jeecg.modules.business.entity.ClientPlatformOrderContent;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.entity.ShoumanOrderContent;
+import org.jeecg.modules.business.vo.PlatformOrderContentFront;
 import org.jeecg.modules.business.vo.SkuDetail;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
@@ -26,6 +27,8 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     boolean deleteByMainId(@Param("mainId") String mainId);
 
     List<PlatformOrderContent> selectByMainId(@Param("mainId") String mainId);
+
+    List<PlatformOrderContentFront> selectByMainIdAndSkuSync(@Param("mainId") String mainId);
 
     List<ClientPlatformOrderContent> selectClientVersionByMainId(@Param("mainId") String mainId);
 
