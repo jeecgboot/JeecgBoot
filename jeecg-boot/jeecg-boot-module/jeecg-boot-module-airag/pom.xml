@@ -86,12 +86,6 @@
         </dependency>
         <dependency>
             <groupId>com.yomahub</groupId>
-            <artifactId>liteflow-script-python</artifactId>
-            <version>${liteflow.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.yomahub</groupId>
             <artifactId>liteflow-script-aviator</artifactId>
             <version>${liteflow.version}</version>
             <scope>runtime</scope>
