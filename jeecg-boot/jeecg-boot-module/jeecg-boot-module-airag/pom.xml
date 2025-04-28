@@ -56,8 +56,53 @@
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-aiflow</artifactId>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
         </dependency>
+        
+        <!-- aiflow 脚本依赖 -->
+        <dependency>
+            <groupId>com.yomahub</groupId>
+            <artifactId>liteflow-script-graaljs</artifactId>
+            <version>${liteflow.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yomahub</groupId>
+            <artifactId>liteflow-script-groovy</artifactId>
+            <version>${liteflow.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yomahub</groupId>
+            <artifactId>liteflow-script-kotlin</artifactId>
+            <version>${liteflow.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-scripting-jsr223</artifactId>
+                </exclusion>
+            </exclusions>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yomahub</groupId>
+            <artifactId>liteflow-script-python</artifactId>
+            <version>${liteflow.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.yomahub</groupId>
+            <artifactId>liteflow-script-aviator</artifactId>
+            <version>${liteflow.version}</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>aviator</artifactId>
+                    <groupId>com.googlecode.aviator</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- aiflow 脚本依赖 -->
 
         <!-- langChain4j model support -->
         <dependency>
