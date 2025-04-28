@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-aiflow</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
         </dependency>
 
         <!-- langChain4j model support -->
