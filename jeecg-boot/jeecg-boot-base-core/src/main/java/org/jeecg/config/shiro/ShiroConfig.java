@@ -46,6 +46,7 @@ import java.util.*;
 
 @Slf4j
 @Configuration
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class ShiroConfig {
 
     @Resource

@@ -20,7 +20,9 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Component;
 
 import jakarta.annotation.Resource;
@@ -35,6 +37,7 @@ import java.util.Set;
  */
 @Component
 @Slf4j
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class ShiroRealm extends AuthorizingRealm {
 	@Lazy
     @Resource
