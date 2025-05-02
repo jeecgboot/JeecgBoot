@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,6 +73,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 	@Resource
 	private JeecgBaseConfig jeecgBaseConfig;
 
+	private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
 	private final static Integer NUMBER_OF_SKU_EXCEL_COLUMNS = 3;
 	private final DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
   
@@ -345,7 +348,28 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			skuWeight.setWeight(param.getWeight());
 			skuWeightsMap.put(sku.getErpCode(), skuWeight);
 		}
+		// Submit task asynchronously
 		List<SkuWeight> skuWeights = new ArrayList<>(skuWeightsMap.values());
+		ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
+		executor.submit(() -> {
+			try {
+				ResponsesWithMsg<String> responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+				List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
+				responses.getSuccesses().forEach((skuErpCode, messages) -> {
+					skuWeightSuccesses.add(skuWeightsMap.get(skuErpCode));
+				});
+				// Update Mongo + save to database
+				skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));
+				skuWeightService.saveBatch(skuWeights);
+			} catch (Exception e) {
+				log.error("Asynchronous updateBatch processing failed", e);
+			}
+		});
+
+		return Result.OK("Batch Edit task has been submitted, please check progress later");
+		///////////////////////////////////////////////////
+		/**
+		 List<SkuWeight> skuWeights = new ArrayList<>(skuWeightsMap.values());
 		ResponsesWithMsg<String> responses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
 		List<SkuWeight> skuWeightSuccesses = new ArrayList<>();
 		responses.getSuccesses().forEach((skuErpCode, messages) -> {
@@ -354,6 +378,6 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 
 		skuWeightSuccesses.forEach(skuWeight -> skuMongoService.upsertSkuWeight(skuWeight));
 		skuWeightService.saveBatch(skuWeights);
-		return Result.OK(responses);
+		return Result.OK(responses);*/
 	}
 }

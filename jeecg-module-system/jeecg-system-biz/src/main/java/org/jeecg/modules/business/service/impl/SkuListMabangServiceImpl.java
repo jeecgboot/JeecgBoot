@@ -1,9 +1,13 @@
 package org.jeecg.modules.business.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.jeecg.qywx.api.conversation.ConversationAPI;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.modules.business.domain.api.mabang.Response;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
@@ -24,6 +28,7 @@ import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.SkuOrderPage;
+import org.jeecg.modules.message.websocket.WebSocketSender;
 import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -42,6 +47,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,8 +82,9 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     @Autowired
     Environment env;
 
-    private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
+    private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
+
 
     private final static String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
 
@@ -687,6 +694,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     @Override
     public ResponsesWithMsg<String> mabangSkuWeightUpdate(List<SkuWeight> skuWeights) {
         ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
+        String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
         List<String> skuIds = skuWeights.stream()
                 .map(SkuWeight::getSkuId)
                 .collect(toList());
@@ -778,32 +786,75 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                 .filter(Objects::nonNull)
                 .collect(toList());
 
-        ExecutorService executor = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS, MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
-        List<CompletableFuture<SkuChangeResponse>> futures = skuDataList.stream()
-                .map(skuData -> CompletableFuture.supplyAsync(() -> {
+        // Batch processing + WebSocket push
+        ExecutorService executor = ThrottlingExecutorService
+                .createExecutorService(DEFAULT_NUMBER_OF_THREADS, MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        // Used to count the number of processed data
+        AtomicInteger processedCounter = new AtomicInteger(0);
+        // Total number of data
+        int totalCount = skuDataList.size();
+        List<List<SkuData>> batchList = Lists.partition(skuDataList, 10);
+
+        // Define how many data to process before pushing progress once, at least once
+        int step = Math.max(1, totalCount / 10);
+        log.info("Total count: {}, push progress every {} items", totalCount, step);
+
+        for (List<SkuData> batch : batchList) {
+            for (SkuData skuData : batch) {
+                futures.add(CompletableFuture.runAsync(() -> {
                     try {
                         SkuChangeRequestBody body = new SkuChangeRequestBody(skuData);
                         SkuChangeRequest request = new SkuChangeRequest(body);
-                        return request.send();
+                        SkuChangeResponse response = request.send();
+
+                        if(response.success()) {
+                            responses.addSuccess(response.getStockSku(), "Mabang");
+                        }
+                        else {
+                            responses.addFailure(response.getStockSku(), "Mabang");
+                        }
                     } catch (Exception e) {
                         log.error("Error updating weight for sku {} : {}", skuData.getErpCode(), e.getMessage());
-                        return new SkuChangeResponse(Response.Code.ERROR, null, null, skuData.getErpCode());
+                        responses.addFailure(skuData.getErpCode(), "Exception: " + e.getMessage());
+                    } finally {
+                        int currentProcessed = processedCounter.incrementAndGet();
+                        // Only push progress if processed enough items (step) or finished all
+                        if (currentProcessed % step == 0 || currentProcessed == totalCount) {
+                            JSONObject progressMsg = new JSONObject();
+                            progressMsg.put("cmd", "user");
+                            progressMsg.put("msgTxt", "已处理 " + currentProcessed + " / " + totalCount + " 条 SKU 更新任务");
+                            WebSocketSender.sendToUser(userId, progressMsg.toJSONString());
+                        }
                     }
-                }, executor))
-                .collect(toList());
-        List<SkuChangeResponse> results = futures.stream().map(CompletableFuture::join).collect(toList());
-        long successCount = results.stream().filter(SkuChangeResponse::success).count();
-        log.info("{}/{} skus updated successfully.", successCount, skuDataList.size());
-        results.forEach(response -> {
-            if(response.success()) {
-                responses.addSuccess(response.getStockSku(), "Mabang");
+                }, executor));
             }
-            else {
-                responses.addFailure(response.getStockSku(), "Mabang");
-            }
-        });
+        }
+        // Wait for all batches to complete
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+        // After all tasks are completed, calculate success and failure counts and push completion message
+        int successCount = responses.getSuccesses().size();
+        int failureCount = responses.getFailures().size();
+
+        JSONObject doneMsg = new JSONObject();
+        doneMsg.put("cmd", "user");
+        doneMsg.put("msgTxt", "SKU 重量更新全部完成！");
+        doneMsg.put("data", new JSONObject() {{
+            put("total", skuDataList.size());
+            put("success", successCount);
+            put("failure", failureCount);
+        }});
+
+        // Send the final result to frontend via WebSocket
+        WebSocketSender.sendToUser(userId, doneMsg.toJSONString());
+
+        log.info("SKU Weight update completed: total {} items processed, {} succeeded, {} failed", skuDataList.size(), successCount, failureCount);
         return responses;
     }
+
+
 
     @Override
     public List<SkuData> fetchUnpairedSkus(List<String> stockSkuList) {
