@@ -144,7 +144,7 @@ export const formSchema: FormSchema[] = [
   {
     field: 'userIds',
     label: '指定用户',
-    component: 'JSelectUser',
+    component: 'JSelectUserByDepartment',
     required: true,
     componentProps: {
       rowKey: 'id',
