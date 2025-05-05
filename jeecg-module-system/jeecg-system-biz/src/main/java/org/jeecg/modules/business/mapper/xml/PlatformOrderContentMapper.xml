@@ -30,7 +30,29 @@
             resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
         SELECT *
         FROM platform_order_content
-        WHERE platform_order_id = #{mainId}    </select>
+        WHERE platform_order_id = #{mainId}
+    </select>
+
+    <select id="selectByMainIdAndSkuSync" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.vo.PlatformOrderContentFront">
+        SELECT poc.id,
+               poc.platform_order_id,
+               poc.sku_id,
+               poc.quantity,
+               poc.purchase_fee,
+               poc.shipping_fee,
+               poc.service_fee,
+               poc.picking_fee,
+               poc.insurance_fee,
+               poc.vat,
+               poc.status,
+               poc.erp_status,
+               poc.product_available,
+               s.is_synced
+        FROM platform_order_content poc
+                 JOIN sku s ON poc.sku_id = s.id
+        WHERE platform_order_id = #{mainId};
+    </select>
 
     <select id="selectClientVersionByMainId" parameterType="java.lang.String"
             resultType="org.jeecg.modules.business.entity.ClientPlatformOrderContent">

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.controller.UserException;
+import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
 import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
@@ -23,6 +24,7 @@ import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatistic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.jeecg.modules.business.entity.Invoice.InvoicingMethod;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -35,6 +37,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
+import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.*;
 
 /**
  * @Description: 平台订单表
@@ -46,22 +49,16 @@ import static java.util.stream.Collectors.*;
 @Slf4j
 public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, PlatformOrder> implements IPlatformOrderService {
 
-    private final PlatformOrderMapper platformOrderMap;
-    private final PlatformOrderContentMapper platformOrderContentMap;
-    private final IShippingFeesWaiverProductService shippingFeesWaiverProductService;
-    private final IClientService clientService;
-    private final ExchangeRatesMapper exchangeRatesMapper;
-
     @Autowired
-    public PlatformOrderServiceImpl(PlatformOrderMapper platformOrderMap, PlatformOrderContentMapper platformOrderContentMap,
-                                    IShippingFeesWaiverProductService shippingFeesWaiverProductService, IClientService clientService,
-                                    ExchangeRatesMapper exchangeRatesMapper) {
-        this.platformOrderMap = platformOrderMap;
-        this.platformOrderContentMap = platformOrderContentMap;
-        this.shippingFeesWaiverProductService = shippingFeesWaiverProductService;
-        this.clientService = clientService;
-        this.exchangeRatesMapper = exchangeRatesMapper;
-    }
+    private PlatformOrderMapper platformOrderMap;
+    @Autowired
+    private PlatformOrderContentMapper platformOrderContentMap;
+    @Autowired
+    private IShippingFeesWaiverProductService shippingFeesWaiverProductService;
+    @Autowired
+    private IClientService clientService;
+    @Autowired
+    private ExchangeRatesMapper exchangeRatesMapper;
 
     @Override
     @Transactional
@@ -188,10 +185,14 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return OrdersStatisticData.makeData(data, null);
     }
 
-
     @Override
     public List<PlatformOrderContent> selectByMainId(String mainId) {
         return platformOrderContentMap.selectByMainId(mainId);
+    }
+
+    @Override
+    public List<PlatformOrderContentFront> selectByMainIdAndSkuSync(String mainId) {
+        return platformOrderContentMap.selectByMainIdAndSkuSync(mainId);
     }
 
     @Override
@@ -204,7 +205,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         List<SkuQuantity> skuIDQuantityMap = platformOrderContentMap.searchOrderContent(platformOrderIdList);
         return confirmPurchaseBySkuQuantity(skuIDQuantityMap);
     }
-
 
     @Override
     public PurchaseConfirmation confirmPurchaseBySkuQuantity(List<SkuQuantity> skuIDQuantityMap) throws UserException {
@@ -560,4 +560,44 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return platformOrderMap.getPlatformOrderIdsByInvoiceNumbers(invoiceNumbers);
     }
 
+    @Override
+    public List<PlatformOrderFront> listByClientAndShops(String clientId, List<String> shopIds, String startDate, String endDate, String invoicingMethod, Integer pageNo, Integer pageSize, List<String> warehouses, String order, String column) {
+        List<Integer> erpStatuses;
+        InvoicingMethod method = InvoicingMethod.fromString(invoicingMethod);
+        switch (method) {
+            case PRESHIPPING :
+                erpStatuses = Arrays.asList(OrderStatus.Pending.getCodeInt(), OrderStatus.Preparing.getCodeInt());
+                break;
+            case POSTSHIPPING:
+                erpStatuses = Collections.singletonList(OrderStatus.Shipped.getCodeInt());
+                break;
+            case ALL :
+                erpStatuses = Arrays.asList(OrderStatus.Pending.getCodeInt(), OrderStatus.Preparing.getCodeInt(), OrderStatus.Shipped.getCodeInt());
+                break;
+            default:
+                throw new IllegalArgumentException("The specified invoicing method is not supported : " + invoicingMethod);
+        }
+        int offset = (pageNo - 1) * pageSize;
+        return platformOrderMap.listByClientAndShops(clientId, shopIds, erpStatuses, warehouses, startDate, endDate, order, column, offset, pageSize);
+    }
+
+    @Override
+    public int countListByClientAndShops(String clientId, List<String> shopIDs, String start, String end, String invoicingMethod, List<String> warehouses) {
+        List<Integer> erpStatuses;
+        InvoicingMethod method = InvoicingMethod.fromString(invoicingMethod);
+        switch (method) {
+            case PRESHIPPING :
+                erpStatuses = Arrays.asList(OrderStatus.Pending.getCodeInt(), OrderStatus.Preparing.getCodeInt());
+                break;
+            case POSTSHIPPING:
+                erpStatuses = Collections.singletonList(OrderStatus.Shipped.getCodeInt());
+                break;
+            case ALL :
+                erpStatuses = Arrays.asList(OrderStatus.Pending.getCodeInt(), OrderStatus.Preparing.getCodeInt(), OrderStatus.Shipped.getCodeInt());
+                break;
+            default:
+                throw new IllegalArgumentException("The specified invoicing method is not supported : " + invoicingMethod);
+        }
+        return platformOrderMap.countListByClientAndShops(clientId, shopIDs, erpStatuses, warehouses, start, end);
+    }
 }

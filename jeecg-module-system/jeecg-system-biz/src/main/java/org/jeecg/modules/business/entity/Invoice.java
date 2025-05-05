@@ -120,6 +120,28 @@ public class Invoice implements Serializable {
     }
 
     @Getter
+    public enum InvoicingMethod {
+        PRESHIPPING ("pre-shipping"),
+        POSTSHIPPING("post-shipping"),
+        ALL("all");
+
+        private final String method;
+
+        public static InvoicingMethod fromString(String method) {
+            for(InvoicingMethod invoicingMethod : InvoicingMethod.values()) {
+                if(invoicingMethod.method.equalsIgnoreCase(method)) {
+                    return invoicingMethod;
+                }
+            }
+            throw new IllegalArgumentException("Incorrect invoicing method : " + method);
+        }
+
+        InvoicingMethod(String method) {
+            this.method = method;
+        }
+    }
+
+    @Getter
     public enum Status {
         Cancelled (0),
         Normal (1);

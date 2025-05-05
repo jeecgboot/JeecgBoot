@@ -245,4 +245,14 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     Integer countPotentialShoumanOrders();
 
     List<String> getPlatformOrderIdsByInvoiceNumbers(@Param("invoiceNumbers") List<String> invoiceNumbers);
+    int countListByClientAndShops(@Param("clientId") String clientId,@Param("shopIds") List<String> shopIds,
+                                  @Param("erpStatuses") List<Integer> erpStatuses,
+                                  @Param("warehouses") List<String> warehouses,
+                                  @Param("start") String startDate, @Param("end") String endDate);
+    List<PlatformOrderFront> listByClientAndShops(@Param("clientId") String clientId,@Param("shopIds") List<String> shopIds,
+                                                  @Param("erpStatuses") List<Integer> erpStatuses,
+                                                  @Param("warehouses") List<String> warehouses,
+                                                  @Param("start") String startDate, @Param("end") String endDate,
+                                                  @Param("order") String order, @Param("column") String column,
+                                                  @Param("offset") Integer offset, @Param("size") Integer pageSize);
 }

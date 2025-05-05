@@ -59,6 +59,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrderContent> selectByMainId(String mainId);
 
+    List<PlatformOrderContentFront> selectByMainIdAndSkuSync(String mainId);
+
     List<ClientPlatformOrderContent> selectClientVersionByMainId(String mainId);
 
     PurchaseConfirmation confirmPurchaseByPlatformOrder(List<String> platformOrderIdList) throws UserException;
@@ -287,4 +289,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     void pagePotentialShoumanOrders(IPage<PlatformOrderPage> page, String column, String order);
 
     List<String> getPlatformOrderIdsByInvoiceNumbers(List<String> invoiceNumbers);
+
+    List<PlatformOrderFront> listByClientAndShops(String clientId, List<String> shopIds, String startDate, String endDate, String invoicingMethod, Integer pageNo, Integer pageSize, List<String> warehouses, String order, String column);
+
+    int countListByClientAndShops(String clientId, List<String> shopIDs, String start, String end, String invoicingMethod, List<String> warehouses);
 }

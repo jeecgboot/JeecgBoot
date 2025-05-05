@@ -24,7 +24,7 @@ public class PlatformOrderFront {
     /**
      * 主键
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.ASSIGN_UUID)
     @ApiModelProperty(value = "主键")
     private String id;
     /**
@@ -40,6 +40,31 @@ public class PlatformOrderFront {
     @Excel(name = "平台订单交易号", width = 15)
     @ApiModelProperty(value = "平台订单交易号")
     private String platformOrderNumber;
+    /**
+     * 平台订单号码
+     */
+    @Excel(name = "平台订单号码", width = 15)
+    @ApiModelProperty(value = "平台订单号码")
+    private String platformOrderId;
+    /**
+     * 物流渠道
+     */
+    @Excel(name = "物流渠道", width = 15, dictTable = "logistic_channel", dicText = "zh_name", dicCode = "zh_name")
+    @Dict(dictTable = "logistic_channel", dicText = "zh_name", dicCode = "zh_name")
+    @ApiModelProperty(value = "物流渠道")
+    private String logisticChannelName;
+    /**
+     * 开票物流渠道名称
+     */
+    @Excel(name = "开票物流渠道名称", width = 15)
+    @ApiModelProperty(value = "开票物流渠道名称")
+    private String invoiceLogisticChannelName;
+    /**
+     * 物流内部单号
+     */
+    @Excel(name = "物流跟踪号", width = 15)
+    @ApiModelProperty(value = "物流跟踪号")
+    private String trackingNumber;
     /**
      * 订单交易时间
      */
@@ -88,6 +113,18 @@ public class PlatformOrderFront {
     @ApiModelProperty(value = "采购发票号")
     private java.lang.String purchaseInvoiceNumber;
     /**
+     * ERP中状态
+     */
+    @Excel(name = "ERP中状态", width = 15)
+    @ApiModelProperty(value = "ERP中状态")
+    private String erpStatus;
+    /**
+     * 待审核订单（1=正常订单，2=异常订单）
+     */
+    @Excel(name = "待审核订单（1=正常订单，2=异常订单）", width = 15)
+    @ApiModelProperty(value = "待审核订单（1=正常订单，2=异常订单）")
+    private java.lang.String canSend;
+    /**
      * 有货（1=有，0=没有）
      */
     @Excel(name = "有货（1=有，0=没有）", width = 15)
@@ -105,6 +142,12 @@ public class PlatformOrderFront {
     @Excel(name = "可开采购票（0=不可，1=可）", width = 15)
     @ApiModelProperty(value = "可开采购票（0=不可，1=可）")
     private String purchaseAvailable;
+    /**
+     * 不一致的产品（1=有，0=没有）
+     */
+    @Excel(name = "不一致的产品（1=有，0=没有）", width = 15)
+    @ApiModelProperty(value = "不一致的产品（1=有，0=没有）")
+    private Integer hasDesyncedSku;
 
     private Integer totalCount;
 

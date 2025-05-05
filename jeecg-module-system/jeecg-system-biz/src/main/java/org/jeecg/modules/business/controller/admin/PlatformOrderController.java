@@ -245,8 +245,8 @@ public class PlatformOrderController {
     @ApiOperation(value = "Order content query", notes = "Query order contents by order's identifier")
     @GetMapping(value = "/queryPlatformOrderContentByMainId")
     public Result<?> queryPlatformOrderContentListByMainId(@RequestParam(name = "id") String id) {
-        List<PlatformOrderContent> platformOrderContentList = platformOrderService.selectByMainId(id);
-        IPage<PlatformOrderContent> page = new Page<>();
+        List<PlatformOrderContentFront> platformOrderContentList = platformOrderService.selectByMainIdAndSkuSync(id);
+        IPage<PlatformOrderContentFront> page = new Page<>();
         page.setRecords(platformOrderContentList);
         page.setTotal(platformOrderContentList.size());
         return Result.OK(page);

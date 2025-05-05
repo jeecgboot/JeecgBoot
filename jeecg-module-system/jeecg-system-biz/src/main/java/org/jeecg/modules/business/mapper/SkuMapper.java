@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.vo.SkuOrderPage;
@@ -74,7 +75,8 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     List<SkuOrderPage> getInventory(@Param("erpCodes") List<String> erpCodes, @Param("invoiceNumber") String invoiceNumber);
 
-    List<Sku> listByClientId(@Param("clientId") String clientId);
+    @MapKey("id")
+    Map<String, Sku> listInUninvoicedOrders(@Param("clientId") String clientId, @Param("erpStatuses") List<String> erpStatuses);
 
     List<SkuOrderPage> searchExistingSkuByKeywords(@Param("keywords") List<String> keywords);
     List<Sku> listImgUrls();
@@ -86,4 +88,6 @@ public interface SkuMapper extends BaseMapper<Sku> {
     int countUnpairedSkus(@Param("shopId") String shopId);
 
     List<String> latestSkuCounter(@Param("userCode") String userCode, @Param("clientCode") String clientCode, @Param("date") String date);
+
+    void setIsSynced(@Param("erpCodes")List<String> erpCodes, @Param("isSynced") boolean isSynced);
 }

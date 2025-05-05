@@ -126,4 +126,10 @@ public class Sku implements Serializable {
      */
     @JSONField(name="isGift")
     private Integer isGift;
+    /**
+     * 是否一致 0否;1是
+     */
+    @Excel(name = "是否一致", width = 15, dicCode = "is_synced")
+    @JSONField(name="isSynced")
+    private Integer isSynced;
 }
