@@ -962,6 +962,11 @@
         FROM platform_order
         WHERE shipping_invoice_number = #{invoiceNumber};
     </select>
+    <select id="getPlatformOrderIdsByInvoiceNumber" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order
+        WHERE shipping_invoice_number = #{invoiceNumber};
+    </select>
     <select id="countPlatformOrders" resultType="org.jeecg.modules.business.vo.OrderKpi">
         WITH processedByUser AS (
             SELECT invoice_number

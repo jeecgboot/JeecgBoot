@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.*;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
@@ -20,6 +19,7 @@ import org.jeecg.modules.business.service.IPlatformOrderMabangService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
 import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +31,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -49,10 +51,12 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
     @Autowired
     private IPlatformOrderService orderservice;
     @Autowired
-    private ISysBaseAPI ISysBaseApi;
+    private IPlatformOrderService platformOrderService;
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
+    private static final Pattern INVOICE_NUMBER_REMARK_PATTERN = Pattern.compile("^([0-9]{4}-[0-9]{2}-[1278][0-9]{3})?(.*)$");
+
     @Override
     @Transactional
     public void saveOrderFromMabang(List<Order> orders) {
@@ -377,6 +381,58 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         res.put("synced_order_number", syncedOrderNumber);
         res.put("synced_order_ids", syncedOrderIds);
         return res;
+    }
+
+    @Override
+    public ResponsesWithMsg<String> editOrdersRemark(String invoiceNumber) {
+        ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
+        List<String> platformOrderIds = platformOrderService.getPlatformOrderIdsByInvoiceNumber(invoiceNumber);
+        ExecutorService executor = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<OrderListRequestBody> Ordersrequests = new ArrayList<>();
+        List<List<String>> orderIdsPartition = Lists.partition(platformOrderIds, 10);
+        for (List<String> platformOrderIdList : orderIdsPartition) {
+            Ordersrequests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
+        }
+        List<Order> ordersFromMabang = getOrdersFromMabang(Ordersrequests, executor);
+        List<EditRemarkRequestBody> editRemarkRequests = new ArrayList<>();
+        for(Order order: ordersFromMabang) {
+            String orderRemark = order.getRemark();
+            StringBuilder remark = new StringBuilder();
+            remark.append(invoiceNumber);
+            Matcher invoiceMatcher = INVOICE_NUMBER_REMARK_PATTERN.matcher(order.getRemark());
+            // TODO : do we override the invoice number if one is present ? Ask
+            if (orderRemark != null && !orderRemark.isEmpty()) {
+                if(invoiceMatcher.matches() && !invoiceMatcher.group(2).isEmpty()) {
+                    log.info("Order {} has remark {}", order.getPlatformOrderId(), invoiceMatcher.group(2));
+                    remark.append(invoiceMatcher.group(2));
+                }
+            }
+            editRemarkRequests.add(new EditRemarkRequestBody(order.getPlatformOrderId(), remark.toString()));
+        }
+        List<CompletableFuture<Boolean>> editRemarkFutures = editRemarkRequests.stream()
+                .map(request -> CompletableFuture.supplyAsync(() -> {
+                    boolean success = false;
+                    try {
+                        EditRemarkRequest editRemarkRequest = new EditRemarkRequest(request);
+                        ChangeOrderResponse response = editRemarkRequest.send();
+                        success = response.success();
+                        if (success) {
+                            responses.addSuccess(request.getPlatformOrderId());
+                        } else {
+                            responses.addFailure(request.getPlatformOrderId(), response.getMessage());
+                        }
+                    } catch (RuntimeException e) {
+                        log.error("Error editing order remark {} : {}", request.getPlatformOrderId(), e.getMessage());
+                        responses.addFailure(request.getPlatformOrderId(), e.getMessage());
+                    }
+                    return success;
+                }, executor))
+                .collect(Collectors.toList());
+        List<Boolean> results = editRemarkFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} order remarks updated successfully.", nbSuccesses, editRemarkRequests.size());
+        return responses;
     }
 
 }

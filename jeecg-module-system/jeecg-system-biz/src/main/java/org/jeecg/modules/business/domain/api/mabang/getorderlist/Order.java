@@ -126,6 +126,12 @@ public class Order {
     private String isNewOrder;
 
     /**
+     * 订单备注
+     */
+    @JSONField(name = "remark")
+    private String remark;
+
+    /**
      * 1 = 有货
      * 2 = 缺货
      * 3 = 已补货
