@@ -20,6 +20,9 @@ public enum OrderStatus {
     public String getCode() {
         return String.valueOf(code);
     }
+    public Integer getCodeInt() {
+        return code;
+    }
 
     public static OrderStatus fromCode(Integer code) {
         for (OrderStatus orderStatus : OrderStatus.values()) {

@@ -598,8 +598,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
-    public List<Sku> listByClientId(String clientId) {
-        return skuMapper.listByClientId(clientId);
+    public Map<String, Sku> listInUninvoicedOrders(String clientId, List<String> erpStatuses) {
+        return skuMapper.listInUninvoicedOrders(clientId, erpStatuses);
     }
 
     @Override
@@ -635,5 +635,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
             return Integer.parseInt(counter);
         }).collect(Collectors.toList());
         return counters.stream().max(Integer::compareTo).orElse(0) + 1;
+    }
+
+    @Override
+    public void setIsSynced(List<String> erpCodes, boolean isSynced) {
+        skuMapper.setIsSynced(erpCodes, isSynced);
     }
 }

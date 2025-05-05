@@ -1275,4 +1275,91 @@
             #{invoiceNumber}
         </foreach>
     </select>
+    <select id="countListByClientAndShops" resultType="java.lang.Integer">
+        SELECT count(po.id)
+        FROM platform_order po
+            JOIN platform_order_content poc ON po.id = poc.platform_order_id
+            JOIN sku s ON poc.sku_id = s.id
+            JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
+        WHERE po.erp_status IN
+                <foreach collection="erpStatuses" separator="," open="(" close=")" index="index" item="erpStatus">
+                    #{erpStatus}
+                </foreach>
+            AND po.shop_id IN
+                <foreach collection="shopIds" separator="," open="(" close=")" index="index" item="shopId">
+                    #{shopId}
+                </foreach>
+            AND (
+                lc.warehouse_in_china IN
+                    <foreach collection="warehouses" separator="," open="(" close=")" index="index" item="warehouse">
+                        #{warehouse}
+                    </foreach>
+                OR po.logistic_channel_name = ''
+                OR po.logistic_channel_name IS NULL
+            )
+            <if test="erpStatuses.size == 1">
+                AND po.shipping_time BETWEEN #{start} AND #{end}
+            </if>
+            <if test="erpStatuses.size > 1">
+                AND po.order_time BETWEEN #{start} AND #{end}
+            </if>
+    </select>
+    <select id="listByClientAndShops" resultType="org.jeecg.modules.business.vo.PlatformOrderFront">
+    WITH orders AS (
+        SELECT po.id                                as id,
+        po.shop_id                                  as shop_id,
+        po.platform_order_number                    as platform_order_number,
+        po.platform_order_id                        as platform_order_id,
+        po.logistic_channel_name                    as logistic_channel_name,
+        po.invoice_logistic_channel_name            as invoice_logistic_channel_name,
+        po.tracking_number                          as tracking_number,
+        po.order_time                               as order_time,
+        po.country                                  as country,
+        po.fret_fee                                 as fret_fee,
+        po.order_service_fee                        as order_service_fee,
+        po.erp_status                               as erp_status,
+        po.can_send                                 as can_send,
+        po.product_available                        as product_available
+        FROM platform_order po
+        JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
+        WHERE po.erp_status IN
+                <foreach collection="erpStatuses" separator="," open="(" close=")" index="index" item="erpStatus">
+                    #{erpStatus}
+                </foreach>
+            AND po.shop_id IN
+                <foreach collection="shopIds" separator="," open="(" close=")" index="index" item="shopId">
+                    #{shopId}
+                </foreach>
+            AND (
+                lc.warehouse_in_china IN
+                    <foreach collection="warehouses" separator="," open="(" close=")" index="index" item="warehouse">
+                        #{warehouse}
+                    </foreach>
+                OR po.logistic_channel_name = ''
+                OR po.logistic_channel_name IS NULL
+            )
+            <if test="erpStatuses.size == 1">
+                AND po.shipping_time BETWEEN #{start} AND #{end}
+            </if>
+            <if test="erpStatuses.size > 1">
+                AND po.order_time BETWEEN #{start} AND #{end}
+            </if>
+            AND po.shipping_invoice_number IS NULL
+        ORDER BY ${column} ${order}
+        LIMIT #{offset}, #{size}
+    )
+    SELECT orders.*,
+        CASE
+            WHEN EXISTS (
+                SELECT 1
+                FROM platform_order_content poc
+                    JOIN sku s ON poc.sku_id = s.id
+                WHERE poc.platform_order_id = orders.id
+                    AND s.is_synced = 0
+                    AND poc.erp_status &lt;&gt; 5
+            ) THEN 1
+            ELSE 0
+        END as has_desynced_sku
+    FROM orders
+    </select>
 </mapper>
