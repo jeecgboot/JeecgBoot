@@ -6,15 +6,12 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.config.JeecgBaseConfig;
-import org.jeecg.config.firewall.interceptor.enums.LowCodeUrlsEnum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.annotation.Resource;
@@ -70,6 +67,9 @@ public class LowCodeModeInterceptor implements HandlerInterceptor {
             Set<String> hasRoles = null;
             if (loginUser == null) {
                 loginUser = commonAPI.getUserByName(JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest()));
+            }
+
+            if (loginUser != null) {
                 //当前登录人拥有的角色
                 hasRoles = commonAPI.queryUserRolesById(loginUser.getId());
             }
