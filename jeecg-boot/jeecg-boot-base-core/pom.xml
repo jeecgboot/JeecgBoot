@@ -117,13 +117,14 @@
 		</dependency>
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<!--JDK 11+-->
-			<artifactId>mybatis-plus-jsqlparser</artifactId>
-			<!--JDK 8+-->
-			<!--<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>-->
+			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
-
+		<!-- minidao -->
+		<dependency>
+			<groupId>org.jeecgframework.boot3</groupId>
+			<artifactId>minidao-spring-boot-starter-jsqlparser-4.9</artifactId>
+		</dependency>
 		<!-- druid -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
@@ -199,8 +200,7 @@
 			<artifactId>java-jwt</artifactId>
 			<version>${java-jwt.version}</version>
 		</dependency>
-
-		<!--shiro-->
+		<!--shiro jakarta-->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring-boot-starter</artifactId>
@@ -212,34 +212,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- shiro-redis -->
-		<dependency>
-			<groupId>org.crazycake</groupId>
-			<artifactId>shiro-redis</artifactId>
-			<version>${shiro-redis.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>checkstyle</artifactId>
-					<groupId>com.puppycrawl.tools</groupId>
-				</exclusion>
-				<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
-				<exclusion>
-					<artifactId>jedis</artifactId>
-					<groupId>redis.clients</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>${jedis.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring</artifactId>
@@ -257,7 +229,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- 引入适配jakarta的依赖包 -->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-core</artifactId>
@@ -273,6 +244,22 @@
 				<exclusion>
 					<groupId>org.apache.shiro</groupId>
 					<artifactId>shiro-core</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- shiro-redis -->
+		<dependency>
+			<groupId>org.crazycake</groupId>
+			<artifactId>shiro-redis</artifactId>
+			<version>${shiro-redis.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>checkstyle</artifactId>
+					<groupId>com.puppycrawl.tools</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
