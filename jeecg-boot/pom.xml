@@ -38,7 +38,7 @@
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
 		<xxl-job-core.version>2.4.1</xxl-job-core.version>
-        <fastjson.version>2.0.43</fastjson.version>
+        <fastjson.version>2.0.57</fastjson.version>
         <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
 		<commonmark.version>0.17.0</commonmark.version>
@@ -54,8 +54,8 @@
 		<dm8.version>8.1.1.49</dm8.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.9.4</jimureport-spring-boot-starter.version>
-		<minidao.version>1.10.7</minidao.version>
+		<jimureport-spring-boot-starter.version>1.9.5</jimureport-spring-boot-starter.version>
+		<minidao.version>1.10.8</minidao.version>
 		
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.11</mybatis-plus.version>
@@ -433,7 +433,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
-				<version>1.9.4.1</version>
+				<version>1.9.5.2</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.calcite</groupId>
