@@ -182,7 +182,8 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
 
         String appkey = request.getHeader("appkey");
         OpenApiAuth openApiAuth = openApiAuthService.getByAppkey(appkey);
-        SysUser systemUser = sysUserService.getById(openApiAuth.getSystemUserId());
+        //TODO 使用创建用户生成token签名，这样无需关联用户
+        SysUser systemUser = sysUserService.getById(openApiAuth.getCreateBy());
         String token = JwtUtil.sign(systemUser.getUsername(), systemUser.getPassword());
         httpHeaders.put("X-Access-Token", Lists.newArrayList(token));
 
