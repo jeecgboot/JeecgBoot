@@ -68,9 +68,9 @@
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
 		<!-- shiro -->
-		<shiro.version>1.13.0</shiro.version>
-		<java-jwt.version>4.5.0</java-jwt.version>
+		<shiro.version>2.0.4</shiro.version>
 		<shiro-redis.version>3.2.3</shiro-redis.version>
+		<java-jwt.version>4.5.0</java-jwt.version>
 		<codegenerate.version>1.4.9</codegenerate.version>
 		<autopoi-web.version>1.4.11</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
@@ -255,7 +255,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.8.0.1</version>
+				<version>3.8.0.2</version>
 			</dependency>
 
 			<!--mongon db-->
