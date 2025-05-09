@@ -40,7 +40,6 @@ public class MabangJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         LocalDateTime endDateTime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("CTT"))).minusMinutes(SKIP_RECENT_MINUTES);
         LocalDateTime startDateTime = endDateTime.minusDays(DEFAULT_NUMBER_OF_DAYS);
-        log.info("抓单时间范围: {} 到 {}", startDateTime, endDateTime);
         DateType dateType = DEFAULT_DATE_TYPE;
         boolean overrideRestriction = false;
         List<OrderStatus> statuses = DEFAULT_STATUSES;
