@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class OpenApiRecord implements Serializable {
+public class OpenApiLog implements Serializable {
     private static final long serialVersionUID = -5870384488947863579L;
 
     /**

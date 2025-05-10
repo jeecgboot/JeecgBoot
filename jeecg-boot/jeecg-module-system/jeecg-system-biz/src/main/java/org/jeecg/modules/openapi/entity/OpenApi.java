@@ -47,18 +47,15 @@ public class OpenApi  implements Serializable {
      * IP 黑名单
      */
     private String blackList;
-
     /**
-     * 请求头列表
+     * 请求头json
      */
-    @TableField(exist = false)
-    private List<OpenApiHeader> headers;
-
+    private String headersJson;
     /**
-     * 请求参数列表
+     * 请求参数json
      */
-    @TableField(exist = false)
-    private List<OpenApiParam> params;
+    private String paramsJson;
+
 
     /**
      * 目前仅支持json

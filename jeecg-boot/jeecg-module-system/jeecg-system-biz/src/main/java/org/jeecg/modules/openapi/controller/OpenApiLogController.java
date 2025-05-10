@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.modules.openapi.entity.OpenApiRecord;
-import org.jeecg.modules.openapi.service.OpenApiRecordService;
+import org.jeecg.modules.openapi.entity.OpenApiLog;
+import org.jeecg.modules.openapi.service.OpenApiLogService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,47 +18,47 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping("/openapi/record")
-public class OpenApiRecordController extends JeecgController<OpenApiRecord, OpenApiRecordService> {
+public class OpenApiLogController extends JeecgController<OpenApiLog, OpenApiLogService> {
 
     /**
      * 分页列表查询
      *
-     * @param openApiRecord
+     * @param OpenApiLog
      * @param pageNo
      * @param pageSize
      * @param req
      * @return
      */
     @GetMapping(value = "/list")
-    public Result<?> queryPageList(OpenApiRecord openApiRecord, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+    public Result<?> queryPageList(OpenApiLog OpenApiLog, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
-        QueryWrapper<OpenApiRecord> queryWrapper = QueryGenerator.initQueryWrapper(openApiRecord, req.getParameterMap());
-        Page<OpenApiRecord> page = new Page<>(pageNo, pageSize);
-        IPage<OpenApiRecord> pageList = service.page(page, queryWrapper);
+        QueryWrapper<OpenApiLog> queryWrapper = QueryGenerator.initQueryWrapper(OpenApiLog, req.getParameterMap());
+        Page<OpenApiLog> page = new Page<>(pageNo, pageSize);
+        IPage<OpenApiLog> pageList = service.page(page, queryWrapper);
         return Result.ok(pageList);
     }
 
     /**
      * 添加
      *
-     * @param openApiRecord
+     * @param OpenApiLog
      * @return
      */
     @PostMapping(value = "/add")
-    public Result<?> add(@RequestBody OpenApiRecord openApiRecord) {
-        service.save(openApiRecord);
+    public Result<?> add(@RequestBody OpenApiLog OpenApiLog) {
+        service.save(OpenApiLog);
         return Result.ok("添加成功！");
     }
 
     /**
      * 编辑
      *
-     * @param openApiRecord
+     * @param OpenApiLog
      * @return
      */
     @PutMapping(value = "/edit")
-    public Result<?> edit(@RequestBody OpenApiRecord openApiRecord) {
-        service.updateById(openApiRecord);
+    public Result<?> edit(@RequestBody OpenApiLog OpenApiLog) {
+        service.updateById(OpenApiLog);
         return Result.ok("修改成功!");
 
     }
@@ -96,7 +96,7 @@ public class OpenApiRecordController extends JeecgController<OpenApiRecord, Open
      */
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
-        OpenApiRecord openApiRecord = service.getById(id);
-        return Result.ok(openApiRecord);
+        OpenApiLog OpenApiLog = service.getById(id);
+        return Result.ok(OpenApiLog);
     }
 }
