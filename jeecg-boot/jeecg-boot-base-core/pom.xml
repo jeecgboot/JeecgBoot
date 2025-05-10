@@ -196,6 +196,7 @@
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring-boot-starter</artifactId>
+			<classifier>jakarta</classifier>
 			<version>${shiro.version}</version>
 			<exclusions>
 				<exclusion>
