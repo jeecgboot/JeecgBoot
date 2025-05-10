@@ -18,16 +18,6 @@ import java.io.Serializable;
 public class OpenApiHeader implements Serializable {
     private static final long serialVersionUID = 5032708503120184683L;
 
-    /**
-     * id
-     */
-    @TableId(type = IdType.ASSIGN_ID)
-    private String id;
-
-    /**
-     * 接口ID
-     */
-    private String apiId;
 
     /**
      * key

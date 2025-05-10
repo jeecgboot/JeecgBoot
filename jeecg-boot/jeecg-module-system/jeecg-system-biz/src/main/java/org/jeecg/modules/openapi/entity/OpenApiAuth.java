@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.jeecg.common.aspect.annotation.Dict;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -44,6 +45,7 @@ public class OpenApiAuth implements Serializable {
     /**
      * 系统用户ID
      */
+    @Dict(dictTable = "sys_user",dicCode = "id",dicText = "username")
     private String systemUserId;
 
     /**

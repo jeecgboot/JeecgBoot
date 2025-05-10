@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.modules.openapi.entity.OpenApi;
 import org.jeecg.modules.openapi.entity.OpenApiAuth;
+import org.jeecg.modules.openapi.entity.OpenApiLog;
 import org.jeecg.modules.openapi.entity.OpenApiPermission;
-import org.jeecg.modules.openapi.entity.OpenApiRecord;
 import org.jeecg.modules.openapi.service.OpenApiAuthService;
+import org.jeecg.modules.openapi.service.OpenApiLogService;
 import org.jeecg.modules.openapi.service.OpenApiPermissionService;
-import org.jeecg.modules.openapi.service.OpenApiRecordService;
 import org.jeecg.modules.openapi.service.OpenApiService;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -27,7 +27,7 @@ import java.util.List;
 @Slf4j
 public class ApiAuthFilter implements Filter {
 
-    private OpenApiRecordService openApiRecordService;
+    private OpenApiLogService openApiLogService;
     private OpenApiAuthService openApiAuthService;
     private OpenApiPermissionService openApiPermissionService;
     private OpenApiService openApiService;
@@ -61,13 +61,13 @@ public class ApiAuthFilter implements Filter {
         filterChain.doFilter(servletRequest, servletResponse);
         long endTime = System.currentTimeMillis();
 
-        OpenApiRecord record = new OpenApiRecord();
-        record.setApiId(openApi.getId());
-        record.setCallAuthId(openApiAuth.getId());
-        record.setCallTime(callTime);
-        record.setUsedTime(endTime - startTime);
-        record.setResponseTime(new Date());
-        openApiRecordService.save(record);
+        OpenApiLog openApiLog = new OpenApiLog();
+        openApiLog.setApiId(openApi.getId());
+        openApiLog.setCallAuthId(openApiAuth.getId());
+        openApiLog.setCallTime(callTime);
+        openApiLog.setUsedTime(endTime - startTime);
+        openApiLog.setResponseTime(new Date());
+        openApiLogService.save(openApiLog);
     }
 
     @Override
@@ -75,7 +75,7 @@ public class ApiAuthFilter implements Filter {
         ServletContext servletContext = filterConfig.getServletContext();
         WebApplicationContext applicationContext = (WebApplicationContext)servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
         this.openApiService = applicationContext.getBean(OpenApiService.class);
-        this.openApiRecordService = applicationContext.getBean(OpenApiRecordService.class);
+        this.openApiLogService = applicationContext.getBean(OpenApiLogService.class);
         this.openApiAuthService = applicationContext.getBean(OpenApiAuthService.class);
         this.openApiPermissionService = applicationContext.getBean(OpenApiPermissionService.class);
     }
