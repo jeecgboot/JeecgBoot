@@ -1,5 +1,6 @@
 package org.jeecg.config.oss;
 
+import jakarta.annotation.PostConstruct;
 import org.jeecg.common.util.oss.OssBootUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,7 +27,7 @@ public class OssConfiguration {
     private String staticDomain;
 
 
-    @Bean
+    @PostConstruct
     public void initOssBootConfiguration() {
         OssBootUtil.setEndPoint(endpoint);
         OssBootUtil.setAccessKeyId(accessKeyId);

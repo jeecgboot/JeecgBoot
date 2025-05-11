@@ -112,7 +112,15 @@
 		<!-- mybatis-plus -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+			<version>${mybatis-plus.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<!--JDK 11+-->
+			<artifactId>mybatis-plus-jsqlparser</artifactId>
+			<!--JDK 8+-->
+			<!--<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>-->
 			<version>${mybatis-plus.version}</version>
 		</dependency>
 
@@ -271,10 +279,21 @@
 		</dependency>
 
 		<!-- knife4j -->
-		<dependency>
+		<!--<dependency>
 			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
 			<version>${knife4j-spring-boot-starter.version}</version>
+		</dependency>-->
+
+		<dependency>
+			<groupId>com.github.xiaoymin</groupId>
+			<artifactId>knife4j-openapi3-ui</artifactId>
+			<version>${knife4j-spring-boot-starter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.7.0</version>
 		</dependency>
 
 		<!-- 代码生成器 -->
