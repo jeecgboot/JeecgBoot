@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.CaseFormat;
-import com.google.common.collect.Lists;
 import freemarker.template.Template;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -15,12 +14,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
-import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuListRawStream;
-import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuListRequestBody;
-import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuUpdateListStream;
 import org.jeecg.modules.business.entity.*;
-import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
@@ -622,70 +616,11 @@ public class SkuController {
     public Result<?> compareClientSkuWithMabang(@RequestParam(name="clientId") String clientId,
                                                 @RequestParam(name="erpStatuses[]") List<String> erpStatuses) {
         Map<String, Sku> clientSkus = skuService.listInUninvoicedOrders(clientId, erpStatuses);
-        List<String> skuIds = new ArrayList<>(clientSkus.keySet());
-        List<SkuDocument> clientSkuDocs = new ArrayList<>();
-        for(String skuId: skuIds) {
-            List<SkuDocument> skus = skuMongoService.findBySkuId(skuId);
-            if(skus.isEmpty()) {
-                skuMongoService.migrateOneSku(clientSkus.get(skuId));
-                skus = skuMongoService.findBySkuId(skuId);
-            }
-            SkuDocument sku = skus.get(0);
-            clientSkuDocs.add(sku);
+        if(clientSkus.isEmpty()) {
+            log.info("No skus to compare");
+            return Result.OK();
         }
-
-        List<List<String>> erpCodePartition = Lists.partition(clientSkuDocs, 50)
-                .stream()
-                .map(skus -> skus.stream().map(SkuDocument::getErpCode).collect(Collectors.toList()))
-                .collect(Collectors.toList());
-        List<SkuData> skusFromMabang = new ArrayList<>();
-        for(List<String> partition : erpCodePartition) {
-            SkuListRequestBody body = new SkuListRequestBody();
-            body.setStockSkuList(String.join(",", partition));
-            SkuListRawStream rawStream = new SkuListRawStream(body);
-            SkuUpdateListStream stream = new SkuUpdateListStream(rawStream);
-            skusFromMabang.addAll(stream.all());
-        }
-        List<String> desyncedSkus = new ArrayList<>();
-        List<String> syncedSkus = new ArrayList<>();
-        for(SkuDocument sku : clientSkuDocs) {
-            SkuData skuData = skusFromMabang.stream().filter(s -> s.getErpCode().equals(sku.getErpCode()))
-                    .findFirst().orElse(null);
-            if(skuData != null) {
-                boolean isDesynced = false;
-                BigDecimal mabangPrice = skuData.getSalePrice().setScale(2, RoundingMode.HALF_UP); // because price from mabang has 4 decimal places, so Objects.equals will always return false
-                if(skuData.getWeight() == null && sku.getLatestSkuWeight() != null) {
-                    log.info("sku {} doesn't have a weight on Mabang but has one in Mongo", skuData.getErpCode());
-                    isDesynced = true;
-                }
-                if (sku.getLatestSkuWeight() != null && !Objects.equals(skuData.getWeight(), sku.getLatestSkuWeight().getWeight())) {
-                    log.info("sku {} has a different weight on Mabang and in Mongo : mabang :{}; mongo :{}", skuData.getErpCode() ,skuData.getWeight(), sku.getLatestSkuWeight().getWeight());
-                    isDesynced = true;
-                }
-                if(skuData.getSalePrice() == null && sku.getLatestSkuPrice() != null) {
-                    log.info("sku {} doesn't have a price on Mabang but has one in mongo", skuData.getErpCode());
-                    isDesynced = true;
-                }
-                if(sku.getLatestSkuPrice() != null && !Objects.equals(mabangPrice, sku.getLatestSkuPrice().getPrice())) {
-                    log.info("sku {} has a different price on Mabang and in Mongo : mabang :{}; mongo :{}", skuData.getErpCode() ,skuData.getSalePrice(), sku.getLatestSkuPrice().getPrice());
-                    isDesynced = true;
-                }
-                if(isDesynced)
-                    desyncedSkus.add(skuData.getErpCode());
-                else
-                    syncedSkus.add(skuData.getErpCode());
-            } else {
-                desyncedSkus.add(sku.getErpCode());
-            }
-        }
-        if(!desyncedSkus.isEmpty()) {
-            log.info("Desynced skus : {}", desyncedSkus);
-            skuService.setIsSynced(desyncedSkus, false);
-        }
-        if(!syncedSkus.isEmpty()) {
-            log.info("Synced skus : {}", syncedSkus);
-            skuService.setIsSynced(syncedSkus, true);
-        }
+        skuListMabangService.compareClientSkusWithMabang(clientSkus);
 
         return Result.OK();
     }

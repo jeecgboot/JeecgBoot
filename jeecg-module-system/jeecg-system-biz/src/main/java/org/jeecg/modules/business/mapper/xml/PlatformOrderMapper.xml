@@ -684,6 +684,8 @@
     </select>
 
     <select id="fetchUninvoicedOrdersByShopForClientFullSQL" resultType="org.jeecg.modules.business.vo.PlatformOrderFront">
+        -- sku_stats counts the number of weights and prices for each sku
+        -- this is used to determine if an order is available for shipping or purchase invoicing
         WITH sku_stats AS (
         SELECT
             sku.id AS sku_id,
@@ -694,7 +696,7 @@
             LEFT JOIN sku_price sp ON sku.id = sp.sku_id
         GROUP BY sku.id
         ),
-            uninvoiced_orders AS (
+        uninvoiced_orders AS (
         SELECT
             po.id AS id,
             s.name AS shop_id,
@@ -769,7 +771,19 @@
         </foreach>
         GROUP BY po.id, po.platform_order_number, po.product_available, po.virtual_product_available, po.purchase_invoice_number
         )
-        SELECT *, COUNT(*) OVER() AS total_count
+        SELECT *,
+               COUNT(*) OVER() AS total_count,
+               CASE
+                   WHEN EXISTS (
+                   SELECT 1
+                   FROM platform_order_content poc
+                       JOIN sku s ON poc.sku_id = s.id
+                   WHERE poc.platform_order_id = uninvoiced_orders.id
+                     AND s.is_synced = 0
+                     AND poc.erp_status &lt;&gt; 5
+                   ) THEN 1
+                   ELSE 0
+               END as has_desynced_sku
         FROM uninvoiced_orders
         WHERE
         product_available IN
@@ -961,6 +975,11 @@
         SELECT *
         FROM platform_order
         WHERE shipping_invoice_number = #{invoiceNumber};
+    </select>
+    <select id="getPlatformOrderIdsByInvoiceNumber" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order
+        WHERE shipping_invoice_number = #{invoiceNumber} OR purchase_invoice_number = #{invoiceNumber};
     </select>
     <select id="countPlatformOrders" resultType="org.jeecg.modules.business.vo.OrderKpi">
         WITH processedByUser AS (
@@ -1278,9 +1297,7 @@
     <select id="countListByClientAndShops" resultType="java.lang.Integer">
         SELECT count(po.id)
         FROM platform_order po
-            JOIN platform_order_content poc ON po.id = poc.platform_order_id
-            JOIN sku s ON poc.sku_id = s.id
-            JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
+        JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
         WHERE po.erp_status IN
                 <foreach collection="erpStatuses" separator="," open="(" close=")" index="index" item="erpStatus">
                     #{erpStatus}
@@ -1303,6 +1320,7 @@
             <if test="erpStatuses.size > 1">
                 AND po.order_time BETWEEN #{start} AND #{end}
             </if>
+            AND po.shipping_invoice_number IS NULL
     </select>
     <select id="listByClientAndShops" resultType="org.jeecg.modules.business.vo.PlatformOrderFront">
     WITH orders AS (

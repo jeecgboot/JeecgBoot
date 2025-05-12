@@ -263,6 +263,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<ShippingFeeBillableOrders> fetchShippingFeeBillableOrders();
 
     List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber);
+    List<String> getPlatformOrderIdsByInvoiceNumber(String invoiceNumber);
 
     Map<String, String> fetchShippingPeriodAndType(String invoiceNumber);
 

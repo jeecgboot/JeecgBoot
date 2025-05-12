@@ -5,8 +5,11 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderListRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.UpdateResult;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
+import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.ResponsesWithMsg;
 
 import java.util.Collection;
 import java.util.List;
@@ -44,4 +47,10 @@ public interface IPlatformOrderMabangService extends IService<Order> {
     String stripAccents(String input);
 
     JSONObject syncOrdersFromMabang(List<String> platformOrderIds) throws JSONException;
+
+    ResponsesWithMsg<String> editOrdersRemark(String invoiceNumber);
+
+    ResponsesWithMsg<String> deleteOrderRemark(String invoiceNumber);
+
+    Response<List<UpdateResult>, List<UpdateResult>> updateOrderStatusToPreparing(List<String> platformOrderIds);
 }

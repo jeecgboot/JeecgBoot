@@ -494,6 +494,10 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public List<PlatformOrder> getPlatformOrdersByInvoiceNumber(String invoiceNumber) {
         return platformOrderMap.getPlatformOrdersByInvoiceNumber(invoiceNumber);
     }
+    @Override
+    public List<String> getPlatformOrderIdsByInvoiceNumber(String invoiceNumber) {
+        return platformOrderMap.getPlatformOrderIdsByInvoiceNumber(invoiceNumber);
+    }
 
     @Override
     public Map<String, String> fetchShippingPeriodAndType(String invoiceNumber) {

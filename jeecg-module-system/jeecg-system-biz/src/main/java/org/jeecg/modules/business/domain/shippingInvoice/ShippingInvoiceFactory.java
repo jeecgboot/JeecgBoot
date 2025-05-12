@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import static cn.hutool.core.date.DateTime.now;
 import static java.util.stream.Collectors.*;
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
+import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.*;
 
 @Slf4j
 @Component
@@ -132,11 +133,11 @@ public class ShippingInvoiceFactory {
         List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(shopIds);
         log.info("Orders to be invoiced: {}", uninvoicedOrderToContent);
         String subject;
-        if(type.equals("shipping"))
+        if(type.equals(POSTSHIPPING.getMethod()))
             subject = String.format("Shipping fees from %s to %s", start, end);
-        else if(type.equals("pre-shipping"))
+        else if(type.equals(PRESHIPPING.getMethod()))
             subject = String.format("Pre-Shipping fees, order time from %s to %s", start, end);
-        else if(type.equals("all"))
+        else if(type.equals(ALL.getMethod()))
             subject = String.format("Shipping fees, order time from %s to %s", start, end);
         else
             throw new UserException("Couldn't create shipping invoice of unknown type.");
@@ -180,11 +181,11 @@ public class ShippingInvoiceFactory {
         String subject;
         if(shippingMethod.equals("shipping"))
             subject = String.format("Purchase and Shipping fees from %s to %s", start, end);
-        else if(shippingMethod.equals("post"))
+        else if(shippingMethod.equals(POSTSHIPPING.getMethod()))
             subject = String.format("Purchase and post-Shipping fees from %s to %s", start, end);
-        else if (shippingMethod.equals("pre-shipping"))
+        else if (shippingMethod.equals(PRESHIPPING.getMethod()))
             subject = String.format("Purchase and pre-Shipping fees, order time from %s to %s", start, end);
-        else if(shippingMethod.equals("all"))
+        else if(shippingMethod.equals(ALL.getMethod()))
             subject = String.format("Purchase and Shipping fees, order time from %s to %s", start, end);
         else throw new UserException("Couldn't create complete invoice for unknown shipping method");
         if(balance != null)

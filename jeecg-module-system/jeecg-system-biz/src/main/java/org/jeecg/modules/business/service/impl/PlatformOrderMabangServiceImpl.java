@@ -3,23 +3,29 @@ package org.jeecg.modules.business.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.apache.shiro.SecurityUtils;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.api.mabang.dochangeorder.*;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequest;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendResponse;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.OrderUpdateOrderNewOrderRequest;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.OrderUpdateOrderNewOrderRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.OrderUpdateOrderNewOrderResponse;
+import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.UpdateResult;
 import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.mapper.PlatformOrderMabangMapper;
 import org.jeecg.modules.business.service.IPlatformOrderMabangService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
+import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +37,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -49,10 +57,11 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
     @Autowired
     private IPlatformOrderService orderservice;
     @Autowired
-    private ISysBaseAPI ISysBaseApi;
+    private IPlatformOrderService platformOrderService;
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
+
     @Override
     @Transactional
     public void saveOrderFromMabang(List<Order> orders) {
@@ -379,4 +388,134 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         return res;
     }
 
+    @Override
+    public ResponsesWithMsg<String> editOrdersRemark(String invoiceNumber) {
+        ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
+        List<String> platformOrderIds = platformOrderService.getPlatformOrderIdsByInvoiceNumber(invoiceNumber);
+        log.info("Editing orders remark with invoice number {} for platform order ids {}", invoiceNumber, platformOrderIds);
+        ExecutorService executor = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<OrderListRequestBody> OrderRequests = new ArrayList<>();
+        List<List<String>> orderIdsPartition = Lists.partition(platformOrderIds, 10);
+        for (List<String> platformOrderIdList : orderIdsPartition) {
+            OrderRequests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
+        }
+        List<Order> ordersFromMabang = getOrdersFromMabang(OrderRequests, executor);
+        List<EditRemarkRequestBody> editRemarkRequests = new ArrayList<>();
+        for(Order order: ordersFromMabang) {
+            editRemarkRequests.add(new EditRemarkRequestBody(order.getPlatformOrderId(), order.getRemark()+ " " + invoiceNumber));
+        }
+        List<CompletableFuture<Boolean>> editRemarkFutures = editRemarkRequests.stream()
+                .map(request -> CompletableFuture.supplyAsync(() -> {
+                    boolean success = false;
+                    try {
+                        EditRemarkRequest editRemarkRequest = new EditRemarkRequest(request);
+                        ChangeOrderResponse response = editRemarkRequest.send();
+                        success = response.success();
+                        if (success) {
+                            responses.addSuccess(request.getPlatformOrderId());
+                        } else {
+                            responses.addFailure(request.getPlatformOrderId(), response.getMessage());
+                        }
+                    } catch (RuntimeException e) {
+                        log.error("Error editing order remark {} : {}", request.getPlatformOrderId(), e.getMessage());
+                        responses.addFailure(request.getPlatformOrderId(), e.getMessage());
+                    }
+                    return success;
+                }, executor))
+                .collect(Collectors.toList());
+        List<Boolean> results = editRemarkFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} order remarks updated successfully.", nbSuccesses, editRemarkRequests.size());
+        return responses;
+    }
+    @Override
+    public ResponsesWithMsg<String> deleteOrderRemark(String invoiceNumber) {
+        ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
+        List<String> orderIds = platformOrderService.getPlatformOrderIdsByInvoiceNumber(invoiceNumber);
+        log.info("Removing orders remark with invoice number {} for platform order ids {}", invoiceNumber, orderIds);
+        ExecutorService executor = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<OrderListRequestBody> OrderRequests = new ArrayList<>();
+        List<List<String>> orderIdsPartition = Lists.partition(orderIds, 10);
+        for (List<String> platformOrderIdList : orderIdsPartition) {
+            OrderRequests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
+        }
+        List<Order> ordersFromMabang = getOrdersFromMabang(OrderRequests, executor);
+        List<EditRemarkRequestBody> removeRemarkRequests = new ArrayList<>();
+        for(Order order: ordersFromMabang) {
+            Matcher invoiceRemarkMatcher = Pattern.compile("^(.*)("+ invoiceNumber +")(.*)$").matcher(order.getRemark());
+            if(invoiceRemarkMatcher.matches() && !invoiceRemarkMatcher.group(2).isEmpty()) {
+                log.info("Invoice number {} found in order remark {}", invoiceNumber, order.getPlatformOrderId());
+                String orderRemark1 = invoiceRemarkMatcher.group(1);
+                String orderRemark2 = invoiceRemarkMatcher.group(3);
+
+                removeRemarkRequests.add(new EditRemarkRequestBody(order.getPlatformOrderId(), orderRemark1.trim() + " " +orderRemark2.trim()));
+            } else {
+                log.info("Invoice number {} not found in order remark {}", invoiceNumber, order.getPlatformOrderId());
+            }
+        }
+        List<CompletableFuture<Boolean>> editRemarkFutures = removeRemarkRequests.stream()
+                .map(request -> CompletableFuture.supplyAsync(() -> {
+                    boolean success = false;
+                    try {
+                        EditRemarkRequest removeRemarkRequest = new EditRemarkRequest(request);
+                        ChangeOrderResponse response = removeRemarkRequest.send();
+                        success = response.success();
+                        if (success) {
+                            responses.addSuccess(request.getPlatformOrderId());
+                        } else {
+                            responses.addFailure(request.getPlatformOrderId(), response.getMessage());
+                        }
+                    } catch (RuntimeException e) {
+                        log.error("Error removing order remark {} : {}", request.getPlatformOrderId(), e.getMessage());
+                        responses.addFailure(request.getPlatformOrderId(), e.getMessage());
+                    }
+                    return success;
+                }, executor))
+                .collect(Collectors.toList());
+        List<Boolean> results = editRemarkFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} order remarks removed successfully.", nbSuccesses, removeRemarkRequests.size());
+
+        return responses;
+    }
+    @Override
+    public Response<List<UpdateResult>, List<UpdateResult>> updateOrderStatusToPreparing(List<String> platformOrderIds) {
+        Response<List<UpdateResult>, List<UpdateResult>> updateResponse = new Response<>();
+        updateResponse.setData(new ArrayList<>());
+        updateResponse.setError(new ArrayList<>());
+
+        List<List<String>> orderPartitions = Lists.partition(platformOrderIds, 50);
+
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        List<CompletableFuture<Boolean>> updateOrderFutures = orderPartitions.stream()
+                .map(platformOrderIdList -> CompletableFuture.supplyAsync(() -> {
+                    log.info("Updating order status on Mabang for PlatformOrderIds : {}", platformOrderIdList);
+                    OrderUpdateOrderNewOrderRequestBody body = new OrderUpdateOrderNewOrderRequestBody(platformOrderIdList);
+                    OrderUpdateOrderNewOrderRequest request = new OrderUpdateOrderNewOrderRequest(body);
+                    OrderUpdateOrderNewOrderResponse response = request.send();
+
+                    if(!response.success()) {
+                        log.error("Failed to update order status on Mabang. PlatformOrderIds : {} - Reason : {}", platformOrderIdList, response.getMessage());
+                        UpdateResult error = new UpdateResult();
+                        error.setReason(response.getMessage());
+                        updateResponse.setError(Collections.singletonList(error));
+                        updateResponse.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
+                        return false;
+                    } else {
+                        updateResponse.getData().addAll(response.getSuccessOrders());
+                        updateResponse.getError().addAll(response.getOrdersNotFound());
+                        updateResponse.setStatus(!response.getOrdersNotFound().isEmpty() ? HttpStatus.SC_NOT_FOUND : HttpStatus.SC_OK);
+                        return true;
+                    }
+                }, throttlingExecutorService)).collect(Collectors.toList());
+
+        List<Boolean> results = updateOrderFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        long nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} platform orders status updated successfully on Mabang. PlatformOrderIds : {}", nbSuccesses, platformOrderIds.size(), platformOrderIds);
+
+        return updateResponse;
+    }
 }

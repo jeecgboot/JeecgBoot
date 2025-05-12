@@ -79,6 +79,8 @@ public class PurchaseOrderController {
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
     @Autowired private IProviderMabangService providerMabangService;
+    @Autowired
+    private IPlatformOrderMabangService platformOrderMabangService;
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
@@ -625,7 +627,7 @@ public class PurchaseOrderController {
         } else {
             log.info("Updating order erp status to 2 in Mabang");
             List<String> platformOrderIds = platformOrderService.getPlatformOrderIdsByInvoiceNumbers(invoiceNumbers);
-            Response<List<UpdateResult>, List<UpdateResult>> updateResponse = providerMabangService.updateOrderStatusToPreparing(platformOrderIds);
+            Response<List<UpdateResult>, List<UpdateResult>> updateResponse = platformOrderMabangService.updateOrderStatusToPreparing(platformOrderIds);
             Responses updateOrderStatusResponse = new Responses();
             if(updateResponse.getStatus() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
                 String errMsg = updateResponse.getError().get(0).getReason();
@@ -634,10 +636,10 @@ public class PurchaseOrderController {
             }
             else {
                 List<String> updateOrderStatusSuccess = updateResponse.getData().stream()
-                        .map(UpdateResult::getPlatformOrderId)
+                        .map(UpdateResult::getPlatformOrderNumber)
                         .collect(Collectors.toList());
                 List<String> updateOrderStatusFailure = updateResponse.getError().stream()
-                        .map(UpdateResult::getPlatformOrderId)
+                        .map(UpdateResult::getPlatformOrderNumber)
                         .collect(Collectors.toList());
                 log.info("Update order errors : {}", updateResponse.getError());
                 updateOrderStatusResponse.getSuccesses().addAll(updateOrderStatusSuccess);
