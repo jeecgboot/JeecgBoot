@@ -1,10 +1,8 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.UpdateResult;
 import org.jeecg.modules.business.domain.api.mabang.purDoGetProvider.ProviderData;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
-import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.Responses;
 
 import java.time.LocalDateTime;
@@ -23,6 +21,4 @@ public interface IProviderMabangService extends IService<ProviderData> {
     Responses addPurchaseOrderToMabang(Map<String, Integer> skuQuantities, InvoiceMetaData metaData, AtomicReference<Map<String, LocalDateTime>>  providersHistory);
 
     Responses deletePurchaseOrderFromMabang(List<String> groupIds);
-
-    Response<List<UpdateResult>, List<UpdateResult>> updateOrderStatusToPreparing(List<String> platformOrderIds);
 }

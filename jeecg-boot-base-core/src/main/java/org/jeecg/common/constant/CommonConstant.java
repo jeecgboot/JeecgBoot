@@ -323,7 +323,7 @@ public interface CommonConstant {
     String X_MiniFlowExclusionFieldMode = "X-Miniflowexclusionfieldmode";
     /**===============================================================================================*/
 
-    String TOKEN_IS_INVALID_MSG = "Token失效，请重新登录!";
+    String TOKEN_IS_INVALID_MSG = "Your session has expired, please log in again";
     String X_FORWARDED_SCHEME = "X-Forwarded-Scheme";
 
 

@@ -20,6 +20,7 @@ import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuSto
 import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.SkuListMabangMapper;
+import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.ResponsesWithMsg;
@@ -35,6 +36,8 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -837,5 +840,80 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     @Override
     public int countUnpairedSkus(String shopId) {
         return skuService.countUnpairedSkus(shopId);
+    }
+
+    @Override
+    public void compareClientSkusWithMabang(Map<String, Sku> clientSkus) {
+
+        List<String> skuIds = new ArrayList<>(clientSkus.keySet());
+        List<SkuDocument> clientSkuDocs = new ArrayList<>();
+        for(String skuId: skuIds) {
+            List<SkuDocument> skus = skuMongoService.findBySkuId(skuId);
+            if(skus.isEmpty()) {
+                skuMongoService.migrateOneSku(clientSkus.get(skuId));
+                skus = skuMongoService.findBySkuId(skuId);
+            }
+            SkuDocument sku = skus.get(0);
+            clientSkuDocs.add(sku);
+        }
+
+        List<List<String>> erpCodePartition = Lists.partition(clientSkuDocs, 50)
+                .stream()
+                .map(skus -> skus.stream().map(SkuDocument::getErpCode).collect(Collectors.toList()))
+                .collect(Collectors.toList());
+        List<SkuData> skusFromMabang = new ArrayList<>();
+        for(List<String> partition : erpCodePartition) {
+            SkuListRequestBody body = new SkuListRequestBody();
+            body.setStockSkuList(String.join(",", partition));
+            SkuListRawStream rawStream = new SkuListRawStream(body);
+            SkuUpdateListStream stream = new SkuUpdateListStream(rawStream);
+            skusFromMabang.addAll(stream.all());
+        }
+        List<String> desyncedSkus = new ArrayList<>();
+        List<String> syncedSkus = new ArrayList<>();
+        for(SkuDocument sku : clientSkuDocs) {
+            SkuData skuData = skusFromMabang.stream().filter(s -> s.getErpCode().equals(sku.getErpCode()))
+                    .findFirst().orElse(null);
+            if(skuData != null) {
+                boolean isDesynced = false;
+                BigDecimal mabangPrice = skuData.getSalePrice().setScale(2, RoundingMode.HALF_UP); // because price from mabang has 4 decimal places, so Objects.equals will always return false
+                int weightInRemark = -1;
+                Matcher saleRemarkMatcher = saleRemarkPattern.matcher(skuData.getSaleRemark());
+                if(saleRemarkMatcher.matches() && !saleRemarkMatcher.group(1).isEmpty()) {
+                    String saleRemark = saleRemarkMatcher.group(1);
+                    weightInRemark = (int) ceil(Double.parseDouble(saleRemark));
+                }
+                if(weightInRemark == -1 && sku.getLatestSkuWeight() != null) {
+                    log.info("sku {} doesn't have a weight on Mabang but has one in Mongo", skuData.getErpCode());
+                    isDesynced = true;
+                }
+                if (sku.getLatestSkuWeight() != null && !Objects.equals(weightInRemark, sku.getLatestSkuWeight().getWeight())) {
+                    log.info("sku {} has a different weight on Mabang and in Mongo : mabang :{}; mongo :{}", skuData.getErpCode() ,weightInRemark, sku.getLatestSkuWeight().getWeight());
+                    isDesynced = true;
+                }
+                if(skuData.getSalePrice() == null && sku.getLatestSkuPrice() != null) {
+                    log.info("sku {} doesn't have a price on Mabang but has one in mongo", skuData.getErpCode());
+                    isDesynced = true;
+                }
+                if(sku.getLatestSkuPrice() != null && !Objects.equals(mabangPrice, sku.getLatestSkuPrice().getPrice())) {
+                    log.info("sku {} has a different price on Mabang and in Mongo : mabang :{}; mongo :{}", skuData.getErpCode() ,skuData.getSalePrice(), sku.getLatestSkuPrice().getPrice());
+                    isDesynced = true;
+                }
+                if(isDesynced)
+                    desyncedSkus.add(skuData.getErpCode());
+                else
+                    syncedSkus.add(skuData.getErpCode());
+            } else {
+                desyncedSkus.add(sku.getErpCode());
+            }
+        }
+        if(!desyncedSkus.isEmpty()) {
+            log.info("Desynced skus : {}", desyncedSkus);
+            skuService.setIsSynced(desyncedSkus, false);
+        }
+        if(!syncedSkus.isEmpty()) {
+            log.info("Synced skus : {}", syncedSkus);
+            skuService.setIsSynced(syncedSkus, true);
+        }
     }
 }

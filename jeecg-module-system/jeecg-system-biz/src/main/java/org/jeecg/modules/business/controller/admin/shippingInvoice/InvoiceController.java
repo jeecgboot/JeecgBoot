@@ -15,7 +15,6 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
-import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoiceEntry;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
@@ -54,6 +53,7 @@ import java.util.stream.Collectors;
 
 import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDictSql;
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
+import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.*;
 import static org.jeecg.modules.business.entity.Task.TaskCode.SI_G;
 import static org.jeecg.modules.business.entity.TaskHistory.TaskStatus.*;
 import static org.jeecg.modules.business.vo.PlatformOrderFront.*;
@@ -116,6 +116,8 @@ public class InvoiceController {
     private IUserClientService userClientService;
     @Autowired
     private ICreditService creditService;
+    @Autowired
+    private IPlatformOrderMabangService platformOrderMabangService;
     @Autowired
     Environment env;
 
@@ -246,10 +248,20 @@ public class InvoiceController {
     @PostMapping(value = "/makeComplete")
     public Result<?> makeCompleteShippingInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
-            String method = param.getErpStatuses().toString().equals("[3]") ? "post" : param.getErpStatuses().toString().equals("[1, 2]") ? "pre-shipping" : "all";
+            JSONObject response = new JSONObject();
+
+            String method = param.getErpStatuses().toString().equals("[3]") ? POSTSHIPPING.getMethod() : param.getErpStatuses().toString().equals("[1, 2]") ? PRESHIPPING.getMethod() : ALL.getMethod();
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
             balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), COMPLETE.name());
-            return Result.OK(metaData);
+
+            if(method.equals(PRESHIPPING.getMethod())) {
+                ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(metaData.getInvoiceCode());
+                response.put("metaData", metaData);
+                response.put("mabangResponses", mabangResponses);
+                return Result.OK(response);
+            }
+            response.put("metaData", metaData);
+            return Result.OK(response);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {
@@ -320,6 +332,7 @@ public class InvoiceController {
     public Result<?> makeManualPurchaseInvoice(@RequestBody ShippingInvoiceOrderParam param) {
         InvoiceMetaData metaData;
         try {
+            JSONObject response = new JSONObject();
             List<SkuQuantity> skuQuantities = skuService.getSkuQuantitiesFromOrderIds(param.orderIds());
             if(skuQuantities.isEmpty()) {
                 return Result.error("Nothing to invoice.");
@@ -353,7 +366,14 @@ public class InvoiceController {
                 emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
                 log.info("Mail sent successfully");
             }
-            return Result.OK(metaData);
+            if(param.getType().equals(PRESHIPPING.getMethod())) {
+                ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(metaData.getInvoiceCode());
+                response.put("metaData", metaData);
+                response.put("mabangResponses", mabangResponses);
+                return Result.OK(response);
+            }
+            response.put("metaData", metaData);
+            return Result.OK(response);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException e) {
@@ -376,6 +396,7 @@ public class InvoiceController {
     @PostMapping(value = "/makeManualComplete")
     public Result<?> makeManualCompleteInvoice(@RequestBody ShippingInvoiceOrderParam param) {
         try {
+            JSONObject response = new JSONObject();
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoice(param);
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
@@ -402,7 +423,14 @@ public class InvoiceController {
                 emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
                 log.info("Mail sent successfully");
             }
-            return Result.OK(metaData);
+            if(param.getType().equals(PRESHIPPING.getMethod())) {
+                ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(metaData.getInvoiceCode());
+                response.put("metaData", metaData);
+                response.put("mabangResponses", mabangResponses);
+                return Result.OK(response);
+            }
+            response.put("metaData", metaData);
+            return Result.OK(response);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {

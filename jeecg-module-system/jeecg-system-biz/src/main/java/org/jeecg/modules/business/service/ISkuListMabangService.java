@@ -47,4 +47,6 @@ public interface ISkuListMabangService extends IService<SkuData> {
     List<SkuOrderPage> unpairedSkus(String shopId, Integer pageNo, Integer pageSize, String column, String order);
 
     int countUnpairedSkus(String shopId);
+
+    void compareClientSkusWithMabang(Map<String, Sku> clientSkus);
 }

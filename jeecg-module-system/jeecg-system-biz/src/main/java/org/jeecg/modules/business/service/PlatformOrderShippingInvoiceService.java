@@ -46,6 +46,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
+import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.*;
 
 @Service
 @Slf4j
@@ -284,7 +285,7 @@ public class PlatformOrderShippingInvoiceService {
     public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException {
         String username = user.length > 0 ? user[0] : ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         List<PlatformOrder> platformOrderList;
-        if(method.equals("post")) {
+        if(method.equals(POSTSHIPPING.getMethod())) {
             //On récupère les commandes entre 2 dates d'expédition avec un status 3
             platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops(param.getStart(), param.getEnd(), param.shopIDs(), param.getWarehouses());
         } else {
@@ -644,7 +645,7 @@ public class PlatformOrderShippingInvoiceService {
                         balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), SHIPPING.name());
                 }
                 else {
-                    metaData = makeCompleteInvoicePostShipping(param, "post");
+                    metaData = makeCompleteInvoicePostShipping(param, POSTSHIPPING.getMethod());
                     if(client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.VIP.getName()))
                             || client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.CONFIRMED.getName())))
                         balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), COMPLETE.name());
@@ -701,7 +702,7 @@ public class PlatformOrderShippingInvoiceService {
                     balanceService.updateBalance(clientId, metaData.getInvoiceCode(), SHIPPING.name());
                 }
                 else {
-                    metaData = makeCompleteInvoicePostShipping(param, "pre-shipping", "system");
+                    metaData = makeCompleteInvoicePostShipping(param, PRESHIPPING.getMethod(), "system");
                     balanceService.updateBalance(clientId, metaData.getInvoiceCode(), COMPLETE.name());
                 }
                 platformOrderMapper.updateErpStatusByCode(metaData.getInvoiceCode(), 2);

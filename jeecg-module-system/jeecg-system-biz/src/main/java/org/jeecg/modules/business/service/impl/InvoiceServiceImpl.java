@@ -31,6 +31,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Autowired
     private IPlatformOrderContentService platformOrderContentService;
     @Autowired
+    private IPlatformOrderMabangService platformOrderMabangService;
+    @Autowired
     private IPlatformOrderService platformOrderService;
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
@@ -83,6 +85,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 shippingInvoiceService.deleteAttachmentFile(po.getInventoryDocumentString());
             if (po.getPaymentDocumentString() != null && !po.getPaymentDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(po.getPaymentDocumentString());
+            platformOrderMabangService.deleteOrderRemark(invoiceNumber);
             platformOrderService.removePurchaseInvoiceNumber(invoiceNumber, clientId);
             purchaseOrderService.cancelInvoice(id);
         }
@@ -119,6 +122,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             if(purchase.getPaymentDocumentString() != null && !purchase.getPaymentDocumentString().isEmpty())
                 shippingInvoiceService.deleteAttachmentFile(purchase.getPaymentDocumentString());
             platformOrderContentService.cancelInvoice(invoiceNumber, clientId);
+            platformOrderMabangService.deleteOrderRemark(invoiceNumber);
             platformOrderService.removePurchaseInvoiceNumber(invoiceNumber, clientId);
             platformOrderService.cancelInvoice(invoiceNumber, clientId);
             purchaseOrderService.cancelInvoice(purchase.getId());
