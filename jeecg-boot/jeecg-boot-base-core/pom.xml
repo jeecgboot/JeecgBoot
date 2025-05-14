@@ -314,5 +314,10 @@
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-starter-chatgpt</artifactId>
 		</dependency>
+		<!-- minidao -->
+		<dependency>
+			<groupId>org.jeecgframework</groupId>
+			<artifactId>minidao-spring-boot-starter</artifactId>
+		</dependency>
 	</dependencies>
 </project>

@@ -78,7 +78,9 @@ public class CustomUndertowMetricsHandler {
             // 获取当前 session，如果不存在则创建
             Session session = sessionManager.getSession(exchange, sessionConfig);
             if (session == null) {
-                sessionManager.createSession(exchange, sessionConfig);
+                try {
+                    sessionManager.createSession(exchange, sessionConfig);
+                } catch (Exception e) {}
             }
 
             // 执行下一个 Handler

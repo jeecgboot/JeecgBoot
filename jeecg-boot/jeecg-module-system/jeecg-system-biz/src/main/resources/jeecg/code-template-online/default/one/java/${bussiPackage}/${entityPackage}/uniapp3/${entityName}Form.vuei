@@ -1,0 +1,512 @@
+<#include "/common/utils.ftl">
+<route lang="json5" type="page">
+{
+layout: 'default',
+style: {
+navigationStyle: 'custom',
+navigationBarTitleText: '${tableVo.ftlDescription}',
+},
+}
+</route>
+
+<template>
+  <PageLayout :navTitle="navTitle" :backRouteName="backRouteName">
+    <scroll-view class="scrollArea" scroll-y>
+      <view class="form-container">
+        <wd-form ref="form" :model="myFormData">
+          <wd-cell-group border>
+      <#list columns as po><#rt/>
+      <#assign form_field_dictCode="">
+      	<#if po.dictTable?default("")?trim?length gt 1 && po.dictText?default("")?trim?length gt 1 && po.dictField?default("")?trim?length gt 1>
+      		<#assign form_field_dictCode="${po.dictTable},${po.dictText},${po.dictField}">
+      	<#elseif po.dictField?default("")?trim?length gt 1>
+      		<#assign form_field_dictCode="${po.dictField}">
+      	</#if>
+          <view class="{ 'mt-14px': ${po_index % 2} == 0 }">
+              <#if po.fieldName !='id' && po.isShow =='Y' && po.fieldName !='delFlag'><#rt/>
+              <#if po.classType =='image'>
+               <!-- 图片 -->
+            <wd-cell
+                :title="get4Label('${po.filedComment}')"
+                title-width="100px"
+                <#if po.nullable == 'N'>
+                :required="true"
+                </#if>
+             >
+              <online-image
+                  v-model:value="myFormData[${autoStringSuffix(po)}]"
+                  name=${autoStringSuffix(po)}
+                  <#if po.uploadnum??>
+                  :maxNum="${po.uploadnum}"
+                  </#if>
+              />
+            </wd-cell>
+            <#elseif po.classType =='file'>
+             <wd-cell
+                :title="get4Label('${po.filedComment}')"
+                title-width="100px"
+                <#if po.nullable == 'N'>
+                :required="true"
+                </#if>
+             >
+           <!-- #ifndef APP-PLUS -->
+           <online-file
+            v-model:value="myFormData[${autoStringSuffix(po)}]"
+            name=${autoStringSuffix(po)}
+             ></online-file>
+           <!-- #endif -->
+
+           <!-- #ifdef APP-PLUS -->
+            <online-file-custom
+            v-model:value="myFormData[${autoStringSuffix(po)}]"
+            name=${autoStringSuffix(po)}
+            ></online-file-custom>
+           <!-- #endif -->
+            </wd-cell>
+            <#elseif po.classType =='datetime' || po.classType =='time'>
+              <DateTime
+                  :label="get4Label('${po.filedComment}')"
+                  labelWidth="100px"
+                  type="${po.classType}"
+                  <#if po.classType =='datetime'>
+                  format="YYYY-MM-DD HH:mm:ss"
+                  <#else>
+                  format="HH:mm:ss"
+                 </#if>
+                  name=${autoStringSuffix(po)}
+                  v-model="myFormData[${autoStringSuffix(po)}]"
+              ></DateTime>
+            <#elseif po.classType =='date'>
+              <online-date
+                  :label="get4Label('${po.filedComment}')"
+                  labelWidth="100px"
+                  <#if po.extendParams?exists && po.extendParams.picker?exists>
+                  :type="getDateExtendType('${po.extendParams.picker}')"
+                  <#else>
+                  type="${po.classType}"
+                  </#if>
+                  name=${autoStringSuffix(po)}
+                  v-model:value="myFormData[${autoStringSuffix(po)}]"
+              ></online-date>
+              <#elseif po.classType =='switch'>
+<#assign switch_extend_arr=['Y','N']>
+<#if po.dictField?default("")?contains("[")>
+<#assign switch_extend_arr=po.dictField?eval>
+</#if>
+        <!-- 开关 -->
+              <wd-cell
+                :label="get4Label('${po.filedComment}')"
+                name=${autoStringSuffix(po)}
+                title-width="100px"
+                center
+              >
+                <wd-switch
+                  :label="get4Label('${po.filedComment}')"
+                  name=${autoStringSuffix(po)}
+                  size="18px"
+                  v-model="myFormData[${autoStringSuffix(po)}]"
+                  active-value="${switch_extend_arr[0]}"
+                  inactive-value="${switch_extend_arr[1]}"
+                />
+             </wd-cell>
+            <#elseif po.classType =='list' || po.classType =='sel_search'>
+              <online-select
+                :label="get4Label('${po.filedComment}')"
+                 labelWidth="100px"
+                 type="${po.classType}"
+                 name=${autoStringSuffix(po)}
+                 dict="${form_field_dictCode}"
+                v-model="myFormData[${autoStringSuffix(po)}]"
+              ></online-select>
+            <#elseif po.classType =='checkbox'>
+              <online-checkbox
+                :label="get4Label('${po.filedComment}')"
+                 labelWidth="100px"
+                 type="${po.classType}"
+                 name=${autoStringSuffix(po)}
+                 dict="${form_field_dictCode}"
+                v-model="myFormData[${autoStringSuffix(po)}]"
+              ></online-checkbox>
+            <#elseif po.classType =='radio'>
+              <online-radio
+                :label="get4Label('${po.filedComment}')"
+                 labelWidth="100px"
+                 type="${po.classType}"
+                 name=${autoStringSuffix(po)}
+                 dict="${form_field_dictCode}"
+                v-model="myFormData[${autoStringSuffix(po)}]"
+              ></online-radio>
+            <#elseif po.classType =='list_multi'>
+              <online-multi
+                :label="get4Label('${po.filedComment}')"
+                 labelWidth="100px"
+                 type="${po.classType}"
+                 name=${autoStringSuffix(po)}
+                 dict="${form_field_dictCode}"
+                v-model="myFormData[${autoStringSuffix(po)}]"
+              ></online-multi>
+            <#elseif po.classType =='textarea' || po.classType =='markdown'  || po.classType =='umeditor'>
+              <wd-textarea
+                :label="get4Label('${po.filedComment}')"
+                 labelWidth="100px"
+                 type="${po.classType}"
+                 name=${autoStringSuffix(po)}
+                 prop=${autoStringSuffix(po)}
+                 clearable
+                 :maxlength="300"
+                v-model="myFormData[${autoStringSuffix(po)}]"
+              ></wd-textarea>
+            <#elseif po.classType =='password'>
+              <wd-input
+                :label="get4Label('${po.filedComment}')"
+                 labelWidth="100px"
+                 show-password
+                 name=${autoStringSuffix(po)}
+                 prop=${autoStringSuffix(po)}
+                 clearable
+                v-model="myFormData[${autoStringSuffix(po)}]"
+              ></wd-input>
+            <#elseif po.classType =='popup_dict'>
+             <PopupDict
+                  labelWidth="100px"
+                 :label="get4Label('${po.filedComment}')"
+                 v-model="myFormData[${autoStringSuffix(po)}]"
+                 :multi="${po.extendParams.popupMulti?c}"
+                 dictCode="${po.dictTable},${po.dictText},${po.dictField}"
+               ></PopupDict>
+            <#elseif po.classType =='popup'>
+            <#assign sourceFields = po.dictField?default("")?trim?split(",")/>
+            <#assign targetFields = po.dictText?default("")?trim?split(",")/>
+             <Popup
+                labelWidth="100px"
+                :label="get4Label('${po.filedComment}')"
+                v-model="myFormData[${autoStringSuffix(po)}]"
+                :multi="${po.extendParams.popupMulti?c}"
+                code="${po.dictTable}"
+                :setFieldsValue="setFieldsValue"
+                :fieldConfig="[
+                    <#list sourceFields as fieldName>
+                    { source: '${fieldName}', target: '${dashedToCamel(targetFields[fieldName_index])}' },
+                    </#list>
+                ]"
+              ></Popup>
+            <#elseif po.classType =='link_table'>
+             <online-popup-link-record
+                :label="get4Label('${po.filedComment}')"
+                labelWidth="100px"
+                 name=${autoStringSuffix(po)}
+                :formSchema="getFormSchema('${po.dictTable}','${po.dictField}','${po.dictText}')"
+                v-model:value="myFormData[${autoStringSuffix(po)}]"
+              ></online-popup-link-record>
+            <#elseif po.classType =='sel_user'>
+            <select-user
+                labelWidth="100px"
+                :label="get4Label('${po.filedComment}')"
+                 name=${autoStringSuffix(po)}
+                 v-model="myFormData[${autoStringSuffix(po)}]"
+                 <#if po.extendParams?exists && po.extendParams.text?exists>labelKey="${po.extendParams.text}"</#if>
+                 <#if po.extendParams?exists && po.extendParams.store?exists>rowKey="${po.extendParams.store}"</#if>
+              ></select-user>
+            <#elseif po.classType =='sel_depart'>
+              <select-dept
+                labelWidth="100px"
+                :label="get4Label('${po.filedComment}')"
+                name=${autoStringSuffix(po)}
+                v-model="myFormData[${autoStringSuffix(po)}]"
+                <#if po.extendParams?exists && po.extendParams.text?exists>labelKey="${po.extendParams.text}"</#if>
+                <#if po.extendParams?exists && po.extendParams.store?exists>rowKey="${po.extendParams.store}"</#if>
+                :multiple="${po.extendParams.multi?default('true')}"
+              ></select-dept>
+            <#elseif po.classType =='cat_tree'>
+            <CategorySelect
+                labelWidth="100px"
+                :label="get4Label('${po.filedComment}')"
+                v-model="myFormData[${autoStringSuffix(po)}]"
+                pcode="${po.dictField?default("")}"
+              ></CategorySelect>
+            <#elseif po.classType =='sel_tree'>
+            <TreeSelect
+                labelWidth="100px"
+                :label="get4Label('${po.filedComment}')"
+                 v-model="myFormData[${autoStringSuffix(po)}]"
+                <#if po.dictText??>
+                <#if po.dictText?split(',')[2]?? && po.dictText?split(',')[0]??>
+                dict="${po.dictTable},${po.dictText?split(',')[2]},${po.dictText?split(',')[0]}"
+                <#elseif po.dictText?split(',')[1]??>
+                pidField="${po.dictText?split(',')[1]}"
+                <#elseif po.dictText?split(',')[3]??>
+                hasChildField="${po.dictText?split(',')[3]}"
+                </#if>
+                </#if>
+                :pidValue="`${po.dictField}`"
+              ></TreeSelect>
+            <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+               <wd-input
+                   label-width="100px"
+                   v-model="myFormData[${autoStringSuffix(po)}]"
+                   :label="get4Label('${po.filedComment}')"
+                   name=${autoStringSuffix(po)}
+                   prop=${autoStringSuffix(po)}
+                   placeholder="请选择${po.filedComment}"
+                   inputMode="numeric"
+                   :rules="[
+                   <#if po.fieldName != 'id'>
+                    <#assign fieldValidType = po.fieldValidType!''>
+                        <#-- 非空校验 -->
+                       <#if po.nullable == 'N' || fieldValidType == '*'>
+                             { required: true, message: '请输入${po.filedComment}!'},
+                       <#elseif fieldValidType!=''>
+                             { required: false},
+                       </#if>
+                       <#-- 6到16位数字 -->
+                       <#if fieldValidType == 'n6-16'>
+                             { pattern: /^\d{6,16}$|^(?=\d+\.\d+)[\d.]{7,17}$/, message: '请输入6到16位数字!'},
+                       <#-- 6到16位任意字符 -->
+                       <#elseif fieldValidType == '*6-16'>
+                             { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
+                       <#-- 6到18位字母 -->
+                       <#elseif fieldValidType == 's6-18'>
+                             { pattern: /^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
+                       <#-- 网址 -->
+                       <#elseif fieldValidType == 'url'>
+                             { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},
+                       <#-- 电子邮件 -->
+                       <#elseif fieldValidType == 'e'>
+                             { pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/, message: '请输入正确的电子邮件!'},
+                       <#-- 手机号码 -->
+                       <#elseif fieldValidType == 'm'>
+                             { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},
+                       <#-- 邮政编码 -->
+                       <#elseif fieldValidType == 'p'>
+                             { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'},
+                       <#-- 字母 -->
+                       <#elseif fieldValidType == 's'>
+                             { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'},
+                       <#-- 数字 -->
+                       <#elseif fieldValidType == 'n'>
+                             { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+                       <#-- 整数 -->
+                       <#elseif fieldValidType == 'z'>
+                             { pattern: /^-?\d+$/, message: '请输入整数!'},
+                       <#-- 金额 -->
+                       <#elseif fieldValidType == 'money'>
+                             { pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '请输入正确的金额!'},
+                       <#-- 正则校验 -->
+                       <#elseif fieldValidType != '' && fieldValidType != '*'>
+                             { pattern: '${fieldValidType}', message: '不符合校验规则!'},
+                       <#-- 无校验 -->
+                       <#else>
+                           <#t>
+                       </#if>
+                     </#if>
+                   ]"
+                   clearable
+              />
+            <#else>
+              <wd-input
+                  label-width="100px"
+                  v-model="myFormData[${autoStringSuffix(po)}]"
+                  :label="get4Label('${po.filedComment}')"
+                  name=${autoStringSuffix(po)}
+                  prop=${autoStringSuffix(po)}
+                  placeholder="请选择${po.filedComment}"
+                  :rules="[
+                 <#if po.fieldName != 'id'>
+                     <#assign fieldValidType = po.fieldValidType!''>
+                             <#-- 非空校验 -->
+                            <#if po.nullable == 'N' || fieldValidType == '*'>
+                                  { required: true, message: '请输入${po.filedComment}!'},
+                            <#elseif fieldValidType!=''>
+                                  { required: false},
+                            </#if>
+                            <#-- 6到16位数字 -->
+                            <#if fieldValidType == 'n6-16'>
+                                  { pattern: /^\d{6,16}$|^(?=\d+\.\d+)[\d.]{7,17}$/, message: '请输入6到16位数字!'},
+                            <#-- 6到16位任意字符 -->
+                            <#elseif fieldValidType == '*6-16'>
+                                  { pattern: /^.{6,16}$/, message: '请输入6到16位任意字符!'},
+                            <#-- 6到18位字母 -->
+                            <#elseif fieldValidType == 's6-18'>
+                                  { pattern: /^[a-z|A-Z]{6,18}$/, message: '请输入6到18位字母!'},
+                            <#-- 网址 -->
+                            <#elseif fieldValidType == 'url'>
+                                  { pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/, message: '请输入正确的网址!'},
+                            <#-- 电子邮件 -->
+                            <#elseif fieldValidType == 'e'>
+                                  { pattern: /^([\w]+\.*)([\w]+)@[\w]+\.\w{3}(\.\w{2}|)$/, message: '请输入正确的电子邮件!'},
+                            <#-- 手机号码 -->
+                            <#elseif fieldValidType == 'm'>
+                                  { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号码!'},
+                            <#-- 邮政编码 -->
+                            <#elseif fieldValidType == 'p'>
+                                  { pattern: /^[0-9]\d{5}$/, message: '请输入正确的邮政编码!'},
+                            <#-- 字母 -->
+                            <#elseif fieldValidType == 's'>
+                                  { pattern: /^[A-Z|a-z]+$/, message: '请输入字母!'},
+                            <#-- 数字 -->
+                            <#elseif fieldValidType == 'n'>
+                                  { pattern: /^-?\d+\.?\d*$/, message: '请输入数字!'},
+                            <#-- 整数 -->
+                            <#elseif fieldValidType == 'z'>
+                                  { pattern: /^-?\d+$/, message: '请输入整数!'},
+                            <#-- 金额 -->
+                            <#elseif fieldValidType == 'money'>
+                                  { pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '请输入正确的金额!'},
+                            <#-- 正则校验 -->
+                            <#elseif fieldValidType != '' && fieldValidType != '*'>
+                                  { pattern: '${fieldValidType}', message: '不符合校验规则!'},
+                            <#-- 无校验 -->
+                            <#else>
+                                <#t>
+                            </#if>
+                      </#if>
+                  ]"
+                  clearable
+              />
+            </#if>
+          </#if>
+        </view>
+       </#list>
+          </wd-cell-group>
+        </wd-form>
+      </view>
+    </scroll-view>
+    <view class="footer">
+      <wd-button :disabled="loading" block :loading="loading" @click="handleSubmit">提交</wd-button>
+    </view>
+  </PageLayout>
+</template>
+
+<script lang="ts" setup>
+import { onLoad } from '@dcloudio/uni-app'
+import { http } from '@/utils/http'
+import { useToast } from 'wot-design-uni'
+import { useRouter } from '@/plugin/uni-mini-router'
+import { ref, onMounted, computed,reactive } from 'vue'
+import OnlineImage from '@/components/online/view/online-image.vue'
+import OnlineFile from '@/components/online/view/online-file.vue'
+import OnlineFileCustom from '@/components/online/view/online-file-custom.vue'
+import OnlineSelect from '@/components/online/view/online-select.vue'
+import OnlineTime from '@/components/online/view/online-time.vue'
+import OnlineDate from '@/components/online/view/online-date.vue'
+import OnlineRadio from '@/components/online/view/online-radio.vue'
+import OnlineCheckbox from '@/components/online/view/online-checkbox.vue'
+import OnlineMulti from '@/components/online/view/online-multi.vue'
+import OnlinePopupLinkRecord from '@/components/online/view/online-popup-link-record.vue'
+import SelectDept from '@/components/SelectDept/SelectDept.vue'
+import SelectUser from '@/components/SelectUser/SelectUser.vue'
+defineOptions({
+  name: '${entityName}Form',
+  options: {
+    styleIsolation: 'shared',
+  },
+})
+const toast = useToast()
+const router = useRouter()
+const form = ref(null)
+// 定义响应式数据
+const myFormData = reactive({})
+const loading = ref(false)
+const navTitle = ref('新增')
+const dataId = ref('')
+const backRouteName = ref('${entityName}List')
+// 定义 initForm 方法
+const initForm = (item) => {
+  console.log('initForm item', item)
+  if(item?.dataId){
+    dataId.value = item.dataId;
+    navTitle.value = item.dataId?'编辑':'新增';
+    initData();
+  }
+}
+// 初始化数据
+const initData = () => {
+  http.get("/${entityPackagePath}/${entityName?uncap_first}/queryById",{id:dataId.value}).then((res) => {
+    if (res.success) {
+      let obj = res.result
+      Object.assign(myFormData, { ...obj })
+    }else{
+      toast.error(res?.message || '表单加载失败！')
+    }
+  })
+}
+const handleSuccess = () => {
+  uni.$emit('refreshList');
+  router.back()
+}
+// 提交表单
+const handleSubmit = () => {
+  let url = dataId.value?'/${entityPackagePath}/${entityName?uncap_first}/edit':'/${entityPackagePath}/${entityName?uncap_first}/add';
+  form.value
+    .validate()
+    .then(({ valid, errors }) => {
+      if (valid) {
+        loading.value = true;
+        http.post(url,myFormData).then((res) => {
+          loading.value = false;
+          if (res.success) {
+            toast.success('保存成功');
+            handleSuccess()
+          }else{
+            toast.error(res?.message || '表单保存失败！')
+          }
+        })
+      }
+    })
+    .catch((error) => {
+      console.log(error, 'error')
+      loading.value = false;
+    })
+}
+// 标题
+const get4Label = computed(() => {
+  return (label) => {
+    return label && label.length > 4 ? label.substring(0, 4) : label;
+  }
+})
+
+// 标题
+const getFormSchema = computed(() => {
+  return (dictTable,dictCode,dictText) => {
+    return {
+      dictCode,
+      dictTable,
+      dictText
+    };
+  }
+})
+/**
+ * 获取日期控件的扩展类型
+ * @param picker
+ * @returns {string}
+ */
+const getDateExtendType = (picker: string) => {
+    let mapField = {
+      month: 'year-month',
+      year: 'year',
+      quarter: 'quarter',
+      week: 'week',
+      day: 'date',
+    }
+    return picker && mapField[picker]
+      ? mapField[picker]
+      : 'date'
+}
+//设置pop返回值
+const setFieldsValue = (data) => {
+   Object.assign(myFormData, {...data })
+}
+// onLoad 生命周期钩子
+onLoad((option) => {
+  initForm(option)
+})
+</script>
+
+<style lang="scss" scoped>
+.footer {
+  width: 100%;
+  padding: 10px 20px;
+  padding-bottom: calc(constant(safe-area-inset-bottom) + 10px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+}
+</style>
