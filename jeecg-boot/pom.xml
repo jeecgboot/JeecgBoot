@@ -55,7 +55,7 @@
 
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>1.9.5</jimureport-spring-boot-starter.version>
-		<minidao.version>1.10.8</minidao.version>
+		<minidao.version>1.10.9</minidao.version>
 		
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.11</mybatis-plus.version>
@@ -257,7 +257,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.7.1-RC</version>
+				<version>3.8.0-beta</version>
 			</dependency>
 			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 			<dependency>
