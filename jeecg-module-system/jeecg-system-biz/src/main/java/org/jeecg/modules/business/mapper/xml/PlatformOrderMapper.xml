@@ -1380,4 +1380,17 @@
         END as has_desynced_sku
     FROM orders
     </select>
+    <select id="selectBatchIdsForUpdate" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT * FROM platform_order
+        WHERE id IN
+        <foreach collection="ids" separator="," open="(" close=")" index="index" item="id">
+            #{id}
+        </foreach>
+        FOR UPDATE;
+    </select>
+    <select id="selectForUpdateSkipLock" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT * FROM platform_order
+        WHERE id = #{id}
+        FOR UPDATE SKIP LOCKED; -- todo : NO WAIT is recognized but not SKIP LOCKED
+    </select>
 </mapper>

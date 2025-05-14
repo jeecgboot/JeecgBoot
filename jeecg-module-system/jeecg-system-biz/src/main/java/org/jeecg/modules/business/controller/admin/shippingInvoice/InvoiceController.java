@@ -28,6 +28,7 @@ import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
@@ -267,7 +268,7 @@ public class InvoiceController {
         } catch (IOException | ParseException e) {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
-        } catch (MessagingException e) {
+        } catch (MessagingException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -436,7 +437,7 @@ public class InvoiceController {
         } catch (IOException | ParseException e) {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
-        } catch (MessagingException | TemplateException e) {
+        } catch (MessagingException | TemplateException | InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
@@ -1322,6 +1323,22 @@ public class InvoiceController {
             log.error(e.getMessage());
             return Result.error("Sorry, server error, please try later");
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @PostMapping("/editOrderTest")
+    public Result<?> editOrderTest(@RequestBody Map<String, String> params) {
+        System.out.println("Edit Order Test : " + params.get("orderId"));
+        String orderId = params.get("orderId");
+        try {
+            PlatformOrder orderToEdit = platformOrderService.selectForUpdateSkipLock(orderId);
+            orderToEdit.setCanSend("2");
+            boolean edited = platformOrderService.updateById(orderToEdit);
+            return Result.OK(edited);
+        } catch (Exception e) {
+            if(e instanceof CannotAcquireLockException) {
+                return Result.error("Order is already being edited by another user");
+            }
             throw new RuntimeException(e);
         }
     }

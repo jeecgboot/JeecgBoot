@@ -37,7 +37,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
-import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.*;
 
 /**
  * @Description: 平台订单表
@@ -276,7 +275,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
             return platformOrderMap.queryQuantities(client.getId());
         }
     }
-
+    // TODO update to FOR UPDATE
     @Override
     public Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrders(List<String> shopIds, Date begin, Date end, List<String> warehouses) {
         List<PlatformOrder> orderList = platformOrderMap.findUninvoicedOrders(shopIds, begin, end, warehouses);
@@ -307,12 +306,19 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
     }
 
+    // TODO: maybe duplicate this for non invoicing usage
     @Override
     public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderData(List<String> orderIds) {
         List<PlatformOrder> orderList = platformOrderMap.selectBatchIds(orderIds);
         List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(orderIds);
         Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
+    }
+    @Override
+    public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataForUpdate(List<String> orderIds) {
+        Map<String, PlatformOrder> ordersMapById = platformOrderMap.selectBatchIdsForUpdate(orderIds);
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContentForUpdate(orderIds);
+        return orderContents.stream().collect(groupingBy(platformOrderContent -> ordersMapById.get(platformOrderContent.getPlatformOrderId())));
     }
     @Override
     public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataByInvoiceCode(String invoiceCode) {
@@ -599,5 +605,10 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
                 throw new IllegalArgumentException("The specified invoicing method is not supported : " + invoicingMethod);
         }
         return platformOrderMap.countListByClientAndShops(clientId, shopIDs, erpStatuses, warehouses, start, end);
+    }
+
+    @Override
+    public PlatformOrder selectForUpdateSkipLock(String orderId) {
+        return platformOrderMap.selectForUpdateSkipLock(orderId);
     }
 }

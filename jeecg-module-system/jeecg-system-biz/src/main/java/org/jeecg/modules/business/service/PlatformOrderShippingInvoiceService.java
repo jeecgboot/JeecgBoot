@@ -265,7 +265,7 @@ public class PlatformOrderShippingInvoiceService {
      * @throws IOException    exception related to invoice file IO.
      */
     @Transactional
-    public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException {
+    public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), null, param.orderIds(), param.getType(), param.getStart(), param.getEnd());
@@ -282,7 +282,7 @@ public class PlatformOrderShippingInvoiceService {
      * @throws IOException
      */
     @Transactional
-    public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException {
+    public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
         String username = user.length > 0 ? user[0] : ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         List<PlatformOrder> platformOrderList;
         if(method.equals(POSTSHIPPING.getMethod())) {
@@ -711,6 +711,8 @@ public class PlatformOrderShippingInvoiceService {
                 String internalCode = entry.getKey().getClient().getInternalCode();
                 invoiceList.add(new InvoiceMetaData("", "error", internalCode, clientId, e.getMessage()));
                 log.error(e.getMessage());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
             System.gc();
         }

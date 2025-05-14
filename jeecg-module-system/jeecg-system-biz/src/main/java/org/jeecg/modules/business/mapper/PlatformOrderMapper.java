@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
@@ -255,4 +256,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
                                                   @Param("start") String startDate, @Param("end") String endDate,
                                                   @Param("order") String order, @Param("column") String column,
                                                   @Param("offset") Integer offset, @Param("size") Integer pageSize);
+    @MapKey("id")
+    Map<String, PlatformOrder> selectBatchIdsForUpdate(@Param("ids") List<String> orderIds);
+
+    PlatformOrder selectForUpdateSkipLock(@Param("id") String orderId);
 }
