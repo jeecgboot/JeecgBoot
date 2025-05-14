@@ -74,34 +74,34 @@ export const formSchema: FormSchema[] = [
     componentProps:{
       dictOptions: [
         {
-          text: 'post',
-          value: 'post',
+          text: 'POST',
+          value: 'POST',
         },
         {
-          text: 'get',
-          value: 'get',
+          text: 'GET',
+          value: 'GET',
         },
         {
-          text: 'head',
-          value: 'head',
+          text: 'HEAD',
+          value: 'HEAD',
         },
         {
-          text: 'put',
-          value: 'put',
+          text: 'PUT',
+          value: 'PUT',
         },
         {
-          text: 'patch',
-          value: 'patch',
+          text: 'PATCH',
+          value: 'PATCH',
         },
         {
-          text: 'delete',
-          value: 'delete',
+          text: 'DELETE',
+          value: 'DELETE',
         },{
-          text: 'options',
-          value: 'options',
+          text: 'OPTIONS',
+          value: 'OPTIONS',
         },{
-          text: 'trace',
-          value: 'trace',
+          text: 'TRACE',
+          value: 'TRACE',
         },
       ]
      },

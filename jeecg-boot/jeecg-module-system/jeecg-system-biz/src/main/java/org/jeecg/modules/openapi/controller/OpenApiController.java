@@ -1,5 +1,6 @@
 package org.jeecg.modules.openapi.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,6 +12,8 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.util.RestUtil;
 import org.jeecg.modules.openapi.entity.OpenApi;
 import org.jeecg.modules.openapi.entity.OpenApiAuth;
 import org.jeecg.modules.openapi.entity.OpenApiHeader;
@@ -28,9 +31,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @date 2024/12/10 9:11
@@ -41,6 +47,8 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
 
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    private RedisUtil redisUtil;
     @Autowired
     private ISysUserService sysUserService;
     @Autowired
@@ -140,24 +148,71 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
             result.put("data", null);
             return Result.error("失败", result);
         }
-        List<OpenApiHeader> headers = JSON.parseArray(openApi.getHeadersJson(),OpenApiHeader.class);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        if (StrUtil.isNotEmpty(openApi.getHeadersJson())) {
+            List<OpenApiHeader> headers = JSON.parseArray(openApi.getHeadersJson(),OpenApiHeader.class);
+            if (headers.size()>0) {
+                for (OpenApiHeader header : headers) {
+                    httpHeaders.put(header.getHeaderKey(), Lists.newArrayList(request.getHeader(header.getHeaderKey())));
+                }
+            }
+        }
+
         String url = openApi.getOriginUrl();
         String method = openApi.getRequestMethod();
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        for (OpenApiHeader header : headers) {
-            httpHeaders.put(header.getHeaderKey(), Lists.newArrayList(request.getHeader(header.getHeaderKey())));
-        }
         String appkey = request.getHeader("appkey");
         OpenApiAuth openApiAuth = openApiAuthService.getByAppkey(appkey);
         SysUser systemUser = sysUserService.getById(openApiAuth.getSystemUserId());
-        String token = JwtUtil.sign(systemUser.getUsername(), systemUser.getPassword());
+        String token = this.getToken(systemUser.getUsername(), systemUser.getPassword());
         httpHeaders.put("X-Access-Token", Lists.newArrayList(token));
-
+        httpHeaders.put("Content-Type",Lists.newArrayList("application/json"));
         HttpEntity<String> httpEntity = new HttpEntity<>(json, httpHeaders);
+        url = RestUtil.getBaseUrl() +  url;
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        if (HttpMethod.GET.matches(method)
+                || HttpMethod.DELETE.matches(method)
+                || HttpMethod.OPTIONS.matches(method)
+                || HttpMethod.TRACE.matches(method)) {
+            //拼接参数
+            if (!request.getParameterMap().isEmpty()) {
+                if (StrUtil.isNotEmpty(openApi.getParamsJson())) {
+                    List<OpenApiParam> params = JSON.parseArray(openApi.getParamsJson(),OpenApiParam.class);
+                    if (params.size()>0) {
+                        Map<String, OpenApiParam> openApiParamMap = params.stream().collect(Collectors.toMap(p -> p.getParamKey(), p -> p, (e, r) -> e));
+                        request.getParameterMap().forEach((k, v) -> {
+                            OpenApiParam openApiParam = openApiParamMap.get(k);
+                            if (Objects.nonNull(openApiParam)) {
+                                if(v==null&&StrUtil.isNotEmpty(openApiParam.getDefaultValue())){
+                                    builder.queryParam(openApiParam.getParamKey(), openApiParam.getDefaultValue());
+                                }
+                                if (v!=null){
+                                    builder.queryParam(openApiParam.getParamKey(), v);
+                                }
+                            }
+                        });
+                    }
+                }
 
-        return restTemplate.exchange(url, HttpMethod.resolve(method), httpEntity, Result.class, request.getParameterMap()).getBody();
+            }
+        }
+        URI targetUrl = builder.build().encode().toUri();
+        return restTemplate.exchange(targetUrl.toString(), Objects.requireNonNull(HttpMethod.resolve(method)), httpEntity, Result.class, request.getParameterMap()).getBody();
     }
+
+    /**
+     * 生成接口访问令牌 Token
+     *
+     * @param USERNAME
+     * @param PASSWORD
+     * @return
+     */
+    private String getToken(String USERNAME, String PASSWORD) {
+        String token = JwtUtil.sign(USERNAME, PASSWORD);
+        redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
+        redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, 60);
+        return token;
+    }
+
 
     @GetMapping("/json")
     public SwaggerModel swaggerModel() {
