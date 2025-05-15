@@ -9,12 +9,17 @@ import lombok.Data;
 @Data
 public class OrderItem {
 
+    @JSONField(name="stockId")
+    private String stockId;
     /**
      * Erp code of sku in DB.
      */
     @JSONField(name = "stockSku")
     private String erpCode;
-
+    @JSONField(name="title")
+    private String title;
+    @JSONField(name="originTitle")
+    private String originTitle;
     @JSONField(deserialize = false)
     private String platformOrderId;
 
@@ -42,6 +47,8 @@ public class OrderItem {
     @JSONField(name = "specifics")
     private String specifics;
 
+    @JSONField(name="amazonAsin")
+    private String saleUrl;
     /**
      * Status :
      * 2 = Normal

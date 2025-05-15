@@ -205,6 +205,10 @@ public class SkuOrderPage {
     @ApiModelProperty(value = "供应商商品网址")
     private String supplierLink;
 
+    @Excel(name="产品销售链接", width = 15)
+    @ApiModelProperty(value = "产品销售链接")
+    private String saleUrl;
+
     @Excel(name = "仓库", width = 15)
     @ApiModelProperty(value = "仓库")
     private String warehouse;
@@ -212,4 +216,8 @@ public class SkuOrderPage {
     @Excel(name ="自定义分类", width = 15)
     @ApiModelProperty(value = "自定义分类")
     private String labelData;
+
+    @Excel(name = "商品多属性", width = 15)
+    @ApiModelProperty(value = "商品多属性")
+    private String specifics;
 }

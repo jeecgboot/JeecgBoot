@@ -579,30 +579,15 @@ public class SkuController {
     public Result<?> unpairedSkus(@RequestParam(name = "shop") String shopCode,
                                   @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                   @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
-                                  @RequestParam(name = "column", defaultValue = "erp_code") String column,
-                                  @RequestParam(name = "order", defaultValue = "ASC") String order
+                                  @RequestParam(name = "skus[]", required = false) List<String> skuNames
     ) {
-        String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
-        String parsedOrder = order.toUpperCase();
-        if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
-            return Result.error(400, "Bad Request");
-        }
-        try {
-            specialFilterContentForDictSql(parsedColumn);
-        } catch (RuntimeException e) {
-            return Result.error(400, "Bad Request");
-        }
+        if(skuNames == null)
+            skuNames = new ArrayList<>();
         String shopId = shopService.getIdByCode(shopCode);
         if (shopId == null) return Result.error(404, "Shop not found");
-        int total = skuListMabangService.countUnpairedSkus(shopId);
-        List<SkuOrderPage> unpairedSkus = skuListMabangService.unpairedSkus(shopId, pageNo, pageSize, parsedColumn, parsedOrder);
+        List<SkuOrderPage> unpairedSkus = skuListMabangService.unpairedSkus(shopId, skuNames);
 
-        IPage<SkuOrderPage> page = new Page<>();
-        page.setRecords(unpairedSkus);
-        page.setCurrent(pageNo);
-        page.setSize(pageSize);
-        page.setTotal(total);
-        return Result.OK(page);
+        return Result.OK(unpairedSkus);
     }
 
     @GetMapping(value = "/latestSkuCounter")

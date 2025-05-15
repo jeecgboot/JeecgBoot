@@ -3,7 +3,6 @@ package org.jeecg.modules.business.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
-import com.jeecg.qywx.api.conversation.ConversationAPI;
 import freemarker.template.Template;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -11,6 +10,9 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.modules.business.domain.api.mabang.Response;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.*;
+import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
+import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderItem;
+import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderListRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddRequest;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.stockDoAddStock.SkuAddResponse;
@@ -29,6 +31,7 @@ import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.SkuOrderPage;
+import org.jeecg.modules.business.vo.UnpairedSku;
 import org.jeecg.modules.message.websocket.WebSocketSender;
 import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +83,8 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     private EmailService emailService;
     @Autowired
     private SkuMongoService skuMongoService;
+    @Autowired
+    private IPlatformOrderMabangService platformOrderMabangService;
     @Autowired
     private FreeMarkerConfigurer freemarkerConfigurer;
     @Autowired
@@ -625,6 +630,10 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         sop.setIsGift(skuData.getIsGift());
         sop.setSupplier(skuData.getSupplier());
         sop.setSupplierLink(skuData.getSupplierLink());
+        if(skuData.getSaleUrl() != null)
+            sop.setSaleUrl(skuData.getSaleUrl());
+        if(skuData.getSpecifics() != null)
+            sop.setSpecifics(skuData.getSpecifics());
         sop.setStatus(skuData.getStatusValue());
         return sop;
     }
@@ -868,6 +877,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             body.setShowWarehouse(1);
             body.setShowLabel(1);
             body.setStockSkuList(String.join(",", skuPartition));
+            body.setShowAttributes(1);
             SkuListRawStream rawStream = new SkuListRawStream(body);
             UnpairedSkuListStream stream = new UnpairedSkuListStream(rawStream);
             skuDataList.addAll(stream.all());
@@ -876,21 +886,38 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     }
 
     @Override
-    public List<SkuOrderPage> unpairedSkus(String shopId, Integer pageNo, Integer pageSize, String column, String order) {
-        int offset = (pageNo - 1) * pageSize;
-        List<String> stockSkuList = skuService.fetchUnpairedSkus(shopId, offset, pageSize, column, order);
-        if(stockSkuList.isEmpty()){
+    public List<SkuOrderPage> unpairedSkus(String shopId, List<String> skuNames) {
+        List<UnpairedSku> unpairedSkus = skuService.fetchUnpairedSkus(shopId);
+        if(unpairedSkus.isEmpty()){
             return new ArrayList<>();
         }
-        List<SkuData> skuDataList = fetchUnpairedSkus(stockSkuList);
-        return skuDataList.stream()
+        List<String> platformOrderIds = unpairedSkus.stream().distinct().map(UnpairedSku::getPlatformOrderId).collect(Collectors.toList());
+        List<List<String>> platformOrderPartitions = Lists.partition(platformOrderIds, 50);
+        List<OrderListRequestBody> orderRequestBodies = new ArrayList<>();
+        for (List<String> platformOrderIdList : platformOrderPartitions) {
+            orderRequestBodies.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
+        }
+        ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
+        List<Order> mabangOrders = platformOrderMabangService.getOrdersFromMabang(orderRequestBodies, executor);
+        List<OrderItem> mabangOrderItems = mabangOrders.stream().map(Order::getOrderItems).flatMap(List::stream).collect(Collectors.toList());
+        List<SkuData> skuDataList = fetchUnpairedSkus(unpairedSkus.stream().map(UnpairedSku::getStockSku).collect(toList()));
+        skuDataList.forEach(skuData -> {
+            mabangOrderItems.stream().filter(orderItem -> orderItem.getStockId().equals(String.valueOf(skuData.getStockSkuId()))).findFirst()
+                    .ifPresent(orderItem -> {
+                        skuData.setSaleUrl(orderItem.getSaleUrl());
+                        skuData.setSpecifics(orderItem.getSpecifics());
+                    });
+        });
+        if(skuNames.isEmpty())
+            return skuDataList.stream()
+                .map(this::SkuDataToSkuOrderPage)
+                    .sorted(Comparator.comparing(SkuOrderPage::getErpCode))
+                    .collect(toList());
+        else
+            return skuDataList.stream()
+                .filter(skuData -> skuNames.contains(skuData.getNameEN()) || skuNames.contains(skuData.getDeclareNameEn()))
                 .map(this::SkuDataToSkuOrderPage)
                 .collect(toList());
-    }
-
-    @Override
-    public int countUnpairedSkus(String shopId) {
-        return skuService.countUnpairedSkus(shopId);
     }
 
     @Override

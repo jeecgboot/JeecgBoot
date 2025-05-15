@@ -799,8 +799,8 @@
         WHERE c.internal_code = #{clientCode};
     </select>
 
-    <select id="fetchUnpairedSkus" resultType="java.lang.String">
-        SELECT poc.sku_id as erp_code
+    <select id="fetchUnpairedSkus" resultType="org.jeecg.modules.business.vo.UnpairedSku">
+        SELECT po.platform_order_id as platform_order_id, poc.sku_id as stock_sku
         FROM platform_order po
             JOIN shop s ON po.shop_id = s.id
             JOIN platform_order_content poc ON po.id = poc.platform_order_id
@@ -809,20 +809,7 @@
           AND po.erp_status IN (1, 2)
           AND poc.erp_status &lt;&gt; 5
           AND s.id = #{shopId}
-        GROUP BY poc.sku_id
-        ORDER BY ${column} ${order}
-        LIMIT #{offset}, #{size};
-    </select>
-    <select id="countUnpairedSkus" resultType="java.lang.Integer">
-        SELECT COUNT(DISTINCT poc.sku_id)
-        FROM platform_order_content poc
-        JOIN platform_order po ON poc.platform_order_id = po.id
-        JOIN shop s ON po.shop_id = s.id
-        LEFT JOIN sku ON poc.sku_id = sku.id
-        WHERE sku.id IS NULL
-          AND po.erp_status IN (1, 2)
-          AND poc.erp_status &lt;&gt; 5
-          AND s.id = #{shopId};
+        GROUP BY poc.sku_id;
     </select>
     <select id="latestSkuCounter" resultType="java.lang.String">
         SELECT erp_code
