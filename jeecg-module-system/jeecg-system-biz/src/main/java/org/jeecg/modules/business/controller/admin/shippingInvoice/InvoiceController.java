@@ -23,6 +23,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.mapper.PurchaseOrderContentMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
+import org.jeecg.modules.message.websocket.WebSocketSender;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,6 +137,7 @@ public class InvoiceController {
     public Result<List<Shop>> getShopsByClient(@RequestParam("clientID") String clientID) {
         log.info("Request for shop by client {}", clientID);
         return Result.OK(shopService.listByClient(clientID));
+
     }
 
     /**
@@ -799,6 +801,10 @@ public class InvoiceController {
     @GetMapping(value = "/breakdown/makeInvoice")
     public Result<?> makeBreakdownInvoice(@RequestParam(value = "shipping[]", required = false) List<String> shippingClientIds,
                                           @RequestParam(value = "complete[]", required = false) List<String> completeClientIds) throws IOException {
+
+        String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
+        pushProgress(userId, "开始执行开票任务，请稍候...");
+
         List<InvoiceMetaData> metaDataErrorList = new ArrayList<>();
         TaskHistory ongoingBITask = taskHistoryService.getLatestRunningTask(SI_G.name());
         if(ongoingBITask != null) {
@@ -810,20 +816,25 @@ public class InvoiceController {
         TaskHistory lastRunningTask = taskHistoryService.getLatestRunningTask(SI_G.name());
 
         if(shippingClientIds != null) {
+            pushProgress(userId, "正在处理 预发货 客户发票...");
             log.info("Making shipping invoice for clients : {}", shippingClientIds);
             invoiceList.addAll(shippingInvoiceService.breakdownInvoiceClientByType(shippingClientIds, 0));
         }
         if(completeClientIds != null) {
+            pushProgress(userId, "正在处理 已发货 客户发票...");
             log.info("Making complete shipping invoice for clients : {}", completeClientIds);
             invoiceList.addAll(shippingInvoiceService.breakdownInvoiceClientByType(completeClientIds, 1));
         }
         if (invoiceList.isEmpty()) {
             lastRunningTask.setOngoing(SUCCESS.getCode());
             taskHistoryService.updateById(lastRunningTask);
+            pushProgress(userId, "没有生成任何发票。");
             return Result.ok("Nothing invoiced");
         }
         List<String> filenameList = new ArrayList<>();
         log.info("Generating detail files ...0/{}", invoiceList.size());
+        int total = invoiceList.size();
+        int step = Math.max(1, total / 5);
         int cpt = 1;
         for(InvoiceMetaData metaData: invoiceList){
             if(metaData.getInvoiceCode().equals("error")) {
@@ -837,6 +848,10 @@ public class InvoiceController {
                 List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(metaData.getInvoiceCode());
                 shippingInvoiceService.exportToExcel(factureDetails, refunds, extraFees, metaData.getInvoiceCode(), metaData.getInvoiceEntity(), metaData.getInternalCode());
                 filenameList.add(INVOICE_DETAIL_DIR + "//" + metaData.getInternalCode() + "_(" + metaData.getInvoiceEntity() + ")_" + metaData.getInvoiceCode() + "_Détail_calcul_de_facture.xlsx");
+            }
+            if (cpt % step == 0 || cpt == total) {
+                int percent = (int)(((double) cpt / total) * 100);
+                pushProgress(userId, "发票生成进度：" + percent + "% (" + cpt + "/" + total + ")");
             }
             log.info("Generating detail files ...{}/{}", cpt++, invoiceList.size());
         }
@@ -859,6 +874,9 @@ public class InvoiceController {
                     .getTemplate("breakdownInvoiceMail.ftl");
             String htmlBody = FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerTemplate, templateModel);
             emailService.sendMessageWithAttachment(destEmail, subject, htmlBody, zipFilename,session);
+            Map<String, Object> summary = new HashMap<>();
+            summary.put("total", total);
+            pushProgress(userId, "全部完成", summary);
             log.info("Mail sent successfully");
 
             lastRunningTask.setOngoing(SUCCESS.getCode());
@@ -869,8 +887,21 @@ public class InvoiceController {
             e.printStackTrace();
             lastRunningTask.setOngoing(CANCELLED.getCode());
             taskHistoryService.updateById(lastRunningTask);
+            pushProgress(userId, "发票任务失败！");
             return Result.error("An error occurred while trying to send an email.");
         }
+    }
+    private void pushProgress(String userId, String message) {
+        pushProgress(userId, message, null);
+    }
+    private void pushProgress(String userId, String message, Map<String, Object> data) {
+        JSONObject msg = new JSONObject();
+        msg.put("cmd", "user");
+        msg.put("msgTxt", message);
+        if (data != null) {
+            msg.put("data", data);
+        }
+        WebSocketSender.sendToUser(userId, msg.toJSONString());
     }
 
     /**
