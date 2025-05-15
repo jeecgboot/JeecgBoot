@@ -324,7 +324,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
         String purchaseID = UUID.randomUUID().toString();
 
-        String invoiceNumber = invoiceNumberReservationService.getLatestInvoiceNumberByType(COMPLETE.getType());
+        String invoiceNumber = invoiceNumberReservationService.getLatestInvoiceNumberByType(PURCHASE.getType());
         // 1. save purchase itself
         purchaseOrderMapper.addPurchase(
                 purchaseID,
