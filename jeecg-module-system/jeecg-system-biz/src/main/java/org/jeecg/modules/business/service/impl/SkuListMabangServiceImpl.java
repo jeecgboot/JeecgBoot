@@ -410,7 +410,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                     s.setZhName(skuData.getNameCN());
                 }
             }
-            if(skuData.getStockPicture().equals("") || skuData.getStockPicture() == null) {
+            if(skuData.getStockPicture() == null || skuData.getStockPicture().isEmpty()) {
                 s.setImageSource(skuData.getSalePicture());
             }
             else {

@@ -49,7 +49,7 @@ public class ClientSkuServiceImpl extends ServiceImpl<ClientSkuMapper, ClientSku
 				continue;
 			}
 			String internalCode = erpCode.substring(index+1);
-			String clientId = clientService.getClientIdByCode(internalCode);
+			String clientId = clientService.getActiveClientIdByCode(internalCode);
             if (clientId != null) {
 				log.info("Associating sku \"{}\" with client \"{}\" : \"{}\". ", sku.getErpCode(), internalCode, clientId);
 				addClientSku(clientId, sku.getId());

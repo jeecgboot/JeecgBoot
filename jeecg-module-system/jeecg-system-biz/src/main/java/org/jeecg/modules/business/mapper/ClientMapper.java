@@ -20,6 +20,7 @@ public interface ClientMapper extends BaseMapper<Client> {
     String getClientEntity(@Param("id") String id);
     Map<String, String> getClientsEntity(@Param("ids") List<String> ids);
     String getClientIdByCode(@Param("code") String code);
+    String getActiveClientIdByCode(@Param("code") String code);
     List<Client> getClientByType(@Param("type") String type);
     Client getClientByCode(@Param("code") String internalCode);
     Client getClientFromOrder(@Param("orderId")String orderId);

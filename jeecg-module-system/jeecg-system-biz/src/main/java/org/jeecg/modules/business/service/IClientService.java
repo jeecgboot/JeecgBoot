@@ -41,6 +41,7 @@ public interface IClientService extends IService<Client> {
 	public String getClientEntity(String id);
 	public Map<String, String> getClientsEntity(List<String> ids);
 	public String getClientIdByCode(String code);
+	public String getActiveClientIdByCode(String code);
 	/**
 	 * Get current user's client information
 	 * @return client or null if current user's role is not client
