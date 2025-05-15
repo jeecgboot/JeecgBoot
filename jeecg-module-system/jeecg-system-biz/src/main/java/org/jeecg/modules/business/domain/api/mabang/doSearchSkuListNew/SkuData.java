@@ -141,6 +141,12 @@ public class SkuData {
     private String supplier;
     @JSONField(name="productLinkAddress")
     private String supplierLink;
+    @JSONField(name="saleUrl")
+    private String saleUrl;
+    /**
+     * 商品多属性
+     */
+    private String specifics;
 
     public SkuStatus getStatus() {
         return SkuStatus.fromCode(this.status);
@@ -168,7 +174,9 @@ public class SkuData {
                 "\nIs Flammable : " + this.isFlammable +
                 "\nIs Knife : " + this.isKnife +
                 "\nIs Gift : " + this.isGift +
-                "\nProvider : " + this.supplier
+                "\nProvider : " + this.supplier +
+                "\nProduct Link : " + this.supplierLink +
+                "\nSale Url : " + this.saleUrl
                 ;
     }
 }

@@ -618,13 +618,8 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
-    public List<String> fetchUnpairedSkus(String shopId, int offset, Integer pageSize, String column, String order) {
-        return skuMapper.fetchUnpairedSkus(shopId, offset, pageSize, column, order);
-    }
-
-    @Override
-    public int countUnpairedSkus(String shopId) {
-        return skuMapper.countUnpairedSkus(shopId);
+    public List<UnpairedSku> fetchUnpairedSkus(String shopId) {
+        return skuMapper.fetchUnpairedSkus(shopId);
     }
 
     @Override

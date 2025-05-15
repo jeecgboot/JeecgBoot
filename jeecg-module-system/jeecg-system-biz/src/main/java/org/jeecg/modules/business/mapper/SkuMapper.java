@@ -7,6 +7,7 @@ import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.vo.SkuOrderPage;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuUpdate;
+import org.jeecg.modules.business.vo.UnpairedSku;
 import org.jeecg.modules.business.vo.inventory.InventoryRecord;
 import org.springframework.stereotype.Repository;
 
@@ -83,9 +84,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     List<String> fetchAllClientSkuCodes(@Param("clientCode") String clientCode);
 
-    List<String> fetchUnpairedSkus(@Param("shopId") String shopId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
-
-    int countUnpairedSkus(@Param("shopId") String shopId);
+    List<UnpairedSku> fetchUnpairedSkus(@Param("shopId") String shopId);
 
     List<String> latestSkuCounter(@Param("userCode") String userCode, @Param("clientCode") String clientCode, @Param("date") String date);
 
