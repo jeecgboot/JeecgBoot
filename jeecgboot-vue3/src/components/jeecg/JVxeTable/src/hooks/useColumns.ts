@@ -1,5 +1,5 @@
 import type { JVxeColumn, JVxeDataProps, JVxeTableProps } from '../types';
-import { computed, nextTick } from 'vue';
+import { computed, nextTick, toRaw } from 'vue';
 import { isArray, isEmpty, isPromise } from '/@/utils/is';
 import { cloneDeep } from 'lodash-es';
 import { JVxeTypePrefix, JVxeTypes } from '../types/JVxeTypes';
@@ -25,6 +25,11 @@ export interface HandleArgs {
 
 export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: JVxeTableMethods, slots) {
   data.vxeColumns = computed(() => {
+    // update-begin--author:liaozhiyang---date:20250403---for：【issues/7812】linkageConfig改变了，vxetable没更新
+    // linkageConfig变化时也需要执行
+    const linkageConfig = toRaw(props.linkageConfig);
+    console.log(linkageConfig);
+    // update-end--author:liaozhiyang---date:20250403---for：【issues/7812】linkageConfig改变了，vxetable没更新
     let columns: JVxeColumn[] = [];
     if (isArray(props.columns)) {
       // handle 方法参数

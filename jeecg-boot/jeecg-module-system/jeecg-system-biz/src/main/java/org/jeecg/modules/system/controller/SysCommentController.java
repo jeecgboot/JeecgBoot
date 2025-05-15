@@ -211,7 +211,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @return
      */
     //@AutoLog(value = "系统评论回复表-通过id删除")
-    @Operation(summary= "系统评论回复表-通过id删除")
+    @Operation(summary = "系统评论回复表-通过id删除")
     //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:delete")
     @DeleteMapping(value = "/delete")
     public Result<String> delete(@RequestParam(name = "id", required = true) String id) {

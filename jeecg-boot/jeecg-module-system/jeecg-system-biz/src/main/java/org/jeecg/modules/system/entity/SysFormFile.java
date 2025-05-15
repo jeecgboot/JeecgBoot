@@ -10,7 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.Date;
 
 /**
@@ -23,7 +22,7 @@ import java.util.Date;
 @TableName("sys_form_file")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description="sys_form_file对象")
+@Schema(description="表单评论文件")
 public class SysFormFile {
     
 	/**id*/

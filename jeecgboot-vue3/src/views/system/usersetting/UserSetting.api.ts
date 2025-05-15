@@ -16,6 +16,8 @@ enum Api {
   agreeOrRefuseJoinTenant = '/sys/tenant/agreeOrRefuseJoinTenant',
   //更改手机号
   changePhone = '/sys/user/changePhone',
+  //用户注销
+  userLogOff = '/sys/user/userLogOff',
 }
 
 /**
@@ -129,3 +131,11 @@ export const agreeOrRefuseJoinTenant = (params) => {
 export const changePhone = (params) => {
   return defHttp.put({ url: Api.changePhone, params },{ joinParamsToUrl: true, isTransformResponse: false });
 };
+
+/**
+ * 用户注销
+ * @param params
+ */
+export const userLogOff = (params) => {
+  return defHttp.put({ url: Api.userLogOff, params },{ isTransformResponse:false });
+}

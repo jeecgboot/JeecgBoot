@@ -3,16 +3,16 @@ package org.jeecg.modules.system.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.dynamic.datasource.DynamicRoutingDataSource;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.config.TenantContext;
@@ -30,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -129,7 +132,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @AutoLog(value = "多数据源管理-编辑")
-    @Operation(summary =  "多数据源管理-编辑")
+    @Operation(summary = "多数据源管理-编辑")
     @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<?> edit(@RequestBody SysDataSource sysDataSource) {
         //update-begin-author:taoyan date:2022-8-10 for: jdbc连接地址漏洞问题
@@ -163,7 +166,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @AutoLog(value = "多数据源管理-批量删除")
-    @Operation(summary =  "多数据源管理-批量删除")
+    @Operation(summary = "多数据源管理-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids") String ids) {
         List<String> idList = Arrays.asList(ids.split(","));

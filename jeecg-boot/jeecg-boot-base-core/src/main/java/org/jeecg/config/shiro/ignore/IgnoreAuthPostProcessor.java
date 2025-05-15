@@ -91,6 +91,10 @@ public class IgnoreAuthPostProcessor implements InitializingBean {
         if (bases.length > 0) {
             for (String base : bases) {
                 for (String uri : uris) {
+                    // 如果uri包含路径占位符, 则需要将其替换为*
+                    if (uri.matches(".*\\{.*}.*")) {
+                        uri = uri.replaceAll("\\{.*?}", "*");
+                    }
                     urls.add(prefix(base) + prefix(uri));
                 }
             }

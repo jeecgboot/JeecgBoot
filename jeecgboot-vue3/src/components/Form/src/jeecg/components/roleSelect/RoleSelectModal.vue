@@ -132,13 +132,23 @@
         }
         return list.filter(item=>item.name.indexOf(text)>=0)
       });
-  
+
+      const selectedKeys = ref<string[]>([]);
       const selectedList = computed(()=>{
         let list = dataList.value;
         if(!list || list.length ==0 ){
           return []
         }
-        return list.filter(item=>item.checked)
+        list = list.filter(item=>item.checked)
+        // 根据 selectedKeys 的顺序排序
+        let arr: any[] = [];
+        for (let key of selectedKeys.value) {
+          let item = list.find(item => item.id == key);
+          if (item) {
+            arr.push(item);
+          }
+        }
+        return arr;
       });
 
       function unSelect(id) {
@@ -146,8 +156,11 @@
         if(!list || list.length ==0 ){
           return;
         }
-        let arr = list.filter(item=>item.id == id);
-        arr[0].checked = false;
+        // update-begin--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
+        let findItem = list.find((item) => item.id == id);
+        findItem.checked = false;
+        selectedKeys.value = selectedKeys.value.filter((key) => key != id);
+        // update-end--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
       }
       
       async function loadDataList() {
@@ -180,18 +193,30 @@
         console.log('loadDataList', data);
       }
 
-
       function onSelect(e, item) {
         prevent(e);
-        console.log('onselect');
-        // 单选判断 只能选中一条数据 其余数据置false
-        if(props.multi === false){
-          let list = dataList.value;
-          for(let item of list){
-            item.checked = false;
-          }
+        // update-begin--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
+        // 单选模式下，先清除所有选中状态
+        if (!props.multi) {
+          dataList.value.forEach(dataItem => {
+            if (dataItem.id != item.id) {
+              dataItem.checked = false;
+            }
+          });
+          // 清空已选择的keys
+          selectedKeys.value = [];
         }
+
+        // 切换当前项的选中状态
         item.checked = !item.checked;
+
+        // 更新selectedKeys数组
+        if (item.checked) {
+          selectedKeys.value.push(item.id);
+        } else {
+          selectedKeys.value = selectedKeys.value.filter(key => key !== item.id);
+        }
+        // update-end--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
       }
 
       function prevent(e) {

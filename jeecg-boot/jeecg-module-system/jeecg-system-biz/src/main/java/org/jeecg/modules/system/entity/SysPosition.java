@@ -22,7 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_position")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description = "sys_position对象")
+@Schema(description = "职务表")
 public class SysPosition {
 
     /**

@@ -11,6 +11,8 @@ import { Persistent } from '/@/utils/cache/persistent';
 import { darkMode } from '/@/settings/designSetting';
 import { resetRouter } from '/@/router';
 import { deepMerge } from '/@/utils';
+import { getHideLayoutTypes } from '/@/utils/env';
+import setting from '/@/settings/projectSetting';
 
 interface AppState {
   darkMode?: ThemeEnum;
@@ -41,7 +43,20 @@ export const useAppStore = defineStore({
       return this.pageLoading;
     },
     getDarkMode(): 'light' | 'dark' | string {
-      return this.darkMode || localStorage.getItem(APP_DARK_MODE_KEY_) || darkMode;
+      // liaozhiyang---date:20250411---for：【QQYUN-11956】修复projectSetting中配置主题模式不生效
+      const getSettingTheme = () => {
+        const theme = setting.themeMode;
+        if (theme) {
+          if (theme == ThemeEnum.DARK) {
+            // 为了index.html页面loading时是暗黑
+            localStorage.setItem(APP_DARK_MODE_KEY_, theme);
+          }
+          return theme;
+        }
+        return '';
+      };
+      // liaozhiyang---date:20250411---for：【QQYUN-11956】修复projectSetting中配置主题模式不生效
+      return this.darkMode || localStorage.getItem(APP_DARK_MODE_KEY_) || getSettingTheme() || darkMode;
     },
 
     getBeforeMiniInfo(): BeforeMiniState {
@@ -70,6 +85,28 @@ export const useAppStore = defineStore({
     getMainAppProps(): MainAppProps {
       return this.mainAppProps;
     },
+
+    getLayoutHideSider(): boolean {
+      const hideLayoutTypes = getHideLayoutTypes();
+      if (hideLayoutTypes.includes('sider')) {
+        return true;
+      }
+      return !!this.mainAppProps.hideSider;
+    },
+    getLayoutHideHeader(): boolean {
+      const hideLayoutTypes = getHideLayoutTypes();
+      if (hideLayoutTypes.includes('header')) {
+        return true;
+      }
+      return !!this.mainAppProps.hideHeader;
+    },
+    getLayoutHideMultiTabs(): boolean {
+      const hideLayoutTypes = getHideLayoutTypes();
+      if (hideLayoutTypes.includes('multi-tabs')) {
+        return true;
+      }
+      return !!this.mainAppProps.hideMultiTabs;
+    },
   },
   actions: {
     setPageLoading(loading: boolean): void {
@@ -79,6 +116,7 @@ export const useAppStore = defineStore({
     setDarkMode(mode: ThemeEnum): void {
       this.darkMode = mode;
       localStorage.setItem(APP_DARK_MODE_KEY_, mode);
+      this.setProjectConfig({ themeMode: mode });
     },
 
     setBeforeMiniInfo(state: BeforeMiniState): void {

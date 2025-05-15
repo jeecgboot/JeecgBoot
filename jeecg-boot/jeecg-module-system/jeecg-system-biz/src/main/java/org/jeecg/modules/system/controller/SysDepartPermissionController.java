@@ -1,20 +1,19 @@
 package org.jeecg.modules.system.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.*;
+import java.util.stream.Collectors;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.base.service.BaseCommonService;
@@ -24,15 +23,18 @@ import org.jeecg.modules.system.entity.SysPermission;
 import org.jeecg.modules.system.entity.SysPermissionDataRule;
 import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.service.ISysDepartPermissionService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.modules.system.service.ISysDepartRolePermissionService;
 import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysPermissionService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
  /**
  * @Description: 部门权限表
@@ -69,7 +71,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param req
 	 * @return
 	 */
-	@Operation(summary="部门权限表-分页列表查询")
+	@Operation(summary ="部门权限表-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(SysDepartPermission sysDepartPermission,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -87,7 +89,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param sysDepartPermission
 	 * @return
 	 */
-	@Operation(summary="部门权限表-添加")
+	@Operation(summary ="部门权限表-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysDepartPermission sysDepartPermission) {
 		sysDepartPermissionService.save(sysDepartPermission);
@@ -100,7 +102,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param sysDepartPermission
 	 * @return
 	 */
-	@Operation(summary="部门权限表-编辑")
+	@Operation(summary ="部门权限表-编辑")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody SysDepartPermission sysDepartPermission) {
 		sysDepartPermissionService.updateById(sysDepartPermission);
@@ -113,7 +115,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param id
 	 * @return
 	 */
-	@Operation(summary="部门权限表-通过id删除")
+	@Operation(summary ="部门权限表-通过id删除")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		sysDepartPermissionService.removeById(id);
@@ -126,7 +128,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param ids
 	 * @return
 	 */
-	@Operation(summary="部门权限表-批量删除")
+	@Operation(summary ="部门权限表-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.sysDepartPermissionService.removeByIds(Arrays.asList(ids.split(",")));
@@ -139,7 +141,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	 * @param id
 	 * @return
 	 */
-	@Operation(summary="部门权限表-通过id查询")
+	@Operation(summary ="部门权限表-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		SysDepartPermission sysDepartPermission = sysDepartPermissionService.getById(id);

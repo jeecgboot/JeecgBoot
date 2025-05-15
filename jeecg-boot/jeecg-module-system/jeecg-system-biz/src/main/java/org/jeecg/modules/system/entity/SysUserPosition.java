@@ -1,15 +1,14 @@
 package org.jeecg.modules.system.entity;
 
+import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.jeecgframework.poi.excel.annotation.Excel;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import java.io.Serializable;
+import org.jeecgframework.poi.excel.annotation.Excel;
 import java.util.Date;
 
 /**
@@ -18,7 +17,7 @@ import java.util.Date;
  * @Date:   2023-02-14
  * @Version: V1.0
  */
-@Schema(description="sys_user_position对象")
+@Schema(description="用户职位关系表")
 @Data
 @TableName("sys_user_position")
 public class SysUserPosition implements Serializable {

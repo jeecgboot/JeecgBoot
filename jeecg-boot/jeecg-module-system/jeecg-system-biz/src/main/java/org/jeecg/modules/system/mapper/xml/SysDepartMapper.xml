@@ -136,7 +136,7 @@
     
     <!--根据用户id获取用户id和部门名称-->
     <select id="getUserDepartByTenantUserId" resultType="org.jeecg.modules.system.vo.SysUserDepVo">
-        SELECT sd.depart_name, sud.user_id
+        SELECT sd.depart_name, sud.user_id, sd.id as deptId, sd.parent_id
         FROM sys_depart sd
         RIGHT JOIN sys_user_depart sud on sd.id = sud.dep_id and sd.del_flag = 0
         WHERE sud.user_id IN

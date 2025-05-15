@@ -199,6 +199,9 @@ export interface ModalProps {
   zIndex?: number;
 
   enableComment?: boolean;
+
+  modalHeaderHeight: number;
+  modalFooterHeight: number;
 }
 
 export interface ModalWrapperProps {

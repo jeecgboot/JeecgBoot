@@ -27,6 +27,7 @@ export { default as JDictSelectTag } from './src/jeecg/components/JDictSelectTag
 export { default as JTreeSelect } from './src/jeecg/components/JTreeSelect.vue';
 export { default as JSearchSelect } from './src/jeecg/components/JSearchSelect.vue';
 export { default as JSelectUserByDept } from './src/jeecg/components/JSelectUserByDept.vue';
+export { default as JSelectUserByDepartment } from './src/jeecg/components/JSelectUserByDepartment.vue';
 export { default as JEditor } from './src/jeecg/components/JEditor.vue';
 export { default as JImageUpload } from './src/jeecg/components/JImageUpload.vue';
 // Jeecg自定义校验

@@ -3,7 +3,7 @@
 <#assign list_need_category=false>
 <#assign list_need_pca=false>
 <#assign bpm_flag=false>
-
+<#assign list_has_popup_dict=false>
 <#-- 开始循环 -->
 <#list columns as po>
 <#if po.fieldDbName=='bpm_status'>
@@ -14,6 +14,9 @@
 </#if>
 <#if po.classType=='pca'>
 <#assign list_need_pca=true>
+</#if>
+<#if po.classType=='popup_dict'>
+<#assign list_has_popup_dict=true>
 </#if>
 </#list>
 <#-- 结束循环 -->
@@ -92,6 +95,10 @@
   import { getAuthCache, setAuthCache } from '/@/utils/auth';
   import { DB_DICT_DATA_KEY } from '/@/enums/cacheEnum';
   </#if>
+<#if list_has_popup_dict>
+  import {getPopDictByCode} from "@/utils/dict";
+  import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
+</#if>
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
@@ -146,6 +153,9 @@
            beforeFetch: (params) => {
              return Object.assign(params, queryParam);
            },
+           <#if list_has_popup_dict>
+           afterFetch: afterFetch
+           </#if>
         },
         exportConfig: {
             name:"${tableVo.ftlDescription}",
@@ -320,6 +330,28 @@
      </#list>
    }
    initDictConfig();
+    </#if>
+
+    <#if list_has_popup_dict>
+   /**
+    * 翻译Popup字典配置
+   */
+    async function afterFetch(records){
+ <#list columns as po>
+    <#if po.isQuery=='Y' || po.isShowList=='Y'>
+      <#if po.classType=='popup_dict' && list_has_popup_dict==true>
+      const ${po.fieldName}Keys = [...new Set(records.map((item) => item['${po.fieldName}']).flatMap((item) => item && item.split(',')))];
+      if(${po.fieldName}Keys && ${po.fieldName}Keys.length){
+       const dictOptions = await getPopDictByCode(${po.fieldName}Keys.join(','), '${po.dictTable},${po.dictField},${po.dictText}');
+       records.forEach((item) => {
+         item['${po.fieldName}_dictText'] = filterMultiDictText(dictOptions, item['${po.fieldName}']);
+       });
+      }
+      </#if>
+    </#if>
+ </#list>
+     return records;
+   }
     </#if>
 </script>
 

@@ -101,7 +101,13 @@ public class SysRoleController {
 	public Result<IPage<SysRole>> queryPageList(SysRole role,
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									  @RequestParam(name="isMultiTranslate", required = false) Boolean isMultiTranslate,
 									  HttpServletRequest req) {
+        //update-begin---author:wangshuai---date:2025-03-26---for:【issues/7948】角色解决根据id查询回显不对---
+        if(null != isMultiTranslate && isMultiTranslate){
+            pageSize = 100;
+        }
+        //update-end---author:wangshuai---date:2025-03-26---for:【issues/7948】角色解决根据id查询回显不对---
 		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
 		//QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
 		//IPage<SysRole> pageList = sysRoleService.page(page, queryWrapper);
@@ -188,7 +194,7 @@ public class SysRoleController {
 				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 				Integer tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 				String username = "admin";
-				if (!tenantId.equals(role.getTenantId()) && !username.equals(sysUser.getUsername())) {
+				if (!tenantId.equals(sysrole.getTenantId()) && !username.equals(sysUser.getUsername())) {
 					baseCommonService.addLog("未经授权，修改非本租户下的角色ID：" + role.getId() + "，操作人：" + sysUser.getUsername(), CommonConstant.LOG_TYPE_2, CommonConstant.OPERATE_TYPE_3);
 					return Result.error("修改角色失败,当前角色不在此租户中。");
 				}

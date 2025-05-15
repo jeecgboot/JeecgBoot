@@ -7,6 +7,8 @@ interface PaginationRenderProps {
   originalElement: any;
 }
 
+type Position = 'topLeft' | 'topCenter' | 'topRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
+
 export declare class PaginationConfig extends Pagination {
   position?: 'top' | 'bottom' | 'both';
 }
@@ -96,4 +98,11 @@ export interface PaginationProps {
    * @type Function
    */
   itemRender?: (props: PaginationRenderProps) => VNodeChild | JSX.Element;
+  // update-begin--author:liaozhiyang---date:20250423---for：【pull/8013】修复 BasicTable position 属性类型配置
+  /**
+   * specify the position of Pagination
+   * @type Position[]
+   */
+  position?: Position[];
+  // update-end--author:liaozhiyang---date:20250423---for：【pull/8013】修复 BasicTable position 属性类型配置
 }

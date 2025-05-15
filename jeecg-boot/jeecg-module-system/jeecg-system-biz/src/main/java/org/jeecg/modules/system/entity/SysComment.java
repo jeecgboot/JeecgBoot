@@ -26,7 +26,7 @@ import java.util.Date;
 @TableName("sys_comment")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@Schema(description="sys_comment对象")
+@Schema(description="系统评论回复表")
 public class SysComment implements Serializable {
     private static final long serialVersionUID = 1L;
 

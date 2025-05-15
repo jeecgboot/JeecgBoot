@@ -14,11 +14,9 @@ import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.constant.enums.SysAnnmentTypeEnum;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.util.DySmsHelper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +25,6 @@ import java.util.Map;
  * @Description: 消息推送测试
  * @Author: lsq
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = JeecgSystemApplication.class)
 public class SendMessageTest {
 

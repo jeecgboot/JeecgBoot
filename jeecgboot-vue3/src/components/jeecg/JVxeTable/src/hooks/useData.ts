@@ -41,8 +41,8 @@ export function useData(props: JVxeTableProps): JVxeDataProps {
         // update-end--author:liaozhiyang---date:20231013---for：【QQYUN-5133】JVxeTable 行编辑升级
       },
       expandConfig: {
-        iconClose: 'ant-table-row-expand-icon ant-table-row-expand-icon-collapsed',
-        iconOpen: 'ant-table-row-expand-icon ant-table-row-expand-icon-expanded',
+        iconClose: 'vxe-icon-arrow-right',
+        iconOpen: 'vxe-icon-arrow-down',
       },
       // 虚拟滚动配置，y轴大于xx条数据时启用虚拟滚动
       scrollY: {

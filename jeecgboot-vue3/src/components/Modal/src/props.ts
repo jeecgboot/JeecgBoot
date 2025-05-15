@@ -17,6 +17,9 @@ export const modalProps = {
   okText: { type: String, default: t('common.okText') },
 
   closeFunc: Function as PropType<() => Promise<boolean>>,
+
+  modalHeaderHeight: Number,
+  modalFooterHeight: Number,
 };
 
 export const basicProps = Object.assign({}, modalProps, {

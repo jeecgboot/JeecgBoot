@@ -236,14 +236,10 @@ export const formSchema: FormSchema[] = [
   {
     label: '租户',
     field: 'relTenantIds',
-    component: 'ApiSelect',
+    component: 'JDictSelectTag',
     componentProps: {
-      mode: 'multiple',
-      api: getAllTenantList,
-      numberToString: true,
-      labelField: 'name',
-      valueField: 'id',
-      immediate: false,
+      dictCode:"sys_tenant,name,id",
+      mode: "multiple"
     },
   },
   {

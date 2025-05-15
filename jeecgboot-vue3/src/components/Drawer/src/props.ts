@@ -35,7 +35,8 @@ export const basicProps = {
   loading: { type: Boolean },
   maskClosable: { type: Boolean, default: true },
   getContainer: {
-    type: [Object, String] as PropType<any>,
+    type: [Object, String, Function, Boolean] as PropType<any>,
+    default: () => 'body',
   },
   closeFunc: {
     type: [Function, Object] as PropType<any>,

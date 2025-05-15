@@ -18,6 +18,10 @@ public class JeecgBaseConfig {
      */
     private String signatureSecret = "dd05f1c54d63749eda95f9fa6d49v442a";
     /**
+     * 自定义后台资源前缀，解决表单设计器无法通过前端nginx转发访问
+     */
+    private String customResourcePrefixPath;
+    /**
      * 需要加强校验的接口清单
      */
     private String signUrls;
@@ -67,6 +71,14 @@ public class JeecgBaseConfig {
      * 百度开放API配置
      */
     private BaiduApi baiduApi;
+
+    public String getCustomResourcePrefixPath() {
+        return customResourcePrefixPath;
+    }
+
+    public void setCustomResourcePrefixPath(String customResourcePrefixPath) {
+        this.customResourcePrefixPath = customResourcePrefixPath;
+    }
 
     public Elasticsearch getElasticsearch() {
         return elasticsearch;

@@ -1,10 +1,10 @@
 JeecgBoot 企业级低代码开发平台
 ===============
-当前最新版本： 3.7.3（发布时间：2025-02-10）
+当前最新版本： 3.8.0（预计发布时间：2025-04-21）
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](http://jeecg.com/aboutusIndex)
-[![](https://img.shields.io/badge/version-3.7.3-brightgreen.svg)](https://github.com
+[![](https://img.shields.io/badge/version-3.8.0-brightgreen.svg)](https://github.com
 /zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
@@ -19,14 +19,14 @@ JeecgBoot-Vue3采用 Vue3.0、Vite、 Ant-Design-Vue4、TypeScript 等新技术�
 
 ## 开发环境搭建
 
-- [前端开发环境准备](https://help.jeecg.com/setup/dev.html)
-- [前端项目快速启动](https://help.jeecg.com/setup/startup.html)
-- [通过IDEA启动项目](https://help.jeecg.com/java/setup/idea/startup.html)
+- [前端开发环境准备](https://help.jeecg.com/setup/dev)
+- [前端项目快速启动](https://help.jeecg.com/setup/startup)
+- [通过IDEA启动项目](https://help.jeecg.com/java/setup/idea/startup)
 
 ## 技术文档
 
 -   官方文档：[https://help.jeecg.com](https://help.jeecg.com)
--   快速入门：[快速入门](http://jeecg.com/doc/quickstart) | [常见问题](http://help.jeecg.com/qa.html) 
+-   快速入门：[快速入门](http://jeecg.com/doc/quickstart) | [常见问题](http://help.jeecg.com/qa) 
 -   QQ交流群：⑩716488839、⑨808791225、其他满
 -   在线演示 ：  [系统演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex)
 > 演示系统的登录账号密码，请点击 [获取账号密码](http://jeecg.com/doc/demo) 获取

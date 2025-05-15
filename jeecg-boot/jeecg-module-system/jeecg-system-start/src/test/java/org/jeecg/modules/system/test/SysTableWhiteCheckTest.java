@@ -1,21 +1,19 @@
 package org.jeecg.modules.system.test;
 
+import org.aspectj.lang.annotation.Before;
 import org.jeecg.JeecgSystemApplication;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.firewall.SqlInjection.IDictTableWhiteListHandler;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * @Description: 系统表白名单测试
  * @Author: sunjianlei
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = JeecgSystemApplication.class)
 public class SysTableWhiteCheckTest {
 
@@ -27,7 +25,7 @@ public class SysTableWhiteCheckTest {
     @Autowired
     JeecgBaseConfig jeecgBaseConfig;
 
-    @Before
+    @BeforeEach
     public void before() {
         String lowCodeMode = this.jeecgBaseConfig.getFirewall().getLowCodeMode();
         System.out.println("当前 LowCode 模式为: " + lowCodeMode);

@@ -9,6 +9,8 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.common.utils.StringUtils;
+import com.alibaba.nacos.shaded.com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
@@ -30,7 +32,6 @@ import org.springframework.context.ApplicationEventPublisherAware;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
@@ -108,7 +109,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
     private void loadRoutesByNacos() {
-        List<RouteDefinition> routes = Collections.emptyList();
+        List<RouteDefinition> routes = Lists.newArrayList();
         configService = createConfigService();
         if (configService == null) {
             log.warn("initConfigService fail");
@@ -117,7 +118,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             log.info("jeecg.route.config.data-id = {}", gatewayRoutersConfig.getDataId());
             log.info("nacos.config.group = {}", gatewayRoutersConfig.getRouteGroup());
             String configInfo = configService.getConfig(gatewayRoutersConfig.getDataId(), gatewayRoutersConfig.getRouteGroup(), DEFAULT_TIMEOUT);
-            if (StringUtils.hasText(configInfo)) {
+            if (StringUtils.isNotBlank(configInfo)) {
                 log.info("获取网关当前配置:\r\n{}", configInfo);
                 routes = JSON.parseArray(configInfo, RouteDefinition.class);
             }else{
@@ -142,7 +143,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
      * @return
      */
     private void loadRoutesByRedis(BaseMap baseMap) {
-        List<MyRouteDefinition> routes = Collections.emptyList();
+        List<MyRouteDefinition> routes = Lists.newArrayList();
         configService = createConfigService();
         if (configService == null) {
             log.warn("initConfigService fail");
@@ -359,13 +360,13 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
         try {
             Properties properties = new Properties();
             properties.setProperty("serverAddr", gatewayRoutersConfig.getServerAddr());
-            if(StringUtils.hasText(gatewayRoutersConfig.getNamespace())){
+            if(StringUtils.isNotBlank(gatewayRoutersConfig.getNamespace())){
                 properties.setProperty("namespace", gatewayRoutersConfig.getNamespace());
             }
-            if(StringUtils.hasText( gatewayRoutersConfig.getUsername())){
+            if(StringUtils.isNotBlank( gatewayRoutersConfig.getUsername())){
                 properties.setProperty("username", gatewayRoutersConfig.getUsername());
             }
-            if(StringUtils.hasText(gatewayRoutersConfig.getPassword())){
+            if(StringUtils.isNotBlank(gatewayRoutersConfig.getPassword())){
                 properties.setProperty("password", gatewayRoutersConfig.getPassword());
             }
             return configService = NacosFactory.createConfigService(properties);

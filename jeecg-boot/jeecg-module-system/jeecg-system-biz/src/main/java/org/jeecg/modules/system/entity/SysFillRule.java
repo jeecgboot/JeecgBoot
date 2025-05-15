@@ -21,7 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_fill_rule")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema( description = "填值规则")
+@Schema(description = "填值规则")
 public class SysFillRule {
 
     /**

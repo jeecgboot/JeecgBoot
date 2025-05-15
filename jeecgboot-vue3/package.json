@@ -1,6 +1,6 @@
 {
   "name": "jeecgboot-vue3",
-  "version": "3.7.3",
+  "version": "3.8.0",
   "author": {
     "name": "北京国炬信息技术有限公司",
     "email": "jeecgos@163.com",
@@ -21,7 +21,11 @@
     "husky:install": "husky install"
   },
   "dependencies": {
-    "@jeecg/online": "3.7.1-RC",
+    "@jeecg/online": "3.7.4-beta",
+    "@jeecg/aiflow": "1.0.0",
+    "@logicflow/core": "^2.0.10",
+    "@logicflow/extension": "^2.0.14",
+    "@logicflow/vue-node-registry": "^1.0.12",
     "@iconify/iconify": "^3.1.1",
     "@ant-design/colors": "^7.2.0",
     "@ant-design/icons-vue": "^7.0.1",
@@ -57,11 +61,12 @@
     "path-to-regexp": "^6.3.0",
     "pinia": "2.1.7",
     "print-js": "^1.6.0",
-    "qrcode": "^1.5.4",
     "qs": "^6.13.1",
+    "qrcode": "^1.5.4",
     "resize-observer-polyfill": "^1.5.1",
     "showdown": "^2.1.0",
     "sortablejs": "^1.15.6",
+    "swagger-ui-dist": "^5.21.0",
     "tinymce": "6.6.2",
     "vditor": "^3.10.8",
     "vue": "^3.5.13",

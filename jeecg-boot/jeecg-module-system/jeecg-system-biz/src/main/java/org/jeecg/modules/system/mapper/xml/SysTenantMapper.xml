@@ -43,8 +43,7 @@
     <select id="queryTenantPackUserCount" resultType="org.jeecg.modules.system.vo.tenant.TenantPackUserCount">
         SELECT pack_code, count(*) as user_count FROM sys_tenant_pack a 
         join sys_tenant_pack_user b on a.id = b.pack_id
-        join sys_user_tenant sut on a.tenant_id = sut.tenant_id and b.user_id = sut.user_id and sut.status = 1
-        where a.tenant_id = #{tenantId} 
+        where a.tenant_id = #{tenantId} and b.tenant_id = #{tenantId}
         and a.pack_code in ('superAdmin', 'accountAdmin', 'appAdmin')
         and b.status = 1
         group by a.pack_code

@@ -49,7 +49,7 @@
         :canResize="false"
         :bordered="true"
         :loading="loading"
-        :rowKey="combineRowKey"
+        :rowKey="rowkey ? rowkey : combineRowKey"
         :columns="columns"
         :showIndexColumn="false"
         :dataSource="dataSource"
@@ -90,7 +90,7 @@
         loading: true,
       }),
     },
-    props: ['multi', 'code', 'sorter', 'groupId', 'param','showAdvancedButton', 'getFormValues'],
+    props: ['multi', 'code', 'sorter', 'groupId', 'param','showAdvancedButton', 'getFormValues', 'selected', 'rowkey'],
     emits: ['ok', 'register'],
     setup(props, { emit }) {
       const { createMessage } = useMessage();
@@ -284,7 +284,15 @@
           createImgPreview({ imageList: imgList });
         }
       }
-
+      // update-begin--author:liaozhiyang---date:20250415--for：【issues/3656】popupdict回显
+      watchEffect(() => {
+        if (props.selected && props.rowkey) {
+          const selected = props.multi ? props.selected : [props.selected];
+          checkedKeys!.value = selected.map((item) => item[props.rowkey]);
+          selectRows!.value = selected;
+        }
+      });
+      // update-end--author:liaozhiyang---date:20250415--for：【issues/3656】popupdict回显
       return {
         attrs,
         register,

@@ -38,6 +38,7 @@
   import { UploadTypeEnum } from './upload.data';
   import { getFileAccessHttpUrl, getHeaders } from '/@/utils/common/compUtils';
   import UploadItemActions from './components/UploadItemActions.vue';
+  import { split } from '/@/utils/index';
 
   const { createMessage, createConfirm } = useMessage();
   const { prefixCls } = useDesign('j-upload');
@@ -201,7 +202,10 @@
       return;
     }
     let list: any[] = [];
-    for (const item of paths.split(',')) {
+    // update-begin--author:liaozhiyang---date:20250325---for：【issues/7990】图片参数中包含逗号会错误的识别成多张图
+    const result = split(paths);
+    // update-end--author:liaozhiyang---date:20250325---for：【issues/7990】图片参数中包含逗号会错误的识别成多张图
+    for (const item of result) {
       let url = getFileAccessHttpUrl(item);
       list.push({
         uid: uidGenerator(),

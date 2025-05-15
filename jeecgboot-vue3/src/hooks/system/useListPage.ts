@@ -8,6 +8,7 @@ import { useMessage } from '/@/hooks/web/useMessage';
 import { useMethods } from '/@/hooks/system/useMethods';
 import { useDesign } from '/@/hooks/web/useDesign';
 import { filterObj } from '/@/utils/common/compUtils';
+import { isFunction } from '@/utils/is';
 const { handleExportXls, handleImportXls } = useMethods();
 
 // 定义 useListPage 方法所需参数
@@ -24,7 +25,7 @@ interface ListPageOptions {
     // 导出文件名
     name?: string | (() => string);
     //导出参数
-    params?: object;
+    params?: object | (() => object);
   };
   // 导入配置
   importConfig?: {
@@ -71,23 +72,32 @@ export function useListPage(options: ListPageOptions) {
       //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
       let paramsForm:any = {};
       try {
-        paramsForm = await getForm().validate();
+        //update-begin-author:liusq---date:2025-03-20--for: [QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
+        //当useSearchFor不等于false的时候，才去触发validate
+        if (options?.tableProps?.useSearchForm !== false) {
+          paramsForm = await getForm().validate();
+          console.log('paramsForm', paramsForm);
+        }
+        //update-end-author:liusq---date:2025-03-20--for:[QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
       } catch (e) {
-        console.error(e);
+        console.warn(e);
       }
       //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
-      
+
       //update-begin-author:liusq date:20230410 for:[/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
       if(!paramsForm?.column){
          Object.assign(paramsForm,{column:'createTime',order:'desc'});
       }
       //update-begin-author:liusq date:20230410 for: [/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
-      
+
       //如果参数不为空，则整合到一起
       //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导出动态设置mainId
       if (params) {
-        Object.keys(params).map((k) => {
-          let temp = (params as object)[k];
+        //update-begin-author:liusq---date:2025-03-20--for: [QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
+        const realParams = isFunction(params) ? await params() : { ...(params || {}) };
+        //update-end-author:liusq---date:2025-03-20--for:[QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
+        Object.keys(realParams).map((k) => {
+          let temp = (realParams as object)[k];
           if (temp) {
             paramsForm[k] = unref(temp);
           }

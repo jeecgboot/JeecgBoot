@@ -5,10 +5,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -17,6 +16,8 @@ import org.jeecg.modules.system.entity.SysTableWhiteList;
 import org.jeecg.modules.system.service.ISysTableWhiteListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * @Description: 系统表白名单
@@ -83,7 +84,7 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      * @return
      */
     @AutoLog(value = "系统表白名单-编辑")
-    @Operation(summary =  "系统表白名单-编辑")
+    @Operation(summary = "系统表白名单-编辑")
     //@RequiresRoles("admin")
     @RequiresPermissions("system:tableWhite:edit")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
@@ -121,7 +122,7 @@ public class SysTableWhiteListController extends JeecgController<SysTableWhiteLi
      * @return
      */
     @AutoLog(value = "系统表白名单-批量删除")
-    @Operation(summary =  "系统表白名单-批量删除")
+    @Operation(summary = "系统表白名单-批量删除")
 //    @RequiresRoles("admin")
     @RequiresPermissions("system:tableWhite:deleteBatch")
     @DeleteMapping(value = "/deleteBatch")

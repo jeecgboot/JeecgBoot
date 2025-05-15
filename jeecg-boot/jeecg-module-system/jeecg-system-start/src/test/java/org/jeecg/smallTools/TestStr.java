@@ -2,11 +2,17 @@ package org.jeecg.smallTools;
 
 import com.alibaba.fastjson.JSONArray;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Test;
+import org.jeecg.common.util.DateUtils;
+import org.junit.jupiter.api.Test;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Date;
 
 /**
  * 字符串处理测试
@@ -36,6 +42,23 @@ public class TestStr {
         String[] conditionValueArray = conditionValue.split(",");
         System.out.println("length = "+ conditionValueArray.length);
         Arrays.stream(conditionValueArray).forEach(System.out::println);
+    }
+    
+    
+    @Test
+    public void getThisDate() {
+        LocalDate d = DateUtils.getLocalDate();
+        System.out.println(d); 
+    }
+    
+    
+    @Test
+    public void firstDayOfLastSixMonths() {
+        LocalDate today = LocalDate.now(); // 获取当前日期
+        LocalDate firstDayOfLastSixMonths = today.minusMonths(6).withDayOfMonth(1); // 获取近半年的第一天
+        LocalDateTime firstDateTime = LocalDateTime.of(firstDayOfLastSixMonths, LocalTime.MIN); // 设置时间为当天的最小时间（00:00:00）
+        Date date = Date.from(firstDateTime.atZone(ZoneId.systemDefault()).toInstant()); // 将 LocalDateTime 转换为 Date
+        System.out.println("近半年的第一天的 00:00:00 时间戳：" + date);
     }
 
     @Test
@@ -67,7 +90,7 @@ public class TestStr {
      */
     @Test
     public void testSpecialChar() {
-        String str = "Hello, World! 你好！这是一段特殊符号的测试，This is a test string with special characters: @#$%^&*";
+        String str = "Hello, World! 你好！这是一段特殊符号的测试，This is__ a test string with special characters: @#$%^&*";
         // 使用正则表达式替换特殊字符
         String replacedStr = str.replaceAll("[^a-zA-Z0-9\\u4e00-\\u9fa5]", "");
         System.out.println("Replaced String: " + replacedStr);

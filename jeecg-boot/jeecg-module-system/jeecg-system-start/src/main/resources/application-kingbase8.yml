@@ -1,7 +1,11 @@
 server:
   port: 8080
-  tomcat:
-    max-swallow-size: -1
+  undertow:
+    # max-http-post-size: 10MB # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
+    worker-threads: 16  # 4核CPU标准配置
+    buffers:
+      websocket: 8192 # WebSocket缓冲 以字节为单位，这里设置为8 KB
+      io: 16384 # IO操作缓冲 以字节为单位，这里设置为16 KB
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -20,7 +24,6 @@ management:
         include: metrics,httptrace-new
 
 spring:
-  # flyway配置
   flyway:
     # 是否启用flyway
     enabled: false
@@ -35,12 +38,8 @@ spring:
     username: jeecgos@163.com
     password: ??
     properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
+      mail.smtp.auth: true
+      smtp.ssl.enable: true
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
@@ -181,6 +180,15 @@ jeecg:
     apiKey: ??
     apiHost: https://api.deepseek.com
     timeout: 60
+  # AIRag向量库
+  ai-rag:
+    embed-store:
+      host: 127.0.0.1
+      port: 5432
+      database: postgres
+      user: postgres
+      password: postgres
+      table: embeddings
   # 平台上线安全配置
   firewall:
     # 数据源安全 (开启后，Online报表和图表的数据源为必填)
@@ -210,11 +218,6 @@ jeecg:
     secretKey: ??
     endpoint: oss-cn-beijing.aliyuncs.com
     bucketName: jeecgdev
-  # ElasticSearch 6设置
-  elasticsearch:
-    cluster-name: jeecg-ES
-    cluster-nodes: 127.0.0.1:9200
-    check-enabled: false
   # 在线预览文件服务器地址配置
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传

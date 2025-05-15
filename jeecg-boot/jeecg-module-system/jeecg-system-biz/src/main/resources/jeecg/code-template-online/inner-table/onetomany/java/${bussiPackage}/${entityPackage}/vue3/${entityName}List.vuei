@@ -6,6 +6,7 @@
 <#assign list_need_category=false>
 <#assign list_need_pca=false>
 <#assign bpm_flag=false>
+<#assign list_has_popup_dict=false>
 
 <#-- 开始循环 -->
 <#list columns as po>
@@ -18,6 +19,9 @@
 <#if po.classType=='pca'>
 <#assign list_need_pca=true>
 </#if>
+<#if po.classType=='popup_dict'>
+<#assign list_has_popup_dict=true>
+</#if>
 </#list>
 <#-- 结束循环 -->
     <!--引用表格-->
@@ -27,7 +31,7 @@
              <a-tabs tabPosition="top">
    <#list subTables as sub>
                <a-tab-pane tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" forceRender>
-                  <${sub.entityName?uncap_first}SubTable :id="expandedRowKeys[0]"/>
+                  <${sub.entityName?uncap_first}SubTable v-if="expandedRowKeys.includes(record.id)" :id="record.id" />
                </a-tab-pane>
    </#list>
              </a-tabs>
@@ -111,6 +115,10 @@
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   </#if>
+  <#if list_has_popup_dict>
+   import {getPopDictByCode} from "@/utils/dict";
+   import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
+  </#if>
   import { useUserStore } from '/@/store/modules/user';
   const queryParam = reactive<any>({});
    // 展开key
@@ -164,6 +172,9 @@
            beforeFetch: (params) => {
              return Object.assign(params, queryParam);
            },
+           <#if list_has_popup_dict>
+           afterFetch: afterFetch
+           </#if>
         },
         exportConfig: {
             name:"${tableVo.ftlDescription}",
@@ -347,6 +358,28 @@
      </#list>
    }
    initDictConfig();
+    </#if>
+
+    <#if list_has_popup_dict>
+   /**
+    * 翻译Popup字典配置
+   */
+    async function afterFetch(records){
+ <#list columns as po>
+    <#if po.isQuery=='Y' || po.isShowList=='Y'>
+      <#if po.classType=='popup_dict' && list_has_popup_dict==true>
+      const ${po.fieldName}Keys = [...new Set(records.map((item) => item['${po.fieldName}']).flatMap((item) => item && item.split(',')))];
+      if(${po.fieldName}Keys && ${po.fieldName}Keys.length){
+       const dictOptions = await getPopDictByCode(${po.fieldName}Keys.join(','), '${po.dictTable},${po.dictField},${po.dictText}');
+       records.forEach((item) => {
+         item['${po.fieldName}_dictText'] = filterMultiDictText(dictOptions, item['${po.fieldName}']);
+       });
+      }
+      </#if>
+    </#if>
+ </#list>
+     return records;
+   }
     </#if>
 </script>
 

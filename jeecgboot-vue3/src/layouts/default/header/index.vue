@@ -38,8 +38,8 @@
       <UserDropDown :theme="getHeaderTheme" />
 
       <SettingDrawer v-if="getShowSetting" :class="`${prefixCls}-action__item`" />
-      <!-- ai助手 -->
-      <Aide></Aide>
+      <!-- ai助手
+      <Aide></Aide> -->
     </div>
   </Header>
   <LoginSelect ref="loginSelectRef" @success="loginSelectOk"></LoginSelect>

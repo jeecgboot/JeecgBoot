@@ -198,6 +198,10 @@
   <#if is_range>
   import { cloneDeep } from "lodash-es";
   </#if>
+<#if need_popup_dict>
+  import {getPopDictByCode} from "@/utils/dict";
+  import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
+</#if>
   const formRef = ref();
   const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
@@ -225,6 +229,9 @@
         return Object.assign(params, queryParam);
        </#if>
       },
+      <#if need_popup_dict>
+      afterFetch: afterFetch,
+      </#if>
       pagination: {
         current: 1,
         pageSize: 5,
@@ -234,7 +241,11 @@
     exportConfig: {
       name:"${tableVo.ftlDescription}",
       url: getExportUrl,
+      <#if is_range>
+      params: setRangeQuery,
+      <#else>
       params: queryParam,
+      </#if>
     },
     importConfig: {
       url: getImportUrl,
@@ -415,7 +426,27 @@
   }
   initDictConfig();
  </#if>
-
+<#if need_popup_dict>
+    /**
+    * 翻译Popup字典配置
+    */
+    async function afterFetch(records){
+    <#list columns as po>
+    <#if po.isQuery=='Y' || po.isShowList=='Y'>
+      <#if po.classType=='popup_dict' && need_popup_dict==true>
+      const ${po.fieldName}Keys = [...new Set(records.map((item) => item['${po.fieldName}']).flatMap((item) => item && item.split(',')))];
+      if(${po.fieldName}Keys && ${po.fieldName}Keys.length){
+       const dictOptions = await getPopDictByCode(${po.fieldName}Keys.join(','), '${po.dictTable},${po.dictField},${po.dictText}');
+       records.forEach((item) => {
+         item['${po.fieldName}_dictText'] = filterMultiDictText(dictOptions, item['${po.fieldName}']);
+       });
+      }
+      </#if>
+    </#if>
+    </#list>
+     return records;
+}
+</#if>
   /* ----------------------以下为原生查询需要添加的-------------------------- */
   const toggleSearchStatus = ref<boolean>(false);
   const labelCol = reactive({

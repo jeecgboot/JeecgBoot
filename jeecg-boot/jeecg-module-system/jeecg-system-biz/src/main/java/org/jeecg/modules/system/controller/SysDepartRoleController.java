@@ -2,15 +2,13 @@ package org.jeecg.modules.system.controller;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -71,7 +69,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @param req
 	 * @return
 	 */
-	@Operation(summary="部门角色-分页列表查询")
+	@Operation(summary = "部门角色-分页列表查询")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(SysDepartRole sysDepartRole,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -112,7 +110,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @return
 	 */
     @RequiresPermissions("system:depart:role:add")
-	@Operation(summary="部门角色-添加")
+	@Operation(summary ="部门角色-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysDepartRole sysDepartRole) {
 		sysDepartRoleService.save(sysDepartRole);
@@ -125,7 +123,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @param sysDepartRole
 	 * @return
 	 */
-	@Operation(summary="部门角色-编辑")
+	@Operation(summary ="部门角色-编辑")
     @RequiresPermissions("system:depart:role:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody SysDepartRole sysDepartRole) {
@@ -140,7 +138,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @return
 	 */
 	@AutoLog(value = "部门角色-通过id删除")
-	@Operation(summary="部门角色-通过id删除")
+	@Operation(summary ="部门角色-通过id删除")
     @RequiresPermissions("system:depart:role:delete")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
@@ -155,7 +153,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @return
 	 */
 	@AutoLog(value = "部门角色-批量删除")
-	@Operation(summary="部门角色-批量删除")
+	@Operation(summary ="部门角色-批量删除")
     @RequiresPermissions("system:depart:role:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -170,7 +168,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @param id
 	 * @return
 	 */
-	@Operation(summary="部门角色-通过id查询")
+	@Operation(summary ="部门角色-通过id查询")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name="id",required=true) String id) {
 		SysDepartRole sysDepartRole = sysDepartRoleService.getById(id);
