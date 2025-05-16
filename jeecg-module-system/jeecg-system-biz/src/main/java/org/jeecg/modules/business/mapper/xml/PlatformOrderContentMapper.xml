@@ -82,7 +82,7 @@
         FROM platform_order_content
         WHERE erp_status &lt;&gt; 5
         AND platform_order_id IN <foreach collection="list" index="i" item="item" open="(" separator="," close=")">#{item}</foreach>
-        FOR UPDATE NOWAIT;
+        FOR UPDATE;
     </select>
 
     <select id="searchSkuDetail"
@@ -166,7 +166,7 @@
                 separator=",">
             #{erpStatus}
         </foreach>
-        FOR UPDATE NOWAIT;
+        FOR UPDATE;
     </select>
 
     <select id="findUninvoicedShippedOrderContents" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">

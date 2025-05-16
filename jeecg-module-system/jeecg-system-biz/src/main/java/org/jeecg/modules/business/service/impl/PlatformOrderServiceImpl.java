@@ -275,7 +275,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
             return platformOrderMap.queryQuantities(client.getId());
         }
     }
-    // TODO update to FOR UPDATE
     @Override
     public Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrders(List<String> shopIds, Date begin, Date end, List<String> warehouses) {
         List<PlatformOrder> orderList = platformOrderMap.findUninvoicedOrders(shopIds, begin, end, warehouses);
@@ -306,7 +305,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
     }
 
-    // TODO: maybe duplicate this for non invoicing usage !
     @Override
     public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderData(List<String> orderIds) {
         List<PlatformOrder> orderList = platformOrderMap.selectBatchIds(orderIds);
