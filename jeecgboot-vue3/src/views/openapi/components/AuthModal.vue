@@ -1,20 +1,41 @@
 <template>
-  <j-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
-    <AuthForm ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></AuthForm>
-  </j-modal>
+  <!--  <j-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">-->
+  <div style="position: relative;">
+    <a-drawer
+      v-model:open="authDrawerOpen"
+      class="custom-class"
+      root-class-name="root-class-name"
+      :root-style="{ color: 'blue' }"
+      style="color: red"
+      title="Basic Drawer"
+      placement="right"
+      :width="800"
+      @after-open-change="authDrawerOpenChange"
+    >
+      <AuthForm ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></AuthForm>
+      <a-button type="primary" style="position: absolute;bottom: 2%;right: 2%" @click="handleOk">确定</a-button>
+    </a-drawer>
+  </div>
+  <!--  </j-modal>-->
 </template>
 
 <script lang="ts" setup>
   import { ref, nextTick, defineExpose } from 'vue';
-  import AuthForm from './AuthForm.vue'
+  import AuthForm from './AuthForm.vue';
   import JModal from '/@/components/Modal/src/JModal/JModal.vue';
-  
+
   const title = ref<string>('');
   const width = ref<number>(800);
   const visible = ref<boolean>(false);
   const disableSubmit = ref<boolean>(false);
   const registerForm = ref();
   const emit = defineEmits(['register', 'success']);
+
+  const authDrawerOpen = ref(false);
+  const authDrawerOpenChange = (val: any) => {
+    if(!val)
+      registerForm.value.cleanData()
+  };
 
   /**
    * 新增
@@ -26,7 +47,7 @@
       registerForm.value.add();
     });
   }
-  
+
   /**
    * 授权
    * @param record
@@ -34,11 +55,12 @@
   function edit(record) {
     title.value = disableSubmit.value ? '详情' : '授权';
     visible.value = true;
+    authDrawerOpen.value = true;
     nextTick(() => {
       registerForm.value.edit(record);
     });
   }
-  
+
   /**
    * 确定按钮点击事件
    */
@@ -59,6 +81,7 @@
    */
   function handleCancel() {
     visible.value = false;
+    authDrawerOpen.value = false;
   }
 
   defineExpose({

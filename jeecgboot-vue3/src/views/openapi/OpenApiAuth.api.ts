@@ -9,7 +9,7 @@ enum Api {
   edit='/openapi/auth/edit',
   apiList= '/openapi/list',
   genAKSK = '/openapi/auth/genAKSK',
-  permissionList='/openapi/permission/list',
+  permissionList='/openapi/permission/getOpenApi',
   permissionAdd='/openapi/permission/add',
   deleteOne = '/openapi/auth/delete',
   deleteBatch = '/openapi/auth/deleteBatch',
