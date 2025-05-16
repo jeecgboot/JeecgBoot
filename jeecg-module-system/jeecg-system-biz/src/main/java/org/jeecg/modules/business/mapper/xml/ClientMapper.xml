@@ -24,7 +24,7 @@
     FROM client
         WHERE internal_code = #{code}
 </select>
-    <select id="getActiveClientIdByCode" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.Client">
+    <select id="getActiveClientIdByCode" parameterType="java.lang.String" resultType="java.lang.String">
         SELECT id
         FROM client
         WHERE internal_code = #{code} AND active = 1
