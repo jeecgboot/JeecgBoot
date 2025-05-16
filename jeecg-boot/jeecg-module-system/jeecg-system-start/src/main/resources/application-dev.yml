@@ -306,6 +306,7 @@ logging:
   level:
     org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
+    org.springframework.context.support.PostProcessorRegistrationDelegate: error
 knife4j:
   #开启增强配置
   enable: true
