@@ -583,8 +583,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
         flowInputParams.put(FlowConsts.FLOW_INPUT_PARAM_IMAGES, sendParams.getImages());
         flowRunParams.setInputParams(flowInputParams);
         HttpServletRequest httpRequest = SpringContextUtils.getHttpServletRequest();
-        // TODO 未改好111
-//        flowRunParams.setHttpRequest(httpRequest);
+        flowRunParams.setHttpRequest(httpRequest);
         // 流程结束后,记录ai返回并保存会话
         // sse
         SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);

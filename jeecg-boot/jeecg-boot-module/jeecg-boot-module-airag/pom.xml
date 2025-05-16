@@ -54,7 +54,7 @@
         </dependency>-->
 
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
+            <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-aiflow</artifactId>
             <version>1.0.4</version>
         </dependency>

@@ -25,15 +25,13 @@
             <version>${jeecgboot.version}</version>
         </dependency>
         
-        <!-- AI大模型管理
-        TODO 未改好111
+        <!-- AI大模型管理 -->
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-module-airag</artifactId>
             <version>${jeecgboot.version}</version>
         </dependency>
-        -->
-        
+       
         <!-- flyway 数据库自动升级 
         <dependency>
             <groupId>org.flywaydb</groupId>
