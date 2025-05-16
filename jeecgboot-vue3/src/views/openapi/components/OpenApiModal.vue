@@ -75,10 +75,11 @@
   });
   //表单配置
   const [registerForm, { setProps, resetFields, setFieldsValue, validate }] = useForm({
-    labelWidth: 150,
+    labelWidth: 100,
     schemas: formSchema,
     showActionButtonGroup: false,
     baseColProps: { span: 24 },
+    wrapperCol: { span: 24 },
   });
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
