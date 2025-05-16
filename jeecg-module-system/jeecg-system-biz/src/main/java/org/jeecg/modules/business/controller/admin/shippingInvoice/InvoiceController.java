@@ -1332,12 +1332,16 @@ public class InvoiceController {
         String orderId = params.get("orderId");
         try {
             PlatformOrder orderToEdit = platformOrderService.selectForUpdateSkipLock(orderId);
+
+            if(orderToEdit == null) {
+                return Result.error(404,"Order not found.");
+            }
             orderToEdit.setCanSend("2");
             boolean edited = platformOrderService.updateById(orderToEdit);
             return Result.OK(edited);
         } catch (Exception e) {
             if(e instanceof CannotAcquireLockException) {
-                return Result.error("Order is already being edited by another user");
+                return Result.error(409,"Order is already being edited by another user.");
             }
             throw new RuntimeException(e);
         }

@@ -172,12 +172,12 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyNote(@Param("shops") List<String> shopCodes);
     List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(@Param("shops") List<String> shopCodes);
 
-    List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(@Param("startDate") String startDate,
+    List<String> fetchUninvoicedShippedOrderIDInShops(@Param("startDate") String startDate,
                                                              @Param("endDate") String endDate,
                                                              @Param("shops") List<String> shops,
                                                              @Param("warehouses") List<String> warehouses);
 
-    List<PlatformOrder> fetchUninvoicedOrderIDInShopsAndOrderTime(@Param("startDate") String startDate,
+    List<String> fetchUninvoicedOrderIDInShopsAndOrderTime(@Param("startDate") String startDate,
                                                                          @Param("endDate") String endDate,
                                                                          @Param("shops") List<String> shops,
                                                                          @Param("erpStatuses") List<Integer> erpStatuses,

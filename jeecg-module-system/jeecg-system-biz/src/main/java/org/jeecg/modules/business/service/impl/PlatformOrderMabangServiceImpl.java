@@ -155,11 +155,13 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         try {
             if (!oldOrders.isEmpty()) {
                 log.info("{} orders to be inserted/updated.", oldOrders.size());
+                platformOrderService.fetchOrderDataForUpdate(oldOrders.stream().map(Order::getId).collect(toList()));
                 platformOrderMabangMapper.batchUpdateById(oldOrders);
                 platformOrderMabangMapper.batchDeleteByMainID(oldOrders.stream().map(Order::getId).collect(toList()));
             }
             if (!ordersFromShippedToCompleted.isEmpty()) {
                 log.info("{} orders to be updated from Shipped to Completed.", ordersFromShippedToCompleted.size());
+                platformOrderService.fetchOrderDataForUpdate(ordersFromShippedToCompleted.stream().map(Order::getId).collect(toList()));
                 platformOrderMabangMapper.batchUpdateById(ordersFromShippedToCompleted);
                 log.info("Contents of {} orders to be updated from Shipped to Completed.", ordersFromShippedToCompleted.size());
                 platformOrderMabangMapper.batchUpdateErpStatusByMainId(
@@ -168,6 +170,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
             }
             if (!invoicedShippedOrders.isEmpty()) {
                 log.info("{} orders to be updated from Pending/Preparing to Shipped.", invoicedShippedOrders.size());
+                platformOrderService.fetchOrderDataForUpdate(invoicedShippedOrders.stream().map(Order::getId).collect(toList()));
                 platformOrderMabangMapper.batchUpdateById(invoicedShippedOrders);
                 log.info("Contents of {} orders to be updated from Pending/Preparing to Shipped.", invoicedShippedOrders.size());
                 platformOrderMabangMapper.batchUpdateErpStatusByMainId(
@@ -176,6 +179,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
             }
             if (!obsoleteOrders.isEmpty()) {
                 log.info("{} orders to become obsolete.", obsoleteOrders.size());
+                platformOrderService.fetchOrderDataForUpdate(obsoleteOrders.stream().map(Order::getId).collect(toList()));
                 platformOrderMabangMapper.batchUpdateById(obsoleteOrders);
                 log.info("Contents of {} orders to be updated to Obsolete.", obsoleteOrders.size());
                 platformOrderMabangMapper.batchUpdateErpStatusByMainId(

@@ -170,8 +170,6 @@ public class ShippingInvoiceFactory {
         log.info("Creating a complete invoice for \n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
         Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchOrderDataForUpdate(orderIds);
-        System.out.println("Sleeping for 1 minute for testing");
-        Thread.sleep(60000);
         Set<PlatformOrder> platformOrders = uninvoicedOrderToContent.keySet();
         List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.findUnprocessedRefundsByClient(customerId);
         List<String> shopIds = platformOrders.stream()

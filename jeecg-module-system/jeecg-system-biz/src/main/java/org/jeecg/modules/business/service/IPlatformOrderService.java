@@ -152,8 +152,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(List<String> shopCodes);
 
-    List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses);
-
     /**
      * Fetch all platform orders between 2 dates and of status erp_status 4 or 5
      * this list will then be archived

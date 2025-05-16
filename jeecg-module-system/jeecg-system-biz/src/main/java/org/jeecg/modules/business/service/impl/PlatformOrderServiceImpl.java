@@ -279,7 +279,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public Map<PlatformOrder, List<PlatformOrderContent>> findUninvoicedOrders(List<String> shopIds, Date begin, Date end, List<String> warehouses) {
         List<PlatformOrder> orderList = platformOrderMap.findUninvoicedOrders(shopIds, begin, end, warehouses);
-        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(orderList.stream().map(PlatformOrder::getId).collect(toList()));
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContentForUpdate(orderList.stream().map(PlatformOrder::getId).collect(toList()));
         Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
     }
@@ -306,7 +306,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
     }
 
-    // TODO: maybe duplicate this for non invoicing usage
+    // TODO: maybe duplicate this for non invoicing usage !
     @Override
     public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderData(List<String> orderIds) {
         List<PlatformOrder> orderList = platformOrderMap.selectBatchIds(orderIds);
@@ -400,10 +400,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return platformOrderMap.fetchOrderInShopsReadyForAbnNumberJob(shopCodes);
     }
 
-    @Override
-    public List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses) {
-        return platformOrderMap.fetchUninvoicedShippedOrderIDInShops(startDate, endDate, shops, warehouses);
-    }
     @Override
     public List<PlatformOrder> fetchOrdersToArchiveBetweenDate(String startDate, String endDate) {
         return platformOrderMap.fetchOrdersToArchiveBetweenDate(startDate, endDate);
