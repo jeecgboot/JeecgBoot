@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.test;
 
+import jakarta.annotation.Resource;
 import org.jeecg.JeecgSystemApplication;
 import org.jeecg.modules.demo.mock.MockController;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
@@ -9,7 +10,6 @@ import org.jeecg.modules.system.service.ISysDataLogService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
-import javax.annotation.Resource;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,classes = JeecgSystemApplication.class)
