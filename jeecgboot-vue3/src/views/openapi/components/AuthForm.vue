@@ -33,7 +33,7 @@
       },
     },
   });
-  const [registerTable, { reload, collapseAll, updateTableDataRecord, findTableDataRecord, getDataSource }, { rowSelection, selectedRowKeys }] =
+  const [registerTable, { reload, collapseAll, updateTableDataRecord, findTableDataRecord, getDataSource,setSelectedRowKeys }, { rowSelection, selectedRowKeys,selectedRows }] =
     tableContext;
 
   const props = defineProps({
@@ -85,13 +85,18 @@
       formData.apiAuthId = record.id;
       // 获取当前已授权的项目
       getPermissionList({ apiAuthId: record.id }).then((res) => {
-        if (res && res.length > 0) {
-          let list = res.result.records || res.result;
+        if (res.length > 0) {
+          let list =  res;
           let ids = [];
           list.forEach((item) => {
+            if(item.ifCheckBox == "1"){
+              selectedRowKeys.value.push(item.id)
+              selectedRows.value.push(item)
+              setSelectedRowKeys(selectedRowKeys.value);
+            }
             ids.push(item.apiId);
           });
-          selectedRowKeys.value = ids;
+          // selectedRowKeys.value = ids;
           formData.apiIdList = ids;
         }
       });
@@ -102,8 +107,8 @@
    * 提交数据
    */
   async function submitForm() {
-    if(selectedRowKeys.value.length === 0)
-      return emit('ok');
+    // if(selectedRowKeys.value.length === 0)
+    //   return emit('ok');
     try {
       // 触发表单验证
       await validate();
@@ -131,6 +136,7 @@
         if (res.success) {
           createMessage.success(res.message);
           emit('ok');
+          cleanData()
         } else {
           createMessage.warning(res.message);
         }
@@ -139,11 +145,16 @@
         confirmLoading.value = false;
       });
   }
+  const cleanData = () => {
+    selectedRows.value = []
+    selectedRowKeys.value = []
+  }
 
   defineExpose({
     add,
     edit,
     submitForm,
+    cleanData
   });
 </script>
 

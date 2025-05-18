@@ -11,9 +11,9 @@
             </a-form-item>
           </a-col>
           <a-col :lg="6">
-            <a-form-item name="systemUserId">
+            <a-form-item name="createBy">
               <template #label><span title="关联系统用户名">关联系统用户名</span></template>
-              <JSearchSelect dict="sys_user,username,id" v-model:value="queryParam.systemUserId" placeholder="请输入关联系统用户名"  allow-clear ></JSearchSelect>
+              <JSearchSelect dict="sys_user,username,username" v-model:value="queryParam.createBy" placeholder="请输入关联系统用户名"  allow-clear ></JSearchSelect>
 <!--              <a-input placeholder="请输入关联系统用户名" v-model:value="queryParam.systemUserId" allow-clear ></a-input>-->
             </a-form-item>
           </a-col>
@@ -62,6 +62,7 @@
       <template v-slot:bodyCell="{ column, record, index, text }">
       </template>
     </BasicTable>
+
     <!-- 表单区域 -->
     <OpenApiAuthModal ref="registerModal" @success="handleSuccess"></OpenApiAuthModal>
     <AuthModal ref="authModal" @success="handleSuccess"></AuthModal>
@@ -73,11 +74,19 @@
   import { BasicTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage';
   import { columns, superQuerySchema } from './OpenApiAuth.data';
-  import { list, deleteOne, batchDelete, getImportUrl, getExportUrl } from './OpenApiAuth.api';
+  import {
+    list,
+    deleteOne,
+    batchDelete,
+    getImportUrl,
+    getExportUrl,
+    getGenAKSK
+  } from "./OpenApiAuth.api";
   import OpenApiAuthModal from './components/OpenApiAuthModal.vue'
   import AuthModal from './components/AuthModal.vue'
   import { useUserStore } from '/@/store/modules/user';
   import JSearchSelect from "../../components/Form/src/jeecg/components/JSearchSelect.vue";
+  import { saveOrUpdate } from "@/views/openapi/OpenApi.api";
 
   const formRef = ref();
   const queryParam = reactive<any>({});
@@ -157,7 +166,21 @@
    */
   function handleEdit(record: Recordable) {
     registerModal.value.disableSubmit = false;
+    registerModal.value.authDrawerOpen = true;
     registerModal.value.edit(record);
+  }
+
+  /**
+   * 重置事件
+   * @param record
+   */
+  async function handleReset(record: Recordable) {
+    const AKSKObj = await getGenAKSK({});
+    record.ak = AKSKObj[0];
+    record.sk = AKSKObj[1];
+    saveOrUpdate(record,true);
+    // handleSuccess;
+
   }
    
   /**
@@ -200,8 +223,12 @@
         auth: 'openapi:open_api_auth:edit'
       },
       {
-        label: '编辑',
-        onClick: handleEdit.bind(null, record),
+        label: '重置',
+        popConfirm: {
+          title: '是否重置AK,SK',
+          confirm: handleReset.bind(null, record),
+          placement: 'topLeft',
+        },
         auth: 'openapi:open_api_auth:edit'
       },
     ];

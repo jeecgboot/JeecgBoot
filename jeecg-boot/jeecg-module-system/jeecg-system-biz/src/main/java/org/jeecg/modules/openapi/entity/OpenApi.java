@@ -97,4 +97,9 @@ public class OpenApi  implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+    /**
+     * 历史已选接口
+     */
+    @TableField(exist = false)
+    private String ifCheckBox = "0";
 }
