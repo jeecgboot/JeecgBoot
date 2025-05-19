@@ -26,7 +26,7 @@ import java.util.Date;
 @TableName("sys_gateway_route")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@Schema(description="sys_gateway_route对象")
+@Schema(description="gateway路由管理")
 public class SysGatewayRoute implements Serializable {
     private static final long serialVersionUID = 1L;
 

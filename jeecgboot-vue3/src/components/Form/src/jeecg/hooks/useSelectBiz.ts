@@ -45,7 +45,9 @@ export function useSelectBiz(getList, props, emit?) {
           });
       }
       //设置列表默认选中
-      checkedKeys['value'] = selectValues['value'];
+      // update-begin--author:liaozhiyang---date:20250423---for：【QQYUN-12155】弹窗中勾选，再点取消，值被选中了
+      checkedKeys['value'] = [...selectValues['value']];
+      // update-end--author:liaozhiyang---date:20250423---for：【QQYUN-12155】弹窗中勾选，再点取消，值被选中了
     },
     { immediate: true }
   );
@@ -109,7 +111,9 @@ export function useSelectBiz(getList, props, emit?) {
       code: selectValues['value'].join(','),
       pageSize: selectValues['value'].length,
     });
-    checkedKeys['value'] = selectValues['value'];
+    // update-begin--author:liaozhiyang---date:20250423---for：【QQYUN-12155】弹窗中勾选，再点取消，值被选中了
+    checkedKeys['value'] = [...selectValues['value']];
+    // update-end--author:liaozhiyang---date:20250423---for：【QQYUN-12155】弹窗中勾选，再点取消，值被选中了
     selectRows['value'] = records;
   }
 
@@ -118,6 +122,9 @@ export function useSelectBiz(getList, props, emit?) {
    */
   async function visibleChange(visible) {
     if (visible) {
+      // update-begin--author:liaozhiyang---date:20250423---for：【QQYUN-12179】弹窗勾选了值，点击取消再次打开弹窗遗留了上次的勾选的值
+      checkedKeys['value'] = [...selectValues['value']];
+      // update-begin--author:liaozhiyang---date:20250423---for：【QQYUN-12179】弹窗勾选了值，点击取消再次打开弹窗遗留了上次的勾选的值
       //设置列表默认选中
       props.showSelected && initSelectRows();
     } else {

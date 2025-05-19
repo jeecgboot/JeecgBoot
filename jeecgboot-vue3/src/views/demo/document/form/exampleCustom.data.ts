@@ -420,9 +420,9 @@ export const schemas: FormSchema[] = [
     component: 'RoleSelect',
     componentProps: {
       //最大选择数量  
-      maxSelectCount: 3,
+      maxSelectCount: 4,
       //是否单选
-      isRadioSelection: false
+      multi: true
     },
   },  
   {

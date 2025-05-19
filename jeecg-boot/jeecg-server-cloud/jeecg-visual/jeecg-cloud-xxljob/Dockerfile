@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/jeecgdocker/alpine-java:8_server-jre_unlimited
+FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/java:21-anolis
 
 MAINTAINER jeecgos@163.com
 
@@ -10,7 +10,7 @@ WORKDIR /jeecg-cloud-xxljob
 
 EXPOSE 9080
 
-ADD ./target/jeecg-cloud-xxljob-3.7.3.jar ./
+ADD ./target/jeecg-cloud-xxljob-3.8.0.jar ./
 
-CMD java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-xxljob-3.7.3.jar
+CMD java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-xxljob-3.8.0.jar
 

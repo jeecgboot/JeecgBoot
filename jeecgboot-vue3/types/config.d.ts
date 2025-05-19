@@ -104,6 +104,8 @@ export interface ProjectConfig {
   colorWeak: boolean;
   // Theme color
   themeColor: string;
+  // Theme Mode
+  themeMode: string;
 
   // The main interface is displayed in full screen, the menu is not displayed, and the top
   fullContent: boolean;
@@ -187,6 +189,8 @@ export interface GlobEnvConfig {
   VITE_GLOB_UPLOAD_URL?: string;
   // view url
   VITE_GLOB_ONLINE_VIEW_URL?: string;
+  // 全局隐藏哪些布局，多个用逗号隔开
+  VITE_GLOB_HIDE_LAYOUT_TYPES?: string;
 
   // 【JEECG作为乾坤子应用】填写后将作为乾坤子应用启动，主应用注册时AppName需保持一致
   VITE_GLOB_QIANKUN_MICRO_APP_NAME?: string;

@@ -1,6 +1,6 @@
 server:
   port: 7001
-  
+
 spring:
   application:
     name: jeecg-system

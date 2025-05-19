@@ -209,18 +209,11 @@ export const useUserStore = defineStore({
         //update-begin---author:wangshuai ---date:20230424  for：【QQYUN-5195】登录之后直接刷新页面导致没有进入创建组织页面------------
         if (redirect && goHome) {
         //update-end---author:wangshuai ---date:20230424  for：【QQYUN-5195】登录之后直接刷新页面导致没有进入创建组织页面------------
-          // update-begin--author:liaozhiyang---date:20240104---for：【QQYUN-7804】部署生产环境，登录跳转404问题
-          let publicPath = import.meta.env.VITE_PUBLIC_PATH;
-          if (publicPath && publicPath != '/') {
-            // update-begin--author:liaozhiyang---date:20240509---for：【issues/1147】登录跳转时去掉发布路径的最后一个/以解决404问题
-            if (publicPath.endsWith('/')) {
-              publicPath = publicPath.slice(0, -1);
-            }
-            redirect = publicPath + redirect;
-          }
-          // update-end--author:liaozhiyang---date:20240509---for：【issues/1147】登录跳转时去掉发布路径的最后一个/以解决404问题
+          // update-begin--author:liaozhiyang---date:20250407---for：【issues/8034】hash模式下退出重登录默认跳转地址异常
+          // router.options.history.base可替代之前的publicPath
           // 当前页面打开
-          window.open(redirect, '_self')
+          window.open(`${router.options.history.base}${redirect}`, '_self');
+          // update-end--author:liaozhiyang---date:20250407---for：【issues/8034】hash模式下退出重登录默认跳转地址异常
           return data;
         }
         // update-end-author:sunjianlei date:20230306 for: 修复登录成功后，没有正确重定向的问题

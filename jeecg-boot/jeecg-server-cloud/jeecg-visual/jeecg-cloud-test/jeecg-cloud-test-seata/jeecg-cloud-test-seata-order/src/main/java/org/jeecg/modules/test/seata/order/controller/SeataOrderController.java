@@ -6,7 +6,6 @@ package org.jeecg.modules.test.seata.order.controller;
  * @date: 2022/01/24
  * @version: V1.0
  */
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.jeecg.modules.test.seata.order.dto.PlaceOrderRequest;

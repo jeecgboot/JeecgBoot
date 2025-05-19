@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/jeecgdocker/alpine-java:8_server-jre_unlimited
+FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/java:21-anolis
 
 MAINTAINER jeecgos@163.com
 
@@ -10,6 +10,6 @@ WORKDIR /jeecg-cloud-sentinel
 
 EXPOSE 8848
 
-ADD ./target/jeecg-cloud-sentinel-3.7.3.jar ./
+ADD ./target/jeecg-cloud-sentinel-3.8.0.jar ./
 
-CMD sleep 5;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-sentinel-3.7.3.jar
+CMD sleep 5;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-sentinel-3.8.0.jar

@@ -1,16 +1,18 @@
 package org.jeecg.modules.system.entity;
 
+import java.io.Serializable;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.jeecgframework.poi.excel.annotation.Excel;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.jeecgframework.poi.excel.annotation.Excel;
 
 /**
  * @Description: 角色首页配置
@@ -22,7 +24,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_role_index")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description="sys_role_index对象")
+@Schema(description="角色首页配置")
 public class SysRoleIndex {
     
 	/**id*/

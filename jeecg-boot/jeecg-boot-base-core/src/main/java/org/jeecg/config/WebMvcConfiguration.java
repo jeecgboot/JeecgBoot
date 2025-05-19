@@ -18,11 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.jackson.JacksonProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.CacheControl;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -40,6 +42,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Spring Boot 2.0 解决跨域问题
@@ -70,6 +73,8 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
                     .addResourceLocations("file:" + jeecgBaseConfig.getPath().getWebapp() + "//");
         }
         resourceHandlerRegistration.addResourceLocations(staticLocations.split(","));
+        // 设置缓存控制标头 Cache-Control有效期为30天
+        resourceHandlerRegistration.setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS));
     }
 
     /**
@@ -147,6 +152,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
      * 解决metrics端点不显示jvm信息的问题(zyf)
      */
     @Bean
+    @ConditionalOnBean(name = "meterRegistryPostProcessor")
     InitializingBean forcePrometheusPostProcessor(BeanPostProcessor meterRegistryPostProcessor) {
         return () -> meterRegistryPostProcessor.postProcessAfterInitialization(prometheusMeterRegistry, "");
     }

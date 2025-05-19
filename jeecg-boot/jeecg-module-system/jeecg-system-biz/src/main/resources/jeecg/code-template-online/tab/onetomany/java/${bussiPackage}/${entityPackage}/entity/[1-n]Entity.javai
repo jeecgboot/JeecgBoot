@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import java.util.Date;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.UnsupportedEncodingException;
 
@@ -24,7 +25,7 @@ import java.io.UnsupportedEncodingException;
  * @Date:   ${.now?string["yyyy-MM-dd"]}
  * @Version: V1.0
  */
-@Tag(description="${subTab.ftlDescription}")
+@Schema(description="${subTab.ftlDescription}")
 @Data
 @TableName("${subTab.tableName}")
 public class ${subTab.entityName} implements Serializable {

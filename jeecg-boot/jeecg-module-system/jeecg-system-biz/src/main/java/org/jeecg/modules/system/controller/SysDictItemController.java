@@ -4,11 +4,11 @@ package org.jeecg.modules.system.controller;
 import java.util.Arrays;
 import java.util.Date;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
@@ -161,7 +161,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/dictItemCheck", method = RequestMethod.GET)
-	@Operation(summary = "字典重复校验接口")
+	@Operation(summary ="字典重复校验接口")
 	public Result<Object> doDictItemCheck(SysDictItem sysDictItem, HttpServletRequest request) {
 		Long num = Long.valueOf(0);
 		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();

@@ -25,7 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +35,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 异常处理器
@@ -63,6 +66,13 @@ public class JeecgBootExceptionHandler {
 	public Result<?> handleJeecgCaptchaException(AuthenticationException e) {
 		log.error(e.getMessage(), e);
 		return Result.error(401, e.getMessage());
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public Result<?> handleValidationExceptions(MethodArgumentNotValidException e) {
+		log.error(e.getMessage(), e);
+		addSysLog(e);
+		return Result.error("校验失败！" + e.getBindingResult().getAllErrors().stream().map(ObjectError::getDefaultMessage).collect(Collectors.joining(",")));
 	}
 
 	/**

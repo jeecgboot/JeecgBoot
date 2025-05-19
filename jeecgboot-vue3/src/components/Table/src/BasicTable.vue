@@ -247,7 +247,11 @@
       const { getHeaderProps } = useTableHeader(getProps, slots, handlers);
       // update-begin--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
       const getSummaryProps = computed(() => {
-        return pick(unref(getProps), ['summaryFunc', 'summaryData', 'hasExpandedRow', 'rowKey']);
+        // update-begin--author:liaozhiyang---date:20250318---for：【issues/7956】修复showSummary: false时且有内嵌子表时合计栏错位
+        const result = pick(unref(getProps), ['summaryFunc', 'summaryData', 'hasExpandedRow', 'rowKey']);
+        result['hasExpandedRow'] = Object.keys(slots).includes('expandedRowRender');
+        // update-end--author:liaozhiyang---date:20250318---for：【issues/7956】修复showSummary: false时且有内嵌子表时合计栏错位
+        return result;
       });
       const getIsEmptyData = computed(() => {
         return (unref(getDataSourceRef) || []).length === 0;

@@ -1,18 +1,17 @@
 package org.jeecg.modules.system.entity;
 
+import java.io.Serializable;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.jeecgframework.poi.excel.annotation.Excel;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @Description: sys_user_tenant_relation
@@ -24,7 +23,7 @@ import java.util.Date;
 @TableName("sys_user_tenant")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@Schema(description="sys_user_tenant对象")
+@Schema(description="sys_user_tenant")
 public class SysUserTenant implements Serializable {
     private static final long serialVersionUID = 1L;
 

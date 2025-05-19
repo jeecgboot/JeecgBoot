@@ -21,7 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_third_account")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description="sys_third_account对象")
+@Schema(description="第三方登录账号表")
 public class SysThirdAccount {
  
 	/**编号*/

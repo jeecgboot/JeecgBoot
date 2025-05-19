@@ -24,8 +24,8 @@ import ${bussiPackage}.${entityPackage}.service.I${entityName}Service;
 <#list subTables as sub>
 import ${bussiPackage}.${entityPackage}.service.I${sub.entityName}Service;
 </#list>
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.common.system.vo.LoginUser;

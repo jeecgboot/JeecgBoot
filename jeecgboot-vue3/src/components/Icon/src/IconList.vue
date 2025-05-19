@@ -185,11 +185,10 @@
   }
   ul span {
     font-size: 1.5rem !important;
-    border: 1px solid #f1f1f1;
     padding: 0.2rem;
     margin: 0.3rem;
   }
-  .icon-border span {
+  .icon-border {
     border: 1px solid rgba(24, 144, 255) !important;
   }
   .justify-content-right {

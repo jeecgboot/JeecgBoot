@@ -30,7 +30,8 @@
           :maxHeight="getProps.maxHeight"
           :height="getWrapperHeight"
           :visible="visibleRef"
-          :modalFooterHeight="footer !== undefined && !footer ? 0 : undefined"
+          :modalHeaderHeight="getProps.modalHeaderHeight"
+          :modalFooterHeight="footer !== undefined && !footer ? 0 : getProps.modalFooterHeight"
           v-bind="omit(getProps.wrapperProps, 'visible', 'height', 'modalFooterHeight')"
           @ext-height="handleExtHeight"
           @height-change="handleHeightChange">

@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.model;
 
 import java.io.Serializable;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 

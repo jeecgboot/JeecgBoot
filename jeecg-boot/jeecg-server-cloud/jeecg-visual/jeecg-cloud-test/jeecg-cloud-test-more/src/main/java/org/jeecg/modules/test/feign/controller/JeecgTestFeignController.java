@@ -32,7 +32,7 @@ public class JeecgTestFeignController {
      * @return
      */
     @GetMapping("/getMessage")
-    @Operation(summary =  "测试feign @SentinelResource熔断写法 | 测试熔断关闭jeecg-demo服务")
+    @Operation(summary = "测试feign @SentinelResource熔断写法 | 测试熔断关闭jeecg-demo服务")
     @SentinelResource(value = "test_more_getMessage", fallback = "getDefaultUser")
     public Result<String> getMessage(@RequestParam(value = "name", required = false) String name) {
         log.info("---------Feign fallbackFactory优先级高于@SentinelResource-----------------");
@@ -47,7 +47,7 @@ public class JeecgTestFeignController {
      * @return
      */
     @GetMapping("/getMessage2")
-    @Operation(summary =  "测试feign fallbackFactory熔断写法 | 测试熔断关闭jeecg-demo服务")
+    @Operation(summary = "测试feign fallbackFactory熔断写法 | 测试熔断关闭jeecg-demo服务")
     public Result<String> getMessage2(@RequestParam(value = "name", required = false) String name) {
         log.info("---------测试 Feign fallbackFactory-----------------");
         String resultMsg = jeecgTestClient.getMessage(" I am jeecg-system 服务节点，呼叫 jeecg-demo!");
@@ -56,7 +56,7 @@ public class JeecgTestFeignController {
 
 
     @GetMapping("/fallback")
-    @Operation(summary =  "测试熔断")
+    @Operation(summary = "测试熔断")
     @SentinelResource(value = "test_more_fallback", fallback = "getDefaultUser")
     public Result<Object> test(@RequestParam(value = "name", required = false) String name) {
         if (StringUtils.isEmpty(name)) {

@@ -9,10 +9,10 @@
     </CollapseContainer>
 
     <CollapseContainer class="mt-4" title="标签页操作">
-      <a-button class="mr-2" @click="closeAll"> 关闭所有 </a-button>
-      <a-button class="mr-2" @click="closeLeft"> 关闭左侧 </a-button>
-      <a-button class="mr-2" @click="closeRight"> 关闭右侧 </a-button>
-      <a-button class="mr-2" @click="closeOther"> 关闭其他 </a-button>
+      <a-button class="mr-2" @click="() => closeAll()"> 关闭所有 </a-button>
+      <a-button class="mr-2" @click="() => closeLeft()"> 关闭左侧 </a-button>
+      <a-button class="mr-2" @click="() => closeRight()"> 关闭右侧 </a-button>
+      <a-button class="mr-2" @click="() => closeOther()"> 关闭其他 </a-button>
       <a-button class="mr-2" @click="closeCurrent"> 关闭当前 </a-button>
       <a-button class="mr-2" @click="refreshPage"> 刷新当前 </a-button>
     </CollapseContainer>

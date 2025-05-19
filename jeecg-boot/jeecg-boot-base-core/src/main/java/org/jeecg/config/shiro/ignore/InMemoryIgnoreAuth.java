@@ -1,5 +1,7 @@
 package org.jeecg.config.shiro.ignore;
 
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import java.util.List;
 public class InMemoryIgnoreAuth {
     private static final List<String> IGNORE_AUTH_LIST = new ArrayList<>();
 
+    private static PathMatcher MATCHER = new AntPathMatcher();
     public InMemoryIgnoreAuth() {}
 
     public static void set(List<String> list) {
@@ -28,7 +31,7 @@ public class InMemoryIgnoreAuth {
 
     public static boolean contains(String url) {
         for (String ignoreAuth : IGNORE_AUTH_LIST) {
-            if (url.endsWith(ignoreAuth)) {
+            if(MATCHER.match(ignoreAuth,url)){
                 return true;
             }
         }

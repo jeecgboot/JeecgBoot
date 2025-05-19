@@ -23,6 +23,20 @@
                 </otherwise>
             </choose>
         </if>
+        <!--增加id查询 for:【issues/7948】角色解决根据id查询回显不对-->
+        <if test="role.id!='' and role.id!=null">
+            <choose>
+                <when test="role.id.indexOf(',') != -1">
+                    AND id in
+                    <foreach item="item" index="index" collection="role.id.split(',')" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    AND id = #{role.id}
+                </otherwise>
+            </choose>
+        </if>
        order by create_time desc
     </select>
    

@@ -1,6 +1,7 @@
 server:
   port: 8080
   undertow:
+    worker-threads: 16
     # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
     #    max-http-post-size: 10MB
     threads:
@@ -25,27 +26,9 @@ management:
         include: metrics,httpexchanges,jeecghttptrace
 
 spring:
-  # flyway配置
   flyway:
     # 是否启用flyway
     enabled: false
-    # 编码格式，默认UTF-8
-    encoding: UTF-8
-    # 迁移sql脚本文件存放路径，官方默认db/migration
-    locations: classpath:flyway/sql/mysql
-    # 迁移sql脚本文件名称的前缀，默认V
-    sql-migration-prefix: V
-    # 迁移sql脚本文件名称的分隔符，默认2个下划线__
-    sql-migration-separator: __
-    # 避免带${}sql执行失败
-    placeholder-prefix: '#('
-    placeholder-suffix: )
-    # 迁移sql脚本文件名称的后缀
-    sql-migration-suffixes: .sql
-    # 迁移时是否进行校验，默认true
-    validate-on-migrate: true
-    # 当迁移发现数据库非空且存在没有元数据的表时，自动执行基准迁移，新建schema_version表
-    baseline-on-migrate: true
     # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
     clean-disabled: true
   servlet:
@@ -59,12 +42,8 @@ spring:
     username: jeecgos@163.com
     password: ??
     properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
+      mail.smtp.auth: true
+      smtp.ssl.enable: true
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
@@ -212,6 +191,15 @@ jeecg:
     apiKey: ??
     apiHost: https://api.deepseek.com
     timeout: 60
+  # AIRag向量库
+  ai-rag:
+    embed-store:
+      host: 127.0.0.1
+      port: 5432
+      database: postgres
+      user: postgres
+      password: postgres
+      table: embeddings
   # 平台上线安全配置
   firewall:
     # 数据源安全 (开启后，Online报表和图表的数据源为必填)
@@ -252,11 +240,7 @@ jeecg:
         SMS_465391221:
         # 注册账号短信模板编码
         SMS_175430166:
-  # ElasticSearch 设置
-  elasticsearch:
-    cluster-name: jeecg-ES
-    cluster-nodes: 127.0.0.1:9200
-    check-enabled: false
+        SMS_461885023:
   # 在线预览文件服务器地址配置
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传

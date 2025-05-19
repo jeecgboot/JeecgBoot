@@ -1,0 +1,148 @@
+{
+  "data": [
+    {
+      "title": "DeepSeek",
+      "value": "DEEPSEEK",
+      "LLM": [
+        {"label": "deepseek-reasoner", "value": "deepseek-reasoner","descr": "【官方模型】深度求索 新推出的推理模型R1满血版\n火便全球。\n支持64k上下文，其中支持8k最大回复。","type": "text"},
+        {"label":"deepseek-chat", "value": "deepseek-chat","descr": "最强开源 MoE 模型 DeepSeek-V3，全球首个在代码、数学能力上与GPT-4-Turbo争锋的模型，在代码、数学的多个榜单上位居全球第二；","type": "text"}
+      ],
+      "type": ["LLM"],
+      "baseUrl": "https://api.deepseek.com/v1",
+      "LLMDefaultValue": "deepseek-chat"
+    },
+    {
+      "title": "Ollama",
+      "value": "OLLAMA",
+      "LLM": [
+        {"label": "llama2", "value": "llama2"},
+        {"label": "llama2:13b", "value": "llama2:13b"},
+        {"label": "llama2:70b", "value": "llama2:70b"},
+        {"label": "llama2-chinese:13b", "value": "llama2-chinese:13b"},
+        {"label": "llama3:8b", "value": "llama3:8b"},
+        {"label": "llama3:70b", "value": "llama3:70b"},
+        {"label": "qwen:0.5b", "value": "qwen:0.5b"},
+        {"label": "qwen:1.8b", "value": "qwen:1.8b"},
+        {"label": "qwen:4b", "value": "qwen:4b"},
+        {"label": "qwen:7b", "value": "qwen:7b"},
+        {"label": "qwen:14b", "value": "qwen:14b"},
+        {"label": "qwen:32b", "value": "qwen:32b"},
+        {"label": "qwen:72b", "value": "qwen:72b"},
+        {"label": "qwen:110b", "value": "qwen:110b"},
+        {"label": "qwen2:72b-instruct", "value": "qwen2:72b-instruct"},
+        {"label": "qwen2:57b-a14b-instruct", "value": "qwen2:57b-a14b-instruct"},
+        {"label": "qwen2:7b-instruct", "value": "qwen2:7b-instruct"},
+        {"label": "qwen2.5:72b-instruct", "value": "qwen2.5:72b-instruct"},
+        {"label": "qwen2.5:32b-instruct", "value": "qwen2.5:32b-instruct"},
+        {"label": "qwen2.5:14b-instruct", "value": "qwen2.5:14b-instruct"},
+        {"label": "qwen2.5:7b-instruct", "value": "qwen2.5:7b-instruct"},
+        {"label": "qwen2.5:1.5b-instruct", "value": "qwen2.5:1.5b-instruct"},
+        {"label": "qwen2.5:0.5b-instruct", "value": "qwen2.5:0.5b-instruct"},
+        {"label": "qwen2.5:3b-instruct", "value": "qwen2.5:3b-instruct"},
+        {"label": "phi3", "value": "phi3"}
+      ],
+      "EMBED": [
+        {"label": "nomic-embed-text", "value": "nomic-embed-text"}
+      ],
+      "type": ["LLM", "EMBED"],
+      "baseUrl": "http://localhost:11434",
+      "LLMDefaultValue": "llama2",
+      "EMBEDDefaultValue": "nomic-embed-text"
+    },
+    {
+      "title": "OpenAI",
+      "value": "OPENAI",
+      "LLM": [
+        {"label": "gpt-3.5-turbo", "value": "gpt-3.5-turbo","descr": "纯官方高速GPT3.5系列，目前指向gpt-35-turbo-0125模型，最大回复小于4k。\n综合能力强，过去使用最广泛的文本模型。", "type": "text"
+        },
+        {"label": "gpt-4", "value": "gpt-4","descr": "纯官方GPT4系列。知识库截止于2021年，价格适中，具有中等参数，比gpt-4turbo系列略强。","type": "text"},
+        {"label": "gpt-4o", "value": "gpt-4o","descr": "GPT-4o，是openai的新旗舰型号，支持文本和图片分析。\n\n是迈向更自然的人机交互的一步——它接受文本和图像的任意组合作为输入，并生成文本和图像输出的任意组合。","type": "text,image"},
+        {"label": "gpt-4o-mini", "value": "gpt-4o-mini","descr": "GPT-4o mini是目前性价比最高的小参数模型，性能介于GPT3.5~GPT4o之间。\n\n成本相比GPT-3.5 Turbo便宜60%以上，支持50种不同语言，用于替代GPT-3.5版本的模型。\n\n4o-mini的图像分析价格和4o差不多，如果有图像分析需求还是4o更好一些。\n\n当前指向 gpt-4o-mini-2024-07-18","type": "text,image"},
+        {"label": "gpt-4-turbo", "value": "gpt-4-turbo","descr": "纯官方GPT4系列，支持文本和图片分析，最大回复4k，openai于2024-4-9新增的模型，知识库更新于2023年12月。提高了写作、数学、逻辑推理和编码能力。当前指向gpt-4-turbo-2024-04-09","type": "text,image"},
+        {"label": "gpt-4-turbo-preview", "value": "gpt-4-turbo-preview","descr": "纯官方GPT4系列，最大回复4k，知识库更新于2023年4月。当前指向gpt-4-0125-preview","type": "text"},
+        {"label": "gpt-3.5-turbo-0125", "value": "gpt-3.5-turbo-0125","descr": "openai于2024年1月25号更新的gpt-3.5模型，最大回复4k。\n\n综合能力强，过去使用最广泛的文本模型。","type": "text"},
+        {"label": "gpt-3.5-turbo-1106", "value": "gpt-3.5-turbo-1106","descr": "openai于2023年11月6号更新的gpt-3.5模型，最大回复4k。属于即将被淘汰的模型。\n\n建议使用gpt-3.5-turbo或gpt-4o-mini","type": "text"},
+        {"label": "gpt-3.5-turbo-0613", "value": "gpt-3.5-turbo-0613","descr": "通过微调后可以更准确地按照用户的指示进行操作，生成更简洁和针对性的输出。它不仅可以用于文本生成，还可以通过函数调用功能与其他系统和API进行集成，实现更复杂的任务自动化","type": "text"},
+        {"label": "gpt-4o-2024-05-13", "value": "gpt-4o-2024-05-13","descr": "GPT-4o，是openai的新旗舰型号，支持文本和图片分析。\n\n是迈向更自然的人机交互的一步——它接受文本和图像的任意组合作为输入，并生成文本和图像输出的任意组合。\n\n该模型为初代的4o模型","type": "text,image"},
+        {"label": "gpt-4-turbo-2024-04-09", "value": "gpt-4-turbo-2024-04-09","descr": "纯官方GPT4系列，支持文本和图片分析，最大回复4k，openai于2024-4-9新增的模型，提高了写作、数学、逻辑推理和编码能力。知识库更新于2023年12月。","type": "text,image"},
+        {"label": "gpt-4-0125-preview", "value": "gpt-4-0125-preview","descr": "纯官方GPT4系列，最大回复4k，知识库更新于2023年4月。当前与gpt-4-turbo-preview属于同一模型","type": "text"},
+        {"label": "gpt-4-1106-preview", "value": "gpt-4-1106-preview","descr": "纯官方GPT4系列，最大回复4k，知识库更新于2023年4月。正在逐渐被新的模型gpt-4-turbo和gpt-4-turbo-preview取代。","type": "text"}
+      ],
+      "EMBED": [
+        {"label": "text-embedding-ada-002", "value": "text-embedding-ada-002","descr": "用于生成文本嵌入的模型。文本嵌入是将文本转换为数值形式（通常是向量），以便可以用于机器学习模型。","type": "vector,embeddings"},
+        {"label": "text-embedding-3-small", "value": "text-embedding-3-small","descr": "用于生成文本的嵌入表示，网络结构较小，计算资源需求较低。虽然可能不如\"large\"版本那样精准，但它更适合于资源受限的环境或需要更快速处理的任务。","type": "vector,embeddings"},
+        {"label": "text-embedding-3-large", "value": "text-embedding-3-large","descr": "用于生成文本的嵌入表示，即将文本转换为高维空间中的点，这些点的距离可以表示文本之间的相似度。有较大的网络结构，能够捕捉更丰富的语言特征，适用于需要高质量文本相似度或分类任务的场景。","type": "vector,embeddings"}
+      ],
+      "type": ["LLM", "EMBED"],
+      "baseUrl": "https://api.openai.com/v1/",
+      "LLMDefaultValue": "gpt-3.5-turbo",
+      "EMBEDDefaultValue": "text-embedding-ada-002"
+    },
+    {
+      "title": "通义千问",
+      "value": "QWEN",
+      "LLM": [
+        {"label": "qwen-turbo", "value": "qwen-turbo","descr": "通义千问超大规模语言模型，支持中文、英文等不同语言输入。适合文本创作、文本处理、编程辅助、翻译服务、对话模拟。","type": "text"},
+        {"label": "qwen-plus", "value": "qwen-plus","descr": "通义千问超大规模语言模型，支持中文、英文等不同语言输入。适合文本创作、文本处理、编程辅助、翻译服务、对话模拟。","type": "text"},
+        {"label": "qwen-max", "value": "qwen-max","descr": "暂无描述内容！","type": "text"}
+      ],
+      "EMBED": [
+        {"label": "text-embedding-v2", "value": "text-embedding-v2","descr": "是一种将文本数据转换为向量的技术，通过深度学习模型将文本的语义信息嵌入到高维向量空间中。这些向量不仅能表达文本内容，还能捕捉文本之间的相似性和关系，从而让计算机高效地进行文本检索、分类、聚类等任务。","type": "vector"}
+      ],
+      "type": ["LLM", "EMBED"],
+      "baseUrl": "https://dashscope.aliyuncs.com/api/v1/services/",
+      "LLMDefaultValue": "qwen-plus",
+      "EMBEDDefaultValue": "text-embedding-v2"
+    },
+    {
+      "title": "千帆大模型",
+      "value": "QIANFAN",
+      "LLM": [
+        {"label": "ERNIE-Bot", "value": "ERNIE-Bot","descr": "是百度推出的一款知识增强大语言模型，主要用于与人对话互动、回答问题、协助创作，帮助人们高效便捷地获取信息、知识和灵感","type": "text"},
+        {"label": "ERNIE-Bot 4.0", "value": "ERNIE-Bot 4.0","descr": "百度自行研发的文心产业级知识增强大语言模型4.0版本\n\n实现了基础模型的全面升级，在理解、生成、逻辑和记忆能力上相对ERNIE 3.5都有着显著提升，支持5K输入+2K输出。","type": "text"},
+        {"label": "ERNIE-Bot-8K", "value": "ERNIE-Bot-8K","descr": "主要用于数据分析场景，特别是在企业数据分析中表现出色。ERNIE-Bot-8K是百度文心大模型的一个版本，具有模型效果优、生成能力强、应用门槛低等独特优势。","type": "text"},
+        {"label": "ERNIE-Bot-turbo", "value": "ERNIE-Bot-turbo","descr": "是一个大语言模型，主要用于对话问答、内容创作生成等任务。它是百度自行研发的大语言模型，覆盖了海量中文数据，具有更强的对话问答和内容创作生成能力","type": "text"},
+        {"label": "ERNIE-Speed-128K", "value": "ERNIE-Speed-128K","descr": "是一款基于Transformer结构的轻量级语言模型，旨在满足实时数据处理的需求。它具有高效、低延迟和高准确性的特点，广泛应用于自然语言处理、信息检索和文本分类等领域","type": "text"},
+        {"label": "EB-turbo-AppBuilder", "value": "EB-turbo-AppBuilder","descr": "主要用于企业级应用场景，如智能客服、内容创作和知识问答等任务。它是基于文心高性能大语言模型ERNIE-Bot-turbo构建的，针对企业特定需求进行了深度的场景效果优化和输出格式定制，因此在满足企业特定需求方面具有更高的灵活性和实用性","type": "text"},
+        {"label": "Yi-34B-Chat", "value": "Yi-34B-Chat","descr": "Yi-34B-Chat是一款基于Transformer架构的生成式预训练语言模型，它拥有340亿个参数，使其在处理自然语言任务时表现出了强大的能力。","type": "text"},
+        {"label": "BLOOMZ-7B", "value": "BLOOMZ-7B","descr": "是一个用于生成文本序列的自回归模型，它可以进行多语言处理，支持46种语言和13种编程语言。BLOOMZ-7B是BLOOM模型的一个调优版本，具有更出色的泛化和零样本学习能力，适用于多种任务和场景","type": "text"},
+        {"label": "Qianfan-BLOOMZ-7B-compressed", "value": "Qianfan-BLOOMZ-7B-compressed","descr": "是千帆团队在BLOOMZ-7B基础上的压缩版本，融合量化、稀疏化等技术，显存占用降低30%以上。","type": "text"},
+        {"label": "Mixtral-8x7B-Instruct", "value": "Mixtral-8x7B-Instruct","descr": "由Mistral AI发布的首个高质量稀疏专家混合模型 (MOE)，模型由8个70亿参数专家模型组成，在多个基准测试中表现优于Llama-2-70B及GPT3.5，能够处理32K上下文，在代码生成任务中表现尤为优异。","type": "text"},
+        {"label": "Llama-2-7b-chat", "value": "Llama-2-7b-chat","descr": "由Meta AI研发并开源，在编码、推理及知识应用等场景表现优秀，Llama-2-7b-chat是高性能原生开源版本，适用于对话场景。","type": "text"},
+        {"label": "Llama-2-13b-chat", "value": "Llama-2-13b-chat","descr": "由Meta AI研发并开源，在编码、推理及知识应用等场景表现优秀，Llama-2-13b-chat是性能与效果均衡的原生开源版本，适用于对话场景。","type": "text"},
+        {"label": "Llama-2-70b-chat", "value": "Llama-2-70b-chat","descr": "由Meta AI研发并开源，在编码、推理及知识应用等场景表现优秀，Llama-2-70b-chat是高精度效果的原生开源版本。","type": "text"},
+        {"label": "Qianfan-Chinese-Llama-2-7B", "value": "Qianfan-Chinese-Llama-2-7B","descr": "是千帆团队在Llama-2-7b基础上的中文增强版本，在CMMLU、C-EVAL等中文数据集上表现优异。","type": "text"},
+        {"label": "ChatGLM2-6B-32K", "value": "ChatGLM2-6B-32K","descr": "是在ChatGLM2-6B的基础上进一步强化了对于长文本的理解能力，能够更好的处理最多32K长度的上下文。","type": "text"},
+        {"label": "AquilaChat-7B", "value": "AquilaChat-7B","descr": "是由智源研究院研发，基于Aquila-7B训练的对话模型，支持流畅的文本对话及多种语言类生成任务，通过定义可扩展的特殊指令规范，实现 AquilaChat对其它模型和工具的调用，且易于扩展。","type": "text"}
+      ],
+      "EMBED": [
+        {"label": "Embedding-V1", "value": "Embedding-V1","descr": "主要用于将离散对象（如文本、图像等）映射为连续的数值向量，以便于计算机处理和机器学习模型的训练和使用","type": "vector,embeddings"},
+        {"label": "tao-8k", "value": "tao-8k","descr": "是由Huggingface开发者amu研发并开源的长文本向量表示模型,支持8k上下文长度,模型效果在C-MTEB上居前列,是当前最优的中文长文本embeddings模型之一","type": "vector"},
+        {"label": "bge-large-zh", "value": "bge-large-zh","descr": "是由智源研究院研发的中文版文本表示模型，可将任意文本映射为低维稠密向量，以用于检索、分类、聚类或语义匹配等任务，并可支持为大模型调用外部知识。","type": "vector"},
+        {"label": "bge-large-en", "value": "bge-large-en","descr": "是由智源研究院研发的英文版文本表示模型，可将任意文本映射为低维稠密向量，以用于检索、分类、聚类或语义匹配等任务，并可支持为大模型调用外部知识。","type": "vector"}
+      ],
+      "type": ["LLM", "EMBED"],
+      "baseUrl": "https://aip.baidubce.com",
+      "LLMDefaultValue": "Yi-34B-Chat",
+      "EMBEDDefaultValue": "Embedding-V1"
+    },
+    {
+      "title": "智谱AI",
+      "value": "ZHIPU",
+      "LLM": [
+        {"label": "glm-4", "value": "glm-4","descr": "是一个多模态大语言模型，主要用于处理复杂的指令和任务，支持长文本处理、多模态理解和文生图等功能","type": "text,image"},
+        {"label": "glm-4v", "value": "glm-4v","descr": "智谱：多模态模型\n\n更懂中文的视觉理解、文生图等多模态模型能力。准确理解各任务场景语言描述及指令，更精确的完成多模态理解类任务，或生成高质量的图片、视频等多模态内容。","type": "text,image"},
+        {"label": "glm-4-flash", "value": "glm-4-flash","descr": "该模型官方免费，主要用于处理多种自然语言处理任务，包括智能对话助手、辅助论文翻译、ppt及会议内容生产、网页智能搜索、数据生成和抽取、网页解析、智能规划和决策、辅助科研等场景","type": "text"},
+        {"label": "glm-3-turbo", "value": "glm-3-turbo","descr": "是一种基于transformer结构的语言模型，由智谱AI推出。其主要特点包括使用三层transformer结构、采用Turbo机制以实时生成文本、处理长文本输入并具有强大的语言理解能力","type": "text"}
+      ],
+      "EMBED": [
+        {"label": "Embedding-3", "value": "Embedding-3","descr": "主要用于文本搜索、聚类、推荐等任务。它通过将文本映射到低维向量空间，使得文本之间的语义关系可以通过向量之间的距离或相似度来衡量，从而支持各种基于向量的应用。","type": "vector"},
+        {"label": "Embedding-2", "value": "Embedding-2","descr": "用于将高维离散数据映射到低维连续数值向量中，以便机器学习模型能够更好地处理和理解这些数据","type": "vector"}
+      ],
+      "type": ["LLM", "EMBED"],
+      "baseUrl": "https://open.bigmodel.cn",
+      "LLMDefaultValue": "glm-4-flash",
+      "EMBEDDefaultValue": "Embedding-2"
+    }
+  ]
+}

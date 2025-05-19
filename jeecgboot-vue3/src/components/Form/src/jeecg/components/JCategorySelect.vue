@@ -6,6 +6,7 @@
     style="width: 100%"
     :disabled="disabled"
     :dropdownStyle="{ maxHeight: '400px', overflow: 'auto' }"
+    showCheckedStrategy="SHOW_ALL"
     :placeholder="placeholder"
     :loadData="asyncLoadTreeData"
     :value="treeValue"

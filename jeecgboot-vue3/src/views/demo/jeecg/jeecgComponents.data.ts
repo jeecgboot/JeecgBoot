@@ -259,6 +259,20 @@ export const schemas: FormSchema[] = [
     colProps: { span: 12 },
   },
   {
+    field: 'user4',
+    component: 'JSelectUserByDepartment',
+    label: '部门选择用户',
+    helpMessage: ['component模式'],
+    defaultValue: '',
+    componentProps: {
+      labelKey: 'realname',
+      rowKey: 'username',
+    },
+    colProps: {
+      span: 12,
+    },
+  },
+  {
     field: 'role2',
     component: 'JSelectRole',
     label: '角色选择组件',

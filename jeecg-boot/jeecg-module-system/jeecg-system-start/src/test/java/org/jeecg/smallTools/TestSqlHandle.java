@@ -1,6 +1,7 @@
 package org.jeecg.smallTools;
 
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * 测试sql分割、替换等操作

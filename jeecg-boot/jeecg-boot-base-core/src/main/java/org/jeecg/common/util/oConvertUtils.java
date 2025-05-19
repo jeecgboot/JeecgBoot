@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -463,7 +464,7 @@ public class oConvertUtils {
 			return false;
 		}
 
-		String[] childs = (String[]) childArray.toArray();
+		List<String> childs = childArray.toJavaList(String.class);
 		for (String v : childs) {
 			if (!isIn(v, all)) {
 				return false;
@@ -1027,6 +1028,110 @@ public class oConvertUtils {
 			result = result.substring(0, sb.length() - 1);
 		}
 		return result;
+	}
+
+	/**
+	 * 判断对象是否为空 <br/>
+	 * 支持各种类型的对象
+	 * for for [QQYUN-10990]AIRAG
+	 * @param obj
+	 * @return
+	 * @author chenrui
+	 * @date 2025/2/13 18:34
+	 */
+	public static boolean isObjectEmpty(Object obj) {
+		if (null == obj) {
+			return true;
+		}
+
+		if (obj instanceof CharSequence) {
+			return isEmpty(obj);
+		} else if (obj instanceof Map) {
+			return ((Map<?, ?>) obj).isEmpty();
+		} else if (obj instanceof Iterable) {
+			return isObjectEmpty(((Iterable<?>) obj).iterator());
+		} else if (obj instanceof Iterator) {
+			return !((Iterator<?>) obj).hasNext();
+		} else if (isArray(obj)) {
+			return 0 == Array.getLength(obj);
+		}
+		return false;
+	}
+
+	/**
+	 * iterator 是否为空
+	 * for for [QQYUN-10990]AIRAG
+	 * @param iterator Iterator对象
+	 * @return 是否为空
+	 */
+	public static boolean isEmptyIterator(Iterator<?> iterator) {
+		return null == iterator || false == iterator.hasNext();
+	}
+
+
+	/**
+	 * 判断对象是否不为空
+	 * for for [QQYUN-10990]AIRAG
+	 * @param object
+	 * @return
+	 * @author chenrui
+	 * @date 2025/2/13 18:35
+	 */
+	public static boolean isObjectNotEmpty(Object object) {
+		return !isObjectEmpty(object);
+	}
+
+	/**
+	 * 如果src大于des返回true
+	 * for [QQYUN-10990]AIRAG
+	 * @param src
+	 * @param des
+	 * @return
+	 * @author: chenrui
+	 * @date: 2018/9/19 15:30
+	 */
+	public static boolean isGt(Number src, Number des) {
+		if (null == src || null == des) {
+			throw new IllegalArgumentException("参数不能为空");
+		}
+		if (src.doubleValue() > des.doubleValue()) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 如果src大于等于des返回true
+	 * for [QQYUN-10990]AIRAG
+	 * @param src
+	 * @param des
+	 * @return
+	 * @author: chenrui
+	 * @date: 2018/9/19 15:30
+	 */
+	public static boolean isGe(Number src, Number des) {
+		if (null == src || null == des) {
+			throw new IllegalArgumentException("参数不能为空");
+		}
+		if (src.doubleValue() < des.doubleValue()) {
+			return false;
+		}
+		return true;
+	}
+
+
+	/**
+	 * 判断是否存在
+	 * for [QQYUN-10990]AIRAG
+	 * @param obj
+	 * @param objs
+	 * @param <T>
+	 * @return
+	 * @author chenrui
+	 * @date 2020/9/12 15:50
+	 */
+	public static <T> boolean isIn(T obj, T... objs) {
+		return isIn(obj, objs);
 	}
 	
 }

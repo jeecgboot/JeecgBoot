@@ -80,8 +80,8 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 								   HttpServletRequest req) {
 		QueryWrapper<SysDepartRole> queryWrapper = QueryGenerator.initQueryWrapper(sysDepartRole, req.getParameterMap());
 		Page<SysDepartRole> page = new Page<SysDepartRole>(pageNo, pageSize);
-		LoginUser user = SecureUtil.currentUser();
-		List<String> deptIds = null;
+//		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+//		List<String> deptIds = null;
 //		if(oConvertUtils.isEmpty(deptId)){
 //			if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals(CommonConstant.USER_IDENTITY_2) ){
 //				deptIds = sysDepartService.getMySubDepIdsByDepId(user.getDepartIds());

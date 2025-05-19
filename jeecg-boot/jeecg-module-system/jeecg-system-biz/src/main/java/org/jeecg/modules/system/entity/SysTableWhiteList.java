@@ -21,7 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_table_white_list")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description = "sys_table_white_list对象")
+@Schema(description = "系统表白名单")
 public class SysTableWhiteList {
 
     /**

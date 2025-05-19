@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-module-system</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.7.3</version>
+        <version>3.8.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,6 +25,13 @@
             <version>${jeecgboot.version}</version>
         </dependency>
         
+        <!-- AI大模型管理 -->
+        <dependency>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-boot-module-airag</artifactId>
+            <version>${jeecgboot.version}</version>
+        </dependency>
+       
         <!-- flyway 数据库自动升级 
         <dependency>
             <groupId>org.flywaydb</groupId>

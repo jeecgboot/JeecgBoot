@@ -271,7 +271,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	@Transactional(rollbackFor = Exception.class)
 	public boolean deleteUser(String userId) {
-		//1.删除用户
+		//update-begin---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】admin用户禁止删除---
+		//1.验证当前用户是管理员账号 admin
+		//验证用户是否为管理员
+		this.checkUserAdminRejectDel(userId);
+		//update-end---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】admin用户禁止删除---
+		
+		//2.删除用户
 		this.removeById(userId);
 		return false;
 	}
@@ -280,7 +286,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
 	@Transactional(rollbackFor = Exception.class)
 	public boolean deleteBatchUsers(String userIds) {
-		//1.删除用户
+		//1.验证当前用户是管理员账号 admin
+		this.checkUserAdminRejectDel(userIds);
+		//2.删除用户
 		this.removeByIds(Arrays.asList(userIds.split(",")));
 		return false;
 	}
@@ -881,7 +889,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		SysUserTenant userTenant = new SysUserTenant();
 		userTenant.setStatus(CommonConstant.USER_TENANT_QUIT);
 		userTenantMapper.update(userTenant,query);
-		//update-end---author:wangshuai ---date:20230111  for：[QQYUN-3951]租户用户离职重构------------
     }
 
     @Override
@@ -1907,7 +1914,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 	}
 
-
 	@Override
 	public void changePhone(JSONObject json, String username) {
 		String smscode = json.getString("smscode");
@@ -1941,7 +1947,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			userMapper.updateById(sysUser);
 		}
 	}
-
+	
 	/**
 	 * 验证手机号
 	 *
@@ -1961,7 +1967,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//验证完成之后清空手机验证码
 		redisUtil.removeAll(phoneKey);
 	}
-
+	
 	@Override
 	public void sendChangePhoneSms(JSONObject jsonObject, String username, String ipAddress) {
 		String type = jsonObject.getString("type");

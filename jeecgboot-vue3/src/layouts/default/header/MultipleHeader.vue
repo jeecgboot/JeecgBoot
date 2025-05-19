@@ -52,7 +52,7 @@
 
       const getShowHeader = computed(() => {
         // 控制是否显示顶部
-        if (appStore.mainAppProps.hideHeader) {
+        if (appStore.getLayoutHideHeader) {
           return false;
         }
         return unref(getShowInsetHeaderRef);
@@ -60,7 +60,7 @@
 
       const getShowTabs = computed(() => {
         // 控制是否显示多Tabs切换
-        if (appStore.mainAppProps.hideMultiTabs) {
+        if (appStore.getLayoutHideMultiTabs) {
           return false;
         }
         return unref(getShowMultipleTab) && !unref(getFullContent);

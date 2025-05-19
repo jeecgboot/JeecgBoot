@@ -37,6 +37,11 @@
       } else {
         Object.assign(data.token, { colorTextBase: '#333' });
       }
+
+      // 定义主题色 css 变量
+      if (data.token.colorPrimary) {
+        document.documentElement.style.setProperty('--j-global-primary-color', data.token.colorPrimary);
+      }
     }
   };
   // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x

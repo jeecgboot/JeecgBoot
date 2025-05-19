@@ -10,7 +10,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
-
 import java.util.Date;
 
 /**
@@ -23,7 +22,7 @@ import java.util.Date;
 @TableName("sys_third_app_config")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description="sys_third_app_config对象")
+@Schema(description="第三方配置表")
 public class SysThirdAppConfig {
 
     /**编号*/

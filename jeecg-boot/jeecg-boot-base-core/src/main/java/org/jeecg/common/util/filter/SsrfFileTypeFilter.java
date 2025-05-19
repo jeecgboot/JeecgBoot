@@ -42,6 +42,7 @@ public class SsrfFileTypeFilter {
         FILE_TYPE_WHITE_LIST.add("pdf");
         FILE_TYPE_WHITE_LIST.add("csv");
 //        FILE_TYPE_WHITE_LIST.add("xml");
+        FILE_TYPE_WHITE_LIST.add("md");
 
         //音视频文件
         FILE_TYPE_WHITE_LIST.add("mp4");
@@ -64,6 +65,10 @@ public class SsrfFileTypeFilter {
         //app文件后缀
         FILE_TYPE_WHITE_LIST.add("apk");
         FILE_TYPE_WHITE_LIST.add("wgt");
+
+        //幻灯片文件后缀
+        FILE_TYPE_WHITE_LIST.add("ppt");
+        FILE_TYPE_WHITE_LIST.add("pptx");
 
         //设置禁止文件的头部标记
         FILE_TYPE_MAP.put("3c25402070616765206c", "jsp");

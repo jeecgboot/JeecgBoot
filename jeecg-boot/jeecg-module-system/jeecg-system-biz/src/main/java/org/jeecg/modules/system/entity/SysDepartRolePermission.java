@@ -1,15 +1,18 @@
 package org.jeecg.modules.system.entity;
 
+import java.io.Serializable;
+import java.util.Date;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.baomidou.mybatisplus.annotation.TableField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.jeecgframework.poi.excel.annotation.Excel;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.jeecgframework.poi.excel.annotation.Excel;
 
 /**
  * @Description: 部门角色权限
@@ -21,7 +24,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_depart_role_permission")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description="sys_depart_role_permission对象")
+@Schema( description="部门角色权限")
 public class SysDepartRolePermission {
     
 	/**id*/

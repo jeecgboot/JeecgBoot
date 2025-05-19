@@ -23,7 +23,7 @@ import java.util.Date;
 @TableName("sys_check_rule")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description = "sys_check_rule对象")
+@Schema(description = "编码校验规则")
 public class SysCheckRule {
 
     /**

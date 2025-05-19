@@ -2,7 +2,7 @@
 <template>
   <div class="JPopup components-input-demo-presuffix" v-if="avalid">
     <!--输入框-->
-    <a-input @click="handleOpen" v-model:value="showText" :placeholder="placeholder" readOnly v-bind="attrs">
+    <a-input @click="handleOpen" :value="innerShowText || showText" :placeholder="placeholder" readOnly v-bind="attrs">
       <template #prefix>
         <Icon icon="ant-design:cluster-outlined"></Icon>
       </template>
@@ -64,6 +64,8 @@
         default: () => [],
       },
       showAdvancedButton: propTypes.bool.def(true),
+      // 是否是在 筛选（search） 中使用
+      inSearch: propTypes.bool.def(false),
     },
     emits: ['update:value', 'register', 'popUpChange', 'focus'],
     setup(props, { emit, refs }) {
@@ -72,6 +74,7 @@
       //pop是否展示
       const avalid = ref(true);
       const showText = ref('');
+      const innerShowText = ref('')
       //注册model
       const [regModal, { openModal }] = useModal();
       //表单值
@@ -124,6 +127,7 @@
         let { fieldConfig } = props;
         //匹配popup设置的回调值
         let values = {};
+        let labels = []
         for (let item of fieldConfig) {
           let val = rows.map((row) => row[item.source]);
           // update-begin--author:liaozhiyang---date:20230831---for：【QQYUN-7535】数组只有一个且是number类型，join会改变值的类型为string
@@ -132,7 +136,20 @@
           item.target.split(',').forEach((target) => {
             values[target] = val;
           });
+
+          if (props.inSearch) {
+            // 处理显示值
+            if (item.label) {
+              let txt = rows.map((row) => row[item.label]);
+              txt = txt.length == 1 ? txt[0] : txt.join(',');
+              labels.push(txt);
+            } else {
+              labels.push(val);
+            }
+          }
+
         }
+        innerShowText.value = labels.join(',');
         //传入表单示例方式赋值
         props.formElRef && props.formElRef.setFieldsValue(values);
         //传入赋值方法方式赋值
@@ -146,6 +163,7 @@
 
       return {
         showText,
+        innerShowText,
         avalid,
         uniqGroupId,
         attrs,

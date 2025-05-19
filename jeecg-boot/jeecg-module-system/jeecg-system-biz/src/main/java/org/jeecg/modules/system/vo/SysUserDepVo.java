@@ -12,4 +12,13 @@ import lombok.Data;
 public class SysUserDepVo {
     private String userId;
     private String departName;
+    /**
+     * 部门id
+     */
+    private String deptId;
+
+    /**
+     * 部门的父级id
+     */
+    private String parentId;
 }

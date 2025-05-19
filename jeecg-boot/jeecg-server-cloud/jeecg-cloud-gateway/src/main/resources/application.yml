@@ -4,10 +4,6 @@ server:
 knife4j:
   gateway:
     enabled: true
-    discover:
-      excluded-services: ${spring.application.name}
-      enabled: true
-    strategy: discover
 
 spring:
   application:

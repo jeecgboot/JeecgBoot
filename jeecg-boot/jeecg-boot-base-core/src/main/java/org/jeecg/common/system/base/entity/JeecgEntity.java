@@ -2,6 +2,7 @@ package org.jeecg.common.system.base.entity;
 
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -12,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 /**
  * @Description: Entity基类

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.airag.llm.mapper.AiragKnowledgeDocMapper">
+
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+        DELETE
+        FROM airag_knowledge_doc
+        WHERE knowledge_id = #{mainId}
+    </delete>
+
+</mapper>

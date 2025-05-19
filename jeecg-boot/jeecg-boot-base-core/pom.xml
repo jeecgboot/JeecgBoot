@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.7.3</version>
+		<version>3.8.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
@@ -115,6 +115,11 @@
 			<artifactId>mybatis-plus-boot-starter</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+			<version>${mybatis-plus.version}</version>
+		</dependency>
 
 		<!-- druid -->
 		<dependency>
@@ -177,7 +182,6 @@
 			<artifactId>DmDialect-for-hibernate5.0</artifactId>
 			<version>${dm8.version}</version>
 		</dependency>
-      
 
 		<!-- Quartz定时任务 -->
 		<dependency>
@@ -220,6 +224,16 @@
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>codegenerate</artifactId>
 			<version>${codegenerate.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-io</artifactId>
+					<groupId>commons-io</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>mysql-connector-java</artifactId>
+					<groupId>mysql</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- AutoPoi Excel工具类-->
@@ -249,6 +263,12 @@
 		<dependency>
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>checker-qual</artifactId>
+					<groupId>org.checkerframework</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- 阿里云短信 -->
@@ -300,11 +320,15 @@
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-crypto</artifactId>
 		</dependency>
-
 		<!-- chatgpt -->
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
+		</dependency>
+		<!-- minidao -->
+		<dependency>
+			<groupId>org.jeecgframework.boot3</groupId>
+			<artifactId>minidao-spring-boot-starter-jsqlparser-4.9</artifactId>
 		</dependency>
 	</dependencies>
 </project>

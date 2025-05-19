@@ -1,6 +1,7 @@
 import type { JPromptProps } from '../typing';
 import { render, createVNode, nextTick } from 'vue';
 import { error } from '/@/utils/log';
+import { getAppContext } from "@/store";
 import JPrompt from '../JPrompt.vue';
 
 export function useJPrompt() {
@@ -21,6 +22,7 @@ export function useJPrompt() {
         document.body.removeChild(box);
       },
     });
+    vm.appContext = getAppContext()!;
     // 挂载到 body
     render(vm, box);
     document.body.appendChild(box);

@@ -1,19 +1,16 @@
 package org.jeecg.modules.system.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
-import org.jeecgframework.poi.excel.annotation.Excel;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import com.baomidou.mybatisplus.annotation.*;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.jeecgframework.poi.excel.annotation.Excel;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * @Description: 租户产品包
@@ -25,7 +22,7 @@ import java.util.Date;
 @TableName("sys_tenant_pack")
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-@Schema(description="sys_tenant_pack对象")
+@Schema(description="租户产品包")
 public class SysTenantPack implements Serializable {
     private static final long serialVersionUID = 1L;
 
