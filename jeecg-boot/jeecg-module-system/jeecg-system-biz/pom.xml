@@ -33,6 +33,12 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.github.jsqlparser</groupId>
+					<artifactId>jsqlparser</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
@@ -42,6 +48,12 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimubi-spring-boot3-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.github.jsqlparser</groupId>
+					<artifactId>jsqlparser</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 	

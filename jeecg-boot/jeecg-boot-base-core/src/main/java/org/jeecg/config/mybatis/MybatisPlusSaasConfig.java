@@ -6,6 +6,8 @@ import java.util.List;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.LongValue;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.TenantConstant;
@@ -21,8 +23,6 @@ import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.LongValue;
 
 /**
  * 单数据源配置（jeecg.datasource.open = false时生效）

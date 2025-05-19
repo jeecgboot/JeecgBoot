@@ -196,7 +196,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
             }
         }
         URI targetUrl = builder.build().encode().toUri();
-        return restTemplate.exchange(targetUrl.toString(), Objects.requireNonNull(HttpMethod.resolve(method)), httpEntity, Result.class, request.getParameterMap()).getBody();
+        return restTemplate.exchange(targetUrl.toString(), Objects.requireNonNull(HttpMethod.valueOf(method)), httpEntity, Result.class, request.getParameterMap()).getBody();
     }
 
     /**

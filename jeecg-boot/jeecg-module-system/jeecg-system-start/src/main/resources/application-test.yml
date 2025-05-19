@@ -281,6 +281,7 @@ jeecg:
 #Mybatis输出sql日志
 logging:
   level:
+    org.springframework.context.support.PostProcessorRegistrationDelegate: error
     org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
 #cas单点登录

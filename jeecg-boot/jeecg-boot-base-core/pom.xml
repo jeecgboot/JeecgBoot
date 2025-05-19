@@ -112,9 +112,15 @@
 		<!-- mybatis-plus -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+			<version>${mybatis-plus.version}</version>
+		</dependency>
+		<!-- minidao -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
 			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
@@ -209,34 +215,6 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- shiro-redis -->
-		<dependency>
-			<groupId>org.crazycake</groupId>
-			<artifactId>shiro-redis</artifactId>
-			<version>${shiro-redis.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>checkstyle</artifactId>
-					<groupId>com.puppycrawl.tools</groupId>
-				</exclusion>
-				<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
-				<exclusion>
-					<artifactId>jedis</artifactId>
-					<groupId>redis.clients</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- TODO shiro 无法使用 spring boot 3.X 自带的jedis，降版本处理 -->
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>${jedis.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring</artifactId>
@@ -273,12 +251,39 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-
-		<!-- knife4j -->
+		<!-- shiro-redis -->
 		<dependency>
+			<groupId>org.crazycake</groupId>
+			<artifactId>shiro-redis</artifactId>
+			<version>${shiro-redis.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.shiro</groupId>
+					<artifactId>shiro-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>checkstyle</artifactId>
+					<groupId>com.puppycrawl.tools</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+	
+	<!--	<dependency>
 			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
 			<version>${knife4j-spring-boot-starter.version}</version>
+		</dependency>-->
+		<!-- knife4j 升级springboot3.4.5报错 -->
+		<dependency>
+			<groupId>com.github.xiaoymin</groupId>
+			<artifactId>knife4j-openapi3-ui</artifactId>
+			<version>${knife4j-spring-boot-starter.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.7.0</version>
 		</dependency>
 
 		<!-- 代码生成器 -->
