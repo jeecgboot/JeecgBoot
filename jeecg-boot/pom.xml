@@ -455,7 +455,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
-				<version>${jimureport-spring-boot-starter.version}</version>
+				<version>1.9.5.2</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.calcite</groupId>
