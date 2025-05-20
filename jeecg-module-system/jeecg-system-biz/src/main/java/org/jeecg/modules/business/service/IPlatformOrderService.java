@@ -108,6 +108,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
      */
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderData(List<String> orderIds);
 
+    Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataForUpdate(List<String> orderIds);
+
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataByInvoiceCode(String invoiceCode);
 
 
@@ -149,8 +151,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyNote(List<String> shopCodes);
 
     List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(List<String> shopCodes);
-
-    List<PlatformOrder> fetchUninvoicedShippedOrderIDInShops(String startDate, String endDate, List<String> shops, List<String> warehouses);
 
     /**
      * Fetch all platform orders between 2 dates and of status erp_status 4 or 5
@@ -293,4 +293,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<PlatformOrderFront> listByClientAndShops(String clientId, List<String> shopIds, String startDate, String endDate, String invoicingMethod, Integer pageNo, Integer pageSize, List<String> warehouses, String order, String column);
 
     int countListByClientAndShops(String clientId, List<String> shopIDs, String start, String end, String invoicingMethod, List<String> warehouses);
+
+    PlatformOrder selectForUpdateSkipLock(String orderId);
 }

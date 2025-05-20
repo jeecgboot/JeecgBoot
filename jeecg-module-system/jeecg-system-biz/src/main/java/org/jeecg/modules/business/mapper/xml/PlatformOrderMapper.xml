@@ -163,7 +163,8 @@
         AND shipping_time >= #{begin}
         AND #{end} >= shipping_time
         AND shipping_invoice_number IS NULL
-        AND erp_status = 3;
+        AND erp_status = 3
+        FOR UPDATE;
     </select>
     <select id="findUninvoicedOrdersForShopsAndStatus" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
@@ -193,6 +194,7 @@
         >
             #{erpStatus}
         </foreach>
+        FOR UPDATE
         ;
     </select>
     <select id="findUninvoicedShippedOrders" resultType="org.jeecg.modules.business.entity.PlatformOrder">
@@ -508,7 +510,7 @@
         ORDER BY order_time;
     </select>
 
-    <select id="fetchUninvoicedShippedOrderIDInShops" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+    <select id="fetchUninvoicedShippedOrderIDInShops" resultType="java.lang.String">
         SELECT po.id
         FROM platform_order po
         JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
@@ -538,7 +540,7 @@
         AND po.shipping_time between #{startDate} AND #{endDate}
         AND po.erp_status = 3;
     </select>
-    <select id="fetchUninvoicedOrderIDInShopsAndOrderTime" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+    <select id="fetchUninvoicedOrderIDInShopsAndOrderTime" resultType="java.lang.String">
         SELECT po.id
         FROM platform_order po
         JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
@@ -576,7 +578,8 @@
                 item="erpStatus"
         >
             #{erpStatus}
-        </foreach>;
+        </foreach>
+        FOR UPDATE;
     </select>
     <select id="fetchOrdersToArchiveBetweenDate" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
@@ -1379,5 +1382,18 @@
             ELSE 0
         END as has_desynced_sku
     FROM orders
+    </select>
+    <select id="selectBatchIdsForUpdate" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT * FROM platform_order
+        WHERE id IN
+        <foreach collection="ids" separator="," open="(" close=")" index="index" item="id">
+            #{id}
+        </foreach>
+        FOR UPDATE;
+    </select>
+    <select id="selectForUpdateSkipLock" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT * FROM platform_order
+        WHERE id = #{id}
+        FOR UPDATE;
     </select>
 </mapper>

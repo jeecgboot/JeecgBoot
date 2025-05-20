@@ -207,8 +207,7 @@ public class PlatformOrderShippingInvoiceService {
         return new Period(beginZoned, endZoned, "");
     }
     public List<String> getShippingOrderIdBetweenDate(List<String> shops, String start, String end, List<String> wareHouses) {
-        List<PlatformOrder> orders = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops( start, end, shops, wareHouses);
-        return orders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
+        return platformOrderMapper.fetchUninvoicedShippedOrderIDInShops( start, end, shops, wareHouses);
     }
     /**
      * Make an invoice based on parameters.
@@ -265,7 +264,7 @@ public class PlatformOrderShippingInvoiceService {
      * @throws IOException    exception related to invoice file IO.
      */
     @Transactional
-    public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException {
+    public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), null, param.orderIds(), param.getType(), param.getStart(), param.getEnd());
@@ -282,18 +281,16 @@ public class PlatformOrderShippingInvoiceService {
      * @throws IOException
      */
     @Transactional
-    public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException {
+    public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
         String username = user.length > 0 ? user[0] : ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
-        List<PlatformOrder> platformOrderList;
+        List<String> orderIds;
         if(method.equals(POSTSHIPPING.getMethod())) {
             //On récupère les commandes entre 2 dates d'expédition avec un status 3
-            platformOrderList = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops(param.getStart(), param.getEnd(), param.shopIDs(), param.getWarehouses());
+            orderIds = platformOrderMapper.fetchUninvoicedShippedOrderIDInShops(param.getStart(), param.getEnd(), param.shopIDs(), param.getWarehouses());
         } else {
             // On récupère les commandes entre 2 dates de commandes avec un status (1,2) ou (1,2,3)
-            platformOrderList = platformOrderMapper.fetchUninvoicedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses(), param.getWarehouses());
+            orderIds = platformOrderMapper.fetchUninvoicedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses(), param.getWarehouses());
         }
-        // on récupère seulement les ID des commandes
-        List<String> orderIds = platformOrderList.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         // Creates invoice by factory
         CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd());
         return getInvoiceMetaDataAndInsert(username, invoice);
@@ -711,6 +708,8 @@ public class PlatformOrderShippingInvoiceService {
                 String internalCode = entry.getKey().getClient().getInternalCode();
                 invoiceList.add(new InvoiceMetaData("", "error", internalCode, clientId, e.getMessage()));
                 log.error(e.getMessage());
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
             System.gc();
         }
