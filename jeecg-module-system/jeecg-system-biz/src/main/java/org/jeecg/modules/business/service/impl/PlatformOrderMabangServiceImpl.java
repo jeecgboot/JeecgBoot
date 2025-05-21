@@ -61,6 +61,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
+    private static final String ABNORMAL_LABEL_NAME = "客户要求暂时不处理";
 
     @Override
     @Transactional
@@ -235,7 +236,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
 
         List<CompletableFuture<Responses>> futures =  orderIds.stream()
             .map(id -> CompletableFuture.supplyAsync(() -> {
-                OrderSuspendRequestBody body = new OrderSuspendRequestBody(id, sysUser.getRealname() + " : " + orderOperation.getReason());
+                OrderSuspendRequestBody body = new OrderSuspendRequestBody(id, ABNORMAL_LABEL_NAME,sysUser.getRealname() + " : " + orderOperation.getReason());
                 OrderSuspendRequest request = new OrderSuspendRequest(body);
                 OrderSuspendResponse response = request.send();
                 Responses r = new Responses();
