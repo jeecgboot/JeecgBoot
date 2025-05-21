@@ -38,6 +38,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
+import org.jeecg.modules.message.service.ISysMessageService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -46,6 +47,7 @@ import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
@@ -68,6 +70,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.PRESHIPPING;
 import static org.jeecg.modules.business.vo.PlatformOrderOperation.Action.*;
 
 /**
@@ -102,6 +105,8 @@ public class PlatformOrderController {
     private IShopService shopService;
     @Autowired
     private ISecurityService securityService;
+    @Autowired
+    private ISysMessageService sysMessageService;
 
     @Autowired
     private Environment env;
@@ -660,5 +665,19 @@ public class PlatformOrderController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PostMapping("/editOrdersRemark")
+    public Result<?> editOrdersRemark(@RequestBody InvoiceOrdersEditParam param) {
+        String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
+        if(param.getInvoicingMethod() == PRESHIPPING) {
+            ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(param.getInvoiceNumber());
+            if(!mabangResponses.getFailures().isEmpty())
+                sysMessageService.sendProgress(userId, HttpStatus.BAD_REQUEST.value(),mabangResponses.getFailures(), "websocket.mabang.editOrdersRemarkError", "editOrdersRemark");
+            else sysMessageService.sendProgress(userId, HttpStatus.OK.value(), null,"websocket.mabang.editOrdersRemarkSuccess", "editOrdersRemark");
+            return Result.OK(mabangResponses);
+        }
+        sysMessageService.pushProgress(userId, "Method not supported");
+        return Result.error(HttpStatus.NOT_FOUND.value(), "Invoicing method not supported");
     }
 }

@@ -313,9 +313,14 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
     }
     @Override
-    public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataForUpdate(List<String> orderIds) {
-        Map<String, PlatformOrder> ordersMapById = platformOrderMap.selectBatchIdsForUpdate(orderIds);
-        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContentForUpdate(orderIds);
+    public void selectOrderDataForUpdate(List<String> orderIds) {
+        platformOrderMap.selectBatchIdsForUpdate(orderIds);
+        platformOrderContentMap.fetchOrderContentForUpdate(orderIds);
+    }
+    @Override
+    public Map<PlatformOrder, List<PlatformOrderContent>> fetchUninvoicedOrderDataForUpdate(List<String> orderIds) {
+        Map<String, PlatformOrder> ordersMapById = platformOrderMap.selectBatchUninvoicedIdsForUpdate(orderIds);
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchUninvoicedOrderContentForUpdate(orderIds);
         return orderContents.stream().collect(groupingBy(platformOrderContent -> ordersMapById.get(platformOrderContent.getPlatformOrderId())));
     }
     @Override

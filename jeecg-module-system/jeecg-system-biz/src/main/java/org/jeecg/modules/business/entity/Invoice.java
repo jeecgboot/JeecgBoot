@@ -3,7 +3,9 @@ package org.jeecg.modules.business.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -125,8 +127,10 @@ public class Invoice implements Serializable {
         POSTSHIPPING("post-shipping"),
         ALL("all");
 
+        @JsonValue
         private final String method;
 
+        @JsonCreator
         public static InvoicingMethod fromString(String method) {
             for(InvoicingMethod invoicingMethod : InvoicingMethod.values()) {
                 if(invoicingMethod.method.equalsIgnoreCase(method)) {

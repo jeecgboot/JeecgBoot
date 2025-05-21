@@ -123,7 +123,10 @@ public class ShippingInvoiceFactory {
     public ShippingInvoice createShippingInvoice(String customerId, List<String> orderIds, String type, String start, String end) throws UserException {
         log.info("Creating an invoice with arguments:\n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
-        Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchOrderDataForUpdate(orderIds);
+        Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchUninvoicedOrderDataForUpdate(orderIds);
+        if (uninvoicedOrderToContent == null || uninvoicedOrderToContent.isEmpty()) {
+            throw new UserException("Orders not found or already invoiced");
+        }
         Set<PlatformOrder> platformOrders = uninvoicedOrderToContent.keySet();
         List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.findUnprocessedRefundsByClient(customerId);
         List<String> shopIds = platformOrders.stream()
@@ -169,7 +172,10 @@ public class ShippingInvoiceFactory {
     public CompleteInvoice createCompleteShippingInvoice(String username, String customerId, BigDecimal balance, List<String> orderIds, String shippingMethod, String start, String end) throws UserException, MessagingException, InterruptedException {
         log.info("Creating a complete invoice for \n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
-        Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchOrderDataForUpdate(orderIds);
+        Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchUninvoicedOrderDataForUpdate(orderIds);
+        if (uninvoicedOrderToContent == null || uninvoicedOrderToContent.isEmpty()) {
+            throw new UserException("Orders not found or already invoiced");
+        }
         Set<PlatformOrder> platformOrders = uninvoicedOrderToContent.keySet();
         List<SavRefundWithDetail> savRefunds = savRefundWithDetailService.findUnprocessedRefundsByClient(customerId);
         List<String> shopIds = platformOrders.stream()

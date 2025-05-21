@@ -23,7 +23,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.mapper.PurchaseOrderContentMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
-import org.jeecg.modules.message.websocket.WebSocketSender;
+import org.jeecg.modules.message.service.ISysMessageService;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,7 +119,7 @@ public class InvoiceController {
     @Autowired
     private ICreditService creditService;
     @Autowired
-    private IPlatformOrderMabangService platformOrderMabangService;
+    private ISysMessageService sysMessageService;
     @Autowired
     Environment env;
 
@@ -251,20 +251,11 @@ public class InvoiceController {
     @PostMapping(value = "/makeComplete")
     public Result<?> makeCompleteShippingInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
-            JSONObject response = new JSONObject();
-
             String method = param.getErpStatuses().toString().equals("[3]") ? POSTSHIPPING.getMethod() : param.getErpStatuses().toString().equals("[1, 2]") ? PRESHIPPING.getMethod() : ALL.getMethod();
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
             balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), COMPLETE.name());
 
-            if(method.equals(PRESHIPPING.getMethod())) {
-                ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(metaData.getInvoiceCode());
-                response.put("metaData", metaData);
-                response.put("mabangResponses", mabangResponses);
-                return Result.OK(response);
-            }
-            response.put("metaData", metaData);
-            return Result.OK(response);
+            return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {
@@ -335,7 +326,6 @@ public class InvoiceController {
     public Result<?> makeManualPurchaseInvoice(@RequestBody ShippingInvoiceOrderParam param) {
         InvoiceMetaData metaData;
         try {
-            JSONObject response = new JSONObject();
             List<SkuQuantity> skuQuantities = skuService.getSkuQuantitiesFromOrderIds(param.orderIds());
             if(skuQuantities.isEmpty()) {
                 return Result.error("Nothing to invoice.");
@@ -369,14 +359,7 @@ public class InvoiceController {
                 emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
                 log.info("Mail sent successfully");
             }
-            if(param.getType().equals(PRESHIPPING.getMethod())) {
-                ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(metaData.getInvoiceCode());
-                response.put("metaData", metaData);
-                response.put("mabangResponses", mabangResponses);
-                return Result.OK(response);
-            }
-            response.put("metaData", metaData);
-            return Result.OK(response);
+            return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException e) {
@@ -399,7 +382,6 @@ public class InvoiceController {
     @PostMapping(value = "/makeManualComplete")
     public Result<?> makeManualCompleteInvoice(@RequestBody ShippingInvoiceOrderParam param) {
         try {
-            JSONObject response = new JSONObject();
             InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoice(param);
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
@@ -426,14 +408,7 @@ public class InvoiceController {
                 emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
                 log.info("Mail sent successfully");
             }
-            if(param.getType().equals(PRESHIPPING.getMethod())) {
-                ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(metaData.getInvoiceCode());
-                response.put("metaData", metaData);
-                response.put("mabangResponses", mabangResponses);
-                return Result.OK(response);
-            }
-            response.put("metaData", metaData);
-            return Result.OK(response);
+            return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {
@@ -599,9 +574,12 @@ public class InvoiceController {
         lambdaQueryWrapper.isNull(PlatformOrder::getShippingInvoiceNumber);
         lambdaQueryWrapper.inSql(PlatformOrder::getId, "SELECT id FROM platform_order po WHERE po.erp_status = '3' AND po.shipping_time between '" + param.getStart() + "' AND '" + param.getEnd() + "'" );
         // on récupère les résultats de la requete
-        List<PlatformOrder> orderID = platformOrderMapper.selectList(lambdaQueryWrapper);
+        List<PlatformOrder> platformOrderIds = platformOrderMapper.selectList(lambdaQueryWrapper);
+        if(platformOrderIds == null || platformOrderIds.isEmpty()) {
+            return Result.error(404, "No orders for selected client/shops");
+        }
         // on récupère seulement les ID des commandes
-        List<String> orderIds = orderID.stream().map(PlatformOrder::getId).collect(Collectors.toList());
+        List<String> orderIds = platformOrderIds.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         ShippingInvoiceOrderParam args = new ShippingInvoiceOrderParam(param.clientID(), orderIds, "postShipping");
         // on check s'il y a des SKU sans prix
         return checkSkuPrices(args);
@@ -804,7 +782,7 @@ public class InvoiceController {
                                           @RequestParam(value = "complete[]", required = false) List<String> completeClientIds) throws IOException {
 
         String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
-        pushProgress(userId, "开始执行开票任务，请稍候...");
+        sysMessageService.pushProgress(userId, "开始执行开票任务，请稍候...");
 
         List<InvoiceMetaData> metaDataErrorList = new ArrayList<>();
         TaskHistory ongoingBITask = taskHistoryService.getLatestRunningTask(SI_G.name());
@@ -817,19 +795,19 @@ public class InvoiceController {
         TaskHistory lastRunningTask = taskHistoryService.getLatestRunningTask(SI_G.name());
 
         if(shippingClientIds != null) {
-            pushProgress(userId, "正在处理 预发货 客户发票...");
+            sysMessageService.pushProgress(userId, "正在处理 预发货 客户发票...");
             log.info("Making shipping invoice for clients : {}", shippingClientIds);
             invoiceList.addAll(shippingInvoiceService.breakdownInvoiceClientByType(shippingClientIds, 0));
         }
         if(completeClientIds != null) {
-            pushProgress(userId, "正在处理 已发货 客户发票...");
+            sysMessageService.pushProgress(userId, "正在处理 已发货 客户发票...");
             log.info("Making complete shipping invoice for clients : {}", completeClientIds);
             invoiceList.addAll(shippingInvoiceService.breakdownInvoiceClientByType(completeClientIds, 1));
         }
         if (invoiceList.isEmpty()) {
             lastRunningTask.setOngoing(SUCCESS.getCode());
             taskHistoryService.updateById(lastRunningTask);
-            pushProgress(userId, "没有生成任何发票。");
+            sysMessageService.pushProgress(userId, "没有生成任何发票。");
             return Result.ok("Nothing invoiced");
         }
         List<String> filenameList = new ArrayList<>();
@@ -852,7 +830,7 @@ public class InvoiceController {
             }
             if (cpt % step == 0 || cpt == total) {
                 int percent = (int)(((double) cpt / total) * 100);
-                pushProgress(userId, "发票生成进度：" + percent + "% (" + cpt + "/" + total + ")");
+                sysMessageService.pushProgress(userId, "发票生成进度：" + percent + "% (" + cpt + "/" + total + ")");
             }
             log.info("Generating detail files ...{}/{}", cpt++, invoiceList.size());
         }
@@ -877,7 +855,7 @@ public class InvoiceController {
             emailService.sendMessageWithAttachment(destEmail, subject, htmlBody, zipFilename,session);
             Map<String, Object> summary = new HashMap<>();
             summary.put("total", total);
-            pushProgress(userId, "全部完成", summary);
+            sysMessageService.pushProgress(userId, "全部完成", summary);
             log.info("Mail sent successfully");
 
             lastRunningTask.setOngoing(SUCCESS.getCode());
@@ -888,21 +866,9 @@ public class InvoiceController {
             e.printStackTrace();
             lastRunningTask.setOngoing(CANCELLED.getCode());
             taskHistoryService.updateById(lastRunningTask);
-            pushProgress(userId, "发票任务失败！");
+            sysMessageService.pushProgress(userId, "发票任务失败！");
             return Result.error("An error occurred while trying to send an email.");
         }
-    }
-    private void pushProgress(String userId, String message) {
-        pushProgress(userId, message, null);
-    }
-    private void pushProgress(String userId, String message, Map<String, Object> data) {
-        JSONObject msg = new JSONObject();
-        msg.put("cmd", "user");
-        msg.put("msgTxt", message);
-        if (data != null) {
-            msg.put("data", data);
-        }
-        WebSocketSender.sendToUser(userId, msg.toJSONString());
     }
 
     /**

@@ -84,6 +84,16 @@
         AND platform_order_id IN <foreach collection="list" index="i" item="item" open="(" separator="," close=")">#{item}</foreach>
         FOR UPDATE;
     </select>
+    <select id="fetchUninvoicedOrderContentForUpdate" parameterType="java.lang.String"
+            resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT *
+        FROM platform_order_content poc
+        JOIN platform_order po ON poc.platform_order_id = po.id
+        WHERE poc.erp_status &lt;&gt; 5
+        AND poc.platform_order_id IN <foreach collection="list" index="i" item="item" open="(" separator="," close=")">#{item}</foreach>
+        AND po.shipping_invoice_number IS NULL
+        FOR UPDATE;
+    </select>
 
     <select id="searchSkuDetail"
             resultType="org.jeecg.modules.business.vo.SkuDetail"
