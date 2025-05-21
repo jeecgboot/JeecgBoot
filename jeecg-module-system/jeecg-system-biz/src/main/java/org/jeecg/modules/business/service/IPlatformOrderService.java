@@ -267,7 +267,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     Map<String, String> fetchShippingPeriodAndType(String invoiceNumber);
 
-
     void anonymizePersonalData(int indirectClientAnonymizationPeriod);
 
     List<PlatformOrderOption> ordersByShop(String shopID);
@@ -295,4 +294,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     int countListByClientAndShops(String clientId, List<String> shopIDs, String start, String end, String invoicingMethod, List<String> warehouses);
 
     PlatformOrder selectForUpdateSkipLock(String orderId);
+
+    List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote);
 }

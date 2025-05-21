@@ -485,7 +485,7 @@
         >
             #{shop}
         </foreach>
-        AND erp_status &lt;&gt; 5
+        AND erp_status in (1,2)
         AND shopify_note IS NULL
         ORDER BY order_time;
     </select>
@@ -1395,5 +1395,12 @@
         SELECT * FROM platform_order
         WHERE id = #{id}
         FOR UPDATE;
+    </select>
+
+    <select id="fetchPlatformOrderIdsByShopifyNote" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order
+        WHERE shopify_note LIKE #{shopifyNote}
+        AND erp_status in (1,2);
     </select>
 </mapper>
