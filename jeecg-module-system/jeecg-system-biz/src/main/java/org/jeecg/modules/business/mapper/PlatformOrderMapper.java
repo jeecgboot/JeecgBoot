@@ -261,4 +261,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     Map<String, PlatformOrder> selectBatchUninvoicedIdsForUpdate(@Param("ids") List<String> orderIds);
 
     PlatformOrder selectForUpdateSkipLock(@Param("id") String orderId);
+
+    List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote);
 }

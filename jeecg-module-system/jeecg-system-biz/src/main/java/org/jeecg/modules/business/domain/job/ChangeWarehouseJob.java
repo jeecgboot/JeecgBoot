@@ -158,8 +158,7 @@ public class ChangeWarehouseJob implements Job {
         Responses responses = new Responses();
         List<CompletableFuture<Responses>> abnormalFutures =  ordersToSetAbnormal.stream()
                 .map(id -> CompletableFuture.supplyAsync(() -> {
-                    OrderSuspendRequestBody body = new OrderSuspendRequestBody(id, "");
-                    body.setAbnormal_label_name(DEFAULT_ABNORMAL_LABEL_NAME);
+                    OrderSuspendRequestBody body = new OrderSuspendRequestBody(id, DEFAULT_ABNORMAL_LABEL_NAME, "");
                     OrderSuspendRequest request = new OrderSuspendRequest(body);
                     OrderSuspendResponse response = request.send();
                     Responses r = new Responses();

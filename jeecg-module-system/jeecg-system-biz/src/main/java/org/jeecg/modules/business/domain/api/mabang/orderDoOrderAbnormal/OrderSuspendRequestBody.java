@@ -13,13 +13,15 @@ import java.util.function.Function;
 public class OrderSuspendRequestBody implements RequestBody {
 
     private String platformOrderId;
-    private String abnormal_label_name = "客户要求暂时不处理";
+    private String abnormalLabelName;
     private String description;
 
-    public OrderSuspendRequestBody(String platformOrderId, String description) {
+    public OrderSuspendRequestBody(String platformOrderId, String abnormalLabelName, String description) {
         this.platformOrderId = platformOrderId;
+        this.abnormalLabelName = abnormalLabelName;
         this.description = description;
     }
+
     @Override
     public String api() {
         return "order-do-order-abnormal";
@@ -29,8 +31,8 @@ public class OrderSuspendRequestBody implements RequestBody {
     public Map<String, Object> parameters() {
         JSONObject json = new JSONObject();
         putNonNull(json, "platformOrderId", platformOrderId);
-        putNonNull(json, "abnormal_label_name", abnormal_label_name);
-        putNonNull(json, "description", description);
+        putNonNull(json, "abnormal_label_name", abnormalLabelName);
+        putNonNull(json, "descr", description);
         return json;
     }
     private <E> void putNonNull(JSONObject json, String key, E value) {
