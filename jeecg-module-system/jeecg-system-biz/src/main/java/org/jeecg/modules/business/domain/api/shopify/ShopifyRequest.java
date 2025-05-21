@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 
 @Slf4j
 public abstract class ShopifyRequest {
-    private final static String BASE_URL = "https://%1$s.myshopify.com/admin/api/2024-01/%2$s";
+    private final static String BASE_URL = "https://%1$s.myshopify.com/admin/api/2025-04/%2$s";
     private final static String SHOPIFY_TOKEN_HEADER_NAME = "X-Shopify-Access-Token";
 
     private final HttpMethod method;
