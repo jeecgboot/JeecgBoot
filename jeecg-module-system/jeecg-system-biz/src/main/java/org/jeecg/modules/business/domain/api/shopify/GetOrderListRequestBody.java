@@ -4,7 +4,7 @@ import java.util.List;
 
 public class GetOrderListRequestBody extends ShopifyRequestBody {
 
-    public static final String ENDPOINT = "orders.json?status=open&limit=250&fields=id,note&ids=%s";
+    public static final String ENDPOINT = "orders.json?status=open&limit=250&fields=id,note,discount_codes&ids=%s";
 
     private final List<String> ids;
 
