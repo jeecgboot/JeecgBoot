@@ -46,9 +46,9 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
      * @param orderIds Order IDs
      * @return order contents
      */
-    // TODO : check all usage and update if need to use FOR UPDATE instead
     List<PlatformOrderContent> fetchOrderContent(List<String> orderIds);
     List<PlatformOrderContent> fetchOrderContentForUpdate(List<String> orderIds);
+    List<PlatformOrderContent> fetchUninvoicedOrderContentForUpdate(List<String> orderIds);
 
     List<SkuDetail> searchSkuDetail(List<String> skuIDs);
 

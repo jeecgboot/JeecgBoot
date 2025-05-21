@@ -256,8 +256,9 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
                                                   @Param("start") String startDate, @Param("end") String endDate,
                                                   @Param("order") String order, @Param("column") String column,
                                                   @Param("offset") Integer offset, @Param("size") Integer pageSize);
+    void selectBatchIdsForUpdate(@Param("ids") List<String> orderIds);
     @MapKey("id")
-    Map<String, PlatformOrder> selectBatchIdsForUpdate(@Param("ids") List<String> orderIds);
+    Map<String, PlatformOrder> selectBatchUninvoicedIdsForUpdate(@Param("ids") List<String> orderIds);
 
     PlatformOrder selectForUpdateSkipLock(@Param("id") String orderId);
 }
