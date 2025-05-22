@@ -24,6 +24,12 @@
 			<artifactId>hibernate-re</artifactId>
 		</dependency>
 
+		<!-- AI大模型管理 -->
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>jeecg-boot-module-airag</artifactId>
+			<version>${jeecgboot.version}</version>
+		</dependency>
 		<!-- 企业微信/钉钉 api -->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
