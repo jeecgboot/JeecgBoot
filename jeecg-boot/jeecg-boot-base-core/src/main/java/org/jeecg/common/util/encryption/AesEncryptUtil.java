@@ -1,6 +1,6 @@
 package org.jeecg.common.util.encryption;
 
-import org.apache.shiro.codec.Base64;
+import org.apache.shiro.lang.codec.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;

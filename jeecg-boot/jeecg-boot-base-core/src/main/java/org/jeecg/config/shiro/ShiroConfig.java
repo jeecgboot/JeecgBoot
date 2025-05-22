@@ -11,6 +11,7 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.spring.web.ShiroUrlPathHelper;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.crazycake.shiro.*;
 import org.jeecg.common.constant.CommonConstant;
@@ -352,16 +353,17 @@ public class ShiroConfig {
         return manager;
     }
 
-//    /**
-//     * 解决 ShiroRequestMappingConfig 获取 requestMappingHandlerMapping Bean 冲突
-//     * spring-boot-autoconfigure:3.4.5 和 spring-boot-actuator-autoconfigure:3.4.5
-//     */
-//    @Primary
-//    @Bean
-//    public RequestMappingHandlerMapping shiroRequestMappingHandlerMapping(
-//            @Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping handlerMapping) {
-//        return handlerMapping;
-//    }
+    /**
+     * 解决 ShiroRequestMappingConfig 获取 requestMappingHandlerMapping Bean 冲突
+     * spring-boot-autoconfigure:3.4.5 和 spring-boot-actuator-autoconfigure:3.4.5
+     */
+    @Primary
+    @Bean
+    public RequestMappingHandlerMapping overridedRequestMappingHandlerMapping() {
+        RequestMappingHandlerMapping mapping = new RequestMappingHandlerMapping();
+        mapping.setUrlPathHelper(new ShiroUrlPathHelper());
+        return mapping;
+    }
 
     private List<String> rebuildUrl(String[] bases, String[] uris) {
         List<String> urls = new ArrayList<>();
