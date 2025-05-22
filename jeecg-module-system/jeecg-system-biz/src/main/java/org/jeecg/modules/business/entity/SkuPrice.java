@@ -63,9 +63,10 @@ public class SkuPrice implements Serializable {
     /**
      * SKU ID
      */
+    @Excel(name = "SKU ID", width = 15, dictTable = "sku", dicText = "erp_code", dicCode = "id")
     @Dict(dictTable = "sku", dicText = "erp_code", dicCode = "id")
     @ApiModelProperty(value = "SKU ID")
-    private String skuId;
+    private java.lang.String skuId;
     /**
      * 价格
      */
@@ -93,40 +94,13 @@ public class SkuPrice implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty(value = "生效日期")
     private Date date;
-    /**
-     * 人民币价格
-     */
-    @Excel(name = "人民币价格", width = 15)
-    @ApiModelProperty(value = "人民币价格")
-    private java.math.BigDecimal priceRmb;
-    /**
-     * 人民币优惠价
-     */
-    @Excel(name = "人民币优惠价", width = 15)
-    @ApiModelProperty(value = "人民币优惠价")
-    private java.math.BigDecimal discountedPriceRmb;
-
-    /**
-     * The price of a sku depends on its quantity, Given a quantity here, return the correspondent price.
-     *
-     * @param quantity a quantity
-     * @param eurToRmb Exchange rate from EUR to RMB
-     * @return the price correspondent to the quantity
-     */
-    public BigDecimal getPrice(int quantity, BigDecimal eurToRmb) {
-        BigDecimal priceCandidate = price;
-        BigDecimal discountedPriceCandidate = discountedPrice == null ? price : discountedPrice;
-        if (priceRmb != null) {
-            priceCandidate = priceRmb.divide(eurToRmb, RoundingMode.HALF_UP);
-            discountedPriceCandidate = discountedPriceRmb == null ? priceCandidate : discountedPriceRmb.divide(eurToRmb, RoundingMode.HALF_UP);
-        }
-        if (threshold != null && quantity >= threshold) {
-            return discountedPriceCandidate;
-        }
-        return priceCandidate;
-    }
+    /**币种ID*/
+    @Excel(name = "币种ID", width = 15, dictTable = "currency", dicText = "code", dicCode = "id")
+    @Dict(dictTable = "currency", dicText = "code", dicCode = "id")
+    @ApiModelProperty(value = "币种ID")
+    private java.lang.String currencyId;
 
     public String toString() {
-        return String.format("%s, %s[%d], %s(RMB), %s[%d](RMB)", price, discountedPrice, threshold, priceRmb, discountedPriceRmb, threshold);
+        return String.format("%s, %s[%d]", price, discountedPrice, threshold);
     }
 }

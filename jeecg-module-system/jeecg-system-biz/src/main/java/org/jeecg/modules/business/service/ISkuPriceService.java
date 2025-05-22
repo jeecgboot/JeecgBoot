@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service;
 
 import org.jeecg.modules.business.entity.SkuPrice;
 import com.baomidou.mybatisplus.extension.service.IService;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -15,4 +16,6 @@ public interface ISkuPriceService extends IService<SkuPrice> {
 	List<SkuPrice> selectByMainId(String mainId);
 
     SkuPrice getLatestBySkuId(String sku_id);
+
+    BigDecimal getPrice(SkuPrice skuPrice, int quantity, BigDecimal eurToRmb);
 }

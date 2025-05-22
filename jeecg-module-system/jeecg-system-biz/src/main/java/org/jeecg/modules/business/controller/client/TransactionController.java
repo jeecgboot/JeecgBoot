@@ -38,6 +38,8 @@ public class TransactionController {
     @Autowired
     private IShopService shopService;
     @Autowired
+    private ISkuPriceService skuPriceService;
+    @Autowired
     PlatformOrderContentMapper platformOrderContentMapper;
     @Autowired
     ExchangeRatesMapper exchangeRatesMapper;
@@ -118,7 +120,7 @@ public class TransactionController {
             for (PlatformOrderContent content : orderContents) {
                 for (SkuPrice skuPrice : skuPrices) {
                     if (content.getSkuId().equals(skuPrice.getSkuId())) {
-                        purchaseEstimation = purchaseEstimation.add(skuPrice.getPrice(content.getQuantity(), exchangeRateEurToRmb));
+                        purchaseEstimation = purchaseEstimation.add(skuPriceService.getPrice(skuPrice, content.getQuantity(), exchangeRateEurToRmb));
                     }
                 }
             }

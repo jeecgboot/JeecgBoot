@@ -15,6 +15,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.IClientService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.service.IShippingFeesWaiverProductService;
+import org.jeecg.modules.business.service.ISkuPriceService;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PurchaseConfirmation;
@@ -58,6 +59,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     private IClientService clientService;
     @Autowired
     private ExchangeRatesMapper exchangeRatesMapper;
+    @Autowired
+    private ISkuPriceService skuPriceService;
 
     @Override
     @Transactional
@@ -246,7 +249,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
                         skuDetail -> new OrderContentDetail(
                                 skuDetail,
                                 skuQuantity.get(skuDetail.getSkuId()),
-                                eurToRmb
+                                eurToRmb,
+                                skuPriceService
                         )
                 )
                 .collect(toList());

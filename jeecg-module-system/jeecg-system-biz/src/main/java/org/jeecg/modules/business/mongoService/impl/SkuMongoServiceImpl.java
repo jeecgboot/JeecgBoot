@@ -36,6 +36,8 @@ public class SkuMongoServiceImpl implements SkuMongoService {
     @Autowired
     private ISkuPriceService skuPriceService;
     @Autowired
+    private ICurrencyService currencyService;
+    @Autowired
     private ISensitiveAttributeService sensitiveAttributeService;
 
     @Override
@@ -72,13 +74,14 @@ public class SkuMongoServiceImpl implements SkuMongoService {
             log.error("Cannot insert or update SkuPrice of Sku Mongo Document, SkuDocument with skuId was {} not found.", price.getSkuId());
             throw new RuntimeException("SkuDocument with skuId: " + price.getSkuId() + " not found");
         }
+        Currency currency = currencyService.getById(price.getCurrencyId());
+        String currencyCode = currency != null ? currency.getCode() : "UNKNOWN";
         SkuDocument.LatestSkuPrice skuPrice =  SkuDocument.LatestSkuPrice.builder()
                 .date(price.getDate())
                 .price(price.getPrice())
                 .discountedPrice(price.getDiscountedPrice())
                 .threshold(price.getThreshold())
-                .priceRmb(price.getPriceRmb())
-                .discountedPriceRmb(price.getDiscountedPriceRmb())
+                .currencyCode(currencyCode)
                 .build();
 
         mongoTemplate.update(SkuDocument.class)
@@ -376,13 +379,14 @@ public class SkuMongoServiceImpl implements SkuMongoService {
             );
         }
         if(latestPrice != null) {
+            Currency currency = currencyService.getById(latestPrice.getCurrencyId());
+            String currencyCode = currency != null ? currency.getCode() : "UNKNOWN";
             skuDocument.setLatestSkuPrice(SkuDocument.LatestSkuPrice.builder()
                     .date(latestPrice.getDate())
                     .price(latestPrice.getPrice())
                     .discountedPrice(latestPrice.getDiscountedPrice())
                     .threshold(latestPrice.getThreshold())
-                    .priceRmb(latestPrice.getPriceRmb())
-                    .discountedPriceRmb(latestPrice.getDiscountedPriceRmb())
+                    .currencyCode(currencyCode)
                     .build()
             );
         }
