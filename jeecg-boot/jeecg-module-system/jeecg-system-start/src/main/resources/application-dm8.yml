@@ -134,11 +134,12 @@ spring:
           password: SYSDBA
           driverClassName: dm.jdbc.driver.DmDriver
   #redis 配置
-  redis:
-    database: 0
-    host: 127.0.0.1
-    port: 6379
-    password: ''
+  data:
+    redis:
+      database: 0
+      host: 127.0.0.1
+      port: 6379
+      password: ''
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
@@ -243,6 +244,7 @@ cas:
 #Mybatis输出sql日志
 logging:
   level:
+    org.springframework.context.support.PostProcessorRegistrationDelegate: error
     org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
 #swagger

@@ -2,12 +2,6 @@ server:
   port: 8080
   undertow:
     worker-threads: 16
-    # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
-    #    max-http-post-size: 10MB
-    threads:
-      io: 16 # 4核CPU标准配置
-      worker: 256
-    buffer-size: 8192 # 以字节为单位，这里设置为8 KB
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -288,6 +282,7 @@ cas:
 #Mybatis输出sql日志
 logging:
   level:
+    org.springframework.context.support.PostProcessorRegistrationDelegate: error
     org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
 #swagger

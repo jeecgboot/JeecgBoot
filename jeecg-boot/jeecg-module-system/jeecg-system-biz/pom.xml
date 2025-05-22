@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-module-system</artifactId>
-		<version>3.8.0</version>
+		<version>3.8.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -33,6 +33,12 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter-fastjson2</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.github.jsqlparser</groupId>
+					<artifactId>jsqlparser</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
@@ -42,6 +48,18 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimubi-spring-boot3-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>com.github.jsqlparser</groupId>
+					<artifactId>jsqlparser</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- AI大模型管理 -->
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>jeecg-boot-module-airag</artifactId>
+			<version>${jeecgboot.version}</version>
 		</dependency>
 	</dependencies>
 	

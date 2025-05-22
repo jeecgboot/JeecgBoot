@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.8.0</version>
+  <version>3.8.1</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -23,19 +23,19 @@
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
-	    <version>3.1.5</version>
+	    <version>3.4.5</version>
 	    <relativePath/>
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.8.0</jeecgboot.version>
+		<jeecgboot.version>3.8.1</jeecgboot.version>
 		<!-- JDK版本支持17和1.8 -->
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- 微服务 -->
-		<spring-cloud.version>2022.0.4</spring-cloud.version>
-        <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
+		<spring-cloud.version>2024.0.1</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
 		<xxl-job-core.version>2.4.1</xxl-job-core.version>
@@ -49,16 +49,16 @@
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
 		<sqljdbc4.version>4.0</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
-		<hutool.version>5.8.25</hutool.version>
+        <hutool.version>5.8.25</hutool.version>
 		<!-- 国产数据库驱动 -->
 		<kingbase8.version>9.0.0</kingbase8.version>
 		<dm8.version>8.1.1.49</dm8.version>
 
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>1.9.5</jimureport-spring-boot-starter.version>
-        <minidao.version>1.10.9</minidao.version>
-        <!-- 持久层 -->
-		<mybatis-plus.version>3.5.11</mybatis-plus.version>
+		<minidao.version>1.10.9</minidao.version>
+		<!-- 持久层 -->
+		<mybatis-plus.version>3.5.12</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.24</druid.version>
 
@@ -76,10 +76,9 @@
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
 		<jedis.version>3.8.0</jedis.version>
 		<baidu-java-sdk.version>4.16.19</baidu-java-sdk.version>
-		<!-- Log4j2爆雷漏洞 -->
 		<!-- spring boot 3 不支持下列两个版本-->
-		<!--<log4j2.version>2.17.0</log4j2.version>-->
-		<logback.version>1.4.12</logback.version>
+		<!--<log4j2.version>2.17.0</log4j2.version>
+		<logback.version>1.4.12</logback.version>-->
 	</properties>
 
 	<modules>
@@ -460,11 +459,27 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
-				<version>${jimureport-spring-boot-starter.version}</version>
+				<version>1.9.5.2</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.calcite</groupId>
 						<artifactId>calcite-elasticsearch</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- minidao -->
+			<dependency>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>minidao-spring-boot-starter-jsqlparser-4.9</artifactId>
+				<version>${minidao.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>druid</artifactId>
+						<groupId>com.alibaba</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>jsqlparser</artifactId>
+						<groupId>com.github.jsqlparser</groupId>
 					</exclusion>
 				</exclusions>
 			</dependency>

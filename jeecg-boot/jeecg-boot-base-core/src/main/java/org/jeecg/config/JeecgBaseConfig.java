@@ -1,7 +1,10 @@
 package org.jeecg.config;
 
 import org.jeecg.config.vo.*;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Component;
 
 
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component("jeecgBaseConfig")
 @ConfigurationProperties(prefix = "jeecg")
+@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class JeecgBaseConfig {
     /**
      * 签名密钥串(字典等敏感接口)

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.8.0</version>
+		<version>3.8.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
@@ -120,6 +120,12 @@
 			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
+		<!-- minidao -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+			<version>${mybatis-plus.version}</version>
+		</dependency>
 
 		<!-- druid -->
 		<dependency>
@@ -211,13 +217,23 @@
 			<artifactId>spring-security-cas</artifactId>
 		</dependency>
 
-		<!-- knife4j -->
+		<!--	<dependency>
+        <groupId>com.github.xiaoymin</groupId>
+        <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+        <version>${knife4j-spring-boot-starter.version}</version>
+    </dependency>-->
+		<!-- knife4j 升级springboot3.4.5报错 -->
 		<dependency>
 			<groupId>com.github.xiaoymin</groupId>
-			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+			<artifactId>knife4j-openapi3-ui</artifactId>
 			<version>${knife4j-spring-boot-starter.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+		
 		<!-- 代码生成器 -->
 		<!-- 如下载失败，请参考此文档  https://help.jeecg.com/java/setup/maven.html -->
 		<dependency>
