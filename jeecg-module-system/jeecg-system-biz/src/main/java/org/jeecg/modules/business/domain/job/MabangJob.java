@@ -32,12 +32,13 @@ public class MabangJob implements Job {
     private IPlatformOrderMabangService platformOrderMabangService;
 
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;
+    private static final Integer SKIP_RECENT_MINUTES = 5;
     private static final DateType DEFAULT_DATE_TYPE = DateType.EXPRESS;
     private static final List<OrderStatus> DEFAULT_STATUSES = Arrays.asList(AllUnshipped, Shipped, Completed);
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        LocalDateTime endDateTime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("CTT")));
+        LocalDateTime endDateTime = LocalDateTime.now(ZoneId.of(ZoneId.SHORT_IDS.get("CTT"))).minusMinutes(SKIP_RECENT_MINUTES);
         LocalDateTime startDateTime = endDateTime.minusDays(DEFAULT_NUMBER_OF_DAYS);
         DateType dateType = DEFAULT_DATE_TYPE;
         boolean overrideRestriction = false;
