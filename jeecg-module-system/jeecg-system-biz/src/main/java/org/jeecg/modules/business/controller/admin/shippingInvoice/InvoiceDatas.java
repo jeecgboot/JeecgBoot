@@ -37,7 +37,8 @@ public class InvoiceDatas {
     private BigDecimal finalAmount;
     @JSONField(name = "extraFees")
     private Map<String, Fee> extraFees;
-
+    @JSONField(name = "status")
+    private Integer status;
 }
 @Data
 @Builder

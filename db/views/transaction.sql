@@ -11,7 +11,9 @@ SELECT combined.id,
        shipping_fee,
        purchase_fee,
        amount,
-       currency.code                                                                AS currency
+       currency.code                                                                AS currency,
+       ordered,
+       status
 FROM (
          SELECT id,
                 create_by,
@@ -25,7 +27,9 @@ FROM (
                 NULL                                                                   AS shipping_fee,
                 NULL                                                                   AS purchase_fee,
                 amount,
-                currency_id
+                currency_id,
+                null                                                                   AS ordered,
+                status
          FROM credit
          UNION ALL
          SELECT id,
@@ -40,7 +44,9 @@ FROM (
                 total_amount                                                           AS shipping_fee,
                 pt.total                                                               AS purchase_fee,
                 COALESCE(pt.total + si.total_amount, si.total_amount)                  AS amount,
-                currency_id
+                currency_id,
+                null                                                                   AS ordered,
+                status
          FROM shipping_invoice si
          LEFT JOIN (
              SELECT po.shipping_invoice_number, SUM(poc.purchase_fee) AS total
@@ -65,7 +71,9 @@ FROM (
                 NULL                                                                   AS shipping_fee,
                 final_amount                                                           AS purchase_fee,
                 final_amount                                                           AS amount,
-                currency_id
+                currency_id,
+                ordered,
+                status
          FROM purchase_order
          WHERE invoice_number LIKE '%-%-1%'
            AND client_id IS NOT NULL

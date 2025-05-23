@@ -129,15 +129,17 @@
 
     <select id="getSkuQuantitiesFromOrderIds" resultType="org.jeecg.modules.business.vo.SkuQuantity">
         SELECT sku_id as ID, sku.erp_code as erp_code, SUM(quantity) AS quantity
-        FROM platform_order_content
-        JOIN sku ON platform_order_content.sku_id = sku.id
-        WHERE platform_order_id IN
+        FROM platform_order_content poc
+        JOIN sku ON poc.sku_id = sku.id
+        JOIN platform_order po ON poc.platform_order_id = po.id
+        WHERE poc.platform_order_id IN
         <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
             #{orderId}
         </foreach>
-        AND erp_status IN ('1','2','3')
-        AND product_available = 0
-        AND virtual_product_available = 0
+        AND poc.erp_status IN ('1','2','3')
+        AND poc.product_available = 0
+        AND poc.virtual_product_available = 0
+        AND po.purchase_invoice_number IS NULL
         GROUP BY sku_id;
     </select>
     <select id="countAllSkus" resultType="java.lang.Integer">

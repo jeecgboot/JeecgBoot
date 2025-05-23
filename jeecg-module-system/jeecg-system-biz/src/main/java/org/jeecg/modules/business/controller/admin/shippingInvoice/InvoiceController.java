@@ -328,7 +328,7 @@ public class InvoiceController {
         try {
             List<SkuQuantity> skuQuantities = skuService.getSkuQuantitiesFromOrderIds(param.orderIds());
             if(skuQuantities.isEmpty()) {
-                return Result.error("Nothing to invoice.");
+                return Result.error(404, "Nothing to invoice.");
             }
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities ,param.orderIds());
             metaData = purchaseOrderService.makeInvoice(purchaseId);
@@ -1142,6 +1142,7 @@ public class InvoiceController {
         invoiceDatas.setInsuranceFee(insuranceFee);
         invoiceDatas.setFeeAndQtyPerCountry(feeAndQtyPerCountry);
         invoiceDatas.setExtraFees(extraFeesMap);
+        invoiceDatas.setStatus(invoice.getStatus());
 
         return Result.OK(invoiceDatas);
     }
@@ -1153,12 +1154,15 @@ public class InvoiceController {
         InvoiceDatas invoiceDatas = new InvoiceDatas();
 
         List<PurchaseOrder> invoices = purchaseOrderService.getPurchasesByInvoiceNumber(invoiceNumber);
+        int invoiceStatus = 1;
         if(invoices == null) {
             return Result.error("No data for product found.");
         }
         List<PurchaseInvoiceEntry> invoiceData = new ArrayList<>();
         for(PurchaseOrder order : invoices) {
             invoiceData.addAll(purchaseOrderContentMapper.selectInvoiceDataByID(order.getId()));
+            if(order.getStatus() == 0)
+                invoiceStatus = 0;
         }
         List<BigDecimal> refundList = iSavRefundService.getRefundAmount(invoiceNumber);
         Map<String, Fee> feeAndQtyPerSku = new HashMap<>(); // it maps number of order and purchase fee per item : <France,<250, 50.30>>, <UK, <10, 2.15>>
@@ -1205,7 +1209,7 @@ public class InvoiceController {
         invoiceDatas.setRefund(refund);
         invoiceDatas.setFinalAmountEur(invoices.stream().map(PurchaseOrder::getFinalAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
         invoiceDatas.setFeeAndQtyPerSku(feeAndQtyPerSku);
-
+        invoiceDatas.setStatus(invoiceStatus);
         return Result.OK(invoiceDatas);
     }
     public String countryNameFormatting(String country) {
