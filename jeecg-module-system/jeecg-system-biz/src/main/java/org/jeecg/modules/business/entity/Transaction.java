@@ -105,4 +105,16 @@ public class Transaction implements Serializable {
 	@Excel(name = "currency", width = 15)
     @ApiModelProperty(value = "currency")
     private java.lang.String currency;
+    /**
+     * 0: cancelled, 1: normal (default)
+     */
+    @Excel(name = "status", width = 15)
+    @ApiModelProperty(value = "status")
+    private java.lang.Integer status;
+    /**
+     * 0: not ordered, 1: ordered
+     */
+    @Excel(name = "ordered", width = 15)
+    @ApiModelProperty(value = "ordered")
+    private java.lang.Integer ordered;
 }

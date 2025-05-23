@@ -203,7 +203,7 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 		if(!credit.getId().equals(latestCredit.getId())) {
 			return Result.error(409, "Credit cannot be deleted, unless it's the last record.");
 		}
-		invoiceService.cancelInvoice(credit.getId(), credit.getInvoiceNumber(), credit.getClientId());
+		invoiceService.cancelInvoice(credit.getId(), credit.getInvoiceNumber(), credit.getClientId(), true);
 		return Result.OK("sys.api.entryDeleteSuccess");
 	}
 	
@@ -340,6 +340,7 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 		}
 		invoiceDatas.setInvoiceNumber(credit.getInvoiceNumber());
 		invoiceDatas.setDescription(credit.getDescription());
+		invoiceDatas.setStatus(credit.getStatus());
 		return Result.OK(invoiceDatas);
 	}
 }

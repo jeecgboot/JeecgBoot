@@ -15,7 +15,7 @@
         WHERE invoice_number = #{invoiceNumber}
     </select>
     <select id="fetchShippingInvoice" resultType="org.jeecg.modules.business.entity.ShippingInvoice">
-        SELECT id, total_amount, discount_amount, final_amount, paid_amount, currency_id, client_id, create_time
+        SELECT id, total_amount, discount_amount, final_amount, paid_amount, currency_id, client_id, create_time, status
         FROM shipping_invoice s
         WHERE s.invoice_number = #{invoiceNumber}
     </select>

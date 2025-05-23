@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String SHIPPING_INVOICE_DETAIL_LOCATION;
 
+    private final int CANCEL_DAYS_LIMIT = 14;
+
     /**
      * Cancel invoice and deletes generated files.
      * shipping : cancels shipping_invoice by setting status to 0, resets data in platform_order_content, platform_order, sav_refund, and balance
@@ -60,7 +64,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
      * @return if invoice is successfully cancelled and files are deleted, will return false even when some files are just missing
      */
     @Override
-    public boolean cancelInvoice(String id, String invoiceNumber, String clientId) {
+    public boolean cancelInvoice(String id, String invoiceNumber, String clientId, boolean isEmployee) {
         String operationType = Balance.OperationType.DebitCancellation.name();
         String originalOperationType = Balance.OperationType.Debit.name();
         BigDecimal amount = BigDecimal.ZERO;
@@ -78,6 +82,16 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             }
             if(po.getStatus() == PurchaseOrder.Status.Cancelled.getCode()) {
                 log.error("Purchase order already cancelled : {}", id);
+                return false;
+            }
+            LocalDate orderDate = po.getCreateTime().toInstant().atZone(Calendar.getInstance().getTimeZone().toZoneId()).toLocalDate();
+            LocalDate twoWeeksAgo = LocalDate.now().minusDays(CANCEL_DAYS_LIMIT);
+            if(!isEmployee && orderDate.isBefore(twoWeeksAgo)) {
+                log.error("Purchase order {} is older than {}, client is not allowed cancel it", invoiceNumber, CANCEL_DAYS_LIMIT);
+                return false;
+            }
+            if(!isEmployee && po.isOrdered()) {
+                log.error("Purchase order {} is already ordered, cannot be cancelled", invoiceNumber);
                 return false;
             }
             currencyId = po.getCurrencyId();
@@ -99,6 +113,12 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 log.error("Shipping invoice already cancelled : {}", id);
                 return false;
             }
+            LocalDate orderDate = si.getCreateTime().toInstant().atZone(Calendar.getInstance().getTimeZone().toZoneId()).toLocalDate();
+            LocalDate twoWeeksAgo = LocalDate.now().minusDays(CANCEL_DAYS_LIMIT);
+            if(!isEmployee && orderDate.isBefore(twoWeeksAgo)) {
+                log.error("Shipping invoice {} is older than {}, client is not allowed to cancel it", invoiceNumber, CANCEL_DAYS_LIMIT);
+                return false;
+            }
             platformOrderContentService.cancelInvoice(invoiceNumber, clientId);
             platformOrderService.cancelInvoice(invoiceNumber, clientId);
             shippingInvoiceService.cancelInvoice(id);
@@ -114,7 +134,17 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 return false;
             }
             if(shippingInvoice.getStatus() == ShippingInvoice.Status.Cancelled.getCode()) {
-                log.error("Complete invoice already cancelled : {}", id);
+                log.error("Complete invoice already cancelled : {}", invoiceNumber);
+                return false;
+            }
+            LocalDate orderDate = shippingInvoice.getCreateTime().toInstant().atZone(Calendar.getInstance().getTimeZone().toZoneId()).toLocalDate();
+            LocalDate twoWeeksAgo = LocalDate.now().minusDays(CANCEL_DAYS_LIMIT);
+            if(!isEmployee && orderDate.isBefore(twoWeeksAgo)) {
+                log.error("Complete invoice {} older than {} days, client is not allowed to cancel it", invoiceNumber, CANCEL_DAYS_LIMIT);
+                return false;
+            }
+            if(!isEmployee && purchase.isOrdered()) {
+                log.error("Purchase order {} for invoice {} is already ordered, cannot be cancelled", id, invoiceNumber);
                 return false;
             }
             if(purchase.getInventoryDocumentString() != null && !purchase.getInventoryDocumentString().isEmpty())
