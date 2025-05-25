@@ -26,7 +26,7 @@ export const columns: BasicColumn[] = [
   {
     title: '手机',
     width: 150,
-    dataIndex: 'telephone',
+    dataIndex: 'phone',
   },
   {
     title: '邮箱',
