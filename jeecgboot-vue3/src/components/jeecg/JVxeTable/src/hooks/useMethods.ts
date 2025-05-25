@@ -424,12 +424,13 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
     let xTable = getXTable();
     let { setActive, index } = options;
     index = index === -1 ? index : xTable.internalData.tableFullData[index];
+    index = index == null ? -1 : index;
     // 插入行
     let result = await xTable.insertAt(rows, index);
     if (setActive) {
       // -update-begin--author:liaozhiyang---date:20240619---for：【TV360X-1404】vxetable警告
       // 激活最后一行的编辑模式
-      xTable.setEditRow(result.rows[result.rows.length - 1]);
+      xTable.setEditRow(result.rows[result.rows.length - 1], true);
       // -update-end--author:liaozhiyang---date:20240619---for：【TV360X-1404】vxetable警告
     }
     await recalcSortNumber();
@@ -763,7 +764,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
       // 4.1.0
       //await xTable.updateCache();
       // 4.1.1
-      await xTable.cacheRowMap()
+      await xTable.cacheRowMap(true)
       // update-end--author:liaozhiyang---date:20231011---for：【QQYUN-5133】JVxeTable 行编辑升级
       return await xTable.updateData();
     }

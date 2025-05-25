@@ -1,8 +1,10 @@
 import type { App } from 'vue';
 // 引入 vxe-table
 import 'xe-utils';
+import VxeUIAll from 'vxe-pc-ui';
 import VXETable /*Grid*/ from 'vxe-table';
 import VXETablePluginAntd from 'vxe-table-plugin-antd';
+import 'vxe-pc-ui/lib/style.css';
 import 'vxe-table/lib/style.css';
 
 import JVxeTable from './JVxeTable';
@@ -27,6 +29,7 @@ export function registerJVxeTable(app: App) {
   // 注册自定义组件
   registerAllComponent();
   // 执行注册方法
+  app.use(VxeUIAll);
   app.use(VXETable, VXETableSettings);
   app.component('JVxeTable', JVxeTable);
 }

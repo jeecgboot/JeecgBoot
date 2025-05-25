@@ -78,8 +78,9 @@
     "vue-router": "^4.5.0",
     "vue-types": "^5.1.3",
     "vuedraggable": "^4.1.0",
-    "vxe-table": "4.6.17",
-    "vxe-table-plugin-antd": "4.0.7",
+    "vxe-table": "4.13.31",
+    "vxe-table-plugin-antd": "4.0.8",
+    "vxe-pc-ui": "4.6.12",
     "xe-utils": "3.5.26",
     "xss": "^1.0.15"
   },
