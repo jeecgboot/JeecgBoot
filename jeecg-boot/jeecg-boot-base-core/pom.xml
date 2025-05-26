@@ -9,10 +9,6 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
 
-	<properties>
-		<spring-boot.version>3.1.5</spring-boot.version>
-	</properties>
-
 	<repositories>
 		<repository>
 			<id>aliyun</id>
