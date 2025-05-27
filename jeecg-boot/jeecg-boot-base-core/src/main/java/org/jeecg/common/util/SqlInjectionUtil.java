@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgSqlInjectionException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,7 +17,13 @@ import java.util.regex.Pattern;
  * @author zhoujf
  */
 @Slf4j
-public class SqlInjectionUtil {	
+public class SqlInjectionUtil {
+
+	/**
+	 * sql注入黑名单数据库名
+	 */
+	public final static String XSS_STR_TABLE = "peformance_schema|information_schema";
+
 	/**
 	 * 默认—sql注入关键词
 	 */
@@ -167,7 +174,28 @@ public class SqlInjectionUtil {
 		}
 		return false;
 	}
-	
+
+	/**
+	 * 判断是否存在SQL注入关键词字符串
+	 *
+	 * @param keyword
+	 * @return
+	 */
+	@SuppressWarnings("AlibabaUndefineMagicConstant")
+	private static boolean isExistSqlInjectTableKeyword(String sql, String keyword) {
+		// 需要匹配的，sql注入关键词
+		String[] matchingTexts = new String[]{"`" + keyword, "(" + keyword, "(`" + keyword};
+		for (String matchingText : matchingTexts) {
+			String[] checkTexts = new String[]{" " + matchingText, "from" + matchingText};
+			for (String checkText : checkTexts) {
+				if (sql.contains(checkText)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * sql注入过滤处理，遇到注入关键字抛异常
 	 * 
@@ -208,6 +236,14 @@ public class SqlInjectionUtil {
 				throw new JeecgSqlInjectionException(SqlInjectionUtil.SQL_INJECTION_TIP + value);
 			}
 		}
+		String[] xssTableArr = XSS_STR_TABLE.split("\\|");
+		for (String xssTableStr : xssTableArr) {
+            if (isExistSqlInjectTableKeyword(value, xssTableStr)) {
+                log.error(SqlInjectionUtil.SQL_INJECTION_KEYWORD_TIP, xssTableStr);
+                log.error(SqlInjectionUtil.SQL_INJECTION_TIP_VARIABLE, value);
+                throw new JeecgSqlInjectionException(SqlInjectionUtil.SQL_INJECTION_TIP + value);
+            }
+        }
 
 		// 三、SQL注入检测存在绕过风险 (正则校验)
 		for (String regularOriginal : XSS_REGULAR_STR_ARRAY) {
@@ -240,6 +276,14 @@ public class SqlInjectionUtil {
 		for (int i = 0; i < xssArr.length; i++) {
 			if (isExistSqlInjectKeyword(value, xssArr[i])) {
 				log.error(SqlInjectionUtil.SQL_INJECTION_KEYWORD_TIP, xssArr[i]);
+				log.error(SqlInjectionUtil.SQL_INJECTION_TIP_VARIABLE, value);
+				throw new JeecgSqlInjectionException(SqlInjectionUtil.SQL_INJECTION_TIP + value);
+			}
+		}
+		String[] xssTableArr = XSS_STR_TABLE.split("\\|");
+		for (String xssTableStr : xssTableArr) {
+			if (isExistSqlInjectTableKeyword(value, xssTableStr)) {
+				log.error(SqlInjectionUtil.SQL_INJECTION_KEYWORD_TIP, xssTableStr);
 				log.error(SqlInjectionUtil.SQL_INJECTION_TIP_VARIABLE, value);
 				throw new JeecgSqlInjectionException(SqlInjectionUtil.SQL_INJECTION_TIP + value);
 			}
