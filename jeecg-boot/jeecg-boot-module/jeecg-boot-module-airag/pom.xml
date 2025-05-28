@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-aiflow</artifactId>
-            <version>1.0.4</version>
+            <version>1.0.5</version>
         </dependency>
         
         <!-- aiflow 脚本依赖 -->
