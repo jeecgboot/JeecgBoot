@@ -80,13 +80,12 @@
     batchDelete,
     getImportUrl,
     getExportUrl,
-    getGenAKSK
+    getGenAKSK, saveOrUpdate
   } from "./OpenApiAuth.api";
   import OpenApiAuthModal from './components/OpenApiAuthModal.vue'
   import AuthModal from './components/AuthModal.vue'
   import { useUserStore } from '/@/store/modules/user';
   import JSearchSelect from "../../components/Form/src/jeecg/components/JSearchSelect.vue";
-  import { saveOrUpdate } from "@/views/openapi/OpenApi.api";
 
   const formRef = ref();
   const queryParam = reactive<any>({});
