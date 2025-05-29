@@ -26,11 +26,11 @@ export const columns: BasicColumn[] = [
     align:"center",
     dataIndex: 'blackList'
    },
-   {
-    title: '状态',
-    align:"center",
-    dataIndex: 'status'
-   },
+   // {
+   //  title: '状态',
+   //  align:"center",
+   //  dataIndex: 'status'
+   // },
    {
     title: '创建人',
     align:"center",

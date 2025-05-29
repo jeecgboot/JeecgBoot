@@ -30,12 +30,11 @@ export const columns: BasicColumn[] = [
     align: "center",
     dataIndex: 'createTime'
   },
-  {
-    title: '关联系统用户名',
-    align: "center",
-    dataIndex: 'createBy',
-
-  },
+  // {
+  //   title: '关联系统用户名',
+  //   align: "center",
+  //   dataIndex: 'createBy',
+  // },
 ];
 
 // 高级查询数据

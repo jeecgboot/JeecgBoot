@@ -14,11 +14,12 @@ import java.security.MessageDigest;
 
 public class SampleOpenApiTest {
     private final String base_url = "http://localhost:8080/jeecg-boot";
-    private final String appKey = "ak-eAU25mrMxhtaZsyS";
-    private final String searchKey = "rjxMqB6YyUXpSHAz4DCIz8vZ5aozQQiV";
+    private final String appKey = "ak-pFjyNHWRsJEFWlu6";
+    private final String searchKey = "4hV5dBrZtmGAtPdbA5yseaeKRYNpzGsS";
     @Test
     public void test() throws Exception {
-        String url = base_url+"/openapi/call/wYAu6xwg?id=a7d7e77e06c84325a40932163adcdaa6";
+        // 根据部门ID查询用户
+        String url = base_url+"/openapi/call/TEwcXBlr?id=6d35e179cd814e3299bd588ea7daed3f";
         JSONObject header = genTimestampAndSignature();
         HttpGet httpGet = new HttpGet(url);
         // 设置请求头
