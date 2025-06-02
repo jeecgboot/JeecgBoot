@@ -12,8 +12,7 @@ SELECT s.id                     AS sku_id,
        scp.price                AS price,
        scp.threshold            AS threshold,
        scp.discounted_price     AS discounted_price,
-       scp.price_rmb            AS price_rmb,
-       scp.discounted_price_rmb AS discounted_price_rmb
+       scp.currency_id          AS currency_id
 FROM sku s
          LEFT JOIN sku_promotion_relation spr ON s.id = spr.sku_id
          LEFT JOIN sku_current_price scp ON s.id = scp.sku_id

@@ -96,33 +96,6 @@ public class SkuMongoSyncService {
         }
     }
 
-    /**
-     * Listens to an event fired by MyBatisInterceptor in jeecg-boot-base-core
-     * /!\ the id in event SHOULD be a sku_price ID.
-     * The condition being if no mapper method uses other criteria to delete a sku_price
-     * @param event contains the sku_price ID and the operation type (INSERT, UPDATE, DELETE)
-     */
-    @EventListener
-    public void handleSkuPriceModifiedEvent(SkuPriceModifiedEvent event) {
-        log.info("Received a SkuPriceModifiedEvent: {}", event);
-        String id = event.getId();
-        String operation = event.getOperation();
-
-        SkuPrice skuPrice = skuPriceService.getById(id);
-
-        switch (operation) {
-            case "INSERT":
-            case "UPDATE":
-                skuMongoService.upsertSkuPrice(skuPrice);
-                break;
-            case "DELETE":
-                skuMongoService.deleteSkuPriceBySkuId(skuPrice.getSkuId());
-                break;
-            default:
-                break;
-        }
-    }
-
     @EventListener
     public void handeSkuWeightModifiedEvent(SkuWeightModifiedEvent event) {
         log.info("Received a SkuWeightModifiedEvent: {}", event);

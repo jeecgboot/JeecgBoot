@@ -195,16 +195,6 @@ public class MybatisInterceptor implements Interceptor {
 							eventPublisher.publishEvent(new SkuModifiedEvent(this, id, "UPDATE"));
 						}
 					}
-					if(table.equals("sku_price")) {
-						if(operationStatus.equals(INSERT_SUCCESS_MSG)) {
-							String id = extractIdFromRequestParam(requestParam);
-							eventPublisher.publishEvent(new SkuPriceModifiedEvent(this, id, "INSERT"));
-						}
-						if(operationStatus.equals(UPDATE_SUCCESS_MSG)) {
-							String id = extractIdFromRequestParam(requestParam);
-							eventPublisher.publishEvent(new SkuPriceModifiedEvent(this, id, "UPDATE"));
-						}
-					}
 					if(table.equals("sku_declared_value")) {
 						if(operationStatus.equals(INSERT_SUCCESS_MSG)) {
 							String id = extractIdFromRequestParam(requestParam);

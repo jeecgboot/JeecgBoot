@@ -2,6 +2,7 @@ package org.jeecg.modules.business.entity;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.business.service.ISkuPriceService;
 import org.jeecg.modules.business.vo.SkuDetail;
 
 import java.math.BigDecimal;
@@ -21,6 +22,8 @@ public class OrderContentDetail {
 
     private final BigDecimal exchangeRate;
 
+    private final ISkuPriceService skuPriceService;
+
     /**
      * Calculate the reduced amount by applying the promotion to the sku.
      *
@@ -37,7 +40,7 @@ public class OrderContentDetail {
      * @return the total price (price * quantity)
      */
     public BigDecimal totalPrice() {
-        BigDecimal unit = skuDetail.getPrice().getPrice(quantity, exchangeRate);
+        BigDecimal unit = skuPriceService.getPrice(skuDetail.getPrice(), quantity, exchangeRate);
         BigDecimal total = unit.multiply(new BigDecimal(quantity));
         log.info("unit: {}", unit);
         log.info("total: {}", total);
@@ -45,7 +48,7 @@ public class OrderContentDetail {
     }
 
     public BigDecimal unitPrice(){
-        return skuDetail.getPrice().getPrice(quantity, exchangeRate);
+        return skuPriceService.getPrice(skuDetail.getPrice(), quantity, exchangeRate);
     }
 
     public int promotionCount() {

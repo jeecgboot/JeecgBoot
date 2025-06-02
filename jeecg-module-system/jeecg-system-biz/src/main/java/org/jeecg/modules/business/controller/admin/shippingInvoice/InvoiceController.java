@@ -48,6 +48,7 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -103,6 +104,8 @@ public class InvoiceController {
     @Autowired
     private ISkuService skuService;
     @Autowired
+    private ISkuPriceService skuPriceService;
+    @Autowired
     private IExchangeRatesService iExchangeRatesService;
     @Autowired
     private IQuartzJobService quartzJobService;
@@ -152,7 +155,7 @@ public class InvoiceController {
         Set<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toSet());
         List<String> skusWithoutPrice = platformOrderContentMap.searchSkuDetail(new ArrayList<>(skuIds))
                 .stream()
-                .filter(skuDetail -> skuDetail.getPrice().getPrice() == null && skuDetail.getPrice().getPriceRmb() == null)
+                .filter(skuDetail -> skuDetail.getPrice() == null || skuDetail.getPrice().getPrice()== null)
                 .map(SkuDetail::getErpCode)
                 .collect(Collectors.toList());
         if (skusWithoutPrice.isEmpty()) {
@@ -948,14 +951,23 @@ public class InvoiceController {
                         break;
                     }
                 }
+                Date today = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
                 for(PlatformOrderContent content : orderContents){
-                    for (SkuPrice skuPrice : skuPrices) {
-                        if(content.getSkuId().equals(skuPrice.getSkuId())) {
-                            BigDecimal price = skuPrice.getPrice(content.getQuantity(), exchangeRateEurToRmb);
-                            price = price.multiply(new BigDecimal(content.getQuantity()));
-                            purchaseEstimation = purchaseEstimation.add(price);
-                            break;
-                        }
+                    Optional<SkuPrice> matched = skuPrices.stream()
+                            .filter(p -> content.getSkuId().equals(p.getSkuId()))
+                            .filter(p -> p.getDate() != null && !p.getDate().after(today))
+                            .max(Comparator.comparing(SkuPrice::getDate));
+                    log.info("Can't be after today: {} - {}", content.getSkuId(), matched.isPresent() ? matched.get().getDate() : "null");
+                    if (matched.isPresent()) {
+                        SkuPrice skuPrice = matched.get();
+                        BigDecimal price = skuPriceService.getPrice(skuPrice, content.getQuantity(), exchangeRateEurToRmb);
+                        price = price.multiply(BigDecimal.valueOf(content.getQuantity()));
+                        purchaseEstimation = purchaseEstimation.add(price);
+                        log.info("Matched SKU: {}, Qty: {}, Final Price: {}", content.getSkuId(), content.getQuantity(), price);
+                    } else {
+                        isCompleteInvoiceReady = false;
+                        errorMessages.add("No valid price for SKU: " + content.getSkuId());
+                        log.warn("No valid price for SKU: {}", content.getSkuId());
                     }
                 }
             }

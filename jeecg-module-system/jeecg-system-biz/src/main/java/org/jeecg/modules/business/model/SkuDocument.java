@@ -97,8 +97,9 @@ public class SkuDocument {
          * effective date
          */
         private Date date;
-        private BigDecimal priceRmb;
-        private BigDecimal discountedPriceRmb;
+
+        private String currencyCode;
+
     }
     @Data
     @NoArgsConstructor
