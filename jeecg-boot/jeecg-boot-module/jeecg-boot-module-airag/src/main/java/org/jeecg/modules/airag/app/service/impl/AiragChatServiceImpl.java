@@ -606,6 +606,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
                             .message(aiMessage.text())
                             .build();
                     msgEventData.setData(messageEventData);
+                    msgEventData.setRequestId(requestId);
                     try {
                         String eventStr = JSONObject.toJSONString(msgEventData);
                         log.debug("[AI应用]接收FLOW返回消息:{}", eventStr);
@@ -728,6 +729,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
                             .message(resMessage)
                             .build();
                     eventData.setData(messageEventData);
+                    eventData.setRequestId(requestId);
                     // sse
                     SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);
                     if (null == emitter) {
