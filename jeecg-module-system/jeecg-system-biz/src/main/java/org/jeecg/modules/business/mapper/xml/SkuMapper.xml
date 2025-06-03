@@ -243,22 +243,37 @@
         FROM sku s
         WHERE s.status = 3
         AND (
+        <if test="erpCodes != ''">
+            s.erp_code REGEXP #{erpCodes}
+        </if>
+        <if test="zhNames != ''">
             <if test="erpCodes != ''">
-                s.erp_code REGEXP #{erpCodes}
+                AND
             </if>
-            <if test="zhNames != ''">
-                <if test="erpCodes != ''">
-                    AND
-                </if>
-                s.zh_name REGEXP #{zhNames}
+            s.zh_name REGEXP #{zhNames}
+        </if>
+        <if test="enNames != ''">
+            <if test="erpCodes != '' || zhNames != ''">
+                AND
             </if>
-            <if test="enNames != ''">
-                <if test="erpCodes != '' || zhNames != ''">
-                    AND
-                </if>
-                s.en_name REGEXP #{enNames}
-            </if>
-            );
+            s.en_name REGEXP #{enNames}
+        </if>
+        );
+    </select>
+    <select id="countAllSkuWeightHistoryWithFilters" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM sku s
+        LEFT JOIN sku_weight sw ON s.id = sw.sku_id
+        WHERE s.status = 3
+        <if test="erpCodes != null and erpCodes != ''">
+            AND s.erp_code REGEXP #{erpCodes}
+        </if>
+        <if test="zhNames != null and zhNames != ''">
+            AND s.zh_name REGEXP #{zhNames}
+        </if>
+        <if test="enNames != null and enNames != ''">
+            AND s.en_name REGEXP #{enNames}
+        </if>
     </select>
     <select id="fetchSkuWeightsWithFilters" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         WITH latestSkuWeights AS (
@@ -300,6 +315,32 @@
             LIMIT #{offset}, #{size}
         </if>
         ;
+    </select>
+    <select id="fetchAllSkuWeightsWithFilters" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
+        SELECT
+        s.id,
+        sw.id AS weightId,
+        s.erp_code,
+        s.zh_name,
+        s.en_name,
+        sw.effective_date AS weightEffectiveDate,
+        sw.weight
+        FROM sku s
+        LEFT JOIN sku_weight sw ON s.id = sw.sku_id
+        WHERE s.status = 3
+        <if test="erpCodes != null and erpCodes != ''">
+            AND s.erp_code REGEXP #{erpCodes}
+        </if>
+        <if test="zhNames != null and zhNames != ''">
+            AND s.zh_name REGEXP #{zhNames}
+        </if>
+        <if test="enNames != null and enNames != ''">
+            AND s.en_name REGEXP #{enNames}
+        </if>
+        ORDER BY ${column} ${order}, sw.effective_date DESC
+        <if test="size != -1">
+            LIMIT #{offset}, #{size}
+        </if>
     </select>
     <select id="countAllClientSkusWithFilters" resultType="java.lang.Integer">
         SELECT COUNT(*) AS total
