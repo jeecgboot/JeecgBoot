@@ -22,6 +22,9 @@ public class SkuOrderPage {
      */
     @ApiModelProperty(value = "主键")
     private String id;
+    @ApiModelProperty(value = "SKU重量表主键")
+    private String weightId;
+
     /**
      * 商品ID
      */

@@ -15,6 +15,8 @@ import java.util.List;
 public interface ISkuWeightService extends IService<SkuWeight> {
     SkuWeight getBySkuId(String skuId);
 
+    List<SkuWeight> findBySkuId(String skuId);
+
     String searchFirstEmptyWeightSku(List<String> skuIds);
 
     List<SkuWeight> exportToExcel(List<String> skuIds);
