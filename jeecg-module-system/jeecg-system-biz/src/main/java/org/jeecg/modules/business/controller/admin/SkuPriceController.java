@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -130,6 +131,12 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
             return Result.error("相同内容的售价记录已存在，仅日期不同，请勿重复添加。");
         }
 
+        if (skuPrice.getPrice() != null) {
+            skuPrice.setPrice(skuPrice.getPrice().setScale(2, RoundingMode.HALF_UP));
+        }
+        if (skuPrice.getDiscountedPrice() != null) {
+            skuPrice.setDiscountedPrice(skuPrice.getDiscountedPrice().setScale(2, RoundingMode.HALF_UP));
+        }
         skuPrice.setCreateBy(sysUser.getUsername());
         skuPrice.setCreateTime(new Date());
         skuPriceService.save(skuPrice);
@@ -281,16 +288,20 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                                     break;
                                 case 1: // Price
                                     BigDecimal price;
-                                    if (cell.getCellType() == CellType.NUMERIC) {
-                                        price = BigDecimal.valueOf(cell.getNumericCellValue());
+                                    if (cell.getCellType() == CellType.BLANK) {
+                                        price = null;
+                                    } else if (cell.getCellType() == CellType.NUMERIC) {
+                                        price = BigDecimal.valueOf(cell.getNumericCellValue()).setScale(2, RoundingMode.UP);
                                     } else {
-                                        price = new BigDecimal(cell.getStringCellValue().trim());
+                                        price = new BigDecimal(cell.getStringCellValue().trim()).setScale(2, RoundingMode.UP);
                                     }
                                     skuPrice.setPrice(price);
                                     break;
                                 case 2: // Threshold
-                                    int threshold;
-                                    if (cell.getCellType() == CellType.NUMERIC) {
+                                    Integer threshold;
+                                    if (cell.getCellType() == CellType.BLANK) {
+                                        threshold = null;
+                                    } else if (cell.getCellType() == CellType.NUMERIC) {
                                         threshold = (int) cell.getNumericCellValue();
                                     } else {
                                         threshold = Integer.parseInt(cell.getStringCellValue().trim());
@@ -299,10 +310,12 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                                     break;
                                 case 3: // Discounted Price
                                     BigDecimal discountedPrice;
-                                    if (cell.getCellType() == CellType.NUMERIC) {
-                                        discountedPrice = BigDecimal.valueOf(cell.getNumericCellValue());
+                                    if (cell.getCellType() == CellType.BLANK) {
+                                        discountedPrice = null;
+                                    } else if (cell.getCellType() == CellType.NUMERIC) {
+                                        discountedPrice = BigDecimal.valueOf(cell.getNumericCellValue()).setScale(2, RoundingMode.UP);
                                     } else {
-                                        discountedPrice = new BigDecimal(cell.getStringCellValue().trim());
+                                        discountedPrice = new BigDecimal(cell.getStringCellValue().trim()).setScale(2, RoundingMode.UP);
                                     }
                                     skuPrice.setDiscountedPrice(discountedPrice);
                                     break;
