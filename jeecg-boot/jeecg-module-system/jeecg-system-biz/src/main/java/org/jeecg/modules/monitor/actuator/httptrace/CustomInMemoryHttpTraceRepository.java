@@ -19,6 +19,21 @@ public class CustomInMemoryHttpTraceRepository extends InMemoryHttpTraceReposito
         return super.findAll();
     }
 
+    /**
+     * for [issues/8309]系统监控>请求追踪，列表每刷新一下，总数据就减一#8309
+     * @param trace
+     * @author chenrui
+     * @date 2025/6/4 19:38
+     */
+    @Override
+    public void add(HttpTrace trace) {
+        // 只有当请求不是OPTIONS方法，并且URI不包含httptrace时才记录数据
+        if (!"OPTIONS".equals(trace.getRequest().getMethod()) &&
+                !trace.getRequest().getUri().toString().contains("httptrace")) {
+            super.add(trace);
+        }
+    }
+
     public List<HttpTrace> findAll(String query) {
         List<HttpTrace> allTrace = super.findAll();
         if (null != allTrace && !allTrace.isEmpty()) {
