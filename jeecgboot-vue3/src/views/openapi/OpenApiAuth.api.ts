@@ -97,7 +97,7 @@ export const saveOrUpdate = (params, isUpdate) => {
  * 全部权限列表接口
  * @param params
  */
-export const getApiList = (params) => defHttp.get({ url: Api.apiList, params });
+export const getApiList = (params) => defHttp.get({ url: Api.apiList, params }, { isTransformResponse: false });
 
 /**
  * 获取已授权项目的接口
