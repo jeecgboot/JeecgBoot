@@ -1,39 +1,39 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :width="'80%'" @ok="handleSubmit">
+  <BasicModal :bodyStyle="{ padding: '20px' }" v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" width="80%" @ok="handleSubmit">
     <a-row :gutter="24">
-      <a-col :span="12">
+      <a-col :span="10">
         <BasicForm @register="registerForm" ref="formRef" name="OpenApiForm" />
       </a-col>
-      <a-col :span="12">
+      <a-col :span="14">
         <a-row :gutter="24">
-          <a-col :span="24">
+          <a-col :span="24" style="margin-top: -0.6em">
             <JVxeTable
               keep-source
-              resizable
               ref="openApiHeader"
               :loading="openApiHeaderTable.loading"
               :columns="openApiHeaderTable.columns"
               :dataSource="openApiHeaderTable.dataSource"
-              :height="340"
+              :height="240"
               :disabled="formDisabled"
               :rowNumber="true"
               :rowSelection="true"
               :toolbar="true"
+              size="mini"
             />
           </a-col>
           <a-col :span="24">
             <JVxeTable
               keep-source
-              resizable
               ref="openApiParam"
               :loading="openApiParamTable.loading"
               :columns="openApiParamTable.columns"
               :dataSource="openApiParamTable.dataSource"
-              :height="340"
+              :height="240"
               :disabled="formDisabled"
               :rowNumber="true"
               :rowSelection="true"
               :toolbar="true"
+              size="mini"
             />
           </a-col>
         </a-row>

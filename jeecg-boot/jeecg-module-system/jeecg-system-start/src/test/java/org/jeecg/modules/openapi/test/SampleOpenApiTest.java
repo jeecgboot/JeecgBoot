@@ -41,7 +41,17 @@ public class SampleOpenApiTest {
 
             // 解析JSON响应
             JSONObject res = JSON.parseObject(responseBody);
-            System.out.println("[info] 调用成功： " + res.toJSONString());
+            //错误日志判断
+            if(res.containsKey("success")){
+                Boolean success = res.getBoolean("success");
+                if(success){
+                    System.out.println("[info] 调用成功： " + res.toJSONString());  
+                }else{
+                    System.out.println("[error] 调用失败： " + res.getString("message"));
+                }
+            }else{
+                System.out.println("[error] 调用失败： " + res.getString("message"));
+            }
         }
 
     }
