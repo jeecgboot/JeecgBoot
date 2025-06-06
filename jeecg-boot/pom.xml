@@ -56,7 +56,7 @@
 		<dm8.version>8.1.1.49</dm8.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>1.9.5.1</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>2.0.0</jimureport-spring-boot-starter.version>
 		<minidao.version>1.10.10</minidao.version>
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.2</mybatis-plus.version>
