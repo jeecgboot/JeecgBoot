@@ -66,6 +66,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     private ICurrencyService currencyService;
     @Autowired
     private IInvoiceNumberReservationService invoiceNumberReservationService;
+    @Autowired
+    private ISecurityService securityService;
 
     /**
      * Directory where payment documents are put
@@ -73,8 +75,10 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Value("${jeecg.path.save}")
     private String PAYMENT_DOC_DIR;
 
-    @Value("${jeecg.path.purchaseTemplatePath}")
-    private String INVOICE_TEMPLATE;
+    @Value("${jeecg.path.purchaseTemplatePath_EU}")
+    private String INVOICE_TEMPLATE_EU;
+    @Value("${jeecg.path.purchaseTemplatePath_US}")
+    private String INVOICE_TEMPLATE_US;
 
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String INVOICE_DIR;
@@ -403,7 +407,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     @Transactional
     public String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities,
-                              Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent) throws UserException {
+                              Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent, List<String> ordersWithStock) throws UserException {
         Objects.requireNonNull(orderAndContent);
 
         List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuQuantities);
@@ -438,7 +442,15 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         purchaseOrderContentMapper.addAll(username, purchaseID, entries);
 
         // 2.1 save extra sku
-        skuService.addInventory(skuQuantities, orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(Collectors.toList()));
+        List<String> orderIds = orderAndContent.keySet().stream()
+                .map(PlatformOrder::getId)
+                .collect(Collectors.toList());
+        if( ordersWithStock != null && !ordersWithStock.isEmpty()) {
+            orderIds = orderIds.stream()
+                    .filter(orderId -> !ordersWithStock.contains(orderId))
+                    .collect(Collectors.toList());
+        }
+        skuService.addInventory(skuQuantities, orderIds);
 
         // 3. save the application of promotion information
         List<PromotionHistoryEntry> promotionHistoryEntries = details.stream()
@@ -459,6 +471,9 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         }
         for (Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry : orderAndContent.entrySet()) {
             PlatformOrder platformOrder = entry.getKey();
+            if(ordersWithStock != null && ordersWithStock.contains(platformOrder.getId()))
+                continue;
+            // TODO : what to do with order status ????????
             List<PlatformOrderContent> orderContents = entry.getValue();
             platformOrder.setStatus(PlatformOrder.Status.Purchasing.code);
             for (PlatformOrderContent orderContent : orderContents) {
@@ -533,22 +548,26 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
     @Override
     public InvoiceMetaData makeInvoice(String purchaseID) throws IOException, UserException {
-        Client client = clientService.getCurrentClient();
-        if(client == null) {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            if (sysUser.getOrgCode().contains("A01") || sysUser.getOrgCode().contains("A03")) {
-                client = clientService.getClientFromPurchase(purchaseID);
-            }
-            else
+        boolean isEmployee = securityService.checkIsEmployee();
+        Client client;
+        if(!isEmployee) {
+            client = clientService.getCurrentClient();
+            if (client == null)
                 throw new UserException("User is not a client");
-        }
+        } else
+            client = clientService.getClientFromPurchase(purchaseID);
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
         String invoiceCode = purchaseOrderMapper.selectById(purchaseID).getInvoiceNumber();
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
 
         String filename = "Invoice N°" + invoiceCode + " (" + client.getInvoiceEntity() + ").xlsx";
-        Path template = Paths.get(INVOICE_TEMPLATE);
+        Path template;
+        if (client.getCurrency().equals("USD")) {
+            template = Paths.get(INVOICE_TEMPLATE_US);
+        } else {
+            template = Paths.get(INVOICE_TEMPLATE_EU);
+        }
         Path newInvoice = Paths.get(INVOICE_DIR, filename);
         Files.copy(template, newInvoice, StandardCopyOption.REPLACE_EXISTING);
         PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);
@@ -558,6 +577,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     public InvoiceMetaData makeInvoiceTest(int nbOfLines) throws Exception {
         Client client = clientService.getClientBySku("test");
+        client.setCurrency("USD");
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
         // -5 because we have at least 5 lines of promotions
         for (int i = 0; i < nbOfLines - 5; i++) {
@@ -571,7 +591,11 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
 
         String filename = "Invoice N°" + invoiceCode + " (" + client.getInvoiceEntity() + ")_" + nbOfLines + ".xlsx";
-        Path template = Paths.get(INVOICE_TEMPLATE);
+        Path template;
+        if(client.getCurrency().equals("USD"))
+            template = Paths.get(INVOICE_TEMPLATE_US);
+        else
+            template = Paths.get(INVOICE_TEMPLATE_EU);
         Path newInvoice = Paths.get(INVOICE_TEST_DIR, filename);
         Files.copy(template, newInvoice, StandardCopyOption.REPLACE_EXISTING);
         PurchaseInvoice pv = new PurchaseInvoice(client, invoiceCode, "Purchase Invoice", purchaseOrderSkuList, promotionDetails, eurToUsd);

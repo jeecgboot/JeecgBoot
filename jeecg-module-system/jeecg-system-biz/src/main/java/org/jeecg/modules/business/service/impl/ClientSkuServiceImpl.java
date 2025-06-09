@@ -86,4 +86,9 @@ public class ClientSkuServiceImpl extends ServiceImpl<ClientSkuMapper, ClientSku
 	public List<Sku> getUnpairedSkus() {
 		return clientSkuMapper.getUnpairedSkus();
 	}
+
+	@Override
+	public String getClientIdFromSkuId(String skuId) {
+		return clientSkuMapper.getClientIdFromSkuId(skuId);
+	}
 }

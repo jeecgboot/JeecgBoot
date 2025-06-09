@@ -180,4 +180,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public Client getClientFromCredit(String invoiceNumber) {
         return clientMapper.getClientFromCredit(invoiceNumber);
     }
+
+    @Override
+    public List<String> getClientsByCode(List<String> clientCodes) {
+        return clientMapper.getClientsByCode(clientCodes);
+    }
 }

@@ -64,6 +64,9 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
             BigDecimal previousBalance = getBalanceByClientIdAndCurrency(clientId, currency);
             BigDecimal currentBalance = previousBalance.subtract(invoice.getFinalAmount());
             BigDecimal purchaseFees = purchaseOrderService.getPurchaseFeesByInvoiceCode(invoiceCode);
+            if(purchaseFees == null) {
+                purchaseFees = BigDecimal.ZERO;
+            }
             currentBalance = currentBalance.subtract(purchaseFees);
             SysUser sysUser = new SysUser();
             Balance balance = Balance.of(sysUser.getUsername(), clientId, invoice.getCurrencyId(), Balance.OperationType.Debit.name(), invoice.getId(), currentBalance);

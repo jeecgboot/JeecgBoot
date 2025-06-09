@@ -38,4 +38,6 @@ public interface ClientMapper extends BaseMapper<Client> {
     Client getByShopId(@Param("shopId") String shopId);
 
     Client getClientFromCredit(@Param("invoiceNumber") String invoiceNumber);
+
+    List<String> getClientsByCode(@Param("codes") List<String> clientCodes);
 }

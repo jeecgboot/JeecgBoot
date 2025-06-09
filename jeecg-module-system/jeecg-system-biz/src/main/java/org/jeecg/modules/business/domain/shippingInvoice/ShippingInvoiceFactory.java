@@ -43,6 +43,8 @@ import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.*;
 public class ShippingInvoiceFactory {
 
     @Autowired
+    private IClientService clientService;
+    @Autowired
     private IExtraFeeService extraFeeService;
     @Autowired
     private IPlatformOrderService platformOrderService;
@@ -99,6 +101,7 @@ public class ShippingInvoiceFactory {
                             return skuDeclaredValueService.getDeclaredValueForDate(skuIdAndDate.getLeft(), skuIdAndDate.getRight());
                         }
                     });
+    private final List<String> CLIENT_STOCK_BYPASS_LIST = Arrays.asList("LA", "AP");
 
     /**
      * Creates an invoice for a client according to type
@@ -149,6 +152,7 @@ public class ShippingInvoiceFactory {
 
     /**
      * Creates a complete shipping (purchase + shipping) invoice for a client
+     * /!\ if the client is in the bypass list and ordersWithStock is not empty we only invoice the shipping fee of these orders, and we don't invoice the purchase fee
      * <p>
      * To generate an invoice, it
      * <ol>
@@ -164,12 +168,13 @@ public class ShippingInvoiceFactory {
      * @param customerId the customer id
      * @param orderIds  the list of order IDs
      * @param shippingMethod "post" = postShipping, "pre" = preShipping, "all" = all shipping methods
+     * @param ordersWithStock for orders with stock, if the client is in the bypass list, we only invoice the shipping fee and we don't invoice the purchase fee of the orders with stock
      * @return the generated invoice
      * @throws UserException if package used by the invoice can not or find more than 1 logistic
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public CompleteInvoice createCompleteShippingInvoice(String username, String customerId, BigDecimal balance, List<String> orderIds, String shippingMethod, String start, String end) throws UserException, MessagingException, InterruptedException {
+    public CompleteInvoice createCompleteShippingInvoice(String username, String customerId, BigDecimal balance, List<String> orderIds, String shippingMethod, String start, String end, List<String> ordersWithStock) throws UserException, MessagingException, InterruptedException {
         log.info("Creating a complete invoice for \n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
         Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchUninvoicedOrderDataForUpdate(orderIds);
@@ -184,19 +189,32 @@ public class ShippingInvoiceFactory {
                 .collect(Collectors.toList());
         List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(shopIds);
         log.info("Orders to be invoiced: {}", uninvoicedOrderToContent);
-        String subject;
-        if(shippingMethod.equals("shipping"))
-            subject = String.format("Purchase and Shipping fees from %s to %s", start, end);
-        else if(shippingMethod.equals(POSTSHIPPING.getMethod()))
-            subject = String.format("Purchase and post-Shipping fees from %s to %s", start, end);
-        else if (shippingMethod.equals(PRESHIPPING.getMethod()))
-            subject = String.format("Purchase and pre-Shipping fees, order time from %s to %s", start, end);
-        else if(shippingMethod.equals(ALL.getMethod()))
-            subject = String.format("Purchase and Shipping fees, order time from %s to %s", start, end);
+        StringBuilder subject = new StringBuilder();
+        boolean hasPeriod = start != null && !start.isEmpty() && end != null && !end.isEmpty();
+        if(shippingMethod.equals("shipping")) {
+            subject.append("Purchase and Shipping fees");
+            if(hasPeriod)
+                subject.append(String.format(" from %s to %s", start, end));
+        }
+        else if(shippingMethod.equals(POSTSHIPPING.getMethod())) {
+            subject.append("Purchase and post-Shipping fees");
+            if(hasPeriod)
+                subject.append(String.format(" from %s to %s", start, end));
+        }
+        else if (shippingMethod.equals(PRESHIPPING.getMethod())) {
+            subject.append("Purchase and Pre-Shipping fees");
+            if(hasPeriod)
+                subject.append(String.format(" order time from %s to %s", start, end));
+        }
+        else if(shippingMethod.equals(ALL.getMethod())) {
+            subject.append("Purchase and Shipping fees");
+            if(hasPeriod)
+                subject.append(String.format(" order time from %s to %s", start, end));
+        }
         else throw new UserException("Couldn't create complete invoice for unknown shipping method");
         if(balance != null)
-            return createCompleteInvoiceWithBalance(username, customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject);
-        return createInvoice(username, customerId, null, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject);
+            return createCompleteInvoiceWithBalance(username, customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject.toString());
+        return createInvoice(username, customerId, null, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject.toString(), ordersWithStock);
     }
 
 
@@ -225,7 +243,7 @@ public class ShippingInvoiceFactory {
     @Transactional
     public CompleteInvoice createInvoice(String username, String customerId, BigDecimal balance, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
-                                         List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject) throws UserException {
+                                         List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject, List<String> ordersWithStock) throws UserException {
         Client client = clientMapper.selectById(customerId);
         log.info("User {} is creating a complete invoice for customer {}", username, client.getInternalCode());
 
@@ -251,20 +269,29 @@ public class ShippingInvoiceFactory {
         log.info("New invoice code: {}", invoiceCode);
         calculateFees(balance, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
+        // Purchase fees
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
         List<String> orderIds = orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(toList());
-        List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(orderIds);
-
-        String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent);
-
-        List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
-        List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
-        if (savRefunds != null) {
-            updateSavRefundsInDb(savRefunds, invoiceCode);
+        List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
+        List<PromotionDetail> promotionDetails = new ArrayList<>();
+        List<String> clientsThatByPassStock = clientService.getClientsByCode(CLIENT_STOCK_BYPASS_LIST);
+        if(clientsThatByPassStock.contains(customerId) && ordersWithStock != null && !ordersWithStock.isEmpty()) {
+            orderIds = orderIds.stream().filter(orderId -> !ordersWithStock.contains(orderId)).collect(toList());
         }
-        if(extraFees != null && !extraFees.isEmpty()) {
-            List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
-            extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
+        if(!orderIds.isEmpty()){
+            List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(orderIds);
+
+            String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent, ordersWithStock);
+
+            purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
+            promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
+            if (savRefunds != null) {
+                updateSavRefundsInDb(savRefunds, invoiceCode);
+            }
+            if(extraFees != null && !extraFees.isEmpty()) {
+                List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
+                extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
+            }
         }
         updateOrdersAndContentsInDb(orderAndContent);
 
@@ -391,7 +418,7 @@ public class ShippingInvoiceFactory {
         List<String> orderIds = orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(toList());
         List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(orderIds);
 
-        String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent);
+        String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent, null);
 
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
