@@ -438,6 +438,48 @@ public class SkuController {
         page.setTotal(total);
         return Result.OK(page);
     }
+
+    @GetMapping("/listAllWithFilters")
+    public Result<?> listAllWithFilters(
+            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
+            @RequestParam(name = "column", defaultValue = "erp_code") String column,
+            @RequestParam(name = "order", defaultValue = "ASC") String order,
+            @RequestParam(name = "erpCodes", required = false) String erpCodes,
+            @RequestParam(name = "zhNames", required = false) String zhNames,
+            @RequestParam(name = "enNames", required = false) String enNames,
+            ServletRequest servletRequest) {
+
+        String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
+        String parsedOrder = order.toUpperCase();
+        if (!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
+            return Result.error("Error 400 Bad Request");
+        }
+
+        try {
+            specialFilterContentForDictSql(parsedColumn);
+        } catch (RuntimeException e) {
+            return Result.error("Error 400 Bad Request");
+        }
+
+        List<SkuOrderPage> skuOrdersPage;
+        int total;
+
+        List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
+        List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
+        List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
+
+        // Count and fetch ALL records (not just latest)
+        total = skuService.countAllSkuWeightHistoryWithFilters(erpCodeList, zhNameList, enNameList);
+        skuOrdersPage = skuService.fetchAllSkuWeightsWithFilters(pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
+
+        IPage<SkuOrderPage> page = new Page<>();
+        page.setRecords(skuOrdersPage);
+        page.setCurrent(pageNo);
+        page.setSize(pageSize);
+        page.setTotal(total);
+        return Result.OK(page);
+    }
     @GetMapping("/listAllSelectableSkuIds")
     public Result<?> listAllSelectableSkuIds(@RequestParam(name = "clientId") String clientId,
                                              @RequestParam(name = "erpCodes", required = false) String erpCodes,

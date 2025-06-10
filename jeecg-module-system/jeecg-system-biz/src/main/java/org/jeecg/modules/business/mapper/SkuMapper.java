@@ -53,12 +53,14 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     Integer countAllSkus();
     Integer countAllSkuWeightsWithFilters(@Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
+    Integer countAllSkuWeightHistoryWithFilters(@Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
     Integer countAllClientSkus(@Param("clientId") String clientId);
     Integer countAllClientSkusWithFilters(@Param("clientId") String clientId, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
 
     List<SkuOrderPage> fetchSkuWeights(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
     List<SkuOrderPage> fetchSkusByClient(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order);
     List<SkuOrderPage> fetchSkuWeightsWithFilters(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
+    List<SkuOrderPage> fetchAllSkuWeightsWithFilters(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
     List<SkuOrderPage> fetchSkusByClientWithFilters(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
 
     List<SkuOrderPage> listSelectableSkuIdsWithFilters(@Param("clientId") String clientId, @Param("erpCodes") String erpCodeList, @Param("zhNames") String zhNameList, @Param("enNames") String enNameList);

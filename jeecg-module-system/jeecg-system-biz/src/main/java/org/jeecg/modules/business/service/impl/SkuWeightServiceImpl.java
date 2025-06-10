@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.SkuWeight;
 import org.jeecg.modules.business.mapper.SkuWeightMapper;
@@ -27,6 +28,13 @@ public class SkuWeightServiceImpl extends ServiceImpl<SkuWeightMapper, SkuWeight
     @Override
     public SkuWeight getBySkuId(String skuId) {
         return skuWeightMapper.getBySkuId(skuId);
+    }
+
+    @Override
+    public List<SkuWeight> findBySkuId(String skuId) {
+        QueryWrapper<SkuWeight> query = new QueryWrapper<>();
+        query.eq("sku_id", skuId);
+        return this.list(query);
     }
 
     @Override

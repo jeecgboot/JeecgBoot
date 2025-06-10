@@ -100,7 +100,11 @@ public interface ISkuService extends IService<Sku> {
     List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order);
 
     Integer countAllSkuWeightsWithFilters(List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
+
+    Integer countAllSkuWeightHistoryWithFilters(List<String> erpCodes, List<String> zhNames, List<String> enNames);
+
     List<SkuOrderPage> fetchSkuWeightsWithFilters(Integer pageNo, Integer pageSize, String parsedColumn, String parsedOrder, List<String> erpCodes, List<String> zhNames, List<String> enNames);
+    List<SkuOrderPage> fetchAllSkuWeightsWithFilters(Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames);
 
     Integer countAllClientSkusWithFilters(String clientId, List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
     List<SkuOrderPage> fetchSkusByClientWithFilters(String clientId, Integer pageNo, Integer pageSize, String column, String order, List<String> erpCodes, List<String> zhNames, List<String> enNames);
