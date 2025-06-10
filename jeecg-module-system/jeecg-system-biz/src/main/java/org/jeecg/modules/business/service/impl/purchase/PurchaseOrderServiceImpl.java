@@ -473,7 +473,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
             PlatformOrder platformOrder = entry.getKey();
             if(ordersWithStock != null && ordersWithStock.contains(platformOrder.getId()))
                 continue;
-            // TODO : what to do with order status ????????
             List<PlatformOrderContent> orderContents = entry.getValue();
             platformOrder.setStatus(PlatformOrder.Status.Purchasing.code);
             for (PlatformOrderContent orderContent : orderContents) {
