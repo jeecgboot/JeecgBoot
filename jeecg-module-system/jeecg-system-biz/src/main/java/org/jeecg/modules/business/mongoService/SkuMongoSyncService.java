@@ -95,25 +95,4 @@ public class SkuMongoSyncService {
                 break;
         }
     }
-
-    @EventListener
-    public void handeSkuWeightModifiedEvent(SkuWeightModifiedEvent event) {
-        log.info("Received a SkuWeightModifiedEvent: {}", event);
-        String id = event.getId();
-        String operation = event.getOperation();
-
-        SkuWeight skuWeight = skuWeightService.getById(id);
-
-        switch (operation) {
-            case "INSERT":
-            case "UPDATE":
-                skuMongoService.upsertSkuWeight(skuWeight);
-                break;
-            case "DELETE":
-                skuMongoService.deleteSkuWeightBySkuId(skuWeight.getSkuId());
-                break;
-            default:
-                break;
-        }
-    }
 }

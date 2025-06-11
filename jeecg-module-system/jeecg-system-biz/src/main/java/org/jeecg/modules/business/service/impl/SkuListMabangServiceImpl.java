@@ -732,7 +732,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             Date effectiveDateToImport = skuWeightMappedById.get(sku.getId()).getEffectiveDate();
             if(latestEffectiveDate.after(effectiveDateToImport)) {
                 log.info("Sku {} has a more recent weight in DB. Therefore won't be imported to Mabang", sku.getErpCode());
-                responses.addSuccess(sku.getErpCode());
+                responses.addSuccess(sku.getErpCode(), "跳过：已有更新的重量，未同步到Mabang");
                 continue;
             }
             skusToUpdate.add(sku);
@@ -822,10 +822,10 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                         SkuChangeResponse response = request.send();
 
                         if(response.success()) {
-                            responses.addSuccess(response.getStockSku(), "Mabang");
+                            responses.addSuccess(response.getStockSku(), "Mabang 重量更新成功");
                         }
                         else {
-                            responses.addFailure(response.getStockSku(), "Mabang");
+                            responses.addFailure(response.getStockSku(), "Mabang 重量更新失败");
                         }
                     } catch (Exception e) {
                         log.error("Error updating weight for sku {} : {}", skuData.getErpCode(), e.getMessage());
@@ -835,8 +835,16 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                         // Only push progress if processed enough items (step) or finished all
                         if (currentProcessed % step == 0 || currentProcessed == totalCount) {
                             JSONObject progressMsg = new JSONObject();
-                            progressMsg.put("cmd", "user");
-                            progressMsg.put("msgTxt", "已处理 " + currentProcessed + " / " + totalCount + " 条 SKU 更新任务");
+                            progressMsg.put("cmd", "mabang-result");
+                            progressMsg.put("type", "progress");
+                            progressMsg.put("msgTxt", "Mabang重量更新中...");
+
+                            JSONObject progressData = new JSONObject();
+                            progressData.put("progress", (currentProcessed * 100) / totalCount);
+                            progressData.put("current", currentProcessed);
+                            progressData.put("total", totalCount);
+
+                            progressMsg.put("data", progressData);
                             WebSocketSender.sendToUser(userId, progressMsg.toJSONString());
                         }
                     }
@@ -851,17 +859,19 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         int failureCount = responses.getFailures().size();
 
         JSONObject doneMsg = new JSONObject();
-        doneMsg.put("cmd", "user");
-        doneMsg.put("msgTxt", "SKU 重量更新全部完成！");
+        doneMsg.put("cmd", "mabang-result");
+        doneMsg.put("type", "complete");
+        doneMsg.put("msgTxt", "SKU重量在马帮更新全部完成！");
         doneMsg.put("data", new JSONObject() {{
             put("total", skuDataList.size());
             put("success", successCount);
             put("failure", failureCount);
+            put("progress", 100);
+            put("successes", responses.getSuccesses());
+            put("failures", responses.getFailures());
         }});
 
-        // Send the final result to frontend via WebSocket
         WebSocketSender.sendToUser(userId, doneMsg.toJSONString());
-
         log.info("SKU Weight update completed: total {} items processed, {} succeeded, {} failed", skuDataList.size(), successCount, failureCount);
         return responses;
     }
