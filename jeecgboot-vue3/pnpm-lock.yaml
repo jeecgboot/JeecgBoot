@@ -143,6 +143,9 @@ importers:
       sortablejs:
         specifier: ^1.15.6
         version: 1.15.6
+      swagger-ui-dist:
+        specifier: ^5.21.0
+        version: 5.24.1
       tinymce:
         specifier: 6.6.2
         version: 6.6.2
@@ -176,12 +179,15 @@ importers:
       vuedraggable:
         specifier: ^4.1.0
         version: 4.1.0(vue@3.5.13(typescript@4.9.5))
+      vxe-pc-ui:
+        specifier: 4.6.12
+        version: 4.6.12(vue@3.5.13(typescript@4.9.5))
       vxe-table:
-        specifier: 4.6.17
-        version: 4.6.17(vue@3.5.13(typescript@4.9.5))
+        specifier: 4.13.31
+        version: 4.13.31(vue@3.5.13(typescript@4.9.5))
       vxe-table-plugin-antd:
-        specifier: 4.0.7
-        version: 4.0.7(vxe-table@4.6.17(vue@3.5.13(typescript@4.9.5)))
+        specifier: 4.0.8
+        version: 4.0.8(vxe-table@4.13.31(vue@3.5.13(typescript@4.9.5)))
       xe-utils:
         specifier: 3.5.26
         version: 3.5.26
@@ -1315,6 +1321,9 @@ packages:
     peerDependencies:
       vite: '>=2.0.0-beta.49'
 
+  '@scarf/scarf@1.4.0':
+    resolution: {integrity: sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ==}
+
   '@simonwep/pickr@1.8.2':
     resolution: {integrity: sha512-/l5w8BIkrpP6n1xsetx9MWPWlU6OblN5YgZZphxan0Tq4BByTCETL6lyIeY8lagalS2Nbt4F2W034KHLIiunKA==}
 
@@ -1738,6 +1747,11 @@ packages:
 
   '@vueuse/shared@10.11.1':
     resolution: {integrity: sha512-LHpC8711VFZlDaYUXEBbFBCQ7GS3dVU9mjOhhMhXP6txTV4EhYQg/KGnQuvt/sPAtoUKq7VVUnL6mVtFoL42sA==}
+
+  '@vxe-ui/core@4.1.5':
+    resolution: {integrity: sha512-IgRwVueejOGC5t+bVmBAUkoUplvp1R77pfYX6bb4fcLEPUdBGOdm4I0LCKTDWQ24Mj3Bki7wNpt3sdtEZEzdoA==}
+    peerDependencies:
+      vue: ^3.2.0
 
   '@zxcvbn-ts/core@3.0.4':
     resolution: {integrity: sha512-aQeiT0F09FuJaAqNrxynlAwZ2mW/1MdXakKWNmGM1Qp/VaY6CnB/GfnMS2T8gB2231Esp1/maCWd8vTG4OuShw==}
@@ -5627,6 +5641,9 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
+  swagger-ui-dist@5.24.1:
+    resolution: {integrity: sha512-ITeWc7CCAfK53u8jnV39UNqStQZjSt+bVYtJHsOEL3vVj/WV9/8HmsF8Ej4oD8r+Xk1HpWyeW/t59r1QNeAcUQ==}
+
   synckit@0.10.3:
     resolution: {integrity: sha512-R1urvuyiTaWfeCggqEvpDJwAlDVdsT9NM+IP//Tk2x7qHCkSvBk/fwFgw/TLAHzZlrAnnazMcRw0ZD8HlYFTEQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
@@ -6087,7 +6104,7 @@ packages:
     resolution: {integrity: sha512-n+YghR059YmciANGJh9SsNWRi1YZEBVlODtmnb/12zI+4R72QZSWd+EuZ5mW6auEo/yaJXgxzwsuhvALVnm73A==}
 
   vue-print-nb-jeecg@1.0.12:
-    resolution: {integrity: sha512-zlvD2qFY9wrfH3M+YCP91fe1ihVjwNFgycXX6zfC7Q1x6IHAPKvZhke599x86O/Ta4edCx+HoYchm72sANuyRw==}
+    resolution: {integrity: sha512-jHyWm6/TxB1iU2nHL7upQdHVdxb1SJQ9n3XKeYTaruFdbSphLo1vDtTunS2qVCjupk8lui7FlF5rxxSNr0zjZg==}
 
   vue-router@4.5.0:
     resolution: {integrity: sha512-HDuk+PuH5monfNuY+ct49mNmkCRK4xJAV9Ts4z9UFc4rzdDnxQLyCMGGc8pKhZhHTVzfanpNwB/lwqevcBwI4w==}
@@ -6131,15 +6148,16 @@ packages:
     peerDependencies:
       vue: ^3.0.1
 
-  vxe-table-plugin-antd@4.0.7:
-    resolution: {integrity: sha512-DFdvHBdpdkvFiRMhvsc6cNPiIL+3cLd2gGF2pu/lRE1ZSqK82OkZKY3onQO2dnE4zByN/szdCDIKV5Lk8iH8rg==}
+  vxe-pc-ui@4.6.12:
+    resolution: {integrity: sha512-57sRB/ksP8ip4l0hPcph5qXt/qGlrCjO2/Y6ZL4sHkGdb+CBWgbzvUPcq3GYgSSPdZg+Ae++UcGqgRGMZss+RQ==}
+
+  vxe-table-plugin-antd@4.0.8:
+    resolution: {integrity: sha512-/ZGw8Iz0R6YfDnf7FL3A0VZpQnxEjRnfE0DW4dQTuLnFCP6UmQqQuKVWU9Vj7vPGM3x3p8rwAVHtU8YtMCXZqQ==}
     peerDependencies:
       vxe-table: ^4.5.0
 
-  vxe-table@4.6.17:
-    resolution: {integrity: sha512-K9A0qJuV33Xh2NK6L1tXXEXueGyOoRVz7eFvFFpTbLVtm3oCoYl6+BOqD6YTw70R8NKdZZNH+ylmEJug+Qjrrg==}
-    peerDependencies:
-      vue: ^3.2.28
+  vxe-table@4.13.31:
+    resolution: {integrity: sha512-ibSM7jXYwJyY+eqXoRy/yXEVLENGFzL96cOEwtnFjBYbbaZV6/ptlM3tsyewGFBCUo5AtIyM+98hswxfjyXxMA==}
 
   walker@1.0.8:
     resolution: {integrity: sha512-ts/8E8l5b7kY0vlWLewOkDXMmPdLcVV4GmOQLyxuSswIJsweeFZtAsMF7k1Nszz+TYBQrlYRmzOnr398y1JemQ==}
@@ -6232,6 +6250,9 @@ packages:
 
   xe-utils@3.5.26:
     resolution: {integrity: sha512-u9R7RqWDumamToEelrCv2nVA2PBJSPPUubvmiMcuHeFxwbYeBsouoi/opejmr7AdPlSj92FifF7IKFzFrczU7w==}
+
+  xe-utils@3.7.5:
+    resolution: {integrity: sha512-wDjqnXw02EQxf2jqlE1nhvT9HP3PDVcyrol5whDJN/NOvnMyXIzcwEiPB/H2T3aq07f2QQXsSs4Z8g5L3BVH5A==}
 
   xml-name-validator@4.0.0:
     resolution: {integrity: sha512-ICP2e+jsHvAj2E2lIHxa5tjXRlKDJo4IdvPvCXbXQGdzSfmSpNVyIKMvoZHjDY9DP0zV17iI85o90vRFXNccRw==}
@@ -7311,6 +7332,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@scarf/scarf@1.4.0': {}
+
   '@simonwep/pickr@1.8.2':
     dependencies:
       core-js: 3.41.0
@@ -7908,6 +7931,12 @@ snapshots:
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
+
+  '@vxe-ui/core@4.1.5(vue@3.5.13(typescript@4.9.5))':
+    dependencies:
+      dom-zindex: 1.0.6
+      vue: 3.5.13(typescript@4.9.5)
+      xe-utils: 3.7.5
 
   '@zxcvbn-ts/core@3.0.4':
     dependencies:
@@ -12249,6 +12278,10 @@ snapshots:
       picocolors: 1.1.1
       stable: 0.1.8
 
+  swagger-ui-dist@5.24.1:
+    dependencies:
+      '@scarf/scarf': 1.4.0
+
   synckit@0.10.3:
     dependencies:
       '@pkgr/core': 0.2.0
@@ -12777,15 +12810,21 @@ snapshots:
       sortablejs: 1.14.0
       vue: 3.5.13(typescript@4.9.5)
 
-  vxe-table-plugin-antd@4.0.7(vxe-table@4.6.17(vue@3.5.13(typescript@4.9.5))):
+  vxe-pc-ui@4.6.12(vue@3.5.13(typescript@4.9.5)):
     dependencies:
-      vxe-table: 4.6.17(vue@3.5.13(typescript@4.9.5))
+      '@vxe-ui/core': 4.1.5(vue@3.5.13(typescript@4.9.5))
+    transitivePeerDependencies:
+      - vue
 
-  vxe-table@4.6.17(vue@3.5.13(typescript@4.9.5)):
+  vxe-table-plugin-antd@4.0.8(vxe-table@4.13.31(vue@3.5.13(typescript@4.9.5))):
     dependencies:
-      dom-zindex: 1.0.6
-      vue: 3.5.13(typescript@4.9.5)
-      xe-utils: 3.5.26
+      vxe-table: 4.13.31(vue@3.5.13(typescript@4.9.5))
+
+  vxe-table@4.13.31(vue@3.5.13(typescript@4.9.5)):
+    dependencies:
+      vxe-pc-ui: 4.6.12(vue@3.5.13(typescript@4.9.5))
+    transitivePeerDependencies:
+      - vue
 
   walker@1.0.8:
     dependencies:
@@ -12908,6 +12947,8 @@ snapshots:
       signal-exit: 4.1.0
 
   xe-utils@3.5.26: {}
+
+  xe-utils@3.7.5: {}
 
   xml-name-validator@4.0.0: {}
 
