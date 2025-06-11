@@ -42,7 +42,7 @@ public class MabangOrderSyncJob implements Job {
                 }
                 username = jsonObject.getString("username");
             } catch (JSONException e) {
-                log.error("Error while parsing parameter as JSON, falling back to default parameters.");
+                log.error("Error while parsing parameter as JSON, falling back to default parameters : {}", e.getMessage());
             }
         }
         if (platformOrderIds.isEmpty()) {

@@ -21,4 +21,6 @@ public interface ClientSkuMapper extends BaseMapper<ClientSku> {
 	List<ClientSku> selectByMainId(@Param("mainId") String mainId);
 
     List<Sku> getUnpairedSkus();
+
+    String getClientIdFromSkuId(@Param("skuId") String skuId);
 }

@@ -184,10 +184,16 @@
             JOIN shop s ON po.shop_id = s.id
             JOIN client c ON s.owner_id = c.id
             WHERE c.id = #{clientId}
+                AND poc.create_time &gt;= '2024-01-01 00:00:00'
                 AND po.erp_status IN ('1','2')
                 AND po.can_send = 1
                 AND poc.erp_status IN ('1','2')
             GROUP BY sku_id
+        ), latest_exchange_rate AS (
+            SELECT rate
+            FROM exchange_rates
+            WHERE original_currency = 'EUR' AND target_currency = 'RMB'
+            ORDER BY create_time DESC LIMIT 1
         ), rmb_id AS (
             SELECT id FROM currency WHERE code = 'RMB'
         )
@@ -198,32 +204,25 @@
                s.purchasing_amount,
                s.available_amount,
                qtyInOrdersNotShipped.quantity                                as qtyInOrdersNotShipped,
-               s.available_amount + s.purchasing_amount - IF(qtyInOrdersNotShipped.quantity IS NULL, 0, qtyInOrdersNotShipped.quantity) as stock,
+               s.available_amount + s.purchasing_amount - COALESCE(qtyInOrdersNotShipped.quantity, 0) as stock,
                s.image_source,
                s.service_fee,
                IF(sp.currency_id = (SELECT id FROM rmb_id),
                   (
                       ROUND(
                               sp.price /
-                              (SELECT rate
-                               FROM exchange_rates
-                               WHERE original_currency = 'EUR' AND target_currency = 'RMB'
-                               ORDER BY create_time DESC LIMIT 1)
+                              (SELECT rate FROM latest_exchange_rate)
                       ,2)
-                  ),
-                  sp.price
+                  ), sp.price
                )                                                             as sku_price,
                sp.threshold                                                  as discount_moq,
                IF(sp.currency_id = (SELECT id FROM rmb_id),
                   (
                       ROUND(
                               sp.discounted_price /
-                              (SELECT rate
-                               FROM exchange_rates
-                               WHERE target_currency = 'EUR' AND original_currency = 'RMB'
-                               ORDER BY create_time DESC LIMIT 1)
+                              (SELECT rate FROM latest_exchange_rate)
                       ,2)
-                   ), sp.discounted_price
+                   ),sp.discounted_price
                )                                                             as discounted_price,
                s7.quantity                                                   as sales_last_week,
                s28.quantity                                                  as sales_four_weeks,
@@ -381,8 +380,13 @@
                 AND po.can_send = 1
                 AND poc.erp_status IN ('1','2')
             GROUP BY sku_id
+        ), latest_exchange_rate AS (
+            SELECT rate
+            FROM exchange_rates
+            WHERE original_currency = 'EUR' AND target_currency = 'RMB'
+            ORDER BY create_time DESC LIMIT 1
         ), rmb_id AS (
-        SELECT id FROM currency WHERE code = 'RMB'
+            SELECT id FROM currency WHERE code = 'RMB'
         )
         SELECT s.id,
                s.erp_code,
@@ -391,17 +395,14 @@
                s.purchasing_amount,
                s.available_amount,
                qtyInOrdersNotShippedCTE.quantity                                          as qtyInOrdersNotShipped,
-               s.available_amount + s.purchasing_amount - IF(qtyInOrdersNotShippedCTE.quantity IS NULL, 0, qtyInOrdersNotShippedCTE.quantity) as stock,
+               s.available_amount + s.purchasing_amount - COALESCE(qtyInOrdersNotShippedCTE.quantity, 0) as stock,
                s.image_source,
                s.service_fee,
                IF(sp.currency_id = (SELECT id FROM rmb_id),
                   (
                       ROUND(
                               sp.price /
-                              (SELECT rate
-                               FROM exchange_rates
-                               WHERE original_currency = 'EUR' AND target_currency = 'RMB'
-                               ORDER BY create_time DESC LIMIT 1)
+                              (SELECT rate FROM latest_exchange_rate)
                       ,2)
                   ), sp.price
                )                                                             as sku_price,
@@ -410,12 +411,9 @@
                   (
                       ROUND(
                               sp.discounted_price /
-                              (SELECT rate
-                               FROM exchange_rates
-                               WHERE target_currency = 'EUR' AND original_currency = 'RMB'
-                               ORDER BY create_time DESC LIMIT 1)
+                              (SELECT rate FROM latest_exchange_rate)
                       ,2)
-                   ), sp.discounted_price
+                   ),sp.discounted_price
                )                                                             as discounted_price,
                s7.quantity                                                   as sales_last_week,
                s28.quantity                                                  as sales_four_weeks,
@@ -477,7 +475,7 @@
                s.available_amount + s.purchasing_amount - IF(qtyInOrdersNotShippedCTE.quantity IS NULL, 0, qtyInOrdersNotShippedCTE.quantity) as stock,
                s.image_source,
                s.service_fee,
-               IF(sp.currency_id = (SELECT id FROM rmb_id) ,
+               IF(sp.currency_id = (SELECT id FROM rmb_id),
                   (
                       ROUND(
                               sp.price /
@@ -485,8 +483,9 @@
                                FROM exchange_rates
                                WHERE original_currency = 'EUR' AND target_currency = 'RMB'
                                ORDER BY create_time DESC LIMIT 1)
-                          ,2)
-                      ),sp.price,
+                          ,2
+                      )
+                  ), sp.price
                )                                                             as sku_price,
                sp.threshold                                                  as discount_moq,
                IF(sp.currency_id = (SELECT id FROM rmb_id),
@@ -499,7 +498,7 @@
                                ORDER BY create_time DESC LIMIT 1)
                           ,2
                       )
-                  ), sp.discounted_price,
+                  ), sp.discounted_price
                )                                                             as discounted_price,
                s7.quantity                                                   as sales_last_week,
                s28.quantity                                                  as sales_four_weeks,

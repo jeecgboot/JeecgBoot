@@ -72,7 +72,7 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
     String addPurchase(List<SkuQuantity> SkuQuantity, List<String> orderIDs) throws UserException;
 
     @Transactional
-    String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities, Map<PlatformOrder, List<PlatformOrderContent>> platformOrderIDs) throws UserException;
+    String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities, Map<PlatformOrder, List<PlatformOrderContent>> orderContentMap, List<String> ordersWithStock) throws UserException;
 
     void savePaymentDocumentForPurchase(String purchaseID, MultipartFile in) throws IOException;
 
