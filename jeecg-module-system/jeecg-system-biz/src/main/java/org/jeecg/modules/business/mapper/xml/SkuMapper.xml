@@ -184,7 +184,7 @@
             JOIN shop s ON po.shop_id = s.id
             JOIN client c ON s.owner_id = c.id
             WHERE c.id = #{clientId}
-                AND poc.create_time &gt;= '2025-01-01 00:00:00'
+                AND poc.create_time &gt;= '2024-01-01 00:00:00'
                 AND po.erp_status IN ('1','2')
                 AND po.can_send = 1
                 AND poc.erp_status IN ('1','2')
