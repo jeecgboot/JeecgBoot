@@ -1,6 +1,6 @@
 <template>
   <a-upload name="file" :showUploadList="false" :customRequest="(file) => onClick(file)">
-    <Button :type="type" :class="getButtonClass">
+    <Button :type="type" :class="getButtonClass" :disabled="props.disabled">
       <template #default="data">
         <Icon :icon="preIcon" v-if="preIcon" :size="iconSize" />
         <slot v-bind="data || {}"></slot>
