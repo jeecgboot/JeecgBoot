@@ -17,6 +17,9 @@ import java.util.List;
 public interface IBalanceService extends IService<Balance> {
 
     BigDecimal getBalanceByClientIdAndCurrency(String clientId, String currency);
+
+    void initBalance(String clientId);
+
     void updateBalance(String clientId, String invoiceCode, String invoiceType);
     void updateBalance(String clientId, String CreditId, BigDecimal amount, String currencyId);
 
@@ -26,6 +29,8 @@ public interface IBalanceService extends IService<Balance> {
      * @param operationType operation type : invoice or credit
      */
     void deleteBalance(String operationId, String operationType);
+
+    void deleteBalanceByClientId(String clientId);
 
     /**
      * Edit balance record

@@ -263,4 +263,5 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     PlatformOrder selectForUpdateSkipLock(@Param("id") String orderId);
 
     List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote);
+    Integer countOrdersByShop(@Param("shopId") String shopId);
 }

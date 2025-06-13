@@ -619,4 +619,10 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote) {
         return platformOrderMap.fetchPlatformOrderIdsByShopifyNote(shopifyNote);
     }
+
+    @Override
+    public Integer countOrdersByShop(String shopId) {
+        return platformOrderMap.countOrdersByShop(shopId);
+    }
+
 }
