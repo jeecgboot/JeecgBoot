@@ -119,6 +119,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 log.error("Shipping invoice {} is older than {}, client is not allowed to cancel it", invoiceNumber, CANCEL_DAYS_LIMIT);
                 return false;
             }
+            platformOrderMabangService.deleteOrderRemark(invoiceNumber);
             platformOrderContentService.cancelInvoice(invoiceNumber, clientId);
             platformOrderService.cancelInvoice(invoiceNumber, clientId);
             shippingInvoiceService.cancelInvoice(id);
