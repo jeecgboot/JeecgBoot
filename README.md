@@ -68,14 +68,6 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 
 
 
-技术文档
------------------------------------
-
-- 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
-- 在线演示 ：  [平台演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex) | [体验低代码](https://jeecg.blog.csdn.net/article/details/106079007) | [体验零代码](https://app.qiaoqiaoyun.com/myapps/index)
-- 开发文档：  [文档中心](https://help.jeecg.com) | [AIGC大模块](https://help.jeecg.com/aigc)
-- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video) | [反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
-- QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
 
 
 
@@ -84,6 +76,30 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 
 - [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
 - [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
+
+
+
+
+##### 在线体验
+
+> jeecgboot vs 敲敲云
+
+> - JeecgBoot是低代码产品拥有很多低代码能力，比如流程设计、表单设计、大屏设计，代码生成器，适合半开发模式（开发+低代码结合），也可以集成零代码的应用管理模块； 
+> - 敲敲云是零代码产品，完全不写代码，通过配置搭建业务系统，其在jeecgboot基础上研发而成，删除了online、代码生成、OA等很多需要编码的功能，只保留了应用管理和聊天、流程、日程、文件四个标准OA功能
+
+
+- JeecgBoot低代码：  https://boot3.jeecg.com
+- 敲敲云零代码：https://app.qiaoqiaoyun.com
+
+
+技术文档
+-----------------------------------
+
+- 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
+- 在线演示 ：  [平台演示](http://boot3.jeecg.com)   | [APP演示](http://jeecg.com/appIndex) | [体验低代码](https://jeecg.blog.csdn.net/article/details/106079007) | [体验零代码](https://app.qiaoqiaoyun.com/myapps/index)
+- 开发文档：  [文档中心](https://help.jeecg.com) | [AIGC大模块](https://help.jeecg.com/aigc)
+- 新手指南： [快速入门](http://www.jeecg.com/doc/quickstart) | [入门视频](http://jeecg.com/doc/video) | [反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)
+- QQ交流群 ： ⑩716488839、⑨808791225(满)、其他(满)
 
 
 
@@ -105,10 +121,7 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 [![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
 
 
-##### 在线体验
 
-- JeecgBoot低代码：  https://boot3.jeecg.com
-- 敲敲云零代码：https://app.qiaoqiaoyun.com
 
 ##### Dify `VS` JEECG AI
 
