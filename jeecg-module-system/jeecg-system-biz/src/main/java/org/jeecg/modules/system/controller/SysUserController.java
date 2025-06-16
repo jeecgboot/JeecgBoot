@@ -182,7 +182,7 @@ public class SysUserController {
 
             if (depart != null && "WIA客户".equals(depart.getDepartName())) {
                 String clientId = payload.getString("client");
-                log.info("Initializing balance for client ID: {}", clientId);
+                log.info("Add user client association for user ID: {}", user.getId());
                 UserClient userClient = new UserClient();
                 userClient.setUser_id(user.getId());
                 userClient.setClient_id(clientId);
