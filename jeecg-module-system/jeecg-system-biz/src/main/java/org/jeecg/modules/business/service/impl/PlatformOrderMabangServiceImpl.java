@@ -201,6 +201,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         for (Order order : orders) {
             order.resolveStatus();
             order.resolveProductAvailability();
+            order.resolveHasPhoneNumber();
             order.getOrderItems().forEach(
                     item -> {
                         item.setPlatformOrderId(order.getId());
