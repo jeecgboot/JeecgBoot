@@ -10,5 +10,7 @@ import java.util.List;
 @Repository
 public interface FactureDetailMapper extends BaseMapper<FactureDetail> {
 
+    List<FactureDetail> getInvoiceDetailWithPurchaseFee(@Param("invoiceNumber") String invoiceNumber);
+
     List<FactureDetail> selectByShopsAndPeriod(@Param("shopIds") List<String> shopIds, @Param("start") String startDate, @Param("end") String endDate, @Param("type") String type);
 }

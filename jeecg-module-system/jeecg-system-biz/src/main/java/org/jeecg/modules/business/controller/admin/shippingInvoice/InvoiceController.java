@@ -659,6 +659,15 @@ public class InvoiceController {
         return shippingInvoiceService.exportToExcel(invoiceDetails, Collections.emptyList(), Collections.emptyList(), period, client.getInvoiceEntity(), client.getInternalCode());
     }
 
+    @GetMapping(value = "/downloadCompleteInvoiceDetail")
+    public byte[] downloadCompleteInvoiceDetail(@RequestParam("invoiceNumber") String invoiceNumber, @RequestParam("invoiceEntity") String invoiceEntity, @RequestParam("internalCode") String internalCode) throws IOException {
+        List<FactureDetail> factureDetails = shippingInvoiceService.getInvoiceDetailWithPurchaseFee(invoiceNumber);
+        List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
+        List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
+        String fileNameInfo = invoiceNumber + "_complete";
+        return shippingInvoiceService.exportToExcel(factureDetails, refunds, extraFees, fileNameInfo, invoiceEntity, internalCode);
+    }
+
     /**
      * Only downloads the inventory of skus that are in the invoice
      * Whereas downloadInventory downloads the inventory of a list of skus for the client
