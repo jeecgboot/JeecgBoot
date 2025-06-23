@@ -529,4 +529,26 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
 
         return updateResponse;
     }
+    @Override
+    public ResponsesWithMsg<String> updateReceiverPhone(String platformOrderId, String receiverPhone, String shopId) {
+        ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
+        try {
+            PlatformOrderOperation op = new PlatformOrderOperation();
+            op.setOrderIds(platformOrderId);
+            op.setAction("EDIT");
+            op.setPhone(receiverPhone);
+            op.setShopId(shopId);
+            ChangeWarehouseRequestBody body = new ChangeWarehouseRequestBody(op);
+            ChangeWarehouseRequest request = new ChangeWarehouseRequest(body);
+            ChangeOrderResponse response = request.send();
+            if (response.success()) {
+                responses.addSuccess(platformOrderId);
+            } else {
+                responses.addFailure(platformOrderId, response.getMessage());
+            }
+        } catch (Exception e) {
+            responses.addFailure(platformOrderId, e.getMessage());
+        }
+        return responses;
+    }
 }

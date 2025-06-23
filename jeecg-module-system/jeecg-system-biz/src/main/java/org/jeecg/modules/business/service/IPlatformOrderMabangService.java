@@ -53,4 +53,6 @@ public interface IPlatformOrderMabangService extends IService<Order> {
     ResponsesWithMsg<String> deleteOrderRemark(String invoiceNumber);
 
     Response<List<UpdateResult>, List<UpdateResult>> updateOrderStatusToPreparing(List<String> platformOrderIds);
+
+    ResponsesWithMsg<String> updateReceiverPhone(String platformOrderId, String receiverPhone, String shopId);
 }
