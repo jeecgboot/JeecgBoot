@@ -55,27 +55,12 @@
 
         <!-- aiflow依赖 -->
         <dependency>
-            <groupId>org.jeecgframework</groupId>
-            <artifactId>ai-flow</artifactId>
+            <groupId>org.jeecgframework.boot</groupId>
+            <artifactId>jeecg-aiflow</artifactId>
             <version>1.1.0</version>
         </dependency>
-        <!-- liteflow -->
-        <dependency>
-            <groupId>com.yomahub</groupId>
-            <artifactId>liteflow-spring-boot-starter</artifactId>
-            <version>${liteflow.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-lang</artifactId>
-                    <groupId>commons-lang</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.yomahub</groupId>
-            <artifactId>liteflow-rule-sql</artifactId>
-            <version>${liteflow.version}</version>
-        </dependency>
+
+        <!-- aiflow 脚本依赖 -->
         <dependency>
             <groupId>com.yomahub</groupId>
             <artifactId>liteflow-script-graaljs</artifactId>
@@ -99,11 +84,6 @@
                 </exclusion>
             </exclusions>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-scripting-jsr223</artifactId>
-            <version>${kotlin.version}</version>
         </dependency>
         <dependency>
             <groupId>com.yomahub</groupId>
