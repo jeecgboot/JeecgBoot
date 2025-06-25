@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableField;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -24,7 +25,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 @TableName("sys_depart_role_permission")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema( description="部门角色权限")
+@Schema(description="部门角色权限")
 public class SysDepartRolePermission {
     
 	/**id*/

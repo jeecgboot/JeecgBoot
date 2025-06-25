@@ -31,8 +31,8 @@ public class SysUserDepart implements Serializable {
 		this.depId = depId;
 	}
 
-	public SysUserDepart(String id, String departId) {
-		this.userId = id;
+	public SysUserDepart(String userId, String departId) {
+		this.userId = userId;
 		this.depId = departId;
 	}
 }

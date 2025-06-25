@@ -1199,6 +1199,23 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				int count = sysPermissionMapper.queryCountByUsername(username, p);
 				has = has || (count>0);
 			}
+			if (!has) {
+				//没有配置菜单 找online表单菜单地址
+				SysPermission sysPermission = new SysPermission();
+				sysPermission.setUrl(onlineFormUrl);
+				int count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
+				if (count <= 0) {
+					//update-begin---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
+					sysPermission.setUrl(onlineAuthDTO.getOnlineWorkOrderUrl());
+					count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
+					if (count > 0) {
+						has = true;
+					}
+					//update-end---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
+				} else {
+					has = true;
+				}
+			}
 			return has;
 		}
 		return true;
@@ -1408,7 +1425,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			e.printStackTrace();
 		}
 
-		log.info("Email Html Text：{}", htmlText);
+		log.debug("Email Html Text：{}", htmlText);
 		emailHandle.sendMsg(email, title, htmlText);
 	}
 

@@ -47,6 +47,8 @@ public class ${subTab.entityName} implements Serializable {
 		<#elseif po.classType=='sel_tree'>
 			<#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText?split(",")[2]}", dicCode = "${po.dictText?split(",")[0]}"'>
 		</#if>
+    <#elseif po.classType=='link_table'>
+        <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicCode = "${po.dictField}", dicText = "${po.dictText?split(",")[0]}"'>
 	</#if>
 	/**${po.filedComment}*/
 	<#if po.fieldName == primaryKeyField>

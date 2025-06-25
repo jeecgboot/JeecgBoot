@@ -45,7 +45,6 @@ public class SysUserOnlineController {
     public ISysUserService userService;
     @Autowired
     private SysBaseApiImpl sysBaseApi;
-
     @Resource
     private BaseCommonService baseCommonService;
 

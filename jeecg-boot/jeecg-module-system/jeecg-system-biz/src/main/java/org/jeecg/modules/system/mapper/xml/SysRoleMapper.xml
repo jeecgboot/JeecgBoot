@@ -54,5 +54,14 @@
             AND tenant_id = #{tenantId}
         </if>
     </select>
-
+    
+    <!--根据用户id获取角色信息-->
+    <select id="getUserRoleByUserId" resultType="org.jeecg.modules.system.vo.SysUserPositionVo">
+        SELECT sr.role_name as name,sur.user_id FROM sys_role sr
+        RIGHT JOIN sys_user_role sur on sur.role_id = sr.id
+        WHERE sur.user_id IN
+        <foreach collection="userList" index="index" item="user" open="(" separator="," close=")">
+            #{user.id}
+        </foreach>
+    </select>
 </mapper>

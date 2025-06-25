@@ -24,6 +24,10 @@
     <#assign need_range_number = false>
     <#assign is_range = false>
     <#assign is_like = false>
+    <#assign buttonList=[]>
+    <#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
+      <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
+    </#if>
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
       <a-form ref="formRef" @keyup.enter.native="reload" :model="queryParam" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -109,6 +113,13 @@
         <a-button type="primary" v-auth="'${entityPackage}:${tableName}:add'"  @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
         <a-button type="primary" v-auth="'${entityPackage}:${tableName}:exportXls'"  preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
         <j-upload-button type="primary"  v-auth="'${entityPackage}:${tableName}:importExcel'" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
+  <#if buttonList?size gt 0>
+   <#list buttonList?sort_by('orderNum') as btn>
+      <#if btn.buttonStyle == 'button'>
+        <a-button type="primary" @click="handle${btn.buttonCode?cap_first}" <#if btn.buttonIcon??> preIcon="ant-design:${btn.buttonIcon}" </#if>>${btn.buttonName}</a-button>
+      </#if>
+    </#list>
+  </#if>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <template #overlay>
             <a-menu>
@@ -168,6 +179,10 @@
   </div>
     <!-- 表单区域 -->
     <${entityName}Modal ref="registerModal" @success="handleSuccess" />
+    <#if bpm_flag==true>
+      <!-- 审批记录 -->
+      <BpmPictureModal @register="registerBpmModal" />
+    </#if>
   </div>
 </template>
 
@@ -175,10 +190,12 @@
   import { ref, reactive, computed, unref, provide } from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage'
+  import {useModal} from '/@/components/Modal';
   import ${entityName}Modal from './components/${entityName}Modal.vue'
   import { columns, superQuerySchema } from './${entityName}.data';
   import { list, deleteOne, batchDelete, getImportUrl,getExportUrl } from './${entityName}.api';
   import { downloadFile } from '/@/utils/common/renderUtils';
+  import { useMessage } from '/@/hooks/web/useMessage';
   <#include "/common/form/native/vue3NativeImport.ftl">
 <#if need_pca>
   import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
@@ -190,6 +207,8 @@
   </#if>
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
+
+  const [registerBpmModal, { openModal: bpmPicModal }] = useModal();
   </#if>
   <#list subTables as sub>
   import ${sub.entityName}List from './${sub.entityName}List.vue'
@@ -207,6 +226,7 @@
   const checkedKeys = ref<Array<string | number>>([]);
   const registerModal = ref();
   const userStore = useUserStore();
+  const { createMessage } = useMessage();
    //注册table数据
   const { prefixCls,tableContext,onExportXls,onImportXls } = useListPage({
     tableProps:{
@@ -348,7 +368,22 @@
           placement: 'topLeft'
         },
         auth: '${entityPackage}:${tableName}:delete'
-      }
+      },
+    {
+      label: '审批进度',
+      onClick: handlePreviewPic.bind(null, record),
+      ifShow: !!record.bpmStatus && record.bpmStatus !== '1',
+    },
+<#if buttonList?size gt 0>
+ <#list buttonList?sort_by('orderNum') as btn>
+    <#if btn.buttonStyle == 'link'>
+    ,{
+       label: '${btn.buttonName}',
+       onClick: handle${btn.buttonCode?cap_first}.bind(null, record),
+     }
+    </#if>
+  </#list>
+</#if>
     ];
     if(record.bpmStatus == '1' || !record.bpmStatus){
       dropDownAction.push({
@@ -375,7 +410,17 @@
           placement: 'topLeft'
         },
         auth: '${entityPackage}:${tableName}:delete'
-      },
+      }
+ <#if buttonList?size gt 0>
+       <#list buttonList?sort_by('orderNum') as btn>
+        <#if btn.buttonStyle == 'link'>
+        ,{
+           label: '${btn.buttonName}',
+           onClick: handle${btn.buttonCode?cap_first}.bind(null, record),
+        }
+        </#if>
+       </#list>
+</#if>
     ];
    </#if>
   }
@@ -394,8 +439,30 @@
     await startProcess(params);
     handleSuccess();
   }
+   /**
+       * 审批进度
+       */
+      async function handlePreviewPic(record) {
+        bpmPicModal(true, {
+          flowCode: 'dev_${tableName}_001',
+          dataId: record.id,
+        });
+      }
   </#if>
-  
+  <#if buttonList?size gt 0>
+    <#list buttonList?sort_by('orderNum') as btn>
+    <#if btn.buttonStyle=='button'>
+       function handle${btn.buttonCode?cap_first}(){
+          createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+       }
+    </#if>
+     <#if btn.buttonStyle=='link'>
+      function handle${btn.buttonCode?cap_first}(record){
+        createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+      }
+     </#if>
+    </#list>
+  </#if>
   <#if need_category>
   /**
    * form点击事件

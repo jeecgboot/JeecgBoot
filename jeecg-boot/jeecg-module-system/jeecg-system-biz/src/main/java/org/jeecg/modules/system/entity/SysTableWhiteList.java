@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_table_white_list")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description = "系统表白名单")
+@Schema(description="系统表白名单")
 public class SysTableWhiteList {
 
     /**

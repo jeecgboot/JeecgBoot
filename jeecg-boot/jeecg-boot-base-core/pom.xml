@@ -111,6 +111,11 @@
 			<artifactId>mybatis-plus-boot-starter</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
+		<!-- minidao -->
+		<dependency>
+			<groupId>org.jeecgframework</groupId>
+			<artifactId>minidao-spring-boot-starter</artifactId>
+		</dependency>
 
 		<!-- druid -->
 		<dependency>
@@ -313,11 +318,6 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-starter-chatgpt</artifactId>
-		</dependency>
-		<!-- minidao -->
-		<dependency>
-			<groupId>org.jeecgframework</groupId>
-			<artifactId>minidao-spring-boot-starter</artifactId>
 		</dependency>
 	</dependencies>
 </project>

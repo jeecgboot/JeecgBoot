@@ -39,12 +39,13 @@ public class AiragApp implements Serializable {
      */
     @TableId(type = IdType.ASSIGN_ID)
     @Schema(description = "主键")
-    private String id;
+    private java.lang.String id;
     /**
      * 创建人
      */
     @Schema(description = "创建人")
-    private String createBy;
+    @Dict(dictTable = "sys_user",dicCode = "username",dicText = "realname")
+    private java.lang.String createBy;
     /**
      * 创建日期
      */
@@ -56,7 +57,7 @@ public class AiragApp implements Serializable {
      * 更新人
      */
     @Schema(description = "更新人")
-    private String updateBy;
+    private java.lang.String updateBy;
     /**
      * 更新日期
      */
@@ -68,95 +69,95 @@ public class AiragApp implements Serializable {
      * 所属部门
      */
     @Schema(description = "所属部门")
-    private String sysOrgCode;
+    private java.lang.String sysOrgCode;
     /**
      * 租户id
      */
     @Excel(name = "租户id", width = 15)
     @Schema(description = "租户id")
-    private String tenantId;
+    private java.lang.String tenantId;
     /**
      * 应用名称
      */
     @Excel(name = "应用名称", width = 15)
     @Schema(description = "应用名称")
-    private String name;
+    private java.lang.String name;
     /**
      * 应用描述
      */
     @Excel(name = "应用描述", width = 15)
     @Schema(description = "应用描述")
-    private String descr;
+    private java.lang.String descr;
     /**
      * 应用图标
      */
     @Excel(name = "应用图标", width = 15)
     @Schema(description = "应用图标")
-    private String icon;
+    private java.lang.String icon;
     /**
      * 应用类型
      */
     @Excel(name = "应用类型", width = 15, dicCode = "ai_app_type")
     @Dict(dicCode = "ai_app_type")
     @Schema(description = "应用类型")
-    private String type;
+    private java.lang.String type;
     /**
      * 开场白
      */
     @Excel(name = "开场白", width = 15)
     @Schema(description = "开场白")
-    private String prologue;
+    private java.lang.String prologue;
     /**
      * 预设问题
      */
     @Excel(name = "预设问题", width = 15)
     @Schema(description = "预设问题")
-    private String presetQuestion;
+    private java.lang.String presetQuestion;
     /**
      * 提示词
      */
     @Excel(name = "提示词", width = 15)
     @Schema(description = "提示词")
-    private String prompt;
+    private java.lang.String prompt;
     /**
      * 模型配置
      */
     @Excel(name = "模型配置", width = 15, dictTable = "airag_model where model_type = 'LLM' ", dicText = "name", dicCode = "id")
     @Dict(dictTable = "airag_model where model_type = 'LLM' ", dicText = "name", dicCode = "id")
     @Schema(description = "模型配置")
-    private String modelId;
+    private java.lang.String modelId;
     /**
      * 历史消息数
      */
     @Excel(name = "历史消息数", width = 15)
     @Schema(description = "历史消息数")
-    private Integer msgNum;
+    private java.lang.Integer msgNum;
     /**
      * 知识库
      */
     @Excel(name = "知识库", width = 15, dictTable = "airag_knowledge where status = 'enable'", dicText = "name", dicCode = "id")
     @Dict(dictTable = "airag_knowledge where status = 'enable'", dicText = "name", dicCode = "id")
     @Schema(description = "知识库")
-    private String knowledgeIds;
+    private java.lang.String knowledgeIds;
     /**
      * 流程
      */
     @Excel(name = "流程", width = 15, dictTable = "airag_flow where status = 'enable' ", dicText = "name", dicCode = "id")
     @Dict(dictTable = "airag_flow where status = 'enable' ", dicText = "name", dicCode = "id")
     @Schema(description = "流程")
-    private String flowId;
+    private java.lang.String flowId;
     /**
      * 快捷指令
      */
     @Excel(name = "快捷指令", width = 15)
     @Schema(description = "快捷指令")
-    private String quickCommand;
+    private java.lang.String quickCommand;
     /**
-     * 状态
+     * 状态（enable=启用、disable=禁用、release=发布）
      */
     @Excel(name = "状态", width = 15)
     @Schema(description = "状态")
-    private String status;
+    private java.lang.String status;
 
 
     /**
@@ -164,7 +165,7 @@ public class AiragApp implements Serializable {
      */
     @Excel(name = "元数据", width = 15)
     @Schema(description = "元数据")
-    private String metadata;
+    private java.lang.String metadata;
 
     /**
      * 知识库ids

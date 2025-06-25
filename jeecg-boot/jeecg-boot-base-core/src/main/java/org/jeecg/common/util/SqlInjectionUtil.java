@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgSqlInjectionException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;

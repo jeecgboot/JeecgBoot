@@ -534,6 +534,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/vue3List", method = RequestMethod.GET)
 	public Result<List<SysAnnouncement>> vue3List(@RequestParam(name="fromUser", required = false) String fromUser,
+												  @RequestParam(name="busType", required = false) String busType,
 												  @RequestParam(name="starFlag", required = false) String starFlag,
                                                   @RequestParam(name="rangeDateKey", required = false) String rangeDateKey,
                                                   @RequestParam(name="beginDate", required = false) String beginDate, 
@@ -562,7 +563,7 @@ public class SysAnnouncementController {
 		}
 		
 		// 2、根据条件查询用户的通知消息
-		List<SysAnnouncement> ls = this.sysAnnouncementService.querySysMessageList(pageSize, pageNo, fromUser, starFlag, beginTime, endTime);
+		List<SysAnnouncement> ls = this.sysAnnouncementService.querySysMessageList(pageSize, pageNo, fromUser, starFlag,busType, beginTime, endTime);
 
 		// 3、设置当前页的消息为已读
 		if (!CollectionUtils.isEmpty(ls)) {

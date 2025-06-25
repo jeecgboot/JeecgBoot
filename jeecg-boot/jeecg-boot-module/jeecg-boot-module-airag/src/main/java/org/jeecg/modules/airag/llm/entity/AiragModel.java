@@ -45,6 +45,7 @@ public class AiragModel implements Serializable {
      * 创建人
      */
     @Schema(description = "创建人")
+    @Dict(dictTable = "sys_user",dicCode = "username",dicText = "realname")
     private String createBy;
     /**
      * 创建日期

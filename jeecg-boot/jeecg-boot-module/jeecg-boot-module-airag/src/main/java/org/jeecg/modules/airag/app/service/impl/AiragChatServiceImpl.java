@@ -13,6 +13,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.*;
 import org.jeecg.modules.airag.app.consts.AiAppConsts;
 import org.jeecg.modules.airag.app.entity.AiragApp;
+import org.jeecg.modules.airag.app.mapper.AiragAppMapper;
 import org.jeecg.modules.airag.app.service.IAiragAppService;
 import org.jeecg.modules.airag.app.service.IAiragChatService;
 import org.jeecg.modules.airag.app.vo.AppDebugParams;
@@ -63,7 +64,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
     RedisTemplate redisTemplate;
 
     @Autowired
-    IAiragAppService airagAppService;
+    AiragAppMapper airagAppMapper;
 
     @Autowired
     IAiragFlowService airagFlowService;
@@ -85,7 +86,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
         // 获取app信息
         AiragApp app = null;
         if (oConvertUtils.isNotEmpty(chatSendParams.getAppId())) {
-            app = airagAppService.getById(chatSendParams.getAppId());
+            app = airagAppMapper.getByIdIgnoreTenant(chatSendParams.getAppId());
         }
         ChatConversation chatConversation = getOrCreateChatConversation(app, conversationId);
         // 更新标题
@@ -146,13 +147,19 @@ public class AiragChatServiceImpl implements IAiragChatService {
         try {
             // 发送完成事件
             emitter.send(SseEmitter.event().data(eventData));
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("终止会话时发生错误", e);
+            try {
+                // 防止异常冒泡
+                emitter.completeWithError(e);
+            } catch (Exception ignore) {}
         } finally {
             // 从缓存中移除emitter
             AiragLocalCache.remove(AiragConsts.CACHE_TYPE_SSE, eventData.getRequestId());
             // 关闭emitter
-            emitter.complete();
+            try {
+                emitter.complete();
+            } catch (Exception ignore) {}
         }
     }
 
@@ -238,6 +245,12 @@ public class AiragChatServiceImpl implements IAiragChatService {
     }
 
     @Override
+    public Result<?> initChat(String appId) {
+        AiragApp app = airagAppMapper.getByIdIgnoreTenant(appId);
+        return Result.ok(app);
+    }
+
+    @Override
     public Result<?> deleteConversation(String conversationId) {
         AssertUtils.assertNotEmpty("请选择要删除的会话", conversationId);
         String key = getConversationCacheKey(conversationId, null);
@@ -278,7 +291,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
      * @author chenrui
      * @date 2025/2/25 19:27
      */
-    private String getConversationCacheKey(String conversationId,HttpServletRequest httpRequest) {
+    private String getConversationCacheKey(String conversationId, HttpServletRequest httpRequest) {
         if (oConvertUtils.isEmpty(conversationId)) {
             return null;
         }
@@ -376,7 +389,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
      * @author chenrui
      * @date 2025/2/25 19:27
      */
-    private void saveChatConversation(ChatConversation chatConversation, boolean temp,HttpServletRequest httpRequest) {
+    private void saveChatConversation(ChatConversation chatConversation, boolean temp, HttpServletRequest httpRequest) {
         if (null == chatConversation) {
             return;
         }
@@ -414,8 +427,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
                     case AiragConsts.MESSAGE_ROLE_USER:
                         List<Content> contents = new ArrayList<>();
                         List<MessageHistory.ImageHistory> images = history.getImages();
-                        if (oConvertUtils.isObjectNotEmpty(images)
-                                && !images.isEmpty()) {
+                        if (oConvertUtils.isObjectNotEmpty(images) && !images.isEmpty()) {
                             contents.addAll(images.stream().map(imageHistory -> {
                                 if (oConvertUtils.isNotEmpty(imageHistory.getUrl())) {
                                     return ImageContent.from(imageHistory.getUrl());
@@ -452,8 +464,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
      * @author chenrui
      * @date 2025/2/25 19:05
      */
-    private void appendMessage(List<ChatMessage> messages, ChatMessage message, ChatConversation
-            chatConversation, String topicId) {
+    private void appendMessage(List<ChatMessage> messages, ChatMessage message, ChatConversation chatConversation, String topicId) {
 
         if (message.type().equals(ChatMessageType.SYSTEM)) {
             // 系统消息,放到消息列表最前面,并且不记录历史
@@ -467,11 +478,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
             histories = new ArrayList<>();
         }
         // 消息记录
-        MessageHistory historyMessage = MessageHistory.builder()
-                .conversationId(chatConversation.getId())
-                .topicId(topicId)
-                .datetime(DateUtils.now())
-                .build();
+        MessageHistory historyMessage = MessageHistory.builder().conversationId(chatConversation.getId()).topicId(topicId).datetime(DateUtils.now()).build();
         if (message.type().equals(ChatMessageType.USER)) {
             historyMessage.setRole(AiragConsts.MESSAGE_ROLE_USER);
             StringBuilder textContent = new StringBuilder();
@@ -516,8 +523,21 @@ public class AiragChatServiceImpl implements IAiragChatService {
         // 每次会话都生成一个新的,用来缓存emitter
         String requestId = UUIDGenerator.generate();
         SseEmitter emitter = new SseEmitter(-0L);
+        emitter.onError(throwable -> {
+            log.warn("SEE向客户端发送消息失败: {}", throwable.getMessage());
+            AiragLocalCache.remove(AiragConsts.CACHE_TYPE_SSE, requestId);
+            try {
+                emitter.complete();
+            } catch (Exception ignore) {}
+        });
+        EventData eventRequestId = new EventData(requestId, null, EventData.EVENT_INIT_REQUEST_ID, chatConversation.getId(), topicId);
+        eventRequestId.setData(EventMessageData.builder().message("").build());
+        sendMessage2Client(emitter, eventRequestId);
         // 缓存emitter
         AiragLocalCache.put(AiragConsts.CACHE_TYPE_SSE, requestId, emitter);
+        // 缓存开始发送时间
+        log.info("[AI-CHAT]开始发送消息,requestId:{}", requestId);
+        AiragLocalCache.put(AiragConsts.CACHE_TYPE_SSE_SEND_TIME, requestId, System.currentTimeMillis());
         try {
             // 组装用户消息
             UserMessage userMessage = aiChatHandler.buildUserMessage(sendParams.getContent(), sendParams.getImages());
@@ -589,36 +609,51 @@ public class AiragChatServiceImpl implements IAiragChatService {
         SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);
         flowRunParams.setEventCallback(eventData -> {
             if (EventData.EVENT_FLOW_FINISHED.equals(eventData.getEvent())) {
+                // 打印耗时日志
+                printChatDuration(requestId, "流程执行完毕");
+                // 已经执行完了,删除时间缓存
+                AiragLocalCache.remove(AiragConsts.CACHE_TYPE_SSE_SEND_TIME, requestId);
                 EventFlowData data = (EventFlowData) eventData.getData();
-                Object outputs = data.getOutputs();
-                if (oConvertUtils.isObjectNotEmpty(outputs)) {
-                    AiMessage aiMessage;
-                    if (outputs instanceof String) {
-                        // 兼容推理模型
-                        String messageText = String.valueOf(outputs);
-                        messageText = messageText.replaceAll("<think>([\\s\\S]*?)</think>", "> $1");
-                        aiMessage = new AiMessage(messageText);
-                    } else {
-                        aiMessage = new AiMessage(JSONObject.toJSONString(outputs));
+                if(data.isSuccess()) {
+                    Object outputs = data.getOutputs();
+                    if (oConvertUtils.isObjectNotEmpty(outputs)) {
+                        AiMessage aiMessage;
+                        if (outputs instanceof String) {
+                            // 兼容推理模型
+                            String messageText = String.valueOf(outputs);
+                            messageText = messageText.replaceAll("<think>([\\s\\S]*?)</think>", "> $1");
+                            aiMessage = new AiMessage(messageText);
+                        } else {
+                            aiMessage = new AiMessage(JSONObject.toJSONString(outputs));
+                        }
+                        EventData msgEventData = new EventData(requestId, null, EventData.EVENT_MESSAGE, chatConversation.getId(), topicId);
+                        EventMessageData messageEventData = EventMessageData.builder().message(aiMessage.text()).build();
+                        msgEventData.setData(messageEventData);
+                        msgEventData.setRequestId(requestId);
+                        sendMessage2Client(emitter, msgEventData);
+                        appendMessage(messages, aiMessage, chatConversation, topicId);
+                        // 保存会话
+                        saveChatConversation(chatConversation, false, httpRequest);
                     }
-                    EventData msgEventData = new EventData(requestId, null, EventData.EVENT_MESSAGE, chatConversation.getId(), topicId);
-                    EventMessageData messageEventData = EventMessageData.builder()
-                            .message(aiMessage.text())
-                            .build();
-                    msgEventData.setData(messageEventData);
-                    try {
-                        String eventStr = JSONObject.toJSONString(msgEventData);
-                        log.debug("[AI应用]接收FLOW返回消息:{}", eventStr);
-                        emitter.send(SseEmitter.event().data(eventStr));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                }else{
+                    //update-begin---author:chenrui ---date:20250425  for：[QQYUN-12203]AI 聊天，超时或者服务器报错，给个友好提示------------
+                    // 失败
+                    String message = data.getMessage();
+                    if (message != null && message.contains(FlowConsts.FLOW_ERROR_MSG_LLM_TIMEOUT)) {
+                        message = "当前用户较多，排队中，请稍后再试！";
+                        EventData errEventData = new EventData(requestId, null, EventData.EVENT_MESSAGE, chatConversation.getId(), topicId);
+                        errEventData.setData(EventMessageData.builder().message("\n" + message).build());
+                        sendMessage2Client(emitter, errEventData);
+                        errEventData = new EventData(requestId, null, EventData.EVENT_MESSAGE_END, chatConversation.getId(), topicId);
+                        // 如果是超时,主动关闭SSE,防止流程切面中返回异常消息导致前端不能正常展示上面的{普通消息}.
+                        closeSSE(emitter, errEventData);
                     }
-                    appendMessage(messages, aiMessage, chatConversation, topicId);
-                    // 保存会话
-                    saveChatConversation(chatConversation, false, httpRequest);
+                    //update-end---author:chenrui ---date:20250425  for：[QQYUN-12203]AI 聊天，超时或者服务器报错，给个友好提示------------
                 }
             }
         });
+        // 打印流程耗时日志
+        printChatDuration(requestId, "开始执行流程");
         airagFlowService.runFlow(flowRunParams);
     }
 
@@ -649,24 +684,26 @@ public class AiragChatServiceImpl implements IAiragChatService {
         String metadataStr = aiApp.getMetadata();
         if (oConvertUtils.isNotEmpty(metadataStr)) {
             JSONObject metadata = JSONObject.parseObject(metadataStr);
-            if(oConvertUtils.isNotEmpty(metadata)){
+            if (oConvertUtils.isNotEmpty(metadata)) {
                 if (metadata.containsKey("temperature")) {
                     aiChatParams.setTemperature(metadata.getDouble("temperature"));
                 }
                 if (metadata.containsKey("topP")) {
-                    aiChatParams.setTopP(metadata.getDouble("temperature"));
+                    aiChatParams.setTopP(metadata.getDouble("topP"));
                 }
                 if (metadata.containsKey("presencePenalty")) {
-                    aiChatParams.setPresencePenalty(metadata.getDouble("temperature"));
+                    aiChatParams.setPresencePenalty(metadata.getDouble("presencePenalty"));
                 }
                 if (metadata.containsKey("frequencyPenalty")) {
-                    aiChatParams.setFrequencyPenalty(metadata.getDouble("temperature"));
+                    aiChatParams.setFrequencyPenalty(metadata.getDouble("frequencyPenalty"));
                 }
                 if (metadata.containsKey("maxTokens")) {
-                    aiChatParams.setMaxTokens(metadata.getInteger("temperature"));
+                    aiChatParams.setMaxTokens(metadata.getInteger("maxTokens"));
                 }
             }
         }
+        // 打印流程耗时日志
+        printChatDuration(requestId, "构造应用自定义参数完成");
         // 发消息
         sendWithDefault(requestId, chatConversation, topicId, modelId, messages, aiChatParams);
     }
@@ -683,10 +720,9 @@ public class AiragChatServiceImpl implements IAiragChatService {
      * @author chenrui
      * @date 2025/2/25 19:24
      */
-    private void sendWithDefault(String requestId, ChatConversation chatConversation, String topicId, String modelId,
-                                 List<ChatMessage> messages,AIChatParams aiChatParams) {
+    private void sendWithDefault(String requestId, ChatConversation chatConversation, String topicId, String modelId, List<ChatMessage> messages, AIChatParams aiChatParams) {
         // 调用ai聊天
-        if(null == aiChatParams){
+        if (null == aiChatParams) {
             aiChatParams = new AIChatParams();
         }
         aiChatParams.setKnowIds(chatConversation.getApp().getKnowIds());
@@ -694,13 +730,15 @@ public class AiragChatServiceImpl implements IAiragChatService {
         HttpServletRequest httpRequest = SpringContextUtils.getHttpServletRequest();
         TokenStream chatStream;
         try {
+            // 打印流程耗时日志
+            printChatDuration(requestId, "开始向LLM发送消息");
             if (oConvertUtils.isNotEmpty(modelId)) {
                 chatStream = aiChatHandler.chat(modelId, messages, aiChatParams);
             } else {
                 chatStream = aiChatHandler.chatByDefaultModel(messages, aiChatParams);
             }
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
+            log.error(e.getMessage(), e);
             throw new JeecgBootBizTipException("调用大模型接口失败:" + e.getMessage());
         }
         /**
@@ -709,91 +747,120 @@ public class AiragChatServiceImpl implements IAiragChatService {
         AtomicBoolean isThinking = new AtomicBoolean(false);
         // ai聊天响应逻辑
         chatStream.onNext((String resMessage) -> {
-                    // 兼容推理模型
-                    if ("<think>".equals(resMessage)) {
-                        isThinking.set(true);
-                        resMessage = "> ";
-                    }
-                    if ("</think>".equals(resMessage)) {
-                        isThinking.set(false);
-                        resMessage = "\n\n";
-                    }
-                    if (isThinking.get()) {
-                        if (null != resMessage && resMessage.contains("\n")) {
-                            resMessage = "\n> ";
-                        }
-                    }
-                    EventData eventData = new EventData(requestId, null, EventData.EVENT_MESSAGE, chatConversation.getId(), topicId);
-                    EventMessageData messageEventData = EventMessageData.builder()
-                            .message(resMessage)
-                            .build();
-                    eventData.setData(messageEventData);
-                    // sse
-                    SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);
-                    if (null == emitter) {
-                        log.warn("[AI应用]接收LLM返回会话已关闭");
-                        return;
-                    }
-                    try {
-                        String eventStr = JSONObject.toJSONString(eventData);
-                        log.debug("[AI应用]接收LLM返回消息:{}", eventStr);
-                        emitter.send(SseEmitter.event().data(eventStr));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .onComplete((responseMessage) -> {
-                    // 记录ai的回复
-                    AiMessage aiMessage = responseMessage.content();
-                    FinishReason finishReason = responseMessage.finishReason();
-                    String respText = aiMessage.text();
-                    // sse
-                    SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);
-                    if (null == emitter) {
-                        log.warn("[AI应用]接收LLM返回会话已关闭");
-                        return;
-                    }
-                    if (FinishReason.STOP.equals(finishReason) || null == finishReason) {
-                        // 正常结束
-                        EventData eventData = new EventData(requestId, null, EventData.EVENT_MESSAGE_END, chatConversation.getId(), topicId);
-                        try {
-                            log.debug("[AI应用]接收LLM返回消息完成:{}", respText);
-                            emitter.send(SseEmitter.event().data(eventData));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        appendMessage(messages, aiMessage, chatConversation, topicId);
-                        // 保存会话
-                        saveChatConversation(chatConversation,false,httpRequest);
-                        closeSSE(emitter, eventData);
-                    } else if (FinishReason.TOOL_EXECUTION.equals(finishReason)) {
-                        // 需要执行工具
-                        // TODO author: chenrui for: date:2025/3/7
-                    } else {
-                        // 异常结束
-                        log.error("调用模型异常:" + respText);
-                        if (respText.contains("insufficient Balance")) {
-                            respText = "大预言模型账号余额不足!";
-                        }
-                        EventData eventData = new EventData(requestId, null, EventData.EVENT_FLOW_ERROR, chatConversation.getId(), topicId);
-                        eventData.setData(EventFlowData.builder().success(false).message(respText).build());
-                        closeSSE(emitter, eventData);
-                    }
-                })
-                .onError((Throwable error) -> {
-                    // sse
-                    SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);
-                    if (null == emitter) {
-                        log.warn("[AI应用]接收LLM返回会话已关闭");
-                        return;
-                    }
-                    String errMsg = "调用大模型接口失败:" + error.getMessage();
-                    log.error(errMsg, error);
-                    EventData eventData = new EventData(requestId, null, EventData.EVENT_FLOW_ERROR, chatConversation.getId(), topicId);
-                    eventData.setData(EventFlowData.builder().success(false).message(errMsg).build());
-                    closeSSE(emitter, eventData);
-                })
-                .start();
+            // 兼容推理模型
+            if ("<think>".equals(resMessage)) {
+                isThinking.set(true);
+                resMessage = "> ";
+            }
+            if ("</think>".equals(resMessage)) {
+                isThinking.set(false);
+                resMessage = "\n\n";
+            }
+            if (isThinking.get()) {
+                if (null != resMessage && resMessage.contains("\n")) {
+                    resMessage = "\n> ";
+                }
+            }
+            EventData eventData = new EventData(requestId, null, EventData.EVENT_MESSAGE, chatConversation.getId(), topicId);
+            EventMessageData messageEventData = EventMessageData.builder().message(resMessage).build();
+            eventData.setData(messageEventData);
+            eventData.setRequestId(requestId);
+            // sse
+            SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);
+            if (null == emitter) {
+                log.warn("[AI应用]接收LLM返回会话已关闭");
+                return;
+            }
+            sendMessage2Client(emitter, eventData);
+        }).onComplete((responseMessage) -> {
+            // 打印流程耗时日志
+            printChatDuration(requestId, "LLM输出消息完成");
+            AiragLocalCache.remove(AiragConsts.CACHE_TYPE_SSE_SEND_TIME, requestId);
+            // 记录ai的回复
+            AiMessage aiMessage = responseMessage.content();
+            FinishReason finishReason = responseMessage.finishReason();
+            String respText = aiMessage.text();
+            // sse
+            SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);
+            if (null == emitter) {
+                log.warn("[AI应用]接收LLM返回会话已关闭");
+                return;
+            }
+            if (FinishReason.STOP.equals(finishReason) || null == finishReason) {
+                // 正常结束
+                EventData eventData = new EventData(requestId, null, EventData.EVENT_MESSAGE_END, chatConversation.getId(), topicId);
+                appendMessage(messages, aiMessage, chatConversation, topicId);
+                // 保存会话
+                saveChatConversation(chatConversation, false, httpRequest);
+                closeSSE(emitter, eventData);
+            } else if (FinishReason.TOOL_EXECUTION.equals(finishReason)) {
+                // 需要执行工具
+                // TODO author: chenrui for: date:2025/3/7
+            } else if (FinishReason.LENGTH.equals(finishReason)) {
+                // 上下文长度超过限制
+                log.error("调用模型异常:上下文长度超过限制:{}", responseMessage.tokenUsage());
+                EventData eventData = new EventData(requestId, null, EventData.EVENT_MESSAGE, chatConversation.getId(), topicId);
+                eventData.setData(EventMessageData.builder().message("\n上下文长度超过限制，请调整模型最大Tokens").build());
+                sendMessage2Client(emitter, eventData);
+                eventData = new EventData(requestId, null, EventData.EVENT_MESSAGE_END, chatConversation.getId(), topicId);
+                closeSSE(emitter, eventData);
+            } else {
+                // 异常结束
+                log.error("调用模型异常:" + respText);
+                if (respText.contains("insufficient Balance")) {
+                    respText = "大预言模型账号余额不足!";
+                }
+                EventData eventData = new EventData(requestId, null, EventData.EVENT_FLOW_ERROR, chatConversation.getId(), topicId);
+                eventData.setData(EventFlowData.builder().success(false).message(respText).build());
+                closeSSE(emitter, eventData);
+            }
+        }).onError((Throwable error) -> {
+            // 打印流程耗时日志
+            printChatDuration(requestId, "LLM输出消息异常");
+            AiragLocalCache.remove(AiragConsts.CACHE_TYPE_SSE_SEND_TIME, requestId);
+            // sse
+            SseEmitter emitter = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE, requestId);
+            if (null == emitter) {
+                log.warn("[AI应用]接收LLM返回会话已关闭{}", requestId);
+                return;
+            }
+            log.error(error.getMessage(), error);
+            String errMsg = error.getMessage();
+            if (errMsg != null && errMsg.contains("timeout")) {
+                //update-begin---author:chenrui ---date:20250425  for：[QQYUN-12203]AI 聊天，超时或者服务器报错，给个友好提示------------
+                errMsg = "当前用户较多，排队中，请稍后再试！";
+                EventData eventData = new EventData(requestId, null, EventData.EVENT_MESSAGE, chatConversation.getId(), topicId);
+                eventData.setData(EventMessageData.builder().message("\n" + errMsg).build());
+                sendMessage2Client(emitter, eventData);
+                eventData = new EventData(requestId, null, EventData.EVENT_MESSAGE_END, chatConversation.getId(), topicId);
+                closeSSE(emitter, eventData);
+                //update-end---author:chenrui ---date:20250425  for：[QQYUN-12203]AI 聊天，超时或者服务器报错，给个友好提示------------
+            } else {
+                errMsg = "调用大模型接口失败:" + errMsg;
+                EventData eventData = new EventData(requestId, null, EventData.EVENT_FLOW_ERROR, chatConversation.getId(), topicId);
+                eventData.setData(EventFlowData.builder().success(false).message(errMsg).build());
+                closeSSE(emitter, eventData);
+            }
+        }).start();
+    }
+
+    /**
+     * 发送消息到客户端
+     *
+     * @param emitter
+     * @param eventData
+     * @author chenrui
+     * @date 2025/4/22 19:58
+     */
+    private static void sendMessage2Client(SseEmitter emitter, EventData eventData) {
+        try {
+            log.info("发送消息:{}", eventData.getRequestId());
+            String eventStr = JSONObject.toJSONString(eventData);
+            log.debug("[AI应用]接收LLM返回消息:{}", eventStr);
+            emitter.send(SseEmitter.event().data(eventStr));
+        } catch (IOException e) {
+            log.error("发送消息失败", e);
+        }
     }
 
     /**
@@ -837,12 +904,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
         }
         CompletableFuture.runAsync(() -> {
             List<ChatMessage> messages = new LinkedList<>();
-            String systemMsgStr = "根据用户的问题,总结会话标题.\n" +
-                    "要求如下:\n" +
-                    "1. 使用中文回答.\n" +
-                    "2. 标题长度控制在5个汉字10个英文字符以内\n" +
-                    "3. 直接回复会话标题,不要有其他任何无关描述\n" +
-                    "4. 如果无法总结,回复不知道\n";
+            String systemMsgStr = "根据用户的问题,总结会话标题.\n" + "要求如下:\n" + "1. 使用中文回答.\n" + "2. 标题长度控制在5个汉字10个英文字符以内\n" + "3. 直接回复会话标题,不要有其他任何无关描述\n" + "4. 如果无法总结,回复不知道\n";
             messages.add(new SystemMessage(systemMsgStr));
             messages.add(new UserMessage(question));
             String summaryTitle;
@@ -876,6 +938,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
 
     /**
      * 获取用户名
+     *
      * @param httpRequest
      * @return
      * @author chenrui
@@ -885,9 +948,9 @@ public class AiragChatServiceImpl implements IAiragChatService {
         try {
             TokenUtils.getTokenByRequest();
             String token;
-            if(null != httpRequest){
+            if (null != httpRequest) {
                 token = TokenUtils.getTokenByRequest(httpRequest);
-            }else{
+            } else {
                 token = TokenUtils.getTokenByRequest();
             }
             if (TokenUtils.verifyToken(token, sysBaseApi, redisUtil)) {
@@ -897,5 +960,20 @@ public class AiragChatServiceImpl implements IAiragChatService {
             return null;
         }
         return null;
+    }
+
+
+    /**
+     * 打印耗时
+     * @param requestId
+     * @param message
+     * @author chenrui
+     * @date 2025/4/28 15:15
+     */
+    private static void printChatDuration(String requestId,String message) {
+        Long beginTime = AiragLocalCache.get(AiragConsts.CACHE_TYPE_SSE_SEND_TIME, requestId);
+        if (null != beginTime) {
+            log.info("[AI-CHAT]{},requestId:{},耗时:{}s", message, requestId, (System.currentTimeMillis() - beginTime) / 1000);
+        }
     }
 }

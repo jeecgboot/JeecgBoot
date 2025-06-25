@@ -46,7 +46,7 @@ public interface SysAnnouncementMapper extends BaseMapper<SysAnnouncement> {
      * @param endDate
      * @return
      */
-	List<SysAnnouncement> queryAllMessageList(Page<SysAnnouncement> page, @Param("userId")String userId, @Param("fromUser")String fromUser, @Param("starFlag")String starFlag, @Param("beginDate")Date beginDate, @Param("endDate")Date endDate);
+	List<SysAnnouncement> queryAllMessageList(Page<SysAnnouncement> page, @Param("userId")String userId, @Param("fromUser")String fromUser, @Param("starFlag")String starFlag, @Param("busType")String busType, @Param("beginDate")Date beginDate, @Param("endDate")Date endDate);
    
     /**
      * 查询用户未阅读的通知公告

@@ -1,7 +1,10 @@
 //package org.jeecg.modules.airag.test;
 //
+//import dev.langchain4j.agent.tool.ToolParameters;
+//import dev.langchain4j.agent.tool.ToolSpecification;
 //import dev.langchain4j.data.message.*;
 //import dev.langchain4j.model.chat.ChatLanguageModel;
+//import dev.langchain4j.model.chat.request.json.JsonObjectSchema;
 //import dev.langchain4j.model.openai.OpenAiChatModel;
 //import dev.langchain4j.model.output.Response;
 //import dev.langchain4j.service.AiServices;
@@ -12,15 +15,13 @@
 //import org.jeecg.ai.factory.AiModelOptions;
 //import org.jeecg.ai.handler.AIParams;
 //import org.jeecg.ai.handler.LLMHandler;
-//import org.jeecg.modules.airag.llm.handler.AIChatParams;
-//import org.junit.Test;
+//import org.junit.jupiter.api.Test;
 //
 //import java.io.IOException;
+//import java.io.Serial;
 //import java.nio.file.Files;
 //import java.nio.file.Paths;
-//import java.util.ArrayList;
-//import java.util.Base64;
-//import java.util.Collections;
+//import java.util.*;
 //import java.util.concurrent.ConcurrentHashMap;
 //import java.util.concurrent.CountDownLatch;
 //
@@ -171,6 +172,53 @@
 //                }).start();
 //        countDownLatch.await();
 //
+//    }
+//
+//
+//    @Test
+//    public void testFuncCalling() {
+//        String apiKey = "sk-";
+//        String baseUrl = "https://api.v3.cm/v1";
+//        String modelName = "gpt-4o-mini";
+//        double temperature = 0.7;
+//        ChatLanguageModel llmModel = OpenAiChatModel.builder()
+//                .apiKey(apiKey)
+//                .baseUrl(baseUrl)
+//                .modelName(modelName)
+//                .temperature(temperature)
+//                .build();
+//
+//        List<ToolSpecification> toolSpecifications = new ArrayList<>();
+//        Map<String, Map<String, Object>> properties = new ConcurrentHashMap<>();
+//
+//        properties.put("location", new HashMap<>() {
+//            @Serial
+//            private static final long serialVersionUID = -8440944665582258534L;
+//            {
+//                put("type", "string");
+//                put("description", "The city and state, e.g. San Francisco, CA");
+//            }
+//        });
+//        ToolSpecification toolSpecification = ToolSpecification.builder()
+//                .name("get_current_weather")
+//                .description("Get the current weather in a given location")
+//                .parameters(ToolParameters.builder()
+//                        .properties(properties)
+//                        .required(List.of("location"))
+//                        .type("string")
+//                        .build())
+//                .build();
+//        toolSpecifications.add(toolSpecification);
+//
+//        List<ChatMessage> messages = new  ArrayList<>();
+//        messages.add(UserMessage.from("How is the weather in Beijing today?"));
+//
+//        Response<AiMessage> resp = llmModel.generate(messages, toolSpecifications);
+//        System.out.println(resp);
+//
+//        /*Response { content = AiMessage { text = null
+//        toolExecutionRequests = [ToolExecutionRequest { id = "call_hjPaRh9WAHv6Ib7KpgHpp8Tl", name = "get_current_weather", arguments = "{"location":"Beijing, China"}" }] },
+//        tokenUsage = TokenUsage { inputTokenCount = 69, outputTokenCount = 19, totalTokenCount = 88 }, finishReason = TOOL_EXECUTION, metadata = {} }*/
 //    }
 //
 //

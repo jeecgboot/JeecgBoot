@@ -36,6 +36,11 @@ public class LLMConsts {
     public static final String MODEL_TYPE_LLM = "LLM";
 
     /**
+     * 向量模型：默认维度
+     */
+    public static final Integer EMBED_MODEL_DEFAULT_DIMENSION = 1536;
+
+    /**
      * 知识库:文档状态:草稿
      */
     public static final String KNOWLEDGE_DOC_STATUS_DRAFT = "draft";
@@ -47,7 +52,10 @@ public class LLMConsts {
      * 知识库:文档状态:构建完成
      */
     public static final String KNOWLEDGE_DOC_STATUS_COMPLETE = "complete";
-
+    /**
+     * 知识库:文档状态:构建失败
+     */
+    public static final String KNOWLEDGE_DOC_STATUS_FAILED = "failed";
 
     /**
      * 知识库:文档类型:文本

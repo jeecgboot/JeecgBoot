@@ -9,9 +9,22 @@
     <#assign hasChildrenField = po.fieldName>
   </#if>
 </#list>
+<#assign buttonList=[]>
+<#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
+  <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
+</#if>
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :title="getTitle" @ok="handleSubmit">
     <BasicForm @register="registerForm" name="${entityName}Form" />
+  <#if buttonList?? && buttonList?size gt 0>
+     <template #insertFooter>
+      <#list buttonList as btn>
+       <#if btn.buttonStyle=='form'>
+         <a-button type="primary" @click="handle${btn.buttonCode?cap_first}" <#if btn.buttonIcon??> preIcon="${btn.buttonIcon}" </#if>>${btn.buttonName}</a-button>
+       </#if>
+      </#list>
+     </template>
+  </#if>
   </BasicModal>
 </template>
 <script lang="ts" setup>
@@ -20,6 +33,8 @@
   import {BasicForm, useForm} from '/@/components/Form';
   import {formSchema} from '../${entityName}.data';
   import {loadTreeData, saveOrUpdateDict} from '../${entityName}.api';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  const { createMessage } = useMessage();
   // 获取emit
   const emit = defineEmits(['register', 'success']);
   const isUpdate = ref(true);
@@ -115,6 +130,15 @@
       setModalProps({confirmLoading: false});
     }
   }
+<#if buttonList?size gt 0>
+<#list buttonList?sort_by('orderNum') as btn>
+    <#if btn.buttonStyle=='form'>
+       function handle${btn.buttonCode?cap_first}(){
+          createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+       }
+    </#if>
+</#list>
+</#if>
 </script>
 <style lang="less" scoped>
 	/** 时间和数字输入框样式 */

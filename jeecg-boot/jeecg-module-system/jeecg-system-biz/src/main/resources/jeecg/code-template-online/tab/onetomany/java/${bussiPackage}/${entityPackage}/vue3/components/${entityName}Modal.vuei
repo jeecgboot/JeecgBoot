@@ -1,5 +1,9 @@
 <#include "/common/utils.ftl">
 <template>
+<#assign buttonList=[]>
+<#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
+  <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
+</#if>
   <BasicModal ref="modalRef" destroyOnClose wrapClassName="j-cgform-tab-modal" v-bind="$attrs" @register="registerModal" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
     <!-- 标题区域 -->
      <template #title>
@@ -41,6 +45,15 @@
        </#if>
      </#list>
      </div>
+ <#if buttonList?? && buttonList?size gt 0>
+    <template #insertFooter>
+     <#list buttonList as btn>
+      <#if btn.buttonStyle=='form'>
+        <a-button type="primary" @click="handle${btn.buttonCode?cap_first}" <#if btn.buttonIcon??> preIcon="${btn.buttonIcon}" </#if>>${btn.buttonName}</a-button>
+      </#if>
+     </#list>
+    </template>
+ </#if>
   </BasicModal>
 </template>
 
@@ -58,6 +71,8 @@
     import {formSchema<#list subTables as sub><#if sub.foreignRelationType =='0'>,${sub.entityName?uncap_first}Columns</#if></#list>} from '../${entityName}.data';
     import {saveOrUpdate<#list subTables as sub>,${sub.entityName?uncap_first}List</#list>} from '../${entityName}.api';
     import { VALIDATE_FAILED } from '/@/utils/common/vxeUtils'
+    import { useMessage } from '/@/hooks/web/useMessage';
+    const { createMessage } = useMessage();
     // Emits声明
     const emit = defineEmits(['register','success']);
     const isUpdate = ref(true);
@@ -221,6 +236,15 @@
             setModalProps({confirmLoading: false});
         }
     }
+<#if buttonList?size gt 0>
+  <#list buttonList?sort_by('orderNum') as btn>
+      <#if btn.buttonStyle=='form'>
+         function handle${btn.buttonCode?cap_first}(){
+            createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+         }
+      </#if>
+  </#list>
+</#if>
 </script>
 
 <style lang="less" scoped>
