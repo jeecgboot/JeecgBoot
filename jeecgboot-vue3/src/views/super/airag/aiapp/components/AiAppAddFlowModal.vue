@@ -20,7 +20,7 @@
                 <div class="flex text-status" v-if="item.metadata && item.metadata.length>0">
                   <span class="tag-input">输入</span>
                   <div v-for="(metaItem, index) in item.metadata">
-                    <a-tag color="rgba(87,104,161,0.08)" class="tags-meadata">
+                    <a-tag color="#f2f3f8" class="tags-meadata">
                       <span v-if="index<3" class="tag-text">{{ metaItem.field }}</span>
                     </a-tag>
                   </div>
@@ -126,7 +126,7 @@
       };
 
       /**
-       * 加载知识库
+       * 加载AI流程
        */
       function loadFlowData() {
         let params = {
@@ -135,7 +135,7 @@
           column: 'createTime',
           order: 'desc',
           name: searchText.value,
-          status:'enable'
+          status: 'enable,release'
         };
         getAiFlowList(params).then((res) =>{
           if(res){
@@ -313,11 +313,11 @@
     white-space: nowrap;
     height: 20px;
     font-size: 12px;
-    color: rgba(15, 21, 40,0.82);
+    color: #3a3f4f;
   }
   .tag-input{
     align-self: center;
-    color: rgba(55,67,106,0.7);
+    color: #707a97;
     font-size: 12px;
     font-style: normal;
     font-weight: 500;

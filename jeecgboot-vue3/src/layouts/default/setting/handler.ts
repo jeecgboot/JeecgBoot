@@ -199,7 +199,10 @@ export function handler(event: HandlerEnum, value: any): DeepPartial<ProjectConf
     case HandlerEnum.COLOR_WEAK:
       updateColorWeak(value);
       return { colorWeak: value };
-
+    // update-begin--author:liaozhiyang---date:20250407---for：【QQYUN-10952】AI助手支持通过设置来配置是否显示
+    case HandlerEnum.AI_ICON_SHOW:
+      return { aiIconShow: value };
+    // update-end--author:liaozhiyang---date:20250407---for：【QQYUN-10952】AI助手支持通过设置来配置是否显示
     case HandlerEnum.SHOW_LOGO:
       return { showLogo: value };
 

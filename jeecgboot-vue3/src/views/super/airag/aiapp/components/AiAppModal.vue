@@ -1,14 +1,24 @@
 <template>
   <div class="p-2">
     <BasicModal destroyOnClose @register="registerModal" :canFullscreen="false" width="800px" :title="title" @ok="handleOk" @cancel="handleCancel">
+      <template #title>
+         <span style="display: flex">
+          {{title}}
+          <a-tooltip title="AI应用文档">
+            <a style="color: unset" href="https://help.jeecg.com/aigc/guide/app" target="_blank">
+              <Icon style="position:relative;left:2px;top:1px" icon="ant-design:question-circle-outlined"></Icon>
+            </a>
+          </a-tooltip>
+        </span>
+      </template>
       <BasicForm @register="registerForm">
         <template #typeSlot="{ model, field }">
-          <a-radio-group v-model:value="type" style="display: flex">
+          <a-radio-group v-model:value="model[field]" style="display: flex">
             <a-card
               v-for="item in appTypeOption"
               style="margin-right: 10px; cursor: pointer; width: 100%"
-              @click="handleTypeClick(item.value)"
-              :style="type === item.value ? { borderColor: '#3370ff' } : {}"
+              @click="model[field] = item.value"
+              :style="model[field] === item.value ? { borderColor: '#3370ff' } : {}"
             >
               <a-radio :value="item.value">
                 <div class="type-title">{{ item.title }}</div>
@@ -23,7 +33,7 @@
 </template>
 
 <script lang="ts">
-  import { ref, unref } from 'vue';
+  import { ref, unref, computed } from 'vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { useModal, useModalInner } from '@/components/Modal';
 
@@ -42,15 +52,13 @@
     },
     emits: ['success', 'register'],
     setup(props, { emit }) {
-      const title = ref<string>('创建应用');
-
       //保存或修改
       const isUpdate = ref<boolean>(false);
 
+      const title = computed<string>(() => isUpdate.value ? '修改应用' : '创建应用');
+
       //app类型
       const appTypeOption = ref<any>([]);
-      //应用类型
-      const type = ref<string>('chatSimple');
 
       //表单配置
       const [registerForm, { validate, resetFields, setFieldsValue }] = useForm({
@@ -63,7 +71,6 @@
       //注册modal
       const [registerModal, { closeModal, setModalProps }] = useModalInner(async (data) => {
         await resetFields();
-        type.value = 'chatSimple';
         //update-begin---author:wangshuai---date:2025-03-11---for: 【QQYUN-11324】8.修改弹窗head---
         isUpdate.value = !!data?.isUpdate;
         if (unref(isUpdate)) {
@@ -71,6 +78,10 @@
           await setFieldsValue({
             ...data.record,
           });
+        } else {
+          await setFieldsValue({
+            type: 'chatSimple',
+          })
         }
         //update-end---author:wangshuai---date:2025-03-11---for:【QQYUN-11324】8.修改弹窗head---
         setModalProps({ minHeight: 500, bodyStyle: { padding: '10px' } });
@@ -83,7 +94,6 @@
         try {
           let values = await validate();
           setModalProps({ confirmLoading: true });
-          values.type = type.value;
           let result = await saveApp(values);
           if (result) {
             //关闭弹窗
@@ -128,13 +138,6 @@
         closeModal();
       }
 
-      /**
-       * 应用类型点击事件
-       */
-      function handleTypeClick(val) {
-        type.value = val;
-      }
-
       return {
         registerModal,
         registerForm,
@@ -142,8 +145,6 @@
         handleOk,
         handleCancel,
         appTypeOption,
-        type,
-        handleTypeClick,
       };
     },
   };

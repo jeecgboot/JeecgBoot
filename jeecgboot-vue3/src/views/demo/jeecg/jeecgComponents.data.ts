@@ -273,6 +273,12 @@ export const schemas: FormSchema[] = [
     },
   },
   {
+    field: 'user4',
+    component: 'JEllipsis',
+    label: '选中用户',
+    colProps: { span: 12 },
+  },
+  {
     field: 'role2',
     component: 'JSelectRole',
     label: '角色选择组件',

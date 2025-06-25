@@ -54,7 +54,7 @@
               </li>
               <li class="flex mr-14 mt-6">
                 <span class="label">创建者</span>
-                <span class="described">{{ item.createBy }}</span>
+                <span class="described">{{ item.createBy_dictText || item.createBy }}</span>
               </li>
             </ul>
           </div>
@@ -93,6 +93,7 @@
       @change="handlePageChange"
       class="list-footer"
       size="small"
+      :show-total="() => `共${total}条` "
     />
   </div>
 
@@ -218,6 +219,9 @@
        * @param item
        */
       async function handleDeleteClick(item) {
+        if(modalList.value.length == 1 && pageNo.value > 1) {
+          pageNo.value = pageNo.value - 1;
+        }
         await deleteModel({ id: item.id, name: item.name }, reload);
       }
 
@@ -225,6 +229,7 @@
        * 查询
        */
       function searchQuery() {
+        pageNo.value = 1;
         reload();
       }
 
@@ -350,14 +355,14 @@
     margin-bottom: 20px;
     background: #fcfcfd;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
     border-radius: 10px;
     height: 152px;
     cursor: pointer;
   }
   .model-card:hover {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 12px #d0d3d8;
     .model-btn {
       display: flex;
     }
@@ -385,7 +390,7 @@
     margin-bottom: 20px;
     background: #fcfcfd;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
     border-radius: 10px;
     display: inline-flex;
@@ -410,7 +415,7 @@
   }
 
   .add-knowledge-card:hover {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 12px #d0d3d8;
   }
   .model-icon{
     background-color: unset;
@@ -419,7 +424,7 @@
   }
   .model-icon:hover{
     color: #000000;
-    background-color: rgba(0,0,0,0.05);
+    background-color: #e9ecf2;
     border: none;
   }
   .ant-dropdown-link{

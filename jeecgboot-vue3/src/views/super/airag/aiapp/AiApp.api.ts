@@ -5,6 +5,7 @@ export enum Api {
   //知识库管理
   list = '/airag/app/list',
   save = '/airag/app/edit',
+  release = '/airag/app/release',
   delete = '/airag/app/delete',
   queryById = '/airag/app/queryById',
   queryBathById = '/airag/knowledge/query/batch/byId',
@@ -44,6 +45,17 @@ export const saveApp = (params) => {
   return defHttp.put({ url: Api.save, params });
 };
 
+// 发布应用
+export function releaseApp(appId: string, release = false) {
+  return defHttp.post({
+    url: Api.release,
+    params: {
+      id: appId,
+      release: release,
+    }
+  }, {joinParamsToUrl: true});
+}
+
 /**
  * 删除应用
  * @param params
@@ -77,5 +89,15 @@ export const queryFlowById = (params) => {
  * @param params
  */
 export const promptGenerate = (params) => {
-  return defHttp.get({ url: Api.promptGenerate, params,timeout: 5 * 60 * 1000 }, { isTransformResponse: false });
+  return defHttp.post(
+    {
+      url: Api.promptGenerate+'?prompt='+ params.prompt,
+      adapter: 'fetch',
+      responseType: 'stream',
+      timeout: 5 * 60 * 1000,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
 };

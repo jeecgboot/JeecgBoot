@@ -67,6 +67,9 @@ const setting: ProjectConfig = {
   // 是否显示底部信息 copyright
   showFooter: false,
 
+  // ai图标显示
+  aiIconShow: false,
+
   // 头部配置
   headerSetting: {
     // 背景色

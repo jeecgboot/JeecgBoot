@@ -13,6 +13,7 @@ enum Api {
   knowledgeDocList = '/airag/knowledge/doc/list',
   knowledgeEditDoc = '/airag/knowledge/doc/edit',
   knowledgeDeleteBatchDoc = '/airag/knowledge/doc/deleteBatch',
+  knowledgeDeleteAllDoc = '/airag/knowledge/doc/deleteAll',
   knowledgeRebuildDoc = '/airag/knowledge/doc/rebuild',
   knowledgeEmbeddingHitTest = '/airag/knowledge/embedding/hitTest',
 }
@@ -110,6 +111,18 @@ export const knowledgeRebuildDoc = (params, handleSuccess) => {
  */
 export const knowledgeDeleteBatchDoc = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.knowledgeDeleteBatchDoc, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+};
+
+/**
+ * 批量删除文档
+ *
+ * @param params
+ * @param handleSuccess
+ */
+export const knowledgeDeleteAllDoc = (knowId: string, handleSuccess) => {
+  return defHttp.delete({ url: Api.knowledgeDeleteAllDoc, params: {knowId} }, { joinParamsToUrl: true }).then(() => {
     handleSuccess();
   });
 };

@@ -49,6 +49,14 @@ export function wrapperEnv(envConf: Recordable): ViteEnv {
  * 获取当前环境下生效的配置文件名
  */
 function getConfFiles() {
+
+  // update-begin--author:sunjianlei---date:20250411---for：【QQYUN-9685】构建 electron 桌面应用
+  const {VITE_GLOB_RUN_PLATFORM} = process.env
+  if (VITE_GLOB_RUN_PLATFORM === 'electron') {
+    return ['.env', '.env.prod_electron'];
+  }
+  // update-end----author:sunjianlei---date:20250411---for：【QQYUN-9685】构建 electron 桌面应用
+
   const script = process.env.npm_lifecycle_script;
   // update-begin--author:liaozhiyang---date:20240326---for：【QQYUN-8690】修正获取当前环境下的文件名
   const reg = new RegExp('NODE_ENV=([a-z_\\d]+)');

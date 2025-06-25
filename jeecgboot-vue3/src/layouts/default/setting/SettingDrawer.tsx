@@ -46,6 +46,7 @@ export default defineComponent({
       getLockTime,
       getShowDarkModeToggle,
       getThemeColor,
+      getAiIconShow,
     } = useRootSetting();
 
     const { getOpenPageLoading, getBasicTransition, getEnableTransition, getOpenNProgress } = useTransitionSetting();
@@ -315,6 +316,8 @@ export default defineComponent({
           <SwitchItem title={t('layout.setting.grayMode')} event={HandlerEnum.GRAY_MODE} def={unref(getGrayMode)} />
 
           <SwitchItem title={t('layout.setting.colorWeak')} event={HandlerEnum.COLOR_WEAK} def={unref(getColorWeak)} />
+
+           <SwitchItem title={t('layout.setting.aiIconSHow')} event={HandlerEnum.AI_ICON_SHOW} def={unref(getAiIconShow)} />
         </>
       );
     }
