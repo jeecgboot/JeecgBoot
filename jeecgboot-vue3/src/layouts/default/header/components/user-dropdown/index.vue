@@ -123,8 +123,9 @@
       // 清除缓存
       async function clearCache() {
         const result = await refreshCache();
-        const dragRes = await refreshDragCache();
-        console.log('dragRes', dragRes);
+        //TODO 当前版本还不支持刷新缓存，需要等jimibi升级
+        // const dragRes = await refreshDragCache();
+        // console.log('dragRes', dragRes);
         if (result.success) {
           const res = await queryAllDictItems();
           removeAuthCache(DB_DICT_DATA_KEY);
