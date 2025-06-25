@@ -5,7 +5,7 @@
     <artifactId>jeecg-cloud-nacos</artifactId>
     <name>jeecg-cloud-nacos</name>
     <description>nacos启动模块</description>
-    <version>3.8.0</version>
+    <version>3.8.1</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
