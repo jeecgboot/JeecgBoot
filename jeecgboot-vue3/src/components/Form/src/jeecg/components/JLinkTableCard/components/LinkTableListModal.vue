@@ -55,7 +55,6 @@
   import { useListPage } from '/@/hooks/system/useListPage';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { defHttp } from '/@/utils/http/axios';
-  import { useTableColumns } from '@/views/super/online/cgform/hooks/auto/useTableColumns';
   import { createAsyncComponent } from '@/utils/factory/createAsyncComponent';
   import { useFixedHeightModal } from '../hooks/useLinkTable';
 
@@ -149,9 +148,9 @@
       };
       const extConfigJson = ref<any>({});
 
-      // 处理 BasicTable 的配置
-      const { columns, downloadRowFile, getImgView, getPcaText, getFormatDate, handleColumnResult, hrefComponent, viewOnlineCellImage } =
-        useTableColumns(onlineTableContext, extConfigJson);
+      // // 处理 BasicTable 的配置
+      // const { columns, downloadRowFile, getImgView, getPcaText, getFormatDate, handleColumnResult, hrefComponent, viewOnlineCellImage } =
+      //   useTableColumns(onlineTableContext, extConfigJson);
 
       /**
        * 查询table列信息 及其他配置
