@@ -177,7 +177,8 @@ public class AddGiftJob implements Job {
                         .filter(orderItem -> !orderItem.getStatus().equalsIgnoreCase(OBSOLETE_STATUS_CODE))
                         .collect(groupingBy(orderItem -> giftSkuSet.contains(orderItem.getErpCode())));
                 if (orderItemMap.isEmpty()) {
-                    break;
+                    log.info("No item in order {}, skipping", order.getPlatformOrderId());
+                    continue;
                 }
                 for (OrderItem orderItem : orderItemMap.get(Boolean.FALSE)) {
                     String erpCode = orderItem.getErpCode();
@@ -196,7 +197,7 @@ public class AddGiftJob implements Job {
                         }
                     }
                 }
-                log.debug("Order {} 's new gift map : ", newGiftMap);
+                log.info("Order {} 's new gift map : {}", order.getPlatformOrderId(), newGiftMap);
                 HashSet<Triple<String, String, Integer>> oldSkuData = new HashSet<>();
                 HashMap<String, Integer> oldGiftMap = new HashMap<>();
                 List<OrderItem> oldGifts = orderItemMap.get(Boolean.TRUE) == null ? new ArrayList<>() : orderItemMap.get(Boolean.TRUE);
