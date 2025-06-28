@@ -150,7 +150,7 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^4.9.5",
-    "vite": "^6.0.7",
+    "vite": "^6.1.6",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-mkcert": "^1.17.6",
