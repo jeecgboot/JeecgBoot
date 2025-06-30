@@ -62,6 +62,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<SkuOrderPage> fetchSkuWeightsWithFilters(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
     List<SkuOrderPage> fetchAllSkuWeightsWithFilters(@Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
     List<SkuOrderPage> fetchSkusByClientWithFilters(@Param("clientId") String clientId, @Param("offset") Integer offset, @Param("size") Integer pageSize, @Param("column") String column, @Param("order") String order, @Param("erpCodes") String erpCodesRegex, @Param("zhNames") String zhNamesRegex, @Param("enNames") String enNamesRegex);
+    List<SkuOrderPage> listSkuOrdersByClient(@Param("clientId") String clientId);
 
     List<SkuOrderPage> listSelectableSkuIdsWithFilters(@Param("clientId") String clientId, @Param("erpCodes") String erpCodeList, @Param("zhNames") String zhNameList, @Param("enNames") String enNameList);
     List<SkuOrderPage> listSelectableSkuIds(@Param("clientId") String clientId);

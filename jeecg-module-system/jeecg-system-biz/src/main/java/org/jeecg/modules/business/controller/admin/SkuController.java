@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.controller.admin;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +10,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -19,10 +23,13 @@ import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
+import org.jeecgframework.poi.excel.ExcelExportUtil;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
+import org.jeecgframework.poi.excel.entity.params.ExcelExportEntity;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,12 +44,15 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -377,30 +387,30 @@ public class SkuController {
 
     @GetMapping("/listWithFilters")
     public Result<?> listWithFilters(@RequestParam(name = "clientId", required = false) String clientId,
-                                  @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-                                  @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
-                                  @RequestParam(name = "column", defaultValue = "erp_code") String column,
-                                  @RequestParam(name = "order", defaultValue = "ASC") String order,
-                                  @RequestParam(name = "erpCodes", required = false) String erpCodes,
-                                  @RequestParam(name = "zhNames", required = false) String zhNames,
-                                  @RequestParam(name = "enNames", required = false) String enNames,
+                                     @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
+                                     @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
+                                     @RequestParam(name = "column", defaultValue = "erp_code") String column,
+                                     @RequestParam(name = "order", defaultValue = "ASC") String order,
+                                     @RequestParam(name = "erpCodes", required = false) String erpCodes,
+                                     @RequestParam(name = "zhNames", required = false) String zhNames,
+                                     @RequestParam(name = "enNames", required = false) String enNames,
                                      ServletRequest servletRequest) {
-        if(!securityService.checkIsEmployee()) {
+        if (!securityService.checkIsEmployee()) {
             Client client = clientService.getCurrentClient();
             // Here we don't explicitly tell the user that they are not allowed to access this endpoint for security measure.
             if (client == null) {
                 return Result.error(HttpStatus.SC_NOT_FOUND, "Profile not found");
             }
-            if( clientId == null) {
+            if (clientId == null) {
                 return Result.error(HttpStatus.SC_BAD_REQUEST, "Bad request");
             }
-            if(!client.getId().equals(clientId)) {
+            if (!client.getId().equals(clientId)) {
                 return Result.error(HttpStatus.SC_NOT_FOUND, "Client not found");
             }
         }
         String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
         String parsedOrder = order.toUpperCase();
-        if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
+        if (!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {
             return Result.error("Error 400 Bad Request");
         }
         try {
@@ -410,20 +420,19 @@ public class SkuController {
         }
         List<SkuOrderPage> skuOrdersPage;
         int total;
-        if(erpCodes != null || zhNames != null || enNames != null) {
+        if (erpCodes != null || zhNames != null || enNames != null) {
             List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
             List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
             List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
-            if(clientId != null) {
+            if (clientId != null) {
                 total = skuService.countAllClientSkusWithFilters(clientId, erpCodeList, zhNameList, enNameList);
                 skuOrdersPage = skuService.fetchSkusByClientWithFilters(clientId, pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
             } else {
                 total = skuService.countAllSkuWeightsWithFilters(erpCodeList, zhNameList, enNameList);
                 skuOrdersPage = skuService.fetchSkuWeightsWithFilters(pageNo, pageSize, parsedColumn, parsedOrder, erpCodeList, zhNameList, enNameList);
             }
-        }
-        else {
-            if(clientId != null) {
+        } else {
+            if (clientId != null) {
                 total = skuService.countAllClientSkus(clientId);
                 skuOrdersPage = skuService.fetchSkusByClient(clientId, pageNo, pageSize, parsedColumn, parsedOrder);
             } else {
@@ -480,6 +489,7 @@ public class SkuController {
         page.setTotal(total);
         return Result.OK(page);
     }
+
     @GetMapping("/listAllSelectableSkuIds")
     public Result<?> listAllSelectableSkuIds(@RequestParam(name = "clientId") String clientId,
                                              @RequestParam(name = "erpCodes", required = false) String erpCodes,
@@ -487,7 +497,7 @@ public class SkuController {
                                              @RequestParam(name = "enNames", required = false) String enNames
     ) {
         List<SkuOrderPage> selectableSkuIds;
-        if(erpCodes != null || zhNames != null || enNames != null) {
+        if (erpCodes != null || zhNames != null || enNames != null) {
             List<String> erpCodeList = erpCodes == null ? null : Arrays.asList(erpCodes.split(","));
             List<String> zhNameList = zhNames == null ? null : Arrays.asList(zhNames.split(","));
             List<String> enNameList = enNames == null ? null : Arrays.asList(enNames.split(","));
@@ -497,10 +507,11 @@ public class SkuController {
         }
         return Result.OK(selectableSkuIds);
     }
+
     @GetMapping("/searchExistingSkuByKeywords")
     public Result<?> searchExistingSkuByKeywords(@RequestParam("keywords") String keywords) {
         String parsedKeywords = keywords.trim().replaceAll("[{}=$]", "");
-        if(parsedKeywords.isEmpty()) {
+        if (parsedKeywords.isEmpty()) {
             return Result.OK(new ArrayList<>());
         }
         return Result.OK(skuMongoService.textSearch(parsedKeywords));
@@ -510,7 +521,7 @@ public class SkuController {
     public Result<?> createMabangSku(@RequestBody List<SkuOrderPage> skuList) {
         log.info("Request to create {} new skus in Mabang", skuList.size());
         skuList.forEach(sku -> {
-            if(sku.getShippingDiscount() == null) {
+            if (sku.getShippingDiscount() == null) {
                 sku.setShippingDiscount(BigDecimal.ZERO);
             } else {
                 BigDecimal oldValue = sku.getShippingDiscount().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
@@ -526,7 +537,7 @@ public class SkuController {
         List<NewSkuPage> skuList = parseSkuList(params);
         log.info("Exporting new skus to excel ...");
         skuList.forEach(sku -> {
-            if(sku.getShippingDiscount() == null) {
+            if (sku.getShippingDiscount() == null) {
                 sku.setShippingDiscount(BigDecimal.ONE);
             } else {
                 BigDecimal oldValue = sku.getShippingDiscount().divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
@@ -641,7 +652,7 @@ public class SkuController {
                                   @RequestParam(name = "pageSize", defaultValue = "50") Integer pageSize,
                                   @RequestParam(name = "skus[]", required = false) List<String> skuNames
     ) {
-        if(skuNames == null)
+        if (skuNames == null)
             skuNames = new ArrayList<>();
         String shopId = shopService.getIdByCode(shopCode);
         if (shopId == null) return Result.error(404, "Shop not found");
@@ -651,22 +662,82 @@ public class SkuController {
     }
 
     @GetMapping(value = "/latestSkuCounter")
-    public Result<?> latestSkuCounter(@RequestParam(name= "userCode") String userCode,
-                                      @RequestParam(name= "clientCode") String clientCode,
-                                      @RequestParam(name= "date") String date) {
+    public Result<?> latestSkuCounter(@RequestParam(name = "userCode") String userCode,
+                                      @RequestParam(name = "clientCode") String clientCode,
+                                      @RequestParam(name = "date") String date) {
         return Result.OK(skuService.latestSkuCounter(userCode, clientCode, date));
     }
 
     @GetMapping(value = "/compare")
-    public Result<?> compareClientSkuWithMabang(@RequestParam(name="clientId") String clientId,
-                                                @RequestParam(name="erpStatuses[]") List<String> erpStatuses) {
+    public Result<?> compareClientSkuWithMabang(@RequestParam(name = "clientId") String clientId,
+                                                @RequestParam(name = "erpStatuses[]") List<String> erpStatuses) {
         Map<String, Sku> clientSkus = skuService.listInUninvoicedOrders(clientId, erpStatuses);
-        if(clientSkus.isEmpty()) {
+        if (clientSkus.isEmpty()) {
             log.info("No skus to compare");
             return Result.OK();
         }
         skuListMabangService.compareClientSkusWithMabang(clientSkus);
 
         return Result.OK();
+    }
+
+    @GetMapping("/skuOrderExport")
+    public void SkuOrderExport(HttpServletResponse response,
+                               @RequestParam String clientId) throws IOException {
+        List<SkuOrderPage> skuList = skuService.listSkuOrdersByClient(clientId);
+        String clientCode = clientService.getById(clientId).getInternalCode();
+        String exportDate = DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
+        ExportParams exportParams = new ExportParams("SKU Orders" + " - " + clientCode + " - " + exportDate, "SKU Orders");
+        exportParams.setType(ExcelType.XSSF);
+        List<ExcelExportEntity> entityList = new ArrayList<>();
+        entityList.add(new ExcelExportEntity("SKU", "erpCode"));
+        entityList.add(new ExcelExportEntity("Nom Anglais", "enName"));
+        entityList.add(new ExcelExportEntity("Nom Chinois", "zhName"));
+        entityList.add(new ExcelExportEntity("Stock Dispo", "availableAmount"));
+        entityList.add(new ExcelExportEntity("Achat WIA en cours", "purchasingAmount"));
+        entityList.add(new ExcelExportEntity("Cde shopify en cours", "qtyInOrdersNotShipped"));
+        entityList.add(new ExcelExportEntity("Stock " + (new SimpleDateFormat("dd/MM").format(new Date())), "stock"));
+        entityList.add(new ExcelExportEntity("Quantité à acheter", "qtyToBuy"));
+        entityList.add(new ExcelExportEntity("Ventes 7j", "salesLastWeek"));
+        entityList.add(new ExcelExportEntity("Ventes 28j", "salesFourWeeks"));
+        entityList.add(new ExcelExportEntity("Ventes 42j", "salesSixWeeks"));
+        entityList.add(new ExcelExportEntity("SKU Price", "skuPrice"));
+
+        List<Map<String, Object>> dataList = new ArrayList<>();
+        for (SkuOrderPage sku : skuList) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("erpCode", sku.getErpCode());
+            map.put("enName", sku.getEnName());
+            map.put("zhName", sku.getZhName());
+            map.put("availableAmount", sku.getAvailableAmount());
+            map.put("purchasingAmount", sku.getPurchasingAmount());
+            map.put("qtyInOrdersNotShipped", sku.getQtyInOrdersNotShipped());
+            map.put("stock", sku.getStock());
+            map.put("qtyToBuy", sku.getQtyToBuy());
+            map.put("salesLastWeek", sku.getSalesLastWeek());
+            map.put("salesFourWeeks", sku.getSalesFourWeeks());
+            map.put("salesSixWeeks", sku.getSalesSixWeeks());
+            map.put("skuPrice", sku.getSkuPrice());
+            dataList.add(map);
+        }
+        Workbook workbook = ExcelExportUtil.exportExcel(exportParams, entityList, dataList);
+        Sheet sheet = workbook.getSheetAt(0);
+        if (sheet.getPhysicalNumberOfRows() > 0) {
+            Row headerRow = sheet.getRow(0);
+            if (headerRow != null) {
+                int cellCount = headerRow.getPhysicalNumberOfCells();
+                for (int i = 0; i < cellCount; i++) {
+                    sheet.autoSizeColumn(i);
+                }
+            }
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("SKU Orders_" + clientCode + "_" + exportDate + ".xlsx", "UTF-8"));
+            try (ServletOutputStream out = response.getOutputStream()) {
+                workbook.write(out);
+                out.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

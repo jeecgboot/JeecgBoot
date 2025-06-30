@@ -86,6 +86,12 @@ public class SkuOrderPage {
     @ApiModelProperty(value = "stock")
     private Integer stock;
     /**
+     * 用户要采购的数量
+     */
+    @Excel(name = "qty à acheter", width = 15)
+    @ApiModelProperty("用户要采购的数量")
+    private Integer qtyToBuy = 0;
+    /**
      * 图片链接
      */
     @Excel(name = "图片链接", width = 15)
