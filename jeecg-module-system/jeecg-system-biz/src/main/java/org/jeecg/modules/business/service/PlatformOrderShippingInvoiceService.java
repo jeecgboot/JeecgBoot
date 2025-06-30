@@ -117,6 +117,8 @@ public class PlatformOrderShippingInvoiceService {
 
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String INVOICE_DETAIL_DIR;
+    @Value("${jeecg.path.shippingInvoiceDetailCompleteDir}")
+    private String INVOICE_DETAIL_COMPLETE_DIR;
     @Value("${jeecg.path.shippingInvoicePdfDir}")
     private String INVOICE_PDF_DIR;
     @Value("${jeecg.path.shippingInvoiceDetailPdfDir}")
@@ -388,6 +390,15 @@ public class PlatformOrderShippingInvoiceService {
         return factureDetailMapper.selectList(queryWrapper);
     }
 
+    public List<FactureDetail> getInvoiceDetailWithPurchaseFee(String invoiceNumber) {
+
+        QueryWrapper<FactureDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("`N° de facture`", invoiceNumber);
+
+        return factureDetailMapper.getInvoiceDetailWithPurchaseFee(invoiceNumber);
+    }
+
+
     public List<FactureDetail> getInvoiceDetailByShopsAndPeriod(List<String> shopIds, String startDate, String endDate, String type) throws UserException {
         if(!type.equals(String.valueOf(SHIPPING.getType())) && !type.equals(String.valueOf(COMPLETE.getType())))
             throw new UserException("Invalid invoice type");
@@ -505,7 +516,14 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.moveCol(0);
             sheetManager.nextRow();
         }
-        String dir = Invoice.isInvoiceNumber(fileNameInfo) ? INVOICE_DETAIL_DIR : INVOICE_DETAIL_EXPORT_DIR;
+        String dir;
+        if (fileNameInfo.contains("complete")) {
+            dir = INVOICE_DETAIL_COMPLETE_DIR;
+        } else if (Invoice.isInvoiceNumber(fileNameInfo)) {
+            dir = INVOICE_DETAIL_DIR;
+        } else {
+            dir = INVOICE_DETAIL_EXPORT_DIR;
+        }
         Path target = Paths.get(dir, internalCode + "_(" + invoiceEntity + ")_" + fileNameInfo + "_Détail_calcul_de_facture.xlsx");
         int i = 2;
         while (Files.exists(target)) {
@@ -782,6 +800,10 @@ public class PlatformOrderShippingInvoiceService {
             log.info("File asked is of type invoice detail");
             pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
         }
+        if (filetype.equals("completeDetail")) {
+            log.info("File asked is of type complete invoice detail");
+            pathList = getPath(INVOICE_DETAIL_COMPLETE_DIR, invoiceNumber);
+        }
         if(filetype.equals("inventory")) {
             log.info("File asked is of type inventory");
             pathList = getPath(PURCHASE_INVENTORY_DIR, invoiceNumber);
@@ -805,6 +827,14 @@ public class PlatformOrderShippingInvoiceService {
                 List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
                 exportToExcel(details, refunds, extraFees, invoiceNumber, client.getInvoiceEntity(), client.getInternalCode());
                 pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
+            } else if (filetype.equals("completeDetail")) {
+                Client client = clientService.getClientFromInvoice(invoiceNumber);
+                List<FactureDetail> details = getInvoiceDetailWithPurchaseFee(invoiceNumber);
+                List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
+                List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
+                String fileNameInfo = invoiceNumber + "_complete";
+                exportToExcel(details, refunds, extraFees, fileNameInfo, client.getInvoiceEntity(), client.getInternalCode());
+                pathList = getPath(INVOICE_DETAIL_COMPLETE_DIR, invoiceNumber);
             } else if (filetype.equals("inventory")) {
                 InvoiceMetaData metaData = purchaseOrderService.getMetaDataFromInvoiceNumbers(invoiceNumber);
                 List<SkuOrderPage> skuOrderPages = skuService.getInventoryByInvoiceNumber(metaData.getInvoiceCode());

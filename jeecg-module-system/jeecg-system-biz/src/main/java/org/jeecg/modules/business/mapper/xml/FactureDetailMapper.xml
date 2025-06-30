@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.FactureDetailMapper">
+    <select id="getInvoiceDetailWithPurchaseFee" resultType="org.jeecg.modules.business.vo.FactureDetail">
+        SELECT * FROM detail_de_facture_avec_frais_achat
+        WHERE `N° de facture` = #{invoiceNumber}
+    </select>
+
     <select id="selectByShopsAndPeriod" resultType="org.jeecg.modules.business.vo.FactureDetail">
         WITH LatestPrices AS (
             SELECT sp.sku_id, sp.price, sp.date
