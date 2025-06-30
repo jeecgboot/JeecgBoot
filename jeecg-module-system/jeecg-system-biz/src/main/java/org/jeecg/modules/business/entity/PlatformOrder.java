@@ -141,6 +141,13 @@ public class PlatformOrder implements Serializable {
     @ApiModelProperty(value = "订单收件人邮编")
     private String postcode;
     /**
+     * 订单收件人是否有电话号码
+     */
+    @Excel(name = "订单收件人是否有电话号码", width = 15, dicCode = "yn")
+    @Dict(dicCode = "yn")
+    @ApiModelProperty(value = "订单收件人是否有电话号码")
+    private String hasPhoneNumber;
+    /**
      * 物流挂号费
      */
     @Excel(name = "物流挂号费", width = 15)

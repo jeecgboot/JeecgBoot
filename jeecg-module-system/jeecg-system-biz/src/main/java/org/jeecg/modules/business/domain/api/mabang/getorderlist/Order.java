@@ -154,6 +154,11 @@ public class Order {
 
     @JSONField(name = "phone1")
     private String phone1;
+    /**
+     * 订单收件人是否有电话号码
+     */
+    @JSONField(name = "hasPhoneNumber")
+    private String hasPhoneNumber;
 
     public void setTrackingNumber(String trackingNumber) {
         if (trackingNumber != null && trackingNumber.isEmpty()) {
@@ -223,5 +228,8 @@ public class Order {
         } else {
             productAvailable = "1";
         }
+    }
+    public void resolveHasPhoneNumber() {
+        this.hasPhoneNumber = (this.phone1 != null && !this.phone1.trim().isEmpty()) ? "1" : "0";
     }
 }
