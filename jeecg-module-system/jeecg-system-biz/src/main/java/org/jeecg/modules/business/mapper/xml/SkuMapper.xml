@@ -450,6 +450,58 @@
         </if>
         ;
     </select>
+    <select id="listSkuOrdersByClient" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
+        WITH qtyInOrdersNotShippedCTE AS (
+            SELECT sku_id AS ID, SUM(quantity) AS quantity
+            FROM platform_order_content poc
+                     JOIN platform_order po ON poc.platform_order_id = po.id
+                     JOIN shop s ON po.shop_id = s.id
+                     JOIN client c ON s.owner_id = c.id
+            WHERE c.id = #{clientId}
+              AND po.erp_status IN ('1','2')
+              AND po.can_send = 1
+              AND poc.erp_status IN ('1','2')
+            GROUP BY sku_id
+        ), latest_exchange_rate AS (
+            SELECT rate
+            FROM exchange_rates
+            WHERE original_currency = 'EUR' AND target_currency = 'RMB'
+            ORDER BY create_time DESC LIMIT 1
+        ), rmb_id AS (
+            SELECT id FROM currency WHERE code = 'RMB'
+        )
+        SELECT s.id,
+               s.erp_code,
+               s.en_name,
+               s.zh_name,
+               s.purchasing_amount,
+               s.available_amount,
+               qtyInOrdersNotShippedCTE.quantity AS qtyInOrdersNotShipped,
+               s.available_amount + s.purchasing_amount - COALESCE(qtyInOrdersNotShippedCTE.quantity, 0) AS stock,
+               s.image_source,
+               s.service_fee,
+               IF(sp.currency_id = (SELECT id FROM rmb_id),
+                  ROUND(sp.price / (SELECT rate FROM latest_exchange_rate), 2),
+                  sp.price) AS sku_price,
+               sp.threshold AS discount_moq,
+               IF(sp.currency_id = (SELECT id FROM rmb_id),
+                  ROUND(sp.discounted_price / (SELECT rate FROM latest_exchange_rate), 2),
+                  sp.discounted_price) AS discounted_price,
+               s7.quantity AS sales_last_week,
+               s28.quantity AS sales_four_weeks,
+               s42.quantity AS sales_six_weeks
+        FROM sku s
+                 JOIN client_sku ON s.id = client_sku.sku_id
+                 LEFT JOIN sku_current_price sp ON s.id = sp.sku_id
+                 LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
+                 LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
+                 LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
+                 LEFT JOIN qtyInOrdersNotShippedCTE ON s.id = qtyInOrdersNotShippedCTE.ID
+        WHERE client_sku.client_id = #{clientId}
+          AND s.status = 3
+        ORDER BY stock ASC
+    </select>
+
     <select id="listSelectableSkuIds" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
         WITH qtyInOrdersNotShippedCTE AS (
             SELECT sku_id as ID, SUM(quantity) AS quantity

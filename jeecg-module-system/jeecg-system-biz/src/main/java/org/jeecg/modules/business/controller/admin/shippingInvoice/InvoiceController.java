@@ -35,6 +35,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.mail.Authenticator;
@@ -462,6 +463,43 @@ public class InvoiceController {
             throw new RuntimeException(e);
         }
     }
+    @PostMapping("/createOrderByExcel")
+    public Result<?> createOrderByExcel(@RequestParam("file") MultipartFile file) {
+        boolean isEmployee = securityService.checkIsEmployee();
+        Client client = null;
+        if (!isEmployee) {
+            client = clientService.getCurrentClient();
+            if (client == null) {
+                return Result.error(HttpStatus.SC_NOT_FOUND, "Client not found");
+            }
+        }
+        //get the excel data
+        List<Map<String, Object>> skuList = skuService.parseExcelToSkuList(file);
+        // if not employee, filter out skus that are not from the client
+        if (!isEmployee) {
+            Iterator<Map<String, Object>> iterator = skuList.iterator();
+            while (iterator.hasNext()) {
+                Map<String, Object> sku = iterator.next();
+                String erpCode = (String) sku.get("erpCode");
+                if (erpCode == null || erpCode.isEmpty()) {
+                    iterator.remove();
+                    continue;
+                }
+                String skuId = skuService.getIdFromErpCode(erpCode);
+                if (skuId == null) {
+                    iterator.remove();
+                    continue;
+                }
+                String skuClientId = clientSkuService.getClientIdFromSkuId(skuId);
+                if (!client.getId().equals(skuClientId)) {
+                    iterator.remove();
+                }
+            }
+        }
+        log.info("SKU list after filtering: {}", skuList);
+        return Result.OK(skuList);
+    }
+
     @GetMapping(value = "/preShipping/orderTime")
     public Result<?> getValidOrderTimePeriod(@RequestParam("shopIds[]") List<String> shopIDs, @RequestParam("erpStatuses[]") List<Integer> erpStatuses) {
         log.info("Request for valid order time period for shops: {} and erpStatuses : {}", shopIDs.toString(), erpStatuses.toString());

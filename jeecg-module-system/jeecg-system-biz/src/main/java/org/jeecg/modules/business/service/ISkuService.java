@@ -6,6 +6,7 @@ import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.inventory.InventoryRecord;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -98,6 +99,7 @@ public interface ISkuService extends IService<Sku> {
 
     Integer countAllClientSkus(String clientId);
     List<SkuOrderPage> fetchSkusByClient(String clientId, Integer pageNo, Integer pageSize, String column, String order);
+    List<SkuOrderPage> listSkuOrdersByClient(String clientId);
 
     Integer countAllSkuWeightsWithFilters(List<String> erpCodeList, List<String> zhNameList, List<String> enNameList);
 
@@ -134,4 +136,6 @@ public interface ISkuService extends IService<Sku> {
     int latestSkuCounter(String userCode, String clientCode, String date);
 
     void setIsSynced(List<String> erpCodes, boolean isSynced);
+
+    List<Map<String, Object>> parseExcelToSkuList(MultipartFile file);
 }

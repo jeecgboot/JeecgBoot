@@ -3,6 +3,7 @@ package org.jeecg.modules.business.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
@@ -19,6 +20,7 @@ import org.jeecg.modules.business.vo.inventory.InventoryRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -427,6 +429,10 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
         return skuMapper.fetchSkusByClient(clientId, offset, pageSize, column, order);
     }
     @Override
+    public List<SkuOrderPage> listSkuOrdersByClient(String clientID){
+        return skuMapper.listSkuOrdersByClient(clientID);
+    }
+    @Override
     public Integer countAllSkuWeightsWithFilters(List<String> erpCodes, List<String> zhNames, List<String> enNames) {
         StringBuilder erpCodesRegex= new StringBuilder(), zhNamesRegex = new StringBuilder(), enNamesRegex = new StringBuilder();
         if(erpCodes != null){
@@ -709,5 +715,81 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     @Override
     public void setIsSynced(List<String> erpCodes, boolean isSynced) {
         skuMapper.setIsSynced(erpCodes, isSynced);
+    }
+
+    public List<Map<String, Object>> parseExcelToSkuList(MultipartFile file) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            int headerRowIndex = -1;
+            Map<String, Integer> colMap = new HashMap<>();
+            // find header row with required columns
+            for (int i = 0; i <= 5; i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+                for (int j = 0; j < row.getLastCellNum(); j++) {
+                    Cell cell = row.getCell(j);
+                    if (cell == null || cell.getCellType() != CellType.STRING) continue;
+                    String val = cell.getStringCellValue().trim().toLowerCase();
+                    if (val.equals("sku")) colMap.put("erpCode", j);
+                    else if (val.contains("anglais")) colMap.put("enName", j);
+                    else if (val.contains("chinois")) colMap.put("zhName", j);
+                    else if (val.contains("stock dispo")) colMap.put("stock", j);
+                    else if (val.contains("wia")) colMap.put("purchaseWIA", j);
+                    else if (val.contains("shopify")) colMap.put("shopifyOrder", j);
+                    else if (val.contains("stock") && val.matches(".*\\d{2}/\\d{2}.*")) colMap.put("stockDate", j);
+                    else if (val.contains("quantité") || val.contains("quantity")) colMap.put("quantity", j);
+                    else if (val.contains("ventes 7")) colMap.put("sales7d", j);
+                    else if (val.contains("ventes 28")) colMap.put("sales28d", j);
+                    else if (val.contains("ventes 42")) colMap.put("sales42d", j);
+                    else if (val.contains("price")) colMap.put("skuPrice", j);
+                }
+                if (!colMap.isEmpty()) {
+                    headerRowIndex = i;
+                    break;
+                }
+            }
+            if (headerRowIndex == -1 || !colMap.containsKey("erpCode") || !colMap.containsKey("quantity")) {
+                throw new RuntimeException("Missing required columns: SKU and Quantity");
+            }
+            // parse data rows
+            for (int i = headerRowIndex + 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+                if (row == null) continue;
+                Map<String, Object> sku = new HashMap<>();
+                for (Map.Entry<String, Integer> entry : colMap.entrySet()) {
+                    String key = entry.getKey();
+                    int col = entry.getValue();
+                    Cell cell = row.getCell(col);
+                    if (cell == null) continue;
+                    Object value = null;
+                    if (cell.getCellType() == CellType.NUMERIC) {
+                        value = key.equals("erpCode")
+                                ? new BigDecimal(cell.getNumericCellValue()).toPlainString().trim()
+                                : cell.getNumericCellValue();
+                    } else {
+                        String str = cell.toString().trim();
+                        if (Arrays.asList("quantity", "sales7d", "sales28d", "sales42d", "skuPrice", "stock", "purchaseWIA", "shopifyOrder", "stockDate").contains(key)) {
+                            try {
+                                value = Double.parseDouble(str);
+                            } catch (NumberFormatException ignored) {}
+                        } else {
+                            value = str;
+                        }
+                    }
+                    sku.put(key, value);
+                }
+                // Only add SKUs with positive quantity and positive price
+                Object qtyObj = sku.get("quantity");
+                if (qtyObj instanceof Number && ((Number) qtyObj).doubleValue() > 0) {
+                    result.add(sku);
+                }
+            }
+            log.info("Parsed Excel SKU list: {}", result);
+        } catch (Exception e) {
+            log.error("Excel parsing failed", e);
+            throw new RuntimeException("Excel parsing error: " + e.getMessage(), e);
+        }
+        return result;
     }
 }
