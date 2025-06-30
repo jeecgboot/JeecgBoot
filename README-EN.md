@@ -81,7 +81,7 @@ Technical documentation
 - Demo ： [OnlineDemo](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
 - Doc：  [DocumentCenter](http://help.jeecg.com) | [AI Config](https://help.jeecg.com/java/ai/aichat)
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart) |   [Q&A ](http://www.jeecg.com/doc/qa)  |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
-- QQ group ： ⑩716488839、⑨808791225
+- QQ group ： 964611995、⑩716488839(满)、⑨808791225(满)
 
 
 

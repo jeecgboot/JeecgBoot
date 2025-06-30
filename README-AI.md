@@ -73,7 +73,7 @@ JeecgBoot平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 ## 技术交流
 
 - 开发文档：https://help.jeecg.com/aigc 
-- QQ群：716488839
+- QQ群：964611995、716488839(满)
 
 
 ## 功能列表
