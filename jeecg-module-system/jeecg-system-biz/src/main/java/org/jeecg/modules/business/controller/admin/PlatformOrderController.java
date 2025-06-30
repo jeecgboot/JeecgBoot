@@ -29,11 +29,8 @@ import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequest;
 import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequestBody;
 import org.jeecg.modules.business.domain.api.shouman.ShoumanOrderRequest;
 import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
-import org.jeecg.modules.business.entity.Client;
-import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.entity.Shouman.ShoumanOrder;
-import org.jeecg.modules.business.entity.ShoumanOrderContent;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.*;
@@ -103,6 +100,8 @@ public class PlatformOrderController {
     private IPlatformOrderMabangService platformOrderMabangService;
     @Autowired
     private IShopService shopService;
+    @Autowired
+    private IShopOptionsService shopOptionsService;
     @Autowired
     private ISecurityService securityService;
     @Autowired
@@ -669,15 +668,30 @@ public class PlatformOrderController {
 
     @PostMapping("/editOrdersRemark")
     public Result<?> editOrdersRemark(@RequestBody InvoiceOrdersEditParam param) {
+        boolean isEmployee = securityService.checkIsEmployee();
         String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
-        if(param.getInvoicingMethod() == PRESHIPPING) {
+        boolean hasRemarkInShippingInvoice = false;
+        List<ShopOptions> options = shopOptionsService.getByInvoiceNumber(param.getInvoiceNumber());
+        for (ShopOptions option : options) {
+            if (option.getHasShippingInvoiceRemark()) {
+                hasRemarkInShippingInvoice = true;
+                break;
+            }
+        }
+        if((param.getInvoicingMethod() != null && param.getInvoicingMethod() == PRESHIPPING) || (hasRemarkInShippingInvoice && param.getInvoicingMethod() == null)) {
             ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(param.getInvoiceNumber());
-            if(!mabangResponses.getFailures().isEmpty())
-                sysMessageService.sendProgress(userId, HttpStatus.BAD_REQUEST.value(),mabangResponses.getFailures(), "websocket.mabang.editOrdersRemarkError", "editOrdersRemark");
-            else sysMessageService.sendProgress(userId, HttpStatus.OK.value(), null,"websocket.mabang.editOrdersRemarkSuccess", "editOrdersRemark");
+            if(isEmployee) {
+                if (!mabangResponses.getFailures().isEmpty())
+                    sysMessageService.sendProgress(userId, HttpStatus.BAD_REQUEST.value(), mabangResponses.getFailures(), "websocket.mabang.editOrdersRemarkError", "editOrdersRemark");
+                else
+                    sysMessageService.sendProgress(userId, HttpStatus.OK.value(), null, "websocket.mabang.editOrdersRemarkSuccess", "editOrdersRemark");
+            }
             return Result.OK(mabangResponses);
         }
-        sysMessageService.pushProgress(userId, "Method not supported");
+        if(!hasRemarkInShippingInvoice && param.getInvoicingMethod() == null) {
+            return Result.OK();
+        }
+        if (isEmployee) sysMessageService.pushProgress(userId, "Method not supported");
         return Result.error(HttpStatus.NOT_FOUND.value(), "Invoicing method not supported");
     }
 }
