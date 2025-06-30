@@ -2,22 +2,28 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.ClientSkuMapper">
 
-	<delete id="deleteByMainId" parameterType="java.lang.String">
-		DELETE 
-		FROM  client_sku 
-		WHERE
-			client_id = #{mainId} 	</delete>
-	
-	<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.ClientSku">
-		SELECT * 
-		FROM  client_sku
-		WHERE
-			 client_id = #{mainId} 	</select>
+<delete id="deleteByMainId" parameterType="java.lang.String">
+	DELETE
+	FROM  client_sku
+	WHERE
+		client_id = #{mainId}
+</delete>
 
-	<select id="getUnpairedSkus" resultType="org.jeecg.modules.business.entity.Sku">
-		SELECT s.*
-		FROM sku s
-		LEFT JOIN client_sku cs ON s.id = cs.sku_id
-		WHERE cs.sku_id IS NULL;
-	</select>
+<select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.ClientSku">
+	SELECT *
+	FROM  client_sku
+	WHERE
+		 client_id = #{mainId} 	</select>
+
+<select id="getUnpairedSkus" resultType="org.jeecg.modules.business.entity.Sku">
+	SELECT s.*
+	FROM sku s
+	LEFT JOIN client_sku cs ON s.id = cs.sku_id
+	WHERE cs.sku_id IS NULL;
+</select>
+<select id="getClientIdFromSkuId" resultType="java.lang.String">
+	SELECT client_id
+	FROM client_sku
+	WHERE sku_id = #{skuId}
+</select>
 </mapper>

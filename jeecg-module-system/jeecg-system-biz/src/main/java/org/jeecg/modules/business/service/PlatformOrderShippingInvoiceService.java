@@ -98,8 +98,10 @@ public class PlatformOrderShippingInvoiceService {
     @Value("${jeecg.path.completeTemplatePath_US}")
     private String COMPLETE_INVOICE_TEMPLATE_US;
 
-    @Value("${jeecg.path.purchaseTemplatePath}")
-    private String PURCHASE_INVOICE_TEMPLATE;
+    @Value("${jeecg.path.purchaseTemplatePath_EU}")
+    private String PURCHASE_INVOICE_TEMPLATE_EU;
+    @Value("${jeecg.path.purchaseTemplatePath_US}")
+    private String PURCHASE_INVOICE_TEMPLATE_US;
 
     @Value("${jeecg.path.shippingInvoiceDir}")
     private String INVOICE_DIR;
@@ -253,21 +255,11 @@ public class PlatformOrderShippingInvoiceService {
         return getInvoiceMetaDataAndInsert(username, invoice);
     }
 
-    /**
-     * Make a complete shipping invoice (purchase + shipping) invoice for specified orders and order statuses
-     *
-     * @param param the parameters to make the invoice
-     * @return name of the invoice, can be used to in {@code getInvoiceBinary}.
-     * @throws UserException  exception due to error of user input, message will contain detail
-     * @throws ParseException exception because of format of "start" and "end" date does not follow
-     *                        pattern: "yyyy-MM-dd"
-     * @throws IOException    exception related to invoice file IO.
-     */
     @Transactional
-    public InvoiceMetaData makeCompleteInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
+    public InvoiceMetaData makeManualCompleteInvoice(ManualInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
-        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), null, param.orderIds(), param.getType(), param.getStart(), param.getEnd());
+        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.getClientID(), null, param.getOrderIds(), param.getType(), null, null, param.getOrdersWithStock());
         return getInvoiceMetaDataAndInsert(username, invoice);
     }
 
@@ -292,7 +284,7 @@ public class PlatformOrderShippingInvoiceService {
             orderIds = platformOrderMapper.fetchUninvoicedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses(), param.getWarehouses());
         }
         // Creates invoice by factory
-        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd());
+        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd(), null);
         return getInvoiceMetaDataAndInsert(username, invoice);
     }
     @NotNull
@@ -341,8 +333,11 @@ public class PlatformOrderShippingInvoiceService {
     @NotNull
     private InvoiceMetaData getInvoiceMetaData(PurchaseInvoice invoice) throws IOException {
         // Chooses invoice template based on client's preference on currency
-        Path template = Paths.get(PURCHASE_INVOICE_TEMPLATE );
-
+        Path template;
+        if(invoice.getTargetClient().getCurrency().equals("USD"))
+            template = Paths.get(PURCHASE_INVOICE_TEMPLATE_US );
+        else
+            template = Paths.get(PURCHASE_INVOICE_TEMPLATE_EU);
         // Writes invoice content to a new excel file
         String filename = "Invoice N°" + invoice.getCode() + " (" + invoice.getTargetClient().getInvoiceEntity() + ").xlsx";
         Path out = Paths.get(PURCHASE_INVOICE_DIR, filename);

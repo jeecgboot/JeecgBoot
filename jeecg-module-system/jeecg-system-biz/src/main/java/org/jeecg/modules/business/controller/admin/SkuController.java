@@ -8,6 +8,7 @@ import freemarker.template.Template;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -59,6 +60,8 @@ import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDict
 @Slf4j
 public class SkuController {
     @Autowired
+    private IClientService clientService;
+    @Autowired
     private IShopService shopService;
     @Autowired
     private ISkuService skuService;
@@ -74,6 +77,8 @@ public class SkuController {
     private ISkuListMabangService skuListMabangService;
     @Autowired
     private SkuMongoService skuMongoService;
+    @Autowired
+    private ISecurityService securityService;
     @Autowired
     private EmailService emailService;
     @Autowired
@@ -380,6 +385,19 @@ public class SkuController {
                                   @RequestParam(name = "zhNames", required = false) String zhNames,
                                   @RequestParam(name = "enNames", required = false) String enNames,
                                      ServletRequest servletRequest) {
+        if(!securityService.checkIsEmployee()) {
+            Client client = clientService.getCurrentClient();
+            // Here we don't explicitly tell the user that they are not allowed to access this endpoint for security measure.
+            if (client == null) {
+                return Result.error(HttpStatus.SC_NOT_FOUND, "Profile not found");
+            }
+            if( clientId == null) {
+                return Result.error(HttpStatus.SC_BAD_REQUEST, "Bad request");
+            }
+            if(!client.getId().equals(clientId)) {
+                return Result.error(HttpStatus.SC_NOT_FOUND, "Client not found");
+            }
+        }
         String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
         String parsedOrder = order.toUpperCase();
         if(!parsedOrder.equals("ASC") && !parsedOrder.equals("DESC")) {

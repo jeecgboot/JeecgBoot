@@ -10,6 +10,7 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -75,6 +76,8 @@ public class InvoiceController {
     private IClientCategoryService clientCategoryService;
     @Autowired
     private IClientService clientService;
+    @Autowired
+    private IClientSkuService clientSkuService;
     @Autowired
     private ICurrencyService currencyService;
     @Autowired
@@ -383,12 +386,12 @@ public class InvoiceController {
      */
     @Transactional
     @PostMapping(value = "/makeManualComplete")
-    public Result<?> makeManualCompleteInvoice(@RequestBody ShippingInvoiceOrderParam param) {
+    public Result<?> makeManualCompleteInvoice(@RequestBody ManualInvoiceOrderParam param) {
         try {
-            InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoice(param);
-            String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
+            InvoiceMetaData metaData = shippingInvoiceService.makeManualCompleteInvoice(param);
+            String clientCategory = clientCategoryService.getClientCategoryByClientId(param.getClientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), COMPLETE.name());
+                balanceService.updateBalance(param.getClientID(), metaData.getInvoiceCode(), COMPLETE.name());
             }
             if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
                 String subject = "Self-service complete invoice";
@@ -396,7 +399,7 @@ public class InvoiceController {
                 Properties prop = emailService.getMailSender();
                 Map<String, Object> templateModel = new HashMap<>();
                 templateModel.put("invoiceType", "complete invoice");
-                templateModel.put("invoiceEntity", clientService.getById(param.clientID()).getInternalCode());
+                templateModel.put("invoiceEntity", clientService.getById(param.getClientID()).getInternalCode());
                 templateModel.put("invoiceNumber", metaData.getInvoiceCode());
 
                 Session session = Session.getInstance(prop, new Authenticator() {
@@ -423,10 +426,22 @@ public class InvoiceController {
     }
     @PostMapping("/makeManualSkuPurchaseInvoice")
     public Result<?> createOrder(@RequestBody Map<String, Integer> payload) {
+        boolean isEmployee = securityService.checkIsEmployee();
+        Client client = null;
+        if(!isEmployee) {
+            client = clientService.getCurrentClient();
+            if(client == null)
+                return Result.error(HttpStatus.SC_NOT_FOUND, "Client not found");
+        }
         InvoiceMetaData metaData;
         List<SkuQuantity> skuQuantities = new ArrayList<>();
         for(Map.Entry<String, Integer> entry : payload.entrySet()) {
             String skuId = skuService.getIdFromErpCode(entry.getKey());
+            if(client != null) {
+                String skuClientId = clientSkuService.getClientIdFromSkuId(skuId);
+                if (!skuClientId.equals(client.getId()))
+                    return Result.error(HttpStatus.SC_NOT_FOUND, "Sku " + entry.getKey() + " for client " + client.getInternalCode() + " not found.");
+            }
             skuQuantities.add(new SkuQuantity(skuId, entry.getKey(), entry.getValue()));
         }
         try {

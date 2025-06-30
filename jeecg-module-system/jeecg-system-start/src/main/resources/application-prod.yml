@@ -229,7 +229,8 @@ jeecg:
     creditInvoiceDir: /wia/invoices/credit
 
     # purchase invoice template
-    purchaseTemplatePath: /wia/files/Purchase_Invoice_Template.xlsx
+    purchaseTemplatePath_EU: /wia/files/Purchase_Invoice_Template_EU.xlsx
+    purchaseTemplatePath_US: /wia/files/Purchase_Invoice_Template_US.xlsx
     # where to store generated file
     purchaseInvoiceDir: /wia/invoices/purchase
     purchaseInvoiceTestDir: /wia/invoices/test/purchase

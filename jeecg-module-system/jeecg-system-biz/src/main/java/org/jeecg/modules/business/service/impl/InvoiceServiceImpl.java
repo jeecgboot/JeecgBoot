@@ -129,7 +129,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         else if(invoiceType.equalsIgnoreCase(COMPLETE.name())) {
             ShippingInvoice shippingInvoice = shippingInvoiceService.getById(id);
             PurchaseOrder purchase = purchaseOrderService.getPurchaseByInvoiceNumberAndClientId(invoiceNumber, clientId);
-            if(shippingInvoice == null || purchase == null) {
+            // we don't test if purchase is null, because certain clients can have complete invoices without purchase orders, eg: LA, AP
+            if(shippingInvoice == null) {
                 log.error("Error while cancelling complete invoice : invoice or purchase not found for id : {}", id);
                 return false;
             }
@@ -143,23 +144,29 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 log.error("Complete invoice {} older than {} days, client is not allowed to cancel it", invoiceNumber, CANCEL_DAYS_LIMIT);
                 return false;
             }
-            if(!isEmployee && purchase.isOrdered()) {
-                log.error("Purchase order {} for invoice {} is already ordered, cannot be cancelled", id, invoiceNumber);
-                return false;
+            if(purchase != null) {
+                if (!isEmployee && purchase.isOrdered()) {
+                    log.error("Purchase order {} for invoice {} is already ordered, cannot be cancelled", id, invoiceNumber);
+                    return false;
+                }
+                if (purchase.getInventoryDocumentString() != null && !purchase.getInventoryDocumentString().isEmpty())
+                    shippingInvoiceService.deleteAttachmentFile(purchase.getInventoryDocumentString());
+                if (purchase.getPaymentDocumentString() != null && !purchase.getPaymentDocumentString().isEmpty())
+                    shippingInvoiceService.deleteAttachmentFile(purchase.getPaymentDocumentString());
+                purchaseOrderService.cancelInvoice(purchase.getId());
+            } else {
+                log.info("Purchase order not found for invoice : {}", invoiceNumber);
             }
-            if(purchase.getInventoryDocumentString() != null && !purchase.getInventoryDocumentString().isEmpty())
-                shippingInvoiceService.deleteAttachmentFile(purchase.getInventoryDocumentString());
-            if(purchase.getPaymentDocumentString() != null && !purchase.getPaymentDocumentString().isEmpty())
-                shippingInvoiceService.deleteAttachmentFile(purchase.getPaymentDocumentString());
             platformOrderContentService.cancelInvoice(invoiceNumber, clientId);
             platformOrderMabangService.deleteOrderRemark(invoiceNumber);
             platformOrderService.removePurchaseInvoiceNumber(invoiceNumber, clientId);
             platformOrderService.cancelInvoice(invoiceNumber, clientId);
-            purchaseOrderService.cancelInvoice(purchase.getId());
             shippingInvoiceService.cancelInvoice(id);
 
             // reminder : in complete invoicing balance is updated only once with shipping invoice ID and the amount is the sum of shipping fees and purchase fees
-            amount = shippingInvoice.getFinalAmount().add(purchase.getFinalAmount());
+            amount = shippingInvoice.getFinalAmount();
+            if(purchase != null)
+                amount = amount.add(purchase.getFinalAmount());
             currencyId = shippingInvoice.getCurrencyId();
         }
         else if(invoiceType.equalsIgnoreCase(CREDIT.name())) {

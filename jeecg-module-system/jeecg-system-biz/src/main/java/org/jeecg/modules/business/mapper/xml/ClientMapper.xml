@@ -112,4 +112,13 @@
         FROM client
         WHERE id = #{id};
     </select>
+    <select id="getClientsByCode" resultType="java.lang.String">
+        SELECT c.id
+        FROM client c
+        WHERE c.internal_code IN
+        <foreach collection="codes" item="code" index="index" separator="," open="(" close=")">
+            #{code}
+        </foreach>
+        AND c.active = 1;
+    </select>
 </mapper>
