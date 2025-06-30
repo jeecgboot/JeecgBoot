@@ -247,6 +247,7 @@ jeecg:
     shippingInvoiceDir: /wia/invoices/shipping
     shippingInvoiceTestDir: /wia/invoices/test/shipping
     shippingInvoiceDetailDir: /wia/invoices/shippingDetail
+    shippingInvoiceDetailCompleteDir: /wia/invoices/shippingDetailComplete
     shippingInvoicePdfDir: /wia/invoices/pdf/shipping
     shippingInvoiceDetailPdfDir: /wia/invoices/pdf/shippingDetail
     invoiceDetailExportDir: /wia/invoices/invoiceDetailExport
