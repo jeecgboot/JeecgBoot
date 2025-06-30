@@ -4,22 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.business.entity.Balance;
 import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.ClientSku;
 import org.jeecg.modules.business.entity.Shop;
-import org.jeecg.modules.business.service.IClientService;
-import org.jeecg.modules.business.service.IClientSkuService;
-import org.jeecg.modules.business.service.IShopService;
+import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.ClientPage;
+import org.jeecg.modules.business.vo.PlatformOrderOption;
 import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -56,11 +54,17 @@ public class ClientController {
 
     private final IClientSkuService clientSkuService;
 
+    private final IBalanceService balanceService;
+
+    private final IPlatformOrderService platformOrderService;
+
     @Autowired
-    public ClientController(IClientService clientService, IShopService shopService, IClientSkuService clientSkuService) {
+    public ClientController(IClientService clientService, IShopService shopService, IClientSkuService clientSkuService, IBalanceService balanceService, IPlatformOrderService platformOrderService) {
         this.clientService = clientService;
         this.shopService = shopService;
         this.clientSkuService = clientSkuService;
+        this.balanceService = balanceService;
+        this.platformOrderService = platformOrderService;
     }
 
 
@@ -73,8 +77,6 @@ public class ClientController {
      * @param req
      * @return
      */
-    @AutoLog(value = "客户-分页列表查询")
-    @ApiOperation(value = "客户-分页列表查询", notes = "客户-分页列表查询")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(Client client,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -92,13 +94,16 @@ public class ClientController {
      * @param clientPage
      * @return
      */
-    @AutoLog(value = "客户-添加")
-    @ApiOperation(value = "客户-添加", notes = "客户-添加")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody ClientPage clientPage) {
         Client client = new Client();
         BeanUtils.copyProperties(clientPage, client);
         clientService.saveMain(client, clientPage.getShopList(), clientPage.getClientSkuList());
+        String useBalance = clientPage.getUseBalance();
+        log.info("useBalance:{}", useBalance);
+        if ("1".equals(useBalance)) {
+            balanceService.initBalance(client.getId());
+        }
         return Result.OK("添加成功！");
     }
 
@@ -121,9 +126,7 @@ public class ClientController {
      * @param clientPage
      * @return
      */
-    @AutoLog(value = "客户-编辑")
-    @ApiOperation(value = "客户-编辑", notes = "客户-编辑")
-    @PutMapping(value = "/edit")
+    @PostMapping(value = "/edit")
     public Result<?> edit(@RequestBody ClientPage clientPage) {
         Client client = new Client();
         BeanUtils.copyProperties(clientPage, client);
@@ -131,8 +134,13 @@ public class ClientController {
         if (clientEntity == null) {
             return Result.error("未找到对应数据");
         }
+        if (client.getUseBalance() != null && "1".equals(clientPage.getUseBalance())){
+            // If useBalance is set to 1, initialize balance for the client
+            balanceService.initBalance(client.getId());
+        }
         clientService.updateMain(client, clientPage.getShopList(), clientPage.getClientSkuList());
         updateShopId();
+        log.info("useBalance from clientPage: {}, useBalance updated for client: {}", clientPage.getUseBalance(), client.getUseBalance());
         log.info("Shop names replaced by new created shop IDs");
         return Result.OK("编辑成功!");
     }
@@ -155,11 +163,32 @@ public class ClientController {
      * @param id
      * @return
      */
-    @AutoLog(value = "客户-通过id删除")
-    @ApiOperation(value = "客户-通过id删除", notes = "客户-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+        // check if the client has any shops with orders
+        List<String> deletedShopIds = new ArrayList<>();
+        List<String> deletedBalanceIds;
+        List<Shop> shopList = shopService.listByClient(id);
+        if (shopList != null && !shopList.isEmpty()) {
+            for (Shop shop : shopList) {
+                Integer ordersAmount = platformOrderService.countOrdersByShop(shop.getId());
+                log.info("checking shop: {}, ordersAmount: {}", shop.getName(), ordersAmount);
+                if (ordersAmount != 0) {
+                    return Result.error("客户的店铺" + shop.getName() + "存在订单，无法删除");
+                }
+            }
+            deletedShopIds = shopList.stream().map(Shop::getId).collect(Collectors.toList());
+            shopService.removeByIds(deletedShopIds);
+        }
+        // delete client balance
+        List<Balance> balances = balanceService.list(
+                new QueryWrapper<Balance>().eq("client_id", id)
+        );
+        deletedBalanceIds = balances.stream().map(Balance::getId).collect(Collectors.toList());
+        balanceService.deleteBalanceByClientId(id);
         clientService.delMain(id);
+        log.info("Deleted Client: {}, Deleted Shops: {}, Deleted Balances: {}",
+                id, deletedShopIds, deletedBalanceIds);
         return Result.OK("删除成功!");
     }
 
@@ -169,11 +198,41 @@ public class ClientController {
      * @param ids
      * @return
      */
-    @AutoLog(value = "客户-批量删除")
-    @ApiOperation(value = "客户-批量删除", notes = "客户-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        this.clientService.delBatchMain(Arrays.asList(ids.split(",")));
+        List<String> clientIds = Arrays.asList(ids.split(","));
+        List<String> deletedClientIds = new ArrayList<>();
+
+        for (String clientId : clientIds) {
+            Client client = clientService.getById(clientId);
+            if (client == null) {
+                continue;
+            }
+            // check if the client has any shops with orders
+            List<String> deletedShopIds = new ArrayList<>();
+            List<String> deletedBalanceIds;
+            List<Shop> shopList = shopService.listByClient(clientId);
+            if (shopList != null && !shopList.isEmpty()) {
+                for (Shop shop : shopList) {
+                    Integer ordersAmount = platformOrderService.countOrdersByShop(shop.getId());
+                    log.info("checking shop: {}, ordersAmount: {}", shop.getName(), ordersAmount);
+                    if (ordersAmount > 0) {
+                        return Result.error("客户的店铺" + shop.getName() + "存在订单，无法删除");
+                    }
+                }
+                deletedShopIds = shopList.stream().map(Shop::getId).collect(Collectors.toList());
+                shopService.removeByIds(deletedShopIds);
+            }
+            // delete client balance
+            List<Balance> balances = balanceService.list(
+                    new QueryWrapper<Balance>().eq("client_id", clientId)
+            );
+            deletedBalanceIds = balances.stream().map(Balance::getId).collect(Collectors.toList());
+            balanceService.deleteBalanceByClientId(clientId);
+            log.info("Deleted Client: {}, Deleted Shops: {}, Deleted Balances: {}",
+                    clientId, deletedShopIds, deletedBalanceIds);
+        }
+        this.clientService.delBatchMain(clientIds);
         return Result.OK("批量删除成功！");
     }
 
@@ -183,8 +242,6 @@ public class ClientController {
      * @param id
      * @return
      */
-    @AutoLog(value = "客户-通过id查询")
-    @ApiOperation(value = "客户-通过id查询", notes = "客户-通过id查询")
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         Client client = clientService.getById(id);
@@ -201,8 +258,6 @@ public class ClientController {
      * @param id
      * @return
      */
-    @AutoLog(value = "店铺-通过主表ID查询")
-    @ApiOperation(value = "店铺-通过主表ID查询", notes = "店铺-通过主表ID查询")
     @GetMapping(value = "/queryShopByMainId")
     public Result<?> queryShopListByMainId(@RequestParam(name = "id", required = true) String id) {
         List<Shop> shopList = shopService.selectByMainId(id);
@@ -218,8 +273,6 @@ public class ClientController {
      * @param id
      * @return
      */
-    @AutoLog(value = "客户名下SKU-通过主表ID查询")
-    @ApiOperation(value = "客户名下SKU-通过主表ID查询", notes = "客户名下SKU-通过主表ID查询")
     @GetMapping(value = "/queryClientSkuByMainId")
     public Result<?> queryClientSkuListByMainId(@RequestParam(name = "id", required = true) String id) {
         log.info(id);

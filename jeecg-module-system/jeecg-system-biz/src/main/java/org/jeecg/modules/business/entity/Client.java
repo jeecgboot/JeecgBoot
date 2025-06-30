@@ -200,6 +200,14 @@ public class Client implements Serializable {
     @ApiModelProperty(value = "invoice in chronological order or first can invoice")
     private java.lang.String isChronologicalOrder;
 
+    /**
+     * 是否使用余额
+     */
+    @Excel(name = "是否使用余额", width = 15, dicCode = "yn")
+    @Dict(dicCode = "yn")
+    @ApiModelProperty(value = "是否使用余额")
+    private String useBalance;
+
     public String fullName() {
         return firstName + " " + surname;
     }

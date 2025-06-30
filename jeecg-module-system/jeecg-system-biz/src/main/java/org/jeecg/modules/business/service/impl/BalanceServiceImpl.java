@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.BalanceMapper;
@@ -44,6 +45,30 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     @Override
     public BigDecimal getBalanceByClientIdAndCurrency(String clientId, String currency) {
         return balanceMapper.getBalanceByClientIdAndCurrency(clientId, currency);
+    }
+    @Override
+    public void initBalance(String clientId) {
+        // TODO : check if the balance already exists for this client
+        Client client = clientMapper.getClientById(clientId);
+        if(client == null) {
+            throw new RuntimeException("Client not found for id: " + clientId);
+        }
+        String currency = client.getCurrency();
+        if(currency == null) {
+            throw new RuntimeException("Client currency is not set for client id: " + clientId);
+        }
+        String currencyId = currencyService.getIdByCode(currency);
+        BigDecimal previousBalance = balanceMapper.getBalanceByClientIdAndCurrency(clientId, currency);
+        if(previousBalance != null) {
+            log.info("Balance already exists for client: {}, currency: {}, balance: {}", clientId, currency, previousBalance);
+            return;
+        }
+        // initialize balance to zero
+        SysUser sysUser = new SysUser();
+        Balance balance = Balance.of(sysUser.getUsername(), clientId, currencyId, Balance.OperationType.Init.name(), null, BigDecimal.ZERO)
+                        .setCreateBy(sysUser.getUsername());
+        balanceMapper.insert(balance);
+        log.info("Initialized balance for client: {}, currency: {}, , currencyId: {},balance: {}", clientId, currency, currencyId, BigDecimal.ZERO);
     }
 
     @Override
@@ -106,6 +131,13 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
     public void deleteBatchBalance(List<String> operationIds, String operationType) {
         balanceMapper.deleteBatchBalance(operationIds, operationType);
     }
+    @Override
+    public void deleteBalanceByClientId(String clientId) {
+        QueryWrapper<Balance> query = new QueryWrapper<>();
+        query.eq("client_id", clientId);
+        this.remove(query);
+    }
+
 
     @Override
     public void editBalance(String operationId, String operationType, String clientId, BigDecimal amount, String currencyId) throws Exception {

@@ -1412,4 +1412,9 @@
         WHERE shopify_note LIKE #{shopifyNote}
         AND erp_status in (1,2);
     </select>
+    <select id="countOrdersByShop" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM platform_order
+        WHERE shop_id = #{shopId}
+    </select>
 </mapper>

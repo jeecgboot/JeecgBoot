@@ -107,6 +107,11 @@
             JOIN credit ON c.id = credit.client_id
         WHERE credit.invoice_number = #{invoiceNumber};
     </select>
+    <select id="getClientById" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT *
+        FROM client
+        WHERE id = #{id};
+    </select>
     <select id="getClientsByCode" resultType="java.lang.String">
         SELECT c.id
         FROM client c

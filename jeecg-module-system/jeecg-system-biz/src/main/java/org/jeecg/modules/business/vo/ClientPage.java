@@ -156,6 +156,22 @@ public class ClientPage {
     @ApiModelProperty(value = "账户余额")
     private java.math.BigDecimal balance;
     /**
+     * 是否初始化余额
+     */
+    @Excel(name = "是否使用余额", width = 15, dicCode = "yn")
+    @Dict(dicCode = "yn")
+    @ApiModelProperty("是否使用余额")
+    private java.lang.String useBalance;
+
+    /**
+     * 客户类型
+     */
+    @Excel(name = "客户类型", width = 15, dictTable = "client_category", dicText = "name", dicCode = "id")
+    @Dict(dictTable = "client_category", dicText = "name", dicCode = "id")
+    @ApiModelProperty(value = "客户类型")
+    private java.lang.String clientCategoryId;
+
+    /**
      * IOSS号码
      */
     @Excel(name = "IOSS号码", width = 15)
