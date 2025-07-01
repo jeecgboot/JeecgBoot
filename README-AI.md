@@ -16,6 +16,19 @@ JeecgBoot平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 [![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
 
 
+##### 功能大模块
+
+- AI应用开发平台
+- AI知识库系统
+- AI大模型管理
+- AI流程编排
+- AI对话支持图片
+- AI对话助手(智能问答)
+- AI建表（Online表单）
+- AI写文章（CMS）
+- AI表单字段建议（表单设计器）
+
+
 
 #### Dify `VS` JEECG AI
 
@@ -44,10 +57,10 @@ JeecgBoot平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 
 
 
-### 安装向量库 pgvector
+### 技术文档
 
-- https://help.jeecg.com/aigc/config
-
+- [AIGC开发文档](https://help.jeecg.com/aigc)
+- [安装向量库 pgvector](https://help.jeecg.com/aigc/config)
 
 
 

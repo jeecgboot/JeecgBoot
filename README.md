@@ -18,7 +18,7 @@ JeecgBoot AI低代码平台
 
 <h3 align="center">企业级AI低代码平台</h3>
 
-JeecgBoot是一款基于AIGC和低代码引擎的企业级低代码平台，旨在帮助开发者快速实现低代码开发和构建、部署个性化的 AI 应用。
+JeecgBoot是一款企业级低代码平台集成了AI应用平台功能，旨在帮助开发者快速实现低代码开发和构建、部署个性化的 AI 应用。
 前后端分离架构Ant Design&Vue3，SpringBoot，SpringCloud Alibaba，Mybatis-plus，Shiro，强大的代码生成器让前后端代码一键生成，无需写任何代码！
 成套AI大模型功能: AI模型管理、AI应用、知识库、AI流程编排、AI对话助手等；
 引领AI低代码开发模式: AIGC生成->OnlineCoding-> 代码生成-> 手工MERGE， 帮助Java项目解决80%的重复工作，让开发更多关注业务，快速提高效率 节省成本，同时又不失灵活性！
@@ -88,71 +88,15 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 - QQ交流群 ： 964611995、⑩716488839(满)、⑨808791225(满)、其他(满)
 
 
-全功能演示
------------------------------------
-
- JeecgBoot vs 敲敲云
-> - JeecgBoot是低代码产品拥有系列低代码能力，比如流程设计、表单设计、大屏设计，代码生成器，适合半开发模式（开发+低代码结合），也可以集成零代码应用管理模块.
-> - 敲敲云是零代码产品，完全不写代码，通过配置搭建业务系统，其在jeecgboot基础上研发而成，删除了online、代码生成、OA等需要编码功能，只保留应用管理功能和聊天、日程、文件三个OA组件.
-
-
-- JeecgBoot低代码：  https://boot3.jeecg.com
-- 敲敲云零代码：https://app.qiaoqiaoyun.com
-- APP演示(多端): http://jeecg.com/appIndex
-
-
 AI应用平台功能介绍
 -----------------------------------
+
+> [AI应用平台详细介绍，点击查看](README-AI.md)
 
 JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
 其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
 
-> JDK说明：AI流程编排引擎暂时不支持jdk21，所以目前只能使用jdk8或者jdk17启动项目。
 
-- [AIGC专题介绍页](README-AI.md)
-- [AIGC开发文档](https://help.jeecg.com/aigc)
-- [配置向量库PGVector](https://help.jeecg.com/aigc/config)
-
-
-##### AI视频介绍
-
-[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
-
-
-
-
-##### Dify `VS` JEECG AI
-
-> JEECG AI与Dify相比，在多个方面展现出显著的优势，特别是在文档处理、格式和图片保持方面。以下是一些具体的优点：
-> - Markdown文档库导入：
-> JEECG AI允许用户直接导入整个Markdown文档库，这不仅保留markdown格式，还支持图片的导入，确保文档内容的完整性和可视化效果。
-> - 对话回复格式美观：
-> 在对话过程中，JEECG AI能够保持回复内容的原格式，也不丢失图片，使得输出的文章更加美观，不会出现格式错乱的情况，还支持图片的渲染。
-> - PDF文档导入与格式转换：
-> JEECG AI在处理PDF文档时，能够更好地保持原始格式和图片，确保转换后的内容与原始文档一致。这个功能在许多AI产品中表现不佳，而JEECG AI在这方面做出了显著的优化
-
-##### 功能大模块
-
-- AI应用开发平台
-- AI知识库系统
-- AI大模型管理
-- AI流程编排
-- AI对话支持图片
-- AI对话助手(智能问答)
-- AI建表（Online表单）
-- AI写文章（CMS）
-- AI表单字段建议（表单设计器）
-
-##### AI大模型支持
-
-| AI大模型   |  支持   |
-| --- | --- |
-| DeepSeek   |  √   |
-| ChatGTP   |  √   |
-| Qwq 		  | √ |
-| 智库 		  | √ |
-| Ollama本地模型   |  √   |
-| 等等。。 | √ |
 
 
 
@@ -293,38 +237,25 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 * 42.提供仪表盘设计器，类大屏设计支持移动端，免费的数据可视化设计工具，支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表和门户设计；目前支持多种图表类型：柱形图、折线图、散点图、饼图、环形图、面积图、漏斗图、进度图、仪表盘、雷达图、地图等等；
 
 
+开源版与企业版区别?
+-----------------------------------
+> [更多商业功能介绍，点击查看](README-Enterprise.md)
+
+ - JeecgBoot开源版采用[Apache-2.0 license](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)开源协议，允许商用使用，不会造成侵权行为，允许基于本平台软件开展业务系统开发（在任何情况下，您不得使用本软件开发可能被认为与本软件竞争的软件）！
+ - 商业版与开源版主要区别在于商业版提供了技术支持 和 更多的企业级功能(例如：Online图表、流程监控、流程设计、流程审批、表单设计器、表单视图、积木报表企业版、OA办公、商业APP、零代码应用、Online模块源码等功能).
+
+
+
+
 ### Jeecg Boot 产品功能蓝图
 ![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
 
 
-### 流程视频介绍
-
-[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/flow_video.png)](https://www.bilibili.com/video/BV1Nk4y1o7Qc)
 
 
 
 ### 功能模块
 ```
-├─AI开发
-│  ├─支持AI大模型ChatGPT和DeepSeek
-│  ├─AI对话助手
-│  ├─AI建表
-│  ├─AI写文章
-│  ├─AI流程编排
-│  ├─AI知识库问答系统
-│  ├─AI应用开发平台
-│  ├─AI聊天窗口支持嵌入第三方
-├─Online在线开发(低代码)
-│  ├─Online在线表单
-│  ├─Online代码生成器
-│  ├─Online在线报表
-│  ├─仪表盘设计器
-│  ├─系统编码规则
-│  ├─系统校验规则
-├─积木报表设计器
-│  ├─打印设计器
-│  ├─数据报表设计
-│  ├─图形报表设计（支持echart）
 ├─系统管理
 │  ├─用户管理
 │  ├─角色管理
@@ -340,6 +271,26 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 │  └─通讯录
 │  ├─多数据源管理
 │  └─多租户管理（租户管理、租户角色、我的租户）
+├─Online在线开发(低代码)
+│  ├─Online在线表单
+│  ├─Online代码生成器
+│  ├─Online在线报表
+│  ├─仪表盘设计器
+│  ├─系统编码规则
+│  ├─系统校验规则
+├─AI开发
+│  ├─支持AI大模型ChatGPT和DeepSeek
+│  ├─AI对话助手
+│  ├─AI建表
+│  ├─AI写文章
+│  ├─AI流程编排
+│  ├─AI知识库问答系统
+│  ├─AI应用开发平台
+│  ├─AI聊天窗口支持嵌入第三方
+├─积木报表设计器
+│  ├─打印设计器
+│  ├─数据报表设计
+│  ├─图形报表设计（支持echart）
 ├─消息中心
 │  ├─消息管理
 │  ├─模板管理
@@ -431,22 +382,6 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 │  ├─提供单点登录CAS集成方案
 │  ├─提供APP发布方案
 │  ├─集成Websocket消息通知机制
-│─更多商业功能
-│  ├─流程设计器
-│  ├─表单设计器
-│  ├─大屏设计器
-│  └─我的任务
-│  └─历史流程
-│  └─历史流程
-│  └─流程实例管理
-│  └─流程监听管理
-│  └─流程表达式
-│  └─我发起的流程
-│  └─我的抄送
-│  └─流程委派、抄送、跳转
-│  └─OA办公组件
-│  └─。。。
-   
 ```
 
 
@@ -454,21 +389,6 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 ### 系统效果
 
 
-##### AI功能
-
-AI聊天助手
-
-![](https://oscimg.oschina.net/oscnet//65298d5710b4e6039a5f802b5f8505c5.png)
-
-AI建表
-
-![](https://oscimg.oschina.net/oscnet/up-381423599f219a67def45dfd9a99df8ef3f.png)
-
-![](https://oscimg.oschina.net/oscnet/up-1508c2b0708c365605f68893044ee11f20d.png)
-
-AI写文章
-
-![](https://oscimg.oschina.net/oscnet/up-e3ee5b1fe497308805aa5e324b72994af79.png)
 
 
 ##### PC端
@@ -489,6 +409,22 @@ AI写文章
 
 ![](https://oscimg.oschina.net/oscnet/up-16c07e000278329b69b228ae3189814b8e9.png)
 
+
+##### AI功能
+
+AI聊天助手
+
+![](https://oscimg.oschina.net/oscnet//65298d5710b4e6039a5f802b5f8505c5.png)
+
+AI建表
+
+![](https://oscimg.oschina.net/oscnet/up-381423599f219a67def45dfd9a99df8ef3f.png)
+
+![](https://oscimg.oschina.net/oscnet/up-1508c2b0708c365605f68893044ee11f20d.png)
+
+AI写文章
+
+![](https://oscimg.oschina.net/oscnet/up-e3ee5b1fe497308805aa5e324b72994af79.png)
 
 
 #####  仪表盘设计器
@@ -555,28 +491,6 @@ AI写文章
 
 ![](https://oscimg.oschina.net/oscnet/up-6b81781b43086819049c4421206810667c5.png)
 
-
-##### 流程设计
-![](https://oscimg.oschina.net/oscnet/up-981ce174e4fbb48c8a2ce4ccfd7372e2994.png)
-
-![](https://oscimg.oschina.net/oscnet/up-1dc0d052149ec675f3e4fad632b82b48add.png)
-
-![](https://oscimg.oschina.net/oscnet/up-de31bc2f9d9b8332c554b0954cc73d79593.png)
-
-![输入图片说明](https://static.oschina.net/uploads/img/201907/05165142_yyQ7.png "在这里输入图片标题")
-
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160917_9Ftz.png "在这里输入图片标题")
-
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160633_u59G.png "在这里输入图片标题")
-
-
-
-##### 表单设计器
-![](https://oscimg.oschina.net/oscnet/up-5f8cb657615714b02190b355e59f60c5937.png)
-
-![](https://oscimg.oschina.net/oscnet/up-d9659b2f324e33218476ec98c9b400e6508.png)
-
-![](https://oscimg.oschina.net/oscnet/up-4868615395272d3206dbb960ade02dbc291.png)
 
 
 
