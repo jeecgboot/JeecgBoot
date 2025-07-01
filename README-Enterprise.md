@@ -86,6 +86,8 @@ JeecgBoot vs 敲敲云
 │  ├─积木报表企业版（含jimureport、jimubi）
 │  ├─AI流程设计器源码
 │  ├─Online全模块功能和源码
+│  ├─AI写文章（CMS）
+│  ├─AI表单字段建议（表单设计器）
 │  └─。。。
    
 ```

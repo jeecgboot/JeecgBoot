@@ -220,7 +220,8 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 - 15、CAS 单点登录   √
 - 16、路由限流   √
 
-
+#### 微服务架构图
+![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot_springcloud2022.png "在这里输入图片标题")
 
 
 
@@ -229,12 +230,11 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 开源版与企业版区别?
 -----------------------------------
 
- - JeecgBoot开源版采用[Apache-2.0 license](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)开源协议，允许商用使用，不会造成侵权行为，允许基于本平台软件开展业务系统开发（在任何情况下，您不得使用本软件开发可能被认为与本软件竞争的软件）！
+ - JeecgBoot开源版采用 [Apache-2.0 license](LICENSE) 开源协议，允许商用使用，不会造成侵权行为，允许基于本平台软件开展业务系统开发（在任何情况下，您不得使用本软件开发可能被认为与本软件竞争的软件）！
  - 商业版与开源版主要区别在于商业版提供了技术支持 和 更多的企业级功能(例如：Online图表、流程监控、流程设计、流程审批、表单设计器、表单视图、积木报表企业版、OA办公、商业APP、零代码应用、Online模块源码等功能)！[更多商业功能介绍，点击查看](README-Enterprise.md)
 
 
-#### 微服务架构图
-![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot_springcloud2022.png "在这里输入图片标题")
+
 
 
 
@@ -246,7 +246,7 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 
 
 
-### 功能模块
+### 开源版功能清单
 ```
 ├─系统管理
 │  ├─用户管理
@@ -270,15 +270,16 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 │  ├─仪表盘设计器
 │  ├─系统编码规则
 │  ├─系统校验规则
-├─AI开发
-│  ├─支持AI大模型ChatGPT和DeepSeek
-│  ├─AI对话助手
-│  ├─AI建表
-│  ├─AI写文章
-│  ├─AI流程编排
+├─AI应用平台
 │  ├─AI知识库问答系统
-│  ├─AI应用开发平台
+│  ├─AI大模型管理
+│  ├─AI流程编排
+│  ├─AI对话支持图片
+│  ├─AI对话助手(智能问答)
+│  ├─AI建表（Online表单）
 │  ├─AI聊天窗口支持嵌入第三方
+│  ├─AI聊天窗口支持移动端
+│  ├─支持常见大模型ChatGPT和DeepSeek等等
 ├─积木报表设计器
 │  ├─打印设计器
 │  ├─数据报表设计
