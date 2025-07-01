@@ -274,12 +274,14 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 │  ├─AI知识库问答系统
 │  ├─AI大模型管理
 │  ├─AI流程编排
+│  ├─AI流程设计器
 │  ├─AI对话支持图片
 │  ├─AI对话助手(智能问答)
 │  ├─AI建表（Online表单）
 │  ├─AI聊天窗口支持嵌入第三方
 │  ├─AI聊天窗口支持移动端
-│  ├─支持常见大模型ChatGPT和DeepSeek等等
+│  ├─支持常见大模型ChatGPT和DeepSeek、ollama等等
+│  ├─AI OCR示例
 ├─积木报表设计器
 │  ├─打印设计器
 │  ├─数据报表设计
@@ -295,7 +297,9 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 │  ├─高级查询器（弹窗自动组合查询条件）
 │  ├─Excel导入导出工具集成（支持单表，一对多 导入导出）
 │  ├─平台移动自适应支持
+│  ├─提供新版uniapp3的代码生成器模板
 ├─系统监控
+│  ├─基于AK和SK认证鉴权OpenAPI功能
 │  ├─Gateway路由网关
 │  ├─性能扫描监控
 │  │  ├─监控 Redis
@@ -375,6 +379,10 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 │  ├─提供单点登录CAS集成方案
 │  ├─提供APP发布方案
 │  ├─集成Websocket消息通知机制
+│  ├─支持electron桌面应用打包(支持windows、linux、macOS三大平台)
+│  ├─docker容器支持
+│  ├─提供移动APP框架及源码（Uniapp3版本）支持H5、小程序、APP、鸿蒙Next
+│  ├─提供移动APP低代码设计(Online表单、仪表盘)
 ```
 
 
