@@ -6,15 +6,13 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.config.JeecgBaseConfig;
-import org.jeecg.config.firewall.interceptor.enums.LowCodeUrlsEnum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.AntPathMatcher;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.annotation.Resource;
@@ -41,6 +39,7 @@ import java.util.Set;
  * @date 20230904
  */
 @Slf4j
+@Component
 public class LowCodeModeInterceptor implements HandlerInterceptor {
     /**
      * 低代码开发模式
@@ -59,6 +58,8 @@ public class LowCodeModeInterceptor implements HandlerInterceptor {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        log.info("低代码模式，拦截请求路径：" + request.getRequestURI());
+        
         //1、验证是否开启低代码开发模式控制
         if (jeecgBaseConfig == null) {
             jeecgBaseConfig = SpringContextUtils.getBean(JeecgBaseConfig.class);
