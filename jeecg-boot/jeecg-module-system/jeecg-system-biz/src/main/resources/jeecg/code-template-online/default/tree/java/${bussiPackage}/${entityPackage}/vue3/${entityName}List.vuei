@@ -116,6 +116,15 @@
    import {getPopDictByCode} from "@/utils/dict";
    import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
   </#if>
+  import { getDateByPicker } from '/@/utils';
+  //日期个性化选择
+  const fieldPickers = reactive({
+  <#list columns as po>
+    <#if po.extendParams?exists && po.extendParams.picker?exists>
+    ${po.fieldName}: '${po.extendParams.picker}',
+    </#if>
+  </#list>
+  });
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   const [registerBpmModal, { openModal: bpmPicModal }] = useModal();
@@ -131,7 +140,7 @@
          api: list,
          title: '${tableVo.ftlDescription}',
          columns,
-         canResize:false,
+         canResize:true,
          <#-- update-begin---author:chenrui ---date:20231228  for：[issue/#5658] 树表复选框与展开按钮重叠问题---------- -->
          isTreeTable: true,
          <#-- update-end---author:chenrui ---date:20231228  for：[issue/#5658] 树表复选框与展开按钮重叠问题---------- -->
@@ -172,7 +181,14 @@
            fixed:'right'
          },
          beforeFetch: (params) => {
-           params.hasQuery = "true"; 
+           if (params && fieldPickers) {
+             for (let key in fieldPickers) {
+               if (params[key]) {
+                 params[key] = getDateByPicker(params[key], fieldPickers[key]);
+               }
+             }
+           }
+           params.hasQuery = "true";
            return Object.assign(params, queryParam);
          },
          <#if list_has_popup_dict>

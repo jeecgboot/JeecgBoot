@@ -204,7 +204,16 @@
   import {getPopDictByCode} from "@/utils/dict";
   import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
 </#if>
+  import { getDateByPicker } from '/@/utils';
   import { useUserStore } from '/@/store/modules/user';
+
+  const fieldPickers = reactive({
+  <#list columns as po>
+    <#if po.extendParams?exists && po.extendParams.picker?exists>
+    ${po.fieldName}: '${po.extendParams.picker}',
+    </#if>
+  </#list>
+  });
   const formRef = ref();
   const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
@@ -218,7 +227,7 @@
            title: '${tableVo.ftlDescription}',
            api: list,
            columns,
-           canResize:false,
+           canResize:true,
            useSearchForm: false,
            actionColumn: {
                width: 120,
@@ -229,6 +238,11 @@
              let rangerQuery = await setRangeQuery();
              return Object.assign(params, rangerQuery);
             <#else>
+             for (let key in fieldPickers) {
+                if (queryParam[key] && fieldPickers[key]) {
+                  queryParam[key] = getDateByPicker(queryParam[key], fieldPickers[key]);
+                }
+             }
              return Object.assign(params, queryParam);
             </#if>
            },

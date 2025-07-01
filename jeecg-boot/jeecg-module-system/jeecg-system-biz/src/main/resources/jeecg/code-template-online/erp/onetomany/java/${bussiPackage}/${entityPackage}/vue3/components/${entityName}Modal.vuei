@@ -19,12 +19,21 @@
 </template>
 
 <script lang="ts" setup>
-    import {ref, computed, unref} from 'vue';
+    import {ref, computed, unref, reactive} from 'vue';
     import {BasicModal, useModalInner} from '/@/components/Modal';
     import {BasicForm, useForm} from '/@/components/Form/index';
     import {formSchema} from '../${entityName}.data';
     import {saveOrUpdate} from '../${entityName}.api';
     import { useMessage } from '/@/hooks/web/useMessage';
+    import { getDateByPicker } from '/@/utils';
+    //日期个性化选择
+    const fieldPickers = reactive({
+    <#list columns as po>
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      ${po.fieldName}: '${po.extendParams.picker}',
+      </#if>
+    </#list>
+    });
     const { createMessage } = useMessage();
     // Emits声明
     const emit = defineEmits(['register','success']);
@@ -61,6 +70,8 @@
     async function handleSubmit(v) {
         try {
             let values = await validate();
+            // 预处理日期数据
+            changeDateValue(values);
             setModalProps({confirmLoading: true});
             //提交表单
             await saveOrUpdate(values, isUpdate.value);
@@ -80,6 +91,20 @@
             setModalProps({confirmLoading: false});
         }
     }
+
+    /**
+     * 处理日期值
+     * @param formData 表单数据
+     */
+    const changeDateValue = (formData) => {
+        if (formData && fieldPickers) {
+            for (let key in fieldPickers) {
+                if (formData[key]) {
+                    formData[key] = getDateByPicker(formData[key], fieldPickers[key]);
+                }
+            }
+        }
+    };
 <#if buttonList?size gt 0>
   <#list buttonList?sort_by('orderNum') as btn>
       <#if btn.buttonStyle=='form'>

@@ -197,6 +197,7 @@
 <#if need_pca>
   import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
 </#if>
+  import { getDateByPicker } from '/@/utils';
   <#if need_popup_dict>
  import {getPopDictByCode} from "@/utils/dict";
  import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
@@ -208,6 +209,13 @@
   import { startProcess } from '/@/api/common/api';
   const [registerBpmModal, { openModal: bpmPicModal }] = useModal();
   </#if>
+  const fieldPickers = reactive({
+  <#list columns as po>
+    <#if po.extendParams?exists && po.extendParams.picker?exists>
+    ${po.fieldName}: '${po.extendParams.picker}',
+    </#if>
+  </#list>
+  });
   const { createMessage } = useMessage();
   const expandedRowKeys = ref([]);
   const queryParam = ref<any>({});
@@ -219,7 +227,7 @@
       title: '${tableVo.ftlDescription}',
       api: list,
       columns,
-      canResize:false,
+      canResize:true,
       useSearchForm: false,
       isTreeTable: true,
       actionColumn: {
@@ -232,6 +240,11 @@
         let rangerQuery = await setRangeQuery();
         return Object.assign(params, rangerQuery);
        <#else>
+        for (let key in fieldPickers) {
+          if (queryParam[key] && fieldPickers[key]) {
+            queryParam[key] = getDateByPicker(queryParam[key], fieldPickers[key]);
+          }
+        }
         return Object.assign(params, queryParam.value);
        </#if>
       },

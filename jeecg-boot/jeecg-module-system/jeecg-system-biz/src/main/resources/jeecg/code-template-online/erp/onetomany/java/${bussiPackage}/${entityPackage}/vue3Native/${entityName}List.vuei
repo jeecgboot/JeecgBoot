@@ -205,6 +205,7 @@
   import { getAuthCache, setAuthCache } from '/@/utils/auth';
   import { DB_DICT_DATA_KEY } from '/@/enums/cacheEnum';
   </#if>
+  import { getDateByPicker } from '/@/utils';
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
 
@@ -221,6 +222,14 @@
   import {getPopDictByCode} from "@/utils/dict";
   import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
 </#if>
+
+  const fieldPickers = reactive({
+  <#list columns as po>
+    <#if po.extendParams?exists && po.extendParams.picker?exists>
+    ${po.fieldName}: '${po.extendParams.picker}',
+    </#if>
+  </#list>
+  });
   const formRef = ref();
   const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
@@ -233,7 +242,7 @@
       title: '${tableVo.ftlDescription}',
       api: list,
       columns,
-      canResize:false,
+      canResize:true,
       useSearchForm: false,
       clickToRowSelect: true,
       rowSelection: {type: 'radio'},
@@ -246,6 +255,11 @@
         let rangerQuery = await setRangeQuery();
         return Object.assign(params, rangerQuery);
        <#else>
+        for (let key in fieldPickers) {
+          if (queryParam[key] && fieldPickers[key]) {
+            queryParam[key] = getDateByPicker(queryParam[key], fieldPickers[key]);
+          }
+        }
         return Object.assign(params, queryParam);
        </#if>
       },
@@ -593,7 +607,6 @@
       height: 100%;
       .content {
         background-color: #fff;
-        height: 100%;
       }
   }
 </style>

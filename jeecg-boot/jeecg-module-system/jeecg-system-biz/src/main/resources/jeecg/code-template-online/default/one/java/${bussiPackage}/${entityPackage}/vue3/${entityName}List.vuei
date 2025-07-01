@@ -117,6 +117,15 @@
  import {getPopDictByCode} from "@/utils/dict";
  import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
   </#if>
+  import { getDateByPicker } from '/@/utils';
+  //日期个性化选择
+  const fieldPickers = reactive({
+  <#list columns as po>
+    <#if po.extendParams?exists && po.extendParams.picker?exists>
+    ${po.fieldName}: '${po.extendParams.picker}',
+    </#if>
+  </#list>
+  });
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
   const [registerBpmModal, { openModal: bpmPicModal }] = useModal();
@@ -133,7 +142,7 @@
            title: '${tableVo.ftlDescription}',
            api: list,
            columns,
-           canResize:false,
+           canResize:true,
            formConfig: {
               //labelWidth: 120,
               schemas: searchFormSchema,
@@ -171,6 +180,13 @@
                fixed:'right'
             },
             beforeFetch: (params) => {
+              if (params && fieldPickers) {
+                for (let key in fieldPickers) {
+                  if (params[key]) {
+                    params[key] = getDateByPicker(params[key], fieldPickers[key]);
+                  }
+                }
+              }
               return Object.assign(params, queryParam);
             },
             <#if list_has_popup_dict>

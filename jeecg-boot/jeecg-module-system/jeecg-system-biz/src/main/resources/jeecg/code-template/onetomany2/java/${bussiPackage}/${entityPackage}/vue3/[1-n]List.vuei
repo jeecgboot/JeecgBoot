@@ -56,7 +56,7 @@
         tableProps: {
             api: ${subTab.entityName?uncap_first}List,
             columns: ${subTab.entityName?uncap_first}Columns,
-            canResize: false,
+            canResize: true,
             useSearchForm: false,
             searchInfo,
             actionColumn: {

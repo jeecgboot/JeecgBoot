@@ -49,7 +49,7 @@
             title: '${tableVo.ftlDescription}',
             api: list,
             columns,
-            canResize:false,
+            canResize:true,
             formConfig: {
                labelWidth: 120,
                schemas: searchFormSchema,
