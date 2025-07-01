@@ -62,15 +62,10 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 | Gitee | [`master`](https://gitee.com/jeecg/JeecgBoot)      | [`springboot3`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3/) 分支     | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支 |
 
 
-#### 项目说明
-
-
-| 项目名                | 说明                                                                      | 
-|--------------------|-------------------------------------------------------------------------|
-| `jeecg-boot`    | 后端JAVA源码项目（SpringBoot微服务架构）                                             |
-| `jeecgboot-vue3` | 前端VUE3源码项目（vue3+vite6+ts最新技术栈）                                          |
-| `JeecgUniapp` | [配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5 |
-
+- `jeecg-boot` 是后端JAVA源码项目（支持单体和微服务切换）.
+- `jeecgboot-vue3` 是前端VUE3源码项目（vue3+vite6+ts最新技术栈）.
+- `JeecgUniapp`  是[配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5、鸿蒙、鸿蒙Next.
+- 参考 [文档](https://help.jeecg.com/ui/2dev/mini) 可以删除不需要的demo，制作一个精简版本
 
 
 
@@ -103,7 +98,7 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 
 - JeecgBoot低代码：  https://boot3.jeecg.com
 - 敲敲云零代码：https://app.qiaoqiaoyun.com
-- APP演示: http://jeecg.com/appIndex
+- APP演示(多端): http://jeecg.com/appIndex
 
 
 AI应用平台功能介绍
