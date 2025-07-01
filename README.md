@@ -56,14 +56,22 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 通过这些适配，JeecgBoot 为使用国产软件和硬件的用户提供了高效的开发解决方案。
 
 
+版本说明
+-----------------------------------
+
+| 下载源    | JDK 8/17 + Spring Boot 2.7                      | JDK 17 + Spring Boot 3.3 + Shiro                      | JDK 17 + Spring Boot 3.3  + SpringAuthorizationServer                                |
+|--------|------------------------------------------------|-----------------------------------------------------------------|--------------------------------------------|
+| Github | [`master`](https://github.com/jeecgboot/JeecgBoot) 分支 | [`springboot3`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3) 分支 | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支 |
+| Gitee | [`master`](https://gitee.com/jeecg/JeecgBoot) 分支 | [`springboot3`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3/) 分支 | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支 |
+
 
 项目说明
 -----------------------------------
 
-| 项目名                | 说明                     | 
-|--------------------|------------------------|
-| `jeecg-boot`    | 后端源码JAVA（SpringBoot微服务架构）        |
-| `jeecgboot-vue3` | 前端源码VUE3（vue3+vite6+ts最新技术栈）  |
+| 项目名                | 说明                                                                      | 
+|--------------------|-------------------------------------------------------------------------|
+| `jeecg-boot`    | 后端JAVA源码项目（SpringBoot微服务架构）                                             |
+| `jeecgboot-vue3` | 前端VUE3源码项目（vue3+vite6+ts最新技术栈）                                          |
 | `JeecgUniapp` | [配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5 |
 
 
@@ -296,21 +304,6 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 
 ### Jeecg Boot 产品功能蓝图
 ![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
-
-
-
-
-### 分支说明
-
-> 主干master更稳定，如果你对最新技术栈无要求，建议采用主干
-
-#### springboot3分支
- - 源码地址：https://github.com/jeecgboot/JeecgBoot/tree/springboot3
- - 架构说明：升级Spring Boot3 & JDK 17 + Undertow + springdoc + fastjson2
- 
-#### springboot3_sas分支
- - 源码地址：https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas
- - 架构说明：在springboot3分支基础上，采用SpringAuthorizationServer替换Shiro
  
  
 
