@@ -50,7 +50,8 @@ public class LowCodeModeInterceptor implements HandlerInterceptor {
 
     @Resource
     private JeecgBaseConfig jeecgBaseConfig;
-    @Autowired
+    
+    @Autowired(required = false)
     private CommonAPI commonAPI;
 
     /**
@@ -61,6 +62,9 @@ public class LowCodeModeInterceptor implements HandlerInterceptor {
         //1、验证是否开启低代码开发模式控制
         if (jeecgBaseConfig == null) {
             jeecgBaseConfig = SpringContextUtils.getBean(JeecgBaseConfig.class);
+        }
+        if (commonAPI == null) {
+            commonAPI = SpringContextUtils.getBean(CommonAPI.class);
         }
 
         if (jeecgBaseConfig.getFirewall()!=null && LowCodeModeInterceptor.LOW_CODE_MODE_PROD.equals(jeecgBaseConfig.getFirewall().getLowCodeMode())) {
