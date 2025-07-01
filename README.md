@@ -149,6 +149,15 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 技术架构：
 -----------------------------------
 
+#### 前端
+
+- 前端环境要求：Node.js要求`Node 20+` 版本以上、pnpm 要求`9+` 版本以上
+- 依赖管理：node、npm、pnpm
+- 前端IDE建议：IDEA、WebStorm、Vscode
+- 采用 Vue3.0+TypeScript+Vite6+Ant-Design-Vue4等新技术方案，包括二次封装组件、utils、hooks、动态菜单、权限校验、按钮级别权限控制等功能
+- 最新技术栈：Vue3.0 + TypeScript + Vite6 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6
+
+
 #### 后端
 
 - IDE建议： IDEA (必须安装lombok插件 )
@@ -165,28 +174,9 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 - 日志打印：logback
 - 缓存：Redis
 - 其他：autopoi, fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。
-- 默认数据库脚本：MySQL5.7+
-- [其他数据库，需要自己转](https://my.oschina.net/jeecg/blog/4905722)
+- 默认提供MySQL5.7+数据库脚本
 
-
-#### 前端
-
-- 前端IDE建议：WebStorm、Vscode
-- 采用 Vue3.0+TypeScript+Vite6+Ant-Design-Vue等新技术方案，包括二次封装组件、utils、hooks、动态菜单、权限校验、按钮级别权限控制等功能
-- 最新技术栈：Vue3.0 + TypeScript + Vite6 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6
-- 依赖管理：node、npm、pnpm
-
-
-#### 前端环境要求
-
-*   本地环境安装 `Node.js 、npm 、pnpm`
-*   pnpm 要求`9+` 版本以上
-*   Node.js 版本建议`v20.15.0`，要求`Node 20+` 版本以上
-
- ` ( 因为Vite6 需要 Node.js 18 / 20+ )`
-
-
-#### 平台支持数据库
+#### 数据库支持
 
 > jeecgboot平台支持以下数据库，默认我们只提供mysql脚本，其他数据库可以参考[转库文档](https://my.oschina.net/jeecg/blog/4905722)自己转。
 
@@ -201,10 +191,16 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 |   人大金仓   |  √   |
 |   TiDB     |  √   |
 |   kingbase8   |  √   |
-  
+
+
 
  
 ## 微服务解决方案
+
+> 微服务方式快速启动
+> - [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
+> - [Docker一键启动微服务前后端](https://help.jeecg.com/java/docker/quickcloud)
+
 
 
 - 1、服务注册和发现 Nacos √
@@ -225,10 +221,6 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 - 16、路由限流   √
 
 
-#### 微服务方式启动
-
-- [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
-- [Docker一键启动微服务前后端](https://help.jeecg.com/java/docker/quickcloud)
 
 
 
@@ -236,10 +228,9 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 
 开源版与企业版区别?
 -----------------------------------
-> [更多商业功能介绍，点击查看](README-Enterprise.md)
 
  - JeecgBoot开源版采用[Apache-2.0 license](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)开源协议，允许商用使用，不会造成侵权行为，允许基于本平台软件开展业务系统开发（在任何情况下，您不得使用本软件开发可能被认为与本软件竞争的软件）！
- - 商业版与开源版主要区别在于商业版提供了技术支持 和 更多的企业级功能(例如：Online图表、流程监控、流程设计、流程审批、表单设计器、表单视图、积木报表企业版、OA办公、商业APP、零代码应用、Online模块源码等功能).
+ - 商业版与开源版主要区别在于商业版提供了技术支持 和 更多的企业级功能(例如：Online图表、流程监控、流程设计、流程审批、表单设计器、表单视图、积木报表企业版、OA办公、商业APP、零代码应用、Online模块源码等功能)！[更多商业功能介绍，点击查看](README-Enterprise.md)
 
 
 #### 微服务架构图
