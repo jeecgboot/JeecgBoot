@@ -34,9 +34,6 @@ JeecgBoot 提供了一系列 `低代码能力`，实现`真正的零代码`在�
 
 
 
-### 视频介绍
-
-[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/flow_video.png)](https://www.bilibili.com/video/BV1Nk4y1o7Qc)
 
 
 适用项目
@@ -59,14 +56,14 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 版本说明
 -----------------------------------
 
-| 下载源    | JDK 8/17 + Spring Boot 2.7                      | JDK 17 + Spring Boot 3.3 + Shiro                      | JDK 17 + Spring Boot 3.3  + SpringAuthorizationServer                                |
-|--------|------------------------------------------------|-----------------------------------------------------------------|--------------------------------------------|
+|下载    | JDK17+Spring Boot 2.7                      | JDK17+Spring Boot3.3+Shiro                      | JDK17 + SpringBoot3.3+ SpringAuthorizationServer   |
+|------|--------------------------------------------|-----------------------------------------------------------|--------------------------------------------|
 | Github | [`master`](https://github.com/jeecgboot/JeecgBoot) 分支 | [`springboot3`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3) 分支 | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支 |
 | Gitee | [`master`](https://gitee.com/jeecg/JeecgBoot) 分支 | [`springboot3`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3/) 分支 | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支 |
 
 
-项目说明
------------------------------------
+#### 项目说明
+
 
 | 项目名                | 说明                                                                      | 
 |--------------------|-------------------------------------------------------------------------|
@@ -304,8 +301,13 @@ JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 
 ### Jeecg Boot 产品功能蓝图
 ![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
- 
- 
+
+
+### 流程视频介绍
+
+[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/flow_video.png)](https://www.bilibili.com/video/BV1Nk4y1o7Qc)
+
+
 
 ### 功能模块
 ```
