@@ -18,7 +18,7 @@ JeecgBoot AI低代码平台
 
 <h3 align="center">企业级AI低代码平台</h3>
 
-JeecgBoot是一款基于AIGC和低代码引擎的AI低代码平台，旨在帮助开发者快速实现低代码开发和构建、部署个性化的 AI 应用。
+JeecgBoot是一款基于AIGC和低代码引擎的企业级低代码平台，旨在帮助开发者快速实现低代码开发和构建、部署个性化的 AI 应用。
 前后端分离架构Ant Design&Vue3，SpringBoot，SpringCloud Alibaba，Mybatis-plus，Shiro，强大的代码生成器让前后端代码一键生成，无需写任何代码！
 成套AI大模型功能: AI模型管理、AI应用、知识库、AI流程编排、AI对话助手等；
 引领AI低代码开发模式: AIGC生成->OnlineCoding-> 代码生成-> 手工MERGE， 帮助Java项目解决80%的重复工作，让开发更多关注业务，快速提高效率 节省成本，同时又不失灵活性！
@@ -56,10 +56,10 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 版本说明
 -----------------------------------
 
-|下载    | JDK17+Spring Boot 2.7                      | JDK17+Spring Boot3.3+Shiro                      | JDK17 + SpringBoot3.3+ SpringAuthorizationServer   |
-|------|--------------------------------------------|-----------------------------------------------------------|--------------------------------------------|
-| Github | [`master`](https://github.com/jeecgboot/JeecgBoot) 分支 | [`springboot3`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3) 分支 | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支 |
-| Gitee | [`master`](https://gitee.com/jeecg/JeecgBoot) 分支 | [`springboot3`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3/) 分支 | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支 |
+|下载    | JDK17 + SpringBoot2.7                              | JDK17 + SpringBoot3.3 + Shiro                                               |JDK17 + SpringBoot3.3+ SpringAuthorizationServer   |
+|------|----------------------------------------------------|-----------------------------------------------------------------------------|--------------------------------------------|
+| Github | [`master`](https://github.com/jeecgboot/JeecgBoot) | [`springboot3`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3) 分支 | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支 |
+| Gitee | [`master`](https://gitee.com/jeecg/JeecgBoot)      | [`springboot3`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3/) 分支     | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支 |
 
 
 #### 项目说明
@@ -84,19 +84,6 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 
 
 
-
-在线体验
------------------------------------
-
-> JeecgBoot vs 敲敲云
-> - JeecgBoot是低代码产品拥有很多低代码能力，比如流程设计、表单设计、大屏设计，代码生成器，适合半开发模式（开发+低代码结合），也可以集成零代码的应用管理模块； 
-> - 敲敲云是零代码产品，完全不写代码，通过配置搭建业务系统，其在jeecgboot基础上研发而成，删除了online、代码生成、OA等很多需要编码的功能，只保留了应用管理和聊天、流程、日程、文件四个标准OA功能
-
-
-- JeecgBoot低代码：  https://boot3.jeecg.com
-- 敲敲云零代码：https://app.qiaoqiaoyun.com
-- APP演示: http://jeecg.com/appIndex
-
 技术文档
 -----------------------------------
 
@@ -106,8 +93,20 @@ JeecgBoot 是一个开源低代码开发平台，支持全信创环境。它兼�
 - QQ交流群 ： 964611995、⑩716488839(满)、⑨808791225(满)、其他(满)
 
 
+商业版本演示
+-----------------------------------
 
-AIGC应用平台介绍
+> JeecgBoot vs 敲敲云
+> - JeecgBoot是低代码产品拥有很多低代码能力，比如流程设计、表单设计、大屏设计，代码生成器，适合半开发模式（开发+低代码结合），也可以集成零代码的应用管理模块；
+> - 敲敲云是零代码产品，完全不写代码，通过配置搭建业务系统，其在jeecgboot基础上研发而成，删除了online、代码生成、OA等很多需要编码的功能，只保留了应用管理和聊天、流程、日程、文件四个标准OA功能
+
+
+- JeecgBoot低代码：  https://boot3.jeecg.com
+- 敲敲云零代码：https://app.qiaoqiaoyun.com
+- APP演示: http://jeecg.com/appIndex
+
+
+AI应用平台功能介绍
 -----------------------------------
 
 JeecgBoot 平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
