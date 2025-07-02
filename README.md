@@ -234,6 +234,10 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
 
 
+####  系统功能架构图
+
+![](https://oscimg.oschina.net/oscnet/up-1569487b95a07dbc3599fb1349a2e3aaae1.png)
+
 
 
 ### 开源版功能清单
@@ -378,9 +382,6 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
 
 ### 系统效果
-
-
-
 
 ##### PC端
 ![](https://oscimg.oschina.net/oscnet/up-000530d95df337b43089ac77e562494f454.png)
