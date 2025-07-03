@@ -445,7 +445,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
     @Override
     public List<PlatformOrderFront> fetchUninvoicedOrdersByShopForClientFullSQL(List<String> shopIds, List<Integer> erpStatuses, String column, String order, Integer pageNo, Integer pageSize,
-                                                                                List<Integer> productAvailable, List<Integer> shippingAvailable, List<Integer> purchaseAvailable, Date startDate, Date endDate) {
+                                                                                List<Integer> productAvailable, List<Integer> shippingAvailable, List<Integer> purchaseAvailable, String startDate, String endDate) {
         int offset = (pageNo - 1) * pageSize;
         return platformOrderMap.fetchUninvoicedOrdersByShopForClientFullSQL(shopIds, erpStatuses, column, order, offset, pageSize, productAvailable, shippingAvailable, purchaseAvailable, startDate, endDate);
     }

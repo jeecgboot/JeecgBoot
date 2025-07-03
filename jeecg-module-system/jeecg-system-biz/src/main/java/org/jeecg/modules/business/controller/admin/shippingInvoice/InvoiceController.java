@@ -570,8 +570,8 @@ public class InvoiceController {
                                             @RequestParam(name ="shippingAvailable[]", required = false) List<Integer> shippingAvailable,
                                             @RequestParam(name ="purchaseAvailable[]", required = false) List<Integer> purchaseAvailable,
                                             @RequestParam(name = "productAvailable[]", required = false) List<Integer> productAvailable,
-                                            @RequestParam(name = "startDate" , required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                            @RequestParam(name = "endDate" , required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate
+                                            @RequestParam(name = "startDate" , required = false)  String startDate,
+                                            @RequestParam(name = "endDate" , required = false)  String endDate
     ) {
         log.info("User : {} is requesting uninvoiced orders for shops : [{}]",
                 ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername(),
@@ -589,13 +589,11 @@ public class InvoiceController {
             e.printStackTrace();
             return Result.error("Error 400 : Bad Request");
         }
-//        // checking shipping data availability
+        // checking shipping data availability
         List<String> shopIdList = Arrays.asList(shopIds.split(","));
 
-        if(startDate != null && endDate != null) {
-            if (startDate.after(endDate)) {
-                return Result.error("startDate can not after endDate!");
-            }
+        if (startDate != null && endDate != null) {
+            log.info("Filtering orders between dates: {} and {}", startDate, endDate);
         }
 
         List<PlatformOrderFront> orders = platformOrderService.fetchUninvoicedOrdersByShopForClientFullSQL(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize,

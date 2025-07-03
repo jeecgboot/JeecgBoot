@@ -69,10 +69,8 @@ public class PlatformOrderFront {
      * 订单交易时间
      */
     @Excel(name = "订单交易时间", width = 15, format = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd HH:mm:ss")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "订单交易时间")
-    private Date orderTime;
+    private String orderTime;
     /**
      * 订单发货时间
      */
