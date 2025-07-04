@@ -6,4 +6,50 @@
     JOIN platform_order po ON so.shop_id = po.shop_id
     WHERE po.shipping_invoice_number = #{invoiceNumber} OR po.purchase_invoice_number = #{invoiceNumber};
 </select>
+<select id="countWithFilters" resultType="java.lang.Integer">
+    SELECT COUNT(shop_id)
+    FROM shop s
+    JOIN client c ON s.owner_id = c.id
+    LEFT JOIN shop_with_options swo ON s.id = swo.shop_id
+    WHERE swo.has_options IN
+        <foreach item="option" index="index" collection="hasOptions" open="(" separator="," close=")">
+            #{option}
+        </foreach>
+    <if test = "showAll == false">
+        AND c.active = 1
+        AND s.active = 1
+    </if>
+    <if test="clientId != null and clientId != ''">
+        AND c.id = #{clientId}
+    </if>
+    <if test="shopIds != null and shopIds.size > 0">
+        AND s.id IN
+            <foreach item="shopId" index="index" collection="shopIds" open="(" separator="," close=")">
+                #{shopId}
+            </foreach>
+    </if>
+</select>
+<select id="listWithFilters" resultType="org.jeecg.modules.business.entity.ShopWithOptions">
+    SELECT *
+    FROM shop_with_options swo
+    WHERE swo.has_options IN
+    <foreach item="option" index="index" collection="hasOptions" open="(" separator="," close=")">
+        #{option}
+    </foreach>
+    <if test = "showAll == false">
+        AND swo.is_client_active = 1
+        AND swo.is_shop_active = 1
+    </if>
+    <if test="clientId != null and clientId != ''">
+        AND client_id = #{clientId}
+    </if>
+    <if test="shopIds != null and shopIds.size > 0">
+        AND shop_id IN
+            <foreach item="shopId" index="index" collection="shopIds" open="(" separator="," close=")">
+                #{shopId}
+            </foreach>
+    </if>
+    ORDER BY internal_code, client_id, erp_code
+    LIMIT #{offset}, #{limit};
+</select>
 </mapper>

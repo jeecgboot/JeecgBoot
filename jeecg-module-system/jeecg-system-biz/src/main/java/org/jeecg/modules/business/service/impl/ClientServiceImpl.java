@@ -47,14 +47,14 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Transactional
     public void saveMain(Client client, List<Shop> shopList, List<ClientSku> clientSkuList) {
         clientMapper.insert(client);
-        if (shopList != null && shopList.size() > 0) {
+        if (shopList != null && !shopList.isEmpty()) {
             for (Shop entity : shopList) {
                 //外键设置
                 entity.setOwnerId(client.getId());
                 shopMapper.insert(entity);
             }
         }
-        if (clientSkuList != null && clientSkuList.size() > 0) {
+        if (clientSkuList != null && !clientSkuList.isEmpty()) {
             for (ClientSku entity : clientSkuList) {
                 //外键设置
                 entity.setClientId(client.getId());
@@ -65,7 +65,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Override
     @Transactional
-    public void updateMain(Client client, List<Shop> shopList, List<ClientSku> clientSkuList) {
+    public void updateMain(Client client, List<Shop> shopList) {
         clientMapper.updateById(client);
 
         //1.先删除子表数据
@@ -73,18 +73,17 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
         clientSkuMapper.deleteByMainId(client.getId());
 
         //2.子表数据重新插入
-        if (shopList != null && shopList.size() > 0) {
+        if (shopList != null && !shopList.isEmpty()) {
             for (Shop entity : shopList) {
                 //外键设置
+                Shop existingShop = shopMapper.selectById(entity.getId());
                 entity.setOwnerId(client.getId());
-                shopMapper.insert(entity);
-            }
-        }
-        if (clientSkuList != null && clientSkuList.size() > 0) {
-            for (ClientSku entity : clientSkuList) {
-                //外键设置
-                entity.setClientId(client.getId());
-                clientSkuMapper.insert(entity);
+                if (existingShop == null) {
+                    shopMapper.insert(entity);
+                } else {
+                    shopMapper.updateById(entity);
+                }
+                entity.setOwnerId(client.getId());
             }
         }
     }
