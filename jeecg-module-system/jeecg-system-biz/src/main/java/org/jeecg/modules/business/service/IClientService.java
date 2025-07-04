@@ -21,27 +21,27 @@ public interface IClientService extends IService<Client> {
 	 * 添加一对多
 	 *
 	 */
-	public void saveMain(Client client,List<Shop> shopList,List<ClientSku> clientSkuList) ;
+	void saveMain(Client client,List<Shop> shopList,List<ClientSku> clientSkuList) ;
 
 	/**
 	 * 修改一对多
 	 *
 	 */
-	public void updateMain(Client client,List<Shop> shopList,List<ClientSku> clientSkuList);
+    void updateMain(Client client, List<Shop> shopList);
 
 	/**
 	 * 删除一对多
 	 */
-	public void delMain (String id);
+	void delMain (String id);
 
 	/**
 	 * 批量删除一对多
 	 */
-	public void delBatchMain (Collection<? extends Serializable> idList);
-	public String getClientEntity(String id);
-	public Map<String, String> getClientsEntity(List<String> ids);
-	public String getClientIdByCode(String code);
-	public String getActiveClientIdByCode(String code);
+	void delBatchMain (Collection<? extends Serializable> idList);
+	String getClientEntity(String id);
+	Map<String, String> getClientsEntity(List<String> ids);
+	String getClientIdByCode(String code);
+	String getActiveClientIdByCode(String code);
 	/**
 	 * Get current user's client information
 	 * @return client or null if current user's role is not client

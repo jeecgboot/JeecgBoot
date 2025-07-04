@@ -138,7 +138,7 @@ public class ClientController {
             // If useBalance is set to 1, initialize balance for the client
             balanceService.initBalance(client.getId());
         }
-        clientService.updateMain(client, clientPage.getShopList(), clientPage.getClientSkuList());
+        clientService.updateMain(client, clientPage.getShopList());
         updateShopId();
         log.info("useBalance from clientPage: {}, useBalance updated for client: {}", clientPage.getUseBalance(), client.getUseBalance());
         log.info("Shop names replaced by new created shop IDs");

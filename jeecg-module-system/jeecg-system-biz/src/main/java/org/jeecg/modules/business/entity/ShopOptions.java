@@ -70,7 +70,7 @@ public class ShopOptions implements Serializable {
 	@Excel(name = "是否定时自动开票", width = 15)
     @ApiModelProperty(value = "是否定时自动开票")
     private java.lang.Boolean isAutoInvoice;
-	/**是否按订单时间顺序自动开票, only if threshhold >= 0*/
+	/**是否按订单时间顺序自动开票, only if threshold >= 0*/
 	@Excel(name = "是否按订单时间顺序自动开票", width = 15)
     @ApiModelProperty(value = "是否按订单时间顺序自动开票")
     private java.lang.Boolean isChronologicalOrder;
