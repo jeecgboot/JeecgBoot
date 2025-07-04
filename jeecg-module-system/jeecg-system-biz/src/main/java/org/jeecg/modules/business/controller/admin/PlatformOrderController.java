@@ -672,6 +672,8 @@ public class PlatformOrderController {
         String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
         boolean hasRemarkInShippingInvoice = false;
         List<ShopOptions> options = shopOptionsService.getByInvoiceNumber(param.getInvoiceNumber());
+        if(options == null)
+            return Result.OK();
         for (ShopOptions option : options) {
             if (option.getHasShippingInvoiceRemark()) {
                 hasRemarkInShippingInvoice = true;
