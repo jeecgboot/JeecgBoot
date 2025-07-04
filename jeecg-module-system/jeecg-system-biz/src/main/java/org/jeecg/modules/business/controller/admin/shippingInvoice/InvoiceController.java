@@ -464,40 +464,27 @@ public class InvoiceController {
         }
     }
     @PostMapping("/createOrderByExcel")
-    public Result<?> createOrderByExcel(@RequestParam("file") MultipartFile file) {
+    public Result<?> createOrderByExcel(@RequestParam("clientId") String clientId,@RequestParam("file") MultipartFile file) {
         boolean isEmployee = securityService.checkIsEmployee();
-        Client client = null;
         if (!isEmployee) {
-            client = clientService.getCurrentClient();
-            if (client == null) {
-                return Result.error(HttpStatus.SC_NOT_FOUND, "Client not found");
+            // check if clientId matches the current client
+            Client client = clientService.getCurrentClient();
+            if (client == null || !clientId.equals(client.getId())) {
+                return Result.error(HttpStatus.SC_NOT_FOUND, "Client not found or not authorized");
             }
         }
         //get the excel data
-        List<Map<String, Object>> skuList = skuService.parseExcelToSkuList(file);
-        // if not employee, filter out skus that are not from the client
-        if (!isEmployee) {
-            Iterator<Map<String, Object>> iterator = skuList.iterator();
-            while (iterator.hasNext()) {
-                Map<String, Object> sku = iterator.next();
-                String erpCode = (String) sku.get("erpCode");
-                if (erpCode == null || erpCode.isEmpty()) {
-                    iterator.remove();
-                    continue;
-                }
-                String skuId = skuService.getIdFromErpCode(erpCode);
-                if (skuId == null) {
-                    iterator.remove();
-                    continue;
-                }
-                String skuClientId = clientSkuService.getClientIdFromSkuId(skuId);
-                if (!client.getId().equals(skuClientId)) {
-                    iterator.remove();
-                }
-            }
+        Result<?> result = skuService.parseExcelToSkuList(clientId,file);
+        if (!result.isSuccess()) {
+            return result;
         }
-        log.info("SKU list after filtering: {}", skuList);
-        return Result.OK(skuList);
+        Map<String, Object> resultData = (Map<String, Object>) result.getResult();
+        List<Map<String, Object>> validSkuList = (List<Map<String, Object>>) resultData.get("validSkuList");
+        List<String> warnings = (List<String>) resultData.get("warnings");
+        Map<String, Object> response = new HashMap<>();
+        response.put("validSkuList", validSkuList);
+        response.put("warnings", warnings);
+        return Result.OK(response);
     }
 
     @GetMapping(value = "/preShipping/orderTime")
