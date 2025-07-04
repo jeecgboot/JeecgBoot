@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.*;
@@ -137,5 +138,5 @@ public interface ISkuService extends IService<Sku> {
 
     void setIsSynced(List<String> erpCodes, boolean isSynced);
 
-    List<Map<String, Object>> parseExcelToSkuList(MultipartFile file);
+    Result<?> parseExcelToSkuList(String clientId, MultipartFile file);
 }

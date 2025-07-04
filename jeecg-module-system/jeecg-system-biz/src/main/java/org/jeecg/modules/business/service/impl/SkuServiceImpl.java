@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.*;
@@ -717,11 +718,14 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
         skuMapper.setIsSynced(erpCodes, isSynced);
     }
 
-    public List<Map<String, Object>> parseExcelToSkuList(MultipartFile file) {
-        List<Map<String, Object>> result = new ArrayList<>();
+    @Override
+    public Result<?> parseExcelToSkuList(String clientId,MultipartFile file) {
+        List<Map<String, Object>> validSkuList = new ArrayList<>();
+        List<String> warnings = new ArrayList<>();
         try (Workbook workbook = WorkbookFactory.create(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             int headerRowIndex = -1;
+            int skuCol = -1, qtyCol = -1;
             Map<String, Integer> colMap = new HashMap<>();
             // find header row with required columns
             for (int i = 0; i <= 5; i++) {
@@ -731,65 +735,86 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
                     Cell cell = row.getCell(j);
                     if (cell == null || cell.getCellType() != CellType.STRING) continue;
                     String val = cell.getStringCellValue().trim().toLowerCase();
-                    if (val.equals("sku")) colMap.put("erpCode", j);
-                    else if (val.contains("anglais")) colMap.put("enName", j);
-                    else if (val.contains("chinois")) colMap.put("zhName", j);
-                    else if (val.contains("stock dispo")) colMap.put("stock", j);
-                    else if (val.contains("wia")) colMap.put("purchaseWIA", j);
-                    else if (val.contains("shopify")) colMap.put("shopifyOrder", j);
-                    else if (val.contains("stock") && val.matches(".*\\d{2}/\\d{2}.*")) colMap.put("stockDate", j);
-                    else if (val.contains("quantité") || val.contains("quantity")) colMap.put("quantity", j);
-                    else if (val.contains("ventes 7")) colMap.put("sales7d", j);
-                    else if (val.contains("ventes 28")) colMap.put("sales28d", j);
-                    else if (val.contains("ventes 42")) colMap.put("sales42d", j);
-                    else if (val.contains("price")) colMap.put("skuPrice", j);
+                    if (val.equals("sku")) skuCol = j;
+                    else if (val.contains("quantité") || val.contains("quantity")) qtyCol = j;
                 }
-                if (!colMap.isEmpty()) {
+                if (skuCol != -1 && qtyCol != -1) {
                     headerRowIndex = i;
                     break;
                 }
             }
-            if (headerRowIndex == -1 || !colMap.containsKey("erpCode") || !colMap.containsKey("quantity")) {
+            if (headerRowIndex == -1) {
                 throw new RuntimeException("Missing required columns: SKU and Quantity");
             }
+            List<String> erpCodes = new ArrayList<>();
+            Map<String, Integer> skuQuantityMap = new HashMap<>();
             // parse data rows
             for (int i = headerRowIndex + 1; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) continue;
-                Map<String, Object> sku = new HashMap<>();
-                for (Map.Entry<String, Integer> entry : colMap.entrySet()) {
-                    String key = entry.getKey();
-                    int col = entry.getValue();
-                    Cell cell = row.getCell(col);
-                    if (cell == null) continue;
-                    Object value = null;
-                    if (cell.getCellType() == CellType.NUMERIC) {
-                        value = key.equals("erpCode")
-                                ? new BigDecimal(cell.getNumericCellValue()).toPlainString().trim()
-                                : cell.getNumericCellValue();
-                    } else {
-                        String str = cell.toString().trim();
-                        if (Arrays.asList("quantity", "sales7d", "sales28d", "sales42d", "skuPrice", "stock", "purchaseWIA", "shopifyOrder", "stockDate").contains(key)) {
-                            try {
-                                value = Double.parseDouble(str);
-                            } catch (NumberFormatException ignored) {}
-                        } else {
-                            value = str;
-                        }
-                    }
-                    sku.put(key, value);
+                Cell skuCell = row.getCell(skuCol);
+                Cell qtyCell = row.getCell(qtyCol);
+                if (skuCell == null || qtyCell == null) continue;
+
+                String erpCode = "";
+                if (skuCell.getCellType() == CellType.NUMERIC) {
+                    erpCode = new BigDecimal(skuCell.getNumericCellValue()).toPlainString().trim();
+                } else {
+                    erpCode = skuCell.toString().trim();
                 }
-                // Only add SKUs with positive quantity and positive price
-                Object qtyObj = sku.get("quantity");
-                if (qtyObj instanceof Number && ((Number) qtyObj).doubleValue() > 0) {
-                    result.add(sku);
+                Integer quantity = null;
+                try {
+                    if (qtyCell.getCellType() == CellType.NUMERIC) {
+                        quantity = (int) qtyCell.getNumericCellValue();
+                    } else {
+                        quantity = Integer.parseInt(qtyCell.toString().trim());
+                    }
+                } catch (NumberFormatException ignored) {}
+
+                if (!erpCode.isEmpty() && quantity != null && quantity > 0) {
+                    erpCodes.add(erpCode);
+                    skuQuantityMap.put(erpCode, quantity);
                 }
             }
-            log.info("Parsed Excel SKU list: {}", result);
+            if (erpCodes.isEmpty()) {
+                return Result.error("No valid SKU and quantity found in the Excel file.");
+            }
+            //extract SKU details from the database
+            String erpRegex = String.join("|", erpCodes);
+            List<SkuOrderPage> skuPages = listSelectableSkuIdsWithFilters(clientId, Collections.singletonList(erpRegex), null, null);
+            // Check for SKUs not found in DB
+            Set<String> fetchedErpCodes = skuPages.stream()
+                    .map(SkuOrderPage::getErpCode)
+                    .collect(Collectors.toSet());
+            erpCodes.stream()
+                    .filter(code -> !fetchedErpCodes.contains(code))
+                    .forEach(code -> warnings.add("SKU " + code + " is invalid: it may not exist, not belong to the client, or have missing/zero price."
+                    ));
+
+            for (SkuOrderPage sku : skuPages) {
+                Integer quantity = skuQuantityMap.get(sku.getErpCode());
+                if (quantity == null) continue;
+                Map<String, Object> skuData = new HashMap<>();
+                skuData.put("skuId", sku.getId());
+                skuData.put("erpCode", sku.getErpCode());
+                skuData.put("enName", sku.getEnName());
+                skuData.put("zhName", sku.getZhName());
+                skuData.put("stock", sku.getStock());
+                skuData.put("skuPrice", sku.getSkuPrice());
+                skuData.put("sales7d", sku.getSalesLastWeek());
+                skuData.put("sales28d", sku.getSalesFourWeeks());
+                skuData.put("sales42d", sku.getSalesSixWeeks());
+                skuData.put("quantity", quantity);
+                validSkuList.add(skuData);
+            }
+            log.info("Parsed and fetched SKU details: {}, warnings: {}",validSkuList, warnings.size());
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("validSkuList", validSkuList);
+            responseData.put("warnings", warnings);
+            return Result.OK(responseData);
         } catch (Exception e) {
             log.error("Excel parsing failed", e);
             throw new RuntimeException("Excel parsing error: " + e.getMessage(), e);
         }
-        return result;
     }
 }
