@@ -158,6 +158,13 @@ export function useTableScroll(
           const trHeight = lastrEl.offsetHeight;
           const dataHeight = trHeight * pageSize;
           if (tableBody && lastrEl) {
+            // update-begin--author:liaozhiyang---date:20250702---for：【issues/8532】online权限管理中的按钮权限第一页数据看不到
+            // table是否隐藏（隐藏的table不能吸底）
+            const isTableBodyHide = tableBody.offsetHeight == 0 && tableBody.offsetWidth == 0;
+            if (isTableBodyHide) {
+              return;
+            }
+            // update-end--author:liaozhiyang---date:20250702---for：【issues/8532】online权限管理中的按钮权限第一页数据看不到
             if (current === 1 && pageSize > unref(getDataSourceRef).length && total <= pageSize) {
               tableBody.style.height = `${height}px`;
             } else {

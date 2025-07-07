@@ -21,8 +21,8 @@ importers:
         specifier: 1.1.1
         version: 1.1.1
       '@jeecg/online':
-        specifier: 3.7.4-beta
-        version: 3.7.4-beta
+        specifier: 3.7.4
+        version: 3.7.4
       '@logicflow/core':
         specifier: ^2.0.10
         version: 2.0.16
@@ -1198,8 +1198,8 @@ packages:
   '@jeecg/aiflow@1.1.1':
     resolution: {integrity: sha512-tzX3RXsayssfmMmYFaj7fZJtGdLCZ/AuBnqEafdarIWHx/W5LqWae+o1zo0dyl/QUwMpYYjQJlKBjR8DS20Z0A==}
 
-  '@jeecg/online@3.7.4-beta':
-    resolution: {integrity: sha512-vzhyUikxmlJwpQFxzMexibCYAW6Vdwu4to6wkuaCAjv3DG4b2TIWGzQE/WpU2FAs8E6jBFUNnKk305SslG7XKA==, tarball: https://registry.npmmirror.com/@jeecg/online/-/online-3.7.4-beta.tgz}
+  '@jeecg/online@3.7.4':
+    resolution: {integrity: sha512-P5aWkN2GpnkLpTLSS3dxgXAAXh4JzaqBDa+QtA+J4QQnhMtVGwZBObig9rag2vU6rkBLxvggbOpmalwyfFr9fQ==}
 
   '@jest/console@29.7.0':
     resolution: {integrity: sha512-5Ni4CU7XHQi32IJ398EEP4RrB8eV09sXP2ROqD4bksHrnTree52PsxvX8tpL8LvTZ3pFzXyPbNQReSN41CAhOg==}
@@ -6264,7 +6264,7 @@ packages:
       vue: '>=3.0.0'
 
   vue-demi@0.14.10:
-    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==, tarball: https://registry.npmmirror.com/vue-demi/-/vue-demi-0.14.10.tgz}
+    resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
     engines: {node: '>=12'}
     hasBin: true
     peerDependencies:
@@ -7240,7 +7240,7 @@ snapshots:
 
   '@jeecg/aiflow@1.1.1': {}
 
-  '@jeecg/online@3.7.4-beta': {}
+  '@jeecg/online@3.7.4': {}
 
   '@jest/console@29.7.0':
     dependencies:
