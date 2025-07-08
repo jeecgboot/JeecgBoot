@@ -1,6 +1,21 @@
 <template>
+<#assign buttonList=[]>
+<#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
+  <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
+</#if>
   <j-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
     <${entityName}Form ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></${entityName}Form>
+   <template #footer>
+      <#if buttonList?? && buttonList?size gt 0>
+      <#list buttonList as btn>
+       <#if btn.buttonStyle=='form'>
+         <a-button type="primary" @click="handle${btn.buttonCode?cap_first}" <#if btn.buttonIcon??> preIcon="ant-design:${btn.buttonIcon}" </#if>>${btn.buttonName}</a-button>
+       </#if>
+      </#list>
+      </#if>
+     <a-button @click="handleCancel">取消</a-button>
+     <a-button :class="{ 'jee-hidden': disableSubmit }" type="primary" @click="handleOk">确认</a-button>
+   </template>
   </j-modal>
 </template>
 
@@ -8,7 +23,8 @@
   import { ref, nextTick, defineExpose } from 'vue';
   import ${entityName}Form from './${entityName}Form.vue'
   import JModal from '/@/components/Modal/src/JModal/JModal.vue';
-  
+  import { useMessage } from '/@/hooks/web/useMessage';
+  const { createMessage } = useMessage();
   const title = ref<string>('');
   const width = ref<number>(800);
   const visible = ref<boolean>(false);
@@ -60,7 +76,15 @@
   function handleCancel() {
     visible.value = false;
   }
-
+<#if buttonList?size gt 0>
+  <#list buttonList?sort_by('orderNum') as btn>
+      <#if btn.buttonStyle=='form'>
+         function handle${btn.buttonCode?cap_first}(){
+            createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+         }
+      </#if>
+  </#list>
+</#if>
   defineExpose({
     add,
     edit,

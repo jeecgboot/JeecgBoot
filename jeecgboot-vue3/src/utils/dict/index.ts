@@ -25,7 +25,7 @@ export const getDictItemsByCode = (code) => {
 
 };
 /**
- * Popup字典翻译方法
+ * 从缓存中获取Pop字典配置
  * @param text
  * @param code
  */

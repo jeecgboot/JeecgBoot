@@ -17,7 +17,7 @@
             {{ t('component.table.settingColumnShow') }}
           </Checkbox>
 
-          <Checkbox v-model:checked="checkIndex" @change="handleIndexCheckChange">
+          <Checkbox :disabled="isTreeTable" v-model:checked="checkIndex" @change="handleIndexCheckChange">
             {{ t('component.table.settingIndexColumnShow') }}
           </Checkbox>
 
@@ -143,6 +143,9 @@
     setup(props, { emit, attrs }) {
       const { t } = useI18n();
       const table = useTableContext();
+      // update-begin--author:liaozhiyang---date:20250526---for：【issues/8301】树形表格序号列禁用
+      const isTreeTable = computed(() => table.getBindValues.value.isTreeTable);
+      // update-end--author:liaozhiyang---date:20250526---for：【issues/8301】树形表格序号列禁用
       const popoverVisible = ref(false);
       // update-begin--author:sunjianlei---date:20221101---for: 修复第一次进入时列表配置不能拖拽
       // nextTick(() => popoverVisible.value = false);
@@ -479,6 +482,7 @@
         defaultRowSelection,
         handleColumnFixed,
         getPopupContainer,
+        isTreeTable,
       };
     },
   });

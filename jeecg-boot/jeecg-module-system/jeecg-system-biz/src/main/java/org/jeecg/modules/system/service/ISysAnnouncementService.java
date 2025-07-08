@@ -72,7 +72,7 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
     /**
      * 分页查询当前登录用户的消息， 并且标记哪些是未读消息
      */
-    List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, Date beginDate, Date endDate);
+    List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, String busType, Date beginDate, Date endDate);
 
     /**
      * 修改为已读消息

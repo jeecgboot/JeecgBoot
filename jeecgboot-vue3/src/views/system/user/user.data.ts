@@ -236,10 +236,11 @@ export const formSchema: FormSchema[] = [
   {
     label: '租户',
     field: 'relTenantIds',
-    component: 'JDictSelectTag',
+    component: 'JSearchSelect',
     componentProps: {
-      dictCode:"sys_tenant,name,id",
-      mode: "multiple"
+      dict:"sys_tenant,name,id",
+      async: true,
+      multiple: true
     },
   },
   {

@@ -464,9 +464,16 @@
       }
 
       function renderItem() {
-        const { itemProps, slot, render, field, suffix, component } = props.schema;
+        const { itemProps, slot, render, field, suffix, suffixCompact, component } = props.schema;
         const { labelCol, wrapperCol } = unref(itemLabelWidthProp);
         const { colon } = props.formProps;
+
+        // update-begin--author:sunjianlei---date:20250613---for：itemProps 属性支持函数形式
+        let getItemProps = itemProps;
+        if (typeof getItemProps === 'function') {
+          getItemProps = getItemProps(unref(getValues));
+        }
+        // update-end--author:sunjianlei---date:20250613---for：itemProps 属性支持函数形式
 
         if (component === 'Divider') {
           return (
@@ -486,8 +493,8 @@
             <Form.Item
               name={field}
               colon={colon}
-              class={{ 'suffix-item': showSuffix }}
-              {...(itemProps as Recordable)}
+              class={{ 'suffix-item': showSuffix, 'suffix-compact': showSuffix && suffixCompact }}
+              {...(getItemProps as Recordable)}
               label={renderLabelHelpMessage()}
               rules={handleRules()}
               // update-begin--author:liaozhiyang---date:20240514---for：【issues/1244】标识了必填，但是必填标识没显示

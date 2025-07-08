@@ -8,6 +8,9 @@
       :style="{ width }"
       @click="currentSelectClick"
   >
+    <template #suffix v-if="allowClear && currentSelect">
+      <CloseCircleFilled class="menu-current-close" @click.stop="clearCurrentSelect" />
+    </template>
     <template #addonAfter>
       <span class="cursor-pointer px-2 py-1 flex items-center" v-if="isSvgMode && currentSelect">
         <SvgIcon :name="currentSelect" @click="currentSelectClick"/>
@@ -77,7 +80,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import svgIcons from 'virtual:svg-icons-names';
   import IconList from "./IconList.vue";
-
+  import { CloseCircleFilled } from '@ant-design/icons-vue';
   // 没有使用别名引入，是因为WebStorm当前版本还不能正确识别，会报unused警告
   const AInput = Input;
 
@@ -104,6 +107,7 @@
     mode: propTypes.oneOf<('svg' | 'iconify')[]>(['svg', 'iconify']).def('iconify'),
     disabled: propTypes.bool.def(false),
     clearSelect: propTypes.bool.def(false),
+    allowClear: propTypes.bool.def(false),
     iconPrefixSave: propTypes.bool.def(true),
   });
 
@@ -196,6 +200,12 @@
     iconOpen.value = false;
   }
 
+  /**
+   * 清除当前选择图标
+   */
+  function clearCurrentSelect(){
+    currentSelect.value = '';
+  }
   onMounted(()=>{
     //初始化加载图标
     initOtherIcon();
@@ -226,6 +236,17 @@
       .scrollbar {
         height: 220px;
       }
+    }
+    //图标样式
+    .menu-current-close {
+      color: #cccccc;
+    }
+  }
+  //图标样式兼容暗黑模式
+  [data-theme='dark'] .@{prefix-cls} {
+    .menu-current-close {
+      color: #4f4f4f;
+      font-size: 12px;
     }
   }
 </style>

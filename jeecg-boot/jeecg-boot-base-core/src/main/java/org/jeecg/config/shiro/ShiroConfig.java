@@ -221,6 +221,7 @@ public class ShiroConfig {
         registration.addUrlPatterns("/airag/flow/debug");
         registration.addUrlPatterns("/airag/chat/send");
         registration.addUrlPatterns("/airag/app/debug");
+        registration.addUrlPatterns("/airag/app/prompt/generate");
         //支持异步
         registration.setAsyncSupported(true);
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
@@ -320,7 +321,7 @@ public class ShiroConfig {
 
             return sentinelManager;
         }
-
+        
         // redis 单机支持，在集群为空，或者集群无机器时候使用 add by jzyadmin@163.com
         if (lettuceConnectionFactory.getClusterConfiguration() == null || lettuceConnectionFactory.getClusterConfiguration().getClusterNodes().isEmpty()) {
             RedisManager redisManager = new RedisManager();

@@ -60,7 +60,7 @@
            title: '${tableVo.ftlDescription}',
            api: list,
            columns,
-           canResize: false,
+           canResize: true,
            rowSelection: {type: 'radio'},
            formConfig: {
                 labelWidth: 120,

@@ -1,6 +1,6 @@
 <template>
   <div class="presetQuestion-wrap">
-    <svg
+<!--    <svg
       v-if="btnShow"
       class="leftBtn"
       :class="leftBtnStatus"
@@ -16,7 +16,7 @@
         fill="currentColor"
         p-id="5071"
       ></path>
-    </svg>
+    </svg>-->
     <div class="content">
       <ul ref="ulElemRef">
         <li v-for="(item, index) in data" :key="index" class="item" @click="handleQuestion(item.descr)">
@@ -28,7 +28,7 @@
         </li>
       </ul>
     </div>
-    <svg
+<!--    <svg
       v-if="btnShow"
       class="rightBtn"
       :class="rightBtnStatus"
@@ -44,7 +44,7 @@
         fill="currentColor"
         p-id="5071"
       ></path>
-    </svg>
+    </svg>-->
   </div>
 </template>
 
@@ -135,7 +135,8 @@ import {ref, onMounted, onBeforeUnmount, watch} from 'vue';
       display: flex;
       margin-bottom: 0;
       width: 100%;
-      overflow-y: auto;
+      overflow-y: hidden;
+      overflow-x: auto;
       /* 隐藏所有滚动条 */
       &::-webkit-scrollbar {
         display: none;
@@ -143,8 +144,15 @@ import {ref, onMounted, onBeforeUnmount, watch} from 'vue';
         width: 0;
       }
     }
+    ul:hover {
+      &::-webkit-scrollbar {
+        display: block;
+        height: 10px;
+        width: 10px;
+      }
+    }
     .item {
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: 1px solid #e6e6e6;
       border-radius: 16px;
       cursor: pointer;
       font-size: 14px;

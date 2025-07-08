@@ -15,7 +15,8 @@ export function useTableScroll(
   columnsRef: ComputedRef<BasicColumn[]>,
   rowSelectionRef: ComputedRef<TableRowSelection<any> | null>,
   getDataSourceRef: ComputedRef<Recordable[]>,
-  slots: Slots
+  slots: Slots,
+  getPaginationInfo: ComputedRef<any>
 ) {
   const tableHeightRef: Ref<Nullable<number>> = ref(null);
 
@@ -138,12 +139,42 @@ export function useTableScroll(
     // 10+6(外层边距padding:10 + 内层padding-bottom:6)
     height -= 16;
     // update-end--author:liaozhiyang---date:20240603---for：【TV360X-861】列表查询区域不可往上滚动
-
+    
     height = (height < minHeight! ? (minHeight as number) : height) ?? height;
     height = (height > maxHeight! ? (maxHeight as number) : height) ?? height;
     setHeight(height);
 
     bodyEl!.style.height = `${height}px`;
+    // update-begin--author:liaozhiyang---date:20240609---for【issues/8374】分页始终显示在底部
+    nextTick(() => {
+      if (maxHeight === undefined) {
+        if (unref(getPaginationInfo) && unref(getDataSourceRef).length) {
+          const pageSize = unref(getPaginationInfo)?.pageSize;
+          const current = unref(getPaginationInfo)?.current;
+          const total = unref(getPaginationInfo)?.total;
+          const tableBody = tableEl.querySelector('.ant-table-body') as HTMLElement;
+          const tr = tableEl.querySelector('.ant-table-tbody')?.children ?? [];
+          const lastrEl = tr[tr.length - 1] as HTMLElement;
+          const trHeight = lastrEl.offsetHeight;
+          const dataHeight = trHeight * pageSize;
+          if (tableBody && lastrEl) {
+            // update-begin--author:liaozhiyang---date:20250702---for：【issues/8532】online权限管理中的按钮权限第一页数据看不到
+            // table是否隐藏（隐藏的table不能吸底）
+            const isTableBodyHide = tableBody.offsetHeight == 0 && tableBody.offsetWidth == 0;
+            if (isTableBodyHide) {
+              return;
+            }
+            // update-end--author:liaozhiyang---date:20250702---for：【issues/8532】online权限管理中的按钮权限第一页数据看不到
+            if (current === 1 && pageSize > unref(getDataSourceRef).length && total <= pageSize) {
+              tableBody.style.height = `${height}px`;
+            } else {
+              tableBody.style.height = `${dataHeight < height ? dataHeight : height}px`;
+            }
+          }
+        }
+      }
+    });
+    // update-end--author:liaozhiyang---date:20240609---for【issues/8374】分页始终显示在底部
   }
   useWindowSizeFn(calcTableHeight, 280);
   onMountedOrActivated(() => {

@@ -8,8 +8,10 @@ import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -23,14 +25,18 @@ import java.net.UnknownHostException;
 
 /**
  * 微服务启动类（采用此类启动项目为微服务模式）
- *  注意： 需要先初始化Nacos的数据库脚本，db/tables_nacos.sql
- * @author zyf
+ * 特别提醒:
+ * 1、需要先初始化Nacos的数据库脚本，db/tables_nacos.sql
+ * 2.需要集成mogodb请删除 exclude={MongoAutoConfiguration.class}
+ * 
+ * @author jeecg
  * @date: 2022/4/21 10:55
  */
 @Slf4j
 @SpringBootApplication
 @EnableFeignClients(basePackages = {"org.jeecg"})
 @EnableScheduling
+@EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
 @ImportAutoConfiguration(JustAuthAutoConfiguration.class)  // spring boot 3.x justauth 兼容性处理
 public class JeecgSystemCloudApplication extends SpringBootServletInitializer implements CommandLineRunner {
 

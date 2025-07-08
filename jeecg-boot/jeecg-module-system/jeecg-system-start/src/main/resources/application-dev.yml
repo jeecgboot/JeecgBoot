@@ -145,7 +145,7 @@ spring:
           selectWhereAlwayTrueCheck: false
         # 打开mergeSql功能；慢SQL记录
         stat:
-          merge-sql: true
+          merge-sql: false
           slow-sql-millis: 5000
       datasource:
         master:
@@ -191,7 +191,7 @@ jeecg:
     enabled: true
     model: deepseek-chat
     apiKey: ??
-    apiHost: https://api.deepseek.com
+    apiHost: https://api.deepseek.com/v1
     timeout: 60
   # AIRag向量库
   ai-rag:
@@ -292,6 +292,7 @@ logging:
     org.springframework.context.support.PostProcessorRegistrationDelegate: error
     org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
+#swagger
 knife4j:
   #开启增强配置
   enable: true

@@ -1,8 +1,6 @@
 package org.jeecg.modules.test.feign.controller;
 
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.vo.Result;
@@ -10,6 +8,8 @@ import org.jeecg.modules.test.feign.client.JeecgTestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 
 /**
  * 微服务单元测试
@@ -32,7 +32,7 @@ public class JeecgTestFeignController {
      * @return
      */
     @GetMapping("/getMessage")
-    @Operation(summary = "测试feign @SentinelResource熔断写法 | 测试熔断关闭jeecg-demo服务")
+    @Operation(summary = "测试feign调用demo服务1")
     @SentinelResource(value = "test_more_getMessage", fallback = "getDefaultUser")
     public Result<String> getMessage(@RequestParam(value = "name", required = false) String name) {
         log.info("---------Feign fallbackFactory优先级高于@SentinelResource-----------------");
@@ -47,7 +47,7 @@ public class JeecgTestFeignController {
      * @return
      */
     @GetMapping("/getMessage2")
-    @Operation(summary = "测试feign fallbackFactory熔断写法 | 测试熔断关闭jeecg-demo服务")
+    @Operation(summary = "测试feign调用demo服务2")
     public Result<String> getMessage2(@RequestParam(value = "name", required = false) String name) {
         log.info("---------测试 Feign fallbackFactory-----------------");
         String resultMsg = jeecgTestClient.getMessage(" I am jeecg-system 服务节点，呼叫 jeecg-demo!");

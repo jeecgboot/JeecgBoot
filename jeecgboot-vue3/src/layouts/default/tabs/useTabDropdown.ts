@@ -18,7 +18,7 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
   const { t } = useI18n();
   const tabStore = useMultipleTabStore();
   const { currentRoute } = useRouter();
-  const { refreshPage, closeAll, close, closeLeft, closeOther, closeRight } = useTabs();
+  const { refreshPage, closeAll, close, closeLeft, closeOther, closeRight, changeDesign } = useTabs();
 
   const getTargetTab = computed((): RouteLocationNormalized => {
     return unref(getIsTabs) ? tabContentProps.tabItem : unref(currentRoute);
@@ -71,6 +71,12 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
         event: MenuEventEnum.REFRESH_PAGE,
         text: t('layout.multipleTab.reload'),
         disabled: refreshDisabled,
+      },
+      {
+        icon: 'ant-design:setting-outlined',
+        event: MenuEventEnum.HOME_DESIGN,
+        text: t('layout.multipleTab.homeDesign'),
+        disabled: path !== '/PortalView',
         divider: true,
       },
       // {
@@ -161,6 +167,12 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
       case MenuEventEnum.CLOSE_ALL:
         // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         closeAll(state.current);
+        // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
+        break;
+      // Close all
+      case MenuEventEnum.HOME_DESIGN:
+        // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
+        changeDesign();
         // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         break;
     }

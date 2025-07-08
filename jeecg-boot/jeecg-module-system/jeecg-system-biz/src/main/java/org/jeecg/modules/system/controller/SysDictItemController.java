@@ -7,8 +7,8 @@ import java.util.Date;
 import jakarta.servlet.http.HttpServletRequest;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -162,7 +162,7 @@ public class SysDictItemController {
 	 * @return
 	 */
 	@RequestMapping(value = "/dictItemCheck", method = RequestMethod.GET)
-	@Operation(summary ="字典重复校验接口")
+	@Operation(summary="字典重复校验接口")
 	public Result<Object> doDictItemCheck(SysDictItem sysDictItem, HttpServletRequest request) {
 		Long num = Long.valueOf(0);
 		LambdaQueryWrapper<SysDictItem> queryWrapper = new LambdaQueryWrapper<SysDictItem>();

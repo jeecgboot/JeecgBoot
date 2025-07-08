@@ -24,6 +24,12 @@
 			<artifactId>hibernate-re</artifactId>
 		</dependency>
 
+		<!-- AI大模型管理 -->
+		<dependency>
+			<groupId>org.jeecgframework.boot</groupId>
+			<artifactId>jeecg-boot-module-airag</artifactId>
+			<version>${jeecgboot.version}</version>
+		</dependency>
 		<!-- 企业微信/钉钉 api -->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
@@ -40,10 +46,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<!-- mongo、redis和文件数据集支持包，按需引入 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>
 		</dependency>
+		<!-- 后台导出接口Echart图表支持包，按需引入
+		<dependency>
+			<groupId>org.jeecgframework.jimureport</groupId>
+			<artifactId>jimureport-echarts-starter</artifactId>
+		</dependency> -->
 		<!-- 积木BI -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>

@@ -38,6 +38,8 @@ export interface TableRowSelection<T = any> extends ITableRowSelection {
    * @type Function
    */
   onSelectInvert?: (selectedRows: string[] | number[]) => any;
+  //【issues/8163】关联记录新增丢失
+  selectedRows?: any[];
 }
 
 export interface TableCustomRecord<T> {

@@ -32,6 +32,8 @@
   <UserReplacePhoneModal @register="registerModal" @success="initUserDetail" />
   <UserReplaceEmailModal @register="registerEmailModal" @success="initUserDetail" />
   <UserPasswordModal @register="registerPassModal" @success="initUserDetail" />
+  <UserPasswordNotBindPhone @register="registerPassNotBindPhoneModal" @success="initUserDetail" />
+  <UserCancellationModal @register="registerCancelModal" />
 </template>
 <script lang="ts" setup>
   import { onMounted, ref, reactive } from 'vue';
@@ -41,6 +43,8 @@
   import UserReplacePhoneModal from './commponents/UserPhoneModal.vue';
   import UserReplaceEmailModal from './commponents/UserEmailModal.vue';
   import UserPasswordModal from './commponents/UserPasswordModal.vue';
+  import UserPasswordNotBindPhone from './commponents/UserPasswordNotBindPhone.vue';
+  import UserCancellationModal from './commponents/UserCancellationModal.vue';
   import { useModal } from '/@/components/Modal';
   import { WechatFilled } from '@ant-design/icons-vue';
   import { useDesign } from '/@/hooks/web/useDesign';
@@ -52,6 +56,8 @@
   const [registerModal, { openModal }] = useModal();
   const [registerEmailModal, { openModal: openEmailModal }] = useModal();
   const [registerPassModal, { openModal: openPassModal }] = useModal();
+  const [registerPassNotBindPhoneModal, { openModal: openPassNotBindPhoneModal }] = useModal();
+  const [registerCancelModal, { openModal: openCancelModal }] = useModal();
 
   const wechatData = reactive<any>({
     bindWechat: false,
@@ -104,9 +110,17 @@
    * 密码修改
    */
   function updatePassWord() {
-    openPassModal(true, {
-      record: { username: userDetail.value.username },
-    });
+    //存在手机号手机号修改密码
+    if(userDetail.value.phone){
+      openPassModal(true, {
+        record: { username: userDetail.value.username },
+      });
+    } else {
+      //没有手机号走直接修改密码弹窗
+      openPassNotBindPhoneModal(true, {
+        record: { username: userDetail.value.username },
+      });
+    }
   }
 
   /**

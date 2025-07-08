@@ -419,6 +419,14 @@ export const formSchema: FormSchema[] = [
         </#if>
         pidValue:"${po.dictField}",
     },
+  <#elseif po.classType=='link_table'>
+    component: 'JLinkTableCard',
+    componentProps: {
+      valueField: '${po.dictField}',
+      textField: '${po.dictText}',
+      tableName: '${po.dictTable}',
+      multi: <#if (po.queryMode!"") == "multi">true<#else>false</#if>
+    },
    <#else>
     component: 'Input',
     </#if>
@@ -658,6 +666,14 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
         </#if>
         </#if>
         pidValue:"${po.dictField}",
+    },
+  <#elseif po.classType=='link_table'>
+    component: 'JLinkTableCard',
+    componentProps: {
+      valueField: '${po.dictField}',
+      textField: '${po.dictText}',
+      tableName: '${po.dictTable}',
+      multi: <#if (po.queryMode!"") == "multi">true<#else>false</#if>
     },
    <#else>
     component: 'Input',

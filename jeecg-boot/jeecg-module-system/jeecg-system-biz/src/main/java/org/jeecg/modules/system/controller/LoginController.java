@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -70,7 +70,7 @@ public class LoginController {
 
 	private final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
-	@Operation(summary = "登录接口")
+	@Operation(summary="登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
 		Result<JSONObject> result = new Result<JSONObject>();
@@ -404,7 +404,7 @@ public class LoginController {
 	 * @param jsonObject
 	 * @return
 	 */
-	@Operation(summary = "手机号登录接口")
+	@Operation(summary="手机号登录接口")
 	@PostMapping("/phoneLogin")
 	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
 		Result<JSONObject> result = new Result<JSONObject>();
@@ -523,7 +523,7 @@ public class LoginController {
 	 * @param response
 	 * @param key
 	 */
-	@Operation(summary = "获取验证码")
+	@Operation(summary="获取验证码")
 	@GetMapping(value = "/randomImage/{key}")
 	public Result<String> randomImage(HttpServletResponse response,@PathVariable("key") String key){
 		Result<String> res = new Result<String>();

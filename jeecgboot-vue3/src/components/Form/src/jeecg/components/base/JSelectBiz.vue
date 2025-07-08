@@ -28,8 +28,12 @@
         ></a-select>
       </a-col>
       <a-col v-if="showButton" class="right">
-        <a-button v-if="buttonIcon" :preIcon="buttonIcon" type="primary" @click="openModal(true)" :disabled="disabled">选择</a-button>
-        <a-button v-else type="primary" @click="openModal(true)" :disabled="disabled">选择</a-button>
+        <a-button v-if="buttonIcon" :preIcon="buttonIcon" type="primary" @click="openModal(true)" :disabled="disabled">
+          {{ buttonText }}
+        </a-button>
+        <a-button v-else type="primary" @click="openModal(true)" :disabled="disabled">
+          {{ buttonText }}
+        </a-button>
       </a-col>
     </a-row>
   </div>
@@ -46,6 +50,7 @@
     inheritAttrs: false,
     props: {
       showButton: propTypes.bool.def(true),
+      buttonText: propTypes.string.def('选择'),
       disabled: propTypes.bool.def(false),
       placeholder: {
         type: String,

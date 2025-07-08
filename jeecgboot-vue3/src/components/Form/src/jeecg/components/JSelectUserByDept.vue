@@ -71,6 +71,11 @@
        */
       watch(selectValues, () => {
         if (selectValues) {
+          // update-begin--author:liaozhiyang---date:20250616---for：【QQYUN-12869】通过部门选择用户组件，必填状态下选择用户后，点击重置后，会出校验信息
+          if (props.value === undefined && selectValues.value?.length == 0) {
+            return;
+          }
+          // update-end--author:liaozhiyang---date:20250616---for：【QQYUN-12869】通过部门选择用户组件，必填状态下选择用户后，点击重置后，会出校验信息
           state.value = selectValues.value;
         }
       });

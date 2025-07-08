@@ -157,5 +157,6 @@ export type ComponentType =
   | 'linkRecordSelect'
   | 'RangeTime'
   | 'JRangeNumber'
+  | 'JLinkTableCard'
   | 'JInputSelect';
-  
+

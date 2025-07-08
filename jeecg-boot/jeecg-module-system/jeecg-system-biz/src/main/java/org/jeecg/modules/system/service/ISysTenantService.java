@@ -232,4 +232,11 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @return
      */
     List<SysTenant> getTenantListByUserId(String userId);
+
+    /**
+     * 删除用户
+     * @param sysUser
+     * @param tenantId
+     */
+    void deleteUser(SysUser sysUser, Integer tenantId);
 }

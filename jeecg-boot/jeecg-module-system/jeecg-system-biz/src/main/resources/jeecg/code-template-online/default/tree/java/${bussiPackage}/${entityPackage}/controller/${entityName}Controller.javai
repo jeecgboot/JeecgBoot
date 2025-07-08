@@ -50,6 +50,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 <#assign pidFieldName = po.fieldName>
 </#if>
 </#list>
+<#assign enhanceJavaList=[]>
+<#if tableVo.extendParams?? && tableVo.extendParams.enhanceJavaList??>
+  <#assign enhanceJavaList = tableVo.extendParams.enhanceJavaList?filter(enhance -> enhance??)>
+</#if>
 @Tag(name="${tableVo.ftlDescription}")
 @RestController
 @RequestMapping("/${entityPackagePath}/${entityName?uncap_first}")
@@ -74,6 +78,14 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 								   HttpServletRequest req) {
+		<#if enhanceJavaList?size gt 0>
+         <#list enhanceJavaList as enhanceJava>
+         <#if enhanceJava.buttonCode=='query' && enhanceJava.event=='start' && enhanceJava.activeStatus=='1'>
+               //TODO 查询前触发的方法，代码生成后，请手工实现增强类逻辑;
+               //${entityName?uncap_first}Service.beforeQuery()
+         </#if>
+         </#list>
+        </#if>
 		String hasQuery = req.getParameter("hasQuery");
         if(hasQuery != null && "true".equals(hasQuery)){
             QueryWrapper<${entityName}> queryWrapper =  QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
@@ -92,6 +104,14 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
             queryWrapper.eq("${Format.humpToUnderline(pidFieldName)}", parentId);
             Page<${entityName}> page = new Page<${entityName}>(pageNo, pageSize);
             IPage<${entityName}> pageList = ${entityName?uncap_first}Service.page(page, queryWrapper);
+        <#if enhanceJavaList?size gt 0>
+         <#list enhanceJavaList as enhanceJava>
+         <#if enhanceJava.buttonCode=='query' && enhanceJava.event=='end' && enhanceJava.activeStatus=='1'>
+                 //TODO 查询后触发的方法，代码生成后，请手工实现增强类逻辑;
+                 //${entityName?uncap_first}Service.afterQuery()
+         </#if>
+         </#list>
+        </#if>
             return Result.OK(pageList);
         }
 	}
@@ -210,7 +230,23 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @RequiresPermissions("${entityPackage}:${tableName}:add")
 	@PostMapping(value = "/add")
 	public Result<String> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
+		<#if enhanceJavaList?size gt 0>
+          <#list enhanceJavaList as enhanceJava>
+          <#if enhanceJava.buttonCode=='add' && enhanceJava.event=='start'  && enhanceJava.activeStatus=='1'>
+              //TODO 新增前的处理方法，代码生成后，请手工实现增强类逻辑;
+             //${entityName?uncap_first}Service.beforeAdd()
+          </#if>
+          </#list>
+        </#if>
 		${entityName?uncap_first}Service.add${entityName}(${entityName?uncap_first});
+		<#if enhanceJavaList?size gt 0>
+          <#list enhanceJavaList as enhanceJava>
+          <#if enhanceJava.buttonCode=='add' && enhanceJava.event=='end'  && enhanceJava.activeStatus=='1'>
+              //TODO 新增后的处理方法，代码生成后，请手工实现增强类逻辑;
+              //${entityName?uncap_first}Service.afterAdd()
+           </#if>
+          </#list>
+        </#if>
 		return Result.OK("添加成功！");
 	}
 	
@@ -225,7 +261,23 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @RequiresPermissions("${entityPackage}:${tableName}:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<String> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
+<#if enhanceJavaList?size gt 0>
+  <#list enhanceJavaList as enhanceJava>
+  <#if enhanceJava.buttonCode=='edit' && enhanceJava.event=='start'  && enhanceJava.activeStatus=='1'>
+       //TODO 编辑前，代码生成后，请手工实现增强类逻辑;
+       //${entityName?uncap_first}Service.beforeEdit()
+  </#if>
+  </#list>
+</#if>
 		${entityName?uncap_first}Service.update${entityName}(${entityName?uncap_first});
+<#if enhanceJavaList?size gt 0>
+  <#list enhanceJavaList as enhanceJava>
+  <#if enhanceJava.buttonCode=='edit' && enhanceJava.event=='end' && enhanceJava.activeStatus=='1'>
+      //TODO 编辑后，代码生成后，请手工实现增强类逻辑;
+      //${entityName?uncap_first}Service.afterEdit()
+  </#if>
+  </#list>
+</#if>
 		return Result.OK("编辑成功!");
 	}
 	
@@ -285,6 +337,14 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @RequiresPermissions("${entityPackage}:${tableName}:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, ${entityName} ${entityName?uncap_first}) {
+<#if enhanceJavaList?size gt 0>
+ <#list enhanceJavaList as enhanceJava>
+ <#if enhanceJava.buttonCode=='export' && enhanceJava.event=='start' && enhanceJava.activeStatus=='1'>
+      //TODO 导出前，代码生成后，请手工实现增强类逻辑;
+      //${entityName?uncap_first}Service.beforeExport()
+ </#if>
+ </#list>
+</#if>
 		return super.exportXls(request, ${entityName?uncap_first}, ${entityName}.class, "${tableVo.ftlDescription}");
     }
 
@@ -298,6 +358,14 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     @RequiresPermissions("${entityPackage}:${tableName}:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
+<#if enhanceJavaList?size gt 0>
+ <#list enhanceJavaList as enhanceJava>
+ <#if enhanceJava.buttonCode=='import' && enhanceJava.event=='start' && enhanceJava.activeStatus=='1'>
+      //TODO 导入前，代码生成后，请手工实现增强类逻辑;
+      //${entityName?uncap_first}Service.beforeImport()
+ </#if>
+ </#list>
+</#if>
 		return super.importExcel(request, response, ${entityName}.class);
     }
 

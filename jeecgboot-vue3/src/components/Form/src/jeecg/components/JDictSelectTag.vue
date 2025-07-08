@@ -89,6 +89,8 @@
         required: false,
       },
       style: propTypes.any,
+      // 搜索时是否只搜索label
+      onlySearchByLabel: propTypes.bool.def(false),
     },
     emits: ['options-change', 'change','update:value'],
     setup(props, { emit, refs }) {
@@ -202,6 +204,10 @@
           }
         }
         // update-end--author:liaozhiyang---date:20230914---for：【QQYUN-6514】 配置的时候，Y轴不能输入多个字段了，控制台报错
+        if (props.onlySearchByLabel) {
+          // 如果开启了只在 label 中搜索，就不继续往下搜索value了
+          return false;
+        }
         // 在 value 中搜索
         return (option.value || '').toString().toLowerCase().indexOf(input.toLowerCase()) >= 0;
       }

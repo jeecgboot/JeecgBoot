@@ -1,0 +1,1 @@
+console.log('build elctron is done.');

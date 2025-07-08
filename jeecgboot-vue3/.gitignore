@@ -2,7 +2,6 @@ node_modules
 .DS_Store
 .github
 dist
-.npmrc
 .cache
 
 tests/server/static

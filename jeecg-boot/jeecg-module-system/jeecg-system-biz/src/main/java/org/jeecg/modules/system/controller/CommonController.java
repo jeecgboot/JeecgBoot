@@ -229,7 +229,7 @@ public class CommonController {
             File file = new File(filePath);
             if(!file.exists()){
                 response.setStatus(404);
-                log.error("文件["+imgPath+"]不存在..");
+                log.warn("文件["+imgPath+"]不存在..");
                 return;
                 //throw new RuntimeException();
             }

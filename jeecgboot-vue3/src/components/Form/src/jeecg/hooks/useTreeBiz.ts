@@ -2,6 +2,7 @@ import type { Ref } from 'vue';
 import { inject, reactive, ref, computed, unref, watch, nextTick } from 'vue';
 import { TreeActionType } from '/@/components/Tree';
 import { listToTree } from '/@/utils/common/compUtils';
+import { isEqual } from 'lodash-es';
 
 export function useTreeBiz(treeRef, getList, props, realProps, emit) {
   //接收下拉框选项
@@ -22,7 +23,7 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
   const getCheckStrictly = computed(() => (realProps.multiple ? props.checkStrictly : true));
   // 是否是首次加载回显，只有首次加载，才会显示 loading
   let isFirstLoadEcho = true;
-
+  let prevSelectValues = [];
   /**
    * 监听selectValues变化
    */
@@ -32,12 +33,17 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
       if(!values){
         return;
       }
-      if (openModal.value == false && values.length > 0) {
+      // update-begin--author:liaozhiyang---date:20250604---for：【issues/8232】代码设置JSelectDept组件值没翻译
+      if (values.length > 0) {
+        // 防止多次请求
+        if (isEqual(values, prevSelectValues)) return;
+        prevSelectValues = values;
         loadingEcho.value = isFirstLoadEcho;
         isFirstLoadEcho = false;
         onLoadData(null, values.join(',')).finally(() => {
           loadingEcho.value = false;
         });
+        // update-end--author:liaozhiyang---date:20250604---for：【issues/8232】代码设置JSelectDept组件值没翻译
       }
     },
     { immediate: true }

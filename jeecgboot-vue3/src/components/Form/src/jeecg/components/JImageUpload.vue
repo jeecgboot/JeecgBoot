@@ -25,7 +25,7 @@
         </a-button>
       </div>
     </a-upload>
-    <a-modal :open="previewVisible" :footer="null" @cancel="handleCancel()">
+    <a-modal :width="previewWidth" :open="previewVisible" :footer="null" @cancel="handleCancel()">
       <img alt="example" style="width: 100%" :src="previewImage" />
     </a-modal>
   </div>
@@ -38,7 +38,7 @@
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { getFileAccessHttpUrl, getHeaders, getRandom } from '/@/utils/common/compUtils';
-  import { uploadUrl } from '/@/api/common/api';
+  import { uploadUrl as systemUploadUrl } from '/@/api/common/api';
   import { getToken } from '/@/utils/auth';
 
   const { createMessage, createErrorModal } = useMessage();
@@ -78,6 +78,15 @@
         type: Number,
         required: false,
         default: 1,
+      },
+      uploadUrl: {
+        type: String,
+        default: systemUploadUrl,
+      },
+      previewWidth: {
+        type: Number,
+        required: false,
+        default: 520,
       },
     },
     emits: ['options-change', 'change', 'update:value'],
@@ -256,7 +265,6 @@
         multiple,
         headers,
         loading,
-        uploadUrl,
         beforeUpload,
         uploadVisible,
         handlePreview,

@@ -13,6 +13,7 @@
   import { getTenantId, getToken } from '/@/utils/auth';
   import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
   import { uploadFile } from '@/api/common/api';
+  import {$electron} from "@/electron";
 
   type Lang = 'zh_CN' | 'en_US' | 'ja_JP' | 'ko_KR' | undefined;
 
@@ -109,6 +110,13 @@
       function init() {
         const wrapEl = unref(wrapRef) as HTMLElement;
         if (!wrapEl) return;
+
+        // vditor组件本地化的路径配置【QQYUN-12053】
+        let localCdn = '/resource/vditor@3.9.4';
+        if ($electron.isElectron()) {
+          localCdn = '.' + localCdn;
+        }
+
         const bindValue = { ...attrs, ...props };
         const insEditor = new Vditor(wrapEl, {
           theme: getDarkMode.value === 'dark' ? 'dark' : 'classic',
@@ -151,8 +159,8 @@
           ],
           // update-end--author:liaozhiyang---date:20240520---for：【TV360X-146】Markdown组件去掉录音选项
           mode: 'sv',
-          // cdn: 'https://cdn.jsdelivr.net/npm/vditor@3.9.6',
-          cdn: 'https://unpkg.com/vditor@3.10.1',
+          cdn: 'https://unpkg.com/vditor@3.10.8',
+          //cdn: localCdn,
           fullscreen: {
             index: 520,
           },

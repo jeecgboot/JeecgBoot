@@ -8,12 +8,14 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class LowCodeModeConfiguration implements WebMvcConfigurer {
 
-    public LowCodeModeInterceptor payInterceptor() {
-        return new LowCodeModeInterceptor();
+    private final LowCodeModeInterceptor lowCodeModeInterceptor;
+
+    public LowCodeModeConfiguration(LowCodeModeInterceptor lowCodeModeInterceptor) {
+        this.lowCodeModeInterceptor = lowCodeModeInterceptor;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(payInterceptor()).addPathPatterns(LowCodeUrlsEnum.getLowCodeInterceptUrls());
+        registry.addInterceptor(lowCodeModeInterceptor).addPathPatterns(LowCodeUrlsEnum.getLowCodeInterceptUrls());
     }
 }

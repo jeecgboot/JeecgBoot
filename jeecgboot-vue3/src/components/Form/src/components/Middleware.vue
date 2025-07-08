@@ -1,5 +1,5 @@
 <template>
-  <div :id="formItemId" style="flex: 1; width: 100%">
+  <div :id="formItemId" class="j-form-item-middleware">
     <slot></slot>
   </div>
 </template>

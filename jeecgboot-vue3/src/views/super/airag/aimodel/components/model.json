@@ -75,7 +75,7 @@
       ],
       "type": ["LLM", "EMBED"],
       "baseUrl": "https://api.openai.com/v1/",
-      "LLMDefaultValue": "gpt-3.5-turbo",
+      "LLMDefaultValue": "gpt-4o-mini",
       "EMBEDDefaultValue": "text-embedding-ada-002"
     },
     {

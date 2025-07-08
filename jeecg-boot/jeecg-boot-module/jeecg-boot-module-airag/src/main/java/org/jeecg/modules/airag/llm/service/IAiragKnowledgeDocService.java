@@ -68,6 +68,14 @@ public interface IAiragKnowledgeDocService extends IService<AiragKnowledgeDoc> {
     Result<?> removeDocByIds(List<String> docIds);
 
     /**
+     * 通过知识库id删除所以文档
+     *
+     * @param knowId
+     * @return
+     */
+    Result<?> deleteAllByKnowId(String knowId);
+
+    /**
      * 从zip包导入文档
      * @param knowId
      * @param file

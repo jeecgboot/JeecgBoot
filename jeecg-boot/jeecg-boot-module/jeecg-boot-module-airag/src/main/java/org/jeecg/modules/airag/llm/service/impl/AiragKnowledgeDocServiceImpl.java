@@ -1,9 +1,12 @@
 package org.jeecg.modules.airag.llm.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.FilenameUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
@@ -26,9 +29,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -36,8 +42,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 
 import static org.jeecg.modules.airag.llm.consts.LLMConsts.*;
 
@@ -79,6 +83,12 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
      */
     private static final ExecutorService buildDocExecutorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
+    // 解压文件:单个文件最大150MB
+    private static final long MAX_FILE_SIZE = 150 * 1024 * 1024;
+    // 解压文件:总解压大小1024MB
+    private static final long MAX_TOTAL_SIZE = 1024 * 1024 * 1024;
+    // 解压文件:最多解压10000个Entry
+    private static final int MAX_ENTRY_COUNT = 10000;
 
     @Transactional(rollbackFor = {Exception.class})
     @Override
@@ -122,7 +132,6 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
         AssertUtils.assertNotEmpty("文档不存在", docList);
 
         HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
-        String baseUrl = CommonUtils.getBaseUrl(request);
         // 检查状态
         List<AiragKnowledgeDoc> knowledgeDocs = docList.stream()
                 .filter(doc -> {
@@ -143,7 +152,6 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
                 })
                 .peek(doc -> {
                     doc.setStatus(KNOWLEDGE_DOC_STATUS_BUILDING);
-                    doc.setBaseUrl(baseUrl);
                 })
                 .collect(Collectors.toList());
         if (oConvertUtils.isObjectEmpty(knowledgeDocs)) {
@@ -174,13 +182,11 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
                         this.updateById(doc);
                         log.info("重建文档成功, 知识库id: {}, 文档id: {}", knowId, doc.getId());
                     } else {
-                        doc.setStatus(KNOWLEDGE_DOC_STATUS_DRAFT);
-                        this.updateById(doc);
+                        this.handleDocBuildFailed(doc, "向量化失败");
                         log.info("重建文档失败, 知识库id: {}, 文档id: {}", knowId, doc.getId());
                     }
                 }catch (Throwable t){
-                    doc.setStatus(KNOWLEDGE_DOC_STATUS_DRAFT);
-                    this.updateById(doc);
+                    this.handleDocBuildFailed(doc, t.getMessage());
                     log.error("重建文档失败:" + t.getMessage() + ", 知识库id: " + knowId + ", 文档id: " + doc.getId(), t);
                 }
                 //update-end---author:chenrui ---date:20250410  for：[QQYUN-11943]【ai】ai知识库 上传完文档 一直显示构建中？------------
@@ -190,6 +196,24 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
         return Result.ok("操作成功");
     }
 
+    /**
+     * 处理文档构建失败
+     */
+    private void handleDocBuildFailed(AiragKnowledgeDoc doc, String failedReason) {
+        doc.setStatus(KNOWLEDGE_DOC_STATUS_FAILED);
+
+        String metadataStr = doc.getMetadata();
+        JSONObject metadata;
+        if (oConvertUtils.isEmpty(metadataStr)) {
+            metadata = new JSONObject();
+        } else {
+            metadata = JSONObject.parseObject(metadataStr);
+        }
+        metadata.put("failedReason", failedReason);
+        doc.setMetadata(metadata.toJSONString());
+
+        this.updateById(doc);
+    }
 
     @Override
     public Result<?> removeByKnowIds(List<String> knowIds) {
@@ -198,8 +222,16 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
             AiragKnowledge airagKnowledge = airagKnowledgeMapper.selectById(knowId);
             AssertUtils.assertNotEmpty("知识库不存在", airagKnowledge);
             AssertUtils.assertNotEmpty("请先为知识库配置向量模型库", airagKnowledge.getEmbedId());
+            // 异步删除向量数据
+            final String embedId = airagKnowledge.getEmbedId();
+            final String finalKnowId = knowId;
+            CompletableFuture.runAsync(() -> {
+                try {
+                    embeddingHandler.deleteEmbedDocsByKnowId(finalKnowId, embedId);
+                } catch (Throwable ignore) {
+                }
+            });
             // 删除数据
-            embeddingHandler.deleteEmbedDocsByKnowId(knowId, airagKnowledge.getEmbedId());
             airagKnowledgeDocMapper.deleteByMainId(knowId);
         }
         return Result.OK();
@@ -223,11 +255,37 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
             AiragKnowledge airagKnowledge = airagKnowledgeMapper.selectById(knowId);
             AssertUtils.assertNotEmpty("知识库不存在", airagKnowledge);
             AssertUtils.assertNotEmpty("请先为知识库配置向量模型库", airagKnowledge.getEmbedId());
+            // 异步删除向量数据
+            final String embedId = airagKnowledge.getEmbedId();
+            final List<String> docIdsToDelete = new ArrayList<>(groupedDocIds);
+            CompletableFuture.runAsync(() -> {
+                try {
+                    embeddingHandler.deleteEmbedDocsByDocIds(docIdsToDelete, embedId);
+                } catch (Throwable ignore) {
+                }
+            });
             // 删除数据
-            embeddingHandler.deleteEmbedDocsByDocIds(groupedDocIds, airagKnowledge.getEmbedId());
             airagKnowledgeDocMapper.deleteBatchIds(groupedDocIds);
         });
         return Result.ok("success");
+    }
+
+    @Override
+    public Result<?> deleteAllByKnowId(String knowId) {
+        if (oConvertUtils.isEmpty(knowId)) {
+            return Result.error("知识库id不能为空");
+        }
+        LambdaQueryWrapper<AiragKnowledgeDoc> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AiragKnowledgeDoc::getKnowledgeId, knowId);
+        //noinspection unchecked
+        wrapper.select(AiragKnowledgeDoc::getId);
+        List<AiragKnowledgeDoc> docList = airagKnowledgeDocMapper.selectList(wrapper);
+        if (docList.isEmpty()) {
+            return Result.ok("暂无文档");
+        }
+        List<String> docIds = docList.stream().map(AiragKnowledgeDoc::getId).collect(Collectors.toList());
+        this.removeDocByIds(docIds);
+        return Result.ok("清空完成");
     }
 
     @Transactional(rollbackFor = {java.lang.Exception.class})
@@ -283,6 +341,7 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
                 doc.setMetadata(metadata.toJSONString());
                 docList.add(doc);
             });
+            AssertUtils.assertNotEmpty("压缩包中没有符合要求的文档", docList);
             // 保存数据
             this.saveBatch(docList);
             // 重建文档
@@ -299,57 +358,113 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
     /**
      * 解压缩文件
      *
-     * @param zipFilePath
-     * @param destDir
-     * @param afterExtract
+     * @param zipFilePath 压缩文件路径
+     * @param destDir    目标文件夹
+     * @param afterExtract 解压完成后回调
      * @throws IOException
      * @author chenrui
      * @date 2025/3/20 14:37
      */
-    public static void unzipFile(String zipFilePath, String destDir, Consumer<File> afterExtract) throws
-            IOException {
-        // 创建目标目录
-        File dir = new File(destDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
+    public static void unzipFile(String zipFilePath, String destDir, Consumer<File> afterExtract) throws IOException {
+        unzipFile(Paths.get(zipFilePath), Paths.get(destDir), afterExtract);
+    }
+
+
+    /**
+     * 解压缩文件
+     *
+     * @param zipFilePath  压缩文件路径
+     * @param targetDir    目标文件夹
+     * @param afterExtract 解压完成后回调
+     * @throws IOException
+     * @author chenrui
+     * @date 2025/4/28 17:02
+     */
+    private static void unzipFile(Path zipFilePath, Path targetDir, Consumer<File> afterExtract) throws IOException {
+        long totalUnzippedSize = 0;
+        int entryCount = 0;
+
+        if (!Files.exists(targetDir)) {
+            Files.createDirectories(targetDir);
         }
 
-        try (ZipFile zipFile = new ZipFile(zipFilePath)) {
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            byte[] buffer = new byte[1024];
+        try (ZipFile zipFile = new ZipFile(zipFilePath.toFile())) {
+            Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
 
             while (entries.hasMoreElements()) {
-                ZipEntry ze = entries.nextElement();
-                File newFile = new File(destDir, ze.getName());
-
-                // 预防 ZIP 路径穿越攻击
-                String canonicalDestDirPath = dir.getCanonicalPath();
-                String canonicalFilePath = newFile.getCanonicalPath();
-                if (!canonicalFilePath.startsWith(canonicalDestDirPath + File.separator)) {
-                    throw new IOException("ZIP 路径穿越攻击被阻止: " + ze.getName());
+                ZipArchiveEntry entry = entries.nextElement();
+                entryCount++;
+                if (entryCount > MAX_ENTRY_COUNT) {
+                    throw new IOException("解压文件数量超限，可能是zip bomb攻击");
                 }
 
-                if (ze.isDirectory()) {
-                    newFile.mkdirs();
-                } else {
-                    // 创建父目录
-                    new File(newFile.getParent()).mkdirs();
+                Path newPath = safeResolve(targetDir, entry.getName());
 
-                    // 读取 ZIP 文件并写入新文件
-                    try (InputStream zis = zipFile.getInputStream(ze);
-                         FileOutputStream fos = new FileOutputStream(newFile)) {
-                        int len;
-                        while ((len = zis.read(buffer)) > 0) {
-                            fos.write(buffer, 0, len);
+                if (entry.isDirectory()) {
+                    Files.createDirectories(newPath);
+                } else {
+                    Files.createDirectories(newPath.getParent());
+                    try (InputStream is = zipFile.getInputStream(entry);
+                         OutputStream os = Files.newOutputStream(newPath)) {
+
+                        long bytesCopied = copyLimited(is, os, MAX_FILE_SIZE);
+                        totalUnzippedSize += bytesCopied;
+
+                        if (totalUnzippedSize > MAX_TOTAL_SIZE) {
+                            throw new IOException("解压总大小超限，可能是zip bomb攻击");
                         }
                     }
 
+                    // 解压完成后回调
                     if (afterExtract != null) {
-                        afterExtract.accept(newFile);
+                        afterExtract.accept(newPath.toFile());
                     }
                 }
             }
         }
+    }
+
+    /**
+     * 安全解析路径，防止Zip Slip攻击
+     *
+     * @param targetDir
+     * @param entryName
+     * @return
+     * @throws IOException
+     * @author chenrui
+     * @date 2025/4/28 16:46
+     */
+    private static Path safeResolve(Path targetDir, String entryName) throws IOException {
+        Path resolvedPath = targetDir.resolve(entryName).normalize();
+        if (!resolvedPath.startsWith(targetDir)) {
+            throw new IOException("ZIP 路径穿越攻击被阻止:" + entryName);
+        }
+        return resolvedPath;
+    }
+
+    /**
+     * 复制输入流到输出流，并限制最大字节数
+     *
+     * @param in
+     * @param out
+     * @param maxBytes
+     * @return
+     * @throws IOException
+     * @author chenrui
+     * @date 2025/4/28 17:03
+     */
+    private static long copyLimited(InputStream in, OutputStream out, long maxBytes) throws IOException {
+        byte[] buffer = new byte[8192];
+        long totalCopied = 0;
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) != -1) {
+            totalCopied += bytesRead;
+            if (totalCopied > maxBytes) {
+                throw new IOException("单个文件解压超限，可能是zip bomb攻击");
+            }
+            out.write(buffer, 0, bytesRead);
+        }
+        return totalCopied;
     }
 
 }

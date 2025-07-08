@@ -65,6 +65,7 @@ import JTreeSelect from './jeecg/components/JTreeSelect.vue';
 import JEllipsis from './jeecg/components/JEllipsis.vue';
 import JSelectUserByDept from './jeecg/components/JSelectUserByDept.vue';
 import JSelectUserByDepartment from './jeecg/components/JSelectUserByDepartment.vue';
+import JLinkTableCard from './jeecg/components/JLinkTableCard/JLinkTableCard.vue';
 import JUpload from './jeecg/components/JUpload/JUpload.vue';
 import JSearchSelect from './jeecg/components/JSearchSelect.vue';
 import JAddInput from './jeecg/components/JAddInput.vue';
@@ -128,6 +129,7 @@ componentMap.set('JImageUpload', JImageUpload);
 componentMap.set('JDictSelectTag', JDictSelectTag);
 componentMap.set('JSelectDept', JSelectDept);
 componentMap.set('JAreaSelect', JAreaSelect);
+componentMap.set('JLinkTableCard', JLinkTableCard);
 // componentMap.set(
 //   'JEditor',
 //   createAsyncComponent(() => import('./jeecg/components/JEditor.vue'))

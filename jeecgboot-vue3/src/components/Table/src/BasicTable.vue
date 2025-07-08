@@ -222,7 +222,7 @@
         // update-end--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
       );
 
-      const { getScrollRef, redoHeight } = useTableScroll(getProps, tableElRef, getColumnsRef, getRowSelectionRef, getDataSourceRef, slots);
+      const { getScrollRef, redoHeight } = useTableScroll(getProps, tableElRef, getColumnsRef, getRowSelectionRef, getDataSourceRef, slots, getPaginationInfo);
 
       const { customRow } = useCustomRow(getProps, {
         setSelectedRowKeys,

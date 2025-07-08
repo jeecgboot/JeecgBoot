@@ -29,6 +29,7 @@
        <if test="tenantId != null and tenantId != 0">
            AND sp.tenant_id = #{tenantId}
        </if>
+        order by sup.create_time desc
     </select>
 
     <!--职位列表移除成员-->

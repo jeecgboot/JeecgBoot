@@ -1,14 +1,22 @@
 package org.jeecg.modules.airag.app.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.util.CommonUtils;
 import org.jeecg.config.shiro.IgnoreAuth;
 import org.jeecg.modules.airag.app.service.IAiragChatService;
 import org.jeecg.modules.airag.app.vo.ChatConversation;
 import org.jeecg.modules.airag.app.vo.ChatSendParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 
 
 /**
@@ -24,6 +32,15 @@ public class AiragChatController {
 
     @Autowired
     IAiragChatService chatService;
+
+    @Value(value = "${jeecg.path.upload}")
+    private String uploadpath;
+
+    /**
+     * 本地：local minio：minio 阿里：alioss
+     */
+    @Value(value="${jeecg.uploadType}")
+    private String uploadType;
 
 
     /**
@@ -57,6 +74,19 @@ public class AiragChatController {
                                 @RequestParam(value = "appId", required = false) String appId) {
         ChatSendParams chatSendParams = new ChatSendParams(content, conversationId, topicId, appId);
         return chatService.send(chatSendParams);
+    }
+
+    /**
+     * 获取所有对话
+     *
+     * @return 返回一个Result对象，包含所有对话的信息
+     * @author chenrui
+     * @date 2025/2/25 11:42
+     */
+    @IgnoreAuth
+    @GetMapping(value = "/init")
+    public Result<?> initChat(@RequestParam(name = "id", required = true) String id) {
+        return chatService.initChat(id);
     }
 
     /**
@@ -139,6 +169,38 @@ public class AiragChatController {
     @GetMapping(value = "/stop/{requestId}")
     public Result<?> stop(@PathVariable(name = "requestId", required = true) String requestId) {
         return chatService.stop(requestId);
+    }
+
+
+    /**
+     * 上传文件
+     * for [QQYUN-12135]AI聊天，上传图片提示非法token
+     *
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     * @author chenrui
+     * @date 2025/4/25 11:04
+     */
+    @IgnoreAuth
+    @PostMapping(value = "/upload")
+    public Result<?> upload(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String bizPath = "airag";
+
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        // 获取上传文件对象
+        MultipartFile file = multipartRequest.getFile("file");
+        String savePath;
+        if (CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)) {
+            savePath = CommonUtils.uploadLocal(file, bizPath, uploadpath);
+        } else {
+            savePath = CommonUtils.upload(file, bizPath, uploadType);
+        }
+        Result<?> result = new Result<>();
+        result.setMessage(savePath);
+        result.setSuccess(true);
+        return result;
     }
 
 }

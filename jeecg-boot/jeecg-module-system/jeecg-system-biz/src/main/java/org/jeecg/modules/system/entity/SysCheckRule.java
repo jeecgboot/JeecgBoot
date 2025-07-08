@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,7 +24,7 @@ import java.util.Date;
 @TableName("sys_check_rule")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description = "编码校验规则")
+@Schema(description="编码校验规则")
 public class SysCheckRule {
 
     /**

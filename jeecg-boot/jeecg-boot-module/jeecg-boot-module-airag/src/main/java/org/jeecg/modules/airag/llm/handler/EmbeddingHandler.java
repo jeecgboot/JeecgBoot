@@ -35,8 +35,9 @@ import org.jeecg.modules.airag.llm.document.TikaDocumentParser;
 import org.jeecg.modules.airag.llm.entity.AiragKnowledge;
 import org.jeecg.modules.airag.llm.entity.AiragKnowledgeDoc;
 import org.jeecg.modules.airag.llm.entity.AiragModel;
+import org.jeecg.modules.airag.llm.mapper.AiragKnowledgeMapper;
+import org.jeecg.modules.airag.llm.mapper.AiragModelMapper;
 import org.jeecg.modules.airag.llm.service.IAiragKnowledgeService;
-import org.jeecg.modules.airag.llm.service.IAiragModelService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,12 +70,14 @@ public class EmbeddingHandler implements IEmbeddingHandler {
     EmbedStoreConfigBean embedStoreConfigBean;
 
     @Autowired
-    @Lazy
-    private IAiragModelService airagModelService;
+    private AiragModelMapper airagModelMapper;
 
     @Autowired
     @Lazy
     private IAiragKnowledgeService airagKnowledgeService;
+
+    @Autowired
+    private AiragKnowledgeMapper airagKnowledgeMapper;
 
     @Value(value = "${jeecg.path.upload:}")
     private String uploadpath;
@@ -111,6 +114,13 @@ public class EmbeddingHandler implements IEmbeddingHandler {
      * 向量存储缓存
      */
     private static final ConcurrentHashMap<String, EmbeddingStore<TextSegment>> EMBED_STORE_CACHE = new ConcurrentHashMap<>();
+
+
+    /**
+     * 正则匹配: md图片
+     * "!\\[(.*?)]\\((.*?)(\\s*=\\d+)?\\)"
+     */
+    private static final Pattern PATTERN_MD_IMAGE = Pattern.compile("!\\[(.*?)]\\((.*?)\\)");
 
     /**
      * 向量化文档
@@ -183,6 +193,7 @@ public class EmbeddingHandler implements IEmbeddingHandler {
      * @author chenrui
      * @date 2025/2/18 16:52
      */
+    @Override
     public KnowledgeSearchResult embeddingSearch(List<String> knowIds, String queryText, Integer topNumber, Double similarity) {
         AssertUtils.assertNotEmpty("请选择知识库", knowIds);
         AssertUtils.assertNotEmpty("请填写查询内容", queryText);
@@ -223,7 +234,7 @@ public class EmbeddingHandler implements IEmbeddingHandler {
      */
     public List<Map<String, Object>> searchEmbedding(String knowId, String queryText, Integer topNumber, Double similarity) {
         AssertUtils.assertNotEmpty("请选择知识库", knowId);
-        AiragKnowledge knowledge = airagKnowledgeService.getById(knowId);
+        AiragKnowledge knowledge = airagKnowledgeMapper.getByIdIgnoreTenant(knowId);
         AssertUtils.assertNotEmpty("知识库不存在", knowledge);
         AssertUtils.assertNotEmpty("请填写查询内容", queryText);
         AiragModel model = getEmbedModelData(knowledge.getEmbedId());
@@ -268,6 +279,7 @@ public class EmbeddingHandler implements IEmbeddingHandler {
      * @author chenrui
      * @date 2025/2/20 21:03
      */
+    @Override
     public QueryRouter getQueryRouter(List<String> knowIds, Integer topNumber, Double similarity) {
         AssertUtils.assertNotEmpty("请选择知识库", knowIds);
         List<ContentRetriever> retrievers = Lists.newArrayList();
@@ -275,7 +287,7 @@ public class EmbeddingHandler implements IEmbeddingHandler {
             if (oConvertUtils.isEmpty(knowId)) {
                 continue;
             }
-            AiragKnowledge knowledge = airagKnowledgeService.getById(knowId);
+            AiragKnowledge knowledge = airagKnowledgeMapper.getByIdIgnoreTenant(knowId);
             AssertUtils.assertNotEmpty("知识库不存在", knowledge);
             AiragModel model = getEmbedModelData(knowledge.getEmbedId());
             AiModelOptions modelOptions = buildModelOptions(model);
@@ -345,7 +357,7 @@ public class EmbeddingHandler implements IEmbeddingHandler {
      */
     private AiragModel getEmbedModelData(String modelId) {
         AssertUtils.assertNotEmpty("向量模型不能为空", modelId);
-        AiragModel model = airagModelService.getById(modelId);
+        AiragModel model = airagModelMapper.getByIdIgnoreTenant(modelId);
         AssertUtils.assertNotEmpty("向量模型不存在", model);
         AssertUtils.assertEquals("仅支持向量模型", LLMConsts.MODEL_TYPE_EMBED, model.getModelType());
         return model;
@@ -371,6 +383,18 @@ public class EmbeddingHandler implements IEmbeddingHandler {
 
         AiModelOptions modelOp = buildModelOptions(model);
         EmbeddingModel embeddingModel = AiModelFactory.createEmbeddingModel(modelOp);
+
+        String tableName = embedStoreConfigBean.getTable();
+
+        // update-begin---author:sunjianlei ---date:20250509  for：【QQYUN-12345】向量模型维度不一致问题
+        // 如果该模型不是默认的向量维度
+        int dimension = embeddingModel.dimension();
+        if (!LLMConsts.EMBED_MODEL_DEFAULT_DIMENSION.equals(dimension)) {
+            // 就加上维度后缀，防止因维度不一致导致保存失败
+            tableName += ("_" + dimension);
+        }
+        // update-end-----author:sunjianlei ---date:20250509  for：【QQYUN-12345】向量模型维度不一致问题
+
         EmbeddingStore<TextSegment> embeddingStore = PgVectorEmbeddingStore.builder()
                 // Connection and table parameters
                 .host(embedStoreConfigBean.getHost())
@@ -378,7 +402,7 @@ public class EmbeddingHandler implements IEmbeddingHandler {
                 .database(embedStoreConfigBean.getDatabase())
                 .user(embedStoreConfigBean.getUser())
                 .password(embedStoreConfigBean.getPassword())
-                .table(embedStoreConfigBean.getTable())
+                .table(tableName)
                 // Embedding dimension
                 // Required: Must match the embedding model’s output dimension
                 .dimension(embeddingModel.dimension())
@@ -449,16 +473,20 @@ public class EmbeddingHandler implements IEmbeddingHandler {
                 String fileType = FilenameUtils.getExtension(docFile.getName());
                 if ("md".contains(fileType)) {
                     // 如果是md文件，查找所有图片语法，如果是本地图片，替换成网络图片
-                    String baseUrl = doc.getBaseUrl() + "/sys/common/static/";
+                    String baseUrl = "#{domainURL}/sys/common/static/";
                     String sourcePath = metadataJson.getString(LLMConsts.KNOWLEDGE_DOC_METADATA_SOURCES_PATH);
                     if(oConvertUtils.isNotEmpty(sourcePath)) {
                         String escapedPath = uploadpath;
-                        if (File.separator.equals("\\")){
+                        //update-begin---author:wangshuai---date:2025-06-03---for:【QQYUN-12636】【AI知识库】文档库上传 本地local 文档中的图片不展示---
+                        /*if (File.separator.equals("\\")){
                             escapedPath = uploadpath.replace("//", "\\\\");
-                        }
+                        }*/
+                        //update-end---author:wangshuai---date:2025-06-03---for:【QQYUN-12636】【AI知识库】文档库上传 本地local 文档中的图片不展示---
                         sourcePath = sourcePath.replaceFirst("^" + escapedPath, "").replace("\\", "/");
-                        baseUrl = baseUrl + sourcePath + "/";
-                        StringBuffer sb = replaceImageUrl(content, baseUrl);
+                        String docFilePath = metadataJson.getString(LLMConsts.KNOWLEDGE_DOC_METADATA_FILEPATH);
+                        docFilePath = FilenameUtils.getPath(docFilePath);
+                        docFilePath = docFilePath.replace("\\", "/");
+                        StringBuffer sb = replaceImageUrl(content, baseUrl + sourcePath + "/", baseUrl + docFilePath);
                         content = sb.toString();
                     }
                 }
@@ -469,11 +497,9 @@ public class EmbeddingHandler implements IEmbeddingHandler {
     }
 
     @NotNull
-    private static StringBuffer replaceImageUrl(String content, String baseUrl) {
+    private static StringBuffer replaceImageUrl(String content, String abstractBaseUrl, String relativeBaseUrl) {
         // 正则表达式匹配md文件中的图片语法 ![alt text](image url)
-        String mdImagePattern = "!\\[(.*?)]\\((.*?)(\\s*=\\d+)?\\)";
-        Pattern pattern = Pattern.compile(mdImagePattern);
-        Matcher matcher = pattern.matcher(content);
+        Matcher matcher = PATTERN_MD_IMAGE.matcher(content);
 
         StringBuffer sb = new StringBuffer();
         while (matcher.find()) {
@@ -481,7 +507,16 @@ public class EmbeddingHandler implements IEmbeddingHandler {
             // 检查是否是本地图片路径
             if (!imageUrl.startsWith("http")) {
                 // 替换成网络图片路径
-                String networkImageUrl = baseUrl + imageUrl;
+                String networkImageUrl = abstractBaseUrl + imageUrl;
+                if(imageUrl.startsWith("/")) {
+                    // 绝对路径
+                    networkImageUrl = abstractBaseUrl + imageUrl;
+                }else{
+                    // 相对路径
+                    networkImageUrl = relativeBaseUrl + imageUrl;
+                }
+                // 修改图片路径中//->/，但保留http://和https://
+                networkImageUrl = networkImageUrl.replaceAll("(?<!http:)(?<!https:)//", "/");
                 matcher.appendReplacement(sb, "![" + matcher.group(1) + "](" + networkImageUrl + ")");
             } else {
                 matcher.appendReplacement(sb, "![" + matcher.group(1) + "](" + imageUrl + ")");

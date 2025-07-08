@@ -21,7 +21,7 @@
   </#list>
   <#-- 结束循环 -->
       <!--引用表格-->
-     <BasicTable bordered size="middle" :loading="loading" rowKey="id" :canResize="false" :columns="${sub.entityName?uncap_first}Columns" :dataSource="dataSource" :pagination="false">
+     <BasicTable bordered size="middle" :loading="loading" rowKey="id" :canResize="true" :columns="${sub.entityName?uncap_first}Columns" :dataSource="dataSource" :pagination="false">
         <!--字段回显插槽-->
         <template v-slot:bodyCell="{ column, record, index, text }">
         <#list sub.originalColumns as po>
