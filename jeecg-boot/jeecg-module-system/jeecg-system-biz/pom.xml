@@ -40,10 +40,16 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot-starter</artifactId>
 		</dependency>
+		<!-- mongo、redis和文件数据集支持包，按需引入 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>
 		</dependency>
+		<!-- 后台导出接口Echart图表支持包，按需引入
+		<dependency>
+			<groupId>org.jeecgframework.jimureport</groupId>
+			<artifactId>jimureport-echarts-starter</artifactId>
+		</dependency> -->
 		<!-- 积木BI -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>

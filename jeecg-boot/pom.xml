@@ -56,7 +56,7 @@
 		<dm8.version>8.1.1.49</dm8.version>
 		
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>2.0.0.1</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>2.1.0</jimureport-spring-boot-starter.version>
 		<minidao.version>1.10.10</minidao.version>
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.2</mybatis-plus.version>
@@ -432,16 +432,23 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<!-- mongo、redis和文件数据集支持包，按需引入 -->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
-				<version>1.9.5.2</version>
+				<version>2.0.0</version>
 				<exclusions>
 					<exclusion>
 						<groupId>org.apache.calcite</groupId>
 						<artifactId>calcite-elasticsearch</artifactId>
 					</exclusion>
 				</exclusions>
+			</dependency>
+			<!-- 后台导出接口Echart图表支持包，按需引入 -->
+			<dependency>
+				<groupId>org.jeecgframework.jimureport</groupId>
+				<artifactId>jimureport-echarts-starter</artifactId>
+				<version>2.1.0</version>
 			</dependency>
 			<!-- 积木BI大屏和仪表盘 -->
 			<dependency>
