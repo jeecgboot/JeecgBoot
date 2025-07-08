@@ -201,7 +201,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	}
 
 	@Override
-	public List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, Date beginDate, Date endDate) {
+	public List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, String busType, Date beginDate, Date endDate) {
 //		//1. 补全send表的数据
 //		completeNoteThreadPool.execute(()->{
 //			completeAnnouncementSendInfo();
@@ -210,7 +210,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 		LoginUser sysUser = SecureUtil.currentUser();
 		log.info(" 获取登录人 LoginUser id: {}", sysUser.getId());
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
-		List<SysAnnouncement> list = baseMapper.queryAllMessageList(page, sysUser.getId(), fromUser, starFlag, beginDate, endDate);
+		List<SysAnnouncement> list = baseMapper.queryAllMessageList(page, sysUser.getId(), fromUser, starFlag, busType, beginDate, endDate);
 		return list;
 	}
 

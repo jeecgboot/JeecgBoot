@@ -92,6 +92,9 @@
 		<if test="starFlag!=null and starFlag!=''">
 			and b.star_flag = #{starFlag}
 		</if>
+		<if test="busType!=null and busType!=''">
+			and a.bus_type = #{busType}
+		</if>
 		order by b.read_flag ASC, a.create_time DESC
 	</select>
 

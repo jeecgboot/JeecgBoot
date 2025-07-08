@@ -6,8 +6,9 @@ package org.jeecg.modules.test.seata.order.controller;
  * @date: 2022/01/24
  * @version: V1.0
  */
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.jeecg.modules.test.seata.order.dto.PlaceOrderRequest;
 import org.jeecg.modules.test.seata.order.service.SeataOrderService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -12,6 +12,7 @@ import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
+import org.jeecg.modules.system.vo.SysUserExportVo;
 import org.jeecg.modules.system.vo.lowapp.DepartAndUserInfo;
 import org.jeecg.modules.system.vo.lowapp.UpdateDepartInfo;
 import org.springframework.transaction.annotation.Transactional;
@@ -458,4 +459,26 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param username
 	 */
 	void userLogOff(JSONObject jsonObject, String username);
+
+    /**
+     * 获取部门和用户关系的导出信息
+     * @param pageList
+     */
+    List<SysUserExportVo> getDepartAndRoleExportMsg(List<SysUser> pageList);
+
+    /**
+     * 导入用户
+     *
+     * @param request
+     */
+    Result<?> importSysUser(HttpServletRequest request);
+
+    /**
+     * 没有绑定手机号 直接修改密码
+     *
+     * @param oldPassword
+     * @param password
+     * @param username
+     */
+    void updatePasswordNotBindPhone(String oldPassword, String password, String username);
 }

@@ -8,11 +8,20 @@
 </template>
 
 <script lang="ts" setup>
-    import {ref, computed, unref,inject} from 'vue';
+    import {ref, computed, unref,inject, reactive} from 'vue';
     import {BasicModal, useModalInner} from '/@/components/Modal';
     import {BasicForm, useForm} from '/@/components/Form/index';
     import {${sub.entityName?uncap_first}FormSchema} from '../${entityName}.data';
     import {${sub.entityName?uncap_first}SaveOrUpdate} from '../${entityName}.api';
+    import { getDateByPicker } from '/@/utils';
+    //日期个性化选择
+    const fieldPickers = reactive({
+    <#list sub.colums as po>
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      ${po.fieldName}: '${po.extendParams.picker}',
+      </#if>
+    </#list>
+    });
 
     //接收主表id
     const mainId = inject('mainId');
@@ -51,6 +60,8 @@
     async function handleSubmit(v) {
         try {
             let values = await validate();
+            // 预处理日期数据
+            changeDateValue(values);
             setModalProps({confirmLoading: true});
             if (unref(mainId)) {
              <#list sub.foreignKeys as key>
@@ -74,6 +85,20 @@
             setModalProps({confirmLoading: false});
         }
     }
+
+    /**
+     * 处理日期值
+     * @param formData 表单数据
+     */
+    const changeDateValue = (formData) => {
+      if (formData && fieldPickers) {
+          for (let key in fieldPickers) {
+              if (formData[key]) {
+                  formData[key] = getDateByPicker(formData[key], fieldPickers[key]);
+              }
+          }
+      }
+    };
 </script>
 <style lang="less" scoped>
 	/** 时间和数字输入框样式 */

@@ -74,6 +74,12 @@ export function useBasicFormSchema() {
         placeholder: '请输入备注',
       },
     },
+    {
+      field: 'id',
+      label: 'ID',
+      component: 'Input',
+      show: false,
+    },
   ];
   return { basicFormSchema };
 }

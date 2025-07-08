@@ -53,19 +53,29 @@
             <artifactId>jeecg-system-cloud-api</artifactId>
         </dependency>-->
 
+        <!-- aiflow依赖 -->
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-aiflow</artifactId>
-            <version>1.0.5</version>
+            <version>1.1.1</version>
         </dependency>
-        
-        <!-- aiflow 脚本依赖 -->
+
+        <!-- beigin 这两个依赖太多每个包50M左右，如果你发布需要使用，请把<scope>provided</scope>删掉 -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-scripting-jsr223</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>com.yomahub</groupId>
             <artifactId>liteflow-script-graaljs</artifactId>
             <version>${liteflow.version}</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
+        <!-- end 这两个依赖太多每个包50M左右，如果你发布需要使用，请把<scope>provided</scope>删掉 -->
+
+        <!-- aiflow 脚本依赖 -->
         <dependency>
             <groupId>com.yomahub</groupId>
             <artifactId>liteflow-script-groovy</artifactId>

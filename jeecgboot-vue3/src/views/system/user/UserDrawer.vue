@@ -44,12 +44,12 @@
     if (unref(isUpdate)) {
       rowId.value = data.record.id;
       //租户信息定义成数组
-      if (data.record.relTenantIds && !Array.isArray(data.record.relTenantIds)) {
+   /*   if (data.record.relTenantIds && !Array.isArray(data.record.relTenantIds)) {
         data.record.relTenantIds = data.record.relTenantIds.split(',');
       } else {
         //【issues/I56C5I】用户管理中连续点两次编辑租户配置就丢失了
         //data.record.relTenantIds = [];
-      }
+      }*/
 
       //查角色/赋值/try catch 处理，不然编辑有问题
       try {

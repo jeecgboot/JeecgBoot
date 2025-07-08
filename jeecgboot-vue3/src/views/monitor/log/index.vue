@@ -43,7 +43,7 @@
   const { createMessage } = useMessage();
   const checkedKeys = ref<Array<string | number>>([]);
 
-  const logColumns = ref<any>(columns);
+  const logColumns = ref<any>(exceptionColumns);
   const searchSchema = ref<any>(searchFormSchema);
   const searchInfo = { logType: '4' };
   // 列表页面公共参数、方法

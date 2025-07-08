@@ -1,11 +1,12 @@
 <template>
-  <a-card :bordered="false" style="height: 100%">
+  <a-card :bordered="false" style="height: 100%;" :body-style="{ background: backgroundColor }" >
     <a-spin :spinning="loading">
-      <a-input-search placeholder="按部门名称搜索…" style="margin-bottom: 10px" @search="onSearch" allowClear />
+      <a-input-search v-if="showSearch" placeholder="按部门名称搜索…" style="margin-bottom: 10px" @search="onSearch" allowClear />
       <!--组织机构树-->
       <template v-if="treeData.length > 0">
         <a-tree
           v-if="!treeReloading"
+          :style="{ background: backgroundColor }"
           showLine
           :clickRowToExpand="false"
           :treeData="treeData"
@@ -27,6 +28,19 @@
   import { Popconfirm } from 'ant-design-vue';
 
   const prefixCls = inject('prefixCls');
+  // 定义props
+  const props = defineProps({
+    // 是否显示搜索框
+    showSearch: {
+      type: Boolean,
+      default: true,
+    },
+    // 背景色
+    backgroundColor: {
+      type: String,
+      default: 'inherit',
+    },
+  });
   const emit = defineEmits(['select', 'rootTreeData']);
 
   const loading = ref<boolean>(false);

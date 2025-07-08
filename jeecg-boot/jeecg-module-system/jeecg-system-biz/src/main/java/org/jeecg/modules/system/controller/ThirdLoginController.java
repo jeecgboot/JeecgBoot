@@ -283,7 +283,7 @@ public class ThirdLoginController {
 	 * @param jsonObject
 	 * @return
 	 */
-	@Operation(summary ="手机号登录接口")
+	@Operation(summary="手机号登录接口")
 	@PostMapping("/bindingThirdPhone")
 	@ResponseBody
 	public Result<String> bindingThirdPhone(@RequestBody JSONObject jsonObject) {

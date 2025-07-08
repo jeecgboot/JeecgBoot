@@ -71,6 +71,13 @@
         </li>
       </ul>
     </div>
+    <div class="left-footer" v-if="source!='chatJs'">
+      AI客服由
+      <a style="color: #4183c4;margin-left: 2px;margin-right: 2px" href="https://www.qiaoqiaoyun.com/aiCustomerService" target="_blank">
+        敲敲云
+      </a>
+      提供
+    </div>
   </div>
 </template>
 
@@ -80,7 +87,7 @@
   import { defHttp } from '@/utils/http/axios';
   import { getFileAccessHttpUrl } from '@/utils/common/compUtils';
   import defaultImg from '../img/ailogo.png';
-  const props = defineProps(['dataSource', 'appData']);
+  const props = defineProps(['dataSource', 'appData','source']);
   const emit = defineEmits(['save', 'click', 'reloadRight', 'prologue']);
   const inputRef = ref(null);
   const router = useRouter();
@@ -149,8 +156,7 @@
         emit('click', props.dataSource.history[0].title, findIndex);
       } else {
         //  删没了（删除了最后一个）
-        props.dataSource.active = null;
-        emit('click', "", -1);
+        handleCreate();
       }
     }
     //update-begin---author:wangshuai---date:2025-03-12---for:【QQYUN-11560】新建聊天内容为空，无法删除---
@@ -216,6 +222,7 @@
       flex: 1;
       min-height: 0;
       overflow: auto;
+      margin-bottom: 20px;
       &::-webkit-scrollbar {
         width: 8px;
         height: 8px;
@@ -285,6 +292,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 14px;
+      position: relative;
+      top: 2px;
       &.ant-input {
         margin-right: 20px;
       }
@@ -315,5 +325,14 @@
       font-weight: 600;
       font-size: 16px;
     }
+  }
+  .left-footer{
+    display:flex;
+    margin-right: 20px;
+    font-size: 12px;
+    position: absolute;
+    bottom: 4px;
+    left: 50px;
+    width: 100%;
   }
 </style>

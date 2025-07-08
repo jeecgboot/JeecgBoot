@@ -271,7 +271,33 @@ export const packColumns: BasicColumn[] = [
     },
   },
   {
-    title: '备注',
+    title: '备注说明',
+    dataIndex: 'remarks',
+    width: 150,
+  },
+];
+
+//套餐包列表
+export const defalutPackColumns: BasicColumn[] = [
+  {
+    title: '默认套餐名称',
+    dataIndex: 'packName',
+    width: 100,
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    width: 100,
+    customRender: ({ text }) => {
+      if (text === '1') {
+        return '开启';
+      } else {
+        return '关闭';
+      }
+    },
+  },
+  {
+    title: '备注说明',
     dataIndex: 'remarks',
     width: 150,
   },
@@ -281,7 +307,17 @@ export const packColumns: BasicColumn[] = [
 export const packFormSchema: FormSchema[] = [
   {
     field: 'packName',
-    label: '套餐包名称',
+    label: '套餐包名',
+    component: 'JInput',
+    colProps: { xxl: 8 },
+  },
+];
+
+//套餐包搜索表单
+export const defaultPackFormSchema: FormSchema[] = [
+  {
+    field: 'packName',
+    label: '默认套餐名',
     component: 'JInput',
     colProps: { xxl: 8 },
   },
@@ -296,7 +332,7 @@ export const packMenuFormSchema: FormSchema[] = [
   },
   {
     field: 'permissionIds',
-    label: '菜单列表',
+    label: '授权菜单',
     component: 'JTreeSelect',
     componentProps: {
       dict: 'sys_permission,name,id',
@@ -309,7 +345,7 @@ export const packMenuFormSchema: FormSchema[] = [
   },
   {
     field: 'remarks',
-    label: '描述',
+    label: '备注说明',
     component: 'InputTextArea',
   },
   {

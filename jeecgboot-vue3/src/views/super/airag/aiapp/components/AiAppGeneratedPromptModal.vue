@@ -109,23 +109,79 @@
         handleCancel();
       }
 
+      //update-begin---author:wangshuai---date:2025-04-01---for:【QQYUN-11796】【AI】提示词生成器，改成异步---
       /**
        * 生成
        */
-      function generatedPrompt() {
+      async function generatedPrompt() {
         content.value = '';
         loading.value = true;
-        promptGenerate({ prompt: prompt.value })
-          .then((res) => {
-            if (res.success) {
-              content.value = res.result;
+        let readableStream = await promptGenerate({ prompt: prompt.value }).catch(() => {
+            loading.value = false;
+        });
+        const reader = readableStream.getReader();
+        const decoder = new TextDecoder('UTF-8');
+        let buffer = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+          let result = decoder.decode(value, { stream: true });
+          const lines = result.split('\n\n');
+          for (const line of lines) {
+            if (line.startsWith('data:')) {
+                const content = line.replace('data:', '').trim();
+                if(!content){
+                  continue;
+                }
+                if(!content.endsWith('}')){
+                  buffer = buffer + line;
+                  continue;
+                }
+                buffer = "";
+                renderText(content)
+              } else {
+                if(!line) {
+                  continue;
+                }
+                if(!line.endsWith('}')) {
+                  buffer = buffer + line;
+                  continue;
+                }
+                buffer = "";
+                renderText(line)
+              }
             }
-            loading.value = false;
-          })
-          .catch(() => {
-            loading.value = false;
-          });
+          }
       }
+
+      /**
+       * 渲染文本
+       * 
+       * @param item
+       */
+      function renderText(item) {
+        try {
+          let parse = JSON.parse(item);
+          if (parse.event == 'MESSAGE') {
+            content.value += parse.data.message;
+            if(loading.value){
+              loading.value = false;
+            }
+          }
+          if (parse.event == 'MESSAGE_END') {
+            loading.value = false;
+          }
+          if (parse.event == 'ERROR') {
+            content.value = parse.data.message?parse.data.message:'生成失败，请稍后重试！'
+            loading.value = false;
+          }
+        } catch (error) {
+          console.log('Error parsing update:', error);
+        }
+      }
+      //update-end---author:wangshuai---date:2025-04-01---for:【QQYUN-11796】【AI】提示词生成器，改成异步---
 
       /**
        * 指令点击事件

@@ -16,6 +16,10 @@ public class AiAppConsts {
      * 状态:禁用
      */
     public static final String STATUS_DISABLE = "disable";
+    /**
+     * 状态:发布
+     */
+    public static final String STATUS_RELEASE = "release";
 
 
     /**

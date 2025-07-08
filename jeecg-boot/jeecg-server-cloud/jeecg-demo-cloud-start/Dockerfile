@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/java:21-anolis
+FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/java:17-anolis
 
 MAINTAINER jeecgos@163.com
 

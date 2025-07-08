@@ -122,6 +122,11 @@
 			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
+		<!-- minidao -->
+        <dependency>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>minidao-spring-boot-starter-jsqlparser-4.9</artifactId>
+        </dependency>
 
 		<!-- druid -->
 		<dependency>
@@ -336,11 +341,6 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
-		</dependency>
-		<!-- minidao -->
-		<dependency>
-			<groupId>org.jeecgframework.boot3</groupId>
-			<artifactId>minidao-spring-boot-starter-jsqlparser-4.9</artifactId>
 		</dependency>
 	</dependencies>
 </project>

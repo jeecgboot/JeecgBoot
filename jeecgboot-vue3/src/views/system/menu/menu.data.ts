@@ -255,6 +255,9 @@ export const formSchema: FormSchema[] = [
     label: '菜单图标',
     component: 'IconPicker',
     ifShow: ({ values }) => !isButton(values.menuType),
+    componentProps: {
+      allowClear: true
+    },
   },
   {
     field: 'sortNo',

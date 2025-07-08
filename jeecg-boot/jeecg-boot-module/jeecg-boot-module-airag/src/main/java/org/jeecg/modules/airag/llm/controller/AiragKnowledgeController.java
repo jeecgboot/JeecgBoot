@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.AssertUtils;
+import org.jeecg.common.util.TokenUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.airag.common.vo.knowledge.KnowledgeSearchResult;
 import org.jeecg.modules.airag.llm.consts.LLMConsts;
 import org.jeecg.modules.airag.llm.entity.AiragKnowledge;
@@ -15,6 +17,7 @@ import org.jeecg.modules.airag.llm.handler.EmbeddingHandler;
 import org.jeecg.modules.airag.llm.service.IAiragKnowledgeDocService;
 import org.jeecg.modules.airag.llm.service.IAiragKnowledgeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -74,6 +77,7 @@ public class AiragKnowledgeController {
      * @date 2025/2/18 17:09
      */
     @PostMapping(value = "/add")
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:add')")
     public Result<String> add(@RequestBody AiragKnowledge airagKnowledge) {
         airagKnowledge.setStatus(LLMConsts.STATUS_ENABLE);
         airagKnowledgeService.save(airagKnowledge);
@@ -90,6 +94,7 @@ public class AiragKnowledgeController {
      */
     @Transactional(rollbackFor = Exception.class)
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:edit')")
     public Result<String> edit(@RequestBody AiragKnowledge airagKnowledge) {
         AiragKnowledge airagKnowledgeEntity = airagKnowledgeService.getById(airagKnowledge.getId());
         if (airagKnowledgeEntity == null) {
@@ -113,6 +118,7 @@ public class AiragKnowledgeController {
      * @date 2025/3/12 17:05
      */
     @PutMapping(value = "/rebuild")
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:rebuild')")
     public Result<?> rebuild(@RequestParam("knowIds") String knowIds) {
         String[] knowIdArr = knowIds.split(",");
         for (String knowId : knowIdArr) {
@@ -131,27 +137,22 @@ public class AiragKnowledgeController {
      */
     @Transactional(rollbackFor = Exception.class)
     @DeleteMapping(value = "/delete")
-    public Result<String> delete(@RequestParam(name = "id", required = true) String id) {
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:delete')")
+    public Result<String> delete(HttpServletRequest request, @RequestParam(name = "id", required = true) String id) {
+        //update-begin---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
+        //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            AiragKnowledge know = airagKnowledgeService.getById(id);
+            //获取当前租户
+            String currentTenantId = TokenUtils.getTenantIdByRequest(request);
+            if (null == know || !know.getTenantId().equals(currentTenantId)) {
+                return Result.error("删除AI知识库失败，不能删除其他租户的AI知识库！");
+            }
+        }
+        //update-end---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
         airagKnowledgeDocService.removeByKnowIds(Collections.singletonList(id));
         airagKnowledgeService.removeById(id);
         return Result.OK("删除成功!");
-    }
-
-    /**
-     * 批量删除知识库
-     *
-     * @param ids
-     * @return
-     * @author chenrui
-     * @date 2025/2/18 17:09
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @DeleteMapping(value = "/deleteBatch")
-    public Result<String> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
-        List<String> idsList = Arrays.asList(ids.split(","));
-        airagKnowledgeDocService.removeByKnowIds(idsList);
-        airagKnowledgeService.removeByIds(idsList);
-        return Result.OK("批量删除成功！");
     }
 
     /**
@@ -203,6 +204,7 @@ public class AiragKnowledgeController {
      * @date 2025/2/18 15:47
      */
     @PostMapping(value = "/doc/edit")
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:doc:edit')")
     public Result<?> addDocument(@RequestBody AiragKnowledgeDoc airagKnowledgeDoc) {
         return airagKnowledgeDocService.editDocument(airagKnowledgeDoc);
     }
@@ -215,6 +217,7 @@ public class AiragKnowledgeController {
      * @date 2025/3/20 11:29
      */
     @PostMapping(value = "/doc/import/zip")
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:doc:zip')")
     public Result<?> importDocumentFromZip(@RequestParam(name = "knowId", required = true) String knowId,
                                            @RequestParam(name = "file", required = true) MultipartFile file) {
         return airagKnowledgeDocService.importDocumentFromZip(knowId,file);
@@ -241,6 +244,7 @@ public class AiragKnowledgeController {
      * @date 2025/2/18 15:47
      */
     @PutMapping(value = "/doc/rebuild")
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:doc:rebuild')")
     public Result<?> rebuildDocument(@RequestParam("docIds") String docIds) {
         return airagKnowledgeDocService.rebuildDocument(docIds);
     }
@@ -255,12 +259,49 @@ public class AiragKnowledgeController {
      */
     @Transactional(rollbackFor = Exception.class)
     @DeleteMapping(value = "/doc/deleteBatch")
-    public Result<String> deleteDocumentBatch(@RequestParam(name = "ids", required = true) String ids) {
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:doc:deleteBatch')")
+    public Result<String> deleteDocumentBatch(HttpServletRequest request, @RequestParam(name = "ids", required = true) String ids) {
         List<String> idsList = Arrays.asList(ids.split(","));
+        //update-begin---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
+        //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            List<AiragKnowledgeDoc> docList = airagKnowledgeDocService.listByIds(idsList);
+            //获取当前租户
+            String currentTenantId = TokenUtils.getTenantIdByRequest(request);
+            docList.forEach(airagKnowledgeDoc -> {
+                if (null == airagKnowledgeDoc || !airagKnowledgeDoc.getTenantId().equals(currentTenantId)) {
+                    throw new IllegalArgumentException("删除AI知识库文档失败，不能删除其他租户的AI知识库文档！");
+                }
+            });
+        }
+        //update-end---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
         airagKnowledgeDocService.removeDocByIds(idsList);
         return Result.OK("批量删除成功！");
     }
 
+    /**
+     * 清空知识库文档
+     *
+     * @param
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @DeleteMapping(value = "/doc/deleteAll")
+    @PreAuthorize("@jps.requiresPermissions('airag:knowledge:doc:deleteAll')")
+    public Result<?> deleteDocumentAll(HttpServletRequest request, @RequestParam(name = "knowId") String knowId) {
+        //update-begin---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
+        //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            AiragKnowledge know = airagKnowledgeService.getById(knowId);
+            //获取当前租户
+            String currentTenantId = TokenUtils.getTenantIdByRequest(request);
+            if (null == know || !know.getTenantId().equals(currentTenantId)) {
+                return Result.error("删除AI知识库失败，不能删除其他租户的AI知识库！");
+            }
+        }
+        //update-end---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
+        return airagKnowledgeDocService.deleteAllByKnowId(knowId);
+    }
 
     /**
      * 命中测试

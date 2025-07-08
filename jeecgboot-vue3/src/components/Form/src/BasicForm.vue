@@ -367,6 +367,13 @@
         margin-bottom: 24px;
       }
       // update-end--author:liaozhiyang---date:20240620---for：【TV360X-1420】校验时闪动
+
+      // 表单组件中间件样式
+      .j-form-item-middleware {
+        flex: 1;
+        width: 100%
+      }
+
       &.suffix-item {
         .ant-form-item-children {
           display: flex;
@@ -374,6 +381,12 @@
 
         .ant-form-item-control {
           margin-top: 4px;
+        }
+
+        // 【QQYUN-12876】当紧凑型 suffix 时，表单组件中间件的宽度不占满
+        &.suffix-compact .j-form-item-middleware {
+          flex: unset;
+          width: auto;
         }
 
         .suffix {

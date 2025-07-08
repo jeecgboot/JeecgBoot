@@ -57,6 +57,7 @@
   import { removeAuthCache, setAuthCache } from '/src/utils/auth';
   import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
   import { getRefPromise } from '/@/utils/index';
+  import { refreshDragCache } from "@/api/common/api";
 
   type MenuEvent = 'logout' | 'doc' | 'lock' | 'cache' | 'depart';
   const { createMessage } = useMessage();
@@ -122,6 +123,9 @@
       // 清除缓存
       async function clearCache() {
         const result = await refreshCache();
+        //TODO 当前版本还不支持刷新缓存，需要等jimibi升级
+        // const dragRes = await refreshDragCache();
+        // console.log('dragRes', dragRes);
         if (result.success) {
           const res = await queryAllDictItems();
           removeAuthCache(DB_DICT_DATA_KEY);

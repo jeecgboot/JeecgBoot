@@ -3,6 +3,7 @@ package org.jeecg.modules.airag.llm.entity;
 import java.io.Serializable;
 
 import com.baomidou.mybatisplus.annotation.*;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecg.common.constant.ProvinceCityArea;
 import org.jeecg.common.util.SpringContextUtils;
 import lombok.Data;
@@ -40,6 +41,7 @@ public class AiragKnowledgeDoc implements Serializable {
      * 创建人
      */
     @Schema(description = "创建人")
+    @Dict(dictTable = "sys_user",dicCode = "username",dicText = "realname")
     private String createBy;
 
     /**
@@ -119,9 +121,4 @@ public class AiragKnowledgeDoc implements Serializable {
     @Schema(description = "状态")
     private String status;
 
-    /**
-     * 服务器基础路径
-     */
-    @TableField(exist = false)
-    private String baseUrl;
 }

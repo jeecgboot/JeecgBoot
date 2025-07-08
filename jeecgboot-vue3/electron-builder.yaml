@@ -1,0 +1,24 @@
+appId: 'com.jeecg.boot3'
+# 产品名称
+productName: 'jeecgboot'
+files:
+  # 仅包含 dist 目录下所有文件
+  - 'dist/**/*'
+  # 特别排除 node_modules 目录
+  - '!node_modules'
+directories:
+  # 输出目录
+  output: 'dist-electron'
+win:
+  # win exe 程序图标
+  icon: 'electron/icons/app.ico'
+  artifactName: 'jeecgboot-setup-${version}.exe'
+# 安装包配置
+nsis:
+  oneClick: false
+  # 是否允许用户选择安装目录
+  allowToChangeInstallationDirectory: true
+  # 是否创建桌面快捷方式
+  createDesktopShortcut: true
+  # 安装程序的图标
+  installerIcon: 'electron/icons/installer.ico'

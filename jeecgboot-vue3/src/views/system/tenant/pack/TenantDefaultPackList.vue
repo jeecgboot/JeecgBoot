@@ -2,7 +2,8 @@
   <div>
     <BasicTable @register="registerTable" :rowSelection="rowSelection">
       <template #tableTitle>
-        <a-button preIcon="ant-design:user-add-outlined" type="primary" @click="handleAdd">新增</a-button>
+        <a-button preIcon="ant-design:user-add-outlined" type="primary" @click="handleAdd">+ 默认套餐
+        </a-button>
         <a-button
           v-if="selectedRowKeys.length > 0"
           preIcon="ant-design:delete-outlined"
@@ -25,7 +26,7 @@
   import { BasicTable, TableAction } from '/@/components/Table';
   import { useModal } from '/@/components/Modal';
   import { deleteTenantPack, packList } from '../tenant.api';
-  import { packColumns, packFormSchema } from '../tenant.data';
+  import { defalutPackColumns, defaultPackFormSchema } from "../tenant.data";
   import TenantPackMenuModal from './TenantPackMenuModal.vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useListPage } from '/@/hooks/system/useListPage';
@@ -42,9 +43,9 @@
     designScope: 'tenant-template',
     tableProps: {
       api: packList,
-      columns: packColumns,
+      columns: defalutPackColumns,
       formConfig: {
-        schemas: packFormSchema,
+        schemas: defaultPackFormSchema,
       },
       beforeFetch: (params) => {
         return Object.assign(params, { packType: 'default' });

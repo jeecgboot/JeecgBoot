@@ -3,6 +3,8 @@ package org.jeecg.common.util.security;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.exception.JeecgSqlInjectionException;
+import org.jeecg.common.util.SqlInjectionUtil;
+import org.jeecg.common.util.oConvertUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -66,6 +68,8 @@ public abstract class AbstractQueryBlackListHandler {
         if(flag == false){
             return false;
         }
+        Set<String> xssTableSet = new HashSet<>(Arrays.asList(SqlInjectionUtil.XSS_STR_TABLE.split("\\|")));
+
         for (QueryTable table : list) {
             String name = table.getName();
             String fieldRule = ruleMap.get(name);
@@ -80,6 +84,16 @@ public abstract class AbstractQueryBlackListHandler {
                     break;
                 }
 
+            }
+            // 判断是否调用了黑名单数据库
+            String dbName = table.getDbName();
+            if (oConvertUtils.isNotEmpty(dbName)) {
+                dbName = dbName.toLowerCase().trim();
+                if (xssTableSet.contains(dbName)) {
+                    flag = false;
+                    log.warn("sql黑名单校验，数据库【" + dbName + "】禁止查询");
+                    break;
+                }
             }
         }
 
@@ -135,6 +149,8 @@ public abstract class AbstractQueryBlackListHandler {
      * 查询的表的信息
      */
     protected class QueryTable {
+        //数据库名
+        private String dbName;
         //表名
         private String name;
         //表的别名
@@ -156,6 +172,14 @@ public abstract class AbstractQueryBlackListHandler {
 
         public void addField(String field) {
             this.fields.add(field);
+        }
+
+        public String getDbName() {
+            return dbName;
+        }
+
+        public void setDbName(String dbName) {
+            this.dbName = dbName;
         }
 
         public String getName() {

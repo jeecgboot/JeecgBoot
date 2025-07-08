@@ -51,7 +51,7 @@
       //下拉框选项值
       const selectOptions = ref<SelectValue>([]);
       //下拉框选中值
-      let selectValues = reactive<object>({
+      let selectValues = reactive<any>({
         value: [],
         change: false,
       });
@@ -74,7 +74,15 @@
       watch(
         () => props.value,
         () => {
-          props.value && initValue();
+          if (props.value) {
+            initValue();
+          } else {
+            // update-begin--author:liaozhiyang---date:20250604---for：【issues/8233】resetFields时无法重置
+            if (selectValues.value?.length) {
+              selectValues.value = [];
+            }
+            // update-end--author:liaozhiyang---date:20250604---for：【issues/8233】resetFields时无法重置
+          }
         },
         { deep: true, immediate: true }
       );

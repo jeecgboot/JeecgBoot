@@ -989,4 +989,16 @@ public class SysTenantController {
         }
         return result;
     }
+
+    /**
+     * 目前只给敲敲云人员与部门下的用户删除使用
+     *
+     * 删除用户
+     */
+    @DeleteMapping("/deleteUser")
+    public Result<String> deleteUser(@RequestBody SysUser sysUser,HttpServletRequest request){
+        Integer tenantId = oConvertUtils.getInteger(TokenUtils.getTenantIdByRequest(request), null);
+        sysTenantService.deleteUser(sysUser, tenantId);
+        return Result.ok("删除用户成功");
+    }
 }

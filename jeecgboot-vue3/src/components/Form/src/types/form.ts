@@ -156,7 +156,9 @@ export interface FormSchema {
   // Required
   required?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
 
-  suffix?: string | number | ((values: RenderCallbackParams) => string | number);
+  suffix?: string | number | VueNode | ((values: RenderCallbackParams) => string | number | VueNode);
+  // 【QQYUN-12876】是否是紧凑型 suffix（当组件宽度未占满时，可紧挨着组件右侧）
+  suffixCompact?: boolean;
 
   // Validation rules
   rules?: Rule[];
@@ -164,7 +166,7 @@ export interface FormSchema {
   rulesMessageJoinLabel?: boolean;
 
   // Reference formModelItem
-  itemProps?: Partial<FormItem>;
+  itemProps?: Partial<FormItem> | ((renderCallbackParams: RenderCallbackParams) => Partial<FormItem>);
 
   // col configuration outside formModelItem
   colProps?: Partial<ColEx>;

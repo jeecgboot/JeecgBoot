@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,7 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_fill_rule")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description = "填值规则")
+@Schema(description="填值规则")
 public class SysFillRule {
 
     /**

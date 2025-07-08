@@ -2,6 +2,9 @@ server:
   port: 8080
   undertow:
     worker-threads: 16
+    buffers:
+      websocket: 8192
+      io: 16384
   error:
     include-exception: true
     include-stacktrace: ALWAYS

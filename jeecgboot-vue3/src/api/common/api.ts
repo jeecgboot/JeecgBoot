@@ -14,6 +14,7 @@ enum Api {
   getDictItems = '/sys/dict/getDictItems/',
   getTableList = '/sys/user/queryUserComponentData',
   getCategoryData = '/sys/category/loadAllData',
+  refreshDragCache = '/drag/page/refreshCache',
 }
 
 /**
@@ -148,3 +149,8 @@ export const getFileblob = (url, parameter) => {
 export const uploadMyFile = (url, data) => {
   return defHttp.uploadMyFile(url, data);
 };
+/**
+ * 刷新仪表盘缓存
+ * @param params
+ */
+export const refreshDragCache = () => defHttp.get({ url: Api.refreshDragCache }, { isTransformResponse: false });

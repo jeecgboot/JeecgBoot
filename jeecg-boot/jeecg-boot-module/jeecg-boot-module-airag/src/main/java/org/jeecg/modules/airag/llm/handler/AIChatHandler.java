@@ -12,7 +12,7 @@ import org.jeecg.modules.airag.common.handler.AIChatParams;
 import org.jeecg.modules.airag.common.handler.IAIChatHandler;
 import org.jeecg.modules.airag.llm.consts.LLMConsts;
 import org.jeecg.modules.airag.llm.entity.AiragModel;
-import org.jeecg.modules.airag.llm.service.IAiragModelService;
+import org.jeecg.modules.airag.llm.mapper.AiragModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,7 +38,7 @@ import java.util.regex.Matcher;
 public class AIChatHandler implements IAIChatHandler {
 
     @Autowired
-    IAiragModelService airagModelService;
+    AiragModelMapper airagModelMapper;
 
     @Autowired
     EmbeddingHandler embeddingHandler;
@@ -82,7 +82,7 @@ public class AIChatHandler implements IAIChatHandler {
         AssertUtils.assertNotEmpty("至少发送一条消息", messages);
         AssertUtils.assertNotEmpty("请选择模型", modelId);
 
-        AiragModel airagModel = airagModelService.getById(modelId);
+        AiragModel airagModel = airagModelMapper.getByIdIgnoreTenant(modelId);
         return completions(airagModel, messages, params);
     }
 
@@ -96,7 +96,7 @@ public class AIChatHandler implements IAIChatHandler {
      * @author chenrui
      * @date 2025/2/24 17:30
      */
-    private String completions(AiragModel airagModel, List<ChatMessage> messages, AIChatParams params) {
+    public String completions(AiragModel airagModel, List<ChatMessage> messages, AIChatParams params) {
         params = mergeParams(airagModel, params);
         String resp = llmHandler.completions(messages, params);
         if (resp.contains("</think>")
@@ -150,7 +150,7 @@ public class AIChatHandler implements IAIChatHandler {
         AssertUtils.assertNotEmpty("至少发送一条消息", messages);
         AssertUtils.assertNotEmpty("请选择模型", modelId);
 
-        AiragModel airagModel = airagModelService.getById(modelId);
+        AiragModel airagModel = airagModelMapper.getByIdIgnoreTenant(modelId);
         return chat(airagModel, messages, params);
     }
 
@@ -226,7 +226,7 @@ public class AIChatHandler implements IAIChatHandler {
                 params.setMaxTokens(modelParams.getInteger("maxTokens"));
             }
             if (oConvertUtils.isObjectEmpty(params.getTimeout())) {
-                params.setMaxTokens(modelParams.getInteger("timeout"));
+                params.setTimeout(modelParams.getInteger("timeout"));
             }
         }
 
@@ -235,6 +235,16 @@ public class AIChatHandler implements IAIChatHandler {
         if (oConvertUtils.isObjectNotEmpty(knowIds)) {
             QueryRouter queryRouter = embeddingHandler.getQueryRouter(knowIds, params.getTopNumber(), params.getSimilarity());
             params.setQueryRouter(queryRouter);
+        }
+
+        // 设置确保maxTokens值正确
+        if (oConvertUtils.isObjectNotEmpty(params.getMaxTokens()) && params.getMaxTokens() <= 0) {
+            params.setMaxTokens(null);
+        }
+
+        // 默认超时时间
+        if(oConvertUtils.isObjectEmpty(params.getTimeout())){
+            params.setTimeout(60);
         }
 
         return params;

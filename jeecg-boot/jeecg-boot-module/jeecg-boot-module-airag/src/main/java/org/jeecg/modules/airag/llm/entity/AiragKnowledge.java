@@ -30,13 +30,14 @@ public class AiragKnowledge implements Serializable {
      */
     @TableId(type = IdType.ASSIGN_ID)
     @Schema(description = "主键")
-    private String id;
+    private java.lang.String id;
 
     /**
      * 创建人
      */
     @Schema(description = "创建人")
-    private String createBy;
+    @Dict(dictTable = "sys_user",dicCode = "username",dicText = "realname")
+    private java.lang.String createBy;
 
     /**
      * 创建日期
@@ -50,7 +51,7 @@ public class AiragKnowledge implements Serializable {
      * 更新人
      */
     @Schema(description = "更新人")
-    private String updateBy;
+    private java.lang.String updateBy;
 
     /**
      * 更新日期
@@ -64,21 +65,21 @@ public class AiragKnowledge implements Serializable {
      * 所属部门
      */
     @Schema(description = "所属部门")
-    private String sysOrgCode;
+    private java.lang.String sysOrgCode;
 
     /**
      * 租户id
      */
     @Excel(name = "租户id", width = 15)
     @Schema(description = "租户id")
-    private String tenantId;
+    private java.lang.String tenantId;
 
     /**
      * 知识库名称
      */
     @Excel(name = "知识库名称", width = 15)
     @Schema(description = "知识库名称")
-    private String name;
+    private java.lang.String name;
 
     /**
      * 向量模型id
@@ -86,19 +87,19 @@ public class AiragKnowledge implements Serializable {
     @Excel(name = "向量模型id", width = 15, dictTable = "airag_model where model_type = 'EMBED'", dicText = "name", dicCode = "id")
     @Dict(dictTable = "airag_model where model_type = 'EMBED'", dicText = "name", dicCode = "id")
     @Schema(description = "向量模型id")
-    private String embedId;
+    private java.lang.String embedId;
 
     /**
      * 描述
      */
     @Excel(name = "描述", width = 15)
     @Schema(description = "描述")
-    private String descr;
+    private java.lang.String descr;
 
     /**
      * 状态
      */
     @Excel(name = "状态", width = 15)
     @Schema(description = "状态")
-    private String status;
+    private java.lang.String status;
 }

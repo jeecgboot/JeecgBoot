@@ -38,8 +38,8 @@
       <UserDropDown :theme="getHeaderTheme" />
 
       <SettingDrawer v-if="getShowSetting" :class="`${prefixCls}-action__item`" />
-      <!-- ai助手
-      <Aide></Aide> -->
+      <!-- ai助手 -->
+      <Aide v-if="getAiIconShow"></Aide>
     </div>
   </Header>
   <LoginSelect ref="loginSelectRef" @success="loginSelectOk"></LoginSelect>
@@ -105,7 +105,7 @@
       const { prefixCls } = useDesign('layout-header');
       const userStore = useUserStore();
       const { getShowTopMenu, getShowHeaderTrigger, getSplit, getIsMixMode, getMenuWidth, getIsMixSidebar } = useMenuSetting();
-      const { getUseErrorHandle, getShowSettingButton, getSettingButtonPosition } = useRootSetting();
+      const { getUseErrorHandle, getShowSettingButton, getSettingButtonPosition, getAiIconShow } = useRootSetting();
       const { title } = useGlobSetting();
 
       const {
@@ -215,7 +215,8 @@
         loginSelectOk,
         loginSelectRef,
         title,
-        t
+        t,
+        getAiIconShow
       };
     },
   });

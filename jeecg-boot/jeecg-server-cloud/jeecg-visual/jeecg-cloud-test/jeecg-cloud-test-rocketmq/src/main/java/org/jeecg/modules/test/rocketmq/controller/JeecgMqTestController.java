@@ -2,8 +2,8 @@ package org.jeecg.modules.test.rocketmq.controller;
 
 
 import cn.hutool.core.util.RandomUtil;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.jeecg.boot.starter.rabbitmq.client.RabbitMqClient;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.base.BaseMap;
@@ -38,7 +38,7 @@ public class JeecgMqTestController {
      * @return
      */
     @GetMapping(value = "/rocketmq")
-    @Operation(description = "测试rocketmq")
+    @Operation(summary = "测试rocketmq")
     public Result<?> rabbitMqClientTest(HttpServletRequest req) {
         //rabbitmq消息队列测试
         BaseMap map = new BaseMap();
@@ -49,7 +49,7 @@ public class JeecgMqTestController {
     }
 
     @GetMapping(value = "/rocketmq2")
-    @Operation(description = "rocketmq消息总线测试")
+    @Operation(summary = "rocketmq消息总线测试")
     public Result<?> rabbitmq2(HttpServletRequest req) {
 
         //rabbitmq消息总线测试

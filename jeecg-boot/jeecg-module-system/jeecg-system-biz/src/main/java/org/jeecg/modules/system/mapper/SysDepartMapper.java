@@ -178,4 +178,21 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
 	 * @return
 	 */
     List<SysDepartExportVo> getSysDepartList(@Param("parentId") String parentId,@Param("tenantId") Integer tenantId, List<String> idList);
+
+    /**
+     * 根据多个部门id获取部门数据
+     * 
+     * @param departIds
+     * @return
+     */
+    List<SysUserDepVo> getDepartByIds(List<String> departIds);
+
+    /**
+     * 根据用户id获取部门数据
+     *
+     * @param userList
+     * @return
+     */
+    @InterceptorIgnore(tenantLine = "true")
+    List<SysUserDepVo> getUserDepartByUserId(@Param("userList")List<SysUser> userList);
 }

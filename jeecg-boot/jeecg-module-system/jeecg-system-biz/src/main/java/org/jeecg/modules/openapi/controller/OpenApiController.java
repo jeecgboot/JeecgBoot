@@ -162,7 +162,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         String method = openApi.getRequestMethod();
         String appkey = request.getHeader("appkey");
         OpenApiAuth openApiAuth = openApiAuthService.getByAppkey(appkey);
-        SysUser systemUser = sysUserService.getById(openApiAuth.getSystemUserId());
+        SysUser systemUser = sysUserService.getUserByName(openApiAuth.getCreateBy());
         String token = this.getToken(systemUser.getUsername(), systemUser.getPassword());
         httpHeaders.put("X-Access-Token", Lists.newArrayList(token));
         httpHeaders.put("Content-Type",Lists.newArrayList("application/json"));
@@ -382,7 +382,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         SwaggerInfo info = new SwaggerInfo();
 
         info.setDescription("OpenAPI 接口列表");
-        info.setVersion("3.8.0");
+        info.setVersion("3.8.1");
         info.setTitle("OpenAPI 接口列表");
         info.setTermsOfService("https://jeecg.com");
 

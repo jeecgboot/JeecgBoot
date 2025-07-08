@@ -19,11 +19,11 @@
 								<a-input v-model:value="formData.sk" placeholder="请输入SK" disabled allow-clear ></a-input>
 							</a-form-item>
 						</a-col>
-						<a-col :span="24">
-							<a-form-item label="关联系统用户名" v-bind="validateInfos.systemUserId" id="OpenApiAuthForm-systemUserId" name="systemUserId">
-								<JSearchSelect dict="sys_user,username,id" v-model:value="formData.systemUserId" placeholder="请输入关联系统用户名"  allow-clear ></JSearchSelect>
-							</a-form-item>
-						</a-col>
+<!--						<a-col :span="24">-->
+<!--							<a-form-item label="关联系统用户名" v-bind="validateInfos.systemUserId" id="OpenApiAuthForm-systemUserId" name="systemUserId">-->
+<!--								<JSearchSelect dict="sys_user,username,id" v-model:value="formData.systemUserId" placeholder="请输入关联系统用户名"  allow-clear ></JSearchSelect>-->
+<!--							</a-form-item>-->
+<!--						</a-col>-->
           </a-row>
         </a-form>
       </template>

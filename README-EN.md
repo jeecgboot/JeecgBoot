@@ -7,12 +7,12 @@
 JEECG BOOT AI Low Code Platform
 ===============
 
-Current version: 3.8.0 (Release date: 2025-04-18)
+Current version: 3.8.1 (Release date: 2025-06-30)
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
-[![](https://img.shields.io/badge/version-3.8.0-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.8.1-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 
@@ -81,7 +81,7 @@ Technical documentation
 - Demo ： [OnlineDemo](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
 - Doc：  [DocumentCenter](http://help.jeecg.com) | [AI Config](https://help.jeecg.com/java/ai/aichat)
 - Newbie guide： [Quick start](http://www.jeecg.com/doc/quickstart) |   [Q&A ](http://www.jeecg.com/doc/qa)  |  [1 minute experience](https://my.oschina.net/jeecg/blog/3083313)
-- QQ group ： ⑩716488839、⑨808791225
+- QQ group ： 964611995、⑩716488839(满)、⑨808791225(满)
 
 
 

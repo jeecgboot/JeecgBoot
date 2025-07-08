@@ -45,7 +45,7 @@
               <img class="header-img" src="./icon/knowledge.png" />
               <div class="header-text">
                 <span class="header-text-top header-name ellipsis" :title="item.name"> {{ item.name }} </span>
-                <span class="header-text-top"> 创建者：{{ item.createBy }} </span>
+                <span class="header-text-top"> 创建者：{{ item.createBy_dictText || item.createBy }} </span>
               </div>
             </div>
           </div>
@@ -75,6 +75,10 @@
                     <Icon class="pointer" icon="ant-design:delete-outlined" size="16"></Icon>
                     删除
                   </a-menu-item>
+                  <a-menu-item key="clear" @click.prevent.stop="onDeleteAllDoc(item)">
+                    <Icon icon="ant-design:delete-outlined" size="16"></Icon>
+                    清空文档
+                  </a-menu-item>
                 </a-menu>
               </template>
             </a-dropdown>
@@ -93,6 +97,7 @@
       @change="handlePageChange"
       class="list-footer"
       size="small"
+      :show-total="() => `共${total}条` "
     />
     <!--添加知识库弹窗-->
     <KnowledgeBaseModal @register="registerModal" @success="reload"></KnowledgeBaseModal>
@@ -105,6 +110,7 @@
   import { reactive, ref } from 'vue';
   import { useModal } from '/@/components/Modal';
   import { deleteModel, list, rebuild } from './AiKnowledgeBase.api';
+  import { doDeleteAllDoc } from "./AiKnowledgeBase.api.util";
   import { Pagination } from 'ant-design-vue';
   import JInput from '@/components/Form/src/jeecg/components/JInput.vue';
   import KnowledgeBaseModal from './components/AiKnowledgeBaseModal.vue';
@@ -221,13 +227,26 @@
        * @param item
        */
       async function handleDelete(item) {
+        if(knowledgeList.value.length == 1 && pageNo.value > 1) {
+          pageNo.value = pageNo.value - 1;
+        }
         await deleteModel({ id: item.id, name: item.name }, reload);
+      }
+
+      /**
+       * 清空文档
+       * @param item
+       */
+      async function onDeleteAllDoc(item) {
+        pageNo.value = 1;
+        return doDeleteAllDoc(item.id, reload);
       }
 
       /**
        * 查询
        */
       function searchQuery() {
+        pageNo.value = 1;
         reload();
       }
 
@@ -237,6 +256,7 @@
       function searchReset() {
         formRef.value.resetFields();
         queryParam.createBy = '';
+        pageNo.value = 1;
         //刷新数据
         reload();
       }
@@ -279,6 +299,7 @@
         total,
         handlePageChange,
         handleDelete,
+        onDeleteAllDoc,
         searchQuery,
         searchReset,
         queryParam,
@@ -389,7 +410,7 @@
     margin-bottom: 20px;
     background: #fcfcfd;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
     border-radius: 10px;
     display: inline-flex;
@@ -414,7 +435,7 @@
   }
 
   .add-knowledge-card:hover {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 12px #d0d3d8;
   }
 
   .knowledge-card {
@@ -424,11 +445,11 @@
     border-radius: 10px;
     background: #fcfcfd;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
   }
   .knowledge-card:hover {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 12px #d0d3d8;
     .knowledge-btn {
       display: block;
     }
@@ -459,7 +480,7 @@
   }
   .model-icon:hover{
     color: #000000;
-    background-color: rgba(0,0,0,0.05);
+    background-color: #e9ecf2;
     border: none;
   }
   .ant-dropdown-link{

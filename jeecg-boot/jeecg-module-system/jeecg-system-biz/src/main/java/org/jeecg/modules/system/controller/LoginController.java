@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
@@ -25,6 +26,7 @@ import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysRoleIndex;
+import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.*;
@@ -49,6 +51,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author scott
@@ -89,7 +92,7 @@ public class LoginController {
 	 * @param sysLoginModel
 	 * @return
 	 */
-	@Operation(summary = "登录接口")
+	@Operation(summary="登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
 		Result<JSONObject> result = new Result<JSONObject>();
@@ -429,7 +432,7 @@ public class LoginController {
 	 * @param jsonObject
 	 * @return
 	 */
-	@Operation(summary = "手机号登录接口")
+	@Operation(summary="手机号登录接口")
 	@PostMapping("/phoneLogin")
 	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
 		Result<JSONObject> result = new Result<JSONObject>();
@@ -548,7 +551,7 @@ public class LoginController {
 	 * @param response
 	 * @param key
 	 */
-	@Operation(summary = "获取验证码")
+	@Operation(summary="获取验证码")
 	@GetMapping(value = "/randomImage/{key}")
 	public Result<String> randomImage(HttpServletResponse response,@PathVariable("key") String key){
 		Result<String> res = new Result<String>();

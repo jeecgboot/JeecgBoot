@@ -1,7 +1,7 @@
 package org.jeecg.modules.system.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
@@ -36,7 +36,7 @@ public class DuplicateCheckController {
 	 * @return
 	 */
 	@RequestMapping(value = "/check", method = RequestMethod.GET)
-	@Operation(summary ="重复校验接口")
+	@Operation(summary="重复校验接口")
 	public Result<String> doDuplicateCheck(DuplicateCheckVo duplicateCheckVo, HttpServletRequest request) {
 		log.debug("----duplicate check------："+ duplicateCheckVo.toString());
 		

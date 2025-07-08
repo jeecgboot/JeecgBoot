@@ -2,7 +2,6 @@
   <div class="p-2">
     <BasicModal destroyOnClose @register="registerModal" :canFullscreen="false" width="600px" :title="title" @ok="handleOk" @cancel="handleCancel">
       <div class="flex header">
-        <span>所选知识库必须使用相同的 Embedding 模型</span>
         <a-input
           @pressEnter="loadKnowledgeData"
           class="header-search"
@@ -19,7 +18,7 @@
                 <img class="checkbox-img" :src="knowledge" />
                 <span class="checkbox-name">{{ item.name }}</span>
               </div>
-              <a-checkbox v-model:checked="item.checked" @click.stop class="quantum-checker"> </a-checkbox>
+              <a-checkbox v-model:checked="item.checked" @click.stop class="quantum-checker" @change="(e)=>handleChange(e,item)"> </a-checkbox>
             </div>
           </a-card>
         </a-col>
@@ -91,6 +90,7 @@
        * 保存
        */
       async function handleOk() {
+        console.log("知识库确定选中的值",knowledgeData.value);
         emit('success', knowledgeIds.value, knowledgeData.value);
         handleCancel();
       }
@@ -103,16 +103,17 @@
       }
 
       //复选框选中事件
-      const handleSelect = (item) => {
+      function handleSelect(item){
         let id = item.id;
         const target = appKnowledgeOption.value.find((item) => item.id === id);
         if (target) {
           target.checked = !target.checked;
         }
         //存放选中的知识库的id
-        if (knowledgeIds.value.length == 0) {
+        if (!knowledgeIds.value || knowledgeIds.value.length == 0) {
           knowledgeIds.value.push(id);
           knowledgeData.value.push(item);
+          console.log("知识库勾选或取消勾选复选框的值",knowledgeData.value);
           return;
         }
         let findIndex = knowledgeIds.value.findIndex((item) => item === id);
@@ -123,7 +124,8 @@
           knowledgeIds.value.splice(findIndex, 1);
           knowledgeData.value.splice(findIndex, 1);
         }
-      };
+        console.log("知识库勾选或取消勾选复选框的值",knowledgeData.value);
+      }
 
       /**
        * 加载知识库
@@ -176,6 +178,25 @@
         });
       }
 
+      /**
+       * 复选框选中事件
+       *
+       * @param e
+       * @param item
+       */
+      function handleChange(e, item) {
+        if (e.target.checked) {
+          knowledgeIds.value.push(item.id);
+          knowledgeData.value.push(item);
+        } else {
+          let findIndex = knowledgeIds.value.findIndex((val) => val === item.id);
+          if (findIndex != -1) {
+            knowledgeIds.value.splice(findIndex, 1);
+            knowledgeData.value.splice(findIndex, 1);
+          }
+        }
+      }
+
       return {
         registerModal,
         title,
@@ -193,6 +214,7 @@
         searchText,
         loadKnowledgeData,
         handleClearClick,
+        handleChange,
       };
     },
   };
@@ -222,7 +244,7 @@
   .list-footer {
     position: absolute;
     bottom: 0;
-    left: 260px;
+    right: 10px;
   }
   .checkbox-card {
     margin-bottom: 10px;

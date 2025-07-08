@@ -84,7 +84,7 @@
     tableProps: {
       api: ${sub.entityName?uncap_first}List,
       columns: ${sub.entityName?uncap_first}Columns,
-      canResize: false,
+      canResize: true,
       useSearchForm: false,
       actionColumn: {
         width: 180,

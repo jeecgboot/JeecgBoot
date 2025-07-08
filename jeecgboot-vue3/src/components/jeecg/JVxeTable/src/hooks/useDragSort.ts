@@ -23,7 +23,12 @@ export function useDragSort(props: JVxeTableProps, methods: JVxeTableMethods) {
     function createSortable() {
       let xTable = methods.getXTable();
       // let dom = xTable.$el.querySelector('.vxe-table--fixed-wrapper .vxe-table--body tbody')
-      let dom = xTable.$el.querySelector('.body--wrapper>.vxe-table--body tbody');
+      // let dom = xTable.$el.querySelector('.body--wrapper>.vxe-table--body tbody');
+      let dom = xTable.$el.querySelector('.vxe-table--body-inner-wrapper > .vxe-table--body tbody');
+      if (!dom) {
+        console.warn('[JVxeTable] 拖拽排序初始化失败，可能是vxe-table升级导致的版本不兼容。');
+        return;
+      }
       let startChildren = [];
       sortable2 = Sortable.create(dom as HTMLElement, {
         handle: '.drag-btn',

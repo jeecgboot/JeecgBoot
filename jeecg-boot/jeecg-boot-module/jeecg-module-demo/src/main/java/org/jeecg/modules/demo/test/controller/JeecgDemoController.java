@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,7 +60,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * @param req
      * @return
      */
-    @Operation(summary = "获取所有Demo数据列表")
+    @Operation(summary = "获取Demo数据列表")
     @GetMapping(value = "/list")
     @PermissionData(pageComponent = "jeecg/JeecgDemoList")
     public Result<?> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
