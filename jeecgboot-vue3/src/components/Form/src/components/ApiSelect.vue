@@ -123,9 +123,22 @@
         }, [] as OptionsItem[]);
       });
       // update-begin--author:liaozhiyang---date:20240823---for：【issues/6999】ApiSelect联动更新字段不生效（代码还原）
-      watchEffect(() => {
-        props.immediate && fetch();
-      });
+      // update-begin--author:liaozhiyang---date:20250707---for:【issues/8527】apiSelect分页加载重复请求
+      watch(
+        () => props.immediate,
+        () => {
+          props.immediate && fetch();
+        },
+        { immediate: true }
+      );
+      watch(
+        () => [props.api, props.pageConfig, props.resultField, props.params],
+        () => {
+          props.immediate && fetch();
+        },
+        { deep: true }
+      );
+      // update-end--author:liaozhiyang---date:20250707---for:【issues/8527】apiSelect分页加载重复请求
       // update-end--author:liaozhiyang---date:20240823---for：【issues/6999】ApiSelect联动更新字段不生效（代码还原）
 
       watch(
