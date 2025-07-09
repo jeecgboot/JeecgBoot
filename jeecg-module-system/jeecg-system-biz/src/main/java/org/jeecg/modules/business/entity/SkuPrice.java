@@ -99,6 +99,12 @@ public class SkuPrice implements Serializable {
     @Dict(dictTable = "currency", dicText = "code", dicCode = "id")
     @ApiModelProperty(value = "币种ID")
     private java.lang.String currencyId;
+    /**
+     * 购买单位
+     */
+    @Excel(name = "购买单位", width = 15, dictTable = "unit", dicText = "name", dicCode = "id")
+    @ApiModelProperty(value = "购买单位")
+    private Integer unit;
 
     public String toString() {
         return String.format("%s, %s[%d]", price, discountedPrice, threshold);

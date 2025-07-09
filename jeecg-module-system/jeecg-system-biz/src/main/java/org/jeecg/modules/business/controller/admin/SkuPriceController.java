@@ -130,6 +130,9 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
         if (sameContentExists) {
             return Result.error("相同内容的售价记录已存在，仅日期不同，请勿重复添加。");
         }
+        if (skuPrice.getUnit() <= 0) {
+            return Result.error("购买单位 unit 必须大于 0");
+        }
 
         if (skuPrice.getPrice() != null) {
             skuPrice.setPrice(skuPrice.getPrice().setScale(2, RoundingMode.HALF_UP));
