@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service.impl.purchase;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,6 +17,7 @@ import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
 import org.jeecg.modules.message.handle.enums.SendMsgTypeEnum;
 import org.jeecg.modules.message.util.PushMsgUtil;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +36,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.jeecg.modules.business.entity.Invoice.InvoiceType.COMPLETE;
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.PURCHASE;
 
 /**
@@ -68,6 +69,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     private IInvoiceNumberReservationService invoiceNumberReservationService;
     @Autowired
     private ISecurityService securityService;
+    @Autowired
+    private ISysUserService sysUserService;
 
     /**
      * Directory where payment documents are put
@@ -680,4 +683,17 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     public List<PurchaseOrder> getPurchasesByInvoices(List<Invoice> invoices) {
         return purchaseOrderMapper.getPurchasesByInvoices(invoices);
     }
+    @Override
+    public void queryOrderByRole(Page<PurchaseOrderPage> page, String clientId) {
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        List<String> roles = sysUserService.getRole(loginUser.getUsername());
+        log.info("User {} is querying purchase orders for client ID: {}, user roles {}", loginUser.getUsername(), clientId, roles);
+        String role = roles.contains("accountant") ? "accountant" :
+                roles.contains("Sales") ? "Sales" :
+                        roles.contains("admin") ? "admin" : "unknown";
+        IPage<PurchaseOrderPage> result = purchaseOrderMapper.queryOrderByRole(page, clientId, role);
+        page.setRecords(result.getRecords());
+        page.setTotal(result.getTotal());
+    }
+
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Invoice;
 import org.jeecg.modules.business.entity.PlatformOrder;
@@ -113,6 +114,8 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     InvoiceMetaData getMetaDataFromInvoiceNumbers(@Param("invoiceNumber") String invoiceNumber);
 
     List<PurchaseOrderPage> getPage(@Param("offset") long offset, @Param("size") long size, @Param("clientId") String clientId);
+
+    IPage<PurchaseOrderPage> queryOrderByRole(IPage<PurchaseOrderPage> page, @Param("clientId") String clientId, @Param("role") String role);
 
     long countPurchaseOrders();
 

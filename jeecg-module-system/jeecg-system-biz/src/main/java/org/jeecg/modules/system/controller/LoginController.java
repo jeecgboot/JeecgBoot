@@ -126,6 +126,8 @@ public class LoginController {
 			// 根据用户名查询用户信息
 			SysUser sysUser = sysUserService.getUserByName(username);
 			JSONObject obj=new JSONObject();
+			List<String> roles = sysUserService.getRole(username);
+			obj.put("roles", roles);
 			log.info("1 获取用户信息耗时（用户基础信息）" + (System.currentTimeMillis() - start) + "毫秒");
 
 			//update-begin---author:scott ---date:2022-06-20  for：vue3前端，支持自定义首页-----------

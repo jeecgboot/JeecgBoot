@@ -127,6 +127,23 @@
         ORDER BY po.create_time DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
+    <select id="queryOrderByRole" resultType="org.jeecg.modules.business.vo.PurchaseOrderPage">
+        SELECT * FROM purchase_order_view
+        <where>
+            <if test="clientId != null and clientId != ''">
+                AND client_id = #{clientId}
+            </if>
+            <choose>
+                <when test="role == 'accountant'">
+                    AND ordered = 0 AND paid_amount &gt; 0 AND payment_document IS NOT NULL AND COALESCE(payment_document, '') != ''
+                </when>
+                <when test="role == 'Sales'">
+                    AND (ordered = 0 OR (ordered = 1 AND create_time &gt; DATE_SUB(NOW(), INTERVAL 1 MONTH)))
+                </when>
+            </choose>
+        </where>
+        ORDER BY create_time DESC
+    </select>
     <select id="countPurchaseOrders" resultType="java.lang.Long">
         SELECT COUNT(*)
         FROM purchase_order
