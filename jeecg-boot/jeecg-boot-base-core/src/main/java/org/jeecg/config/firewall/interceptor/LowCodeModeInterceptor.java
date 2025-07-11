@@ -11,7 +11,6 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.config.JeecgBaseConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -50,14 +49,12 @@ public class LowCodeModeInterceptor implements HandlerInterceptor {
     @Resource
     private JeecgBaseConfig jeecgBaseConfig;
     
-    @Autowired(required = false)
-    private CommonAPI commonAPI;
-
     /**
      * 在请求处理之前进行调用
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        CommonAPI commonAPI = null;
         log.info("低代码模式，拦截请求路径：" + request.getRequestURI());
         
         //1、验证是否开启低代码开发模式控制
