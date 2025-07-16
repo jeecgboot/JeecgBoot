@@ -2,14 +2,14 @@
 <template>
   <div class="JPopup components-input-demo-presuffix" v-if="avalid">
     <!--输入框-->
-    <a-input @click="handleOpen" :value="innerShowText || showText" :placeholder="placeholder" readOnly v-bind="attrs">
+    <a-input @click="handleOpen" :value="innerShowText || showText" :placeholder="placeholder" v-bind="attrs">
       <template #prefix>
         <Icon icon="ant-design:cluster-outlined"></Icon>
       </template>
       <!-- update-begin-author:taoyan date:2022-5-31 for: VUEN-1157 popup 选中后，有两个清除图标；后边这个清除，只是把输入框中数据清除，实际值并没有清除 -->
-      <!-- <template #suffix>
-                <Icon icon="ant-design:close-circle-outlined" @click="handleEmpty" title="清空" v-if="showText"></Icon>
-            </template>-->
+      <template #suffix>
+        <Icon icon="ant-design:close-circle-outlined" @click="handleEmpty" title="清空" v-if="showText"></Icon>
+      </template>
       <!-- update-begin-author:taoyan date:2022-5-31 for: VUEN-1157 popup 选中后，有两个清除图标；后边这个清除，只是把输入框中数据清除，实际值并没有清除 -->
     </a-input>
     <!-- update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
@@ -117,7 +117,22 @@
        * TODO 清空
        */
       function handleEmpty() {
-        showText.value = '';
+        // showText.value = '';
+        // update-begin--author:huoshicang---date:20250716
+        // 匹配popup设置的回调值
+        let { fieldConfig } = props;
+        // 初始化数据
+        let values = {};
+        for (let item of fieldConfig) {
+          item.target.split(',').forEach((target) => {
+            // 设置默认值为空字符串
+            values[target] = '';
+          });
+        }
+        props.formElRef && props.formElRef.setFieldsValue(values);
+        props.setFieldsValue && props.setFieldsValue(values);
+        emit('popUpChange', values);
+        // update-end--author:huoshicang---date:20250716
       }
 
       /**
