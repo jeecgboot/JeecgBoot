@@ -1,5 +1,6 @@
 package org.jeecg.config.init;
 
+import io.undertow.UndertowOptions;
 import io.undertow.server.DefaultByteBufferPool;
 import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.websockets.jsr.WebSocketDeploymentInfo;
@@ -26,6 +27,11 @@ public class UndertowConfiguration implements WebServerFactoryCustomizer<Underto
 
     @Override
     public void customize(UndertowServletWebServerFactory factory) {
+        // 设置 Undertow 服务器参数（底层网络配置）
+        factory.addBuilderCustomizers(builder -> {
+            builder.setServerOption(UndertowOptions.MAX_HEADER_SIZE, 65536);      // header 最大64KB
+            builder.setServerOption(UndertowOptions.MAX_PARAMETERS, 10000);       // 最大参数数
+        });
         factory.addDeploymentInfoCustomizers(deploymentInfo -> {
             
             WebSocketDeploymentInfo webSocketDeploymentInfo = new WebSocketDeploymentInfo();
