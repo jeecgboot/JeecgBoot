@@ -135,7 +135,7 @@
             </if>
             <choose>
                 <when test="role == 'accountant'">
-                    AND ordered = 0 AND paid_amount &gt; 0 AND payment_document IS NOT NULL AND COALESCE(payment_document, '') != ''
+                    AND ordered = 0 AND (paid_amount &gt; 0 OR TRIM(COALESCE(payment_document, '')) != '')
                 </when>
                 <when test="role == 'Sales'">
                     AND (ordered = 0 OR (ordered = 1 AND create_time &gt; DATE_SUB(NOW(), INTERVAL 1 MONTH)))
