@@ -38,6 +38,7 @@ import org.jeecg.modules.message.handle.impl.SystemSendMsgHandle;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
+import org.jeecg.modules.system.service.ISysRoleService;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
@@ -88,6 +89,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private SysPermissionMapper sysPermissionMapper;
 	@Autowired
 	private SysUserRoleMapper sysUserRoleMapper;
+	@Autowired
+	private ISysRoleService sysRoleService;
 	@Autowired
 	private SysUserDepartMapper sysUserDepartMapper;
 	@Autowired
@@ -522,6 +525,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		return userRoleList;
 		//update-end---author:wangshuai ---date:20230220  for：[QQYUN-3980]组织管理中 职位功能 职位表加租户id 加职位-用户关联表------------
 	}
+
+	/**
+	 * 根据角色编码查询用户
+	 * @param roleCode 角色编码
+	 * @return 拥有该角色的用户列表
+	 */
+	@Override
+	public List<SysUser> getUsersByRoleCode(String roleCode) {
+		SysRole role = sysRoleService.getOne(
+				new LambdaQueryWrapper<SysRole>().eq(SysRole::getRoleCode, roleCode)
+		);
+		if (role == null) return Collections.emptyList();
+		return userMapper.getUserByRoleId(new Page<>(1, 100), role.getId(), null).getRecords();
+
+	}
+
 
 
 	@Override

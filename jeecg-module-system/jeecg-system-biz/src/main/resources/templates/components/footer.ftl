@@ -28,7 +28,7 @@
                                 <td style="color:#EF5A1A;">WIA SOURCING</td>
                             </tr>
                             <tr>
-                                <td>© 2018/2023 par WIA Sourcing Agency.</td>
+                                <td>© 2018/2025 par WIA Sourcing Agency.</td>
                             </tr>
                             <tr>
                                 <td>TOUS DROITS RÉSERVÉS©</td>
