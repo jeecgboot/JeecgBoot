@@ -72,7 +72,7 @@
     "vue": "^3.5.13",
     "vue-cropper": "^0.6.5",
     "vue-cropperjs": "^5.0.0",
-    "vue-i18n": "^9.14.2",
+    "vue-i18n": "^9.14.5",
     "vue-infinite-scroll": "^2.0.2",
     "vue-print-nb-jeecg": "^1.0.12",
     "vue-router": "^4.5.0",
