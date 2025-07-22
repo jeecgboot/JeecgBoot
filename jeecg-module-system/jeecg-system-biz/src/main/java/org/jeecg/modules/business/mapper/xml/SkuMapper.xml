@@ -215,6 +215,7 @@
                       ,2)
                   ), sp.price
                )                                                             as sku_price,
+               sp.unit AS unit,
                sp.threshold                                                  as discount_moq,
                IF(sp.currency_id = (SELECT id FROM rmb_id),
                   (
@@ -484,6 +485,7 @@
                   ROUND(sp.price / (SELECT rate FROM latest_exchange_rate), 2),
                   sp.price) AS sku_price,
                sp.threshold AS discount_moq,
+               sp.unit AS unit,
                IF(sp.currency_id = (SELECT id FROM rmb_id),
                   ROUND(sp.discounted_price / (SELECT rate FROM latest_exchange_rate), 2),
                   sp.discounted_price) AS discounted_price,

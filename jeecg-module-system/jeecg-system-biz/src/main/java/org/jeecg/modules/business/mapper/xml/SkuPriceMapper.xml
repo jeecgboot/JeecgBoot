@@ -15,7 +15,7 @@
         WHERE sku_id = #{mainId}
     </select>
 	<select id="getLatestBySkuId" resultType="org.jeecg.modules.business.entity.SkuPrice">
-		SELECT date, price, threshold, discounted_price, currency_id
+		SELECT date, price, threshold, discounted_price, currency_id, unit
 		FROM sku_price
 		WHERE sku_id = #{skuId}
 		ORDER BY date DESC

@@ -125,7 +125,8 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                 existing.getPrice().compareTo(skuPrice.getPrice()) == 0 &&
                         existing.getDiscountedPrice().compareTo(skuPrice.getDiscountedPrice()) == 0 &&
                         existing.getThreshold().equals(skuPrice.getThreshold()) &&
-                        existing.getCurrencyId().equals(skuPrice.getCurrencyId())
+                        existing.getCurrencyId().equals(skuPrice.getCurrencyId())&&
+                        existing.getUnit().equals(skuPrice.getUnit())
         );
         if (sameContentExists) {
             return Result.error("相同内容的售价记录已存在，仅日期不同，请勿重复添加。");
@@ -274,7 +275,7 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                     boolean hasError = false;
                     String erpCode = null;
 
-                    for (int cellIndex = 0; cellIndex <= 5; cellIndex++) {
+                    for (int cellIndex = 0; cellIndex <= 6; cellIndex++) {
                         Cell cell = row.getCell(cellIndex, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
 
                         try {
@@ -302,23 +303,25 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                                     break;
                                 case 2: // Threshold
                                     Integer threshold;
-                                    if (cell.getCellType() == CellType.BLANK) {
+                                    if (cell == null || cell.getCellType() == CellType.BLANK) {
                                         threshold = null;
                                     } else if (cell.getCellType() == CellType.NUMERIC) {
                                         threshold = (int) cell.getNumericCellValue();
                                     } else {
-                                        threshold = Integer.parseInt(cell.getStringCellValue().trim());
+                                        String value = cell.getStringCellValue().trim();
+                                        threshold = value.isEmpty() ? null : Integer.parseInt(value);
                                     }
                                     skuPrice.setThreshold(threshold);
                                     break;
                                 case 3: // Discounted Price
                                     BigDecimal discountedPrice;
-                                    if (cell.getCellType() == CellType.BLANK) {
+                                    if (cell == null || cell.getCellType() == CellType.BLANK) {
                                         discountedPrice = null;
                                     } else if (cell.getCellType() == CellType.NUMERIC) {
                                         discountedPrice = BigDecimal.valueOf(cell.getNumericCellValue()).setScale(2, RoundingMode.UP);
                                     } else {
-                                        discountedPrice = new BigDecimal(cell.getStringCellValue().trim()).setScale(2, RoundingMode.UP);
+                                        String value = cell.getStringCellValue().trim();
+                                        discountedPrice = value.isEmpty() ? null : new BigDecimal(value).setScale(2, RoundingMode.UP);
                                     }
                                     skuPrice.setDiscountedPrice(discountedPrice);
                                     break;
@@ -343,6 +346,23 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                                         skuPrice.setCurrencyId(currencyId);
                                     }
                                     break;
+                                case 6: // Unit
+                                    int unit;
+                                    if (cell.getCellType() == CellType.BLANK) {
+                                        unit = 1;
+                                    } else if (cell.getCellType() == CellType.NUMERIC) {
+                                        unit = (int) cell.getNumericCellValue();
+                                    } else {
+                                        unit = Integer.parseInt(cell.getStringCellValue().trim());
+                                    }
+                                    if (unit <= 0) {
+                                        responses.addFailure("Row " + (rowIndex + 1), " Unit must be greater than 0");
+                                        hasError = true;
+                                    } else {
+                                        skuPrice.setUnit(unit);
+                                    }
+                                    break;
+
                             }
                         } catch (Exception ex) {
                             responses.addFailure("Row " + (rowIndex+1), " Failure at column " + cellIndex + ": " + ex.getMessage());

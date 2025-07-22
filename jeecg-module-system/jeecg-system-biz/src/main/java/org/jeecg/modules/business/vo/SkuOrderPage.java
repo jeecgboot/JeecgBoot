@@ -141,6 +141,14 @@ public class SkuOrderPage {
      */
     @ApiModelProperty(value = "SKU价格")
     private java.math.BigDecimal skuPrice;
+
+    /**
+     * SKU购买单位
+     */
+    @Excel(name = "购买单位", width = 15)
+    @ApiModelProperty(value = "SKU购买单位")
+    private Integer unit;
+
     /**
      * 优惠价起订量
      */

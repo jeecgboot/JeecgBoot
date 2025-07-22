@@ -2,6 +2,7 @@ CREATE OR REPLACE VIEW sku_current_price AS
 SELECT id                   AS price_id,
        sp.sku_id            AS sku_id,
        price                AS price,
+       unit                 AS unit,
        threshold            AS threshold,
        discounted_price     AS discounted_price,
        currency_id          AS currency_id,
