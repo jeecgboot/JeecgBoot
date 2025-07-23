@@ -16,9 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Description: 客户
@@ -66,24 +65,27 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     @Transactional
     public void updateMain(Client client, List<Shop> shopList) {
+        // 1. update the main client record
         clientMapper.updateById(client);
-
-        //1.先删除子表数据
-        shopMapper.deleteByMainId(client.getId());
-        clientSkuMapper.deleteByMainId(client.getId());
-
-        //2.子表数据重新插入
-        if (shopList != null && !shopList.isEmpty()) {
-            for (Shop entity : shopList) {
-                //外键设置
-                Shop existingShop = shopMapper.selectById(entity.getId());
-                entity.setOwnerId(client.getId());
-                if (existingShop == null) {
-                    shopMapper.insert(entity);
-                } else {
-                    shopMapper.updateById(entity);
-                }
-                entity.setOwnerId(client.getId());
+        // 2. Fetch all existing shop records related to this client from db
+        List<Shop> dbShops = shopMapper.selectByMainId(client.getId());
+        Map<String, Shop> dbShopMap = dbShops.stream()
+                .collect(Collectors.toMap(Shop::getId, s -> s));
+        // 3. Insert or update each incoming shop
+        Set<String> incomingIds = new HashSet<>();
+        for (Shop shop : shopList) {
+            shop.setOwnerId(client.getId());
+            incomingIds.add(shop.getId());
+            if (dbShopMap.containsKey(shop.getId())) {
+                shopMapper.updateById(shop);
+            } else {
+                shopMapper.insert(shop);
+            }
+        }
+        // 4. Remove shops from the db that are no longer included in the incoming list
+        for (Shop dbShop : dbShops) {
+            if (!incomingIds.contains(dbShop.getId())) {
+                shopMapper.deleteById(dbShop.getId());
             }
         }
     }
