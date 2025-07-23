@@ -470,6 +470,11 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
+    public List<String> fetchOrdersWithProductAvailableByOrders(List<String> orderIds) {
+        return platformOrderMap.fetchOrdersWithProductAvailableByOrders(orderIds);
+    }
+
+    @Override
     public List<PlatformOrder> fetchOrdersWithMissingStock(LocalDateTime start) {
         return platformOrderMap.fetchOrdersWithMissingStock(start);
     }
