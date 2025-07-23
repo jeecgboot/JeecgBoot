@@ -919,6 +919,17 @@
             AND po.erp_status IN ('1', '2')
         ORDER BY po.order_time;
     </select>
+    <select id="fetchOrdersWithProductAvailableByOrders" resultType="java.lang.String">
+        SELECT po.id
+        FROM platform_order po
+        WHERE (po.product_available = 1
+            OR po.virtual_product_available = 1)
+            AND po.erp_status &lt;&gt; 5
+            AND po.id IN
+            <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+                #{orderId}
+            </foreach>;
+    </select>
     <select id="fetchOrdersWithMissingStock" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT po.*
         FROM platform_order po

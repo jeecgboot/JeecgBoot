@@ -205,6 +205,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrder> fetchByIds(@Param("orderIds") List<String> orderNumbers);
 
     List<PlatformOrder> fetchOrdersWithProductAvailable();
+    List<String> fetchOrdersWithProductAvailableByOrders(@Param("orderIds") List<String> orderIds);
 
     List<PlatformOrder> fetchOrdersWithMissingStock(@Param("start") LocalDateTime start);
 

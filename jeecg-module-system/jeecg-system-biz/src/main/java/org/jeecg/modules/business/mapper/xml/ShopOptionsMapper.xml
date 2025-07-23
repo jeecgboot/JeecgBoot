@@ -52,4 +52,22 @@
     ORDER BY internal_code, client_id, erp_code
     LIMIT #{offset}, #{limit};
 </select>
+<select id="findByClientId" resultType="org.jeecg.modules.business.entity.ShopOptions">
+    SELECT * FROM shop_options
+    JOIN shop s ON shop_options.shop_id = s.id
+    WHERE s.owner_id = #{clientId}
+    AND s.active = 1;
+</select>
+<select id="getStockBypassByOrder" resultType="org.jeecg.modules.business.vo.OrderBypassStock">
+    SELECT po.id as order_id,
+           so.is_self_ignore_stock
+    FROM shop_options so
+    JOIN shop s ON so.shop_id = s.id
+    JOIN platform_order po ON s.id = po.shop_id
+    WHERE s.active = 1
+    AND po.id IN
+    <foreach item="orderId" index="index" collection="orderIds" open="(" separator="," close=")">
+        #{orderId}
+    </foreach>
+</select>
 </mapper>
