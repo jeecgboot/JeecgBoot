@@ -10,7 +10,6 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
-import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
 import org.springdoc.core.filters.GlobalOpenApiMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,30 +59,29 @@ public class Swagger3Config implements WebMvcConfigurer {
         return method -> method.isAnnotationPresent(Operation.class);
     }
 
-    @Bean
-    public GlobalOpenApiCustomizer globalOpenApiCustomizer() {
-        return openApi -> {
-            // 全局添加鉴权参数
-            if (openApi.getPaths() != null) {
-                openApi.getPaths().forEach((path, pathItem) -> {
-                    //log.debug("path: {}", path);
-                    // 检查当前路径是否在排除列表中
-                    boolean isExcluded = excludedPaths.stream().anyMatch(excludedPath ->
-                            excludedPath.equals(path) ||
-                                    (excludedPath.endsWith("**") && path.startsWith(excludedPath.substring(0, excludedPath.length() - 2)))
-                    );
-
-                    if (!isExcluded) {
-                        // 接口添加鉴权参数
-                        pathItem.readOperations()
-                                .forEach(operation ->
-                                        operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
-                                );
-                    }
-                });
-            }
-        };
-    }
+    //TODO 暂时注释掉，for：【issues/8638】springboot3分支，knife4j不能正确显示文档，但是swagger-ui和v3/api-docs正常 #8638
+//    @Bean
+//    public GlobalOpenApiCustomizer globalOpenApiCustomizer() {
+//        return openApi -> {
+//            // 全局添加鉴权参数
+//            if (openApi.getPaths() != null) {
+//                openApi.getPaths().forEach((path, pathItem) -> {
+//                    //log.debug("path: {}", path);
+//                    // 检查当前路径是否在排除列表中
+//                    boolean isExcluded = excludedPaths.stream().anyMatch(
+//                            excludedPath -> excludedPath.equals(path) || (excludedPath.endsWith("**") && path.startsWith(excludedPath.substring(0, excludedPath.length() - 2)))
+//                    );
+//
+//                    if (!isExcluded) {
+//                        // 接口添加鉴权参数
+//                        pathItem.readOperations().forEach(operation ->
+//                                operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
+//                        );
+//                    }
+//                });
+//            }
+//        };
+//    }
 
     @Bean
     public OpenAPI customOpenAPI() {
