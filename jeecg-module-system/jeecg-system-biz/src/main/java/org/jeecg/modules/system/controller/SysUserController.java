@@ -1877,4 +1877,23 @@ public class SysUserController {
             return Result.error(404,"User code not found");
         return Result.ok(sysUser.getCode());
     }
+    /**
+     * 获取WIA员工的马帮账户号
+     * @return
+     */
+    @GetMapping(value = "/getWiaMabangUsername")
+    public Result<List<Map<String, String>>> getWiaMabangUsername() {
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("org_code", "A02").isNotNull("mabang_username");
+        queryWrapper.select("mabang_username");
+        queryWrapper.orderByAsc("mabang_username");
+        List<SysUser> list = sysUserService.list(queryWrapper);
+        List<Map<String, String>> result = list.stream()
+                .map(user -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("mabang_username", user.getMabangUsername());
+                    return map;
+                }).collect(Collectors.toList());
+        return Result.OK(result);
+    }
 }
