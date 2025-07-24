@@ -471,6 +471,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
 
     @Override
     public List<String> fetchOrdersWithProductAvailableByOrders(List<String> orderIds) {
+        if(orderIds == null || orderIds.isEmpty())
+            return new ArrayList<>();
         return platformOrderMap.fetchOrdersWithProductAvailableByOrders(orderIds);
     }
 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,9 @@ public class ShopOptionsServiceImpl extends ServiceImpl<ShopOptionsMapper, ShopO
 
     @Override
     public List<OrderBypassStock> getStockBypassByOrder(List<String> orderIds) {
+        if(orderIds == null || orderIds.isEmpty()) {
+            return new ArrayList<>();
+        }
         return shopOptionsMapper.getStockBypassByOrder(orderIds);
     }
 }
