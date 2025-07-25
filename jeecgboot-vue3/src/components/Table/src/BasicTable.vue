@@ -269,6 +269,9 @@
       const getBindValues = computed(() => {
         const dataSource = unref(getDataSourceRef);
         let propsData: Recordable = {
+          // date-begin--author:liaozhiyang---date:20250716---for：【issues/8564】basicTale的TableLayout换成auto不生效
+          tableLayout: 'fixed',
+          // date-begin--author:liaozhiyang---date:20250716---for：【issues/8564】basicTale的TableLayout换成auto不生效
           // ...(dataSource.length === 0 ? { getPopupContainer: () => document.body } : {}),
           ...attrs,
           customRow,
@@ -278,7 +281,6 @@
           ...unref(getHeaderProps),
           scroll: unref(getScrollRef),
           loading: unref(getLoading),
-          tableLayout: 'fixed',
           rowSelection: unref(getRowSelectionRef),
           rowKey: unref(getRowKey),
           columns: toRaw(unref(getViewColumns)),

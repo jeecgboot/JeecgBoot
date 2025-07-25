@@ -83,8 +83,16 @@ JeecgBoot低代码平台，可以应用在任何J2EE项目的开发中，支持�
 AI 应用平台介绍
 -----------------------------------
 
+一个全栈式 AI 开发平台，旨在帮助开发者快速构建和部署个性化的 AI 应用。
+
 JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
-其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。 [详细专题介绍，请点击查看](README-AI.md)
+其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。 
+
+- [详细专题介绍，请点击查看](README-AI.md)
+
+- AI视频介绍
+
+[![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
 
 
 为什么选择JeecgBoot?
