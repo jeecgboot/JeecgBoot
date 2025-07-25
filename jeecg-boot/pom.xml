@@ -43,7 +43,7 @@
         <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
 		<commonmark.version>0.17.0</commonmark.version>
-		<knife4j-spring-boot-starter.version>4.5.0</knife4j-spring-boot-starter.version>
+		<knife4j-spring-boot-starter.version>4.6.0</knife4j-spring-boot-starter.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
