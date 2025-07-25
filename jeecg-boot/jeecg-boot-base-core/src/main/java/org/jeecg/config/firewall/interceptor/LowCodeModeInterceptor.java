@@ -11,7 +11,6 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.config.JeecgBaseConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 

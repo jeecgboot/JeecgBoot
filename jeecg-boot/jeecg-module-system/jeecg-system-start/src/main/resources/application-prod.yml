@@ -1,6 +1,7 @@
 server:
   port: 8080
   undertow:
+    decode-url: true # 启用URL解码
     worker-threads: 16
     buffers:
       websocket: 8192
