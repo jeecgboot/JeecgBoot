@@ -247,6 +247,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrdersWithProductAvailable();
 
+    List<String> fetchOrdersWithProductAvailableByOrders(List<String> orderIds);
+
     List<PlatformOrder> fetchOrdersWithMissingStock(LocalDateTime start);
 
     List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);

@@ -261,7 +261,8 @@ public class PlatformOrderShippingInvoiceService {
     public InvoiceMetaData makeManualCompleteInvoice(ManualInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
-        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.getClientID(), null, param.getOrderIds(), param.getType(), null, null, param.getOrdersWithStock());
+        List<String> ordersWithStock = platformOrderService.fetchOrdersWithProductAvailableByOrders(param.getOrdersWithStock());
+        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.getClientID(), null, param.getOrderIds(), param.getType(), null, null, ordersWithStock);
         return getInvoiceMetaDataAndInsert(username, invoice);
     }
 

@@ -2,6 +2,7 @@ package org.jeecg.modules.business.controller.admin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -184,4 +185,12 @@ public class ShopOptionsController extends JeecgController<ShopOptions, IShopOpt
         return super.importExcel(request, response, ShopOptions.class);
     }
 
+	@GetMapping(value = "/findByClientId")
+	public Result<?> findByClientId(@RequestParam(name = "clientID") String clientId) {
+		Map<String, ShopWithOptions> shopWithOptionsMapByShopId = shopOptionsService.findByClientId(clientId);
+		if (shopWithOptionsMapByShopId == null || shopWithOptionsMapByShopId.isEmpty()) {
+			return Result.error(404, "");
+		}
+		return Result.OK(shopWithOptionsMapByShopId);
+	}
 }

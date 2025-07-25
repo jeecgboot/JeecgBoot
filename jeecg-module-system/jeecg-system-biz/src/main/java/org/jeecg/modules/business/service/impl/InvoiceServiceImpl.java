@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
+import static org.jeecg.modules.business.enums.FileExtensions.*;
 
 @Service
 @Slf4j
@@ -43,10 +44,14 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
 
+    @Value("${jeecg.path.creditInvoiceDir}")
+    private String CREDIT_INVOICE_LOCATION;
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String PURCHASE_INVOICE_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDir}")
     private String SHIPPING_INVOICE_LOCATION;
+    @Value("${jeecg.path.shippingInvoicePdfDir}")
+    private String SHIPPING_INVOICE_PDF_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String SHIPPING_INVOICE_DETAIL_LOCATION;
 
@@ -276,10 +281,22 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
      * @return
      */
     public boolean deleteInvoice(String invoiceNumber, String invoiceEntity) {
-        boolean invoiceDeleted = false, detailDeleted = false;
-
-        List<Path> invoicePathList = shippingInvoiceService.getPath(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name()) ? PURCHASE_INVOICE_LOCATION : SHIPPING_INVOICE_LOCATION, invoiceNumber, invoiceEntity);
+        boolean invoiceDeleted = false, detailDeleted = false, pdfDeleted = false;
+        String invoiceType = Invoice.getType(invoiceNumber);
+        StringBuilder dirPath = new StringBuilder();
+        if(invoiceType.equalsIgnoreCase(PURCHASE.name())) {
+            dirPath.append(PURCHASE_INVOICE_LOCATION);
+        } else if(invoiceType.equalsIgnoreCase(SHIPPING.name()) || invoiceType.equalsIgnoreCase(COMPLETE.name())) {
+            dirPath.append(SHIPPING_INVOICE_LOCATION);
+        } else if(invoiceType.equalsIgnoreCase(CREDIT.name())) {
+            dirPath.append(CREDIT_INVOICE_LOCATION);
+        } else {
+            log.error("Invalid invoice type : {}", invoiceType);
+            return false;
+        }
+        List<Path> invoicePathList = shippingInvoiceService.getPath(dirPath.toString(), invoiceNumber, invoiceEntity);
         List<Path> detailPathList = shippingInvoiceService.getPath(SHIPPING_INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
+        List<Path> pdfPathList = shippingInvoiceService.getAttachementPath(SHIPPING_INVOICE_PDF_LOCATION, invoiceNumber, EXTENSION.PDF.getExtension());
 
         if(invoicePathList.isEmpty()) {
             log.error("FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
@@ -300,7 +317,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             }
         }
         if(detailPathList.isEmpty()) {
-            log.error("DETAIL FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
+            if(invoiceType.equalsIgnoreCase(SHIPPING.name()) || invoiceType.equalsIgnoreCase(COMPLETE.name()))
+                log.error("DETAIL FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
+            else
+                detailDeleted = true;
         } else {
             for (Path path : detailPathList) {
                 log.info(path.toString());
@@ -317,7 +337,25 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 e.printStackTrace();
             }
         }
-        return invoiceDeleted && detailDeleted;
+        if(pdfPathList.isEmpty()) {
+            log.error("PDF FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
+        } else {
+            for (Path path : pdfPathList) {
+                log.info(path.toString());
+            }
+            try {
+                File pdfFile = new File(pdfPathList.get(0).toString());
+                if(pdfFile.delete()) {
+                    log.info("PDF file {} delete successful.", pdfPathList.get(0).toString());
+                    pdfDeleted = true;
+                } else {
+                    log.error("PDF file {} delete fail.", pdfPathList.get(0).toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return invoiceDeleted && detailDeleted && pdfDeleted;
     }
     public boolean deleteInvoiceFiles(List<Invoice> invoices) {
         boolean invoicesDeleted = true;

@@ -1,7 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ShippingInvoiceMapper;
@@ -24,6 +23,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.jeecg.modules.business.enums.FileExtensions.*;
+
 /**
  * @Description: 物流发票
  * @Author: jeecg-boot
@@ -36,21 +37,6 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
 
     @Autowired
     private ShippingInvoiceMapper shippingInvoiceMapper;
-    @Getter
-    private static enum EXTENSION {
-        XLSX(".xlsx"),
-        XLS(".xls"),
-        CSV(".csv"),
-        PDF(".pdf"),
-        JPG(".jpg"),
-        PNG(".png"),
-        JPEG(".jpeg");
-        private final String extension;
-
-        EXTENSION(String extension) {
-            this.extension = extension;
-        }
-    }
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String PURCHASE_INVOICE_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDir}")
@@ -138,6 +124,7 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
      * @param invoiceNumber
      * @return List of paths for the file but should only find one result
      */
+    @Override
     public List<Path> getPath(String dirPath, String invoiceNumber) {
         List<Path> pathList = new ArrayList<>();
         //Recursively list all files
@@ -161,6 +148,7 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
      * @param invoiceNumber
      * @return List of paths for the file but should only find one result
      */
+    @Override
     public List<Path> getPath(String dirPath, String invoiceNumber, String invoiceEntity) {
         List<Path> pathList = new ArrayList<>();
         //Recursively list all files
@@ -185,6 +173,7 @@ public class ShippingInvoiceServiceImpl extends ServiceImpl<ShippingInvoiceMappe
      * @param extension
      * @return List of paths for the file but should only find one result
      */
+    @Override
     public List<Path> getAttachementPath(String dirPath, String filename, String extension) {
         List<Path> pathList = new ArrayList<>();
         //Recursively list all files

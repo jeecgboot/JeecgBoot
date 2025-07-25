@@ -73,6 +73,8 @@ public class ShippingInvoiceFactory {
     @Autowired
     private ISavRefundService savRefundService;
     @Autowired
+    private IShopOptionsService shopOptionsService;
+    @Autowired
     private ISavRefundWithDetailService savRefundWithDetailService;
     @Autowired
     private ILogisticInsuranceService logisticInsuranceService;
@@ -245,6 +247,14 @@ public class ShippingInvoiceFactory {
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                          List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject, List<String> ordersWithStock) throws UserException {
         Client client = clientMapper.selectById(customerId);
+        List<OrderBypassStock> orderBypassStockList = shopOptionsService.getStockBypassByOrder(ordersWithStock);
+        List<String> ordersCanBypassStock = orderBypassStockList.stream()
+                .filter(order -> order.getIsSelfIgnoreStock() == true)
+                .map(OrderBypassStock::getOrderId)
+                .collect(Collectors.toList());
+        log.info("Orders {} aren't allowed to bypass stock", orderBypassStockList.stream()
+                .filter(order -> order.getIsSelfIgnoreStock() == false)
+                .map(OrderBypassStock::getOrderId).collect(Collectors.toList()));
         log.info("User {} is creating a complete invoice for customer {}", username, client.getInternalCode());
 
         log.info("Orders to be invoiced: {}", orderAndContent);
@@ -274,9 +284,8 @@ public class ShippingInvoiceFactory {
         List<String> orderIds = orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(toList());
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
         List<PromotionDetail> promotionDetails = new ArrayList<>();
-        List<String> clientsThatByPassStock = clientService.getClientsByCode(CLIENT_STOCK_BYPASS_LIST);
-        if(clientsThatByPassStock.contains(customerId) && ordersWithStock != null && !ordersWithStock.isEmpty()) {
-            orderIds = orderIds.stream().filter(orderId -> !ordersWithStock.contains(orderId)).collect(toList());
+        if(!ordersCanBypassStock.isEmpty()) {
+            orderIds = orderIds.stream().filter(orderId -> !ordersCanBypassStock.contains(orderId)).collect(toList());
         }
         if(!orderIds.isEmpty()){
             List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(orderIds);
