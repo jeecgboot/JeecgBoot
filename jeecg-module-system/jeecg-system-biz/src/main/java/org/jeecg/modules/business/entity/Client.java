@@ -206,7 +206,24 @@ public class Client implements Serializable {
     @Excel(name = "是否使用余额", width = 15, dicCode = "yn")
     @Dict(dicCode = "yn")
     @ApiModelProperty(value = "是否使用余额")
-    private String useBalance;
+    private Boolean useBalance;
+
+    public enum UseBalance {
+        YES(true, "是"),
+        NO(false, "否");
+        private final Boolean value;
+        private final String description;
+        UseBalance(Boolean value, String description) {
+            this.value = value;
+            this.description = description;
+        }
+        public Boolean getValue() {
+            return value;
+        }
+        public String getDescription() {
+            return description;
+        }
+    }
 
     public String fullName() {
         return firstName + " " + surname;
