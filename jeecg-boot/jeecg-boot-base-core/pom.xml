@@ -117,12 +117,6 @@
 			<version>${mybatis-plus.version}</version>
 		</dependency>
 		<!-- minidao -->
-		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
-			<version>${mybatis-plus.version}</version>
-		</dependency>
-		<!-- minidao -->
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>minidao-spring-boot-starter-jsqlparser-4.9</artifactId>
