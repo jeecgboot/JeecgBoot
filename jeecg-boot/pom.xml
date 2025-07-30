@@ -56,7 +56,8 @@
 		<dm8.version>8.1.1.49</dm8.version>
 		
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>2.1.0</jimureport-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>2.1.1</jimureport-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.1.0</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.10</minidao.version>
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.3.2</mybatis-plus.version>
@@ -448,13 +449,13 @@
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-echarts-starter</artifactId>
-				<version>2.1.0</version>
+				<version>2.1.1</version>
 			</dependency>
 			<!-- 积木BI大屏和仪表盘 -->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimubi-spring-boot-starter</artifactId>
-				<version>1.9.5</version>
+				<version>${jimubi-spring-boot-starter.version}</version>
 			</dependency>
 			<!-- AI集成 -->
 			<dependency>
