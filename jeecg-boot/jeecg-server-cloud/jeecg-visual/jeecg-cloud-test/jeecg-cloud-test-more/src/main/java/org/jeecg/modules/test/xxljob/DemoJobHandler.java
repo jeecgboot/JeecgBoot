@@ -3,10 +3,9 @@ package org.jeecg.modules.test.xxljob;
 
 
 import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.XxlJob;
-import com.xxl.job.core.log.XxlJobLogger;
-import com.xxl.job.core.util.ShardingUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import java.io.BufferedInputStream;
@@ -16,7 +15,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-
+import com.xxl.job.core.context.XxlJobHelper;
 
 /**
  * xxl-job定时任务测试
@@ -46,13 +45,14 @@ public class DemoJobHandler {
     @XxlJob("shardingJobHandler")
     public ReturnT<String> shardingJobHandler(String param) throws Exception {
 
-        // 分片参数
-        ShardingUtil.ShardingVO shardingVO = ShardingUtil.getShardingVo();
-        log.info("分片参数：当前分片序号 = {}, 总分片数 = {}", shardingVO.getIndex(), shardingVO.getTotal());
+        // 获取分片序号和总分片数
+        int shardIndex = XxlJobHelper.getShardIndex();
+        int shardTotal = XxlJobHelper.getShardTotal();
+        log.info("分片参数：当前分片序号 = {}, 总分片数 = {}", shardIndex, shardTotal);
 
         // 业务逻辑
-        for (int i = 0; i < shardingVO.getTotal(); i++) {
-            if (i == shardingVO.getIndex()) {
+        for (int i = 0; i < shardTotal; i++) {
+            if (i == shardIndex) {
                 log.info("第 {} 片, 命中分片开始处理", i);
             } else {
                 log.info("第 {} 片, 忽略", i);
@@ -98,9 +98,9 @@ public class DemoJobHandler {
         }
 
         if (exitValue == 0) {
-            return IJobHandler.SUCCESS;
+            return ReturnT.SUCCESS;
         } else {
-            return new ReturnT<String>(IJobHandler.FAIL.getCode(), "command exit value(" + exitValue + ") is failed");
+            return new ReturnT<String>(ReturnT.FAIL_CODE, "command exit value(" + exitValue + ") is failed");
         }
     }
 
