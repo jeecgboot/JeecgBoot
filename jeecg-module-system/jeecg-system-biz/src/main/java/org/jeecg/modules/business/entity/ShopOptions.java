@@ -54,18 +54,6 @@ public class ShopOptions implements Serializable {
     @ApiModelProperty(value = "店铺ID")
     @Dict(dictTable = "shop", dicText = "erp_code", dicCode = "id")
     private java.lang.String shopId;
-	/**是否用余额*/
-	@Excel(name = "是否使用余额", width = 15)
-    @ApiModelProperty(value = "是否使用余额")
-    private java.lang.Boolean useBalance;
-	/**是否可发票上显示账户余额*/
-	@Excel(name = "是否可发票上显示账户余额", width = 15)
-    @ApiModelProperty(value = "是否可发票上显示账户余额")
-    private java.lang.Boolean showBalance;
-	/**余额阈值 default: -1.00 no limit, 0.00 if balance must be positive*/
-	@Excel(name = "余额阈值", width = 15)
-    @ApiModelProperty(value = "余额阈值")
-    private java.lang.Integer balanceThreshold;
 	/**是否定时自动开票*/
 	@Excel(name = "是否定时自动开票", width = 15)
     @ApiModelProperty(value = "是否定时自动开票")

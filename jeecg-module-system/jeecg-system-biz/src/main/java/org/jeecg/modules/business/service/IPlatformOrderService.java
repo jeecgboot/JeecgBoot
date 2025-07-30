@@ -293,7 +293,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<String> getPlatformOrderIdsByInvoiceNumbers(List<String> invoiceNumbers);
 
-    List<PlatformOrderFront> listByClientAndShops(String clientId, List<String> shopIds, String startDate, String endDate, String invoicingMethod, Integer pageNo, Integer pageSize, List<String> warehouses, String order, String column);
+    Response<List<PlatformOrderFront>, String> listByClientAndShops(String clientId, List<String> shopIds, String startDate, String endDate, String invoicingMethod, Integer pageNo, Integer pageSize, List<String> warehouses, String order, String column);
 
     int countListByClientAndShops(String clientId, List<String> shopIDs, String start, String end, String invoicingMethod, List<String> warehouses);
 

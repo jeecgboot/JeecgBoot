@@ -17,6 +17,7 @@ public interface IShopService extends IService<Shop> {
 	public List<Shop> selectByMainId(String mainId);
 
     List<Shop> listByClient(String clientID);
+    List<Shop> listSelfInvoiceShopsByClient(String clientID);
     List<String> listIdByClient(String clientID);
 
     List<String> getShopIdsByClientAndType(List<String> clientIds, String clientType);

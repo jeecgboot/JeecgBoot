@@ -22,6 +22,8 @@ public interface ShopMapper extends BaseMapper<Shop> {
 
     List<Shop> selectByClient(@Param("clientID") String clientID);
 
+    List<Shop> selectSelfInvoiceShopsByClient(@Param("clientID") String clientID);
+
     List<String> selectShopIdByClient(@Param("clientID") String clientID);
 
     List<String> getShopIdsByClientAndType(@Param("clientIds") List<String> clientIds, @Param("type") String clientType);

@@ -83,9 +83,6 @@ public class ShopOptionsController extends JeecgController<ShopOptions, IShopOpt
 		List<ShopOptions> shopOptionsList = shopOptionsAddParam.getShopIds().stream().map(shopId -> {
 			ShopOptions shopOptions = new ShopOptions();
 			shopOptions.setShopId(shopId);
-			shopOptions.setUseBalance(shopOptionsAddParam.getUseBalance());
-			shopOptions.setShowBalance(shopOptionsAddParam.getShowBalance());
-			shopOptions.setBalanceThreshold(shopOptionsAddParam.getBalanceThreshold());
 			shopOptions.setIsAutoInvoice(shopOptionsAddParam.getIsAutoInvoice());
 			shopOptions.setIsChronologicalOrder(shopOptionsAddParam.getIsChronologicalOrder());
 			shopOptions.setIsBreakdownInvoice(shopOptionsAddParam.getIsBreakdownInvoice());

@@ -151,7 +151,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		 boolean isEmployee = securityService.checkIsEmployee();
 		 if (!isEmployee) {
-			 log.info("User {}, tried to access /skuWeight/updateBatch but is not authorized.", sysUser.getUsername());
+			 log.info("User {}, tried to access /skuWeight/deleteBatch but is not authorized.", sysUser.getUsername());
 			 return Result.error(403,"Forbidden.");
 		 }
 		 List<SkuWeight> weightsToDelete = skuWeightService.listByIds(ids);
@@ -234,7 +234,7 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 		  boolean isEmployee = securityService.checkIsEmployee();
 		  LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		  if(!isEmployee){
-			  log.info("User {}, tried to access /skuWeight/updateBatch but is not authorized.", sysUser.getUsername());
+			  log.info("User {}, tried to access /skuWeight/importExcel but is not authorized.", sysUser.getUsername());
 			  return Result.error(403,"Forbidden.");
 		  }
 		  String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
