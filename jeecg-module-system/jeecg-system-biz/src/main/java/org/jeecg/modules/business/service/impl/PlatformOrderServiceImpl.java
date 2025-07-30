@@ -604,6 +604,12 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
                 if(!logisticChannels.contains(po.getLogisticChannelName()))
                     logisticChannels.add(po.getLogisticChannelName());
             }
+            if(logisticChannels.isEmpty()) {
+                String message = "No order found for client: " + clientId + " in shops: " + String.join(", ", shopIds) + " with invoicing method: " + invoicingMethod + " between dates: " + startDate + " and " + endDate;
+                log.error(message);
+                response.setError(message);
+                return response;
+            }
             String message = "There are " + ordersWithInvalidLC.size() + " orders with invalid logistic channel: " + String.join(", ", logisticChannels) + ". Order IDs: " + String.join(", ", orderIds);
             log.error(message);
             response.setError(message);

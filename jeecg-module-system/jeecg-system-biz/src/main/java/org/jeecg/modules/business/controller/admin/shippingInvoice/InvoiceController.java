@@ -198,8 +198,11 @@ public class InvoiceController {
             return Result.error("Error 400 Bad Request");
         }
 
-        Response<List<PlatformOrderFront>, String> orders = platformOrderService.listByClientAndShops(clientId, shopIDs, start, end, type, pageNo, pageSize, warehouses, order, parsedColumn);
         int total = platformOrderService.countListByClientAndShops(clientId, shopIDs, start, end, type, warehouses);
+        if (total == 0) {
+            return Result.error(404, "No orders for selected client/shops");
+        }
+        Response<List<PlatformOrderFront>, String> orders = platformOrderService.listByClientAndShops(clientId, shopIDs, start, end, type, pageNo, pageSize, warehouses, order, parsedColumn);
         if(orders.getError() != null) {
             return Result.error(orders.getError());
         }
