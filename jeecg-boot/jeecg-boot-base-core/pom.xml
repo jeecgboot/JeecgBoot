@@ -111,10 +111,15 @@
 			<artifactId>mybatis-plus-boot-starter</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+			<version>${mybatis-plus.version}</version>
+		</dependency>
 		<!-- minidao -->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
-			<artifactId>minidao-spring-boot-starter</artifactId>
+			<artifactId>minidao-spring-boot-starter-jsqlparser-4.9</artifactId>
 		</dependency>
 
 		<!-- druid -->
