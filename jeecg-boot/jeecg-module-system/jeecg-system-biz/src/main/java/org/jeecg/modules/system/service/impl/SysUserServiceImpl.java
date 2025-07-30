@@ -353,23 +353,49 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	 */
 	@Override
 	public SysRoleIndex getDynamicIndexByUserRole(String username, String version) {
-		List<String> roles = sysUserRoleMapper.getRoleByUserName(username);
-		String componentUrl = RoleIndexConfigEnum.getIndexByRoles(roles);
-		SysRoleIndex roleIndex = new SysRoleIndex(componentUrl);
-		boolean isV3 = CommonConstant.VERSION_V3.equals(version);
+		SysRoleIndex roleIndex = new SysRoleIndex();
 		//只有 X-Version=v3 的时候，才读取sys_role_index表获取角色首页配置
-		if (isV3 && CollectionUtils.isNotEmpty(roles)) {
-			LambdaQueryWrapper<SysRoleIndex> routeIndexQuery = new LambdaQueryWrapper<>();
-			//用户所有角色
-			routeIndexQuery.in(SysRoleIndex::getRoleCode, roles);
-			//角色首页状态0：未开启  1：开启
-			routeIndexQuery.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
-			//优先级正序排序
-			routeIndexQuery.orderByAsc(SysRoleIndex::getPriority);
-			List<SysRoleIndex> list = sysRoleIndexService.list(routeIndexQuery);
-			if (CollectionUtils.isNotEmpty(list)) {
-				roleIndex = list.get(0);
+		boolean isV3 = CommonConstant.VERSION_V3.equals(version);
+		if (isV3) {
+			//update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12980] 【首页配置】首页自定义配置功能页面
+			//1.先查询 用户USER级别 的所有首页配置
+			if(oConvertUtils.isNotEmpty(username)){
+				LambdaQueryWrapper<SysRoleIndex> routeIndexUserQuery = new LambdaQueryWrapper<>();
+				//角色首页状态0：未开启  1：开启
+				routeIndexUserQuery.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
+				routeIndexUserQuery.eq(SysRoleIndex::getRelationType, CommonConstant.HOME_RELATION_USER);
+				routeIndexUserQuery.eq(SysRoleIndex::getRoleCode, username);
+				//优先级正序排序
+				routeIndexUserQuery.orderByAsc(SysRoleIndex::getPriority);
+				List<SysRoleIndex> list = sysRoleIndexService.list(routeIndexUserQuery);
+				if (CollectionUtils.isNotEmpty(list)) {
+					roleIndex = list.get(0);
+				}else{
+				   //2.用户没有配置，再查询 角色ROLE级别 的所有首页配置
+					LambdaQueryWrapper<SysRoleIndex> routeIndexQuery = new LambdaQueryWrapper<>();
+					//角色首页状态0：未开启  1：开启
+					routeIndexQuery.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
+					//角色所有首页配置
+					routeIndexQuery.eq(SysRoleIndex::getRelationType, CommonConstant.HOME_RELATION_ROLE);
+					//当前用户角色
+					List<String> roles = sysUserRoleMapper.getRoleByUserName(username);
+					String componentUrl = RoleIndexConfigEnum.getIndexByRoles(roles);
+					roleIndex = new SysRoleIndex(componentUrl);
+					//用户所有角色
+					//update-begin-author:liusq---date:2025-07-21--for: [QQYUN-13187]【新用户登录报错】没有添加角色时 报错
+					if(CollectionUtil.isNotEmpty(roles)){
+						routeIndexQuery.in(SysRoleIndex::getRoleCode, roles);
+					}
+					//update-end-author:liusq---date:2025-07-21--for: [QQYUN-13187]【新用户登录报错】没有添加角色时 报错
+					//优先级正序排序
+					routeIndexQuery.orderByAsc(SysRoleIndex::getPriority);
+					list = sysRoleIndexService.list(routeIndexQuery);
+					if (CollectionUtils.isNotEmpty(list)) {
+						roleIndex = list.get(0);
+					}
+				}
 			}
+			//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12980] 【首页配置】首页自定义配置功能页面
 		}
 
 		if (oConvertUtils.isEmpty(roleIndex.getComponent())) {

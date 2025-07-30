@@ -2,7 +2,6 @@ package org.jeecg.modules.openapi.swagger;
 
 import lombok.Data;
 
-import java.util.List;
 import java.util.Map;
 
 /**

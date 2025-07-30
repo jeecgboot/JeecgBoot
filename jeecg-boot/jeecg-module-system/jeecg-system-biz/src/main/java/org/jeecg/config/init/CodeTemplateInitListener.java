@@ -57,7 +57,7 @@ public class CodeTemplateInitListener implements ApplicationListener<Application
 
             // 非jar模式不生成模板
             // 不生成目录，只生成具体模板文件
-            if (!filepath.contains(".jar!/BOOT-INF/lib/") || !createFilePath.contains(".")) {
+            if ((!filepath.contains(".jar!/BOOT-INF/lib/") && !filepath.contains(".jar/!BOOT-INF/lib/")) || !createFilePath.contains(".")) {
                 continue;
             }
             if (!FileUtil.exist(createFilePath)) {

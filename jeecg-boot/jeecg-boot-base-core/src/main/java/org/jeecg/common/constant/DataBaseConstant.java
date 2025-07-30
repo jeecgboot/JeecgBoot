@@ -4,6 +4,20 @@ package org.jeecg.common.constant;
  * @author: jeecg-boot
  */
 public interface DataBaseConstant {
+
+	/**
+	 * 内置的系统变量键列表
+	 */
+	public static final String[] SYSTEM_KEYS = {
+			DataBaseConstant.SYS_ORG_CODE, DataBaseConstant.SYS_ORG_CODE_TABLE, DataBaseConstant.SYS_MULTI_ORG_CODE,
+			DataBaseConstant.SYS_MULTI_ORG_CODE_TABLE, DataBaseConstant.SYS_ORG_ID, DataBaseConstant.SYS_ORG_ID_TABLE,
+			DataBaseConstant.SYS_ROLE_CODE, DataBaseConstant.SYS_ROLE_CODE_TABLE, DataBaseConstant.SYS_USER_CODE,
+			DataBaseConstant.SYS_USER_CODE_TABLE, DataBaseConstant.SYS_USER_ID, DataBaseConstant.SYS_USER_ID_TABLE,
+			DataBaseConstant.SYS_USER_NAME, DataBaseConstant.SYS_USER_NAME_TABLE, DataBaseConstant.SYS_DATE,
+			DataBaseConstant.SYS_DATE_TABLE, DataBaseConstant.SYS_TIME, DataBaseConstant.SYS_TIME_TABLE,
+			DataBaseConstant.SYS_BASE_PATH
+	};
+	
 	//*********数据库类型****************************************
 
     /**MYSQL数据库*/

@@ -91,6 +91,12 @@ public class MessageDTO implements Serializable {
     private Boolean isTimeJob = false;
     
     //---【邮件相关参数】-------------------------------------------------------------
+
+    /**
+     * 枚举：org.jeecg.common.constant.enums.NoticeTypeEnum
+     * 通知类型(system:系统消息、file:知识库、flow:流程、plan:日程计划、meeting:会议)
+     */
+    private String noticeType;
     
     public MessageDTO(){
     }

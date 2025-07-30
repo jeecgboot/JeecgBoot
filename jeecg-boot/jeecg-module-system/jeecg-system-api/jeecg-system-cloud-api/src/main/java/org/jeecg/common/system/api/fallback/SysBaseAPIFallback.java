@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
@@ -342,6 +343,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public void sendSmsMsg(String phone, JSONObject params, DySmsEnum dySmsEnum) {
+
+    }
+
+    @Override
     public List<Map> getDeptUserByOrgCode(String orgCode) {
         return null;
     }
@@ -462,6 +468,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     @Override
     public boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String... fields) {
         return false;
+    }
+
+    @Override
+    public void announcementAutoRelease(String dataId, String currentUserName) {
+
     }
 
 }

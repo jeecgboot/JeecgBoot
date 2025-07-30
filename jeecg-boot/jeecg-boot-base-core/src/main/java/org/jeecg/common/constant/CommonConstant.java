@@ -304,6 +304,11 @@ public interface CommonConstant {
     String SYS_USER_ID_MAPPING_CACHE = "sys:cache:user:id_mapping";
 
     /**
+     * 系统角色管理员编码
+     */
+    String SYS_ROLE_ADMIN = "admin";
+
+    /**
      * 考勤补卡业务状态 （1：同意  2：不同意）
      */
     String SIGN_PATCH_BIZ_STATUS_1 = "1";
@@ -427,6 +432,11 @@ public interface CommonConstant {
     * 发消息 消息业务类型
     */
    String NOTICE_MSG_BUS_TYPE = "NOTICE_MSG_BUS_TYPE";
+
+    /**
+     * 通知类型，用于区分来源 file 知识 flow 流程 plan 日程 system 系统消息 
+     */
+    String NOTICE_TYPE = "noticeType";
 
     /**
      * 邮箱消息中地址登录时地址后携带的token,需要替换成真实的token值
@@ -629,4 +639,24 @@ public interface CommonConstant {
     * 修改手机号验证码请求次数超出
     */
    Integer PHONE_SMS_FAIL_CODE = 40002;
+
+
+    /**
+     * 自定义首页关联关系(ROLE:表示角色 USER:表示用户)
+     *
+     */
+    String HOME_RELATION_ROLE = "ROLE";
+    String HOME_RELATION_USER = "USER";
+
+    /**
+     * 是否置顶(0否 1是)
+     */
+    Integer IZ_TOP_1 = 1;
+    Integer IZ_TOP_0 = 0;
+    
+    
+    //关注流程缓存前缀
+    String FLOW_FOCUS_NOTICE_PREFIX = "flow:runtimeData:focus:notice:";
+    //任务缓办时间缓存前缀
+    String FLOW_TASK_DELAY_PREFIX = "flow:runtimeData:task:delay:";
 }

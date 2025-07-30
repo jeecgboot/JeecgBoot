@@ -3,6 +3,7 @@ package org.jeecg.modules.system.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.Joiner;
+import com.jeecg.dingtalk.api.core.response.Response;
 import freemarker.core.TemplateClassResolver;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -23,20 +25,17 @@ import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.aspect.UrlMatchEnum;
 import org.jeecg.common.constant.*;
-import org.jeecg.common.constant.enums.EmailTemplateEnum;
-import org.jeecg.common.constant.enums.MessageTypeEnum;
-import org.jeecg.common.constant.enums.SysAnnmentTypeEnum;
+import org.jeecg.common.constant.enums.*;
 import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryCondition;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.query.QueryRuleEnum;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.*;
-import org.jeecg.common.util.HTMLUtils;
-import org.jeecg.common.util.YouBianCodeUtil;
+import org.jeecg.common.util.*;
 import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
-import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.firewall.SqlInjection.IDictTableWhiteListHandler;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
@@ -136,6 +135,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Autowired
 	private IDictTableWhiteListHandler dictTableWhiteListHandler;
+
+	@Autowired
+	private ISysAnnouncementService sysAnnouncementService;
 
 	@Override
 	//@SensitiveDecode
@@ -420,7 +422,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				message.getToUser(),
 				message.getTitle(),
 				message.getContent(),
-				message.getCategory());
+				message.getCategory(),
+                message.getNoticeType());
 		try {
 			// 同步发送第三方APP消息
 			wechatEnterpriseService.sendMessage(message, true);
@@ -488,7 +491,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setSendTime(new Date());
 		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
-		sysAnnouncementMapper.insert(announcement);
+       //update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+		announcement.setIzTop(CommonConstant.IZ_TOP_0);
+		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+  		sysAnnouncementMapper.insert(announcement);
 		// 2.插入用户通告阅读标记表记录
 		String userId = toUser;
 		String[] userIds = userId.split(",");
@@ -558,7 +564,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
 		announcement.setSendStatus(CommonConstant.HAS_SEND);
 		announcement.setSendTime(new Date());
-		
+		//update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+		announcement.setIzTop(CommonConstant.IZ_TOP_0);
+		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		if(tmplateParam!=null && oConvertUtils.isNotEmpty(tmplateParam.get(CommonSendStatus.MSG_ABSTRACT_JSON))){
 			announcement.setMsgAbstract(tmplateParam.get(CommonSendStatus.MSG_ABSTRACT_JSON));
 		}
@@ -1285,14 +1293,16 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	/**
-	 * 发消息
-	 * @param fromUser
-	 * @param toUser
-	 * @param title
-	 * @param msgContent
-	 * @param setMsgCategory
-	 */
-	private void sendSysAnnouncement(String fromUser, String toUser, String title, String msgContent, String setMsgCategory) {
+     * 发消息
+     *
+     * @param fromUser
+     * @param toUser
+     * @param title
+     * @param msgContent
+     * @param setMsgCategory
+     * @param noticeType
+     */
+	private void sendSysAnnouncement(String fromUser, String toUser, String title, String msgContent, String setMsgCategory, String noticeType) {
 		SysAnnouncement announcement = new SysAnnouncement();
 		announcement.setTitile(title);
 		announcement.setMsgContent(msgContent);
@@ -1303,6 +1313,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setSendTime(new Date());
 		announcement.setMsgCategory(setMsgCategory);
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
+		//update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+		announcement.setIzTop(CommonConstant.IZ_TOP_0);
+		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+		if(oConvertUtils.isEmpty(noticeType)){
+            noticeType = NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue();
+        }
+        announcement.setNoticeType(noticeType);
 		sysAnnouncementMapper.insert(announcement);
 		// 2.插入用户通告阅读标记表记录
 		String userId = toUser;
@@ -1324,6 +1341,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
 				obj.put(WebsocketConst.MSG_ID, announcement.getId());
 				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
+				obj.put(CommonConstant.NOTICE_TYPE, noticeType);
 				webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
@@ -1355,6 +1373,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setBusType(busType);
 		announcement.setOpenType(SysAnnmentTypeEnum.getByType(busType).getOpenType());
 		announcement.setOpenPage(SysAnnmentTypeEnum.getByType(busType).getOpenPage());
+        announcement.setNoticeType(NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue());
+		//update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+		announcement.setIzTop(CommonConstant.IZ_TOP_0);
+		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		sysAnnouncementMapper.insert(announcement);
 		// 2.插入用户通告阅读标记表记录
 		String userId = toUser;
@@ -1376,6 +1398,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
 				obj.put(WebsocketConst.MSG_ID, announcement.getId());
 				obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
+				obj.put(CommonConstant.NOTICE_TYPE, NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue());
 				webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
 			}
 		}
@@ -1392,7 +1415,23 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			EmailSendMsgHandle emailHandle=new EmailSendMsgHandle();
 			emailHandle.sendMsg(email, title, content);
 	}
-	
+	/**
+	 * 发送短信消息
+	 * @param phone 手机号
+	 * @param param 模版参数
+	 * @param dySmsEnum 短信模版
+	 */
+	@Override
+	public void sendSmsMsg(String phone, JSONObject param,DySmsEnum dySmsEnum) {
+        try {
+			log.info(" 发送短信消息 phone = {}", phone);
+			log.info(" 发送短信消息 param = {}", param);
+            DySmsHelper.sendSms(phone, param,dySmsEnum);
+        } catch (ClientException e) {
+			e.printStackTrace();
+        }
+    }
+
 	/**
 	 * 发送html模版邮件消息
 	 * @param email
@@ -1839,6 +1878,58 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			return dictTableWhiteListHandler.isPassByDict(tableOrDictCode);
 		} else {
 			return dictTableWhiteListHandler.isPassByDict(tableOrDictCode, fields);
+		}
+	}
+
+	/**
+	 * 自动发布流程
+	 * @param dataId
+	 * @param currentUserName
+	 */
+	@Override
+	public void announcementAutoRelease(String dataId, String currentUserName) {
+		//根据ID查询通知公告
+		SysAnnouncement sysAnnouncement = sysAnnouncementService.getById(dataId);
+		//流程通过后自动发布通告
+		sysAnnouncement.setSendStatus(CommonSendStatus.PUBLISHED_STATUS_1);
+		sysAnnouncement.setSendTime(new Date());
+		sysAnnouncement.setSender(currentUserName);
+		boolean ok = sysAnnouncementService.updateById(sysAnnouncement);
+		//推送通知消息
+		if(ok) {
+			if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
+				// 补全公告和用户之前的关系
+				sysAnnouncementService.batchInsertSysAnnouncementSend(sysAnnouncement.getId(), sysAnnouncement.getTenantId());
+
+				// 推送websocket通知
+				JSONObject obj = new JSONObject();
+				obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
+				obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+				obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+				webSocket.sendMessage(obj.toJSONString());
+			}else {
+				// 2.插入用户通告阅读标记表记录
+				String userId = sysAnnouncement.getUserIds();
+				String[] userIds = userId.substring(0, (userId.length()-1)).split(",");
+				JSONObject obj = new JSONObject();
+				obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+				obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
+				obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+				webSocket.sendMessage(userIds, obj.toJSONString());
+			}
+			try {
+				// 同步企业微信、钉钉的消息通知
+				Response<String> dtResponse = dingtalkService.sendActionCardMessage(sysAnnouncement, null, true);
+				wechatEnterpriseService.sendTextCardMessage(sysAnnouncement, true);
+
+				if (dtResponse != null && dtResponse.isSuccess()) {
+					String taskId = dtResponse.getResult();
+					sysAnnouncement.setDtTaskId(taskId);
+					sysAnnouncementService.updateById(sysAnnouncement);
+				}
+			} catch (Exception e) {
+				log.error("同步发送第三方APP消息失败：", e);
+			}
 		}
 	}
 

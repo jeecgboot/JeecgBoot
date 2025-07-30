@@ -69,6 +69,12 @@ public class LoginUser {
 	private String avatar;
 
 	/**
+	 * 工号
+	 */
+	@SensitiveField
+	private String workNo;
+
+	/**
 	 * 生日
 	 */
 	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")

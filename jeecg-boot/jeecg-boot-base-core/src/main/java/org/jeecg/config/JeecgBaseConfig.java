@@ -70,7 +70,12 @@ public class JeecgBaseConfig {
     /**
      * 百度开放API配置
      */
-    private BaiduApi baiduApi;
+    private BaiduApi baiduApi;    
+    
+    /**
+     * 高德开放API配置
+     */
+    private GaoDeApi gaoDeApi;
 
     public String getCustomResourcePrefixPath() {
         return customResourcePrefixPath;
@@ -168,4 +173,11 @@ public class JeecgBaseConfig {
         this.baiduApi = baiduApi;
     }
 
+    public GaoDeApi getGaoDeApi() {
+        return gaoDeApi;
+    }
+
+    public void setGaoDeApi(GaoDeApi gaoDeApi) {
+        this.gaoDeApi = gaoDeApi;
+    }
 }

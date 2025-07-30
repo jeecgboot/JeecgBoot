@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jeecg.dingtalk.api.core.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
@@ -421,6 +422,31 @@ public class ThirdAppController {
         }
         return result;
     }
+
+    /**
+     * 根据id删除第三方配置表
+     * @param id
+     * @return
+     */
+    @DeleteMapping(value = "/deleteThirdAppConfig")
+    @RequiresPermissions("system:third:config:delete")
+    public Result<String> deleteThirdAppConfig(@RequestParam(name="id",required=true) String id) {
+        Result<String> result = new Result<>();
+        SysThirdAppConfig config = appConfigService.getById(id);
+        if (null == config) {
+            result.error500("数据不存在");
+            return result;
+        }
+        try {
+            appConfigService.removeById(id);
+            result.success("解绑成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+    
 
     /**
      * 根据租户id和第三方类型获取第三方app配置信息
