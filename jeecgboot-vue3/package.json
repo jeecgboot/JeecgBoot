@@ -11,6 +11,8 @@
     "clean:cache": "rimraf node_modules/.cache/ && rimraf node_modules/.vite",
     "dev": "vite",
     "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 vite build && esno ./build/script/postBuild.ts && esno ./build/script/copyChat.ts",
+    "build:docker": "cross-env NODE_ENV=docker NODE_OPTIONS=--max-old-space-size=8192 vite build && esno ./build/script/postBuild.ts && esno ./build/script/copyChat.ts",
+    "build:dockercloud": "cross-env NODE_ENV=dockercloud NODE_OPTIONS=--max-old-space-size=8192 vite build && esno ./build/script/postBuild.ts && esno ./build/script/copyChat.ts",
     "build:report": "pnpm clean:cache && cross-env REPORT=true npm run build",
     "preview": "npm run build && vite preview",
     "reinstall": "rimraf pnpm-lock.yaml && rimraf yarn.lock && rimraf package.lock.json && rimraf node_modules && npm run install",
