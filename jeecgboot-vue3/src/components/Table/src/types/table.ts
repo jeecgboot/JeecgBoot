@@ -1,4 +1,4 @@
-import type { VNodeChild } from 'vue';
+import type { VNodeChild, ComputedRef } from 'vue';
 import type { PaginationProps } from './pagination';
 import type { FormProps } from '/@/components/Form';
 import type { TableRowSelection as ITableRowSelection } from 'ant-design-vue/lib/table/interface';
@@ -80,6 +80,10 @@ export interface FetchParams {
 export interface GetColumnsParams {
   ignoreIndex?: boolean;
   ignoreAction?: boolean;
+  // update-begin--author:liaozhiyang---date:20250729---for：【issues/8502】解决权限列在列表中不显示，列配置中还显示
+  ignoreAuth?: boolean;
+  ignoreIfShow?: boolean | ((column: BasicColumn) => boolean);
+  // update-end--author:liaozhiyang---date:20250729---for：【issues/8502】解决权限列在列表中不显示，列配置中还显示
   sort?: boolean;
 }
 
@@ -116,6 +120,7 @@ export interface TableActionType {
   setShowPagination: (show: boolean) => Promise<void>;
   getShowPagination: () => boolean;
   setCacheColumnsByField?: (dataIndex: string | undefined, value: BasicColumn) => void;
+  getColumnsRef: () => ComputedRef<BasicColumn[]>;
 }
 
 export interface FetchSetting {

@@ -151,6 +151,9 @@
       // nextTick(() => popoverVisible.value = false);
       // update-end--author:sunjianlei---date:20221101---for: 修复第一次进入时列表配置不能拖拽
       const defaultRowSelection = omit(table.getRowSelection(), 'selectedRowKeys');
+      // update-begin--author:liaozhiyang---date:20250722---for：【issues/8529】setColumns后列配置没联动更新
+      const getColumnsRef = table.getColumnsRef();
+      // update-end--author:liaozhiyang---date:20250722---for：【issues/8529】setColumns后列配置没联动更新
       let inited = false;
 
       const cachePlainOptions = ref<Options[]>([]);
@@ -219,7 +222,7 @@
         checkSelect.value = !!values.rowSelection;
       });
       // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
-      watch(localeStore, () => {
+      watch([localeStore, getColumnsRef], () => {
         const columns = getColumns();
         plainOptions.value = columns;
         plainSortOptions.value = columns;
@@ -230,7 +233,7 @@
       function getColumns() {
         const ret: Options[] = [];
         // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
-        let t = table.getColumns({ ignoreIndex: true, ignoreAction: true });
+        let t = table.getColumns({ ignoreIndex: true, ignoreAction: true, ignoreAuth: true, ignoreIfShow: true });
         if (!t.length) {
           t = table.getCacheColumns();
         }
@@ -249,7 +252,7 @@
         const columns = getColumns();
 
         const checkList = table
-          .getColumns({ ignoreAction: true, ignoreIndex: true })
+          .getColumns({ ignoreAction: true, ignoreIndex: true, ignoreAuth: true, ignoreIfShow: true })
           .map((item) => {
             if (item.defaultHidden) {
               return '';
@@ -341,7 +344,7 @@
           // state.checkedList = [...state.defaultCheckList];
           // update-begin--author:liaozhiyang---date:20231103---for：【issues/825】tabel的列设置隐藏列保存后切换路由问题[重置没勾选]
           state.checkedList = table
-            .getColumns({ ignoreAction: true })
+            .getColumns({ ignoreAction: true, ignoreAuth: true, ignoreIfShow: true })
             .map((item) => {
               return item.dataIndex || item.title;
             })

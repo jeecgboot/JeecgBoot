@@ -232,6 +232,15 @@ export const useMultipleTabStore = defineStore({
         curTab.fullPath = fullPath || curTab.fullPath;
         this.tabList.splice(updateIndex, 1, curTab);
       } else {
+        // update-begin--author:liaozhiyang---date:20250709---for：【QQYUN-13058】菜单检测同样的地址(忽略query查询参数)只打开一个
+        // 只比较path，忽略query
+        const findIndex = this.tabList.findIndex((tab) => tab.path === path);
+        const isTabExist = findIndex !== -1;
+        if (isTabExist) {
+          this.tabList.splice(findIndex, 1, route);
+          return;
+        }
+        // update-end--author:liaozhiyang---date:20250709---for：【QQYUN-13058】菜单检测同样的地址(忽略query查询参数)只打开一个
         // Add tab
         // 获取动态路由打开数，超过 0 即代表需要控制打开数
         const dynamicLevel = meta?.dynamicLevel ?? -1;

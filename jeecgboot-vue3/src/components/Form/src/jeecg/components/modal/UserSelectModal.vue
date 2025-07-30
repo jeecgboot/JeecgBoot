@@ -24,7 +24,7 @@
             v-bind="getBindValue"
             :useSearchForm="true"
             :formConfig="formConfig"
-            :api="getUserList"
+            :api="hasCustomApi ? customListApi : getUserList"
             :searchInfo="searchInfo"
             :rowSelection="rowSelection"
             :indexColumnProps="indexColumnProps"
@@ -54,7 +54,7 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, unref, ref, watch } from 'vue';
+  import { defineComponent, unref, ref, watch, computed } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { getUserList } from '/@/api/common/api';
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
@@ -85,6 +85,11 @@
         default: [],
       },
       //update-end---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
+
+      // 查询table数据使用的自定义接口
+      customListApi: {type: Function},
+      // 自定义接口的查询条件是否使用 JInput
+      customApiJInput: {type: Boolean, default: true},
     },
     emits: ['register', 'getSelectResult', 'close'],
     setup(props, { emit, refs }) {
@@ -92,6 +97,8 @@
       const tableScroll = ref<any>({ x: false });
       const tableRef = ref();
       const maxHeight = ref(600);
+
+      const hasCustomApi = computed(() => typeof props.customListApi === 'function');
 
       //注册弹框
       const [register, { closeModal }] = useModalInner(() => {
@@ -156,12 +163,12 @@
           {
             label: '账号',
             field: 'username',
-            component: 'JInput',
+            component: (hasCustomApi.value && !props.customApiJInput) ? 'Input' : 'JInput',
           },
           {
             label: '姓名',
             field: 'realname',
-            component: 'JInput',
+            component: (hasCustomApi.value && !props.customApiJInput) ? 'Input' : 'JInput',
           },
         ],
       };
@@ -300,6 +307,7 @@
         handleCancel,
         maxHeight,
         beforeFetch,
+        hasCustomApi,
       };
     },
   });

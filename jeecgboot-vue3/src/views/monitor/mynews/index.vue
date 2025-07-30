@@ -33,9 +33,20 @@
   import { useAppStore } from '/@/store/modules/app';
   import { useMessageHref } from '/@/views/system/message/components/useSysMessage';
   const appStore = useAppStore();
-
-  const {goPage} = useMessageHref()
-
+  const router = useRouter();
+  const { currentRoute } = useRouter();
+  const { goPage } = useMessageHref();
+  // update-begin--author:liaozhiyang---date:20250709---for：【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
+  const querystring = currentRoute.value.query;
+  const findItem: any = searchFormSchema.find((item: any) => item.field === 'msgCategory');
+  if (findItem) {
+    if (querystring?.msgCategory) {
+      findItem.componentProps.defaultValue = querystring.msgCategory
+    } else {
+      findItem.componentProps.defaultValue = null
+    }
+  }
+  // update-end--author:liaozhiyang---date:20250709---for：【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
   const { prefixCls, tableContext } = useListPage({
     designScope: 'mynews-list',
     tableProps: {
@@ -47,6 +58,14 @@
         //update-begin---author:wangshuai---date:2024-06-11---for:【TV360X-545】我的消息列表不能通过时间范围查询---
         fieldMapToTime: [['sendTime', ['sendTimeBegin', 'sendTimeEnd'], 'YYYY-MM-DD']],
         //update-end---author:wangshuai---date:2024-06-11---for:【TV360X-545】我的消息列表不能通过时间范围查询---
+      },
+      beforeFetch: (params) => {
+        // update-begin--author:liaozhiyang---date:20250709---for：【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
+        if (querystring?.msgCategory) {
+          params.msgCategory = querystring.msgCategory;
+        }
+        return params;
+        // update-end--author:liaozhiyang---date:20250709---for：【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
       },
     },
   });

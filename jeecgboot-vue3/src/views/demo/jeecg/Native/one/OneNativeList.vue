@@ -65,7 +65,7 @@
                     <a @click="handleDetail(record)">详情</a>
                   </a-menu-item>
                   <a-menu-item>
-                    <Popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)">
+                    <Popconfirm title="确定删除吗?" @confirm="() => handleDelete(record.id)" placement="left">
                       <a>删除</a>
                     </Popconfirm>
                   </a-menu-item>

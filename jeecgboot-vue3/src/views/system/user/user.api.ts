@@ -8,6 +8,7 @@ enum Api {
   edit = '/sys/user/edit',
   agentSave = '/sys/sysUserAgent/add',
   agentEdit = '/sys/sysUserAgent/edit',
+  deleteAgent = '/sys/sysUserAgent/delete',
   getUserRole = '/sys/user/queryUserRole',
   duplicateCheck = '/sys/duplicate/check',
   deleteUser = '/sys/user/delete',
@@ -207,6 +208,15 @@ export const getUserAgent = (params) => defHttp.get({ url: Api.getUserAgent, par
 export const saveOrUpdateAgent = (params) => {
   let url = params.id ? Api.agentEdit : Api.agentSave;
   return defHttp.post({ url: url, params });
+};
+/**
+ * 代理删除
+ * @param params
+ */
+export const deleteAgent = (params, handleSuccess) => {
+  return defHttp.delete({ url: Api.deleteAgent, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
 };
 
 /**

@@ -1,6 +1,6 @@
 import type { RouteLocationNormalized, RouteRecordNormalized } from 'vue-router';
 import type { App, Plugin } from 'vue';
-import type { FormSchema } from "@/components/Form";
+import type { FormSchema, FormActionType } from "@/components/Form";
 
 import { unref } from 'vue';
 import { isObject, isFunction, isString } from '/@/utils/is';
@@ -110,11 +110,12 @@ export function getValueType(props, field) {
 /**
  * 获取表单字段值数据类型
  * @param schema
+ * @param formAction
  */
-export function getValueTypeBySchema(schema: FormSchema) {
+export function getValueTypeBySchema(schema: FormSchema, formAction: FormActionType) {
   let valueType = 'string';
   if (schema) {
-    const componentProps = schema.componentProps as Recordable;
+    const componentProps = formAction.getSchemaComponentProps(schema);
     valueType = componentProps?.valueType ? componentProps?.valueType : valueType;
   }
   return valueType;

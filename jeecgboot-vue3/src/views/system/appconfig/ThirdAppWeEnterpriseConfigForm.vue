@@ -17,7 +17,7 @@
         <a-collapse-panel key="2">
           <template #header>
             <div style="width: 100%; justify-content: space-between; display: flex">
-              <div style="font-size: 16px"> 2.对接信息录入</div>
+              <div style="font-size: 16px"> 2.对接信息录入及解绑</div>
             </div>
           </template>
           <div class="flex-flow">
@@ -40,6 +40,7 @@
           </div>
           <div style="margin-top: 20px; width: 100%; text-align: right">
             <a-button @click="weEnterpriseEditClick">编辑</a-button>
+            <a-button v-if="appConfigData.id" @click="cancelBindClick" danger style="margin-left: 10px">取消绑定</a-button>
           </div>
         </a-collapse-panel>
       </a-collapse>
@@ -61,7 +62,7 @@
 
 <script lang="ts">
   import { defineComponent, onMounted, ref } from 'vue';
-  import { getThirdConfigByTenantId } from './ThirdApp.api';
+  import { getThirdConfigByTenantId, deleteThirdAppConfig } from './ThirdApp.api';
   import ThirdAppConfigModal from './ThirdAppConfigModal.vue';
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
@@ -97,6 +98,8 @@
         let values = await getThirdConfigByTenantId(params);
         if (values) {
           appConfigData.value = values;
+        } else {
+          appConfigData.value = "";
         }
       }
 
@@ -159,6 +162,25 @@
       function seeBindWeChat() {
         openBindModal(true,{ izBind: true })
       }
+
+      /**
+       * 取消绑定
+       */
+      function cancelBindClick() {
+        if(!appConfigData.value.id){
+          createMessage.warning("请先绑定企业微信应用！");
+          return;
+        }
+        Modal.confirm({
+          title: '取消绑定',
+          content: '是否要解除当前组织的企业微信应用配置绑定？',
+          okText: '确认',
+          cancelText: '取消',
+          onOk: () => {
+            deleteThirdAppConfig({ id: appConfigData.value.id }, handleSuccess);
+          },
+        });
+      }
       
       onMounted(() => {
         let tenantId = getTenantId();
@@ -175,6 +197,7 @@
         thirdUserByWechat,
         handleBindSuccess,
         seeBindWeChat,
+        cancelBindClick,
       };
     },
   });

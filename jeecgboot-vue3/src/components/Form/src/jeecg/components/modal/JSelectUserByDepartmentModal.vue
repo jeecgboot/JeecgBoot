@@ -595,6 +595,9 @@
     flex: 1;
     border-right: 1px solid #e8e8e8;
     .search-box {
+      :deep(.ant-input-affix-wrapper) {
+        border-color: #d9d9d9 !important;
+      }
       margin: 0 16px 16px 16px;
     }
     :deep(.ant-breadcrumb) {

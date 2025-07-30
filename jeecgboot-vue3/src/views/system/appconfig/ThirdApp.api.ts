@@ -10,6 +10,7 @@ enum Api {
   wechatEnterpriseToLocal = '/sys/thirdApp/sync/wechatEnterprise/departAndUser/toLocal',
   getThirdUserBindByWechat = '/sys/thirdApp/getThirdUserBindByWechat',
   deleteThirdAccount = '/sys/thirdApp/deleteThirdAccount',
+  deleteThirdAppConfig = '/sys/thirdApp/deleteThirdAppConfig',
 }
 
 /**
@@ -66,4 +67,15 @@ export const getThirdUserBindByWechat = () => {
  */
 export const deleteThirdAccount = (params) => {
   return defHttp.delete({ url: Api.deleteThirdAccount, params }, { isTransformResponse:false, joinParamsToUrl: true });
+};
+
+/**
+ * 根据配置表的id删除第三方配置
+ * @param params
+ * @param handleSuccess
+ */
+export const deleteThirdAppConfig = (params, handleSuccess) => {
+  return defHttp.delete({ url: Api.deleteThirdAppConfig, params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
 };
