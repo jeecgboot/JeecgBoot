@@ -161,8 +161,7 @@ public class ClientPage {
     @Excel(name = "是否使用余额", width = 15, dicCode = "yn")
     @Dict(dicCode = "yn")
     @ApiModelProperty("是否使用余额")
-    private java.lang.String useBalance;
-
+    private java.lang.Boolean useBalance;
     /**
      * 客户类型
      */

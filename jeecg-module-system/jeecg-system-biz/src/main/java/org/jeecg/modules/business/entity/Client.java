@@ -206,7 +206,7 @@ public class Client implements Serializable {
     @Excel(name = "是否使用余额", width = 15, dicCode = "yn")
     @Dict(dicCode = "yn")
     @ApiModelProperty(value = "是否使用余额")
-    private String useBalance;
+    private Boolean useBalance;
 
     public String fullName() {
         return firstName + " " + surname;

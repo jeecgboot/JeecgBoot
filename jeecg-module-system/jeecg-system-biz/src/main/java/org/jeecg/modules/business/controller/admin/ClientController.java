@@ -99,9 +99,9 @@ public class ClientController {
         Client client = new Client();
         BeanUtils.copyProperties(clientPage, client);
         clientService.saveMain(client, clientPage.getShopList(), clientPage.getClientSkuList());
-        String useBalance = clientPage.getUseBalance();
+        Boolean useBalance = clientPage.getUseBalance();
         log.info("useBalance:{}", useBalance);
-        if ("1".equals(useBalance)) {
+        if (useBalance) {
             balanceService.initBalance(client.getId());
         }
         return Result.OK("添加成功！");
@@ -134,7 +134,7 @@ public class ClientController {
         if (clientEntity == null) {
             return Result.error("未找到对应数据");
         }
-        if (client.getUseBalance() != null && "1".equals(clientPage.getUseBalance())){
+        if (clientPage.getUseBalance()){
             // If useBalance is set to 1, initialize balance for the client
             balanceService.initBalance(client.getId());
         }
