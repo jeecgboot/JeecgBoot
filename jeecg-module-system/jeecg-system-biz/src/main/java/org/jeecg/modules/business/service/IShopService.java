@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface IShopService extends IService<Shop> {
 
-	public List<Shop> selectByMainId(String mainId);
+	List<Shop> selectByMainId(String mainId);
 
     List<Shop> listByClient(String clientID);
     List<Shop> listSelfInvoiceShopsByClient(String clientID);

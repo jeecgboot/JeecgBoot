@@ -116,4 +116,10 @@ public class Shop implements Serializable {
     @Excel(name = "海外仓包材费", width = 15)
     @ApiModelProperty(value = "海外仓包材费")
     private java.math.BigDecimal packagingMaterialFee;
+    /**
+     * 默认商品中文名称
+     */
+    @Excel(name = "默认商品中文名称", width = 15)
+    @ApiModelProperty(value = "默认商品中文名称")
+    private java.lang.String defaultSkuZhName;
 }
