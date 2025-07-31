@@ -48,7 +48,7 @@ JeecgBoot低代码平台，可以应用在任何J2EE项目的开发中，支持�
 版本说明
 -----------------------------------
 
-|下载    | JDK17 + SpringBoot2.7                              | JDK17 + SpringBoot3.3 + Shiro                                               |JDK17 + SpringBoot3.3+ SpringAuthorizationServer   |
+|下载    | JDK17/JDK8 + SpringBoot2.7                              | JDK17 + SpringBoot3.3 + Shiro                                               |JDK17 + SpringBoot3.3+ SpringAuthorizationServer   |
 |------|----------------------------------------------------|-----------------------------------------------------------------------------|--------------------------------------------|
 | Github | [`master`](https://github.com/jeecgboot/JeecgBoot) | [`springboot3`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3) 分支 | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支 |
 | Gitee | [`master`](https://gitee.com/jeecg/JeecgBoot)      | [`springboot3`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3/) 分支     | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支 |
@@ -230,7 +230,7 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
  - JeecgBoot开源版采用 [Apache-2.0 license](LICENSE) 协议附加补充条款：允许商用使用，不会造成侵权行为，允许基于本平台软件开展业务系统开发（但在任何情况下，您不得使用本软件开发可能被认为与本软件竞争的软件).
  - 商业版与开源版主要区别在于商业版提供了技术支持 和 更多的企业级功能(例如：Online图表、流程监控、流程设计、流程审批、表单设计器、表单视图、积木报表企业版、OA办公、商业APP、零代码应用、Online模块源码等功能). [更多商业功能介绍，点击查看](README-Enterprise.md)
- - JeecgBoot未来发展方向是：零代码平台的建设，也就是团队的另外一款产品 [敲敲云零代码](https://www.qiaoqiaoyun.com) ，无需编码即可通过拖拽快速搭建企业级应用，与JeecgBoot低代码平台形成互补，满足从简单业务到复杂系统的全场景开发需求，目前已经上线，[欢迎注册体验](https://app.qiaoqiaoyun.com)
+ - JeecgBoot未来发展方向是：零代码平台的建设，也就是团队的另外一款产品 [敲敲云零代码](https://www.qiaoqiaoyun.com) ，无需编码即可通过拖拽快速搭建企业级应用，与JeecgBoot低代码平台形成互补，满足从简单业务到复杂系统的全场景开发需求，目前已经开源，[欢迎下载](https://qiaoqiaoyun.com/downloadCode)
 
 
 
@@ -254,6 +254,7 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 │  ├─用户管理
 │  ├─角色管理
 │  ├─菜单管理
+│  ├─首页配置
 │  ├─权限设置（支持按钮权限、数据权限）
 │  ├─表单权限（控制字段禁用、隐藏）
 │  ├─部门管理
@@ -264,7 +265,9 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 │  └─职务管理
 │  └─通讯录
 │  ├─多数据源管理
-│  └─多租户管理（租户管理、租户角色、我的租户）
+│  ├─白名单管理
+│  ├─第三方配置（对接钉钉和企业微信）
+│  └─多租户管理（租户管理、租户角色、我的租户、租户默认套餐管理）
 ├─Online在线开发(低代码)
 │  ├─Online在线表单
 │  ├─Online代码生成器
@@ -272,6 +275,7 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 │  ├─仪表盘设计器
 │  ├─系统编码规则
 │  ├─系统校验规则
+│  ├─APP版本管理
 ├─AI应用平台
 │  ├─AI知识库问答系统
 │  ├─AI大模型管理
@@ -284,10 +288,13 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 │  ├─AI聊天窗口支持移动端
 │  ├─支持常见大模型ChatGPT和DeepSeek、ollama等等
 │  ├─AI OCR示例
-├─积木报表设计器
-│  ├─打印设计器
-│  ├─数据报表设计
-│  ├─图形报表设计（支持echart）
+├─数据可视化
+│  ├─报表设计器(支持打印设计）
+│  ├─大屏设和仪表盘设计
+├─OpenAPI（基于AK和SK认证鉴权）
+│  ├─接口管理
+│  ├─接口授权
+│  ├─接口文档
 ├─消息中心
 │  ├─消息管理
 │  ├─模板管理
@@ -301,8 +308,10 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 │  ├─平台移动自适应支持
 │  ├─提供新版uniapp3的代码生成器模板
 ├─系统监控
-│  ├─基于AK和SK认证鉴权OpenAPI功能
 │  ├─Gateway路由网关
+│  ├─基于AK和SK认证鉴权OpenAPI功能
+│  ├─定时任务
+│  ├─数据源管理
 │  ├─性能扫描监控
 │  │  ├─监控 Redis
 │  │  ├─Tomcat
@@ -310,13 +319,11 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 │  │  ├─服务器信息
 │  │  ├─请求追踪
 │  │  ├─磁盘监控
-│  ├─定时任务
 │  ├─系统日志
 │  ├─消息中心（支持短信、邮件、微信推送等等）
 │  ├─数据日志（记录数据快照，可对比快照，查看数据变更情况）
-│  ├─系统通知
 │  ├─SQL监控
-│  ├─swagger-ui(在线接口文档)
+│  ├─在线用户
 │─报表示例
 │  ├─曲线图
 │  └─饼状图
