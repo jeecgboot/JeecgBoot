@@ -14,6 +14,10 @@ public enum EmailTemplateEnum {
      */
     BPM_CUIBAN_EMAIL("bpm_cuiban_email", "/templates/email/bpm_cuiban_email.ftl"),
     /**
+     * 流程抄送
+     */
+    BPM_CC_EMAIL("bpm_cc_email", "/templates/email/bpm_cc_email.ftl"),
+    /**
      * 流程新任务
      */
     BPM_NEW_TASK_EMAIL("bpm_new_task_email", "/templates/email/bpm_new_task_email.ftl"),

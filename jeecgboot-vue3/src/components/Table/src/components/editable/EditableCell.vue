@@ -148,7 +148,27 @@
 
         const options: LabelValueOptions = editComponentProps?.options ?? (unref(optionsRef) || []);
         const option = options.find((item) => `${item.value}` === `${value}`);
-
+        // update-begin---author:liaozhiyang---date:2025-07-28---for:【QQYUN-13251】表格可编辑单元格apiSelect多选不翻译 ---
+        if (['tags', 'multiple'].includes(editComponentProps?.mode)) {
+          const result = options
+            .filter((item) => {
+              let v = value;
+              if (isString(value)) {
+                v = value.split(',');
+              } else if (isNumber(value)) {
+                v = [value];
+              }
+              if (v.includes(item.value)) {
+                return true;
+              }
+            })
+            .map((item) => item.label);
+          if (result.length) {
+            return result.join(',');
+          }
+          return value;
+        }
+        // update-end---author:liaozhiyang---date:2025-07-28---for:【QQYUN-13251】表格可编辑单元格apiSelect多选不翻译 ---
         return option?.label ?? value;
       });
 

@@ -9,7 +9,7 @@
     @cancel="handleCancel"
     cancelText="关闭"
   >
-    <OneNativeForm ref="realForm" @ok="submitCallback" :disabled="disableSubmit"></OneNativeForm>
+    <OneNativeForm ref="realForm" @ok="submitCallback" :formDisabled="disableSubmit"></OneNativeForm>
   </BasicModal>
 </template>
 
@@ -61,5 +61,9 @@
   });
 </script>
 
-<style lang="less" scoped>
+<style lang="less">
+  /**隐藏样式-modal确定按钮 */
+  .jee-hidden {
+    display: none !important;
+  }
 </style>

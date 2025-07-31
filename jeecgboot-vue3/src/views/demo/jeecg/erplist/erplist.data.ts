@@ -227,6 +227,7 @@ export const ticketFormSchema: FormSchema[] = [
     component: 'DatePicker',
     componentProps: {
       valueFormat: 'YYYY-MM-DD',
+      getPopupContainer:()=>document.body,
     },
   },
   {

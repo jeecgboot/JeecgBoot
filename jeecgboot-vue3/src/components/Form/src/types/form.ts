@@ -41,6 +41,7 @@ export interface FormActionType {
   validateFields: (nameList?: NamePath[], options?: ValidateOptions) => Promise<any>;
   validate: (nameList?: NamePath[]) => Promise<any>;
   scrollToField: (name: NamePath, options?: ScrollOptions) => Promise<void>;
+  getSchemaComponentProps: (schema: FormSchema) => Recordable
 }
 
 export type RegisterFn = (formInstance: FormActionType) => void;

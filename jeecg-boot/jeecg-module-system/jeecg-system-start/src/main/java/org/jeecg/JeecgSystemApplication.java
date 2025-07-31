@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
-* 单体启动类
+* 单体启动类（采用此类启动为单体模式）
 * 报错提醒: 未集成mongo报错，可以打开启动类上面的注释 exclude={MongoAutoConfiguration.class}
 */
 @Slf4j

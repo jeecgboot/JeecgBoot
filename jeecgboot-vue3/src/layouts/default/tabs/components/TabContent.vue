@@ -28,6 +28,7 @@
   import { useTabDropdown } from '../useTabDropdown';
   import { useMultipleTabSetting } from '/@/hooks/setting/useMultipleTabSetting';
   import { useLocaleStore } from '/@/store/modules/locale';
+  import { PageEnum } from '/@/enums/pageEnum';
 
   export default defineComponent({
     name: 'TabContent',
@@ -61,7 +62,7 @@
       const prefixIconType = computed(() => {
         if (props.tabItem.meta.icon) {
           return props.tabItem.meta.icon;
-        } else if (props.tabItem.path === '/dashboard/analysis') {
+        } else if (props.tabItem.path === PageEnum.BASE_HOME) {
           // 当是首页时返回 home 图标 TODO 此处可能需要动态判断首页路径
           return 'ant-design:home-outlined';
         } else {

@@ -1,5 +1,5 @@
 <template>
-  <BasicModal @register="registerModal" :title="title" :width="800" v-bind="$attrs" @ok="onSubmit">
+  <BasicModal @register="registerModal" :title="title" :width="600" v-bind="$attrs" @ok="onSubmit">
     <BasicForm @register="registerForm" />
   </BasicModal>
 </template>
@@ -21,6 +21,15 @@
   //update-end---author:wangshuai ---date:20221123  for：[VUEN-2807]消息模板加一个查看功能--------------z
     schemas: formSchemas,
     showActionButtonGroup: false,
+    baseRowStyle: {
+      marginTop: '10px',
+    },
+    labelCol: {
+      span: 5,
+    },
+    wrapperCol: {
+      span: 17,
+    },
   });
   // 注册 modal
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {

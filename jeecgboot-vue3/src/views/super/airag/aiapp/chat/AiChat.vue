@@ -34,7 +34,7 @@
         ></chat>
       </div>
     </template>
-    <Spin v-else :spinning="true"></Spin>
+    <Loading :loading="loading" tip="加载中，请稍后"></Loading>
   </div>
 </template>
 
@@ -48,6 +48,7 @@
   import { defHttp } from '/@/utils/http/axios';
   import { useRouter } from 'vue-router';
   import { useAppInject } from "@/hooks/web/useAppInject";
+  import Loading from '@/components/Loading/src/Loading.vue';
 
   const router = useRouter();
   const userId = useUserStore().getUserInfo?.id;
@@ -67,6 +68,8 @@
   const chatActiveKey = ref<number>(0);
   //预置开场白
   const presetQuestion = ref<string>('');
+  //加载
+  const loading = ref<any>(true);
 
   const handleToggle = () => {
     expand.value = !expand.value;
@@ -179,10 +182,13 @@
       })
       .catch(() => {
         priming();
-      });
+      }).finally(()=>{
+        loading.value = false
+    });
   }
 
   onMounted(() => {
+    loading.value = true;
     let params: any = router.currentRoute.value.params;
     if (params.appId) {
       appId.value = params.appId;

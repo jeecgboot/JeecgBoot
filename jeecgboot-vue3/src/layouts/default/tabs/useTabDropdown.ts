@@ -8,6 +8,7 @@ import { useMultipleTabStore } from '/@/store/modules/multipleTab';
 import { RouteLocationNormalized, useRouter } from 'vue-router';
 import { useTabs } from '/@/hooks/web/useTabs';
 import { useI18n } from '/@/hooks/web/useI18n';
+import { useHideHomeDesign } from './useHideHomeDesign';
 
 export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: ComputedRef<boolean>) {
   const state = reactive({
@@ -23,6 +24,10 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
   const getTargetTab = computed((): RouteLocationNormalized => {
     return unref(getIsTabs) ? tabContentProps.tabItem : unref(currentRoute);
   });
+  // update-begin--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
+  // 隐藏下拉菜单中的门户设计项
+  const { getHideHomeDesign, isHideHomeDesign } = useHideHomeDesign(currentRoute);
+  // update-end--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
 
   /**
    * @description: drop-down list
@@ -65,6 +70,10 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
     // Close right
     const closeRightDisabled = index === tabStore.getTabList.length - 1 && tabStore.getLastDragEndIndex >= 0;
     // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
+    // update-begin--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
+    // 隐藏下拉菜单中的门户设计项
+    getHideHomeDesign(isCurItem, path);
+    // update-end--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
     const dropMenuList: DropMenu[] = [
       {
         icon: 'jam:refresh-reverse',
@@ -76,7 +85,8 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
         icon: 'ant-design:setting-outlined',
         event: MenuEventEnum.HOME_DESIGN,
         text: t('layout.multipleTab.homeDesign'),
-        disabled: path !== '/PortalView',
+        disabled: !/^\/portal-view\/[^/]+$/.test(path),
+        hide: isHideHomeDesign.value,
         divider: true,
       },
       // {

@@ -15,6 +15,7 @@ enum Api {
   getTableList = '/sys/user/queryUserComponentData',
   getCategoryData = '/sys/category/loadAllData',
   refreshDragCache = '/drag/page/refreshCache',
+  refreshDefaultIndexCache = '/sys/sysRoleIndex/cleanDefaultIndexCache',
 }
 
 /**
@@ -154,3 +155,8 @@ export const uploadMyFile = (url, data) => {
  * @param params
  */
 export const refreshDragCache = () => defHttp.get({ url: Api.refreshDragCache }, { isTransformResponse: false });
+/**
+ * 刷新默认首页缓存
+ * @param params
+ */
+export const refreshHomeCache = () => defHttp.get({ url: Api.refreshDefaultIndexCache }, { isTransformResponse: false });

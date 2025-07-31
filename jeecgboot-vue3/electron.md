@@ -16,6 +16,7 @@
     "electron:build-all": "npm run electron:build-web && npm run electron:build-app",
     "electron:build-web": "cross-env VITE_GLOB_RUN_PLATFORM=electron NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 vite build --mode prod_electron && cross-env VITE_GLOB_RUN_PLATFORM=electron esno ./build/script/postBuild.ts && esno ./build/script/copyChat.ts",
     "electron:build-app": "esno ./electron/script/buildBefore.ts && electron-builder && esno ./electron/script/buildAfter.ts",
+    "electron:install": "cross-env ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ node node_modules/electron/install.js",
   },
   "devDependencies": {
     "electron": "35.1.4",
@@ -23,9 +24,9 @@
     "vite-plugin-electron": "^0.29.0",
   },
 }
-
 ```
 
+> 提示：在执行`pnpm install`后如果Electron安装失败，可以尝试运行`npm run electron:install`进行安装
 
 # Electron桌面通知示例和代码位置
 

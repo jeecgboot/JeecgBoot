@@ -1,6 +1,5 @@
 package org.jeecg.modules.system.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysAnnouncement;
@@ -48,10 +47,11 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
     /**
      * 获取用户未读消息数量
      *
-     * @param userId 用户id
+     * @param userId     用户id
+     * @param noticeType 通知类型
      * @return
      */
-    public Integer getUnreadMessageCountByUserId(String userId, Date beginDate);
+    public Integer getUnreadMessageCountByUserId(String userId, Date beginDate, String noticeType);
 
 
     /**
@@ -72,7 +72,7 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
     /**
      * 分页查询当前登录用户的消息， 并且标记哪些是未读消息
      */
-    List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, String busType, Date beginDate, Date endDate);
+    List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, String busType, String msgCategory, Date beginDate, Date endDate, String noticeType);
 
     /**
      * 修改为已读消息
@@ -91,4 +91,11 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
      * @return
      */
     public List<String> getNotSendedAnnouncementlist(String userId);
+
+    /**
+     * 添加访问次数
+     * @param id
+     * @param count
+     */
+    void updateVisitsNum(String id, int count);
 }

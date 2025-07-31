@@ -151,6 +151,28 @@
           toolbar,
           menubar: false,
           plugins,
+          // 添加以下粘贴相关配置
+          paste_data_images: true, // 允许粘贴图片
+          paste_as_text: false, // 不以纯文本粘贴
+          paste_retain_style_properties: 'all', // 保留所有样式属性
+          paste_webkit_styles: 'all', // 保留webkit样式
+          paste_merge_formats: true, // 合并格式
+          paste_block_drop: true, // 允许拖放粘贴
+          paste_preprocess: (plugin, args) => {
+            // 可以在这里对粘贴的内容进行预处理
+            //console.log('粘贴的内容:', args.content);
+          },
+          paste_postprocess: (plugin, args) => {
+            // 可以在这里对粘贴的内容进行后处理
+            //console.log('处理后的内容:', args.node);
+          },
+          // 放宽内容过滤规则
+          valid_elements: '*[*]',
+          extended_valid_elements: '*[*]',
+          valid_children: '+body[style]',
+          allow_conditional_comments: true,
+          allow_html_in_named_anchor: true,
+
           language_url: publicPath + 'resource/tinymce/langs/' + langName.value + '.js',
           language: langName.value,
           branding: false,

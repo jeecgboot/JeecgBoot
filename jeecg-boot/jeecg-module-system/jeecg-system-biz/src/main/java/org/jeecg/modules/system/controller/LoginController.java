@@ -370,7 +370,16 @@ public class LoginController {
 				} else if(CommonConstant.SMS_TPL_TYPE_2.equals(smsmode)) {
 					//忘记密码模板
 					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
-				}
+                    //update-begin---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
+                    if(b){
+                        String username = sysUser.getUsername();
+                        obj.put("username",username);
+                        redisUtil.set(redisKey, obj.toJSONString(), 600);
+                        result.setSuccess(true);
+                        return result;
+                    }
+                    //update-end---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
+                }
 			}
 
 			if (b == false) {
@@ -438,7 +447,7 @@ public class LoginController {
 		userInfo(sysUser, result, request);
 		//添加日志
 		baseCommonService.addLog("用户名: " + sysUser.getUsername() + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
-
+        redisUtil.removeAll(redisKey);
 		return result;
 	}
 
@@ -793,7 +802,10 @@ public class LoginController {
 				return result;
 			}
 			//验证码5分钟内有效
-			redisUtil.set(redisKey, captcha, 300);
+            //update-begin---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
+            obj.put("username",username);
+            redisUtil.set(redisKey, obj.toJSONString(), 300);
+            //update-end---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
 			result.setSuccess(true);
 		} catch (ClientException e) {
 			e.printStackTrace();

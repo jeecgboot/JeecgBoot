@@ -2,7 +2,6 @@ package org.jeecg.modules.openapi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.modules.openapi.entity.OpenApi;
 import org.jeecg.modules.openapi.entity.OpenApiPermission;
 
 import java.util.List;

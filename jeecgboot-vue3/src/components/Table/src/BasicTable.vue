@@ -4,6 +4,7 @@
       :class="{ 'table-search-area-hidden': !getBindValues.formConfig?.schemas?.length }"
       submitOnReset
       v-bind="getFormProps"
+      source="table-query"
       v-if="getBindValues.useSearchForm"
       :tableAction="tableAction"
       @register="registerForm"
@@ -214,7 +215,7 @@
         onChange && isFunction(onChange) && onChange.call(undefined, ...args);
       }
 
-      const { getViewColumns, getColumns, setCacheColumnsByField, setColumns, getColumnsRef, getCacheColumns } = useColumns(
+      const { getViewColumns, getColumns, getRefColumns, setCacheColumnsByField, setColumns, getColumnsRef, getCacheColumns } = useColumns(
         getProps,
         getPaginationInfo,
         // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
@@ -367,6 +368,9 @@
         getRowSelection,
         getPaginationRef: getPagination,
         getColumns,
+        // update-begin--author:liaozhiyang---date:20250722---for：【issues/8529】setColumns后列配置没联动更新
+        getColumnsRef: () => getColumnsRef,
+        // update-end--author:liaozhiyang---date:20250722---for：【issues/8529】setColumns后列配置没联动更新
         getCacheColumns,
         emit,
         updateTableData,
