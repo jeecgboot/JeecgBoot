@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +25,6 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
-import org.jeecg.modules.business.entity.Client;
-import org.jeecg.modules.business.entity.UserClient;
 import org.jeecg.modules.business.service.IBalanceService;
 import org.jeecg.modules.business.service.IUserClientService;
 import org.jeecg.modules.system.entity.*;
@@ -105,11 +102,6 @@ public class SysUserController {
     @Autowired
     private ISysUserTenantService userTenantService;
 
-    @Autowired
-    private IUserClientService userClientService;
-    @Autowired
-    private IBalanceService balanceService;
-
     /**
      * 获取租户下用户数据（支持租户隔离）
      * @param user
@@ -175,19 +167,8 @@ public class SysUserController {
             // 保存用户走一个service 保证事务
             //获取租户ids
             String relTenantIds = payload.getString("relTenantIds");
-            sysUserService.saveUser(user, selectedRoles, selectedDeparts, relTenantIds);
-            // 判断是否为 WIA客户（通过部门名称）
-            String departId = selectedDeparts.split(",")[0]; // 取第一个部门ID
-            SysDepart depart = sysDepartService.getDepartById(departId);
-
-            if (depart != null && "WIA客户".equals(depart.getDepartName())) {
-                String clientId = payload.getString("client");
-                log.info("Add user client association for user ID: {}", user.getId());
-                UserClient userClient = new UserClient();
-                userClient.setUser_id(user.getId());
-                userClient.setClient_id(clientId);
-                userClientService.save(userClient);
-            }
+            String clientId = payload.getString("client");
+            sysUserService.saveUser(user, selectedRoles, selectedDeparts, relTenantIds, clientId);
             baseCommonService.addLog("添加用户，username： " +user.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
             result.success("添加成功！");
         } catch (Exception e) {
@@ -222,7 +203,8 @@ public class SysUserController {
                 // 修改用户走一个service 保证事务
                 //获取租户ids
                 String relTenantIds = jsonObject.getString("relTenantIds");
-                sysUserService.editUser(user, roles, departs, relTenantIds);
+                String clientId = jsonObject.getString("client");
+                sysUserService.editUser(user, roles, departs, relTenantIds, clientId);
                 result.success("修改成功!");
             }
         } catch (Exception e) {
@@ -1876,5 +1858,24 @@ public class SysUserController {
         if(sysUser.getCode() == null || sysUser.getCode().isEmpty())
             return Result.error(404,"User code not found");
         return Result.ok(sysUser.getCode());
+    }
+    /**
+     * 获取WIA员工的马帮账户号
+     * @return
+     */
+    @GetMapping(value = "/getWiaMabangUsername")
+    public Result<List<Map<String, String>>> getWiaMabangUsername() {
+        QueryWrapper<SysUser> queryWrapper = new QueryWrapper<>();
+        queryWrapper.ne("org_code", "A02").isNotNull("mabang_username");
+        queryWrapper.select("mabang_username");
+        queryWrapper.orderByAsc("mabang_username");
+        List<SysUser> list = sysUserService.list(queryWrapper);
+        List<Map<String, String>> result = list.stream()
+                .map(user -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("mabang_username", user.getMabangUsername());
+                    return map;
+                }).collect(Collectors.toList());
+        return Result.OK(result);
     }
 }
