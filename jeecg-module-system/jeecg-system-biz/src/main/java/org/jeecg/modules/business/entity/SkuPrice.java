@@ -75,6 +75,13 @@ public class SkuPrice implements Serializable {
     private BigDecimal price;
 
     /**
+     * 购买单位
+     */
+    @Excel(name = "购买单位", width = 15)
+    @ApiModelProperty(value = "购买单位")
+    private Integer unit;
+
+    /**
      * 优惠价起订量
      */
     @Excel(name = "优惠价起订量", width = 15)

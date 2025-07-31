@@ -100,6 +100,8 @@ public class SkuDocument {
 
         private String currencyCode;
 
+        private Integer unit;
+
     }
     @Data
     @NoArgsConstructor

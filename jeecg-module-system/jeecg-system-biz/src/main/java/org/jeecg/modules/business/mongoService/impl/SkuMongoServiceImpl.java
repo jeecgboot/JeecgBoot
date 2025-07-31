@@ -82,6 +82,7 @@ public class SkuMongoServiceImpl implements SkuMongoService {
                 .discountedPrice(price.getDiscountedPrice())
                 .threshold(price.getThreshold())
                 .currencyCode(currencyCode)
+                .unit(price.getUnit())
                 .build();
 
         mongoTemplate.update(SkuDocument.class)
@@ -269,7 +270,11 @@ public class SkuMongoServiceImpl implements SkuMongoService {
             skuOrderPage.setSkuPrice(Optional.ofNullable(skuDocument.getLatestSkuPrice())
                     .map(SkuDocument.LatestSkuPrice::getPrice)
                     .orElse(null));
-            skuOrderPage.setSkuPriceEffectiveDate(Optional.ofNullable(skuDocument.getLatestSkuPrice())
+        skuOrderPage.setUnit(
+                Optional.ofNullable(skuDocument.getLatestSkuPrice())
+                        .map(SkuDocument.LatestSkuPrice::getUnit)
+                        .orElse(1));
+        skuOrderPage.setSkuPriceEffectiveDate(Optional.ofNullable(skuDocument.getLatestSkuPrice())
                     .map(SkuDocument.LatestSkuPrice::getDate)
                     .orElse(null));
             skuOrderPage.setDiscountedPrice(Optional.ofNullable(skuDocument.getLatestSkuPrice())
@@ -387,6 +392,7 @@ public class SkuMongoServiceImpl implements SkuMongoService {
                     .discountedPrice(latestPrice.getDiscountedPrice())
                     .threshold(latestPrice.getThreshold())
                     .currencyCode(currencyCode)
+                    .unit(latestPrice.getUnit())
                     .build()
             );
         }
