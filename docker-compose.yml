@@ -32,6 +32,19 @@ services:
     networks:
       - jeecg-boot
 
+  jeecg-boot-pgvector:
+    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/pgvector
+    container_name: jeecg-boot-pgvector
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vector_db
+    ports:
+      - 5432:5432
+    restart: always
+    networks:
+      - jeecg-boot
+      
   jeecg-boot-system:
     build:
       context: ./jeecg-boot/jeecg-module-system/jeecg-system-start
