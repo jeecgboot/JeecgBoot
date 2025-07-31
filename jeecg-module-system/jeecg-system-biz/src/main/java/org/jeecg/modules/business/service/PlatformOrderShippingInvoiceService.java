@@ -366,8 +366,8 @@ public class PlatformOrderShippingInvoiceService {
      * @return List of shipping fees estimations.
      * @param errorMessages List of error messages to be filled
      */
-    public List<ShippingFeesEstimation> getShippingFeesEstimation(List<String> errorMessages) {
-        return factory.getEstimations(errorMessages);
+    public List<ShippingFeesEstimation> getShippingFeesEstimation(List<String> errorMessages,String userId) {
+        return factory.getEstimations(errorMessages, userId);
     }
 
     /**
