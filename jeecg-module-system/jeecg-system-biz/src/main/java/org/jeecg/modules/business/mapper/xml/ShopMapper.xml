@@ -5,12 +5,14 @@
     <delete id="deleteByMainId" parameterType="java.lang.String">
         DELETE
         FROM shop
-        WHERE owner_id = #{mainId}    </delete>
+        WHERE owner_id = #{mainId}
+    </delete>
 
     <select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.Shop">
         SELECT *
         FROM shop
-        WHERE owner_id = #{mainId}    </select>
+        WHERE owner_id = #{mainId}
+    </select>
 
     <select id="selectByClient" resultType="org.jeecg.modules.business.entity.Shop">
         SELECT shop.*
@@ -49,7 +51,8 @@
         SELECT s.erp_code as shop_code,
                c.internal_code as client_code,
                CONCAT(c.first_name, ' ' , c.surname) as client_name,
-               c.currency as currency
+               c.currency as currency,
+               s.default_sku_zh_name
         FROM shop s
         JOIN client c
             ON s.owner_id = c.id
