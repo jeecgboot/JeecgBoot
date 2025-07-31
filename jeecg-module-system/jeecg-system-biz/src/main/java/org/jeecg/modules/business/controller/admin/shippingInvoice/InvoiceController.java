@@ -146,6 +146,11 @@ public class InvoiceController {
         log.info("Request for shop by client {}", clientID);
         return Result.OK(shopService.listByClient(clientID));
 
+    }@GetMapping(value = "/selfInvoiceShopsByClient")
+    public Result<List<Shop>> getSelfInvoiceShopsByClient(@RequestParam("clientID") String clientID) {
+        log.info("Request for shop by client {}", clientID);
+        return Result.OK(shopService.listByClient(clientID));
+
     }
 
     /**
@@ -193,11 +198,17 @@ public class InvoiceController {
             return Result.error("Error 400 Bad Request");
         }
 
-        List<PlatformOrderFront> orders = platformOrderService.listByClientAndShops(clientId, shopIDs, start, end, type, pageNo, pageSize, warehouses, order, parsedColumn);
         int total = platformOrderService.countListByClientAndShops(clientId, shopIDs, start, end, type, warehouses);
-        if (!orders.isEmpty()) {
+        if (total == 0) {
+            return Result.error(404, "No orders for selected client/shops");
+        }
+        Response<List<PlatformOrderFront>, String> orders = platformOrderService.listByClientAndShops(clientId, shopIDs, start, end, type, pageNo, pageSize, warehouses, order, parsedColumn);
+        if(orders.getError() != null) {
+            return Result.error(orders.getError());
+        }
+        if (!orders.getData().isEmpty()) {
             IPage<PlatformOrderFront> page = new Page<>();
-            page.setRecords(orders);
+            page.setRecords(orders.getData());
             page.setCurrent(pageNo);
             page.setSize(pageSize);
             page.setTotal(total);
@@ -258,11 +269,12 @@ public class InvoiceController {
     @PostMapping(value = "/makeComplete")
     public Result<?> makeCompleteShippingInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
+            Response<InvoiceMetaData, List<Response<String, String>>> response = new Response<>();
             String method = param.getErpStatuses().toString().equals("[3]") ? POSTSHIPPING.getMethod() : param.getErpStatuses().toString().equals("[1, 2]") ? PRESHIPPING.getMethod() : ALL.getMethod();
-            InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
-            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), COMPLETE.name());
+            response = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
+            balanceService.updateBalance(param.clientID(), response.getData().getInvoiceCode(), COMPLETE.name());
 
-            return Result.OK(metaData);
+            return Result.OK(response);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {
@@ -389,7 +401,8 @@ public class InvoiceController {
     @PostMapping(value = "/makeManualComplete")
     public Result<?> makeManualCompleteInvoice(@RequestBody ManualInvoiceOrderParam param) {
         try {
-            InvoiceMetaData metaData = shippingInvoiceService.makeManualCompleteInvoice(param);
+            Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse = shippingInvoiceService.makeManualCompleteInvoice(param);
+            InvoiceMetaData metaData = invoiceMetaDataResponse.getData();
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.getClientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
                 balanceService.updateBalance(param.getClientID(), metaData.getInvoiceCode(), COMPLETE.name());
@@ -415,7 +428,7 @@ public class InvoiceController {
                 emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
                 log.info("Mail sent successfully");
             }
-            return Result.OK(metaData);
+            return Result.OK(invoiceMetaDataResponse);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {
@@ -491,6 +504,8 @@ public class InvoiceController {
     public Result<?> getValidOrderTimePeriod(@RequestParam("shopIds[]") List<String> shopIDs, @RequestParam("erpStatuses[]") List<Integer> erpStatuses) {
         log.info("Request for valid order time period for shops: {} and erpStatuses : {}", shopIDs.toString(), erpStatuses.toString());
         Period period = shippingInvoiceService.getValidOrderTimePeriod(shopIDs, erpStatuses);
+        if(period == null)
+            return Result.error(404, "No package in the selected period");
         if (period.isValid()) {
             return Result.OK(period);
         }
@@ -585,7 +600,7 @@ public class InvoiceController {
 
         List<PlatformOrderFront> orders = platformOrderService.fetchUninvoicedOrdersByShopForClientFullSQL(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize,
                 productStatuses, shippingAvailable, purchaseAvailable, startDate, endDate);
-        int total = !order.isEmpty() ? orders.get(0).getTotalCount() : 0;
+        int total = orders.isEmpty() ? 0 : orders.get(0).getTotalCount();
 
         IPage<PlatformOrderFront> page = new Page<>();
         page.setRecords(orders);

@@ -258,12 +258,17 @@ public class PlatformOrderShippingInvoiceService {
     }
 
     @Transactional
-    public InvoiceMetaData makeManualCompleteInvoice(ManualInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
+    public Response<InvoiceMetaData, List<Response<String, String>>> makeManualCompleteInvoice(ManualInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
+        Response<InvoiceMetaData, List<Response<String, String>>> response = new Response<>();
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
         List<String> ordersWithStock = platformOrderService.fetchOrdersWithProductAvailableByOrders(param.getOrdersWithStock());
-        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.getClientID(), null, param.getOrderIds(), param.getType(), null, null, ordersWithStock);
-        return getInvoiceMetaDataAndInsert(username, invoice);
+        Response<CompleteInvoice, List<Response<String, String>>> invoiceResponse = factory.createCompleteShippingInvoice(username, param.getClientID(), null, param.getOrderIds(), param.getType(), null, null, ordersWithStock);
+        CompleteInvoice invoice = invoiceResponse.getData();
+        response.setData(getInvoiceMetaDataAndInsert(username, invoice));
+        if(invoiceResponse.getError() != null)
+            response.setError(invoiceResponse.getError());
+        return response;
     }
 
     /**
@@ -276,7 +281,8 @@ public class PlatformOrderShippingInvoiceService {
      * @throws IOException
      */
     @Transactional
-    public InvoiceMetaData makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
+    public Response<InvoiceMetaData, List<Response<String, String>>> makeCompleteInvoicePostShipping(ShippingInvoiceParam param, String method, String ... user) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
+        Response<InvoiceMetaData, List<Response<String, String>>> response = new Response<>();
         String username = user.length > 0 ? user[0] : ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         List<String> orderIds;
         if(method.equals(POSTSHIPPING.getMethod())) {
@@ -287,8 +293,12 @@ public class PlatformOrderShippingInvoiceService {
             orderIds = platformOrderMapper.fetchUninvoicedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses(), param.getWarehouses());
         }
         // Creates invoice by factory
-        CompleteInvoice invoice = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd(), null);
-        return getInvoiceMetaDataAndInsert(username, invoice);
+        Response<CompleteInvoice, List<Response<String, String>>> invoiceResponse = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd(), null);
+        CompleteInvoice invoice = invoiceResponse.getData();
+        if (invoiceResponse.getError() != null)
+            response.setError(invoiceResponse.getError());
+        response.setData(getInvoiceMetaDataAndInsert(username, invoice));
+        return response;
     }
     @NotNull
     private InvoiceMetaData getInvoiceMetaDataAndInsert(String username, ShippingInvoice invoice) throws IOException {
@@ -625,6 +635,7 @@ public class PlatformOrderShippingInvoiceService {
      */
     @Transactional
     public List<InvoiceMetaData> breakdownInvoiceClientByType(List<String> clientIds, int invoiceType) {
+        // TODO : adapt front and do something with errors in response
         Map<String, List<String>> clientShopIDsMap = new HashMap<>();
         List<InvoiceMetaData> invoiceList = new ArrayList<>();
         for(String id: clientIds) {
@@ -648,6 +659,7 @@ public class PlatformOrderShippingInvoiceService {
                     "\nbetween dates : [" + start + "] --- [" + end + "]");
             try {
                 ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), null, entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
+                Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse;
                 InvoiceMetaData metaData;
                 if(invoiceType == 0) {
                     metaData = makeInvoice(param);
@@ -656,7 +668,8 @@ public class PlatformOrderShippingInvoiceService {
                         balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), SHIPPING.name());
                 }
                 else {
-                    metaData = makeCompleteInvoicePostShipping(param, POSTSHIPPING.getMethod());
+                    invoiceMetaDataResponse = makeCompleteInvoicePostShipping(param, POSTSHIPPING.getMethod());
+                    metaData = invoiceMetaDataResponse.getData();
                     if(client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.VIP.getName()))
                             || client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.CONFIRMED.getName())))
                         balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), COMPLETE.name());
@@ -707,13 +720,15 @@ public class PlatformOrderShippingInvoiceService {
                     "\nbetween dates : [" + start + "] --- [" + end + "]");
             try {
                 ShippingInvoiceParam param = new ShippingInvoiceParam(clientId, entry.getKey().getBalance(), entry.getValue(), start, end, Collections.singletonList(1), Arrays.asList("0", "1"));
+                Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse;
                 InvoiceMetaData metaData;
                 if(invoiceType == 0) {
                     metaData = makeInvoice(param, "system");
                     balanceService.updateBalance(clientId, metaData.getInvoiceCode(), SHIPPING.name());
                 }
                 else {
-                    metaData = makeCompleteInvoicePostShipping(param, PRESHIPPING.getMethod(), "system");
+                    invoiceMetaDataResponse = makeCompleteInvoicePostShipping(param, PRESHIPPING.getMethod(), "system");
+                    metaData = invoiceMetaDataResponse.getData();
                     balanceService.updateBalance(clientId, metaData.getInvoiceCode(), COMPLETE.name());
                 }
                 platformOrderMapper.updateErpStatusByCode(metaData.getInvoiceCode(), 2);

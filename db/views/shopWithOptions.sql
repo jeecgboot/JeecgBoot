@@ -6,9 +6,6 @@ SELECT c.id as client_id,
        s.erp_code as erp_code,
        s.active as is_shop_active,
        so.id as shop_options_id,
-       so.use_balance,
-       so.show_balance,
-       so.balance_threshold,
        so.is_auto_invoice,
        so.is_chronological_order,
        so.is_breakdown_invoice,
@@ -20,7 +17,7 @@ SELECT c.id as client_id,
        so.is_self_ignore_stock,
        so.has_stock,
        so.has_shipping_invoice_remark,
-       IF(so.use_balance IS NULL, 0, 1) AS has_options
+       IF(so.can_self_invoice IS NULL, 0, 1) AS has_options
 FROM shop s
 LEFT JOIN shop_options so ON s.id = so.shop_id
 JOIN client c ON s.owner_id = c.id

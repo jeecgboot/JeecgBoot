@@ -31,6 +31,10 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 		return shopMapper.selectByClient(clientID);
 	}
 	@Override
+	public List<Shop> listSelfInvoiceShopsByClient(String clientID) {
+		return shopMapper.selectSelfInvoiceShopsByClient(clientID);
+	}
+	@Override
 	public List<String> listIdByClient(String clientID) {
 		return shopMapper.selectShopIdByClient(clientID);
 	}

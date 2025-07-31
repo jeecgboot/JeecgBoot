@@ -257,6 +257,10 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
                                                   @Param("start") String startDate, @Param("end") String endDate,
                                                   @Param("order") String order, @Param("column") String column,
                                                   @Param("offset") Integer offset, @Param("size") Integer pageSize);
+    List<PlatformOrderFront> listAllByClientAndShops(@Param("clientId") String clientId,@Param("shopIds") List<String> shopIds,
+                                                  @Param("erpStatuses") List<Integer> erpStatuses,
+                                                  @Param("warehouses") List<String> warehouses,
+                                                  @Param("start") String startDate, @Param("end") String endDate);
     List<PlatformOrder> selectBatchIdsForUpdate(@Param("ids") List<String> orderIds);
     @MapKey("id")
     Map<String, PlatformOrder> selectBatchUninvoicedIdsForUpdate(@Param("ids") List<String> orderIds);

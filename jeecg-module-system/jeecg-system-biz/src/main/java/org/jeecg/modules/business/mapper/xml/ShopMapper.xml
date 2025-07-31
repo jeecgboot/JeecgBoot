@@ -17,6 +17,13 @@
         FROM shop
         WHERE owner_id = #{clientID} AND active = '1'
     </select>
+    <select id="selectSelfInvoiceShopsByClient" resultType="org.jeecg.modules.business.entity.Shop">
+        SELECT s.*
+        FROM shop s
+        JOIN shop_options so ON s.id = so.shop_id
+        WHERE owner_id = #{clientID}
+          AND active = '1' AND so.can_self_invoice = 1;
+    </select>
     <select id="selectShopIdByClient" resultType="java.lang.String">
         SELECT shop.id
         FROM shop

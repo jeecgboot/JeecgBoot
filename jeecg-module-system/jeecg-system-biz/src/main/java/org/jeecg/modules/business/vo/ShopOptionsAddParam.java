@@ -8,9 +8,6 @@ import java.util.List;
 @Data
 public class ShopOptionsAddParam {
     private List<String> shopIds;
-    private Boolean useBalance;
-    private Boolean showBalance;
-    private Integer balanceThreshold;
     private Boolean isAutoInvoice;
     private Boolean isChronologicalOrder;
     private Boolean isBreakdownInvoice;
@@ -24,9 +21,6 @@ public class ShopOptionsAddParam {
     private Boolean hasShippingInvoiceRemark;
 
     public ShopOptionsAddParam(@JsonProperty("shopIds") List<String> shopIds,
-                               @JsonProperty("useBalance") Boolean useBalance,
-                               @JsonProperty("showBalance") Boolean showBalance,
-                               @JsonProperty("balanceThreshold") Integer balanceThreshold,
                                @JsonProperty("isAutoInvoice") Boolean isAutoInvoice,
                                @JsonProperty("isChronologicalOrder") Boolean isChronologicalOrder,
                                @JsonProperty("isBreakdownInvoice") Boolean isBreakdownInvoice,
@@ -40,9 +34,6 @@ public class ShopOptionsAddParam {
                                @JsonProperty("hasShippingInvoiceRemark") Boolean hasShippingInvoiceRemark
     ) {
         this.shopIds = shopIds;
-        this.useBalance = useBalance;
-        this.showBalance = showBalance;
-        this.balanceThreshold = balanceThreshold;
         this.isAutoInvoice = isAutoInvoice;
         this.isChronologicalOrder = isChronologicalOrder;
         this.isBreakdownInvoice = isBreakdownInvoice;
