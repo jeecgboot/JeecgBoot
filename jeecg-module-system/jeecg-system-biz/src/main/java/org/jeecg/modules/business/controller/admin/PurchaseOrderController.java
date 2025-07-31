@@ -615,26 +615,31 @@ public class PurchaseOrderController {
         log.info("{}/{} purchase order requests have succeeded.", nbSuccesses, invoiceNumbers.size());
 
         List<String> groupIdsToDelete = new ArrayList<>();
-        for(Map.Entry<String, Responses> entry : responsesMappedByInvoiceNumber.entrySet()) {
-            if(!entry.getValue().getFailures().isEmpty()) {
-                groupIdsToDelete.addAll(entry.getValue().getSuccesses());
+        List<String> successfulInvoices = new ArrayList<>();
+        for (Map.Entry<String, Responses> entry : responsesMappedByInvoiceNumber.entrySet()) {
+            String invoiceNumber = entry.getKey();
+            Responses resp = entry.getValue();
+            if (!resp.getFailures().isEmpty()) {
+                groupIdsToDelete.addAll(resp.getSuccesses());
+            } else {
+                successfulInvoices.add(invoiceNumber);
             }
         }
-        if(!groupIdsToDelete.isEmpty()) {
+        if (!groupIdsToDelete.isEmpty()) {
             log.info("Deleting purchase orders that have been incompletely created in Mabang : {}", groupIdsToDelete);
             Responses groupIdsDeleteResult = providerMabangService.deletePurchaseOrderFromMabang(groupIdsToDelete);
             responsesMappedByInvoiceNumber.put("groupIdDelete", groupIdsDeleteResult);
-        } else {
-            log.info("Updating order erp status to 2 in Mabang");
-            List<String> platformOrderIds = platformOrderService.getPlatformOrderIdsByInvoiceNumbers(invoiceNumbers);
+        }
+        if (!successfulInvoices.isEmpty()) {
+            log.info("Updating order erp status to 2 in Mabang for invoices: {}", successfulInvoices);
+            List<String> platformOrderIds = platformOrderService.getPlatformOrderIdsByInvoiceNumbers(successfulInvoices);
             Response<List<UpdateResult>, List<UpdateResult>> updateResponse = platformOrderMabangService.updateOrderStatusToPreparing(platformOrderIds);
             Responses updateOrderStatusResponse = new Responses();
             if(updateResponse.getStatus() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
                 String errMsg = updateResponse.getError().get(0).getReason();
                 updateOrderStatusResponse.addFailure(errMsg);
                 responsesMappedByInvoiceNumber.put("UpdateOrderStatusError", updateOrderStatusResponse);
-            }
-            else {
+            } else {
                 List<String> updateOrderStatusSuccess = updateResponse.getData().stream()
                         .map(UpdateResult::getPlatformOrderNumber)
                         .collect(Collectors.toList());
