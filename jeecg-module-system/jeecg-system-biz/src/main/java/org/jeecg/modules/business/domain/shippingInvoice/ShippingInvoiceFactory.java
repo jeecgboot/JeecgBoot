@@ -15,6 +15,7 @@ import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
+import org.jeecg.modules.message.websocket.WebSocketSender;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,6 +73,8 @@ public class ShippingInvoiceFactory {
     private SkuPromotionHistoryMapper skuPromotionHistoryMapper;
     @Autowired
     private ISavRefundService savRefundService;
+    @Autowired
+    private IShopOptionsService shopOptionsService;
     @Autowired
     private ISavRefundWithDetailService savRefundWithDetailService;
     @Autowired
@@ -174,7 +177,7 @@ public class ShippingInvoiceFactory {
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public CompleteInvoice createCompleteShippingInvoice(String username, String customerId, BigDecimal balance, List<String> orderIds, String shippingMethod, String start, String end, List<String> ordersWithStock) throws UserException, MessagingException, InterruptedException {
+    public Response<CompleteInvoice, List<Response<String, String>>> createCompleteShippingInvoice(String username, String customerId, BigDecimal balance, List<String> orderIds, String shippingMethod, String start, String end, List<String> ordersWithStock) throws UserException, MessagingException, InterruptedException {
         log.info("Creating a complete invoice for \n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
         Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchUninvoicedOrderDataForUpdate(orderIds);
@@ -241,10 +244,19 @@ public class ShippingInvoiceFactory {
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public CompleteInvoice createInvoice(String username, String customerId, BigDecimal balance, List<String> shopIds,
+    public Response<CompleteInvoice, List<Response<String, String>>> createInvoice(String username, String customerId, BigDecimal balance, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                          List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject, List<String> ordersWithStock) throws UserException {
+        Response<CompleteInvoice, List<Response<String, String>>> response = new Response<>();
         Client client = clientMapper.selectById(customerId);
+        List<OrderBypassStock> orderBypassStockList = shopOptionsService.getStockBypassByOrder(ordersWithStock);
+        List<String> ordersCanBypassStock = orderBypassStockList.stream()
+                .filter(order -> order.getIsSelfIgnoreStock() == true)
+                .map(OrderBypassStock::getOrderId)
+                .collect(Collectors.toList());
+        log.info("Orders {} aren't allowed to bypass stock", orderBypassStockList.stream()
+                .filter(order -> order.getIsSelfIgnoreStock() == false)
+                .map(OrderBypassStock::getOrderId).collect(Collectors.toList()));
         log.info("User {} is creating a complete invoice for customer {}", username, client.getInternalCode());
 
         log.info("Orders to be invoiced: {}", orderAndContent);
@@ -267,16 +279,25 @@ public class ShippingInvoiceFactory {
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
         String invoiceCode = invoiceNumberReservationService.getLatestInvoiceNumberByType(COMPLETE.getType());
         log.info("New invoice code: {}", invoiceCode);
-        calculateFees(balance, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
+        Map<String, List<String>> ordersWithPb = calculateFees(balance, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
+        List<Response<String, String>> responsesWithPb = new ArrayList<>();
+        if (!ordersWithPb.isEmpty()) {
+            for (Map.Entry<String, List<String>> entry : ordersWithPb.entrySet()) {
+                Response<String, String> responseWithPb = new Response<>();
+                responseWithPb.setData(entry.getKey());
+                responseWithPb.setError(String.join(", ", entry.getValue()));
+                responsesWithPb.add(responseWithPb);
+            }
+            response.setError(responsesWithPb);
+        }
         // Purchase fees
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
         List<String> orderIds = orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(toList());
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
         List<PromotionDetail> promotionDetails = new ArrayList<>();
-        List<String> clientsThatByPassStock = clientService.getClientsByCode(CLIENT_STOCK_BYPASS_LIST);
-        if(clientsThatByPassStock.contains(customerId) && ordersWithStock != null && !ordersWithStock.isEmpty()) {
-            orderIds = orderIds.stream().filter(orderId -> !ordersWithStock.contains(orderId)).collect(toList());
+        if(!ordersCanBypassStock.isEmpty()) {
+            orderIds = orderIds.stream().filter(orderId -> !ordersCanBypassStock.contains(orderId)).collect(toList());
         }
         if(!orderIds.isEmpty()){
             List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(orderIds);
@@ -295,8 +316,9 @@ public class ShippingInvoiceFactory {
         }
         updateOrdersAndContentsInDb(orderAndContent);
 
-        return new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
-                purchaseOrderSkuList, promotionDetails, eurToUsd);
+        response.setData(new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
+                purchaseOrderSkuList, promotionDetails, eurToUsd));
+        return response;
     }
 
     /**
@@ -323,9 +345,10 @@ public class ShippingInvoiceFactory {
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public CompleteInvoice createCompleteInvoiceWithBalance(String username, String customerId, BigDecimal balance, List<String> shopIds,
+    public Response<CompleteInvoice, List<Response<String, String>>> createCompleteInvoiceWithBalance(String username, String customerId, BigDecimal balance, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                          List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject) throws UserException, MessagingException {
+        Response<CompleteInvoice, List<Response<String, String>>> response = new Response<>();
         // sorting by order time
         orderAndContent = orderAndContent.entrySet().stream().sorted(
                 Map.Entry.comparingByKey(Comparator.comparing(PlatformOrder::getOrderTime))
@@ -333,7 +356,9 @@ public class ShippingInvoiceFactory {
 
         Client client = clientMapper.selectById(customerId);
         BigDecimal virtualBalance = balance;
-        Map<String, List<String>> ordersToRemove = new HashMap<>();
+        List<Response<String, String>> ordersWithError = new ArrayList<>();
+        List<Response<String, String>> ordersToSkip = new ArrayList<>();
+        List<Response<String, String>> ordersInsBalance = new ArrayList<>();
         log.info("User {} is creating a complete invoice in {} order, for customer {}", username, client.getInternalCode(), client.getIsChronologicalOrder().equals("0") ? "first can invoice" : "chronological");
 
         if (orderAndContent == null || orderAndContent.isEmpty()) {
@@ -361,59 +386,79 @@ public class ShippingInvoiceFactory {
         boolean skip = false;// isChronologicalOrder = 1 && insufficient balance => skip = true
         for(Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry : orderAndContent.entrySet()) {
             if(skip) {
-                if(ordersToRemove.containsKey("skip"))
-                    ordersToRemove.get("skip").add(entry.getKey().getPlatformOrderId());
-                else
-                    ordersToRemove.put("skip", Collections.singletonList(entry.getKey().getPlatformOrderId()));
+                Response<String, String> orderToSkip = new Response<>();
+                orderToSkip.setData(entry.getKey().getPlatformOrderId());
+                orderToSkip.setError("Order skipped due to insufficient balance in chronological order.");
+                ordersToSkip.add(orderToSkip);
                 continue;
             }
             BigDecimal estimatedVirtualBalance;
+            Response<BigDecimal, String> estimatedBalanceResponse;
             try {
-                estimatedVirtualBalance = calculateFeeForOrder(username, virtualBalance, logisticChannelMap, entry.getKey(), entry.getValue(), channelPriceMap, countryList, skuRealWeights, skuServiceFees,
+                estimatedBalanceResponse = calculateFeeForOrder(username, virtualBalance, logisticChannelMap, entry.getKey(), entry.getValue(), channelPriceMap, countryList, skuRealWeights, skuServiceFees,
                         latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
             } catch (UserException e) {
                 log.error("Couldn't calculate fee for order {} !", entry.getKey().getId());
-                if(ordersToRemove.containsKey("error"))
-                    ordersToRemove.get("error").add(entry.getKey().getPlatformOrderId());
-                else
-                    ordersToRemove.put("error", Collections.singletonList(entry.getKey().getPlatformOrderId()));
+                Response<String, String> orderWithError = new Response<>();
+                orderWithError.setData(entry.getKey().getPlatformOrderId());
+                orderWithError.setError(e.getMessage());
+                ordersWithError.add(orderWithError);
                 continue;
             }
+            if (estimatedBalanceResponse.getError() != null) {
+                log.error("Error while calculating fee for order {} : {}", entry.getKey().getId(), estimatedBalanceResponse.getError());
+                Response<String, String> orderWithError = new Response<>();
+                orderWithError.setData(entry.getKey().getPlatformOrderId());
+                orderWithError.setError(estimatedBalanceResponse.getError());
+                ordersWithError.add(orderWithError);
+                continue;
+            }
+            estimatedVirtualBalance = estimatedBalanceResponse.getData();
             if(estimatedVirtualBalance.compareTo(BigDecimal.ZERO) < 0) {
                 log.error("Not enough balance for order {} !", entry.getKey().getId());
-                if(ordersToRemove.containsKey("balance"))
-                    ordersToRemove.get("balance").add(entry.getKey().getPlatformOrderId());
-                else
-                    ordersToRemove.put("balance", Collections.singletonList(entry.getKey().getPlatformOrderId()));
+                Response<String, String> orderInsBalance = new Response<>();
+                orderInsBalance.setData(entry.getKey().getPlatformOrderId());
+                orderInsBalance.setError("Not enough balance for order " + entry.getKey().getPlatformOrderId() + " : " + estimatedVirtualBalance);
+                ordersInsBalance.add(orderInsBalance);
                 if(client.getIsChronologicalOrder().equals("1"))
                     skip = true;
                 continue;
             }
             virtualBalance = estimatedVirtualBalance;
         }
-        if(!ordersToRemove.isEmpty() && ordersToRemove.get("balance") != null) {
+        if(!ordersInsBalance.isEmpty()) {
             String emailSubject = "[" + LocalDate.now() + "] Rapport de facturation automatique WIA App";
             String destEmail = env.getProperty("spring.mail.username");
             String templateName = "client/confirmedClientsInvoicingJobReport.ftl";
             Map<String, Object> templateModel = new HashMap<>();
-            templateModel.put("errors", ordersToRemove.get("balance"));
-//            templateModel.put("skipped", ordersToRemove.get("skip"));
+            templateModel.put("errors", ordersInsBalance);
             templateModel.put("client", client);
             templateModel.put("chronologicalOrder", client.getIsChronologicalOrder());
             emailService.newSendSimpleMessage(destEmail, emailSubject, templateName, templateModel);
         }
         // removing orders that can't be invoiced
-        for(Map.Entry<String, List<String>> entry : ordersToRemove.entrySet()) {
-            for(String platformOrderId : entry.getValue()) {
-                orderAndContent.keySet().removeIf(order -> order.getPlatformOrderId().equals(platformOrderId));
-            }
+        for (Response<String, String> orderWithError : ordersWithError) {
+            String platformOrderId = orderWithError.getData();
+            orderAndContent.keySet().removeIf(order -> order.getPlatformOrderId().equals(platformOrderId));
+        }
+        for (Response<String, String> orderToSkip : ordersToSkip) {
+            String platformOrderId = orderToSkip.getData();
+            orderAndContent.keySet().removeIf(order -> order.getPlatformOrderId().equals(platformOrderId));
+        }
+        for (Response<String, String> orderInsBalance : ordersInsBalance) {
+            String platformOrderId = orderInsBalance.getData();
+            orderAndContent.keySet().removeIf(order -> order.getPlatformOrderId().equals(platformOrderId));
         }
 
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
         if(orderAndContent.isEmpty()) {
             log.error("No order was invoiced for customer {},  : Please check if the orders are in the correct erp status and if the customer has enough balance.", client.getInternalCode());
-            throw new UserException("No order was invoiced for customer " + client.getInternalCode() +
-                    " : Please check if the orders are in the correct erp status and if the customer has enough balance.");
+            List<Response<String, String>> allUninvoicedOrders = new ArrayList<>();
+            allUninvoicedOrders.addAll(ordersWithError);
+            allUninvoicedOrders.addAll(ordersToSkip);
+            allUninvoicedOrders.addAll(ordersInsBalance);
+            response.setError(allUninvoicedOrders);
+            return response;
         }
         List<String> orderIds = orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(toList());
         List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(orderIds);
@@ -431,8 +476,11 @@ public class ShippingInvoiceFactory {
         }
         updateOrdersAndContentsInDb(orderAndContent);
 
-        return new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
-                purchaseOrderSkuList, promotionDetails, eurToUsd);
+        response.setData(
+                new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
+                        purchaseOrderSkuList, promotionDetails, eurToUsd)
+        );
+        return response;
     }
 
     private BigDecimal calculateAndUpdateContentFees(Map<String, BigDecimal> skuRealWeights, Map<String, BigDecimal> skuServiceFees,
@@ -585,7 +633,7 @@ public class ShippingInvoiceFactory {
                                          List<ExtraFeeResult> extraFees,
                                          String subject, boolean skipShippingTimeComparing) throws UserException {
         log.info("Orders to be invoiced: {}", orderAndContent);
-        if (orderAndContent == null || orderAndContent.size() == 0) {
+        if (orderAndContent == null || orderAndContent.isEmpty()) {
             throw new UserException("No platform order in the selected period!");
         }
         Map<String, BigDecimal> skuRealWeights = new HashMap<>();
@@ -812,14 +860,20 @@ public class ShippingInvoiceFactory {
             }
             BigDecimal contentWeight = contentWeightResult.getKey();
             Pair<LogisticChannel, LogisticChannelPrice> logisticChannelPair;
+            Response<Pair<LogisticChannel, LogisticChannelPrice>, String> logisticChannelPriceResponse;
             try {
-                logisticChannelPair = findAppropriatePrice(countryList, logisticChannelMap,
+                logisticChannelPriceResponse = findAppropriatePrice(countryList, logisticChannelMap,
                         channelPriceMap, uninvoicedOrder, contentWeight);
             }
-            catch (RuntimeException | UserException e) {
+            catch ( UserException e ) {
                 platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList(e.getMessage()));
                 continue;
             }
+            if(logisticChannelPriceResponse.getError() != null) {
+                platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList(logisticChannelPriceResponse.getError()));
+                continue;
+            }
+            logisticChannelPair = logisticChannelPriceResponse.getData();
             LogisticChannelPrice price = logisticChannelPair.getRight();
 
             // retrieve all insurance fees already fetched
@@ -954,7 +1008,7 @@ public class ShippingInvoiceFactory {
      * @return
      * @throws UserException
      */
-    private BigDecimal calculateFeeForOrder(String username,
+    private Response<BigDecimal, String> calculateFeeForOrder(String username,
                                             BigDecimal balance,
                                             Map<String, LogisticChannel> logisticChannelMap,
                                             PlatformOrder order,
@@ -969,6 +1023,7 @@ public class ShippingInvoiceFactory {
                                             Map<String, BigDecimal> shopPackageMatFeeMap,
                                             String invoiceCode
     ) throws UserException {
+        Response<BigDecimal, String> response = new Response<>();
         // Virtual balance is only used for client type 1 in invoicing job
         BigDecimal virtualBalance = balance;
         // find logistic channel price for each order based on its content
@@ -1004,18 +1059,27 @@ public class ShippingInvoiceFactory {
                 skuRealWeights
         );
         if(!contentWeightResult.getValue().isEmpty()) {
-            return null;
+            response.setError("Order: " + order.getPlatformOrderId() + " has invalid sku weight: " + contentWeightResult.getValue());
+            return response;
         }
         BigDecimal contentWeight = contentWeightResult.getKey();
         Pair<LogisticChannel, LogisticChannelPrice> logisticChannelPair;
+        Response<Pair<LogisticChannel, LogisticChannelPrice>, String> logisticChannelPriceResponse;
         try {
-            logisticChannelPair = findAppropriatePrice(countryList, logisticChannelMap,
+            logisticChannelPriceResponse = findAppropriatePrice(countryList, logisticChannelMap,
                     channelPriceMap, order, contentWeight);
         }
         catch (UserException e) {
             log.error(e.getMessage());
-            return null;
+            response.setError(e.getMessage());
+            return response;
         }
+        if(logisticChannelPriceResponse.getError() != null) {
+            log.error(logisticChannelPriceResponse.getError());
+            response.setError(logisticChannelPriceResponse.getError());
+            return response;
+        }
+        logisticChannelPair = logisticChannelPriceResponse.getData();
         LogisticChannelPrice price = logisticChannelPair.getRight();
 
         BigDecimal packageMatFee = shopPackageMatFeeMap.get(order.getShopId());
@@ -1050,7 +1114,8 @@ public class ShippingInvoiceFactory {
                     .subtract(orderInsuranceFees)
                     .subtract(totalVAT);
             if (virtualBalance.compareTo(BigDecimal.ZERO) < 0) {
-                return virtualBalance;
+                response.setData(virtualBalance);
+                return response;
             }
             // if we are dealing with complete invoice, before inserting orders info
             // we calcute purchase fee and make sure we have enough balance
@@ -1063,7 +1128,8 @@ public class ShippingInvoiceFactory {
                 virtualBalance = virtualBalance.subtract(purchaseFee.multiply(eurToUsd));
             }
             if (virtualBalance.compareTo(BigDecimal.ZERO) < 0) {
-                return virtualBalance;
+                response.setData(virtualBalance);
+                return response;
             }
         }
         // update attributes of orders and theirs content
@@ -1084,7 +1150,8 @@ public class ShippingInvoiceFactory {
                     totalShippingFee, clientVatPercentage, contentDeclaredValueMap, totalDeclaredValue, totalVAT,
                     vatApplicable, pickingFeePerItem, content, remainingShippingFee,  null);
         }
-        return virtualBalance;
+        response.setData(virtualBalance);
+        return response;
     }
 
     private void updateOrdersAndContentsInDb(Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent) {
@@ -1163,9 +1230,10 @@ public class ShippingInvoiceFactory {
      * @throws UserException
      */
     @NotNull
-    private Pair<LogisticChannel, LogisticChannelPrice> findAppropriatePrice(List<Country> countryList, Map<String, LogisticChannel> logisticChannelMap,
+    private Response<Pair<LogisticChannel, LogisticChannelPrice>, String> findAppropriatePrice(List<Country> countryList, Map<String, LogisticChannel> logisticChannelMap,
                                                                              Map<LogisticChannel, List<LogisticChannelPrice>> channelPriceMap,
                                                                              PlatformOrder uninvoicedOrder, BigDecimal contentWeight) throws UserException {
+        Response<Pair<LogisticChannel, LogisticChannelPrice>, String> response = new Response<>();
         LogisticChannelPrice price;
         LogisticChannel channel;
         try {
@@ -1176,7 +1244,9 @@ public class ShippingInvoiceFactory {
             if (!foundCountry.isPresent()) {
                 String msg = "Couldn't find country named " + uninvoicedOrder.getCountry();
                 log.error(msg);
-                throw new UserException(msg);
+                response.setError(msg);
+                response.setStatus(404);
+                return response;
             }
 
             Date shippingTime = uninvoicedOrder.getShippingTime() == null ? now().toSqlDate() : uninvoicedOrder.getShippingTime();
@@ -1209,7 +1279,9 @@ public class ShippingInvoiceFactory {
                         uninvoicedOrder.getCountry()
                 );
                 log.error(msg);
-                throw new UserException(msg);
+                response.setError(msg);
+                response.setStatus(404);
+                return response;
             }
             Optional<LogisticChannelPrice> priceCandidate = channelPriceMap.get(channel).stream()
                     .filter(channelPrice -> channelPrice.getEffectiveCountry().equals(foundCountry.get().getCode()))
@@ -1231,17 +1303,19 @@ public class ShippingInvoiceFactory {
                         uninvoicedOrder.getCountry()
                 );
                 log.error(msg);
-                throw new UserException(msg);
+                response.setError(msg);
+                response.setStatus(404);
+                return response;
             }
         } catch (IncorrectResultSizeDataAccessException e) {
             String msg = "Found more than 1 channel price for package Order No: " + uninvoicedOrder.getPlatformOrderNumber()
                     + ", delivered at " + uninvoicedOrder.getShippingTime().toString();
             log.error(msg);
             throw new UserException(msg);
-        } catch (UserException e) {
-            throw new RuntimeException(e);
         }
-        return Pair.of(channel, price);
+        response.setData(Pair.of(channel, price));
+        response.setStatus(200);
+        return response;
     }
 
     /**
@@ -1274,7 +1348,7 @@ public class ShippingInvoiceFactory {
         return rule.next(lastInvoiceCode);
     }
 
-    public List<ShippingFeesEstimation> getEstimations(List<String> errorMessages) {
+    public List<ShippingFeesEstimation> getEstimations(List<String> errorMessages, String userId) {
         List<ShippingFeesEstimation> estimations = new ArrayList<>();
         Map<String, Map<PlatformOrder, List<PlatformOrderContent>>> uninvoicedOrdersByShopId = platformOrderService.findUninvoicedOrders();
         if(uninvoicedOrdersByShopId.isEmpty()) {
@@ -1305,6 +1379,8 @@ public class ShippingInvoiceFactory {
                 .collect(toMap(LogisticChannel::getId, Function.identity()));
         Map<LogisticChannel, List<LogisticChannelPrice>> channelPriceMap = getChannelPriceMap(logisticChannelMap, flattenedOrdersMap, true);
 
+        int totalShops = clientToShopsMap.values().stream().mapToInt(List::size).sum();
+        int currentIndex = 0;
         for (Map.Entry<Client, List<Shop>> entry : clientToShopsMap.entrySet()) {
             Client client = entry.getKey();
             List<Shop> shopList = entry.getValue();
@@ -1334,6 +1410,9 @@ public class ShippingInvoiceFactory {
                             client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), BigDecimal.ZERO, client.getIsCompleteInvoice(), e.getMessage(), new ArrayList<>()));
                     errorMessages.add(e.getMessage());
                 }
+                currentIndex++;
+                int percent = (int) Math.floor((currentIndex * 100.0) / totalShops);
+                WebSocketSender.sendJsonToUser(userId, "estimation", "预处理进度：" + percent + "%");
             }
         }
         return estimations.stream()

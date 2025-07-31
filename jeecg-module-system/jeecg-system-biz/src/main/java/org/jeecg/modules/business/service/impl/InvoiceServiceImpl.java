@@ -1,10 +1,18 @@
 package org.jeecg.modules.business.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.InvoiceMapper;
+import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.vo.Period;
+import org.jeecg.modules.business.vo.ShippingFeesEstimation;
+import org.jeecg.modules.business.vo.ShippingInvoiceOrderParam;
+import org.jeecg.modules.business.vo.SkuDetail;
+import org.jeecg.modules.message.websocket.WebSocketSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -13,11 +21,11 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
+import static org.jeecg.modules.business.enums.FileExtensions.*;
 
 @Service
 @Slf4j
@@ -42,11 +50,22 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     private ISavRefundService savRefundService;
     @Autowired
     private IShippingInvoiceService shippingInvoiceService;
+    @Autowired
+    private IShopService shopService;
+    @Autowired
+    private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
+    @Autowired
+    private PlatformOrderContentMapper platformOrderContentMap;
 
+
+    @Value("${jeecg.path.creditInvoiceDir}")
+    private String CREDIT_INVOICE_LOCATION;
     @Value("${jeecg.path.purchaseInvoiceDir}")
     private String PURCHASE_INVOICE_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDir}")
     private String SHIPPING_INVOICE_LOCATION;
+    @Value("${jeecg.path.shippingInvoicePdfDir}")
+    private String SHIPPING_INVOICE_PDF_LOCATION;
     @Value("${jeecg.path.shippingInvoiceDetailDir}")
     private String SHIPPING_INVOICE_DETAIL_LOCATION;
 
@@ -276,10 +295,22 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
      * @return
      */
     public boolean deleteInvoice(String invoiceNumber, String invoiceEntity) {
-        boolean invoiceDeleted = false, detailDeleted = false;
-
-        List<Path> invoicePathList = shippingInvoiceService.getPath(Invoice.getType(invoiceNumber).equalsIgnoreCase(PURCHASE.name()) ? PURCHASE_INVOICE_LOCATION : SHIPPING_INVOICE_LOCATION, invoiceNumber, invoiceEntity);
+        boolean invoiceDeleted = false, detailDeleted = false, pdfDeleted = false;
+        String invoiceType = Invoice.getType(invoiceNumber);
+        StringBuilder dirPath = new StringBuilder();
+        if(invoiceType.equalsIgnoreCase(PURCHASE.name())) {
+            dirPath.append(PURCHASE_INVOICE_LOCATION);
+        } else if(invoiceType.equalsIgnoreCase(SHIPPING.name()) || invoiceType.equalsIgnoreCase(COMPLETE.name())) {
+            dirPath.append(SHIPPING_INVOICE_LOCATION);
+        } else if(invoiceType.equalsIgnoreCase(CREDIT.name())) {
+            dirPath.append(CREDIT_INVOICE_LOCATION);
+        } else {
+            log.error("Invalid invoice type : {}", invoiceType);
+            return false;
+        }
+        List<Path> invoicePathList = shippingInvoiceService.getPath(dirPath.toString(), invoiceNumber, invoiceEntity);
         List<Path> detailPathList = shippingInvoiceService.getPath(SHIPPING_INVOICE_DETAIL_LOCATION, invoiceNumber, invoiceEntity);
+        List<Path> pdfPathList = shippingInvoiceService.getAttachementPath(SHIPPING_INVOICE_PDF_LOCATION, invoiceNumber, EXTENSION.PDF.getExtension());
 
         if(invoicePathList.isEmpty()) {
             log.error("FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
@@ -300,7 +331,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             }
         }
         if(detailPathList.isEmpty()) {
-            log.error("DETAIL FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
+            if(invoiceType.equalsIgnoreCase(SHIPPING.name()) || invoiceType.equalsIgnoreCase(COMPLETE.name()))
+                log.error("DETAIL FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
+            else
+                detailDeleted = true;
         } else {
             for (Path path : detailPathList) {
                 log.info(path.toString());
@@ -317,7 +351,25 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                 e.printStackTrace();
             }
         }
-        return invoiceDeleted && detailDeleted;
+        if(pdfPathList.isEmpty()) {
+            log.error("PDF FILE NOT FOUND : " + invoiceNumber + ", " +  invoiceEntity);
+        } else {
+            for (Path path : pdfPathList) {
+                log.info(path.toString());
+            }
+            try {
+                File pdfFile = new File(pdfPathList.get(0).toString());
+                if(pdfFile.delete()) {
+                    log.info("PDF file {} delete successful.", pdfPathList.get(0).toString());
+                    pdfDeleted = true;
+                } else {
+                    log.error("PDF file {} delete fail.", pdfPathList.get(0).toString());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return invoiceDeleted && detailDeleted && pdfDeleted;
     }
     public boolean deleteInvoiceFiles(List<Invoice> invoices) {
         boolean invoicesDeleted = true;
@@ -332,4 +384,74 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         return invoicesDeleted;
     }
 
+    @Override
+    public void asyncEstimateAndPushUpdates(String userId) {
+        new Thread(() -> {
+            List<String> errorMessages = new ArrayList<>();
+            List<ShippingFeesEstimation> shippingFeesEstimation = platformOrderShippingInvoiceService.getShippingFeesEstimation(errorMessages, userId);
+            if (shippingFeesEstimation.isEmpty()) {
+                WebSocketSender.sendJsonToUser(userId, "user", "No data");
+                return;
+            }
+            Map<String, String> clientIDCodeMap = new HashMap<>();
+            for (ShippingFeesEstimation estimation : shippingFeesEstimation) {
+                try {
+                    String clientId = clientIDCodeMap.computeIfAbsent(estimation.getCode(), code ->
+                            clientService.getClientIdByCode(code));
+                    if ("1".equals(estimation.getIsCompleteInvoice())) {
+                        List<String> shopIds = shopService.listIdByClient(clientId);
+                        Period period = platformOrderShippingInvoiceService.getValidPeriod(shopIds);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(period.start());
+                        String start = String.format("%04d-%02d-%02d",
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH) + 1,
+                                calendar.get(Calendar.DAY_OF_MONTH));
+                        calendar.setTime(period.end());
+                        if (calendar.get(Calendar.DAY_OF_MONTH) == calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
+                            if (calendar.get(Calendar.MONTH) == Calendar.DECEMBER) {
+                                calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 1);
+                                calendar.set(Calendar.MONTH, 0);
+                            } else {
+                                calendar.add(Calendar.MONTH, 1);
+                                calendar.set(Calendar.DAY_OF_MONTH, 1);
+                            }
+                        } else {
+                            calendar.add(Calendar.DAY_OF_MONTH, 1);
+                        }
+                        String end = String.format("%04d-%02d-%02d",
+                                calendar.get(Calendar.YEAR),
+                                calendar.get(Calendar.MONTH) + 1,
+                                calendar.get(Calendar.DAY_OF_MONTH));
+                        List<String> orderIds = platformOrderShippingInvoiceService.getShippingOrderIdBetweenDate(shopIds, start, end, Arrays.asList("0", "1"));
+                        ShippingInvoiceOrderParam param = new ShippingInvoiceOrderParam(clientId, orderIds, "post");
+                        Result<?> checkSkuPrices = checkSkuPrices(param);
+                        estimation.setErrorMessage(checkSkuPrices.getCode() == 200 ? "" : checkSkuPrices.getMessage());
+                    }
+                } catch (Exception e) {
+                    estimation.setErrorMessage("失败：" + e.getMessage());
+                }
+                System.gc();
+            }
+            WebSocketSender.sendJsonToUser(userId, "estimationBulk", JSONObject.toJSONString(shippingFeesEstimation));
+            WebSocketSender.sendJsonToUser(userId, "estimation", "全部完成");
+
+        }).start();
+    }
+    @Override
+    public Result<?> checkSkuPrices(ShippingInvoiceOrderParam param) {
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(param.orderIds());
+        Set<String> skuIds = orderContents.stream()
+                .map(PlatformOrderContent::getSkuId)
+                .collect(Collectors.toSet());
+        List<String> skusWithoutPrice = platformOrderContentMap.searchSkuDetail(new ArrayList<>(skuIds))
+                .stream()
+                .filter(sku -> sku.getPrice() == null || sku.getPrice().getPrice() == null)
+                .map(SkuDetail::getErpCode)
+                .collect(Collectors.toList());
+        if (skusWithoutPrice.isEmpty()) {
+            return Result.OK();
+        }
+        return Result.error("Couldn't find prices for following SKUs : " + skusWithoutPrice);
+    }
 }

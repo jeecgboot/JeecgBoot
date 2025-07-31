@@ -470,6 +470,13 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
+    public List<String> fetchOrdersWithProductAvailableByOrders(List<String> orderIds) {
+        if(orderIds == null || orderIds.isEmpty())
+            return new ArrayList<>();
+        return platformOrderMap.fetchOrdersWithProductAvailableByOrders(orderIds);
+    }
+
+    @Override
     public List<PlatformOrder> fetchOrdersWithMissingStock(LocalDateTime start) {
         return platformOrderMap.fetchOrdersWithMissingStock(start);
     }
@@ -570,7 +577,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
-    public List<PlatformOrderFront> listByClientAndShops(String clientId, List<String> shopIds, String startDate, String endDate, String invoicingMethod, Integer pageNo, Integer pageSize, List<String> warehouses, String order, String column) {
+    public Response<List<PlatformOrderFront>, String> listByClientAndShops(String clientId, List<String> shopIds, String startDate, String endDate, String invoicingMethod, Integer pageNo, Integer pageSize, List<String> warehouses, String order, String column) {
+        Response<List<PlatformOrderFront>, String> response = new Response<>();
         List<Integer> erpStatuses;
         InvoicingMethod method = InvoicingMethod.fromString(invoicingMethod);
         switch (method) {
@@ -587,7 +595,28 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
                 throw new IllegalArgumentException("The specified invoicing method is not supported : " + invoicingMethod);
         }
         int offset = (pageNo - 1) * pageSize;
-        return platformOrderMap.listByClientAndShops(clientId, shopIds, erpStatuses, warehouses, startDate, endDate, order, column, offset, pageSize);
+        List<PlatformOrderFront> platformOrders = platformOrderMap.listByClientAndShops(clientId, shopIds, erpStatuses, warehouses, startDate, endDate, order, column, offset, pageSize);
+        if (platformOrders == null || platformOrders.isEmpty()) {
+            List<PlatformOrderFront> ordersWithInvalidLC = platformOrderMap.listAllByClientAndShops(clientId, shopIds, erpStatuses, warehouses, startDate, endDate);
+            List<String> orderIds = new ArrayList<>(), logisticChannels = new ArrayList<>();
+            for (PlatformOrderFront po : ordersWithInvalidLC) {
+                orderIds.add(po.getPlatformOrderId());
+                if(!logisticChannels.contains(po.getLogisticChannelName()))
+                    logisticChannels.add(po.getLogisticChannelName());
+            }
+            if(logisticChannels.isEmpty()) {
+                String message = "No order found for client: " + clientId + " in shops: " + String.join(", ", shopIds) + " with invoicing method: " + invoicingMethod + " between dates: " + startDate + " and " + endDate;
+                log.error(message);
+                response.setError(message);
+                return response;
+            }
+            String message = "There are " + ordersWithInvalidLC.size() + " orders with invalid logistic channel: " + String.join(", ", logisticChannels) + ". Order IDs: " + String.join(", ", orderIds);
+            log.error(message);
+            response.setError(message);
+            return response;
+        }
+        response.setData(platformOrders);
+        return response;
     }
 
     @Override

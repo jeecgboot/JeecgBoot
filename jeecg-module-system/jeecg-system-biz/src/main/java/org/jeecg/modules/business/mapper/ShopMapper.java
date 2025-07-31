@@ -16,11 +16,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ShopMapper extends BaseMapper<Shop> {
 
-	public boolean deleteByMainId(@Param("mainId") String mainId);
+	boolean deleteByMainId(@Param("mainId") String mainId);
     
-	public List<Shop> selectByMainId(@Param("mainId") String mainId);
+	List<Shop> selectByMainId(@Param("mainId") String mainId);
 
     List<Shop> selectByClient(@Param("clientID") String clientID);
+
+    List<Shop> selectSelfInvoiceShopsByClient(@Param("clientID") String clientID);
 
     List<String> selectShopIdByClient(@Param("clientID") String clientID);
 

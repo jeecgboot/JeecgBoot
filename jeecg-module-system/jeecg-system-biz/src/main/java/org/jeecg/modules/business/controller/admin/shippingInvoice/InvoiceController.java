@@ -102,6 +102,8 @@ public class InvoiceController {
     @Autowired
     private IShippingInvoiceService iShippingInvoiceService;
     @Autowired
+    private InvoiceService invoiceService;
+    @Autowired
     private ISavRefundService iSavRefundService;
     @Autowired
     private ISavRefundWithDetailService savRefundWithDetailService;
@@ -146,6 +148,11 @@ public class InvoiceController {
         log.info("Request for shop by client {}", clientID);
         return Result.OK(shopService.listByClient(clientID));
 
+    }@GetMapping(value = "/selfInvoiceShopsByClient")
+    public Result<List<Shop>> getSelfInvoiceShopsByClient(@RequestParam("clientID") String clientID) {
+        log.info("Request for shop by client {}", clientID);
+        return Result.OK(shopService.listByClient(clientID));
+
     }
 
     /**
@@ -155,17 +162,7 @@ public class InvoiceController {
      */
     @PostMapping(value = "/checkSkuPrices")
     public Result<?> checkSkuPrices(@RequestBody ShippingInvoiceOrderParam param) {
-        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(param.orderIds());
-        Set<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toSet());
-        List<String> skusWithoutPrice = platformOrderContentMap.searchSkuDetail(new ArrayList<>(skuIds))
-                .stream()
-                .filter(skuDetail -> skuDetail.getPrice() == null || skuDetail.getPrice().getPrice()== null)
-                .map(SkuDetail::getErpCode)
-                .collect(Collectors.toList());
-        if (skusWithoutPrice.isEmpty()) {
-            return Result.OK();
-        }
-        return Result.error("Couldn't find prices for following SKUs : " + skusWithoutPrice);
+        return invoiceService.checkSkuPrices(param);
     }
     @GetMapping(value = "/orders")
     public Result<?> getOrdersByClientAndShops(PlatformOrder platformOrder,
@@ -193,11 +190,17 @@ public class InvoiceController {
             return Result.error("Error 400 Bad Request");
         }
 
-        List<PlatformOrderFront> orders = platformOrderService.listByClientAndShops(clientId, shopIDs, start, end, type, pageNo, pageSize, warehouses, order, parsedColumn);
         int total = platformOrderService.countListByClientAndShops(clientId, shopIDs, start, end, type, warehouses);
-        if (!orders.isEmpty()) {
+        if (total == 0) {
+            return Result.error(404, "No orders for selected client/shops");
+        }
+        Response<List<PlatformOrderFront>, String> orders = platformOrderService.listByClientAndShops(clientId, shopIDs, start, end, type, pageNo, pageSize, warehouses, order, parsedColumn);
+        if(orders.getError() != null) {
+            return Result.error(orders.getError());
+        }
+        if (!orders.getData().isEmpty()) {
             IPage<PlatformOrderFront> page = new Page<>();
-            page.setRecords(orders);
+            page.setRecords(orders.getData());
             page.setCurrent(pageNo);
             page.setSize(pageSize);
             page.setTotal(total);
@@ -258,11 +261,12 @@ public class InvoiceController {
     @PostMapping(value = "/makeComplete")
     public Result<?> makeCompleteShippingInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
+            Response<InvoiceMetaData, List<Response<String, String>>> response = new Response<>();
             String method = param.getErpStatuses().toString().equals("[3]") ? POSTSHIPPING.getMethod() : param.getErpStatuses().toString().equals("[1, 2]") ? PRESHIPPING.getMethod() : ALL.getMethod();
-            InvoiceMetaData metaData = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
-            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), COMPLETE.name());
+            response = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
+            balanceService.updateBalance(param.clientID(), response.getData().getInvoiceCode(), COMPLETE.name());
 
-            return Result.OK(metaData);
+            return Result.OK(response);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {
@@ -389,7 +393,8 @@ public class InvoiceController {
     @PostMapping(value = "/makeManualComplete")
     public Result<?> makeManualCompleteInvoice(@RequestBody ManualInvoiceOrderParam param) {
         try {
-            InvoiceMetaData metaData = shippingInvoiceService.makeManualCompleteInvoice(param);
+            Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse = shippingInvoiceService.makeManualCompleteInvoice(param);
+            InvoiceMetaData metaData = invoiceMetaDataResponse.getData();
             String clientCategory = clientCategoryService.getClientCategoryByClientId(param.getClientID());
             if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
                 balanceService.updateBalance(param.getClientID(), metaData.getInvoiceCode(), COMPLETE.name());
@@ -415,7 +420,7 @@ public class InvoiceController {
                 emailService.sendSimpleMessage(destEmail, subject, htmlBody, session);
                 log.info("Mail sent successfully");
             }
-            return Result.OK(metaData);
+            return Result.OK(invoiceMetaDataResponse);
         } catch (UserException e) {
             return Result.error(e.getMessage());
         } catch (IOException | ParseException e) {
@@ -491,6 +496,8 @@ public class InvoiceController {
     public Result<?> getValidOrderTimePeriod(@RequestParam("shopIds[]") List<String> shopIDs, @RequestParam("erpStatuses[]") List<Integer> erpStatuses) {
         log.info("Request for valid order time period for shops: {} and erpStatuses : {}", shopIDs.toString(), erpStatuses.toString());
         Period period = shippingInvoiceService.getValidOrderTimePeriod(shopIDs, erpStatuses);
+        if(period == null)
+            return Result.error(404, "No package in the selected period");
         if (period.isValid()) {
             return Result.OK(period);
         }
@@ -585,7 +592,7 @@ public class InvoiceController {
 
         List<PlatformOrderFront> orders = platformOrderService.fetchUninvoicedOrdersByShopForClientFullSQL(shopIdList, Collections.singletonList(1), parsedColumn, parsedOrder, pageNo, pageSize,
                 productStatuses, shippingAvailable, purchaseAvailable, startDate, endDate);
-        int total = !order.isEmpty() ? orders.get(0).getTotalCount() : 0;
+        int total = orders.isEmpty() ? 0 : orders.get(0).getTotalCount();
 
         IPage<PlatformOrderFront> page = new Page<>();
         page.setRecords(orders);
@@ -731,51 +738,10 @@ public class InvoiceController {
      */
     @GetMapping(value = "/breakdown/byShop")
     public Result<?> getOrdersByClientAndShops() {
-        List<String> errorMessages = new ArrayList<>();
-        List<ShippingFeesEstimation> shippingFeesEstimation = shippingInvoiceService.getShippingFeesEstimation(errorMessages);
-        if (shippingFeesEstimation.isEmpty()) {
-            return Result.error("No data");
-        }
-        Map<String, String> clientIDCodeMap = new HashMap<>();
-        for(ShippingFeesEstimation estimation: shippingFeesEstimation) {
-            String clientId;
-            if(clientIDCodeMap.containsKey(estimation.getCode())){
-                clientId = clientIDCodeMap.get(estimation.getCode());
-            }
-            else {
-                clientId = clientService.getClientIdByCode(estimation.getCode());
-                clientIDCodeMap.put(estimation.getCode(), clientId);
-            }
-            if (estimation.getIsCompleteInvoice().equals("1")) {
-                List<String> shopIds = shopService.listIdByClient(clientId);
-                Period period = shippingInvoiceService.getValidPeriod(shopIds);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(period.start());
-                String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
-                calendar.setTime(period.end());
-                if (calendar.get(Calendar.DAY_OF_MONTH) == calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                    if(calendar.get(Calendar.MONTH) == Calendar.DECEMBER) { // Si on est le 31 décembre
-                        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 1);
-                        calendar.set(Calendar.MONTH, 0);
-                    } else {
-                        calendar.add(Calendar.MONTH, 1); // Passer au mois suivant
-                        calendar.set(Calendar.DAY_OF_MONTH, 1); // Définir le jour au 1er
-                    }
-                } else {
-                    calendar.add(Calendar.DAY_OF_MONTH, 1); // Passer simplement au jour suivant
-                }
-                String end = calendar.get(Calendar.YEAR) + "-" +
-                        (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" +
-                        (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + calendar.get(Calendar.DAY_OF_MONTH);
-
-                List<String> orderIds = shippingInvoiceService.getShippingOrderIdBetweenDate(shopIds, start, end, Arrays.asList("0", "1"));
-                ShippingInvoiceOrderParam param = new ShippingInvoiceOrderParam(clientId, orderIds, "post");
-                Result<?> checkSkuPrices = checkSkuPrices(param);
-                estimation.setErrorMessage(checkSkuPrices.getCode() == 200 ? "" : checkSkuPrices.getMessage());
-            }
-            System.gc();
-        }
-        return Result.OK(errorMessages.toString(), shippingFeesEstimation);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String userId = sysUser.getId();
+        invoiceService.asyncEstimateAndPushUpdates(userId);
+        return Result.OK("Estimation started");
     }
 
     /**

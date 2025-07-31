@@ -98,7 +98,7 @@ public class PurchaseOrderController {
                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                    @RequestParam(name = "clientId", required = false) String clientId) {
         Page<PurchaseOrderPage> page = new Page<>(pageNo, pageSize);
-        purchaseOrderService.setPageForList(page, clientId);
+        purchaseOrderService.queryOrderByRole(page, clientId);
         return Result.OK(page);
     }
     /**

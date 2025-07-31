@@ -8,4 +8,5 @@ public class ShopPage {
     private String clientCode;
     private String clientName;
     private String currency;
+    private String defaultSkuZhName;
 }

@@ -28,17 +28,19 @@ import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
 import org.jeecg.common.desensitization.annotation.SensitiveEncode;
 import org.jeecg.common.exception.JeecgBootException;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.modules.business.entity.UserClient;
+import org.jeecg.modules.business.service.IUserClientService;
 import org.jeecg.modules.message.handle.impl.SystemSendMsgHandle;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.ISysRoleService;
+import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysUserDepVo;
@@ -54,11 +56,9 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -126,6 +126,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	@Autowired
 	private ISysThirdAccountService sysThirdAccountService;
+	@Autowired
+	private IUserClientService userClientService;
+	@Autowired
+	private ISysDepartService sysDepartService;
+	@Autowired
+	private static final String ORG_CODE_WIA_CLIENT = "A02";
 
 	@Override
 	public Result<IPage<SysUser>> queryPageList(HttpServletRequest req, QueryWrapper<SysUser> queryWrapper, Integer pageSize, Integer pageNo) {
@@ -722,7 +728,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void saveUser(SysUser user, String selectedRoles, String selectedDeparts, String relTenantIds) {
+	public void saveUser(SysUser user, String selectedRoles, String selectedDeparts, String relTenantIds, String clientId) {
 		//step.1 保存用户
 		this.save(user);
 		//获取用户保存前台传过来的租户id并添加到租户
@@ -747,12 +753,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 		//step.4 保存职位
 		this.saveUserPosition(user.getId(),user.getPost());
+		// step.5 处理 WIA 客户绑定
+		String departId = selectedDeparts.split(",")[0];
+		SysDepart depart = sysDepartService.getDepartById(departId);
+		if (depart != null && ORG_CODE_WIA_CLIENT.equals(depart.getOrgCode())) {
+			userClientBind(user, clientId);
+		}
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	@CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
-	public void editUser(SysUser user, String roles, String departs, String relTenantIds) {
+	public void editUser(SysUser user, String roles, String departs, String relTenantIds, String clientId) {
 		//获取用户编辑前台传过来的租户id
         this.editUserTenants(user.getId(),relTenantIds);
 		//step.1 修改用户基础信息
@@ -804,6 +816,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
 		//step.5 修改职位
 		this.editUserPosition(user.getId(),user.getPost());
+		// step.6 处理 WIA 客户绑定
+		String departId = departs.split(",")[0];
+		SysDepart depart = sysDepartService.getDepartById(departId);
+		if (depart != null && ORG_CODE_WIA_CLIENT.equals(depart.getOrgCode())) {
+			userClientBind(user, clientId);
+		}
+	}
+
+	public void userClientBind(SysUser user, String clientId) {
+		log.info("User-client association updated for user ID: {}, client ID: {}", user.getId(), clientId);
+		LambdaQueryWrapper<UserClient> wrapper = new LambdaQueryWrapper<UserClient>()
+				.eq(UserClient::getUser_id, user.getId());
+		UserClient existing = userClientService.getOne(wrapper);
+		if (existing != null) {
+			existing.setClient_id(clientId);
+			userClientService.updateById(existing);
+		} else {
+			UserClient userClient = new UserClient();
+			userClient.setUser_id(user.getId());
+			userClient.setClient_id(clientId);
+			userClientService.save(userClient);
+		}
 	}
 
 	@Override
