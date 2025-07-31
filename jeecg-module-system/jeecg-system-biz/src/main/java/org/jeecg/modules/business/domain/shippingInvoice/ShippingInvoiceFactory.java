@@ -15,6 +15,7 @@ import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
+import org.jeecg.modules.message.websocket.WebSocketSender;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1283,7 +1284,7 @@ public class ShippingInvoiceFactory {
         return rule.next(lastInvoiceCode);
     }
 
-    public List<ShippingFeesEstimation> getEstimations(List<String> errorMessages) {
+    public List<ShippingFeesEstimation> getEstimations(List<String> errorMessages, String userId) {
         List<ShippingFeesEstimation> estimations = new ArrayList<>();
         Map<String, Map<PlatformOrder, List<PlatformOrderContent>>> uninvoicedOrdersByShopId = platformOrderService.findUninvoicedOrders();
         if(uninvoicedOrdersByShopId.isEmpty()) {
@@ -1314,6 +1315,8 @@ public class ShippingInvoiceFactory {
                 .collect(toMap(LogisticChannel::getId, Function.identity()));
         Map<LogisticChannel, List<LogisticChannelPrice>> channelPriceMap = getChannelPriceMap(logisticChannelMap, flattenedOrdersMap, true);
 
+        int totalShops = clientToShopsMap.values().stream().mapToInt(List::size).sum();
+        int currentIndex = 0;
         for (Map.Entry<Client, List<Shop>> entry : clientToShopsMap.entrySet()) {
             Client client = entry.getKey();
             List<Shop> shopList = entry.getValue();
@@ -1343,6 +1346,9 @@ public class ShippingInvoiceFactory {
                             client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), BigDecimal.ZERO, client.getIsCompleteInvoice(), e.getMessage(), new ArrayList<>()));
                     errorMessages.add(e.getMessage());
                 }
+                currentIndex++;
+                int percent = (int) Math.floor((currentIndex * 100.0) / totalShops);
+                WebSocketSender.sendJsonToUser(userId, "estimation", "预处理进度：" + percent + "%");
             }
         }
         return estimations.stream()

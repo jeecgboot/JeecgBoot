@@ -102,6 +102,8 @@ public class InvoiceController {
     @Autowired
     private IShippingInvoiceService iShippingInvoiceService;
     @Autowired
+    private InvoiceService invoiceService;
+    @Autowired
     private ISavRefundService iSavRefundService;
     @Autowired
     private ISavRefundWithDetailService savRefundWithDetailService;
@@ -155,17 +157,7 @@ public class InvoiceController {
      */
     @PostMapping(value = "/checkSkuPrices")
     public Result<?> checkSkuPrices(@RequestBody ShippingInvoiceOrderParam param) {
-        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(param.orderIds());
-        Set<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toSet());
-        List<String> skusWithoutPrice = platformOrderContentMap.searchSkuDetail(new ArrayList<>(skuIds))
-                .stream()
-                .filter(skuDetail -> skuDetail.getPrice() == null || skuDetail.getPrice().getPrice()== null)
-                .map(SkuDetail::getErpCode)
-                .collect(Collectors.toList());
-        if (skusWithoutPrice.isEmpty()) {
-            return Result.OK();
-        }
-        return Result.error("Couldn't find prices for following SKUs : " + skusWithoutPrice);
+        return invoiceService.checkSkuPrices(param);
     }
     @GetMapping(value = "/orders")
     public Result<?> getOrdersByClientAndShops(PlatformOrder platformOrder,
@@ -731,51 +723,10 @@ public class InvoiceController {
      */
     @GetMapping(value = "/breakdown/byShop")
     public Result<?> getOrdersByClientAndShops() {
-        List<String> errorMessages = new ArrayList<>();
-        List<ShippingFeesEstimation> shippingFeesEstimation = shippingInvoiceService.getShippingFeesEstimation(errorMessages);
-        if (shippingFeesEstimation.isEmpty()) {
-            return Result.error("No data");
-        }
-        Map<String, String> clientIDCodeMap = new HashMap<>();
-        for(ShippingFeesEstimation estimation: shippingFeesEstimation) {
-            String clientId;
-            if(clientIDCodeMap.containsKey(estimation.getCode())){
-                clientId = clientIDCodeMap.get(estimation.getCode());
-            }
-            else {
-                clientId = clientService.getClientIdByCode(estimation.getCode());
-                clientIDCodeMap.put(estimation.getCode(), clientId);
-            }
-            if (estimation.getIsCompleteInvoice().equals("1")) {
-                List<String> shopIds = shopService.listIdByClient(clientId);
-                Period period = shippingInvoiceService.getValidPeriod(shopIds);
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(period.start());
-                String start = calendar.get(Calendar.YEAR) + "-" + (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" + (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + (calendar.get(Calendar.DAY_OF_MONTH));
-                calendar.setTime(period.end());
-                if (calendar.get(Calendar.DAY_OF_MONTH) == calendar.getActualMaximum(Calendar.DAY_OF_MONTH)) {
-                    if(calendar.get(Calendar.MONTH) == Calendar.DECEMBER) { // Si on est le 31 décembre
-                        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 1);
-                        calendar.set(Calendar.MONTH, 0);
-                    } else {
-                        calendar.add(Calendar.MONTH, 1); // Passer au mois suivant
-                        calendar.set(Calendar.DAY_OF_MONTH, 1); // Définir le jour au 1er
-                    }
-                } else {
-                    calendar.add(Calendar.DAY_OF_MONTH, 1); // Passer simplement au jour suivant
-                }
-                String end = calendar.get(Calendar.YEAR) + "-" +
-                        (calendar.get(Calendar.MONTH) + 1 < 10 ? "0" : "") + (calendar.get(Calendar.MONTH) + 1) + "-" +
-                        (calendar.get(Calendar.DAY_OF_MONTH) < 10 ? "0" : "") + calendar.get(Calendar.DAY_OF_MONTH);
-
-                List<String> orderIds = shippingInvoiceService.getShippingOrderIdBetweenDate(shopIds, start, end, Arrays.asList("0", "1"));
-                ShippingInvoiceOrderParam param = new ShippingInvoiceOrderParam(clientId, orderIds, "post");
-                Result<?> checkSkuPrices = checkSkuPrices(param);
-                estimation.setErrorMessage(checkSkuPrices.getCode() == 200 ? "" : checkSkuPrices.getMessage());
-            }
-            System.gc();
-        }
-        return Result.OK(errorMessages.toString(), shippingFeesEstimation);
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String userId = sysUser.getId();
+        invoiceService.asyncEstimateAndPushUpdates(userId);
+        return Result.OK("Estimation started");
     }
 
     /**
