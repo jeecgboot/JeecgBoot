@@ -1,28 +1,34 @@
 package org.jeecg.modules.business.controller.client;
 
 import cn.hutool.core.date.DateTime;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.message.TemplateMessageDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.api.ISysBaseAPI;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
+import org.jeecg.modules.business.entity.PurchaseOrder;
 import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.Estimation;
 import org.jeecg.modules.business.vo.ShippingFeesEstimation;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,9 +42,15 @@ public class TransactionController {
     @Autowired
     private IPlatformOrderService platformOrderService;
     @Autowired
+    private IPurchaseOrderService purchaseOrderService;
+    @Autowired
     private IShopService shopService;
     @Autowired
     private ISkuPriceService skuPriceService;
+    @Autowired
+    ISysUserService sysUserService;
+    @Autowired
+    private EmailService emailService;
     @Autowired
     PlatformOrderContentMapper platformOrderContentMapper;
     @Autowired
@@ -161,4 +173,60 @@ public class TransactionController {
         }
         return Result.ok(new Estimation(internalCode, ordersToProcess, processedOrders, shippingFeesEstimation, purchaseEstimation, currency, errorMessages,null, shopIds, new DateTime(startDate).toString(), new DateTime(endDate).toString(), isCompleteInvoiceReady, orderIds));
     }
+    @PostMapping("/uploadPaymentProofAndNotify")
+    public Result<?> uploadPaymentProofAndNotify(@RequestBody Map<String, String> params) {
+        log.info("Received request to upload payment proof and notify - params: {}", params);
+        String invoiceNumber = params.get("invoiceNumber");
+        String paymentProofString = params.get("paymentProofString");
+        log.info("Start uploading payment proof - Invoice Number: {}, Image Path: {}", invoiceNumber, paymentProofString);
+        if (StringUtils.isBlank(invoiceNumber) ||StringUtils.isBlank(paymentProofString)) {
+            return Result.error("Invoice number and image cannot be empty");
+        }
+        // invoice number validation
+        String[] parts = invoiceNumber.split("-");
+        String lastPart = parts[parts.length - 1];
+        if (!(lastPart.startsWith("1") || lastPart.startsWith("7"))) {
+            return Result.error("Only invoice numbers starting with '1' or '7' are allowed");
+        }
+        //get purchase order by invoice number
+        PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
+        if (purchaseOrder == null) {
+            return Result.error("Cannot find purchase order for invoice number: " + invoiceNumber);
+        }
+        purchaseOrder.setPaymentDocumentString(paymentProofString);
+        boolean updated = purchaseOrderService.updateById(purchaseOrder);
+        if (!updated) {
+            return Result.error("Failed to update purchase order for invoice number: " + invoiceNumber);
+        }
+        log.info("Purchase order updated successfully, payment proof set to: {}", paymentProofString);
+        // email
+        try {
+            String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
+            SysUser user = sysUserService.getById(userId);
+            log.info("Current operation user: {}({})", user.getUsername(), userId);
+            String emailSubject = String.format("客户 %s 上传了付款截图，请及时审核", user.getUsername());
+            String templateName = "admin/paymentProofNotification.ftl";
+            Map<String, Object> templateModel = new HashMap<>();
+            templateModel.put("client", user.getUsername());
+            templateModel.put("invoiceNumber", invoiceNumber);
+            templateModel.put("uploadTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            templateModel.put("reviewLink", "https://app.wia-sourcing.com/business/admin/purchasing/RegisterPurchaseInvoice");
+            List<SysUser> accountantUsers = sysUserService.getUsersByRoleCode("accountant");
+
+            for (SysUser accountant : accountantUsers) {
+                String email = accountant.getEmail();
+                if (StringUtils.isNotBlank(email)) {
+                    emailService.newSendSimpleMessage(email, emailSubject, templateName, templateModel);
+                    log.info("Email sent to accountant {} at {}", accountant.getUsername(), email);
+                } else {
+                    log.warn("Accountant {} has no email, skipping notification", accountant.getUsername());
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to send email notification for payment proof upload", e);
+        }
+
+        return Result.ok("Your payment proof has been submitted and will be reviewed soon.");
+    }
+
 }

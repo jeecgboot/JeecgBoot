@@ -194,7 +194,13 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return 权限集合
 	 */
 	Set<String> getUserPermissionsSet(String userId);
-	
+
+	/**
+	 * 根据角色编码查询用户
+	 * @param roleCode 角色编码
+	 * @return 拥有该角色的用户列表
+	 */
+	List<SysUser> getUsersByRoleCode(String roleCode);
 	/**
 	 * 根据用户名设置部门ID
 	 * @param username
