@@ -126,7 +126,7 @@ public class ClientController {
      * @param clientPage
      * @return
      */
-    @PostMapping(value = "/edit")
+    @PatchMapping(value = "/edit")
     public Result<?> edit(@RequestBody ClientPage clientPage) {
         Client client = new Client();
         BeanUtils.copyProperties(clientPage, client);
