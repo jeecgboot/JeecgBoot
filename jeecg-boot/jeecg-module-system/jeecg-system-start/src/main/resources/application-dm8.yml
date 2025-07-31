@@ -22,13 +22,12 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,httptrace-new
+        include: metrics,jeecghttptrace
 
 spring:
   flyway:
     # 是否启用flyway
     enabled: false
-    # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
     clean-disabled: true
   servlet:
     multipart:
@@ -44,7 +43,8 @@ spring:
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
-    initialize-schema: never
+    jdbc:
+      initialize-schema: never
     #定时任务启动开关，true-开  false-关
     auto-startup: true
     #延迟1秒启动定时任务
@@ -153,8 +153,8 @@ mybatis-plus:
       # 默认数据库表下划线命名
       table-underline: true
   configuration:
-    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
-    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
 #jeecg专用配置

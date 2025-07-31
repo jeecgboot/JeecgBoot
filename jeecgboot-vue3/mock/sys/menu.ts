@@ -1,13 +1,14 @@
 import { resultSuccess, resultError, getRequestToken, requestParams,baseUrl} from '../_util';
 import { MockMethod } from 'vite-plugin-mock';
 import { createFakeUserList } from './user';
+import { PageEnum } from '/@/enums/pageEnum';
 
 // single
 const dashboardRoute = {
   path: '/dashboard',
   name: 'Dashboard',
   component: 'LAYOUT',
-  redirect: '/dashboard/analysis',
+  redirect: PageEnum.BASE_HOME,
   meta: {
     title: 'routes.dashboard.dashboard',
     hideChildrenInMenu: true,

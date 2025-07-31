@@ -65,7 +65,7 @@
                     <a-button v-else type="dashed" shape="circle" @click="openSelectPerson">
                       <plus-outlined />
                     </a-button>
-                    
+
                   </span>
                 </div>
                 <div class="search-date">
@@ -81,14 +81,32 @@
                     </div>
                   </div>
                 </div>
+
+                <div class="search-date">
+                  <div class="date-label">类型：</div>
+                  <div class="date-tags">
+                    <div class="tags-container">
+                      <div v-for="item in noticeTypeOption" :class="item.active == true ? 'tag active flex' : 'tag flex'" @click="handleClickNoticeType(item)">
+                        <img class="notice-type-img" v-if="item.img" :src="item.img" />
+                        {{ item.text }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </template>
-              
+
               <span v-if="conditionStr" class="anticon filtera">
-                <filter-outlined />
-                <span style="font-size:12px;margin-left: 3px">{{conditionStr}}</span>
-                <span style="display: flex;margin:0 5px;"><close-outlined style="font-size: 12px" @click="clearAll"/></span>
+                <img v-if="noticeImg" :src="noticeImg" class="notice-type-header-img">
+                <filter-outlined v-else/>
+                <span style="font-size:12px;margin-left: 3px;position: relative;">{{conditionStr}}</span>
+                <span style="display: flex;margin:0 5px;">
+                  <svg @click="clearAll" t="1715689724802" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10694" width="14" height="14"><path d="M624.593455 23.272727a93.090909 93.090909 0 0 1 93.090909 93.090909v168.587637l143.406545 0.023272a116.363636 116.363636 0 0 1 116.247273 111.313455l0.116363 5.050182V861.090909a116.363636 116.363636 0 0 1-116.363636 116.363636H162.909091a116.363636 116.363636 0 0 1-116.363636-116.363636V401.338182a116.363636 116.363636 0 0 1 116.363636-116.363637l146.664727-0.023272V116.363636a93.090909 93.090909 0 0 1 88.459637-92.974545l4.654545-0.116364zM139.636364 581.818182v279.272727a23.272727 23.272727 0 0 0 23.272727 23.272727h302.545454v-162.909091a46.545455 46.545455 0 1 1 93.09091 0v162.909091h93.090909v-162.909091a46.545455 46.545455 0 1 1 93.090909 0v162.909091h116.363636a23.272727 23.272727 0 0 0 23.272727-23.272727V581.818182H139.636364z m0-93.090909h744.727272v-87.389091a23.272727 23.272727 0 0 0-23.272727-23.272727h-166.679273a69.818182 69.818182 0 0 1-69.818181-69.818182V116.363636h-221.905455v191.883637a69.818182 69.818182 0 0 1-69.818182 69.818182H162.909091a23.272727 23.272727 0 0 0-23.272727 23.272727V488.727273z" fill="currentColor" p-id="10695"></path></svg>
+                </span>
               </span>
-              <filter-outlined v-else/>
+              <div v-else style="align-content: center;">
+                 <img v-if="noticeImg" :src="noticeImg" class="notice-type-header-img" style="position: relative;top: -2px">
+                 <filter-outlined v-else />
+              </div>
             </a-popover>
             <close-outlined @click="closeModal" />
           </div>
@@ -103,12 +121,12 @@
         </template>
 
         <a-tab-pane tab="全部消息" key="all" forceRender>
-          <sys-message-list ref="allMessageRef" @close="hrefThenClose" @detail="showDetailModal"/>
+          <sys-message-list :isLowApp="isLowApp" ref="allMessageRef" @close="hrefThenClose" @detail="showDetailModal" @clear="clearAll" :messageCount="messageCount" @closeModal="closeModal"/>
         </a-tab-pane>
 
         <!-- 标星 -->
         <a-tab-pane tab="标星消息" key="star" forceRender>
-          <sys-message-list ref="starMessageRef" star @close="hrefThenClose" @detail="showDetailModal"/>
+          <sys-message-list :isLowApp="isLowApp" ref="starMessageRef" star @close="hrefThenClose" @detail="showDetailModal" @clear="clearAll" :messageCount="messageCount" @closeModal="closeModal" :cancelStarAfterDel="true"/>
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -116,7 +134,7 @@
 
   <user-select-modal isRadioSelection :showButton="false" labelKey="realname" rowKey="username" @register="regModal" @getSelectResult="getSelectedUser"></user-select-modal>
 
-  <DetailModal @register="registerDetail" :zIndex="1001"/>
+  <DetailModal @register="registerDetail" :zIndex="1001" @close="handleDetailColse"/>
 </template>
 
 <script>
@@ -128,7 +146,10 @@
   import UserSelectModal from '/@/components/Form/src/jeecg/components/modal/UserSelectModal.vue'
   import DetailModal from '/@/views/monitor/mynews/DetailModal.vue';
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
-  
+  import calendar from '/@/assets/icons/calendarNotice.png';
+  import folder from '/@/assets/icons/folderNotice.png';
+  import system from '/@/assets/icons/systemNotice.png';
+  import flow from '/@/assets/icons/flowNotice.png';
   export default {
     name: 'SysMessageModal',
     components: {
@@ -138,16 +159,35 @@
       BellFilled,
       ExclamationOutlined,
       JSelectUser,
+      // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-8241】emoji-mart-vue-fast库异步加载
       SysMessageList: createAsyncComponent(() => import('./SysMessageList.vue')),
+      // SysMessageList,
+      // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-8241】emoji-mart-vue-fast库异步加载
       UserSelectModal,
       PlusOutlined,
       DetailModal
+    },
+    props:{
+      messageCount: {
+        type: Number,
+        default: 0
+      }
     },
     emits:['register', 'refresh'],
     setup(_p, {emit}) {
       const allMessageRef = ref();
       const starMessageRef = ref();
       const activeKey = ref('all');
+      //通知类型
+      const noticeType = ref('');
+      //通知类型数组
+      const noticeTypeOption = reactive([
+        { key: 'system', text: '系统通知', active: false, img: system },
+        { key: 'flow', text: '流程通知', active: false, img: flow },
+        { key: 'plan', text: '日程通知', active: false, img: calendar },
+        { key: 'file', text: '知识通知', active: false, img: folder },
+      ]);
+      const noticeImg = ref('');
       function handleChangeTab(e, key) {
         activeKey.value = key;
         loadData();
@@ -155,7 +195,7 @@
       function handleChangePanel(key) {
         activeKey.value = key;
       }
-      
+
       // 查询区域存储值
       const searchParams = reactive({
         fromUser: '',
@@ -169,6 +209,7 @@
           fromUser: searchParams.fromUser,
           rangeDateKey: searchParams.rangeDateKey,
           rangeDate: searchParams.rangeDate,
+          noticeType: noticeType.value ? noticeType.value:''
         }
         if(activeKey.value == 'all'){
           getRefPromise(allMessageRef).then(() => {
@@ -178,15 +219,36 @@
           starMessageRef.value.reload(params);
         }
       }
-      
+
+      const isLowApp = ref(false);
       //useModalInner
       const [registerModal, { closeModal }] = useModalInner(async (data) => {
+        showSearch.value = false
+        if(data.noticeType){
+          noticeType.value = data.noticeType;
+          //update-begin---author:wangshuai---date:2025-07-01---for:【QQYUN-12998】点击完聊天的系统图标，再点击系统上面的铃铛就不出数据了---
+          for (const item of noticeTypeOption) {
+            if(item.key === data.noticeType){
+              item.active = true;
+              noticeImg.value = item.img;
+            }else{
+              item.active = false;
+            }
+          }
+          //update-end---author:wangshuai---date:2025-07-01---for:【QQYUN-12998】点击完聊天的系统图标，再点击系统上面的铃铛就不出数据了---
+          delete data.noticeType;
+        }
         //每次弹窗打开 加载最新的数据
         loadData();
+        if(data){
+          isLowApp.value = data.isLowApp||false
+        }else{
+          isLowApp.value = false;
+        }
       });
-      
+
       const showSearch = ref(false);
-      
+
       function handleChangeSearchPerson(value, a) {
         console.log('选择改变', value, a);
         showSearch.value = true;
@@ -239,12 +301,12 @@
         searchParams.rangeDate = [...dateStringArray]
         loadData();
       }
-      
+
       function hrefThenClose(id){
         emit('refresh', id)
        // closeModal();
       }
-      
+
       // 有查询条件值的时候显示该字符串
       const conditionStr = computed(()=>{
         const { fromUser, rangeDateKey, realname } = searchParams;
@@ -273,14 +335,30 @@
           searchParams.realname = options[0].label;
         }
       }
-      
+
       function openSelectPerson(){
         openModal(true, {})
       }
-      
+
       function clearSearchParamsUser(){
         searchParams.fromUser = ''
         searchParams.realname = ''
+      }
+
+      function clearAll(){
+        searchParams.fromUser='';
+        searchParams.realname='';
+        searchParams.rangeDateKey='';
+        searchParams.rangeDate=[];
+        for (let a of dateTags) {
+          a.active = false;
+        }
+        noticeType.value = "";
+        noticeImg.value = "";
+        for (const item of noticeTypeOption) {
+          item.active = false;
+        }
+        loadData();
       }
 
       function getRefPromise(componentRef) {
@@ -297,22 +375,36 @@
           })();
         });
       }
-      
-      function clearAll(){
-        searchParams.fromUser='';
-        searchParams.realname='';
-        searchParams.rangeDateKey='';
-        searchParams.rangeDate=[];
-        for (let a of dateTags) {
-          a.active = false;
-        }
-        loadData();
-      }
-
       const [registerDetail, { openModal: openDetailModal }] = useModal();
       function showDetailModal(record){
         openDetailModal(true, {record: unref(record), isUpdate: true})
       }
+
+      function handleDetailColse(){
+        loadData();
+      }
+
+      /**
+       * 只是通知
+       * @param item
+       */
+      function handleClickNoticeType(item) {
+        for (let a of noticeTypeOption) {
+          if(a.key !== item.key){
+            a.active = false;
+          }
+        }
+        item.active = !item.active;
+        if(item.active === false){
+          noticeType.value = "";
+          noticeImg.value = "";
+        }else{
+          noticeType.value = item.key;
+          noticeImg.value = item.img;
+        }
+        loadData();
+      }
+      
       return {
         conditionStr,
         regModal,
@@ -320,7 +412,7 @@
         openSelectPerson,
         clearSearchParamsUser,
         clearAll,
-        
+
         registerModal,
         activeKey,
         handleChangePanel,
@@ -340,8 +432,12 @@
         allMessageRef,
         starMessageRef,
         registerDetail,
-        showDetailModal
-     
+        showDetailModal,
+        isLowApp,
+        handleDetailColse,
+        noticeTypeOption,
+        handleClickNoticeType,
+        noticeImg,
       };
     },
   };
@@ -354,7 +450,7 @@
     100%{transform:translateY(600px);}
   }
 
-  
+
   .sys-msg-modal {
     .ant-modal-header {
       padding-bottom: 0;
@@ -383,13 +479,13 @@
       display: inline-block;
       width: 220px;
       vertical-align: top;
-      
+
       .icons {
         display: flex;
         height: 100%;
         flex-direction: row;
         justify-content: flex-end;
-  
+
         > span.anticon {
           padding: 10px;
           display: inline-block;
@@ -407,7 +503,7 @@
           line-height: 25px;
           //color: #2196f3;
           display: flex;
-          
+
           >span.anticon{
             height: auto;
             line-height: 9px;
@@ -415,7 +511,7 @@
           }
         }
 
-    
+
       }
     }
     .ant-tabs-nav-wrap {
@@ -519,5 +615,25 @@
     .clear-user-icon{
       margin-left: 5px;
     }
+  }
+</style>
+<style lang="less" scoped>
+  .notice-type-img{
+      width: 16px;
+      height: 16px;
+      position: relative;
+      top: 2px;
+      margin-right: 1px;
+  }
+  .notice-type-header-img{
+    width: 16px;
+    height: 16px;
+    position: relative;
+    left: 2px;
+    top: 1px;
+  }
+  .flex{
+    display: flex;
+    flex: unset;
   }
 </style>

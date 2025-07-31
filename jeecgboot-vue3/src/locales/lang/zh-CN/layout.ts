@@ -8,6 +8,7 @@ export default {
     dropdownItemSwitchDepart: '切换部门',
     dropdownItemRefreshCache: '刷新缓存',
     dropdownItemSwitchAccount: '账户设置',
+    dropdownItemSwitchDefaultHomePage: '切换首页',
 
     // tooltip
     tooltipErrorLog: '错误日志',
@@ -34,7 +35,7 @@ export default {
     closeRight: '关闭右侧',
     closeOther: '关闭其它',
     closeAll: '关闭全部',
-    homeDesign: '设计模式',
+    homeDesign: '门户设计',
   },
   setting: {
     // content mode

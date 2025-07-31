@@ -1,5 +1,5 @@
 import type {BrowserWindowConstructorOptions} from 'electron';
-import {BrowserWindow, dialog} from 'electron';
+import {app, BrowserWindow, dialog} from 'electron';
 import path from 'path';
 import {_PATHS} from '../paths';
 import {$env, isDev} from '../env';
@@ -19,7 +19,13 @@ export function createBrowserWindow(options?: BrowserWindowConstructorOptions) {
     icon: isDev ? _PATHS.appIcon : void 0,
     ...options,
   });
-
+  // update-begin--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
+  if (process.platform === 'darwin') { // 仅 macOS 生效
+    if (app.dock) {
+      app.dock.setIcon(path.join(_PATHS.electronRoot, './icons/mac/dock.png').replace(/[\\/]dist[\\/]/, '/'));
+    }
+  }
+  // update-end--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
   // 设置窗口打开处理器
   win.webContents.setWindowOpenHandler(({url}) => {
     const win = createBrowserWindow();

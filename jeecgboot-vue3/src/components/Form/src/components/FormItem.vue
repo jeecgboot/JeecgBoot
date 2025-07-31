@@ -66,6 +66,10 @@
         default: '',
       },
       // update-end--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
+      source: {
+        type: String,
+        default: '',
+      },
     },
     setup(props, { slots }) {
       const { t } = useI18n();
@@ -506,7 +510,7 @@
               <div style="display:flex">
                 {/* author: sunjianlei for: 【VUEN-744】此处加上 width: 100%; 因为要防止组件宽度超出 FormItem */}
                 {/* update-begin--author:liaozhiyang---date:20240510---for：【TV360X-719】表单校验不通过项滚动到可视区内 */}
-                <Middleware formName={props.formName} fieldName={field}>{getContent()}</Middleware>
+                <Middleware formName={props.formName} fieldName={field} source={props.source}>{getContent()}</Middleware>
                 {/* update-end--author:liaozhiyang---date:20240510---for：【TV360X-719】表单校验不通过项滚动到可视区内 */}
                 {showSuffix && <span class="suffix">{getSuffix}</span>}
               </div>

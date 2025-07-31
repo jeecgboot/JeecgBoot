@@ -1,6 +1,6 @@
 {
   "name": "jeecgboot-vue3",
-  "version": "3.8.1",
+  "version": "3.8.2",
   "author": {
     "name": "北京国炬信息技术有限公司",
     "email": "jeecgos@163.com",
@@ -10,7 +10,9 @@
     "pinstall": "pnpm install",
     "clean:cache": "rimraf node_modules/.cache/ && rimraf node_modules/.vite",
     "dev": "vite",
-    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 vite build && esno ./build/script/postBuild.ts",
+    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 vite build && esno ./build/script/postBuild.ts && esno ./build/script/copyChat.ts",
+    "build:docker": "cross-env NODE_ENV=docker NODE_OPTIONS=--max-old-space-size=8192 vite build --mode docker && esno ./build/script/postBuild.ts && esno ./build/script/copyChat.ts",
+    "build:dockercloud": "cross-env NODE_ENV=dockercloud NODE_OPTIONS=--max-old-space-size=8192 vite build --mode dockercloud && esno ./build/script/postBuild.ts && esno ./build/script/copyChat.ts",
     "build:report": "pnpm clean:cache && cross-env REPORT=true npm run build",
     "preview": "npm run build && vite preview",
     "reinstall": "rimraf pnpm-lock.yaml && rimraf yarn.lock && rimraf package.lock.json && rimraf node_modules && npm run install",
@@ -21,7 +23,7 @@
     "husky:install": "husky install"
   },
   "dependencies": {
-    "@jeecg/online": "3.7.4",
+    "@jeecg/online": "3.8.2-beta",
     "@jeecg/aiflow": "1.1.1",
     "@logicflow/core": "^2.0.10",
     "@logicflow/extension": "^2.0.14",
@@ -79,8 +81,8 @@
     "vue-types": "^5.1.3",
     "vuedraggable": "^4.1.0",
     "vxe-table": "4.13.31",
-    "vxe-table-plugin-antd": "4.0.8",
     "vxe-pc-ui": "4.6.12",
+    "vxe-table-plugin-antd": "4.0.8",
     "xe-utils": "3.5.26",
     "xss": "^1.0.15"
   },

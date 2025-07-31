@@ -836,7 +836,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
                 closeSSE(emitter, eventData);
                 //update-end---author:chenrui ---date:20250425  for：[QQYUN-12203]AI 聊天，超时或者服务器报错，给个友好提示------------
             } else {
-                errMsg = "调用大模型接口失败:" + errMsg;
+                errMsg = "调用大模型接口失败，详情请查看后台日志。";
                 EventData eventData = new EventData(requestId, null, EventData.EVENT_FLOW_ERROR, chatConversation.getId(), topicId);
                 eventData.setData(EventFlowData.builder().success(false).message(errMsg).build());
                 closeSSE(emitter, eventData);

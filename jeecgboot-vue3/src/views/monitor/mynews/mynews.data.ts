@@ -81,4 +81,16 @@ export const searchFormSchema: FormSchema[] = [
     },
     colProps: { span: 6 },
   },
+  {
+    field: 'msgCategory',
+    label: '消息类型',
+    component: 'Select',
+    componentProps: {
+      options: [
+        { label: '通知公告', value: '1' },
+        { label: '系统消息', value: '2' },
+      ],
+    },
+    colProps: { span: 6 },
+  },
 ];

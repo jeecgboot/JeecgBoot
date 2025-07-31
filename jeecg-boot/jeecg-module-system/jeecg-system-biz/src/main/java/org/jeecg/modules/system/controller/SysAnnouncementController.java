@@ -16,6 +16,7 @@ import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.CommonSendStatus;
 import org.jeecg.common.constant.WebsocketConst;
+import org.jeecg.common.constant.enums.NoticeTypeEnum;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
@@ -89,7 +90,14 @@ public class SysAnnouncementController {
 	private RedisUtil redisUtil;
 	@Autowired
 	public RedisTemplate redisTemplate;
-	
+	//常规报错定义
+	private static final String SPECIAL_CHAR_ERROR = "保存失败:消息内容包含数据库不支持的特殊字符，请检查并修改内容!";
+	private static final String CONTENT_TOO_LONG_ERROR = "保存失败:消息内容超过最大长度限制，请缩减内容长度!";
+	private static final String DEFAULT_ERROR = "操作失败，请稍后重试或联系管理员!";
+	/**
+	 * 通告缓存
+	 */
+	String ANNO_CACHE_KEY = "sys:cache:announcement";
 	/**
 	 * QQYUN-5072【性能优化】线上通知消息打开有点慢
 	 */
@@ -141,11 +149,14 @@ public class SysAnnouncementController {
 			sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
             //未发布
 			sysAnnouncement.setSendStatus(CommonSendStatus.UNPUBLISHED_STATUS_0);
+            //流程状态
+			sysAnnouncement.setBpmStatus("1");
+            sysAnnouncement.setNoticeType(NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue());
 			sysAnnouncementService.saveAnnouncement(sysAnnouncement);
 			result.success("添加成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
-			result.error500("操作失败");
+			result.error500(determineErrorMessage(e));
 		}
 		return result;
 	}
@@ -159,20 +170,44 @@ public class SysAnnouncementController {
 	public Result<SysAnnouncement> eidt(@RequestBody SysAnnouncement sysAnnouncement) {
 		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
 		SysAnnouncement sysAnnouncementEntity = sysAnnouncementService.getById(sysAnnouncement.getId());
+		try{
+			if(sysAnnouncementEntity==null) {
+				result.error500("未找到对应实体");
+			}else {
+				// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
+				String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
+				sysAnnouncement.setTitile(title);
+				// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
+				sysAnnouncement.setNoticeType(NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue());
+				boolean ok = sysAnnouncementService.upDateAnnouncement(sysAnnouncement);
+				//TODO 返回false说明什么？
+				if(ok) {
+					result.success("修改成功!");
+				}
+			}
+		} catch (Exception e) {
+			result.error500(determineErrorMessage(e));
+		}
+
+		return result;
+	}
+	/**
+	  *  简单编辑
+	 * @param sysAnnouncement
+	 * @return
+	 */
+	@RequestMapping(value = "/editIzTop", method = {RequestMethod.PUT,RequestMethod.POST})
+	public Result<SysAnnouncement> editIzTop(@RequestBody SysAnnouncement sysAnnouncement) {
+		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
+		SysAnnouncement sysAnnouncementEntity = sysAnnouncementService.getById(sysAnnouncement.getId());
 		if(sysAnnouncementEntity==null) {
 			result.error500("未找到对应实体");
 		}else {
-			// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
-			String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
-			sysAnnouncement.setTitile(title);
-			// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
-			boolean ok = sysAnnouncementService.upDateAnnouncement(sysAnnouncement);
-			//TODO 返回false说明什么？
-			if(ok) {
-				result.success("修改成功!");
-			}
+			Integer izTop = sysAnnouncement.getIzTop();
+			sysAnnouncementEntity.setIzTop(oConvertUtils.getInt(izTop,CommonConstant.IZ_TOP_0));
+			sysAnnouncementService.updateById(sysAnnouncementEntity);
+			result.success("修改成功!");
 		}
-
 		return result;
 	}
 
@@ -256,6 +291,9 @@ public class SysAnnouncementController {
 			String currentUserName = JwtUtil.getUserNameByToken(request);
 			sysAnnouncement.setSender(currentUserName);
 			boolean ok = sysAnnouncementService.updateById(sysAnnouncement);
+            if(oConvertUtils.isEmpty(sysAnnouncement.getNoticeType())){
+                sysAnnouncement.setNoticeType(NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue());
+            }
 			if(ok) {
 				result.success("系统通知推送成功");
 				if(sysAnnouncement.getMsgType().equals(CommonConstant.MSG_TYPE_ALL)) {
@@ -267,6 +305,7 @@ public class SysAnnouncementController {
 			    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_TOPIC);
 					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
 					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+					obj.put(CommonConstant.NOTICE_TYPE, sysAnnouncement.getNoticeType());
 			    	webSocket.sendMessage(obj.toJSONString());
 				}else {
 					// 2.插入用户通告阅读标记表记录
@@ -278,6 +317,7 @@ public class SysAnnouncementController {
 			    	obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
 					obj.put(WebsocketConst.MSG_ID, sysAnnouncement.getId());
 					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
+                    obj.put(CommonConstant.NOTICE_TYPE, sysAnnouncement.getNoticeType());
 			    	webSocket.sendMessage(userIds, obj.toJSONString());
 				}
 				try {
@@ -383,15 +423,31 @@ public class SysAnnouncementController {
 	 * @return
 	 */
 	@RequestMapping(value = "/getUnreadMessageCount", method = RequestMethod.GET)
-	public Result<Integer> getUnreadMessageCount(@RequestParam(required = false, defaultValue = "5") Integer pageSize, HttpServletRequest request) {
+	public Result<Map<String, Integer>> getUnreadMessageCount(@RequestParam(required = false, defaultValue = "5") Integer pageSize, HttpServletRequest request) {
 		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		String userId = sysUser.getId();
 
 		// 获取上个月的第一天（只查近两个月的通知）
 		Date lastMonthStartDay = DateRangeUtils.getLastMonthStartDay();
 		log.info(" ------查询近两个月收到的未读通知消息数量------，近2月的第一天：{}", lastMonthStartDay);
-		Integer unreadMessageCount = sysAnnouncementService.getUnreadMessageCountByUserId(userId, lastMonthStartDay);
-		return Result.ok(unreadMessageCount);
+        //update-begin---author:wangshuai---date:2025-06-26---for:【QQYUN-12162】OA项目改造，系统重消息拆分，目前消息都在一起 需按分类进行拆分---
+        Map<String,Integer> unreadMessageCount = new HashMap<>();
+        //系统消息数量
+        Integer systemCount = sysAnnouncementService.getUnreadMessageCountByUserId(userId, lastMonthStartDay, NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue());
+        unreadMessageCount.put("systemCount",systemCount);
+        //流程数量
+        Integer flowCount = sysAnnouncementService.getUnreadMessageCountByUserId(userId, lastMonthStartDay, NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue());
+        unreadMessageCount.put("flowCount",flowCount);
+        //文件数量
+        Integer fileCount = sysAnnouncementService.getUnreadMessageCountByUserId(userId, lastMonthStartDay,  NoticeTypeEnum.NOTICE_TYPE_FILE.getValue());
+        unreadMessageCount.put("fileCount",fileCount);
+        //日程计划数量
+        Integer planCount = sysAnnouncementService.getUnreadMessageCountByUserId(userId, lastMonthStartDay,  NoticeTypeEnum.NOTICE_TYPE_PLAN.getValue());
+        unreadMessageCount.put("planCount",planCount);
+        Integer count = systemCount + flowCount + fileCount + planCount;
+        unreadMessageCount.put("count",count);
+        //update-end---author:wangshuai---date:2025-06-26---for:【QQYUN-12162】OA项目改造，系统重消息拆分，目前消息都在一起 需按分类进行拆分---
+        return Result.ok(unreadMessageCount);
 	}
 
 
@@ -440,6 +496,9 @@ public class SysAnnouncementController {
                 for (SysAnnouncement sysAnnouncementExcel : listSysAnnouncements) {
                 	if(sysAnnouncementExcel.getDelFlag()==null){
                 		sysAnnouncementExcel.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
+					}
+                	if(oConvertUtils.isEmpty(sysAnnouncementExcel.getIzTop())){
+                		sysAnnouncementExcel.setIzTop(CommonConstant.IZ_TOP_0);
 					}
                     sysAnnouncementService.save(sysAnnouncementExcel);
                 }
@@ -527,6 +586,9 @@ public class SysAnnouncementController {
 	/**
 	 * 【vue3用】 消息列表查询
 	 * @param fromUser
+	 * @param busType
+	 * @param starFlag
+	 * @param msgCategory
 	 * @param beginDate
 	 * @param endDate
 	 * @param pageNo
@@ -537,11 +599,13 @@ public class SysAnnouncementController {
 	public Result<List<SysAnnouncement>> vue3List(@RequestParam(name="fromUser", required = false) String fromUser,
 												  @RequestParam(name="busType", required = false) String busType,
 												  @RequestParam(name="starFlag", required = false) String starFlag,
+												  @RequestParam(name="msgCategory", required = false) String msgCategory,
                                                   @RequestParam(name="rangeDateKey", required = false) String rangeDateKey,
                                                   @RequestParam(name="beginDate", required = false) String beginDate, 
 												  @RequestParam(name="endDate", required = false) String endDate,
 												  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo, 
-												  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+												  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                  @RequestParam(name= "noticeType", required = false) String noticeType) {
 		long calStartTime = System.currentTimeMillis(); // 记录开始时间
 		
 		// 1、获取日期查询条件，开始时间和结束时间
@@ -564,7 +628,7 @@ public class SysAnnouncementController {
 		}
 		
 		// 2、根据条件查询用户的通知消息
-		List<SysAnnouncement> ls = this.sysAnnouncementService.querySysMessageList(pageSize, pageNo, fromUser, starFlag,busType, beginTime, endTime);
+		List<SysAnnouncement> ls = this.sysAnnouncementService.querySysMessageList(pageSize, pageNo, fromUser, starFlag,busType, msgCategory, beginTime, endTime, noticeType);
 
 		// 3、设置当前页的消息为已读
 		if (!CollectionUtils.isEmpty(ls)) {
@@ -586,7 +650,7 @@ public class SysAnnouncementController {
 		// 4、性能统计耗时
 		long calEndTime = System.currentTimeMillis(); // 记录结束时间
 		long duration = calEndTime - calStartTime; // 计算耗时
-		System.out.println("耗时：" + duration + " 毫秒");
+		log.info("耗时：" + duration + " 毫秒");
 		
 		return Result.ok(ls);
 	}
@@ -598,11 +662,11 @@ public class SysAnnouncementController {
      * @return
      */
 	@GetMapping("/getLastAnnountTime")
-	public Result<Page<SysAnnouncementSend>> getLastAnnountTime(@RequestParam(name = "userId") String userId){
+	public Result<Page<SysAnnouncementSend>> getLastAnnountTime(@RequestParam(name = "userId") String userId,@RequestParam(name="noticeType",required = false) String noticeType){
 		Result<Page<SysAnnouncementSend>> result = new Result<>();
 		//----------------------------------------------------------------------------------------
 		// step.1 此接口过慢，可以采用缓存一小时方案
-		String keyString = String.format(CommonConstant.CACHE_KEY_USER_LAST_ANNOUNT_TIME_1HOUR, userId);
+		String keyString = String.format(CommonConstant.CACHE_KEY_USER_LAST_ANNOUNT_TIME_1HOUR + "_" + noticeType, userId);
 		if (redisTemplate.hasKey(keyString)) {
 			log.info("[SysAnnouncementSend Redis] 通过Redis缓存查询用户最后一次收到系统通知时间，userId={}", userId);
 			Page<SysAnnouncementSend> pageList = (Page<SysAnnouncementSend>) redisTemplate.opsForValue().get(keyString);
@@ -641,5 +705,55 @@ public class SysAnnouncementController {
     public Result<String> clearAllUnReadMessage(){
 		sysAnnouncementService.clearAllUnReadMessage();
 		return Result.ok("清除未读消息成功");
+	}
+
+	/**
+	 * 添加访问次数
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/addVisitsNumber", method = RequestMethod.GET)
+	public Result<?> addVisitsNumber(@RequestParam(name="id",required=true) String id) {
+		int count = oConvertUtils.getInt(redisUtil.get(ANNO_CACHE_KEY+id),0) + 1;
+		redisUtil.set(ANNO_CACHE_KEY+id, count);
+
+		if (count % 5 == 0) {
+			cachedThreadPool.execute(() -> {
+				sysAnnouncementService.updateVisitsNum(id, count);
+			});
+			// 重置访问次数
+			redisUtil.del(ANNO_CACHE_KEY+id);
+		}
+		return Result.ok("公告消息访问次数+1次");
+	}
+
+	/**
+	 * 根据异常信息确定友好的错误提示
+	 */
+	private String determineErrorMessage(Exception e) {
+		String errorMsg = e.getMessage();
+		if (isSpecialCharacterError(errorMsg)) {
+			return SPECIAL_CHAR_ERROR;
+		} else if (isContentTooLongError(errorMsg)) {
+			return CONTENT_TOO_LONG_ERROR;
+		} else {
+			return DEFAULT_ERROR;
+		}
+	}
+	/**
+	 * 判断是否为特殊字符错误
+	 */
+	private boolean isSpecialCharacterError(String errorMsg) {
+		return errorMsg != null
+				&& errorMsg.contains("Incorrect string value")
+				&& errorMsg.contains("column 'msg_content'");
+	}
+
+	/**
+	 * 判断是否为内容过长错误
+	 */
+	private boolean isContentTooLongError(String errorMsg) {
+		return errorMsg != null
+				&& errorMsg.contains("Data too long for column 'msg_content'");
 	}
 }

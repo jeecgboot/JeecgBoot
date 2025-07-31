@@ -35,6 +35,9 @@ public class SysMessageTemplate extends JeecgEntity{
 	/**模板类型*/
 	@Excel(name = "模板类型", width = 15)
 	private java.lang.String templateType;
+	/**模板分类*/
+	@Excel(name = "模板类型(notice通知公告 other其他)", width = 15)
+	private java.lang.String templateCategory;
 
 	/**已经应用/未应用  1是0否*/
 	@Excel(name = "应用状态", width = 15)

@@ -167,6 +167,11 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/mock/json/**")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/jimubi/view")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/jimubi/share/view/**")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getMapDataByCode")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getTotalDataByCompId")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getDictByCodes")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/dragChannelSocket/**")).permitAll()
+                        
                         //大屏模板例子
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/test/bigScreen/**")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/bigscreen/template1/**")).permitAll()
@@ -177,6 +182,8 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/test/seata/**")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/error")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/openapi/call/**")).permitAll()
+                        // APP版本信息
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/version/app3version")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))

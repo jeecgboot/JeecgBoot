@@ -5,5 +5,7 @@ export interface DropMenu {
   event: string | number;
   text: string;
   disabled?: boolean;
+  // 是否隐藏
+  hide?: boolean;
   divider?: boolean;
 }

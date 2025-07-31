@@ -1,11 +1,18 @@
 // tray = 系统托盘
 import path from 'path';
-import {Tray, Menu, app, dialog, nativeImage, BrowserWindow, Notification} from 'electron';
+import { Tray, Menu, app, dialog, nativeImage, BrowserWindow, Notification, ipcMain } from 'electron';
+import type { IpcMainInvokeEvent } from 'electron';
 import {_PATHS} from '../paths';
 import {$env, isDev} from '../env';
 
 const TrayIcons = {
-  normal: nativeImage.createFromPath(path.join(_PATHS.publicRoot, 'logo.png')),
+  // update-begin--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
+  normal: nativeImage.createFromPath(
+    process.platform === 'win32'
+      ? path.join(_PATHS.publicRoot, 'logo.png')
+      : path.join(_PATHS.electronRoot, './icons/mac/tray-icon.png').replace(/[\\/]dist[\\/]/, '/')
+  ),
+  // update-end--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
   empty: nativeImage.createEmpty(),
 };
 
@@ -60,7 +67,21 @@ export function useTray(tray: Tray, win: BrowserWindow) {
     }
     tray.setImage(TrayIcons.normal);
   }
-
+  ipcMain.on('tray-flash', (event: IpcMainInvokeEvent) => {
+    // 仅在 Windows 系统中闪烁
+    if (process.platform === 'win32') {
+      startBlink();
+    }
+  });
+  ipcMain.on('tray-flash-stop', (event: IpcMainInvokeEvent) => {
+    // 仅在 Windows 系统中停止闪烁
+    if (process.platform === 'win32') {
+      stopBlink();
+    }
+  });
+  win.on('focus', () => {
+    stopBlink();
+  });
   // 发送桌面通知
   function sendDesktopNotice() {
     // 判断是否支持桌面通知
@@ -75,9 +96,8 @@ export function useTray(tray: Tray, win: BrowserWindow) {
     }
     const ins = new Notification({
       title: '通知标题',
-      subtitle: '通知副标题',
       body: '通知内容第一行\n通知内容第二行',
-      icon: TrayIcons.normal.resize({width: 32, height: 32}),
+      // icon: TrayIcons.normal.resize({width: 32, height: 32}),
     });
 
     ins.on('click', () => {

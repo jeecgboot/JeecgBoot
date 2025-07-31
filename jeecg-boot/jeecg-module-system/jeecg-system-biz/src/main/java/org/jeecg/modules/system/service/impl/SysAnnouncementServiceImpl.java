@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.DateRangeUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.security.utils.SecureUtil;
@@ -151,8 +150,8 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	}
 
 	@Override
-	public Integer getUnreadMessageCountByUserId(String userId, Date beginDate) {
-		return sysAnnouncementMapper.getUnreadMessageCountByUserId(userId, beginDate);
+	public Integer getUnreadMessageCountByUserId(String userId, Date beginDate, String noticeType) {
+		return sysAnnouncementMapper.getUnreadMessageCountByUserId(userId, beginDate, noticeType);
 	}
 
 	@Override
@@ -201,7 +200,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	}
 
 	@Override
-	public List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, String busType, Date beginDate, Date endDate) {
+	public List<SysAnnouncement> querySysMessageList(int pageSize, int pageNo, String fromUser, String starFlag, String busType, String msgCategory, Date beginDate, Date endDate, String noticeType) {
 //		//1. 补全send表的数据
 //		completeNoteThreadPool.execute(()->{
 //			completeAnnouncementSendInfo();
@@ -210,7 +209,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 		LoginUser sysUser = SecureUtil.currentUser();
 		log.info(" 获取登录人 LoginUser id: {}", sysUser.getId());
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
-		List<SysAnnouncement> list = baseMapper.queryAllMessageList(page, sysUser.getId(), fromUser, starFlag, busType, beginDate, endDate);
+		List<SysAnnouncement> list = baseMapper.queryAllMessageList(page, sysUser.getId(), fromUser, starFlag, busType, msgCategory,beginDate, endDate, noticeType);
 		return list;
 	}
 
@@ -235,6 +234,23 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 	@Override
 	public List<String> getNotSendedAnnouncementlist(String userId) {
 		return sysAnnouncementMapper.getNotSendedAnnouncementlist(new Date(), userId);
+	}
+
+	/**
+	 * 更新访问量
+	 * @param id
+	 * @param increaseCount
+	 */
+	@Override
+	public void updateVisitsNum(String id, int increaseCount) {
+		SysAnnouncement sysAnnouncement = sysAnnouncementMapper.selectById(id);
+		if (oConvertUtils.isNotEmpty(sysAnnouncement)) {
+			int visits = oConvertUtils.getInt(sysAnnouncement.getVisitsNum(), 0);
+			int totalValue = increaseCount + visits;
+			sysAnnouncement.setVisitsNum(totalValue);
+			sysAnnouncementMapper.updateById(sysAnnouncement);
+			log.info("通知公告：{} 访问次数+1，总访问数量：{}", sysAnnouncement.getTitile(), sysAnnouncement.getVisitsNum());
+		}
 	}
 
 }

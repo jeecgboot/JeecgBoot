@@ -10,11 +10,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
+import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.modules.system.constant.DefIndexConst;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.service.ISysRoleIndexService;
+import org.jeecg.modules.system.service.ISysUserService;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -43,6 +51,14 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
     @Autowired
     private ISysRoleIndexService sysRoleIndexService;
 
+    @Autowired
+    private ISysUserService sysUserService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+    @Autowired
+    private BaseCommonService baseCommonService;
     /**
      * 分页列表查询
      *
@@ -77,7 +93,12 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
     @PostMapping(value = "/add")
     //@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
     public Result<?> add(@RequestBody SysRoleIndex sysRoleIndex,HttpServletRequest request) {
+        String relationType = sysRoleIndex.getRelationType();
+        if(oConvertUtils.isEmpty(relationType)){
+            sysRoleIndex.setRelationType(CommonConstant.HOME_RELATION_ROLE);
+        }
         sysRoleIndexService.save(sysRoleIndex);
+        sysRoleIndexService.cleanDefaultIndexCache();
         return Result.OK("添加成功！");
     }
 
@@ -93,7 +114,12 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     //@DynamicTable(value = DynamicTableConstant.SYS_ROLE_INDEX)
     public Result<?> edit(@RequestBody SysRoleIndex sysRoleIndex,HttpServletRequest request) {
+        String relationType = sysRoleIndex.getRelationType();
+        if(oConvertUtils.isEmpty(relationType)){
+            sysRoleIndex.setRelationType(CommonConstant.HOME_RELATION_ROLE);
+        }
         sysRoleIndexService.updateById(sysRoleIndex);
+        sysRoleIndexService.cleanDefaultIndexCache();
         return Result.OK("编辑成功!");
     }
 
@@ -105,6 +131,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      */
     @AutoLog(value = "角色首页配置-通过id删除")
     @Operation(summary = "角色首页配置-通过id删除")
+    @PreAuthorize("@jps.requiresPermissions('system:roleindex:delete')")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         sysRoleIndexService.removeById(id);
@@ -119,8 +146,10 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      */
     @AutoLog(value = "角色首页配置-批量删除")
     @Operation(summary = "角色首页配置-批量删除")
+    @PreAuthorize("@jps.requiresPermissions('system:roleindex:deleteBatch')")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+        baseCommonService.addLog("批量删除用户， ids： " +ids ,CommonConstant.LOG_TYPE_2, 3);
         this.sysRoleIndexService.removeByIds(Arrays.asList(ids.split(",")));
         return Result.OK("批量删除成功！");
     }
@@ -203,5 +232,53 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
             return Result.error("设置失败");
         }
     }
+    /**
+     * 切换默认门户
+     *
+     * @param sysRoleIndex
+     * @return
+     */
+    @PostMapping(value = "/changeDefHome")
+    public Result<?> changeDefHome(@RequestBody SysRoleIndex sysRoleIndex,HttpServletRequest request) {
+        String username = JwtUtil.getUserNameByToken(request);
+        sysRoleIndex.setRoleCode(username);
+        sysRoleIndexService.changeDefHome(sysRoleIndex);
+        //update-begin-author:liusq---date:2025-07-03--for: 切换完成后的homePath获取
+        String version = request.getHeader(CommonConstant.VERSION);
+        String homePath = null;
+        SysRoleIndex defIndexCfg = sysUserService.getDynamicIndexByUserRole(username, version);
+        if (defIndexCfg == null) {
+            defIndexCfg = sysRoleIndexService.initDefaultIndex();
+        }
+        if (oConvertUtils.isNotEmpty(version) && defIndexCfg != null && oConvertUtils.isNotEmpty(defIndexCfg.getUrl())) {
+            homePath = defIndexCfg.getUrl();
+            if (!homePath.startsWith(SymbolConstant.SINGLE_SLASH)) {
+                homePath = SymbolConstant.SINGLE_SLASH + homePath;
+            }
+        }
+        //update-end-author:liusq---date:2025-07-03--for:切换完成后的homePath获取
+        return Result.OK(homePath);
+    }
+    /**
+     * 获取门户类型
+     *
+     * @return
+     */
+    @GetMapping(value = "/getCurrentHome")
+    public Result<?> getCurrentHome(HttpServletRequest request) {
+        String username = JwtUtil.getUserNameByToken(request);
+        Object homeType = redisUtil.get(DefIndexConst.CACHE_TYPE + username);
+        return Result.OK(oConvertUtils.getString(homeType,DefIndexConst.HOME_TYPE_SYSTEM));
+    }
 
+    /**
+     * 清除缓存
+     *
+     * @return
+     */
+    @RequestMapping(value = "/cleanDefaultIndexCache")
+    public Result<?> cleanDefaultIndexCache(HttpServletRequest request) {
+        sysRoleIndexService.cleanDefaultIndexCache();
+        return Result.OK();
+    }
 }

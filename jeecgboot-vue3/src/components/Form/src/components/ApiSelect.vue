@@ -190,7 +190,7 @@
         } finally {
           loading.value = false;
           //--@updateBy-begin----author:liusq---date:20210914------for:判断选择模式，multiple多选情况下的value值空的情况下需要设置为数组------
-          unref(attrs).mode == 'multiple' && !Array.isArray(unref(state)) && setState([]);
+          ['multiple', 'tags'].includes(unref(attrs).mode) && !Array.isArray(unref(state)) && setState([]);
           //--@updateBy-end----author:liusq---date:20210914------for:判断选择模式，multiple多选情况下的value值空的情况下需要设置为数组------
 
           //update-begin---author:wangshuai ---date:20230505  for：初始化value值，如果是多选字符串的情况下显示不出来------------
@@ -202,7 +202,7 @@
       function initValue() {
         let value = props.value;
         // update-begin--author:liaozhiyang---date:20250407---for：【issues/8037】初始化值单选的值被错误地写入数组值
-        if (unref(attrs).mode == 'multiple') {
+        if (['multiple', 'tags'].includes(unref(attrs).mode)) {
           if (value && typeof value === 'string' && value != 'null' && value != 'undefined') {
             state.value = value.split(',');
           } else if (isNumber(value)) {

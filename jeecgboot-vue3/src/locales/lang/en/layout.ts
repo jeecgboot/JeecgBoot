@@ -8,6 +8,7 @@ export default {
     dropdownItemSwitchDepart: 'Switch Department',
     dropdownItemRefreshCache: 'Clean cache',
     dropdownItemSwitchAccount: 'Account Setting',
+    dropdownItemSwitchDefaultHomePage: 'Switch Home Page',
 
     tooltipErrorLog: 'Error log',
     tooltipLock: 'Lock screen',

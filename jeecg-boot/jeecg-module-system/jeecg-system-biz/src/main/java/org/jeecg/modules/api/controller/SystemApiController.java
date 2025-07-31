@@ -6,6 +6,8 @@ import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.enums.DySmsEnum;
+import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.system.vo.*;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -579,6 +581,27 @@ public class SystemApiController {
          this.sysBaseApi.sendEmailMsg(email,title,content);
     };
     /**
+     * 发送html模版邮件消息
+     * @param email
+     * @param title
+     * @param emailTemplateEnum 邮件模版枚举
+     * @param params            模版参数
+     */
+    @GetMapping("/sendHtmlTemplateEmail")
+    public void sendHtmlTemplateEmail(@RequestParam("email")String email, @RequestParam("title")String title, @RequestParam("emailEnum") EmailTemplateEnum emailTemplateEnum, @RequestParam("params") JSONObject params){
+         this.sysBaseApi.sendHtmlTemplateEmail(email,title,emailTemplateEnum,params);
+    };
+    /**
+     * 发送短信消息
+     * @param phone  手机号码
+     * @param params  模版参数
+     * @param dySmsEnum 短信模版枚举
+     */
+    @GetMapping("/sendSmsMsg")
+    public void sendSmsMsg(@RequestParam("phone")String phone, @RequestParam("params") JSONObject params, @RequestParam("dySmsEnum") DySmsEnum dySmsEnum){
+         this.sysBaseApi.sendSmsMsg(phone,params,dySmsEnum);
+    };
+    /**
      * 41 获取公司下级部门和公司下所有用户信息
      * @param orgCode
      */
@@ -975,6 +998,20 @@ public class SystemApiController {
             @RequestParam(value = "fields", required = false) String... fields
     ) {
         return sysBaseApi.dictTableWhiteListCheckByDict(tableOrDictCode, fields);
+    }
+    /**
+     * 自动发布通告
+     *
+     * @param dataId 通告ID
+     * @param currentUserName 发送人
+     * @return
+     */
+    @GetMapping("/announcementAutoRelease")
+    public void announcementAutoRelease(
+            @RequestParam("dataId") String dataId,
+            @RequestParam(value = "currentUserName", required = false) String currentUserName
+    ) {
+       sysBaseApi.announcementAutoRelease(dataId, currentUserName);
     }
 
     @GetMapping("/sys/api/getUserByPhone")

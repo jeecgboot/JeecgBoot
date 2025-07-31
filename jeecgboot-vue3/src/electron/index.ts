@@ -1,10 +1,10 @@
 import type {App} from "vue";
 import {router} from "@/router";
 import {useGlobSetting} from "@/hooks/setting";
-
+import { ElectronEnum } from '/@/enums/jeecgEnum'
 const glob = useGlobSetting();
 
-const _PRELOAD_UTILS = '_ELECTRON_PRELOAD_UTILS_';
+const _PRELOAD_UTILS = ElectronEnum.ELECTRON_API;
 
 export const $electron = {
   // 当前是否为Electron平台
@@ -38,8 +38,16 @@ export function setupElectron(_: App) {
     return;
   }
   hookWindowOpen();
+  // update-begin--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
+  hookNavigate();
+  // update-end--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
 }
-
+function hookNavigate() {
+  // @ts-ignore
+  window[ElectronEnum.ELECTRON_API].onNavigate((path) => {
+    router.push({ path });
+  });
+}
 function hookWindowOpen() {
   // 保存原生方法引用
   const originFunc = window.open;

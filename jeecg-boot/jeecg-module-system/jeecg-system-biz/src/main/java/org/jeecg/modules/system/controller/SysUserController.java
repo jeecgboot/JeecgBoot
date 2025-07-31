@@ -1093,13 +1093,26 @@ public class SysUserController {
         //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
         String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
 		Object code = redisUtil.get(redisKey);
-		if (!smscode.equals(code)) {
+        //update-begin---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
+        if (null == code) {
+            result.setMessage("短信验证码失效！");
+            result.setSuccess(false);
+            return result;
+        }
+        String smsCode = "";
+        if (code.toString().contains("code")) {
+            smsCode = JSONObject.parseObject(code.toString()).getString("code");
+        } else {
+            smsCode = code.toString();
+        }
+		if (!smscode.equals(smsCode)) {
+        //update-end---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
 			result.setMessage("手机验证码错误");
 			result.setSuccess(false);
 			return result;
 		}
 		//设置有效时间
-		redisUtil.set(redisKey, smscode,600);
+		redisUtil.set(redisKey, code,600);
         //update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 
 		//新增查询用户名
@@ -1145,6 +1158,22 @@ public class SysUserController {
             result.setSuccess(false);
             return result;
         }
+
+        //update-begin---author:wangshuai---date:2025-07-14---for:【issues/8567】严重：修改密码存在水平越权问题。---
+        String redisUsername = "";
+        if(object.toString().contains("code")){
+            JSONObject jsonObject = JSONObject.parseObject(object.toString());
+            object = jsonObject.getString("code");
+            redisUsername = jsonObject.getString("username");
+        }
+        //验证是否为当前用户的
+        if(oConvertUtils.isNotEmpty(redisUsername) && !username.equals(redisUsername)){
+            result.setMessage("此验证码不是当前用户的！");
+            result.setSuccess(false);
+            return result;
+        }
+        //update-end---author:wangshuai---date:2025-07-14---for:【issues/8567】严重：修改密码存在水平越权问题。---
+        
         if(!smscode.equals(object.toString())) {
         	result.setMessage("短信验证码不匹配！");
             result.setSuccess(false);
@@ -1152,7 +1181,7 @@ public class SysUserController {
         }
         sysUser = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername,username).eq(SysUser::getPhone,phone));
         if (sysUser == null) {
-            result.setMessage("当前登录用户和绑定的手机号不匹配，无法修改密码！");
+            result.setMessage("当前用户和绑定的手机号不匹配，无法修改密码！");
             result.setSuccess(false);
             return result;
         } else {

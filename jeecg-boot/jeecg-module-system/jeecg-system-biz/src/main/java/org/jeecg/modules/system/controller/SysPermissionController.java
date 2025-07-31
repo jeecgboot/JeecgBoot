@@ -272,7 +272,7 @@ public class SysPermissionController {
 					indexMenu = new SysPermission();
 					indexMenu.setUrl(defIndexCfg.getUrl());
 					indexMenu.setComponent(defIndexCfg.getComponent());
-					indexMenu.setRoute(defIndexCfg.isRoute());
+					indexMenu.setRoute(defIndexCfg.getRoute());
 					indexMenu.setName(DefIndexConst.DEF_INDEX_NAME);
 					indexMenu.setMenuType(0);
 				}

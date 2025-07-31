@@ -40,4 +40,9 @@ public interface ISysRoleIndexService extends IService<SysRoleIndex> {
      */
     void cleanDefaultIndexCache();
 
+    /**
+     * 切换默认门户
+     * @param sysRoleIndex
+     */
+    void changeDefHome(SysRoleIndex sysRoleIndex);
 }

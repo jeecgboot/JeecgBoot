@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.8.1</version>
+  <version>3.8.2</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.8.1</jeecgboot.version>
+		<jeecgboot.version>3.8.2</jeecgboot.version>
 		<!-- JDK版本支持17和1.8 -->
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -56,6 +56,7 @@
 		
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>2.1.1</jimureport-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.1.0</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.11</minidao.version>
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.12</mybatis-plus.version>
@@ -249,7 +250,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.8.0-RC</version>
+				<version>3.8.2-beta</version>
 			</dependency>
 			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 			<dependency>
@@ -418,10 +419,6 @@
 						<artifactId>druid</artifactId>
 						<groupId>com.alibaba</groupId>
 					</exclusion>
-					<exclusion>
-						<artifactId>jsqlparser</artifactId>
-						<groupId>com.github.jsqlparser</groupId>
-					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- 积木报表-->
@@ -450,10 +447,6 @@
 						<artifactId>druid</artifactId>
 						<groupId>com.alibaba</groupId>
 					</exclusion>
-					<exclusion>
-						<artifactId>jsqlparser</artifactId>
-						<groupId>com.github.jsqlparser</groupId>
-					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- mongo、redis和文件数据集支持包，按需引入 -->
@@ -468,22 +461,6 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<!-- minidao -->
-			<dependency>
-				<groupId>org.jeecgframework.boot3</groupId>
-				<artifactId>minidao-spring-boot-starter-jsqlparser-4.9</artifactId>
-				<version>${minidao.version}</version>
-				<exclusions>
-					<exclusion>
-						<artifactId>druid</artifactId>
-						<groupId>com.alibaba</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>jsqlparser</artifactId>
-						<groupId>com.github.jsqlparser</groupId>
-					</exclusion>
-				</exclusions>
-			</dependency>
 			<!-- 后台导出接口Echart图表支持包，按需引入 -->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
@@ -494,7 +471,7 @@
             <dependency>
                 <groupId>org.jeecgframework.jimureport</groupId>
                 <artifactId>jimubi-spring-boot3-starter</artifactId>
-                <version>2.1.0</version>
+                <version>${jimubi-spring-boot-starter.version}</version>
             </dependency>
 			<!-- chatgpt -->
 			<dependency>
@@ -536,7 +513,7 @@
 	         <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-				 <version>3.1.0</version>
+				<version>3.1.0</version>
                 <configuration>
                     <nonFilteredFileExtensions>
                         <nonFilteredFileExtension>woff</nonFilteredFileExtension>
@@ -632,6 +609,24 @@
 				<config.username></config.username>
 				<!--Nacos密码-->
 				<config.password></config.password>
+            </properties>
+        </profile>
+        <!-- docker打包用 -->
+        <profile>
+            <id>docker</id>
+            <properties>
+                <!--当前环境-->
+                <profile.name>docker</profile.name>
+                <!--Nacos服务地址-->
+                <config.server-addr>jeecg-boot-nacos:8848</config.server-addr>
+                <!--Nacos配置中心命名空间,用于支持多环境.这里必须使用ID，不能使用名称,默认为空-->
+                <config.namespace>springboot3</config.namespace>
+                <!--Nacos配置分组名称-->
+                <config.group>DEFAULT_GROUP</config.group>
+                <!--Nacos用户名-->
+                <config.username></config.username>
+                <!--Nacos密码-->
+                <config.password></config.password>
             </properties>
         </profile>
         <!-- 生产 -->

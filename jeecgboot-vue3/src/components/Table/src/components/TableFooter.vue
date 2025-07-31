@@ -49,6 +49,7 @@
     },
     setup(props) {
       const table = useTableContext();
+      const getColumnsRef = table.getColumnsRef();
       const tableFooter = ref<any>(null);
       const getDataSource = computed((): Recordable[] => {
         const { summaryFunc, summaryData } = props;
@@ -71,7 +72,10 @@
 
       const getColumns = computed(() => {
         const dataSource = unref(getDataSource);
-        let columns: BasicColumn[] = cloneDeep(table.getColumns());
+        // update-begin--author:liaozhiyang---date:20250729---for：【issues/8502】权限列不显示后，表尾行合计栏还显示导致对不齐
+        const allColumns = unref(getColumnsRef);
+        let columns: BasicColumn[] = cloneDeep(table.getColumns({ ignoreAuth: true, ignoreIfShow: true }));
+        // update-end--author:liaozhiyang---date:20250729---for：【issues/8502】权限列不显示后，表尾行合计栏还显示导致对不齐
         // update-begin--author:liaozhiyang---date:220230804---for：【issues/638】表格合计，列自定义隐藏或展示时，合计栏会错位
         columns = columns.filter((item) => !item.defaultHidden);
         // update-begin--author:liaozhiyang---date:220230804---for：【issues/638】表格合计，列自定义隐藏或展示时，合计栏会错位

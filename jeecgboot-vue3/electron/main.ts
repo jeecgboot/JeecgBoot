@@ -1,9 +1,9 @@
-import './ipc';
-
-import { app, BrowserWindow, Menu } from 'electron';
+import { app, BrowserWindow, Menu, ipcMain } from 'electron';
 import { isDev } from './env';
 import { createMainWindow, createIndexWindow } from './utils/window';
-import { getAppInfo} from "./utils";
+import { getAppInfo } from './utils';
+import { ElectronEnum } from '../src/enums/jeecgEnum';
+import './ipc';
 
 // 隐藏所有菜单
 Menu.setApplicationMenu(null);
@@ -12,6 +12,14 @@ let mainWindow: BrowserWindow | null = null;
 
 function main() {
   mainWindow = createMainWindow();
+  // update-begin--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
+  mainWindow.on('focus', () => {
+    // 清除任务栏闪烁
+    if (process.platform === 'win32') {
+      mainWindow!.flashFrame(false);
+    }
+  });
+  // update-end--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
   return mainWindow;
 }
 

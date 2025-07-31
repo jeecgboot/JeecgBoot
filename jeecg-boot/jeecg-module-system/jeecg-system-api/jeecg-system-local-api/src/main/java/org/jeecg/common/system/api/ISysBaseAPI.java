@@ -5,6 +5,7 @@ import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.system.vo.*;
 
@@ -398,7 +399,13 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return List<Map>
      */
     List<Map> getDeptUserByOrgCode(String orgCode);
-
+    /**
+     * 42 发送短信消息
+     * @param phone 手机号
+     * @param param 模版参数
+     * @param dySmsEnum 短信模版
+     */
+    void sendSmsMsg(String phone, JSONObject param, DySmsEnum dySmsEnum);
     /**
      * 查询分类字典翻译
      * @param ids 多个分类字典id
@@ -544,4 +551,10 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     boolean dictTableWhiteListCheckByDict(String tableOrDictCode, String... fields);
 
+    /**
+     * 消息自动发布
+     * @param dataId
+     * @param currentUserName
+     */
+    void announcementAutoRelease(String dataId, String currentUserName);
 }

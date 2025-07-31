@@ -7,6 +7,7 @@
       <a-menu :class="[`${prefixCls}-menu`]" :selectedKeys="selectedKeys">
         <template v-for="item in dropMenuList" :key="`${item.event}`">
           <a-menu-item
+            v-if="!item.hide"
             v-bind="getAttr(item.event)"
             @click="handleClickMenu(item)"
             :disabled="item.disabled"
