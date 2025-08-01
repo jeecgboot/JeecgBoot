@@ -215,7 +215,7 @@ public class AddGiftJob implements Job {
                     giftInsertionRequests.add(changeOrderRequestBody);
 
                     // If the order already has a logistic channel name, then we need to clear it before inserting gifts
-                    if (order.getLogisticChannelName() != null && !order.getLogisticChannelName().isEmpty()) {
+                    if (order.hasLogisticChannelAssigned()) {
                         ordersWithLogistic.add(order);
                     }
                 }
