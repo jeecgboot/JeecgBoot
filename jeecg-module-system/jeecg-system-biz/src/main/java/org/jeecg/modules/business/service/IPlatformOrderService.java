@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
+import org.jeecg.modules.business.domain.job.ThirdPartyStockAttributionParam;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
@@ -302,4 +303,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote);
 
     Integer countOrdersByShop(String shopId);
+
+    List<ThirdPartyStockAttributionParam> fetchThirdPartyStockAttributionParams(LocalDateTime startDateTime, List<String> shopCodes, List<String> countries);
 }

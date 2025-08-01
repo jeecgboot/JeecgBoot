@@ -9,6 +9,7 @@ import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderItem;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import static org.jeecg.modules.business.domain.api.mabang.dochangeorder.ChangeOrderRequestBody.OperationType;
@@ -22,6 +23,8 @@ public class ChangeWarehouseRequestBody implements RequestBody {
     private String street1;
     private String street2;
     private String phone;
+    // In case of different new warehouse name for multiple SKUs
+    private Map<String, String> skuCodeWarehouseNameMap;
 
     public ChangeWarehouseRequestBody(Order order, String warehouseName) {
         this.platformOrderId = order.getPlatformOrderId();
@@ -38,6 +41,12 @@ public class ChangeWarehouseRequestBody implements RequestBody {
         this.street1 = order.getStreet1();
         this.street2 = order.getStreet2();
         this.phone = order.getPhone();
+    }
+
+    public ChangeWarehouseRequestBody(Order order, Map<String, String> skuCodeWarehouseNameMap) {
+        this.platformOrderId = order.getPlatformOrderId();
+        this.skuCodeWarehouseNameMap =  skuCodeWarehouseNameMap;
+        this.order = order;
     }
 
     @Override
@@ -61,9 +70,20 @@ public class ChangeWarehouseRequestBody implements RequestBody {
                 if(!isSkuValidFormat(orderItem.getErpCode()))
                     continue;
                 JSONObject stockData = new JSONObject();
+                // Assign all SKUs to one single warehouse
+                if (warehouseName != null && !warehouseName.isEmpty()) {
+                    stockData.put("warehouseName", warehouseName);
+                } else if (skuCodeWarehouseNameMap != null && !skuCodeWarehouseNameMap.isEmpty()) {
+                    // Assign SKUs on a case-by-case base
+                    String newWarehouseName = skuCodeWarehouseNameMap.get(orderItem.getErpCode());
+                    if (newWarehouseName == null) {
+                        continue;
+                    } else {
+                        stockData.put("warehouseName", newWarehouseName);
+                    }
+                }
                 stockData.put("type", OperationType.MODIFY.getCode());
                 stockData.put("stockSku", orderItem.getErpCode());
-                stockData.put("warehouseName", warehouseName);
                 stockData.put("erpOrderItemId", orderItem.getErpOrderItemId());
                 stockDataArray.add(stockData);
             }

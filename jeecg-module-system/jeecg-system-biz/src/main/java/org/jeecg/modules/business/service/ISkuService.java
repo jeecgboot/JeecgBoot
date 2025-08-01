@@ -132,6 +132,8 @@ public interface ISkuService extends IService<Sku> {
 
     List<String> fetchAllClientSkuCodes(String clientCode);
 
+    List<Sku> fetchAllClientActiveSku(String clientCode);
+
     List<UnpairedSku> fetchUnpairedSkus(String shopId);
 
     int latestSkuCounter(String userCode, String clientCode, String date);

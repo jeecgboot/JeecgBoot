@@ -2,6 +2,7 @@ package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
+import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockData;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.entity.SkuWeight;
@@ -50,4 +51,6 @@ public interface ISkuListMabangService extends IService<SkuData> {
     void compareClientSkusWithMabang(Map<String, Sku> clientSkus);
 
     ResponsesWithMsg<String> mabangSkuPriceUpdate(List<SkuPrice> skuPrices);
+
+    Map<String, List<SkuStockData>> syncThirdPartyStock(Map<String, List<Sku>> skusByWarehouse);
 }

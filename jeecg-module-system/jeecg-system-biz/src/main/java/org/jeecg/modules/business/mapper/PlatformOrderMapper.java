@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.Order;
 import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
+import org.jeecg.modules.business.domain.job.ThirdPartyStockAttributionParam;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderShopSync;
 import org.jeecg.modules.business.vo.*;
@@ -269,4 +270,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote);
     Integer countOrdersByShop(@Param("shopId") String shopId);
+
+    List<ThirdPartyStockAttributionParam> fetchThirdPartyStockAttributionParams(LocalDateTime startDateTime, List<String> shopCodes, List<String> countries);
 }

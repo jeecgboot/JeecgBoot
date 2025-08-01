@@ -8,6 +8,7 @@ import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.DateType;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.function.Function;
 
 @Getter
@@ -15,12 +16,13 @@ import java.util.function.Function;
 public class SkuStockRequestBody implements RequestBody {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     // max 100, seperated by comma
-    private String stockSkus = "";
+    private List<String> stockSkus;
     // day format
     private LocalDateTime updateTime;
     private static final String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
     private Integer page = 1;
     private Integer total;
+    private String warehouseName;
 
     @Override
     public String api() {
@@ -30,9 +32,9 @@ public class SkuStockRequestBody implements RequestBody {
     @Override
     public JSONObject parameters() {
         JSONObject json = new JSONObject();
-        putNonNull(json, "stockSkus", stockSkus);
+        putNonNull(json, "stockSkus", stockSkus, (skus) -> String.join(",", skus));
         putNonNull(json, "updateTime", updateTime, formatter::format);
-        putNonNull(json, "warehouseName", DEFAULT_WAREHOUSE_NAME);
+        putNonNull(json, "warehouseName", warehouseName == null ? DEFAULT_WAREHOUSE_NAME : warehouseName);
         return json;
     }
 
@@ -43,7 +45,7 @@ public class SkuStockRequestBody implements RequestBody {
     int getPage() {
         return page;
     }
-    public SkuStockRequestBody setStockSkus(String stockSkus) {
+    public SkuStockRequestBody setStockSkus(List<String> stockSkus) {
         this.stockSkus = stockSkus;
         return this;
     }
@@ -53,6 +55,10 @@ public class SkuStockRequestBody implements RequestBody {
     }
     public SkuStockRequestBody setTotal(int total) {
         this.total = total;
+        return this;
+    }
+    public SkuStockRequestBody setWarehouse(String warehouseName) {
+        this.warehouseName = warehouseName;
         return this;
     }
     public int getTotalPages() {
