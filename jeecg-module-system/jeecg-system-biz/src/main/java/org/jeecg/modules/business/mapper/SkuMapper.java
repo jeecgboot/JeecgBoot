@@ -87,6 +87,8 @@ public interface SkuMapper extends BaseMapper<Sku> {
 
     List<String> fetchAllClientSkuCodes(@Param("clientCode") String clientCode);
 
+    List<Sku> fetchAllClientActiveSku(@Param("clientCode") String clientCode);
+
     List<UnpairedSku> fetchUnpairedSkus(@Param("shopId") String shopId);
 
     List<String> latestSkuCounter(@Param("userCode") String userCode, @Param("clientCode") String clientCode, @Param("date") String date);

@@ -1004,4 +1004,29 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             skuService.setIsSynced(syncedSkus, true);
         }
     }
+
+    @Override
+    public Map<String, List<SkuStockData>> syncThirdPartyStock(Map<String, List<Sku>> skusByWarehouse) {
+        Map<String, List<SkuStockData>> stockDataByWarehouse = new HashMap<>();
+        for (Map.Entry<String, List<Sku>> entry : skusByWarehouse.entrySet()) {
+            String warehouseName = entry.getKey();
+            List<Sku> skuList = entry.getValue();
+            List<List<Sku>> skuLists = Lists.partition(skuList, 100);
+            List<SkuStockData> skuStockDataList = new ArrayList<>();
+            for (int i = 0; i < skuLists.size(); ) {
+                List<String> skus = skuLists.get(i).stream().map(Sku::getErpCode).collect(toList());
+                SkuStockRequestBody body = (new SkuStockRequestBody())
+                        .setWarehouse(warehouseName)
+                        .setStockSkus(skus)
+                        .setTotal(skuList.size());
+                i++;
+                log.info("Sending request for page {}/{}.", i, body.getTotalPages());
+                SkuStockRawStream rawStream = new SkuStockRawStream(body);
+                SkuStockStream stream = new SkuStockStream(rawStream);
+                skuStockDataList.addAll(stream.all());
+            }
+            stockDataByWarehouse.put(warehouseName, skuStockDataList);
+        }
+        return stockDataByWarehouse;
+    }
 }
