@@ -19,10 +19,7 @@ import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
-import org.jeecg.modules.business.service.ICurrencyService;
-import org.jeecg.modules.business.service.ISecurityService;
-import org.jeecg.modules.business.service.ISkuPriceService;
-import org.jeecg.modules.business.service.ISkuService;
+import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.util.DateUtils;
 import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +39,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -67,6 +66,8 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
     private SkuMongoService skuMongoService;
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private ISkuListMabangService skuListMabangService;
 
     /**
      * 分页列表查询
@@ -145,6 +146,14 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
         skuPrice.setCreateTime(new Date());
         skuPriceService.save(skuPrice);
         skuMongoService.upsertSkuPrice(skuPrice);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            try {
+                skuListMabangService.mabangSkuPriceUpdate(Collections.singletonList(skuPrice));
+            } catch (Exception e) {
+                log.error("添加售价后同步到马帮失败: {}", skuPrice.getSkuId(), e);
+            }
+        });
         return Result.OK("添加成功！");
     }
 
@@ -301,52 +310,7 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                                     }
                                     skuPrice.setPrice(price);
                                     break;
-                                case 2: // Threshold
-                                    Integer threshold;
-                                    if (cell == null || cell.getCellType() == CellType.BLANK) {
-                                        threshold = null;
-                                    } else if (cell.getCellType() == CellType.NUMERIC) {
-                                        threshold = (int) cell.getNumericCellValue();
-                                    } else {
-                                        String value = cell.getStringCellValue().trim();
-                                        threshold = value.isEmpty() ? null : Integer.parseInt(value);
-                                    }
-                                    skuPrice.setThreshold(threshold);
-                                    break;
-                                case 3: // Discounted Price
-                                    BigDecimal discountedPrice;
-                                    if (cell == null || cell.getCellType() == CellType.BLANK) {
-                                        discountedPrice = null;
-                                    } else if (cell.getCellType() == CellType.NUMERIC) {
-                                        discountedPrice = BigDecimal.valueOf(cell.getNumericCellValue()).setScale(2, RoundingMode.UP);
-                                    } else {
-                                        String value = cell.getStringCellValue().trim();
-                                        discountedPrice = value.isEmpty() ? null : new BigDecimal(value).setScale(2, RoundingMode.UP);
-                                    }
-                                    skuPrice.setDiscountedPrice(discountedPrice);
-                                    break;
-                                case 4: // Date
-                                    Date effectiveDate;
-                                    if (cell.getCellType() == CellType.NUMERIC) {
-                                        effectiveDate = cell.getDateCellValue();
-                                        effectiveDate = DateUtils.setToEuropeMorning8(effectiveDate);
-                                        log.info("Effective date: {}", effectiveDate);
-                                    } else {
-                                        effectiveDate = new SimpleDateFormat("yyyy-MM-dd").parse(cell.getStringCellValue().trim());
-                                    }
-                                    skuPrice.setDate(effectiveDate);
-                                    break;
-                                case 5: // Currency
-                                    String currencyCode = cell.getStringCellValue().trim();
-                                    String currencyId = currencyService.getIdByCode(currencyCode);
-                                    if (currencyId == null) {
-                                        responses.addFailure("Row " + (rowIndex+1), ": 无效币种代码: " + currencyCode);
-                                        hasError = true;
-                                    } else {
-                                        skuPrice.setCurrencyId(currencyId);
-                                    }
-                                    break;
-                                case 6: // Unit
+                                case 2: // Unit
                                     int unit;
                                     if (cell.getCellType() == CellType.BLANK) {
                                         unit = 1;
@@ -362,7 +326,52 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                                         skuPrice.setUnit(unit);
                                     }
                                     break;
+                                case 3:// Threshold
+                                    Integer threshold;
+                                    if (cell == null || cell.getCellType() == CellType.BLANK) {
+                                        threshold = null;
+                                    } else if (cell.getCellType() == CellType.NUMERIC) {
+                                        threshold = (int) cell.getNumericCellValue();
+                                    } else {
+                                        String value = cell.getStringCellValue().trim();
+                                        threshold = value.isEmpty() ? null : Integer.parseInt(value);
+                                    }
+                                    skuPrice.setThreshold(threshold);
+                                    break;
 
+                                case 4: // Discounted Price
+                                    BigDecimal discountedPrice;
+                                    if (cell == null || cell.getCellType() == CellType.BLANK) {
+                                        discountedPrice = null;
+                                    } else if (cell.getCellType() == CellType.NUMERIC) {
+                                        discountedPrice = BigDecimal.valueOf(cell.getNumericCellValue()).setScale(2, RoundingMode.UP);
+                                    } else {
+                                        String value = cell.getStringCellValue().trim();
+                                        discountedPrice = value.isEmpty() ? null : new BigDecimal(value).setScale(2, RoundingMode.UP);
+                                    }
+                                    skuPrice.setDiscountedPrice(discountedPrice);
+                                    break;
+                                case 5:// Date
+                                    Date effectiveDate;
+                                    if (cell.getCellType() == CellType.NUMERIC) {
+                                        effectiveDate = cell.getDateCellValue();
+                                        effectiveDate = DateUtils.setToEuropeMorning8(effectiveDate);
+                                        log.info("Effective date: {}", effectiveDate);
+                                    } else {
+                                        effectiveDate = new SimpleDateFormat("yyyy-MM-dd").parse(cell.getStringCellValue().trim());
+                                    }
+                                    skuPrice.setDate(effectiveDate);
+                                    break;
+                                case 6:// Currency
+                                    String currencyCode = cell.getStringCellValue().trim();
+                                    String currencyId = currencyService.getIdByCode(currencyCode);
+                                    if (currencyId == null) {
+                                        responses.addFailure("Row " + (rowIndex+1), ": 无效币种代码: " + currencyCode);
+                                        hasError = true;
+                                    } else {
+                                        skuPrice.setCurrencyId(currencyId);
+                                    }
+                                    break;
                             }
                         } catch (Exception ex) {
                             responses.addFailure("Row " + (rowIndex+1), " Failure at column " + cellIndex + ": " + ex.getMessage());
@@ -403,6 +412,15 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                     return result;
                 }
                 skuPriceService.saveBatch(skuPrices);
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                executor.submit(() -> {
+                    try {
+                        skuListMabangService.mabangSkuPriceUpdate(skuPrices);
+                        log.info("Sku prices synced to Mabang: {}", skuPrices);
+                    } catch (Exception e) {
+                        log.error("sku prices synced to Mabang failed: {}", skuPrices);
+                    }
+                });
             } catch (Exception e) {
                 log.error("导入失败", e);
                 return Result.error("导入失败：" + e.getMessage());

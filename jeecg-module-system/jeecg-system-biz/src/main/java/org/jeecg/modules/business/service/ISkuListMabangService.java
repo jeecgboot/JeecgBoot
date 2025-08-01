@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.domain.api.mabang.doSearchSkuListNew.SkuData;
 import org.jeecg.modules.business.domain.api.mabang.stockGetStockQuantity.SkuStockData;
 import org.jeecg.modules.business.entity.Sku;
+import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.entity.SkuWeight;
 import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.SkuOrderPage;
@@ -48,6 +49,8 @@ public interface ISkuListMabangService extends IService<SkuData> {
     List<SkuOrderPage> unpairedSkus(String shopId, List<String> skuNames);
 
     void compareClientSkusWithMabang(Map<String, Sku> clientSkus);
+
+    ResponsesWithMsg<String> mabangSkuPriceUpdate(List<SkuPrice> skuPrices);
 
     Map<String, List<SkuStockData>> syncThirdPartyStock(Map<String, List<Sku>> skusByWarehouse);
 }
