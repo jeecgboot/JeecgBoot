@@ -197,9 +197,9 @@ jeecg:
   # AIRag向量库
   ai-rag:
     embed-store:
-      host: 127.0.0.1
+      host: jeecg-boot-pgvector
       port: 5432
-      database: postgres
+      database: vector_db
       user: postgres
       password: postgres
       table: embeddings
