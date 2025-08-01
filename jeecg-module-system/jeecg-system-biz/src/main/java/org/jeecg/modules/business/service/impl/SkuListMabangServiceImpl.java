@@ -1004,4 +1004,93 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             skuService.setIsSynced(syncedSkus, true);
         }
     }
+    @Override
+    public ResponsesWithMsg<String> mabangSkuPriceUpdate(List<SkuPrice> skuPrices) {
+        ResponsesWithMsg<String> responses = new ResponsesWithMsg<>();
+        String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
+        //Select latest price for each SKU
+        Map<String, SkuPrice> latestPriceMap = skuPrices.stream()
+                .collect(Collectors.toMap(SkuPrice::getSkuId, Function.identity(), (p1, p2) ->
+                        p1.getDate().after(p2.getDate()) ? p1 : p2));
+        List<String> skuIds = new ArrayList<>(latestPriceMap.keySet());
+        List<Sku> skus = skuService.listByIds(skuIds);
+        //check if the prices in the database is already the latest, skip those that do not need to be synchronized
+        List<Sku> skusToSync = new ArrayList<>();
+        for (Sku sku : skus) {
+            SkuPrice incomingPrice = latestPriceMap.get(sku.getId());
+            if (incomingPrice == null) {
+                responses.addFailure(sku.getErpCode(), "未找到对应价格记录");
+                continue;
+            }
+            //get the latest price from the database
+            SkuPrice dbLatestPrice = skuPriceService.getLatestBySkuId(sku.getId());
+            if (dbLatestPrice != null && dbLatestPrice.getDate().after(incomingPrice.getDate())) {
+                log.info("SKU {} 当前数据库已有更新价格，跳过同步", sku.getErpCode());
+                responses.addSuccess(sku.getErpCode(), "跳过：当前数据库已有更新的价格，无需同步到Mabang");
+                continue;
+            }
+            skusToSync.add(sku);
+        }
+        //Create a list of SkuData to be updated
+        List<SkuData> skuDataList = skusToSync.stream().map(sku -> {
+            SkuPrice price = latestPriceMap.get(sku.getId());
+            if (price == null || price.getPrice() == null) {
+                return null;
+            }
+            SkuData data = new SkuData();
+            data.setErpCode(sku.getErpCode());
+            data.setSalePrice(price.getPrice().setScale(2, RoundingMode.HALF_UP));
+            return data;
+        }).filter(Objects::nonNull).collect(Collectors.toList());
+        // Update Mabang in batches using a thread pool
+        ExecutorService executor = ThrottlingExecutorService
+                .createExecutorService(DEFAULT_NUMBER_OF_THREADS, MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
+        AtomicInteger processedCounter = new AtomicInteger(0);
+        int totalCount = skuDataList.size();
+        int step = Math.max(1, totalCount / 10);
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        for (SkuData skuData : skuDataList) {
+            futures.add(CompletableFuture.runAsync(() -> {
+                try {
+                    SkuChangeRequestBody body = new SkuChangeRequestBody(skuData);
+                    SkuChangeRequest request = new SkuChangeRequest(body);
+                    SkuChangeResponse response = request.send();
+
+                    if (response.success()) {
+                        responses.addSuccess(skuData.getErpCode(), "Mabang售价更新成功");
+                    } else {
+                        responses.addFailure(skuData.getErpCode(), "Mabang售价更新失败");
+                    }
+                } catch (Exception e) {
+                    responses.addFailure(skuData.getErpCode(), "异常：" + e.getMessage());
+                } finally {
+                    int done = processedCounter.incrementAndGet();
+                    if (done % step == 0 || done == totalCount) {
+                        JSONObject progress = new JSONObject();
+                        progress.put("cmd", "mabang-price-result");
+                        progress.put("type", "progress");
+                        progress.put("msgTxt", "Mabang售价更新中...");
+                        JSONObject data = new JSONObject();
+                        data.put("progress", (done * 100) / totalCount);
+                        data.put("current", done);
+                        data.put("total", totalCount);
+                        progress.put("data", data);
+                        WebSocketSender.sendToUser(userId, progress.toJSONString());
+                    }
+                }
+            }, executor));
+        }
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        JSONObject done = new JSONObject();
+        done.put("cmd", "mabang-price-result");
+        done.put("type", "complete");
+        done.put("msgTxt", "售价同步完成");
+        JSONObject data = new JSONObject();
+        data.put("total", totalCount);
+        data.put("success", responses.getSuccesses().size());
+        data.put("failure", responses.getFailures().size());
+        done.put("data", data);
+        WebSocketSender.sendToUser(userId, done.toJSONString());
+        return responses;
+    }
 }

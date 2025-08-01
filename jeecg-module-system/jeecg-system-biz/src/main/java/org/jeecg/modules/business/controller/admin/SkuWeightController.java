@@ -79,8 +79,8 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 	private SkuMongoService skuMongoService;
 	@Resource
 	private JeecgBaseConfig jeecgBaseConfig;
-	 @Autowired
-	 private MongoTemplate mongoTemplate;
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
 	private final static Integer NUMBER_OF_SKU_EXCEL_COLUMNS = 3;
