@@ -652,30 +652,16 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
     }
     @Override
     public void mabangSkuStockUpdate(List<String> skuList) {
-        StringBuilder skus = new StringBuilder();
         List<SkuStockData> updateList = new ArrayList<>();
         List<Sku> skuToUpdate = new ArrayList<>();
-        int count = 1;
-        for(int i = 1; i <= skuList.size(); i++) {
-            if(i%100 != 1)
-                skus.append(",");
-            skus.append(skuList.get(i - 1));
-            if(i%100 == 0) {
-                SkuStockRequestBody body = (new SkuStockRequestBody())
-                        .setStockSkus(skus.toString())
-                        .setTotal(skuList.size());
-                log.info("Sending request for page {}/{}.", count++, body.getTotalPages());
-
-                SkuStockRawStream rawStream = new SkuStockRawStream(body);
-                SkuStockStream stream = new SkuStockStream(rawStream);
-                updateList.addAll(stream.all());
-                skus = new StringBuilder();
-            }
-        }
-        if(skus.length() != 0) {
+        List<List<String>> skuLists = Lists.partition(skuList, 100);
+        for (int i = 0; i < skuLists.size(); ) {
+            List<String> skus = skuLists.get(i);
             SkuStockRequestBody body = (new SkuStockRequestBody())
-                    .setStockSkus(skus.toString())
+                    .setStockSkus(skus)
                     .setTotal(skuList.size());
+            i++;
+            log.info("Sending request for page {}/{}.", i, body.getTotalPages());
             SkuStockRawStream rawStream = new SkuStockRawStream(body);
             SkuStockStream stream = new SkuStockStream(rawStream);
             updateList.addAll(stream.all());
@@ -1003,5 +989,30 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             log.info("Synced skus : {}", syncedSkus);
             skuService.setIsSynced(syncedSkus, true);
         }
+    }
+
+    @Override
+    public Map<String, List<SkuStockData>> syncThirdPartyStock(Map<String, List<Sku>> skusByWarehouse) {
+        Map<String, List<SkuStockData>> stockDataByWarehouse = new HashMap<>();
+        for (Map.Entry<String, List<Sku>> entry : skusByWarehouse.entrySet()) {
+            String warehouseName = entry.getKey();
+            List<Sku> skuList = entry.getValue();
+            List<List<Sku>> skuLists = Lists.partition(skuList, 100);
+            List<SkuStockData> skuStockDataList = new ArrayList<>();
+            for (int i = 0; i < skuLists.size(); ) {
+                List<String> skus = skuLists.get(i).stream().map(Sku::getErpCode).collect(toList());
+                SkuStockRequestBody body = (new SkuStockRequestBody())
+                        .setWarehouse(warehouseName)
+                        .setStockSkus(skus)
+                        .setTotal(skuList.size());
+                i++;
+                log.info("Sending request for page {}/{}.", i, body.getTotalPages());
+                SkuStockRawStream rawStream = new SkuStockRawStream(body);
+                SkuStockStream stream = new SkuStockStream(rawStream);
+                skuStockDataList.addAll(stream.all());
+            }
+            stockDataByWarehouse.put(warehouseName, skuStockDataList);
+        }
+        return stockDataByWarehouse;
     }
 }

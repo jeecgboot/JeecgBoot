@@ -699,6 +699,11 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
     }
 
     @Override
+    public List<Sku> fetchAllClientActiveSku(String clientCode) {
+        return skuMapper.fetchAllClientActiveSku(clientCode);
+    }
+
+    @Override
     public List<UnpairedSku> fetchUnpairedSkus(String shopId) {
         return skuMapper.fetchUnpairedSkus(shopId);
     }

@@ -19,7 +19,7 @@
 	SELECT s.*
 	FROM sku s
 	LEFT JOIN client_sku cs ON s.id = cs.sku_id
-	WHERE cs.sku_id IS NULL;
+	WHERE cs.sku_id IS NULL
 </select>
 <select id="getClientIdFromSkuId" resultType="java.lang.String">
 	SELECT client_id

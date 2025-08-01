@@ -233,4 +233,8 @@ public class Order {
     public void resolveHasPhoneNumber() {
         this.hasPhoneNumber = (this.phone1 != null && !this.phone1.trim().isEmpty()) ? "1" : "0";
     }
+
+    public boolean hasLogisticChannelAssigned() {
+        return logisticChannelName != null && !logisticChannelName.isEmpty();
+    }
 }
