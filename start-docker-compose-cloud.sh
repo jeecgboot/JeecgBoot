@@ -40,6 +40,7 @@ echo "[4/5] 编译前端项目..."
 cd ../jeecgboot-vue3
 pnpm install
 pnpm run build:dockercloud
+cd ..
 
 echo "[5/5] 启动Docker容器..."
 docker-compose -f docker-compose-cloud.yml up -d
