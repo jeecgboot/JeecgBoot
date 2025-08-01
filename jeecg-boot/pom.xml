@@ -69,7 +69,7 @@
 		<aliyun.oss.version>3.17.3</aliyun.oss.version>
 		<java-jwt.version>3.11.0</java-jwt.version>
 		<codegenerate.version>1.4.9</codegenerate.version>
-		<autopoi-web.version>1.4.11</autopoi-web.version>
+		<autopoi-web.version>1.4.14</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<justauth.version>1.16.6</justauth.version>
