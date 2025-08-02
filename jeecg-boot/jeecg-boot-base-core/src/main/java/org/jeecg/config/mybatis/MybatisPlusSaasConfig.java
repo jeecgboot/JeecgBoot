@@ -145,7 +145,7 @@ public class MybatisPlusSaasConfig {
             // 如果是SQL Server则覆盖为2005分页方式
             interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.SQL_SERVER2005));
         } else {
-            interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.SQL_SERVER2005));
+            interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         }
         //update-end---author:scott ---date::2025-08-02  for：【issues/8666】升级mybatisPlus后SqlServer分页使用OFFSET ？ ROWS FETCH NEXT ？ ROWS ONLY，导致online报表报错---
         
