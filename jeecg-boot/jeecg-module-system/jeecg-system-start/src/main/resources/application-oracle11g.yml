@@ -132,8 +132,8 @@ spring:
         timeBetweenEvictionRunsMillis: 60000
         # 配置一个连接在池中最小生存的时间，单位是毫秒
         minEvictableIdleTimeMillis: 300000
-        validationQuery: SELECT 1
-        testWhileIdle: true
+        validationQuery: SELECT 1 FROM DUAL
+        #testWhileIdle: true
         testOnBorrow: false
         testOnReturn: false
         # 打开PSCache，并且指定每个连接上PSCache的大小
@@ -141,13 +141,6 @@ spring:
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
         filters: stat,wall,slf4j
-        # 允许SELECT语句的WHERE子句是一个永真条件
-        wall:
-          selectWhereAlwayTrueCheck: false
-        # 打开mergeSql功能；慢SQL记录
-        stat:
-          merge-sql: false
-          slow-sql-millis: 5000
       datasource:
         master:
           url: jdbc:oracle:thin:@127.0.0.1:1521:helowin
