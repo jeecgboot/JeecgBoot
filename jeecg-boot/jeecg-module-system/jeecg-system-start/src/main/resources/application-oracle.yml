@@ -22,7 +22,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,jeecghttptrace
+        include: metrics,httpexchanges,jeecghttptrace
 
 spring:
   flyway:
@@ -216,8 +216,6 @@ jeecg:
     upload: /opt/upFiles
     #webapp文件路径
     webapp: /opt/webapp
-  shiro:
-    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/bigscreen/category/**,/bigscreen/visual/**,/bigscreen/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
@@ -320,3 +318,11 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
+
+security:
+  oauth2:
+    client:
+      ignore-urls:
+        - /test/jeecgDemo/demo3
+        - /test/jeecgDemo/redisDemo/**
+        - /jmreport/bigscreen2/**

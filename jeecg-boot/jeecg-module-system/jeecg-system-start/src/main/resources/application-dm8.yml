@@ -22,7 +22,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,jeecghttptrace
+        include: metrics,httpexchanges,jeecghttptrace
 
 spring:
   flyway:
