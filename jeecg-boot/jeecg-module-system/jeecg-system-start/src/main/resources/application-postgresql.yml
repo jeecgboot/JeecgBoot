@@ -27,7 +27,7 @@ management:
 spring:
   flyway:
     # 是否启用flyway
-    enabled: false
+    enabled: true
     # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
     clean-disabled: true
   servlet:
@@ -46,6 +46,7 @@ spring:
       mail.smtp.writetimeout: 10000  # 写入超时（毫秒）
       mail.smtp.auth: true
       smtp.ssl.enable: true
+      mail.debug: true  # 启用调试模式(查看详细日志)
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
@@ -80,6 +81,11 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
     open-in-view: false
   aop:
     proxy-target-class: true
@@ -125,7 +131,7 @@ spring:
         # 初始化大小，最小，最大
         initial-size: 5
         min-idle: 5
-        maxActive: 20
+        maxActive: 1000
         # 配置获取连接等待超时的时间
         maxWait: 60000
         # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
@@ -141,20 +147,32 @@ spring:
         maxPoolPreparedStatementPerConnectionSize: 20
         # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
         filters: stat,slf4j
-        # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+        # 允许SELECT语句的WHERE子句是一个永真条件
+        wall:
+          selectWhereAlwayTrueCheck: false
+        # 打开mergeSql功能；慢SQL记录
+        stat:
+          merge-sql: false
+          slow-sql-millis: 5000
       datasource:
         master:
-          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-          url: jdbc:sqlserver://127.0.0.1:1433;SelectMethod=cursor;DatabaseName=jeecgboot
-          username: jeecgboot
-          password: ??
-  #redis配置
+          url: jdbc:postgresql://127.0.0.1:5432/postgres?stringtype=unspecified
+          username: admin
+          password: ????
+          driver-class-name: org.postgresql.Driver
+          # 多数据源配置
+          #multi-datasource1:
+          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          #username: root
+          #password: root
+          #driver-class-name: com.mysql.cj.jdbc.Driver
+  #redis 配置
   data:
     redis:
       database: 0
       host: 127.0.0.1
       port: 6379
-      password: ''
+      password:
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
@@ -212,6 +230,8 @@ jeecg:
     upload: /opt/upFiles
     #webapp文件路径
     webapp: /opt/webapp
+  shiro:
+    excludeUrls: /test/jeecgDemo/demo3,/test/jeecgDemo/redisDemo/**,/bigscreen/category/**,/bigscreen/visual/**,/bigscreen/map/**,/jmreport/bigscreen2/**
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
@@ -314,11 +334,3 @@ justauth:
     type: default
     prefix: 'demo::'
     timeout: 1h
-
-security:
-  oauth2:
-    client:
-      ignore-urls:
-        - /test/jeecgDemo/demo3
-        - /test/jeecgDemo/redisDemo/**
-        - /jmreport/bigscreen2/**
