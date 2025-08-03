@@ -34,17 +34,22 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   mail:
+    # 定时任务发送邮件
+    timeJobSend: false
     host: smtp.163.com
     username: jeecgos@163.com
     password: ??
     properties:
+      mail.smtp.timeout: 10000  # 连接超时（毫秒）
+      mail.smtp.connectiontimeout: 10000  # 连接超时（毫秒）
+      mail.smtp.writetimeout: 10000  # 写入超时（毫秒）
       mail.smtp.auth: true
       smtp.ssl.enable: true
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
     jdbc:
-      initialize-schema: never
+      initialize-schema: embedded
     #定时任务启动开关，true-开  false-关
     auto-startup: true
     #延迟1秒启动定时任务
@@ -166,7 +171,7 @@ jeecg:
     enabled: true
     model: deepseek-chat
     apiKey: ??
-    apiHost: https://api.deepseek.com
+    apiHost: https://api.deepseek.com/v1
     timeout: 60
   # AIRag向量库
   ai-rag:
@@ -204,6 +209,18 @@ jeecg:
     secretKey: ??
     endpoint: oss-cn-beijing.aliyuncs.com
     bucketName: jeecgdev
+    # 短信模板
+    sms-template:
+      # 签名
+      signature:
+      # 模板code
+      templateCode:
+        # 登录短信、忘记密码模板编码
+        SMS_175435174:
+        # 修改密码短信模板编码
+        SMS_465391221:
+        # 注册账号短信模板编码
+        SMS_175430166:
   # 在线预览文件服务器地址配置
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传
