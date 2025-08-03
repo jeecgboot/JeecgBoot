@@ -22,7 +22,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: metrics,jeecghttptrace
+        include: metrics,httpexchanges,jeecghttptrace
 
 spring:
   flyway:
@@ -114,7 +114,7 @@ spring:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
     exclude:
-      - com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+      - com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
       - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
@@ -167,11 +167,12 @@ spring:
           #password: root
           #driver-class-name: com.mysql.cj.jdbc.Driver
   #redis 配置
-  redis:
-    database: 0
-    host: 127.0.0.1
-    port: 6379
-    password: ''
+  data:
+    redis:
+      database: 0
+      host: 127.0.0.1
+      port: 6379
+      password:
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
