@@ -150,10 +150,16 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-          url: jdbc:sqlserver://192.168.1.188:1433;SelectMethod=cursor;DatabaseName=jeecgboot
+          url: jdbc:oracle:thin:@127.0.0.1:1521:helowin
           username: jeecgboot
-          password: ??
+          password: ???
+          driver-class-name: oracle.jdbc.OracleDriver
+  #          # 多数据源配置
+  #        multi-datasource1:
+  #          url: jdbc:sqlserver://192.168.1.199:1433;SelectMethod=cursor;DatabaseName=jeecgbootbpm
+  #          username: jeecgboot
+  #          password: jeecgboot@459
+  #          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
   #redis配置
   redis:
     database: 0
