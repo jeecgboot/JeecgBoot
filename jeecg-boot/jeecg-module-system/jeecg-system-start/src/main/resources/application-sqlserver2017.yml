@@ -151,7 +151,7 @@ spring:
       datasource:
         master:
           driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-          url: jdbc:sqlserver://192.168.1.188:1433;SelectMethod=cursor;DatabaseName=jeecgboot
+          url: jdbc:sqlserver://127.0.0.1:1433;SelectMethod=cursor;DatabaseName=jeecgboot
           username: jeecgboot
           password: ??
   #redis配置
