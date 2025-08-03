@@ -27,7 +27,7 @@ management:
 spring:
   flyway:
     # 是否启用flyway
-    enabled: true
+    enabled: false
     # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
     clean-disabled: true
   servlet:
@@ -46,7 +46,6 @@ spring:
       mail.smtp.writetimeout: 10000  # 写入超时（毫秒）
       mail.smtp.auth: true
       smtp.ssl.enable: true
-      mail.debug: true  # 启用调试模式(查看详细日志)
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
@@ -126,7 +125,7 @@ spring:
         # 初始化大小，最小，最大
         initial-size: 5
         min-idle: 5
-        maxActive: 1000
+        maxActive: 20
         # 配置获取连接等待超时的时间
         maxWait: 60000
         # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
@@ -151,17 +150,11 @@ spring:
           slow-sql-millis: 5000
       datasource:
         master:
-          url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-          username: root
-          password: root
-          driver-class-name: com.mysql.cj.jdbc.Driver
-          # 多数据源配置
-          #multi-datasource1:
-          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-          #username: root
-          #password: root
-          #driver-class-name: com.mysql.cj.jdbc.Driver
-  #redis 配置
+          driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+          url: jdbc:sqlserver://192.168.1.188:1433;SelectMethod=cursor;DatabaseName=jeecgboot
+          username: jeecgboot
+          password: ??
+  #redis配置
   redis:
     database: 0
     host: 127.0.0.1
