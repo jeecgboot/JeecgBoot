@@ -250,7 +250,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.8.2-beta</version>
+				<version>3.8.2</version>
 			</dependency>
 			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 			<dependency>
