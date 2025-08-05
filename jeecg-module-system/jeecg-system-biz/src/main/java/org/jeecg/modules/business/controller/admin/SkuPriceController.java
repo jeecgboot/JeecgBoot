@@ -11,10 +11,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.NumberUtils;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.model.SkuDocument;
@@ -164,9 +164,7 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
      * @param ids
      * @return
      */
-    @AutoLog(value = "SKU售价-批量删除")
     @ApiOperation(value="SKU售价-批量删除", notes="SKU售价-批量删除")
-//    @RequiresPermissions("skuprice:sku_price:deleteBatch")
     @DeleteMapping(value = "/deleteBatch")
     public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
@@ -177,9 +175,27 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
         }
         List<String> idList = Arrays.asList(ids.split(","));
         List<SkuPrice> pricesToDelete = skuPriceService.listByIds(idList);
+        List<String> invalidErpCodes = new ArrayList<>();
+        for (SkuPrice price : pricesToDelete) {
+            if (price == null || price.getSkuId() == null) {
+                invalidErpCodes.add("Invalid SKU ID in deletion list: " + price);
+                continue;
+            }
+            SkuPrice latest = skuPriceService.getLatestBySkuId(price.getSkuId());
+            if (latest == null || price.getDate() == null || latest.getDate().after(price.getDate())) {
+                Sku sku = skuService.getById(price.getSkuId());
+                String erpCode = sku != null ? sku.getErpCode() : price.getSkuId();
+                invalidErpCodes.add(erpCode);
+            }
+        }
+
+        if (!invalidErpCodes.isEmpty()) {
+            return Result.error("只能删除每个 SKU 的最新价格记录，违规项 ERP: " + String.join(", ", invalidErpCodes));
+        }
         // delete from MySQL
         skuPriceService.removeByIds(idList);
         // check if the deleted prices are the latest ones in MongoDB
+        List<SkuPrice> newLatestToSync = new ArrayList<>();
         for (SkuPrice deleted : pricesToDelete) {
             String skuId = deleted.getSkuId();
             Date deletedDate = deleted.getDate();
@@ -197,11 +213,22 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                 );
                 // if there are remaining prices, update the latest price in MongoDB
                 if (!remainingPrices.isEmpty()) {
-                    log.info("Updating latest SKU price for SKU {} to {}", skuId, remainingPrices.get(0));
-                    skuMongoService.upsertSkuPrice(remainingPrices.get(0));
+                    SkuPrice newLatest = remainingPrices.get(0);
+                    skuMongoService.upsertSkuPrice(newLatest);
+                    newLatestToSync.add(newLatest);
+                    log.info("Updating latest SKU price for SKU {} to {}", skuId, newLatest);
                 }
             }
         }
+        // sync to Mabang by async task
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.submit(() -> {
+            try {
+                skuListMabangService.mabangSkuPriceUpdate(newLatestToSync);
+            } catch (Exception e) {
+                log.error("Failed to sync SKU prices with Mabang", e);
+            }
+        });
         log.info("Deleted SKU prices: {}", pricesToDelete);
         return Result.OK("批量删除成功!");
     }
@@ -392,10 +419,10 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                             continue;
                         }
                         boolean sameContentExists = existingPrices.stream().anyMatch(existing ->
-                                existing.getPrice().compareTo(skuPrice.getPrice()) == 0 &&
-                                        existing.getDiscountedPrice().compareTo(skuPrice.getDiscountedPrice()) == 0 &&
-                                        existing.getThreshold().equals(skuPrice.getThreshold()) &&
-                                        existing.getCurrencyId().equals(skuPrice.getCurrencyId())
+                                NumberUtils.isEqual(existing.getPrice(), skuPrice.getPrice()) &&
+                                        NumberUtils.isEqual(existing.getDiscountedPrice(), skuPrice.getDiscountedPrice()) &&
+                                        Objects.equals(existing.getThreshold(), skuPrice.getThreshold()) &&
+                                        Objects.equals(existing.getCurrencyId(), skuPrice.getCurrencyId())
                         );
                         if (sameContentExists) {
                             responses.addSuccess("Row " + (rowIndex+1), ": 与已有记录内容相同，仅日期不同，跳过导入");
