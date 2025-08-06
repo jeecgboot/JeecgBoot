@@ -71,7 +71,7 @@ public class AiragModelController extends JeecgController<AiragModel, IAiragMode
      * @return
      */
     @PostMapping(value = "/add")
-    @PreAuthorize("@jps.requiresPermissions('airag:model:add")
+    @PreAuthorize("@jps.requiresPermissions('airag:model:add')")
     public Result<String> add(@RequestBody AiragModel airagModel) {
         // 验证 模型名称/模型类型/基础模型
         AssertUtils.assertNotEmpty("模型名称不能为空", airagModel.getName());
