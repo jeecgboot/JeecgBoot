@@ -60,29 +60,29 @@ public class Swagger3Config implements WebMvcConfigurer {
         return method -> method.isAnnotationPresent(Operation.class);
     }
 
-    //TODO 暂时注释掉，for：【issues/8638】springboot3分支，knife4j不能正确显示文档，但是swagger-ui和v3/api-docs正常 #8638
-//    @Bean
-//    public GlobalOpenApiCustomizer globalOpenApiCustomizer() {
-//        return openApi -> {
-//            // 全局添加鉴权参数
-//            if (openApi.getPaths() != null) {
-//                openApi.getPaths().forEach((path, pathItem) -> {
-//                    //log.debug("path: {}", path);
-//                    // 检查当前路径是否在排除列表中
-//                    boolean isExcluded = excludedPaths.stream().anyMatch(
-//                            excludedPath -> excludedPath.equals(path) || (excludedPath.endsWith("**") && path.startsWith(excludedPath.substring(0, excludedPath.length() - 2)))
-//                    );
-//
-//                    if (!isExcluded) {
-//                        // 接口添加鉴权参数
-//                        pathItem.readOperations().forEach(operation ->
-//                                operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
-//                        );
-//                    }
-//                });
-//            }
-//        };
-//    }
+    @Bean
+    public GlobalOpenApiCustomizer globalOpenApiCustomizer() {
+        return openApi -> {
+            // 全局添加鉴权参数
+            if (openApi.getPaths() != null) {
+                openApi.getPaths().forEach((path, pathItem) -> {
+                    //log.info("path: {}", path);
+                    // 检查当前路径是否在排除列表中
+                    boolean isExcluded = excludedPaths.stream().anyMatch(
+                            excludedPath -> excludedPath.equals(path) || (excludedPath.endsWith("**") && path.startsWith(excludedPath.substring(0, excludedPath.length() - 2)))
+                    );
+
+                    if (!isExcluded) {
+                        //log.info(" 接口添加默认X_ACCESS_TOKEN: {}", path);
+                        // 接口添加鉴权参数
+                        pathItem.readOperations().forEach(operation ->
+                                operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
+                        );
+                    }
+                });
+            }
+        };
+    }
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -91,11 +91,15 @@ public class Swagger3Config implements WebMvcConfigurer {
                         .title("JeecgBoot 后台服务API接口文档")
                         .version("3.8.1")
                         .contact(new Contact().name("北京国炬信息技术有限公司").url("www.jeccg.com").email("jeecgos@163.com"))
-                        .description( "后台API接口")
+                        .description("后台API接口")
                         .termsOfService("NO terms of service")
                         .license(new License().name("Apache 2.0").url("http://www.apache.org/licenses/LICENSE-2.0.html")))
                 .addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
                 .components(new Components().addSecuritySchemes(CommonConstant.X_ACCESS_TOKEN,
-                        new SecurityScheme().name(CommonConstant.X_ACCESS_TOKEN).type(SecurityScheme.Type.HTTP)));
+                        new SecurityScheme()
+                                .name(CommonConstant.X_ACCESS_TOKEN)
+                                .type(SecurityScheme.Type.APIKEY)
+                                .in(SecurityScheme.In.HEADER) // 关键：指定为 header
+                ));
     }
 }
