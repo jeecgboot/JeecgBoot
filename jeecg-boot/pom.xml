@@ -56,8 +56,8 @@
 		<dm8.version>8.1.1.49</dm8.version>
 		
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>2.1.1</jimureport-spring-boot-starter.version>
-		<jimubi-spring-boot-starter.version>2.1.0</jimubi-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>2.1.2</jimureport-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.1.2</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.11</minidao.version>
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.12</mybatis-plus.version>
@@ -73,7 +73,7 @@
 		<shiro-redis.version>3.2.3</shiro-redis.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
 		<codegenerate.version>1.4.9</codegenerate.version>
-		<autopoi-web.version>1.4.13</autopoi-web.version>
+		<autopoi-web.version>1.4.15</autopoi-web.version>
 		<minio.version>8.0.3</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
@@ -439,6 +439,10 @@
 						<groupId>org.apache.calcite</groupId>
 						<artifactId>calcite-elasticsearch</artifactId>
 					</exclusion>
+					<exclusion>
+						<artifactId>autopoi-web</artifactId>
+						<groupId>org.jeecgframework</groupId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- 后台导出接口Echart图表支持包，按需引入 -->
@@ -457,7 +461,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
-				<version>3.8.2</version>
+				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
 			<!--mysql5.6，需要把版本号改成5.2.1-->
