@@ -151,9 +151,9 @@
         </dependency>
         <!-- langChain4j vextor support -->
         <dependency>
-            <groupId>dev.langchain4j</groupId>
+            <groupId>org.jeecgframework</groupId>
             <artifactId>langchain4j-pgvector</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>0.35.0</version>
         </dependency>
         <!-- langChain4j Document Parser -->
         <dependency>
