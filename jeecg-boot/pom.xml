@@ -217,7 +217,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-job</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>3.8.2-RC</version>
 			</dependency>
 			<!--redis分布式锁-->
 			<dependency>
