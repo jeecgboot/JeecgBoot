@@ -69,6 +69,7 @@ Jeecg-Boot AI low code platform can be applied in the development of any J2EE pr
 Starts the project
 -----------------------------------
 
+- [Development Environment setup](https://help.jeecg.com/java/setup/tools)
 - [IDEA Quick start](https://help.jeecg.com/java/setup/idea/startup)
 - [Docker Quick start](https://help.jeecg.com/java/docker/quick)
 
