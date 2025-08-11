@@ -348,9 +348,8 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 							  continue;
 						  }
 
-						  boolean sameContentExists = existingWeight.stream()
-								  .anyMatch(e -> e.getWeight() == skuWeight.getWeight());
-						  if (sameContentExists) {
+						  boolean sameLatestWeight = skuWeightService.getBySkuId(skuWeight.getSkuId()).getWeight() == skuWeight.getWeight();
+						  if (sameLatestWeight) {
 							  responses.addSuccess("Row " + (rowIndex + 1), " 内容一致，仅日期不同，跳过");
 							  log.info("Row {} has existing weight with same content but different date for SKU {}, skipping",
 									  rowIndex + 1, skuWeight.getSkuId());
@@ -383,23 +382,24 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 						  WebSocketSender.sendToUser(userId, detailMsg.toJSONString());
 
 						  //step 3: Asynchronously call Mabang API
-						  executor.submit(() -> {
-							  try {
-								  ResponsesWithMsg<String> mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
-
-								  List<SkuWeight> matchedSuccesses = new ArrayList<>();
-								  mabangResponses.getSuccesses().forEach((skuErpCode, messages) -> {
-									  SkuWeight matched = skuWeightMappedByErpCode.get(skuErpCode);
-									  if (matched != null) {
-										  matchedSuccesses.add(matched);
-									  }
-								  });
-								  log.info("Mabang synchronization completed - successes: {}, failures: {}",
-										  mabangResponses.getSuccesses().size(), mabangResponses.getFailures().size());
-							  } catch (Exception ex) {
-								  log.error("Mabang synchronization failed", ex);
-							  }
-						  });
+						  // TODO :re-enable after testing
+//						  executor.submit(() -> {
+//							  try {
+//								  ResponsesWithMsg<String> mabangResponses = skuListMabangService.mabangSkuWeightUpdate(skuWeights);
+//
+//								  List<SkuWeight> matchedSuccesses = new ArrayList<>();
+//								  mabangResponses.getSuccesses().forEach((skuErpCode, messages) -> {
+//									  SkuWeight matched = skuWeightMappedByErpCode.get(skuErpCode);
+//									  if (matched != null) {
+//										  matchedSuccesses.add(matched);
+//									  }
+//								  });
+//								  log.info("Mabang synchronization completed - successes: {}, failures: {}",
+//										  mabangResponses.getSuccesses().size(), mabangResponses.getFailures().size());
+//							  } catch (Exception ex) {
+//								  log.error("Mabang synchronization failed", ex);
+//							  }
+//						  });
 
 					  } else {
 						  log.warn("No valid SKU weights found to import, skipping");
