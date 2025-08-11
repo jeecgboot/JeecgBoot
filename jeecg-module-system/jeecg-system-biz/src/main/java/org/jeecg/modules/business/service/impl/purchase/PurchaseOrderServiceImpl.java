@@ -696,4 +696,9 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         page.setTotal(result.getTotal());
     }
 
+    @Override
+    public Client getShopOwnerFromInvoiceNumber(String invoiceNumber) {
+        return purchaseOrderMapper. getShopOwnerFromInvoiceNumber(invoiceNumber);
+    }
+
 }

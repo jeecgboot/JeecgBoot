@@ -10,10 +10,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
-import org.jeecg.modules.business.entity.PlatformOrder;
-import org.jeecg.modules.business.entity.PlatformOrderContent;
-import org.jeecg.modules.business.entity.PurchaseOrder;
-import org.jeecg.modules.business.entity.SkuPrice;
+import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.Estimation;
@@ -75,7 +72,8 @@ public class TransactionController {
     @GetMapping(value="/debit")
     public Result<?> debit(@RequestParam("clientId") String clientId, @RequestParam("currency") String currency) {
         List<String> errorMessages = new ArrayList<>();
-        List<String> shopIds = shopService.listIdByClient(clientId);
+        List<Shop> shops = shopService.listSelfInvoiceShopsByClient(clientId);
+        List<String> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toList());
         List<PlatformOrder> shippingOrders = platformOrderService.findUninvoicedShippingOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
         List<String> orderIds = shippingOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         Date startDate = null;

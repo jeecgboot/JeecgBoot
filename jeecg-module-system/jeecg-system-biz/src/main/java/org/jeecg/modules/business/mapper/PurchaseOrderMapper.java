@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.Invoice;
 import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PurchaseOrder;
@@ -132,4 +133,6 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     List<PurchaseOrder> getPurchasesByInvoices(@Param("invoices") List<Invoice> invoices);
 
     void cancelInvoice(@Param("id") String invoiceId);
+
+    Client getShopOwnerFromInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
 }

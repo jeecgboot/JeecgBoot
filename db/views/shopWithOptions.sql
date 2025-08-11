@@ -1,5 +1,6 @@
 CREATE OR REPLACE VIEW shop_with_options AS
-SELECT c.id as client_id,
+SELECT so.id as id,
+       c.id as client_id,
        c.internal_code as internal_code,
        c.active as is_client_active,
        s.id as shop_id,
@@ -17,7 +18,7 @@ SELECT c.id as client_id,
        so.is_self_ignore_stock,
        so.has_stock,
        so.has_shipping_invoice_remark,
-       IF(so.can_self_invoice IS NULL, 0, 1) AS has_options
+       IF(so.id IS NULL, 0, 1) AS has_options
 FROM shop s
 LEFT JOIN shop_options so ON s.id = so.shop_id
 JOIN client c ON s.owner_id = c.id

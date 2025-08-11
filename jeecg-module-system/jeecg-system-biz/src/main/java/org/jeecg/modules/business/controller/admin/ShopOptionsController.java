@@ -185,8 +185,10 @@ public class ShopOptionsController extends JeecgController<ShopOptions, IShopOpt
 	@GetMapping(value = "/findByClientId")
 	public Result<?> findByClientId(@RequestParam(name = "clientID") String clientId) {
 		Map<String, ShopWithOptions> shopWithOptionsMapByShopId = shopOptionsService.findByClientId(clientId);
-		if (shopWithOptionsMapByShopId == null || shopWithOptionsMapByShopId.isEmpty()) {
-			return Result.error(404, "");
+		boolean allShopsHaveOptions = shopWithOptionsMapByShopId.values().stream()
+				.allMatch(ShopWithOptions::getHasOptions);
+		if (!allShopsHaveOptions) {
+			return Result.error(409, "One or more shops is not properly configured. Please contact support.");
 		}
 		return Result.OK(shopWithOptionsMapByShopId);
 	}

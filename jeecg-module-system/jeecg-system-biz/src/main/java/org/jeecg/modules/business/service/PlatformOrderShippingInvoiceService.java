@@ -663,8 +663,7 @@ public class PlatformOrderShippingInvoiceService {
                 InvoiceMetaData metaData;
                 if(invoiceType == 0) {
                     metaData = makeInvoice(param);
-                    if(client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.VIP.getName()))
-                        || client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.CONFIRMED.getName())))
+                    if(client.getUseBalance())
                         balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), SHIPPING.name());
                 }
                 else {
