@@ -37,7 +37,7 @@
 		<spring-cloud.version>2021.0.8</spring-cloud.version>
 		<spring-cloud-alibaba.version>2021.0.6.2</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
-		<seata.version>1.5.2</seata.version>
+		<seata.version>1.7.0</seata.version>
 
 		<xxl-job-core.version>2.4.1</xxl-job-core.version>
         <fastjson.version>2.0.57</fastjson.version>
@@ -240,7 +240,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>3.8.2-RC</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>

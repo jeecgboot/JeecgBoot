@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-starter-seata</artifactId>
-            <version>${jeecgboot.version}</version>
+            <version>3.8.2-RC</version>
         </dependency>
     </dependencies>
 </project>

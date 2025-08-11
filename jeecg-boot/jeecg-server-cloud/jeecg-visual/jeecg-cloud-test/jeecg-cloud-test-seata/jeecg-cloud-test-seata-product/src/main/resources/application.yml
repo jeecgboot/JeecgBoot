@@ -3,6 +3,11 @@ server:
 spring:
   application:
     name: seata-product
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
   main:
     allow-bean-definition-overriding: true
   autoconfigure:
@@ -12,9 +17,11 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306/jeecg_product?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useSSL=false
     username: root
     password: root
-    schema: classpath:sql/schema-product.sql
+  sql:
+    init:
+      schema-locations: classpath:sql/schema-product.sql
 seata:
-#  enable-auto-data-source-proxy: false
+  enable-auto-data-source-proxy: false
   service:
     grouplist:
       default: 127.0.0.1:8091
@@ -22,3 +29,7 @@ seata:
       springboot-seata-group: default
   # seata 事务组编号 用于TC集群名
   tx-service-group: springboot-seata-group
+  
+# 无用配置，为了避免扫码全代码导致启动慢
+minidao:
+  base-package: org.jeecg.modules.jmreport.*
