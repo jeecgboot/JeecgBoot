@@ -49,8 +49,9 @@ public interface ISysTenantService extends IService<SysTenant> {
      * 邀请用户加入租户,通过手机号
      * @param ids
      * @param phone
+     * @param username
      */
-    void invitationUserJoin(String ids, String phone);
+    void invitationUserJoin(String ids, String phone,String username);
 
     /**
      * 请离用户（租户）

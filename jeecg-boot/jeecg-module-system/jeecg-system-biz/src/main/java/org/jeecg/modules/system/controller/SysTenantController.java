@@ -412,8 +412,11 @@ public class SysTenantController {
      */
     @PutMapping("/invitationUserJoin")
     @RequiresPermissions("system:tenant:invitation:user")
-    public Result<String> invitationUserJoin(@RequestParam("ids") String ids,@RequestParam("phone") String phone){
-        sysTenantService.invitationUserJoin(ids,phone);
+    public Result<String> invitationUserJoin(@RequestParam("ids") String ids,@RequestParam(value = "phone", required = false) String phone, @RequestParam(value = "username", required = false) String username){
+        if(oConvertUtils.isEmpty(phone) && oConvertUtils.isEmpty(username)){
+            return Result.error("手机号和用户账号不能同时为空！");
+        }
+        sysTenantService.invitationUserJoin(ids,phone,username);
         return Result.ok("邀请用户成功");
     }
 
