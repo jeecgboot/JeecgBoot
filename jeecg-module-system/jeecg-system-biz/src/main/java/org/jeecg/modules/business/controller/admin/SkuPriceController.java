@@ -15,6 +15,7 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.NumberUtils;
 import org.jeecg.modules.business.entity.Sku;
 import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.model.SkuDocument;
@@ -391,13 +392,16 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                             responses.addSuccess("Row " + (rowIndex+1), ": 已存在相同 SKU + 日期，跳过导入");
                             continue;
                         }
-                        boolean sameContentExists = existingPrices.stream().anyMatch(existing ->
-                                existing.getPrice().compareTo(skuPrice.getPrice()) == 0 &&
-                                        existing.getDiscountedPrice().compareTo(skuPrice.getDiscountedPrice()) == 0 &&
-                                        existing.getThreshold().equals(skuPrice.getThreshold()) &&
-                                        existing.getCurrencyId().equals(skuPrice.getCurrencyId())
-                        );
-                        if (sameContentExists) {
+                        SkuPrice latestSkuPrice = skuPriceService.getLatestBySkuId(skuPrice.getSkuId());
+                        boolean sameAsLatestSkuPrice =
+                                latestSkuPrice != null
+                                        && latestSkuPrice.getPrice() != null
+                                        && skuPrice.getPrice() != null
+                                        && latestSkuPrice.getPrice().compareTo(skuPrice.getPrice()) == 0
+                                        && Objects.equals(latestSkuPrice.getCurrencyId(), skuPrice.getCurrencyId())
+                                        && Objects.equals(latestSkuPrice.getThreshold(), skuPrice.getThreshold())
+                                        && NumberUtils.isEqual(latestSkuPrice.getDiscountedPrice(), skuPrice.getDiscountedPrice());
+                        if (sameAsLatestSkuPrice) {
                             responses.addSuccess("Row " + (rowIndex+1), ": 与已有记录内容相同，仅日期不同，跳过导入");
                             continue;
                         }
