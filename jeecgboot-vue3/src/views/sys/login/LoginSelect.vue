@@ -146,11 +146,11 @@
         let multi_depart = loginResult.multi_depart;
         //0:无部门 1:一个部门 2:多个部门
         if (multi_depart == 0) {
-          notification.warn({
-            message: '提示',
-            description: `您尚未归属部门,请确认账号信息`,
-            duration: 3,
-          });
+          // notification.warn({
+          //   message: '提示',
+          //   description: `您尚未归属部门,请确认账号信息`,
+          //   duration: 3,
+          // });
           isMultiDepart.value = false;
         } else if (multi_depart == 2) {
           isMultiDepart.value = true;
