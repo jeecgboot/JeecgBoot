@@ -21,6 +21,24 @@
     <template #JPopup="{ model, field }">
       <JPopup v-model:value="model[field]" :formElRef="formElRef" code="report_user" :fieldConfig="[{ source: 'username', target: 'pop1' }]" />
     </template>
+    <template #JPopup2="{ model, field }">
+      <JPopup
+        v-model:value="model[field]"
+        :formElRef="formElRef"
+        code="withparamreport"
+        :param="{ sex: '1' }"
+        :fieldConfig="[{ source: 'name', target: 'pop2' }]"
+      />
+    </template>
+    <template #JPopup3="{ model, field }">
+      <JPopup
+        v-model:value="model[field]"
+        :formElRef="formElRef"
+        code="tj_user_report"
+        :param="{ sex: '1' }"
+        :fieldConfig="[{ source: 'realname', target: 'pop3' }]"
+      />
+    </template>
     <template #JAreaSelect="{ model, field }">
       <JAreaSelect v-model:value="model[field]" />
     </template>
