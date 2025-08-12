@@ -66,6 +66,7 @@ JeecgBoot低代码平台，可以应用在任何J2EE项目的开发中，支持�
 启动项目
 -----------------------------------
 
+- [开发环境搭建](https://help.jeecg.com/java/setup/tools)
 - [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
 - [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
 

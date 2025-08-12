@@ -12,6 +12,11 @@ spring:
         enabled: false
   application:
     name: seata-account
+  cloud:
+    nacos:
+      config:
+        import-check:
+          enabled: false
   main:
     allow-bean-definition-overriding: true
   autoconfigure:
@@ -21,14 +26,11 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
-    schema: classpath:sql/schema-account.sql
-  cloud:
-    nacos:
-      config:
-        import-check:
-          enabled: false
+  sql:
+    init:
+      schema-locations: classpath:sql/schema-account.sql
 seata:
-#  enable-auto-data-source-proxy: true
+  enable-auto-data-source-proxy: false
   service:
     grouplist:
       default: 127.0.0.1:8091
@@ -36,3 +38,7 @@ seata:
       springboot-seata-group: default
   # seata 事务组编号 用于TC集群名
   tx-service-group: springboot-seata-group
+  
+# 无用配置，为了避免扫码全代码导致启动慢
+minidao:
+  base-package: org.jeecg.modules.jmreport.*
