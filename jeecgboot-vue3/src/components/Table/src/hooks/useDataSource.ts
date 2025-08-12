@@ -238,12 +238,20 @@ export function useDataSource(
 
       const { sortInfo = {}, filterInfo } = searchState;
 
+      // 扩展默认排序多字段数组写法
+      let defSortInfo: Recordable<any> | undefined = {};
+      if (defSort && Array.isArray(defSort) && defSort.length > 0) {
+        defSortInfo['defSortString'] = JSON.stringify(defSort);
+      } else {
+        defSortInfo = defSort;
+      }
+
       let params: Recordable = {
         ...pageParams,
         // 由于 getFieldsValue 返回的不是逗号分割的数据，所以改用 validate
         ...(useSearchForm ? await validate() : {}),
         ...searchInfo,
-        ...defSort,
+        ...defSortInfo,
         ...(opt?.searchInfo ?? {}),
         ...sortInfo,
         ...filterInfo,

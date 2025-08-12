@@ -123,11 +123,17 @@
         style: { textAlign: 'left' },
       },
     },
-    //自定义默认排序
-    defSort: {
-      column: 'createTime,sex',
-      order: 'desc',
-    },
+    //自定义默认多字段排序
+    defSort: [
+      {
+        column: 'name',
+        order: 'desc',
+      },
+      {
+        column: 'sex',
+        order: 'asc',
+      },
+    ],
     striped: true,
     useSearchForm: true,
     showTableSetting: true,
