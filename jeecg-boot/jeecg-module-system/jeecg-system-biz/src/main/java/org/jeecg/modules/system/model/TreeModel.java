@@ -22,7 +22,7 @@ public class TreeModel implements Serializable {
 	
 	private String slotTitle;
 	
-	private boolean isLeaf;
+	private Boolean isLeaf;
 	
 	private String icon;
 	
@@ -54,11 +54,11 @@ public class TreeModel implements Serializable {
 		this.title = title;
 	}
 
-	public boolean getIsLeaf() {
+	public Boolean getIsLeaf() {
 		return isLeaf;
 	}
 
-	public void setIsLeaf(boolean isLeaf) {
+	public void setIsLeaf(Boolean isLeaf) {
 		this.isLeaf = isLeaf;
 	}
 
