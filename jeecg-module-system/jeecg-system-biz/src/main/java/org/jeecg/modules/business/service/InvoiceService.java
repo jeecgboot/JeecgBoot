@@ -15,4 +15,5 @@ public interface InvoiceService extends IService<Invoice> {
     void asyncEstimateAndPushUpdates(String userId);
 
     Result<?> checkSkuPrices(ShippingInvoiceOrderParam param);
+    int findEarliestInvoiceYear(String clientId, String currency);
 }
