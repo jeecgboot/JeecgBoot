@@ -8,6 +8,8 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.config.security.app.AppGrantAuthenticationConvert;
 import org.jeecg.config.security.app.AppGrantAuthenticationProvider;
 import org.jeecg.config.security.password.PasswordGrantAuthenticationConvert;
@@ -64,6 +66,7 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 @EnableMethodSecurity
 @AllArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private JdbcTemplate jdbcTemplate;
@@ -87,14 +90,15 @@ public class SecurityConfig {
                         .authenticationProvider(new SocialGrantAuthenticationProvider(authorizationService, tokenGenerator())))
                 //开启OpenID Connect 1.0（其中oidc为OpenID Connect的缩写）。 访问 /.well-known/openid-configuration即可获取认证信息
                 .oidc(Customizer.withDefaults());
-        http
-                //将需要认证的请求，重定向到login页面行登录认证。
-                .exceptionHandling((exceptions) -> exceptions
-                        .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/sys/login"),
-                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
-                        )
-                );
+
+        //将需要认证的请求，抛出异常，不跳转页面
+        http.exceptionHandling(exceptions -> exceptions
+                .authenticationEntryPoint((request, response, authException) -> {
+                    // 记录详细的异常信息
+                    log.error("接口访问失败，请求路径：{}，错误信息：{}", request.getRequestURI(), authException.getMessage(), authException);
+                    JwtUtil.responseError(response,401,authException.getMessage());
+                })
+        );
 
         return http.build();
     }
@@ -195,6 +199,12 @@ public class SecurityConfig {
                             return config;
                         }))
                 .csrf(AbstractHttpConfigurer::disable)
+                // 添加异常处理
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            log.error("接口访问失败，请求路径：{}，错误信息：{}", request.getRequestURI(), authException.getMessage(), authException);
+                            JwtUtil.responseError(response,401,authException.getMessage());
+                        }))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jeecgAuthenticationConvert)));
         return http.build();
     }
