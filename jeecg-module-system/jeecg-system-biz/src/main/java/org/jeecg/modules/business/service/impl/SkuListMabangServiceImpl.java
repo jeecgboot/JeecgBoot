@@ -1071,11 +1071,21 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         JSONObject done = new JSONObject();
         done.put("cmd", "mabang-price-result");
         done.put("type", "complete");
-        done.put("msgTxt", "售价同步完成");
+        done.put("msgTxt", "马帮售价同步完成");
         JSONObject data = new JSONObject();
         data.put("total", totalCount);
         data.put("success", responses.getSuccesses().size());
         data.put("failure", responses.getFailures().size());
+        JSONObject successDetails = new JSONObject();
+        for (Map.Entry<String, List<String>> entry : responses.getSuccesses().entrySet()) {
+            successDetails.put(entry.getKey(), String.join("; ", entry.getValue()));
+        }
+        data.put("successes", successDetails);
+        JSONObject failureDetails = new JSONObject();
+        for (Map.Entry<String, List<String>> entry : responses.getFailures().entrySet()) {
+            failureDetails.put(entry.getKey(), String.join("; ", entry.getValue()));
+        }
+        data.put("failures", failureDetails);
         done.put("data", data);
         WebSocketSender.sendToUser(userId, done.toJSONString());
         return responses;

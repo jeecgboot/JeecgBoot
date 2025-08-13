@@ -84,4 +84,9 @@ public class InvoiceViewController {
         boolean invoicesCancelled = invoiceService.cancelBatchInvoice(invoices);
         return Result.ok(invoicesCancelled ? "sys.api.invoiceCancelSuccess" : "sys.api.invoiceCancelSuccessFileDeleteFail");
     }
+    @GetMapping("/findEarliestInvoiceYear")
+    public Result<?> findEarliestInvoiceYear(@RequestParam("clientId") String clientId,
+                                             @RequestParam("currency") String currency) {
+        return Result.ok(invoiceService.findEarliestInvoiceYear(clientId, currency));
+    }
 }

@@ -69,8 +69,10 @@ public class TransactionController {
         return Result.ok(transactionMapper.list());
     }
     @GetMapping(value="/listByClientAndCurrency")
-    public Result<?> listByClientId(@RequestParam("clientId") String clientId, @RequestParam("currency") String currency) {
-        return Result.ok(transactionMapper.listByClientIdAndCurrency(clientId, currency));
+    public Result<?> listByClientId(@RequestParam("clientId") String clientId,
+                                    @RequestParam("currency") String currency,
+                                    @RequestParam("year") String year) {
+        return Result.ok(transactionMapper.listByClientIdAndCurrency(clientId, currency, year));
     }
     @GetMapping(value="/debit")
     public Result<?> debit(@RequestParam("clientId") String clientId, @RequestParam("currency") String currency) {

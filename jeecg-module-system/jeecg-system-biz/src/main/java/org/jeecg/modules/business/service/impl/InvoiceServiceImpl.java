@@ -56,6 +56,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
     @Autowired
     private PlatformOrderContentMapper platformOrderContentMap;
+    @Autowired
+    private InvoiceMapper invoiceMapper;
 
 
     @Value("${jeecg.path.creditInvoiceDir}")
@@ -453,5 +455,10 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             return Result.OK();
         }
         return Result.error("Couldn't find prices for following SKUs : " + skusWithoutPrice);
+    }
+
+    @Override
+    public int findEarliestInvoiceYear(String clientId, String currency) {
+        return invoiceMapper.findEarliestInvoiceYear(clientId, currency);
     }
 }

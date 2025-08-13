@@ -27,4 +27,6 @@ public interface ISkuWeightService extends IService<SkuWeight> {
     List<SkuWeightPage> listLatestWeights();
 
     List<SkuWeightPage> listLatestWeightForSkus(List<String> skuIds);
+
+    SkuWeight getLatestBySkuId(String skuId);
 }

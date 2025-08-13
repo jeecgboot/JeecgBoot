@@ -26,4 +26,5 @@ public interface SkuWeightMapper extends BaseMapper<SkuWeight> {
 
     List<SkuWeightPage> listLatestWeightForSkus(@Param("skuIds") List<String> skuIds);
 
+    SkuWeight getLatestBySkuId(String skuId);
 }
