@@ -418,13 +418,16 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
                             responses.addSuccess("Row " + (rowIndex+1), ": 已存在相同 SKU + 日期，跳过导入");
                             continue;
                         }
-                        boolean sameContentExists = existingPrices.stream().anyMatch(existing ->
-                                NumberUtils.isEqual(existing.getPrice(), skuPrice.getPrice()) &&
-                                        NumberUtils.isEqual(existing.getDiscountedPrice(), skuPrice.getDiscountedPrice()) &&
-                                        Objects.equals(existing.getThreshold(), skuPrice.getThreshold()) &&
-                                        Objects.equals(existing.getCurrencyId(), skuPrice.getCurrencyId())
-                        );
-                        if (sameContentExists) {
+                        SkuPrice latestSkuPrice = skuPriceService.getLatestBySkuId(skuPrice.getSkuId());
+                        boolean sameAsLatestSkuPrice =
+                                latestSkuPrice != null
+                                        && latestSkuPrice.getPrice() != null
+                                        && skuPrice.getPrice() != null
+                                        && latestSkuPrice.getPrice().compareTo(skuPrice.getPrice()) == 0
+                                        && Objects.equals(latestSkuPrice.getCurrencyId(), skuPrice.getCurrencyId())
+                                        && Objects.equals(latestSkuPrice.getThreshold(), skuPrice.getThreshold())
+                                        && NumberUtils.isEqual(latestSkuPrice.getDiscountedPrice(), skuPrice.getDiscountedPrice());
+                        if (sameAsLatestSkuPrice) {
                             responses.addSuccess("Row " + (rowIndex+1), ": 与已有记录内容相同，仅日期不同，跳过导入");
                             continue;
                         }
