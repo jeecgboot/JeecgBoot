@@ -18,7 +18,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import org.springframework.web.method.HandlerMethod;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -64,21 +64,59 @@ public class Swagger3Config implements WebMvcConfigurer {
     @Bean
     public OperationCustomizer operationCustomizer() {
         return (operation, handlerMethod) -> {
-            String path = handlerMethod.getBeanType().getAnnotation(RequestMapping.class).value()[0];
-            if (!excludedPaths.contains(path)) {
+            String path = getFullPath(handlerMethod);
+            if (!isExcludedPath(path)) {
                 operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN));
+            }else{
+                log.info("忽略加入 X_ACCESS_TOKEN 的 PATH:" + path);
             }
             return operation;
         };
     }
+
+    private String getFullPath(HandlerMethod handlerMethod) {
+        StringBuilder fullPath = new StringBuilder();
+
+        // 获取类级别的路径
+        RequestMapping classMapping = handlerMethod.getBeanType().getAnnotation(RequestMapping.class);
+        if (classMapping != null && classMapping.value().length > 0) {
+            fullPath.append(classMapping.value()[0]);
+        }
+
+        // 获取方法级别的路径
+        RequestMapping methodMapping = handlerMethod.getMethodAnnotation(RequestMapping.class);
+        if (methodMapping != null && methodMapping.value().length > 0) {
+            String methodPath = methodMapping.value()[0];
+            // 确保路径正确拼接，处理斜杠
+            if (!fullPath.toString().endsWith("/") && !methodPath.startsWith("/")) {
+                fullPath.append("/");
+            }
+            fullPath.append(methodPath);
+        }
+
+        return fullPath.toString();
+    }
     
+    
+    private boolean isExcludedPath(String path) {
+        return excludedPaths.stream()
+                .anyMatch(pattern -> {
+                    if (pattern.endsWith("/**")) {
+                        // 处理通配符匹配
+                        String basePath = pattern.substring(0, pattern.length() - 3);
+                        return path.startsWith(basePath);
+                    }
+                    // 精确匹配
+                    return pattern.equals(path);
+                });
+    }
     
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("JeecgBoot 后台服务API接口文档")
-                        .version("3.8.1")
+                        .version("3.8.2")
                         .contact(new Contact().name("北京国炬信息技术有限公司").url("www.jeccg.com").email("jeecgos@163.com"))
                         .description("后台API接口")
                         .termsOfService("NO terms of service")
