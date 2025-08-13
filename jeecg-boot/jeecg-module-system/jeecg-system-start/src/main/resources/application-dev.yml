@@ -25,6 +25,9 @@ management:
         include: metrics,jeecghttptrace
 
 spring:
+#  main:
+#    # 启动加速 (建议开发环境，开启后flyway自动升级失效)
+#    lazy-initialization: true
   flyway:
     # 是否启用flyway
     enabled: true
@@ -46,7 +49,7 @@ spring:
       mail.smtp.writetimeout: 10000  # 写入超时（毫秒）
       mail.smtp.auth: true
       smtp.ssl.enable: true
-      mail.debug: true  # 启用调试模式(查看详细日志)
+#      mail.debug: true  # 启用调试模式(查看详细日志)
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
@@ -180,7 +183,7 @@ mybatis-plus:
       table-underline: true
   configuration:
     # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
-    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
 #jeecg专用配置
@@ -292,6 +295,7 @@ logging:
   level:
     org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
+    org.jeecg.modules.demo.test.mapper: info
 #swagger
 knife4j:
   #开启增强配置
