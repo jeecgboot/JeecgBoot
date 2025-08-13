@@ -264,12 +264,12 @@
 		</dependency>
 
 
-		<dependency>
-			<groupId>com.github.xingfudeshi</groupId>
+		<!--	<dependency>
+			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
 			<version>${knife4j-spring-boot-starter.version}</version>
-		</dependency>
-		<!-- knife4j 升级springboot3.4.5报错
+		</dependency>-->
+		<!-- knife4j 升级springboot3.4.5报错 -->
 		<dependency>
 			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-openapi3-ui</artifactId>
@@ -279,7 +279,7 @@
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.7.0</version>
-		</dependency> -->
+		</dependency>
 
 		<!-- 代码生成器 -->
 		<!-- 如下载失败，请参考此文档  https://help.jeecg.com/java/setup/maven.html -->
