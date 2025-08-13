@@ -79,8 +79,8 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 	private SkuMongoService skuMongoService;
 	@Resource
 	private JeecgBaseConfig jeecgBaseConfig;
-	 @Autowired
-	 private MongoTemplate mongoTemplate;
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
 	private final static Integer NUMBER_OF_SKU_EXCEL_COLUMNS = 3;
@@ -348,9 +348,8 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 							  continue;
 						  }
 
-						  boolean sameContentExists = existingWeight.stream()
-								  .anyMatch(e -> e.getWeight() == skuWeight.getWeight());
-						  if (sameContentExists) {
+						  boolean sameLatestWeight = skuWeightService.getBySkuId(skuWeight.getSkuId()).getWeight() == skuWeight.getWeight();
+						  if (sameLatestWeight) {
 							  responses.addSuccess("Row " + (rowIndex + 1), " 内容一致，仅日期不同，跳过");
 							  log.info("Row {} has existing weight with same content but different date for SKU {}, skipping",
 									  rowIndex + 1, skuWeight.getSkuId());

@@ -23,7 +23,7 @@ FROM (
                 'Credit'                                                               AS type,
                 client_id,
                 payment_proof,
-                NULL                                                                   AS invoice_number,
+                invoice_number,
                 NULL                                                                   AS shipping_fee,
                 NULL                                                                   AS purchase_fee,
                 amount,

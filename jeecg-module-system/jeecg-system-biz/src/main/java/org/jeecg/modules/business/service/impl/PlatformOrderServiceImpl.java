@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
 import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
+import org.jeecg.modules.business.domain.job.ThirdPartyStockAttributionParam;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
@@ -654,4 +655,9 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return platformOrderMap.countOrdersByShop(shopId);
     }
 
+
+    @Override
+    public List<ThirdPartyStockAttributionParam> fetchThirdPartyStockAttributionParams(LocalDateTime startDateTime, List<String> shopCodes, List<String> countries) {
+        return platformOrderMap.fetchThirdPartyStockAttributionParams(startDateTime, shopCodes, countries);
+    }
 }

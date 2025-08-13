@@ -1453,4 +1453,38 @@
         FROM platform_order
         WHERE shop_id = #{shopId}
     </select>
+
+    <select id="fetchThirdPartyStockAttributionParams" resultType="org.jeecg.modules.business.domain.job.ThirdPartyStockAttributionParam">
+        SELECT p.platform_order_id, tps.quantity, s.id as sku_id, s.erp_code as sku, tps.warehouse_name
+        FROM third_party_stock tps
+                 JOIN sku s ON s.id = tps.sku_id
+                 JOIN platform_order_content poc ON poc.sku_id = s.id
+                 JOIN platform_order p ON p.id = poc.platform_order_id
+                 JOIN shop on p.shop_id = shop.id
+        WHERE p.platform_order_id NOT IN (SELECT platform_order_id FROM third_party_stock_attribution tpsa)
+          AND p.country IN
+            <foreach
+                    collection="countries"
+                    index="index"
+                    item="country"
+                    open="("
+                    close=")"
+                    separator=",">
+                #{country}
+            </foreach>
+          AND tps.quantity > 0
+          AND poc.warehouse_name &lt;&gt; tps.warehouse_name
+          AND shop.erp_code IN
+            <foreach
+                    collection="shopCodes"
+                    index="index"
+                    item="shopCode"
+                    open="("
+                    close=")"
+                    separator=",">
+                #{shopCode}
+            </foreach>
+          AND p.create_time > #{startDateTime}
+          AND poc.erp_status in (1, 2);
+    </select>
 </mapper>
