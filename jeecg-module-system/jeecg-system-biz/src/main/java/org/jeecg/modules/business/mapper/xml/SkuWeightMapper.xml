@@ -81,4 +81,11 @@
     </foreach>
     AND lsw.rn = 1;
 </select>
+    <select id="getLatestBySkuId" resultType="org.jeecg.modules.business.entity.SkuWeight">
+    SELECT *
+    FROM sku_weight
+    WHERE sku_id = #{skuId}
+    ORDER BY effective_date DESC
+    LIMIT 1;
+    </select>
 </mapper>

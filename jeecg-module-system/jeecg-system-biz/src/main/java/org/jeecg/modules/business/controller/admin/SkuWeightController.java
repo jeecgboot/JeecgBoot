@@ -155,9 +155,26 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			 return Result.error(403,"Forbidden.");
 		 }
 		 List<SkuWeight> weightsToDelete = skuWeightService.listByIds(ids);
+		 List<String> invalidErpCodes = new ArrayList<>();
+		 for (SkuWeight weight : weightsToDelete) {
+			if (weight == null || weight.getSkuId() == null) {
+				invalidErpCodes.add("Invalid SKU ID in deletion list: " + weight);
+				continue;
+			}
+			SkuWeight latest = skuWeightService.getLatestBySkuId(weight.getSkuId());
+			if (latest == null || weight.getEffectiveDate() == null || latest.getEffectiveDate().after(weight.getEffectiveDate())) {
+				Sku sku = skuService.getById(weight.getSkuId());
+				String erpCode = sku != null ? sku.getErpCode() : weight.getSkuId();
+				invalidErpCodes.add(erpCode);
+			}
+		 }
+		if (!invalidErpCodes.isEmpty()) {
+			return Result.error("只能删除每个 SKU 的最新重量记录，违规项 ERP: " + String.join(", ", invalidErpCodes));
+		}
 		 // delete from mysql
 		 skuWeightService.removeByIds(ids);
 		//update the latest SKU weight in MongoDB
+		List<SkuWeight> newLatestToSync = new ArrayList<>();
 		 for (SkuWeight deleted : weightsToDelete) {
 			 String skuId = deleted.getSkuId();
 			 Date deletedDate = deleted.getEffectiveDate();
@@ -173,12 +190,23 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 				 List<SkuWeight> remaining = skuWeightService.list(
 						 new QueryWrapper<SkuWeight>().eq("sku_id", skuId).orderByDesc("effective_date"));
 				 if (!remaining.isEmpty()) {
-					 skuMongoService.upsertSkuWeight(remaining.get(0));
+					 SkuWeight newLatest = remaining.get(0);
+					 skuMongoService.upsertSkuWeight(newLatest);
+					 newLatestToSync.add(newLatest);
 				 }
 			 }
 		 }
-		 log.info("Deleted SKU weights: {}", weightsToDelete);
-		 return Result.OK("SKU重量批量删除成功！");
+		 // update Mabang
+		ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
+		executor.submit(() -> {
+			try {
+				skuListMabangService.mabangSkuWeightUpdate(newLatestToSync);
+			} catch (Exception e) {
+				log.error("Failed to sync SKU weights with Mabang", e);
+			}
+		});
+		log.info("Deleted {} SKU weights, awaiting Mabang sync. IDs: {}", weightsToDelete.size(), ids);
+		return Result.OK("Sku weights deleted successfully and waiting for Mabang update.");
 	 }
 	
 	/**

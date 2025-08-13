@@ -56,4 +56,9 @@ public class SkuWeightServiceImpl extends ServiceImpl<SkuWeightMapper, SkuWeight
     public List<SkuWeightPage> listLatestWeightForSkus(List<String> skuIds) {
         return skuWeightMapper.listLatestWeightForSkus(skuIds);
     }
+
+    @Override
+    public SkuWeight getLatestBySkuId(String skuId) {
+        return skuWeightMapper.getLatestBySkuId(skuId);
+    }
 }
