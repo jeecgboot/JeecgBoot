@@ -10,11 +10,12 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
-import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
+import org.springdoc.core.customizers.OperationCustomizer;
 import org.springdoc.core.filters.GlobalOpenApiMethodFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -61,29 +62,17 @@ public class Swagger3Config implements WebMvcConfigurer {
     }
 
     @Bean
-    public GlobalOpenApiCustomizer globalOpenApiCustomizer() {
-        return openApi -> {
-            // 全局添加鉴权参数
-            if (openApi.getPaths() != null) {
-                openApi.getPaths().forEach((path, pathItem) -> {
-                    //log.info("path: {}", path);
-                    // 检查当前路径是否在排除列表中
-                    boolean isExcluded = excludedPaths.stream().anyMatch(
-                            excludedPath -> excludedPath.equals(path) || (excludedPath.endsWith("**") && path.startsWith(excludedPath.substring(0, excludedPath.length() - 2)))
-                    );
-
-                    if (!isExcluded) {
-                        //log.info(" 接口添加默认X_ACCESS_TOKEN: {}", path);
-                        // 接口添加鉴权参数
-                        pathItem.readOperations().forEach(operation ->
-                                operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
-                        );
-                    }
-                });
+    public OperationCustomizer operationCustomizer() {
+        return (operation, handlerMethod) -> {
+            String path = handlerMethod.getBeanType().getAnnotation(RequestMapping.class).value()[0];
+            if (!excludedPaths.contains(path)) {
+                operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN));
             }
+            return operation;
         };
     }
-
+    
+    
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
