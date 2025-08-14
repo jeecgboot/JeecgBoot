@@ -67,9 +67,10 @@ JeecgBoot低代码平台，可以应用在任何J2EE项目的开发中，支持�
 -----------------------------------
 
 - [开发环境搭建](https://help.jeecg.com/java/setup/tools)
-- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
-- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
-
+- [IDEA启动前后端(单体模式)](https://help.jeecg.com/java/setup/idea/startup)
+- [Docker一键启动(单体模式)](https://help.jeecg.com/java/docker/quick)
+- [IDEA启动前后端(微服务方式)](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
+- [Docker一键启动(微服务方式)](https://help.jeecg.com/java/docker/quickcloud)
 
 
 技术文档
@@ -195,12 +196,6 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
  
 ## 微服务解决方案
-
-> 微服务方式快速启动
-> - [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
-> - [Docker一键启动微服务前后端](https://help.jeecg.com/java/docker/quickcloud)
-
-
 
 - 1、服务注册和发现 Nacos √
 - 2、统一配置中心 Nacos  √
