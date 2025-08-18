@@ -66,6 +66,8 @@ JeecgBoot低代码平台，可以应用在任何J2EE项目的开发中，支持�
 启动项目
 -----------------------------------
 
+> 默认账号密码： admin/123456
+
 - [开发环境搭建](https://help.jeecg.com/java/setup/tools)
 - [IDEA启动前后端(单体模式)](https://help.jeecg.com/java/setup/idea/startup)
 - [Docker一键启动(单体模式)](https://help.jeecg.com/java/docker/quick)

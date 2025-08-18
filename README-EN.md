@@ -69,10 +69,13 @@ Jeecg-Boot AI low code platform can be applied in the development of any J2EE pr
 Starts the project
 -----------------------------------
 
-- [Development Environment setup](https://help.jeecg.com/java/setup/tools)
-- [IDEA Quick start](https://help.jeecg.com/java/setup/idea/startup)
-- [Docker Quick start](https://help.jeecg.com/java/docker/quick)
+> Default account password： admin/123456
 
+- [Development Environment setup](https://help.jeecg.com/java/setup/tools)
+- [IDEA Quick start(single model)](https://help.jeecg.com/java/setup/idea/startup)
+- [Docker Quick start(single model)](https://help.jeecg.com/java/docker/quick)
+- [IDEA Quick start(microservices model)](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
+- [Docker Quick start(microservices model)](https://help.jeecg.com/java/docker/quickcloud)
 
 
 Technical documentation
