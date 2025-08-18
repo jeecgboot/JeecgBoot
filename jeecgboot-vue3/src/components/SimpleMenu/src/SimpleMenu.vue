@@ -152,7 +152,9 @@
           if (!flag) return;
         }
 
-        emit('menuClick', key);
+        // 传递菜单项信息以支持query参数
+        const menuItem = getMatchingMenu(props.items, key);
+        emit('menuClick', key, menuItem);
 
         isClickGo.value = true;
         setOpenKeys(key);
