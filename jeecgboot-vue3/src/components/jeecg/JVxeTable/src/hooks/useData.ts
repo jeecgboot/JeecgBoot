@@ -54,8 +54,16 @@ export function useData(props: JVxeTableProps): JVxeDataProps {
         // 暂时关闭左右虚拟滚动
         enabled: false,
       },
-      radioConfig: { highlight: true },
-      checkboxConfig: { highlight: true },
+      radioConfig: {
+        // 保留勾选状态
+        reserve: true,
+        highlight: true,
+      },
+      checkboxConfig: {
+        // 保留勾选状态
+        reserve: true,
+        highlight: true,
+      },
       mouseConfig: { selected: false },
       keyboardConfig: {
         // 删除键功能
