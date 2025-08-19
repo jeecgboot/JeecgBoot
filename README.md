@@ -66,18 +66,22 @@ JeecgBoot低代码平台，可以应用在任何J2EE项目的开发中，支持�
 启动项目
 -----------------------------------
 
-- [开发环境搭建](https://help.jeecg.com/java/setup/tools)
-- [IDEA启动前后端项目](https://help.jeecg.com/java/setup/idea/startup)
-- [Docker一键启动前后端](https://help.jeecg.com/java/docker/quick)
+> 默认账号密码： admin/123456
 
+- [开发环境搭建](https://help.jeecg.com/java/setup/tools)
+- [IDEA启动前后端(单体模式)](https://help.jeecg.com/java/setup/idea/startup)
+- [Docker一键启动(单体模式)](https://help.jeecg.com/java/docker/quick)
+- [IDEA启动前后端(微服务方式)](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
+- [Docker一键启动(微服务方式)](https://help.jeecg.com/java/docker/quickcloud)
 
 
 技术文档
 -----------------------------------
 
 - 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
-- 入门指南：  [快速入门](http://www.jeecg.com/doc/quickstart)  | [开发文档](https://help.jeecg.com)  | [AI应用使用手册](https://help.jeecg.com/aigc)  |  [技术博客](https://jeecg.blog.csdn.net)
-- 技术支持：  [反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)  | [视频教程](http://jeecg.com/doc/video)  | [低代码体验一分钟](https://jeecg.blog.csdn.net/article/details/106079007) 
+- 在线演示：  [平台演示](https://boot3.jeecg.com) | [APP演示](https://jeecg.com/appIndex)
+- 入门指南：  [快速入门](http://www.jeecg.com/doc/quickstart)  | [代码生成使用](https://help.jeecg.com/java/codegen/online) | [开发文档](https://help.jeecg.com)  | [AI应用手册](https://help.jeecg.com/aigc) | [视频教程](http://jeecg.com/doc/video)
+- 技术支持：  [反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)    | [低代码体验一分钟](https://jeecg.blog.csdn.net/article/details/106079007) 
 - QQ交流群 ： 964611995、⑩716488839(满)、⑨808791225(满)、其他(满)
 
 
@@ -195,12 +199,6 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
  
 ## 微服务解决方案
-
-> 微服务方式快速启动
-> - [单体快速切换微服务](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
-> - [Docker一键启动微服务前后端](https://help.jeecg.com/java/docker/quickcloud)
-
-
 
 - 1、服务注册和发现 Nacos √
 - 2、统一配置中心 Nacos  √

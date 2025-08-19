@@ -7,7 +7,9 @@
   display: flex;
   height: @header-height;
   padding: 0;
-  margin-left: -1px;
+  // update-begin--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
+  // margin-left: -1px;
+  // update-end--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
   line-height: @header-height;
   color: @white;
   background-color: @white;
@@ -170,7 +172,9 @@
   &--dark {
     background-color: @header-dark-bg-color !important;
     // border-bottom: 1px solid @border-color-base;
-    border-left: 1px solid @border-color-base;
+    // update-begin--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
+    // border-left: 1px solid @border-color-base;
+    // update-end--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
 
     .@{header-prefix-cls}-logo {
       &:hover {

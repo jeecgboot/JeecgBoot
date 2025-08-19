@@ -28,15 +28,16 @@
                    ,icon
                    ,is_leaf
 		   FROM   sys_permission
-		   WHERE 1=1
-		    <choose>
-		   		<when test="parentId != null and parentId != ''">
-		   			AND parent_id =  #{parentId,jdbcType=VARCHAR}
-		   		</when>
-		   		<otherwise>
-		   			AND parent_id is null
-		   		</otherwise>
-		    </choose>
+		<where>
+			<choose>
+				<when test="parentId != null and parentId != ''">
+					parent_id = #{parentId,jdbcType=VARCHAR}
+				</when>
+				<otherwise>
+					parent_id is null
+				</otherwise>
+			</choose>
+		</where>
 	</select>
 	
 	<!-- 获取登录用户拥有的权限 -->
@@ -212,7 +213,7 @@
 	</select>
 	
 	<!--根据用户名称和test角色id查询权限-->
-	<select id="queryPermissionByTestRoleId" resultType="org.jeecg.modules.system.entity.SysPermission">
+	<select id="queryPermissionByTestRoleId" resultMap="SysPermission">
 		SELECT p.*
 		FROM  sys_permission p
 		WHERE exists(

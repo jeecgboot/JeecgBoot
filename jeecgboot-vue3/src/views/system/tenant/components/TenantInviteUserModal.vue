@@ -20,20 +20,42 @@ export default defineComponent({
     const [registerForm, { resetFields, validate }] = useForm({
       schemas: [
         {
+          label: '邀请方式',
+          field: 'invitedMode',
+          component: 'RadioButtonGroup',
+          defaultValue: 1,
+          componentProps: {
+            options: [
+              { label: '手机号', value: 1 },
+              { label: '用户账号', value: 2 },
+            ],
+          },
+        },
+        {
           label: '手机号',
           field: 'phone',
           component: 'Input',
-          dynamicRules: () => {
-            return [
-              { required: true, message: '请填写手机号' },
-              { pattern: /^1[3456789]\d{9}$/, message: '手机号码格式有误' },
-            ];
+          ifShow: ({ values }) => values.invitedMode === 1,
+          dynamicRules: ({ values }) => {
+            return values.invitedMode === 1
+              ? [
+                  { required: true, message: '请填写手机号' },
+                  { pattern: /^1[3456789]\d{9}$/, message: '手机号码格式有误' },
+                ]
+              : [{ pattern: /^1[3456789]\d{9}$/, message: '手机号码格式有误' }];
+          },
+        },
+        {
+          field: 'user',
+          component: 'Input',
+          label: '用户账号',
+          ifShow: ({ values }) => values.invitedMode === 2,
+          dynamicRules: ({ values }) => {
+            return values.invitedMode === 2 ? [{ required: true, message: '请输入用户账号' }] : [];
           },
         },
       ],
       showActionButtonGroup: false,
-      labelCol: { span: 24 },
-      wrapperCol: { span: 24 },
     });
     //表单赋值
     const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
@@ -47,7 +69,7 @@ export default defineComponent({
      */
     async function handleSubmit() {
       let values = await validate();
-      emit('inviteOk',values.phone);
+      emit('inviteOk', values.phone, values.user);
       closeModal();
     }
 

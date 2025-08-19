@@ -16,7 +16,10 @@ interface ListPageOptions {
   // 样式作用域范围
   designScope?: string;
   // 【必填】表格参数配置
-  tableProps: TableProps;
+  tableProps: TableProps & {
+    // 添加 defSort 类型定义
+    defSort?: DefSort;
+  };
   // 是否分页
   pagination?: boolean;
   // 导出配置
@@ -44,6 +47,11 @@ interface IDoRequestOptions {
   reload?: boolean;
   // 是否自动清空选择，默认 true
   clearSelection?: boolean;
+}
+
+interface DefSort {
+  column: string;
+  order: 'asc' | 'desc';
 }
 
 /**
@@ -85,8 +93,17 @@ export function useListPage(options: ListPageOptions) {
       //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
 
       //update-begin-author:liusq date:20230410 for:[/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
-      if(!paramsForm?.column){
-         Object.assign(paramsForm,{column:'createTime',order:'desc'});
+      // 获取表格的默认排序
+      const { defSort } = options?.tableProps ?? {};
+      if (defSort && !paramsForm?.column) {
+        // 使用类型断言确保 defSort 类型正确
+        Object.assign(paramsForm, {
+          column: (defSort as DefSort).column,
+          order: (defSort as DefSort).order,
+        });
+      } else if (!paramsForm?.column) {
+        // 如果没有默认排序,则使用创建时间倒序
+        Object.assign(paramsForm, { column: 'createTime', order: 'desc' });
       }
       //update-begin-author:liusq date:20230410 for: [/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
 

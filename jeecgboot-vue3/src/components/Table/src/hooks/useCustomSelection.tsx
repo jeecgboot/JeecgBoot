@@ -348,6 +348,9 @@ export function useCustomSelection(
     onSelectChild(record, checked);
     updateSelected(record, checked);
     onSelectParent(record, checked);
+    // update-begin--author:liaozhiyang---date:20250813---for：【issues/8690】BasicTable的rowSelection新增onSelect方法
+    propsRef.value.rowSelection?.onSelect?.(toRaw(record), checked, toRaw(selectedRows.value));
+    // update-end--author:liaozhiyang---date:20250813---for：【issues/8690】BasicTable的rowSelection新增onSelect方法
     emitChange();
   }
 

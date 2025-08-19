@@ -40,19 +40,19 @@ export const columns: BasicColumn[] = [
     title: '门牌号',
     width: 100,
   },
-  {
-    dataIndex: 'position_dictText',
-    title: '职级',
-    width: 150
-  },
-  {
-    dataIndex: 'department_dictText',
-    title: '部门',
-    width: 150
-  },
+  // {
+  //   dataIndex: 'position_dictText',
+  //   title: '职级',
+  //   width: 150
+  // },
+  // {
+  //   dataIndex: 'department_dictText',
+  //   title: '部门',
+  //   width: 150
+  // },
   {
     dataIndex: 'createBy_dictText',
-    title: '创建者(拥有者)',
+    title: '创建者(拥有)',
     width: 150
   },
 /*  {

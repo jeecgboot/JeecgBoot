@@ -71,8 +71,8 @@
 		<shiro.version>2.0.4</shiro.version>
 		<shiro-redis.version>3.2.3</shiro-redis.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
-		<codegenerate.version>1.4.9</codegenerate.version>
-		<autopoi-web.version>1.4.14</autopoi-web.version>
+		<codegenerate.version>1.5.1</codegenerate.version>
+		<autopoi-web.version>1.4.15</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
@@ -443,6 +443,10 @@
 						<artifactId>druid</artifactId>
 						<groupId>com.alibaba</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>autopoi</artifactId>
+						<groupId>org.jeecgframework</groupId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- mongo、redis和文件数据集支持包，按需引入 -->
@@ -459,6 +463,10 @@
 						<artifactId>autopoi-web</artifactId>
 						<groupId>org.jeecgframework</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>autopoi</artifactId>
+						<groupId>org.jeecgframework</groupId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- 后台导出接口Echart图表支持包，按需引入 -->
@@ -472,6 +480,16 @@
                 <groupId>org.jeecgframework.jimureport</groupId>
                 <artifactId>jimubi-spring-boot3-starter</artifactId>
                 <version>${jimubi-spring-boot-starter.version}</version>
+				<exclusions>
+					<exclusion>
+						<artifactId>autopoi-web</artifactId>
+						<groupId>org.jeecgframework</groupId>
+					</exclusion>
+					<exclusion>
+						<artifactId>autopoi</artifactId>
+						<groupId>org.jeecgframework</groupId>
+					</exclusion>
+				</exclusions>
             </dependency>
 			<!-- chatgpt -->
 			<dependency>

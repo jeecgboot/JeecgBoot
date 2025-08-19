@@ -104,15 +104,27 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
 
     @Override
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
-    public void invitationUserJoin(String ids, String phone) {
+    public void invitationUserJoin(String ids, String phone,String username) {
         String[] idArray = ids.split(SymbolConstant.COMMA);
+        String userId = null;
+        SysUser userByPhone = null;
         //update-begin---author:wangshuai ---date:20230313  for：【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户，通过手机号邀请------------
-        SysUser userByPhone = userService.getUserByPhone(phone);
-        //说明用户不存在
-        if(null == userByPhone){
-            throw new JeecgBootException("当前用户不存在，请核对手机号");
+        if(oConvertUtils.isNotEmpty(phone)){
+            userByPhone = userService.getUserByPhone(phone);
+            //说明用户不存在
+            if(null == userByPhone){
+                throw new JeecgBootException("当前用户不存在，请核对手机号");
+            }
+            userId = userByPhone.getId();
+        }else{
+            userByPhone = userService.getUserByName(username);
+            //说明用户不存在
+            if(null == userByPhone){
+                throw new JeecgBootException("当前用户不存在，请核对手机号");
+            }
+            userId = userByPhone.getId();
         }
-        String userId = userByPhone.getId();
+
         //循环租户id
         for (String id:idArray) {
             //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------

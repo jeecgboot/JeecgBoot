@@ -61,6 +61,7 @@
   import { useDesign } from '/@/hooks/web/useDesign';
   import dayjs from 'dayjs';
   import { useDebounceFn } from '@vueuse/core';
+  import { isFunction, isObject } from '/@/utils/is';
 
   export default defineComponent({
     name: 'BasicForm',
@@ -145,9 +146,17 @@
           if (defaultValue && dateItemType.includes(component)) {
             //update-begin---author:wangshuai ---date:20230410  for：【issues/435】代码生成的日期控件赋默认值报错------------
             let valueFormat:string = "";
-            if(componentProps){
+            // update-begin--author:liaozhiyang---date:20250818---for：【issues/8683】DatePicker组件的componentProps使用函数形式时初始值获取不对
+            if(isObject(componentProps)) {
               valueFormat = componentProps?.valueFormat;
+            } else if (isFunction(componentProps)) {
+              try {
+                // @ts-ignore
+                valueFormat = componentProps({schema, tableAction: props.tableAction, formModel})?.valueFormat;
+              } catch (error) {
+              }
             }
+            // update-end--author:liaozhiyang---date:20250818---for【issues/8683】DatePicker组件的componentProps使用函数形式时初始值获取不对
             if(!valueFormat){
               console.warn("未配置valueFormat,可能导致格式化错误！");
             }

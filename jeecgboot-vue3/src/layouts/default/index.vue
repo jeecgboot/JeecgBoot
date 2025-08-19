@@ -86,7 +86,9 @@
 
     &-main {
       width: 100%;
-      margin-left: 1px;
+      // update-begin--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
+      // margin-left: 1px;
+      // update-end--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
     }
   }
 </style>

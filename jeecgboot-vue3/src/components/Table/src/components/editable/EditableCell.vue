@@ -100,7 +100,14 @@
       });
 
       const getComponentProps = computed(() => {
-        const compProps = props.column?.editComponentProps ?? {};
+        let compProps;
+        // update-begin--author:liaozhiyang---date:20250818---for：【issues/8680】editComponentProps可接受一个函数传入record
+        if (isFunction(props.column?.editComponentProps)) {
+          compProps = props.column?.editComponentProps(props.record);
+        } else {
+          compProps = props.column?.editComponentProps ?? {};
+        }
+        // update-end--author:liaozhiyang---date:20250818---for：【issues/8680】editComponentProps可接受一个函数传入record
         const component = unref(getComponent);
         const apiSelectProps: Recordable = {};
         if (component === 'ApiSelect') {

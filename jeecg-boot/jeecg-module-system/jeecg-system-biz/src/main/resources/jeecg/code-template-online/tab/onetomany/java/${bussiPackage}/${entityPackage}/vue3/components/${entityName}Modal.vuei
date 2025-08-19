@@ -286,7 +286,7 @@
       </#list>
     };
 <#if buttonList?size gt 0>
-  <#list buttonList?sort_by('orderNum') as btn>
+  <#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
       <#if btn.buttonStyle=='form'>
          function handle${btn.buttonCode?cap_first}(){
             createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
