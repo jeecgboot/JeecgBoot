@@ -222,14 +222,18 @@
         checkSelect.value = !!values.rowSelection;
       });
       // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
-      watch([localeStore, getColumnsRef], () => {
+      watch([localeStore], () => {
         const columns = getColumns();
         plainOptions.value = columns;
         plainSortOptions.value = columns;
         cachePlainOptions.value = columns;
       });
       // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
-
+      // update-begin--author:liaozhiyang---date:20250813---for：【issues/8529】setColumns将原本隐藏的列展示后，列配置里却没有勾选该列
+      watch([getColumnsRef], () => {
+        init();
+      });
+      // update-end--author:liaozhiyang---date:20250813---for：【issues/8529】setColumns将原本隐藏的列展示后，列配置里却没有勾选该列
       function getColumns() {
         const ret: Options[] = [];
         // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
