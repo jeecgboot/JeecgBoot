@@ -141,10 +141,11 @@
   .@{prefix-cls} {
     transition: width 0.2s;
     flex: 0 0 auto;
-
-    &--dark {
-      margin-left: -1px;
-    }
+    // update-begin--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
+    // &--dark {
+    //   margin-left: -1px;
+    // }
+    // update-end--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
 
     &--fixed {
       position: fixed;
