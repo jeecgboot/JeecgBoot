@@ -1,4 +1,4 @@
-import { unref, computed } from 'vue';
+import { unref, computed, ref, watch, nextTick } from 'vue';
 import { merge } from 'lodash-es';
 import { isArray } from '/@/utils/is';
 import { useAttrs } from '/@/hooks/core/useAttrs';
@@ -40,6 +40,16 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
     });
     return events;
   });
+
+  // update-begin--author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
+  const vxeColumnsRef = ref([])
+  watch(data.vxeColumns, async () => {
+    vxeColumnsRef.value = []
+    await nextTick()
+    vxeColumnsRef.value = data.vxeColumns.value
+  }, {immediate: true})
+  // update-end----author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
+
   // vxe 最终 props
   const vxeProps = computed(() => {
     // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
@@ -77,7 +87,8 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
         size: props.size,
         loading: false,
         disabled: props.disabled,
-        columns: unref(data.vxeColumns),
+        // columns: unref(data.vxeColumns),
+        columns: vxeColumnsRef.value,
         editRules: unref(vxeEditRules),
         height: props.height === 'auto' ? null : props.height,
         maxHeight: props.maxHeight,
