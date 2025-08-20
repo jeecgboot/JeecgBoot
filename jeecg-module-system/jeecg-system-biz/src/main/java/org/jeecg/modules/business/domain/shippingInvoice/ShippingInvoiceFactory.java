@@ -126,7 +126,7 @@ public class ShippingInvoiceFactory {
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public ShippingInvoice  createShippingInvoice(String customerId, List<String> orderIds, String type, String start, String end) throws UserException {
+    public ShippingInvoice createShippingInvoice(String customerId, List<String> orderIds, String type, String start, String end) throws UserException {
         log.info("Creating an invoice with arguments:\n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
         Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchUninvoicedOrderDataForUpdate(orderIds);

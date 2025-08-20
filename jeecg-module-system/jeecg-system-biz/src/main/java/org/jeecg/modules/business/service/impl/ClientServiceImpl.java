@@ -186,4 +186,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public List<String> getClientsByCode(List<String> clientCodes) {
         return clientMapper.getClientsByCode(clientCodes);
     }
+
+    @Override
+    public void updateClientEmailPreference(String clientId, Boolean receiveInvoiceByEmail) {
+        clientMapper.updateClientEmailPreference(clientId, receiveInvoiceByEmail);
+    }
 }

@@ -67,4 +67,6 @@ public interface IClientService extends IService<Client> {
 	Client getClientFromCredit(String invoiceNumber);
 
     List<String> getClientsByCode(List<String> clientCodes);
+
+    void updateClientEmailPreference(String clientId, Boolean receiveInvoiceByEmail);
 }

@@ -295,12 +295,11 @@ public class InvoiceController {
             String clientId = param.clientID();
             InvoiceMetaData metaData = shippingInvoiceService.makeInvoice(param);
             Client client = clientService.getById(clientId);
-            Boolean canSelfInvoice = shopOptionsService.findCanSelfInvoiceByClientId(clientId);
             if(client.getUseBalance()) {
                 balanceService.updateBalance(clientId, metaData.getInvoiceCode(), SHIPPING.name());
             }
-            if(canSelfInvoice) {
-                String subject = "Self-service shipping invoice";
+            if(client.getReceiveInvoiceByEmail()) {
+                String subject = "Shipping invoice n°" + metaData.getInvoiceCode();
                 String destEmail = env.getProperty("spring.mail.username");
                 Properties prop = emailService.getMailSender();
                 Map<String, Object> templateModel = new HashMap<>();
@@ -353,12 +352,11 @@ public class InvoiceController {
 
             String clientId = param.clientID();
             Client client = clientService.getById(clientId);
-            Boolean canSelfInvoice = shopOptionsService.findCanSelfInvoiceByClientId(clientId);
             if(client.getUseBalance()) {
                 balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), PURCHASE.name());
             }
-            if(canSelfInvoice) {
-                String subject = "Self-service purchase invoice";
+            if(client.getReceiveInvoiceByEmail()) {
+                String subject = "Purchase invoice n°" + metaData.getInvoiceCode();
                 String destEmail = env.getProperty("spring.mail.username");
                 Properties prop = emailService.getMailSender();
                 Map<String, Object> templateModel = new HashMap<>();
@@ -406,12 +404,11 @@ public class InvoiceController {
 
             String clientId = param.getClientID();
             Client client = clientService.getById(clientId);
-            Boolean canSelfInvoice = shopOptionsService.findCanSelfInvoiceByClientId(clientId);
             if(client.getUseBalance()) {
                 balanceService.updateBalance(param.getClientID(), metaData.getInvoiceCode(), COMPLETE.name());
             }
-            if(canSelfInvoice) {
-                String subject = "Self-service complete invoice";
+            if(client.getReceiveInvoiceByEmail()) {
+                String subject = "Invoice n°" + metaData.getInvoiceCode();;
                 String destEmail = env.getProperty("spring.mail.username");
                 Properties prop = emailService.getMailSender();
                 Map<String, Object> templateModel = new HashMap<>();
@@ -465,8 +462,9 @@ public class InvoiceController {
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
             PurchaseOrder purchaseOrder = purchaseOrderService.getById(purchaseId);
             String clientId = purchaseOrder.getClientId();
-            Boolean canSelfInvoice = shopOptionsService.findCanSelfInvoiceByClientId(clientId);
-            if(canSelfInvoice) {
+            if(client == null)
+                client = clientService.getById(clientId);
+            if(client.getUseBalance()) {
                 balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), PURCHASE.name());
             }
             metaData = purchaseOrderService.makeInvoice(purchaseId);

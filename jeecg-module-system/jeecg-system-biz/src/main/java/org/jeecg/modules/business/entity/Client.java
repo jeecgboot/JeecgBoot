@@ -208,6 +208,14 @@ public class Client implements Serializable {
     @ApiModelProperty(value = "是否使用余额")
     private Boolean useBalance;
 
+    /**
+     * 是否通過郵件接收發票
+     */
+    @Excel(name = "是否通過郵件接收發票", width = 15, dicCode = "yn")
+    @Dict(dicCode = "yn")
+    @ApiModelProperty(value = "是否通過郵件接收發票")
+    private Boolean receiveInvoiceByEmail;
+
     public String fullName() {
         return firstName + " " + surname;
     }

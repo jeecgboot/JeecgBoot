@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -25,8 +26,11 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
-import org.jeecg.modules.business.service.IBalanceService;
+import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.service.IClientService;
+import org.jeecg.modules.business.service.ISecurityService;
 import org.jeecg.modules.business.service.IUserClientService;
+import org.jeecg.modules.business.vo.ClientPreference;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
@@ -67,6 +71,8 @@ import java.util.stream.Collectors;
 public class SysUserController {
 
     @Autowired
+    private IClientService clientService;
+    @Autowired
     private ISysUserService sysUserService;
 
     @Autowired
@@ -102,6 +108,11 @@ public class SysUserController {
     @Autowired
     private ISysUserTenantService userTenantService;
 
+    @Autowired
+    private ISecurityService securityService;
+
+    @Autowired
+    private IUserClientService userClientService;
     /**
      * 获取租户下用户数据（支持租户隔离）
      * @param user
@@ -1877,5 +1888,46 @@ public class SysUserController {
                     return map;
                 }).collect(Collectors.toList());
         return Result.OK(result);
+    }
+    @GetMapping(value = "userPreferences")
+    public Result<?> getUserPreferences(HttpServletRequest request) {
+        boolean isEmployee = securityService.checkIsEmployee();
+        Client client;
+        SysUser sysUser;
+        String username = JwtUtil.getUserNameByToken(request);
+        if(!isEmployee) {
+            sysUser = sysUserService.getUserByName(username);
+        } else {
+            return Result.error(HttpStatus.SC_UNAUTHORIZED, "Unauthorized access");
+        }
+        client = userClientService.getClientByUserId(sysUser.getId());
+        if (client == null) {
+            return Result.error(404, "Client not found for user: " + username);
+        }
+        ClientPreference preferences = new ClientPreference();
+        preferences.setInvoiceMail(client.getReceiveInvoiceByEmail());
+        return Result.ok(preferences);
+    }
+
+    @PostMapping("/userPreferences")
+    public Result<?> updateUserPreferences(
+            @RequestBody ClientPreference preferences,
+            HttpServletRequest request
+    ) {
+        boolean isEmployee = securityService.checkIsEmployee();
+        Client client;
+        SysUser sysUser;
+        String username = JwtUtil.getUserNameByToken(request);
+        if(!isEmployee) {
+            sysUser = sysUserService.getUserByName(username);
+        } else {
+            return Result.error(HttpStatus.SC_UNAUTHORIZED, "Unauthorized access");
+        }
+        client = userClientService.getClientByUserId(sysUser.getId());
+        if (client == null) {
+            return Result.error(404, "Client not found for user: " + username);
+        }
+        clientService.updateClientEmailPreference(client.getId(), preferences.isInvoiceMail());
+        return Result.ok();
     }
 }

@@ -121,4 +121,9 @@
         </foreach>
         AND c.active = 1;
     </select>
+    <update id="updateClientEmailPreference">
+        UPDATE client
+        SET receive_invoice_by_email = #{emailPreference}
+        WHERE id = #{clientId};
+    </update>
 </mapper>
