@@ -188,6 +188,9 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/openapi/call/**")).permitAll()
                         // APP版本信息
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/sys/version/app3version")).permitAll()
+                        // mcp接口
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/sse")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/mcp/message")).permitAll()
                         .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))

@@ -167,6 +167,14 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+            <!-- spring-ai -->
+            <dependency>
+                <groupId>org.springframework.ai</groupId>
+                <artifactId>spring-ai-bom</artifactId>
+                <version>1.0.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
 			<!-- system 模块-->
 			<dependency>
@@ -481,7 +489,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>3.8.3</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
 			<!--mysql5.6，需要把版本号改成5.2.1-->
