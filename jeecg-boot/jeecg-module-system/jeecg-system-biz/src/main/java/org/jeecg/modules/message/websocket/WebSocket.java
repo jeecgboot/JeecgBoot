@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Component
 @Slf4j
-@ServerEndpoint("/websocket/{userId}")
+//@ServerEndpoint("/websocket/{userId}")
 public class WebSocket {
     
     /**线程安全Map*/

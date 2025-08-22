@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @Slf4j
 @Component
-@ServerEndpoint("/vxeSocket/{userId}/{pageId}")
+//@ServerEndpoint("/vxeSocket/{userId}/{pageId}")
 public class VxeSocket {
 
     /**
