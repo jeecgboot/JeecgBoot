@@ -6,11 +6,9 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.entity.Client;
-import org.jeecg.modules.business.entity.ClientCategory;
 import org.jeecg.modules.business.service.ISecurityService;
 import org.jeecg.modules.business.service.IUserClientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,8 +26,6 @@ public class UserClientController {
     private IUserClientService userClientService;
     @Autowired
     private ISecurityService securityService;
-    @Autowired
-    private Environment env;
     /**
      * Checks if the user is a client or internal user
      * @return the client's info OR a list of clients
@@ -51,9 +47,5 @@ public class UserClientController {
             clientMap.put("client", client);
             return Result.ok(clientMap);
         }
-    }
-    @GetMapping(value = "/getSelfServiceClients")
-    public Result<?> getSelfServiceClients() {
-        return Result.ok(userClientService.getClientsByCategory(ClientCategory.CategoryName.SELF_SERVICE.getName()));
     }
 }

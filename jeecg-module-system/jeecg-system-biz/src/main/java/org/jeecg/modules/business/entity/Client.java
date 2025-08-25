@@ -10,8 +10,6 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import org.jeecgframework.poi.excel.annotation.Excel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -180,13 +178,6 @@ public class Client implements Serializable {
     @Excel(name = "物流发票是否包含采购", width = 15)
     @ApiModelProperty(value = "物流发票是否包含采购")
     private java.lang.String isCompleteInvoice;
-    /**
-     * category id
-     * */
-    @Excel(name = "category id", width = 15, dictTable = "client_category", dicText = "name", dicCode = "id")
-    @Dict(dictTable = "client_category", dicText = "name", dicCode = "id")
-    @ApiModelProperty(value = "category id")
-    private java.lang.String clientCategoryId;
     /**
      * balance threshold before alert
      * */

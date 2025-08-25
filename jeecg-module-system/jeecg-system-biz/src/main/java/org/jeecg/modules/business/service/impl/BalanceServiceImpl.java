@@ -4,11 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.BalanceMapper;
-import org.jeecg.modules.business.mapper.ClientCategoryMapper;
 import org.jeecg.modules.business.mapper.ClientMapper;
 import org.jeecg.modules.business.service.*;
-import org.jeecg.modules.business.vo.BalanceData;
-import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.jeecg.modules.system.entity.SysUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +13,6 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
@@ -32,8 +28,6 @@ import static org.jeecg.modules.business.entity.Invoice.InvoiceType.*;
 public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> implements IBalanceService {
     @Autowired
     private BalanceMapper balanceMapper;
-    @Autowired
-    private ClientCategoryMapper clientCategoryMapper;
     @Autowired
     private ClientMapper clientMapper;
     @Autowired
@@ -153,22 +147,6 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         BigDecimal finalBalance = operationType.equals(Balance.OperationType.Credit.name()) ? currentBalance.add(amount) : currentBalance.subtract(amount);
         Balance newBalance = Balance.of(sysUser.getUsername(), clientId, currencyId, operationType, operationId, finalBalance);
         balanceMapper.insert(newBalance);
-    }
-
-    @Override
-    public List<BalanceData> getLowBalanceClients(List<InvoiceMetaData> metaDataList) {
-        List<BalanceData> lowBalanceDataList = new ArrayList<>();
-        for(InvoiceMetaData metaData : metaDataList) {
-            Client client = clientMapper.getClientByCode(metaData.getInternalCode());
-            Currency currency = shippingInvoiceService.getInvoiceCurrencyByCode(metaData.getInvoiceCode());
-            BigDecimal balance = getBalanceByClientIdAndCurrency(client.getId(), currency.getCode());
-            BigDecimal balanceThreshold = client.getBalanceThreshold() == null ?
-                    clientCategoryMapper.getBalanceThresholdByCategoryId(client.getClientCategoryId()) : client.getBalanceThreshold();
-            if(balance.compareTo(balanceThreshold) < 0) {
-                lowBalanceDataList.add(new BalanceData(client, currency.getCode(), balance));
-            }
-        }
-        return lowBalanceDataList;
     }
 
     @Override

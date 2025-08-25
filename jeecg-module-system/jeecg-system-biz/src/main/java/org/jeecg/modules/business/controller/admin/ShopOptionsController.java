@@ -84,7 +84,6 @@ public class ShopOptionsController extends JeecgController<ShopOptions, IShopOpt
 			ShopOptions shopOptions = new ShopOptions();
 			shopOptions.setShopId(shopId);
 			shopOptions.setIsAutoInvoice(shopOptionsAddParam.getIsAutoInvoice());
-			shopOptions.setIsChronologicalOrder(shopOptionsAddParam.getIsChronologicalOrder());
 			shopOptions.setIsBreakdownInvoice(shopOptionsAddParam.getIsBreakdownInvoice());
 			shopOptions.setIsCompleteInvoice(shopOptionsAddParam.getIsCompleteInvoice());
 			shopOptions.setCanSelfInvoice(shopOptionsAddParam.getCanSelfInvoice());

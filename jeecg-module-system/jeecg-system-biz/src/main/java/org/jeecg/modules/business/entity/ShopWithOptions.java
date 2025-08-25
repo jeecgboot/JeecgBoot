@@ -48,10 +48,6 @@ public class ShopWithOptions {
     @Excel(name = "是否定时自动开票", width = 15)
     @ApiModelProperty(value = "是否定时自动开票")
     private java.lang.Boolean isAutoInvoice;
-    /**是否按订单时间顺序自动开票, only if threshold >= 0*/
-    @Excel(name = "是否按订单时间顺序自动开票", width = 15)
-    @ApiModelProperty(value = "是否按订单时间顺序自动开票")
-    private java.lang.Boolean isChronologicalOrder;
     /**是否每周五 系统统一开票*/
     @Excel(name = "是否每周五系统统一开票", width = 15)
     @ApiModelProperty(value = "是否每周五系统统一开票")

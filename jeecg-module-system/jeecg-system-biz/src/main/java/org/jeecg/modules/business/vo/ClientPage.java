@@ -162,13 +162,6 @@ public class ClientPage {
     @Dict(dicCode = "yn")
     @ApiModelProperty("是否使用余额")
     private java.lang.Boolean useBalance;
-    /**
-     * 客户类型
-     */
-    @Excel(name = "客户类型", width = 15, dictTable = "client_category", dicText = "name", dicCode = "id")
-    @Dict(dictTable = "client_category", dicText = "name", dicCode = "id")
-    @ApiModelProperty(value = "客户类型")
-    private java.lang.String clientCategoryId;
 
     /**
      * IOSS号码

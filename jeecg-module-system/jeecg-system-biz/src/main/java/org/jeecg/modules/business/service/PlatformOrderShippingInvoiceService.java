@@ -13,7 +13,6 @@ import org.jeecg.modules.business.domain.shippingInvoice.CompleteInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoice;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
 import org.jeecg.modules.business.entity.*;
-import org.jeecg.modules.business.entity.ClientCategory.CategoryName;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.vo.*;
 import org.jetbrains.annotations.NotNull;
@@ -66,8 +65,6 @@ public class PlatformOrderShippingInvoiceService {
     IBalanceService balanceService;
     @Autowired
     ClientMapper clientMapper;
-    @Autowired
-    IClientCategoryService clientCategoryService;
     @Autowired
     FactureDetailMapper factureDetailMapper;
     @Autowired
@@ -669,8 +666,7 @@ public class PlatformOrderShippingInvoiceService {
                 else {
                     invoiceMetaDataResponse = makeCompleteInvoicePostShipping(param, POSTSHIPPING.getMethod());
                     metaData = invoiceMetaDataResponse.getData();
-                    if(client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.VIP.getName()))
-                            || client.getClientCategoryId().equals(clientCategoryService.getIdByCode(CategoryName.CONFIRMED.getName())))
+                    if(client.getUseBalance())
                         balanceService.updateBalance(entry.getKey(), metaData.getInvoiceCode(), COMPLETE.name());
                 }
                 convertToPdf(metaData.getInvoiceCode(), "invoice");
