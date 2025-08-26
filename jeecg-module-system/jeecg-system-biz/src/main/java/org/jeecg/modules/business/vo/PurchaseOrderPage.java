@@ -82,6 +82,19 @@ public class PurchaseOrderPage {
 	@Excel(name = "status", width = 15)
 	@ApiModelProperty(value = "status")
 	private Integer status;
+	/** 采购金额合计(P) */
+	private java.math.BigDecimal poTotalAmount;
+	/** 物流金额合计(S) */
+	private java.math.BigDecimal siTotalAmount;
+	/** 采购最终金额(P) */
+	private java.math.BigDecimal poFinalAmount;
+	/** 物流最终金额(S) */
+	private java.math.BigDecimal siFinalAmount;
+	/**是否通过付款审核**/
+	@Excel(name = "是否通过付款审核", width = 15)
+	@ApiModelProperty(value = "是否通过付款审核")
+	private Boolean paymentApproved;
+
 
 	/**
 	 * Payment document

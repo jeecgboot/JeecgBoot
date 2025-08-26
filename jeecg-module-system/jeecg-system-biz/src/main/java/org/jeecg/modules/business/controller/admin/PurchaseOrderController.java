@@ -3,6 +3,7 @@ package org.jeecg.modules.business.controller.admin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +47,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import static com.baomidou.mybatisplus.core.toolkit.Wrappers.lambdaUpdate;
 
 /**
  * @Description: API Handler related admin purchase order
@@ -99,6 +101,16 @@ public class PurchaseOrderController {
                                    @RequestParam(name = "clientId", required = false) String clientId) {
         Page<PurchaseOrderPage> page = new Page<>(pageNo, pageSize);
         purchaseOrderService.queryOrderByRole(page, clientId);
+        return Result.OK(page);
+    }
+    @ApiOperation(value = "付款凭证审核-分页列表查询", notes = "付款凭证审核-分页列表查询")
+    @GetMapping("/paymentProofReview/list")
+    public Result<?> paymentProofReviewList(
+            @RequestParam(required = false) String clientId,
+            @RequestParam(name = "pageNo",   defaultValue = "1")   Integer pageNo,
+            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+        Page<PurchaseOrderPage> page = new Page<>(pageNo, pageSize,false);
+        purchaseOrderService.pageForPaymentProofReview(page, clientId);
         return Result.OK(page);
     }
     /**
@@ -210,9 +222,35 @@ public class PurchaseOrderController {
     @ApiOperation(value="purchase_order-编辑", notes="purchase_order-编辑")
     @RequestMapping(value = "/editPurchaseAndOrder", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<?> editPurchaseAndOrder(@RequestBody PurchaseOrderPage purchaseOrderPage) {
+        final String invoiceNumber = purchaseOrderPage.getInvoiceNumber();
+        final String clientId = purchaseOrderPage.getClientId();
+        char prefix = 0;
+        if (invoiceNumber != null) {
+            int dash = invoiceNumber.lastIndexOf('-');
+            prefix = invoiceNumber.charAt(dash + 1);
+        }
+        if (prefix == '2') {
+            String proof = purchaseOrderPage.getPaymentDocumentString();
+            if (proof == null && purchaseOrderPage.getPaymentDocument() != null) {
+                proof = new String(purchaseOrderPage.getPaymentDocument());
+            }
+            boolean isEdit = shippingInvoiceService.update(
+                    lambdaUpdate(ShippingInvoice.class)
+                            .set(StringUtils.isNotBlank(proof),
+                                    ShippingInvoice::getPaymentDocumentString, proof)
+                            .eq(ShippingInvoice::getInvoiceNumber, invoiceNumber)
+                            .eq(ShippingInvoice::getClientId, clientId)
+            );
+            Map<String, Responses> responsesMappedByReason = new HashMap<>();
+            Responses shipUpdate = new Responses();
+            if (isEdit) shipUpdate.addSuccess("updated");
+            responsesMappedByReason.put("shippingUpdate : " + invoiceNumber, shipUpdate);
+            if (!isEdit) return Result.error("No rows updated for shipping invoice " + invoiceNumber);
+            return Result.OK("sys.api.entryEditSuccess", responsesMappedByReason);
+        }
         // TODO : refacto using Reponses
         PurchaseOrder purchaseOrder = new PurchaseOrder();
-        BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder);
+        BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder, "paidAmount");
         purchaseOrder.setPaymentDocumentString(new String(purchaseOrderPage.getPaymentDocument()));
         purchaseOrder.setInventoryDocumentString(new String(purchaseOrderPage.getInventoryDocument()));
         Map<String, Responses> responsesMappedByReason = new HashMap<>();
@@ -246,6 +284,101 @@ public class PurchaseOrderController {
         purchaseOrderService.updateById(purchaseOrder);
         responsesMappedByReason.put("orderIdUpdate : " + purchaseOrder.getInvoiceNumber(), platformOrderIdUpdateResponse);
         return Result.OK("sys.api.entryEditSuccess", responsesMappedByReason);
+    }
+    /**
+     * 设置付款审核
+     */
+    @PostMapping("/paymentProofReview/setPaymentApproved")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<?> setPaymentApproved(@RequestBody Map<String, Object> payload) {
+        String invoiceNumber = String.valueOf(payload.get("invoiceNumber"));
+        String clientId      = String.valueOf(payload.get("clientId"));
+        Boolean approved     = Boolean.valueOf(String.valueOf(payload.get("approved")));
+        log.info("setPaymentApproved called: invoiceNumber={}, clientId={}, approved={}", invoiceNumber, clientId, approved);
+        int dash = invoiceNumber.lastIndexOf('-');
+        char prefix = invoiceNumber.charAt(dash + 1);
+        boolean shipUpdated = false, poUpdated = false;
+        //update paymentApproved
+        if (prefix == '2' || prefix == '7') {
+            shipUpdated = shippingInvoiceService.update(
+                    lambdaUpdate(ShippingInvoice.class)
+                            .set(ShippingInvoice::getPaymentApproved, approved)
+                            .eq(ShippingInvoice::getInvoiceNumber, invoiceNumber)
+                            .eq(ShippingInvoice::getClientId, clientId)
+            );
+        }
+        if (prefix == '1' || prefix == '7') {
+            poUpdated = purchaseOrderService.update(
+                    lambdaUpdate(PurchaseOrder.class)
+                            .set(PurchaseOrder::getPaymentApproved, approved)
+                            .eq(PurchaseOrder::getInvoiceNumber, invoiceNumber)
+                            .eq(PurchaseOrder::getClientId, clientId)
+            );
+        }
+        if (!shipUpdated && !poUpdated) return Result.error("未更新任何记录");
+        Map<String,Object> out = new HashMap<>();
+        out.put("shippingUpdated", shipUpdated);
+        out.put("purchaseUpdated", poUpdated);
+        // If approved and invoice is 2/7 (contains shipping),then update all related platform orders in Mabang to PREPARING.
+        if (approved && (prefix == '2' || prefix == '7') && shipUpdated) {
+            List<String> platformOrderIds = platformOrderService
+                    .getPlatformOrderIdsByInvoiceNumbers(Collections.singletonList(invoiceNumber))
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
+            if (platformOrderIds.isEmpty()) {
+                out.put("mabangUpdate", "无关联的平台订单");
+            } else {
+                Response<List<UpdateResult>, List<UpdateResult>> updateResp =
+                        platformOrderMabangService.updateOrderStatusToPreparing(platformOrderIds);
+                if (updateResp == null) {
+                    Map<String, Object> err = new HashMap<String, Object>(4);
+                    err.put("reason", "服务返回为空"  );
+                    err.put("platformOrderIds", platformOrderIds);
+                    err.put("base", out);
+                    return Result.error("马帮订单状态更新失败", err);
+                }
+                // Compose Mabang call details
+                Map<String, Object> mabang = new HashMap<>();
+                mabang.put("httpStatus", updateResp.getStatus());
+                List<String> okIds = Optional.ofNullable(updateResp.getData()).orElse(Collections.emptyList())
+                        .stream()
+                        .map(UpdateResult::getPlatformOrderNumber)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                List<String> failIds = Optional.ofNullable(updateResp.getError()).orElse(Collections.emptyList())
+                        .stream()
+                        .map(UpdateResult::getPlatformOrderNumber)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+                // Aggregate all error reasons
+                List<String> reasons = Optional.ofNullable(updateResp.getError()).orElse(Collections.emptyList())
+                        .stream()
+                        .map(UpdateResult::getReason)
+                        .filter(Objects::nonNull)
+                        .distinct()
+                        .collect(Collectors.toList());
+
+                mabang.put("successOrderIds", okIds);
+                mabang.put("failedOrderIds", failIds);
+                if (!reasons.isEmpty()) {
+                    mabang.put("reasons", reasons);
+                }
+                // 500
+                if (updateResp.getStatus() == org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR) {
+                    out.put("mabangUpdate", mabang);
+                    return Result.error("马帮订单状态更新失败", out);
+                }
+                //404
+                if (updateResp.getStatus() == org.apache.http.HttpStatus.SC_NOT_FOUND) {
+                    out.put("mabangUpdate", mabang);
+                    return Result.error("部分订单未找到", out);
+                }
+                out.put("mabangUpdate", mabang);
+            }
+        }
+        return Result.OK("sys.api.entryEditSuccess", out);
     }
 
     /**

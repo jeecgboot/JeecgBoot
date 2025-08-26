@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 import org.jeecg.modules.business.entity.Invoice;
 import org.jeecg.modules.business.entity.PlatformOrder;
@@ -132,4 +133,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     List<PurchaseOrder> getPurchasesByInvoices(@Param("invoices") List<Invoice> invoices);
 
     void cancelInvoice(@Param("id") String invoiceId);
+    IPage<PurchaseOrderPage> pageForPaymentProofReview(
+            Page<PurchaseOrderPage> page,
+            @Param("clientId") String clientId);
 }
