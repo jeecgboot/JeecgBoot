@@ -250,7 +250,7 @@ public class PurchaseOrderController {
         }
         // TODO : refacto using Reponses
         PurchaseOrder purchaseOrder = new PurchaseOrder();
-        BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder, "paidAmount");
+        BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder,  "totalAmount","finalAmount","discountAmount","paidAmount");
         purchaseOrder.setPaymentDocumentString(new String(purchaseOrderPage.getPaymentDocument()));
         purchaseOrder.setInventoryDocumentString(new String(purchaseOrderPage.getInventoryDocument()));
         Map<String, Responses> responsesMappedByReason = new HashMap<>();
