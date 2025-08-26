@@ -117,13 +117,13 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
   });
 
   // update-begin--author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
-  const vxeColumnsRef = ref([])
+  const vxeColumnsRef = ref(data.vxeColumns!.value || [])
   const watchColumnsDebounce = debounce(async () => {
     vxeColumnsRef.value = []
     await nextTick()
     vxeColumnsRef.value = data.vxeColumns!.value
   }, 50)
-  watch(data.vxeColumns!, watchColumnsDebounce, {immediate: true})
+  watch(data.vxeColumns!, watchColumnsDebounce)
   // update-end----author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
 
   const vxeProps = computed(() => {
