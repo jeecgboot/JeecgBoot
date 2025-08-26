@@ -57,6 +57,26 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
     }
     // @ts-ignore 添加是否缓存路由配置
     item.meta.ignoreKeepAlive = !item?.meta.keepAlive;
+    
+    // 处理路径中的query参数 - 核心修复
+    if (item.path && item.path.includes('?')) {
+      const [basePath, queryString] = item.path.split('?');
+      item.path = basePath; // 只保留基础路径作为Vue Router的path
+
+      // 将query参数保存到meta中，供菜单点击时使用
+      if (queryString) {
+        const queryParams: Record<string, string> = {};
+        queryString.split('&').forEach((param) => {
+          const [key, value] = param.split('=');
+          if (key) {
+            queryParams[decodeURIComponent(key)] = decodeURIComponent(value || '');
+          }
+        });
+        item.meta = item.meta || {};
+        item.meta.queryParams = queryParams;
+      }
+    }
+    
     let token = getToken();
     let tenantId = getTenantId();
     // URL支持{{ window.xxx }}占位符变量
