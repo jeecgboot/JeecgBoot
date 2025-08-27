@@ -11,4 +11,9 @@
     FROM currency
     WHERE code = #{code};
 </select>
+<select id="getByCode" resultType="org.jeecg.modules.business.entity.Currency">
+    SELECT *
+    FROM currency
+    WHERE code = #{code};
+</select>
 </mapper>

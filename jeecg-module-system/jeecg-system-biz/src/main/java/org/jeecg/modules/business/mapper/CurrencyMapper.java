@@ -16,4 +16,6 @@ public interface CurrencyMapper extends BaseMapper<Currency> {
     String getCodeById(@Param("currencyId") String currencyId);
 
     String getIdByCode(@Param("code") String code);
+
+    Currency getByCode(@Param("code") String code);
 }

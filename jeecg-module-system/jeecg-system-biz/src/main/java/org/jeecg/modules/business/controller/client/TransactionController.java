@@ -11,6 +11,7 @@ import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.entity.Currency;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.Estimation;
@@ -34,6 +35,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/transaction")
 @Slf4j
 public class TransactionController {
+    @Autowired
+    private ITransactionService transactionService;
     @Autowired
     private TransactionMapper transactionMapper;
     @Autowired
@@ -142,6 +145,11 @@ public class TransactionController {
         }
         if(!currency.equals("EUR")) {
             BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", currency);
+            if(exchangeRate == null) {
+                String errorMessage = String.format("Cannot find exchange rate from EUR to %s", currency);
+                log.error(errorMessage);
+                return Result.error(errorMessage);
+            }
 
             purchaseEstimation = purchaseEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
             shippingFeesEstimation = shippingFeesEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
@@ -227,6 +235,11 @@ public class TransactionController {
         }
 
         return Result.ok("Your payment proof has been submitted and will be reviewed soon.");
+    }
+    @GetMapping("/getAllCurrenciesByClient")
+    public Result<?> getAllCurrenciesByClient(@RequestParam("clientId") String clientId) {
+        List<Currency> currencies = transactionService.getAllCurrenciesByClient(clientId);
+        return Result.ok(currencies);
     }
 
 }
