@@ -162,7 +162,20 @@ public class ClientPage {
     @Dict(dicCode = "yn")
     @ApiModelProperty("是否使用余额")
     private java.lang.Boolean useBalance;
-
+    /**
+     * 是否显示余额
+     */
+    @Excel(name = "是否显示余额", width = 15, dicCode = "yn")
+    @Dict(dicCode = "yn")
+    @ApiModelProperty(value = "是否显示余额")
+    private Boolean displayBalance;
+    /**
+     * 是否通過郵件接收發票
+     */
+    @Excel(name = "是否通過郵件接收發票", width = 15, dicCode = "yn")
+    @Dict(dicCode = "yn")
+    @ApiModelProperty(value = "是否通過郵件接收發票")
+    private Boolean receiveInvoiceByEmail;
     /**
      * IOSS号码
      */
