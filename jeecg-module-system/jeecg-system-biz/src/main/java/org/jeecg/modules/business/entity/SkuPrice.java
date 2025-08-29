@@ -96,9 +96,8 @@ public class SkuPrice implements Serializable {
     /**
      * 生效日期
      */
-    @Excel(name = "生效日期", width = 15, format = "yyyy-MM-dd")
-    @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "生效日期", width = 15, format = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @ApiModelProperty(value = "生效日期")
     private Date date;
     /**币种ID*/

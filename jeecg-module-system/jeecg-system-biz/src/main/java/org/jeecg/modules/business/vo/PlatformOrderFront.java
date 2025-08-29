@@ -70,12 +70,13 @@ public class PlatformOrderFront {
      */
     @Excel(name = "订单交易时间", width = 15, format = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "订单交易时间")
-    private String orderTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private Date orderTime;
     /**
      * 订单发货时间
      */
     @Excel(name = "订单发货时间", width = 15, format = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "订单发货时间")
     private Date shippingTime;

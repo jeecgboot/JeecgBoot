@@ -9,6 +9,7 @@ SELECT id                   AS price_id,
        date                 AS date
 FROM sku_price sp
          INNER JOIN (SELECT sku_id, MAX(date) max_date FROM sku_price
-                                                       where DATE(date)  <= CURRENT_DATE
-                                                       GROUP BY sku_id) sp2
-                    ON sp.sku_id = sp2.sku_id AND sp.date = sp2.max_date
+                                                       where date  <= CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', '+08:00')
+                                                       GROUP BY sku_id
+                     ) sp2
+                    ON sp.sku_id = sp2.sku_id AND sp.date = sp2.max_date;
