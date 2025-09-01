@@ -3,11 +3,35 @@
 <mapper namespace="org.jeecg.modules.business.mapper.ShippingInvoiceMapper">
 
     <select id="fetchShopOwnerFromInvoiceNumber" resultType="org.jeecg.modules.business.entity.Client">
-        SELECT distinct c.*
+        SELECT c.*
         FROM client c
-            JOIN shop s ON c.id = s.owner_id
-            JOIN platform_order po on s.id = po.shop_id
-        WHERE po.shipping_invoice_number = #{invoiceNumber} OR po.purchase_invoice_number = #{invoiceNumber};
+        WHERE c.id IN (
+            SELECT id_
+            FROM (
+                     /* A. shipping_invoice.invoice_number -> client_id */
+                     SELECT si.client_id AS id_
+                     FROM shipping_invoice si
+                     WHERE si.invoice_number = #{invoiceNumber}
+                     UNION
+                     /* B. purchase_order.invoice_number -> client_id  */
+                     SELECT po2.client_id AS id_
+                     FROM purchase_order po2
+                     WHERE po2.invoice_number = #{invoiceNumber}
+                     UNION
+                     /* C. 关联平台订单-物流发票号：platform_order.shipping_invoice_number -> shop -> owner_id */
+                     SELECT s.owner_id AS id_
+                     FROM shop s
+                              JOIN platform_order po ON po.shop_id = s.id
+                     WHERE po.shipping_invoice_number = #{invoiceNumber}
+                     UNION
+                     /* D. 关联订单-采购发票号：platform_order.purchase_invoice_number -> shop -> owner_id */
+                     SELECT s.owner_id AS id_
+                     FROM shop s
+                              JOIN platform_order po ON po.shop_id = s.id
+                     WHERE po.purchase_invoice_number = #{invoiceNumber}
+                 ) AS u
+        )
+        LIMIT 1
     </select>
     <select id="fetchShippingInvoiceId" resultType="java.lang.String">
         SELECT id
