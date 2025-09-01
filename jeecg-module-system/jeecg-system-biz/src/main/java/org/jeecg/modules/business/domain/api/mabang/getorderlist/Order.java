@@ -72,8 +72,8 @@ public class Order {
 
     @JSONField(name = "expressTime")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", locale = "fr", timezone = "GMT+1")
-    private String shippingTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    private Date shippingTime;
 
     /**
      * 订单收件人
@@ -197,13 +197,6 @@ public class Order {
         return Objects.equals(recipient, candidate.recipient)
                 && Objects.equals(postcode, candidate.postcode)
                 && Objects.equals(country, candidate.country);
-    }
-
-    public void setShippingTime(String shippingTime) {
-        if (shippingTime != null && shippingTime.isEmpty()) {
-            this.shippingTime = null;
-        } else
-            this.shippingTime = shippingTime;
     }
 
     /**

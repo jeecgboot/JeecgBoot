@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -54,6 +55,7 @@ public class SkuOrderPage {
      */
     @Excel(name = "重量生效日期", width = 15)
     @ApiModelProperty(value = "重量生效日期")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private java.util.Date weightEffectiveDate;
     /**
      * 库存数量
@@ -166,6 +168,7 @@ public class SkuOrderPage {
      */
     @Excel(name = "价格生效日期", width = 15)
     @ApiModelProperty(value = "价格生效日期")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private java.util.Date skuPriceEffectiveDate;
     /**
      * 申报价格
