@@ -139,4 +139,6 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
     List<PurchaseOrder> getPurchasesByInvoices(List<Invoice> invoices);
 
     void queryOrderByRole(Page<PurchaseOrderPage> page, String clientId);
+    IPage<PurchaseOrderPage> pageForPaymentProofReview(
+            Page<PurchaseOrderPage> page, String clientId);
 }

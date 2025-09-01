@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.entity;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -109,6 +110,44 @@ public class ShippingInvoice implements Serializable {
     @Excel(name = "status", width = 15)
     @ApiModelProperty(value = "status")
     private java.lang.Integer status;
+    /**
+     * 是否通过付款审核
+     * 0: not approved (default), 1: approved
+     */
+    @Excel(name = "是否通过付款审核", width = 15)
+    @ApiModelProperty(value = "是否通过付款审核")
+    private Boolean paymentApproved;
+
+    /**
+     * Payment document
+     */
+    @Excel(name = "payment document", width = 15)
+    private transient java.lang.String paymentDocumentString;
+
+    private byte[] paymentDocument;
+
+    public byte[] getPaymentDocument(){
+        if(paymentDocumentString==null){
+            return null;
+        }
+        try {
+            return paymentDocumentString.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public String getPaymentDocumentString(){
+        if(paymentDocument==null || paymentDocument.length==0){
+            return "";
+        }
+        try {
+            return new String(paymentDocument,"UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     public ShippingInvoice() {
 //        this.id = null;

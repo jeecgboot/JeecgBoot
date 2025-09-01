@@ -120,6 +120,13 @@ public class PurchaseOrder implements Serializable {
     private java.lang.Integer status;
 
     /**
+     * 是否通过付款审核
+     */
+    @Excel(name = "是否通过付款审核", width = 15)
+    @ApiModelProperty(value = "是否通过付款审核")
+    private Boolean paymentApproved;
+
+    /**
      * Payment document
      */
     @Excel(name = "payment document", width = 15)
