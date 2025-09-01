@@ -119,23 +119,28 @@ public class SkuPriceController extends JeecgController<SkuPrice, ISkuPriceServi
             return Result.error("已存在相同 SKU 和日期的记录，不能重复添加。");
         }
         //duplicate content check(except date)
-        List<SkuPrice> existingList = skuPriceService.list(new QueryWrapper<SkuPrice>()
-                .eq("sku_id", skuPrice.getSkuId()));
+        if (skuPrice.getPrice() != null) {
+            skuPrice.setPrice(skuPrice.getPrice().setScale(2, RoundingMode.HALF_UP));
+        }
+        if (skuPrice.getDiscountedPrice() != null) {
+            skuPrice.setDiscountedPrice(skuPrice.getDiscountedPrice().setScale(2, RoundingMode.HALF_UP));
+        }
+        SkuPrice latest = skuPriceService.getLatestBySkuId(skuPrice.getSkuId());
+        if (latest != null) {
+            boolean sameAsLatest =
+                    NumberUtils.isEqual(latest.getPrice(), skuPrice.getPrice()) &&
+                            NumberUtils.isEqual(latest.getDiscountedPrice(), skuPrice.getDiscountedPrice()) &&
+                            Objects.equals(latest.getThreshold(), skuPrice.getThreshold()) &&
+                            Objects.equals(latest.getCurrencyId(), skuPrice.getCurrencyId()) &&
+                            Objects.equals(latest.getUnit(), skuPrice.getUnit());
 
-        boolean sameContentExists = existingList.stream().anyMatch(existing ->
-                existing.getPrice().compareTo(skuPrice.getPrice()) == 0 &&
-                        existing.getDiscountedPrice().compareTo(skuPrice.getDiscountedPrice()) == 0 &&
-                        existing.getThreshold().equals(skuPrice.getThreshold()) &&
-                        existing.getCurrencyId().equals(skuPrice.getCurrencyId())&&
-                        existing.getUnit().equals(skuPrice.getUnit())
-        );
-        if (sameContentExists) {
-            return Result.error("相同内容的售价记录已存在，仅日期不同，请勿重复添加。");
+            if (sameAsLatest) {
+                return Result.error("与最新的历史价格相同，无需新增。");
+            }
         }
         if (skuPrice.getUnit() <= 0) {
             return Result.error("购买单位 unit 必须大于 0");
         }
-
         if (skuPrice.getPrice() != null) {
             skuPrice.setPrice(skuPrice.getPrice().setScale(2, RoundingMode.HALF_UP));
         }

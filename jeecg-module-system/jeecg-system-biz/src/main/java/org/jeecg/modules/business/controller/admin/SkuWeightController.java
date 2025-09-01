@@ -517,20 +517,16 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			wrapper.apply("DATE(effective_date) = {0}", new SimpleDateFormat("yyyy-MM-dd").format(param.getEffectiveDate()));
 			if (skuWeightService.count(wrapper) > 0) {
 				log.warn("SKU {} already has a weight record for the same date, skipping", sku.getErpCode());
-				responses.addSuccess(sku.getErpCode() , ": 相同日期的重量记录已存在，跳过");
+				responses.addSuccess(sku.getErpCode(), ": 相同日期的重量记录已存在，跳过");
 				continue;
 			}
-			//check if there is an existing record with the same sku_id and weight but different effective_date
-			wrapper = new QueryWrapper<>();
-			wrapper.eq("sku_id", skuId).eq("weight", param.getWeight());
-			List<SkuWeight> existing = skuWeightService.list(wrapper);
-			boolean sameContentDiffDate = existing.stream()
-					.anyMatch(e -> !e.getEffectiveDate().equals(param.getEffectiveDate()));
-			if (sameContentDiffDate) {
-				log.warn("SKU {} has the same weight but different date, skipping", sku.getErpCode());
-				responses.addSuccess(sku.getErpCode() , ": 日期不同但重量相同，跳过");
+			//check if there is the latest existing record with the same sku_id and weight but different effective_date
+			SkuWeight latest = skuWeightService.getLatestBySkuId(skuId);
+            if (latest != null && latest.getWeight() == param.getWeight()) {
+				log.warn("SKU {} latest weight equals new weight, skipping", sku.getErpCode());
+				responses.addSuccess(sku.getErpCode(), ": 与最新重量相同，跳过");
 				continue;
-			}
+            }
 			SkuWeight skuWeight = new SkuWeight();
 			skuWeight.setCreateBy(sysUser.getUsername());
 			skuWeight.setEffectiveDate(param.getEffectiveDate());
