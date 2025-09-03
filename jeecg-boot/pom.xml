@@ -55,9 +55,9 @@
 		<dm8.version>8.1.1.49</dm8.version>
 		
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>2.1.1</jimureport-spring-boot-starter.version>
-		<jimubi-spring-boot-starter.version>2.1.0</jimubi-spring-boot-starter.version>
-		<minidao.version>1.10.11</minidao.version>
+		<jimureport-spring-boot-starter.version>2.1.3</jimureport-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.1.3</jimubi-spring-boot-starter.version>
+		<minidao.version>1.10.12</minidao.version>
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.12</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
@@ -72,7 +72,7 @@
 		<shiro-redis.version>3.2.3</shiro-redis.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
 		<codegenerate.version>1.5.1</codegenerate.version>
-		<autopoi-web.version>1.4.15</autopoi-web.version>
+		<autopoi-web.version>1.4.18</autopoi-web.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
