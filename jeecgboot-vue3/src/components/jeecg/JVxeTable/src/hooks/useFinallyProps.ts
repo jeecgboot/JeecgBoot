@@ -1,5 +1,5 @@
 import { unref, computed, ref, watch, nextTick } from 'vue';
-import { merge } from 'lodash-es';
+import { merge, debounce } from 'lodash-es';
 import { isArray } from '/@/utils/is';
 import { useAttrs } from '/@/hooks/core/useAttrs';
 import { useKeyboardEdit } from '../hooks/useKeyboardEdit';
@@ -41,17 +41,8 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
     return events;
   });
 
-  // update-begin--author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
-  const vxeColumnsRef = ref([])
-  watch(data.vxeColumns, async () => {
-    vxeColumnsRef.value = []
-    await nextTick()
-    vxeColumnsRef.value = data.vxeColumns.value
-  }, {immediate: true})
-  // update-end----author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
-
   // vxe 最终 props
-  const vxeProps = computed(() => {
+  const vxePropsMerge = computed(() => {
     // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
     let rowClass = {};
     if (props.dragSort) {
@@ -88,7 +79,6 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
         loading: false,
         disabled: props.disabled,
         // columns: unref(data.vxeColumns),
-        columns: vxeColumnsRef.value,
         editRules: unref(vxeEditRules),
         height: props.height === 'auto' ? null : props.height,
         maxHeight: props.maxHeight,
@@ -125,6 +115,25 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
       unref(keyboardEditConfig)
     );
   });
+
+  // update-begin--author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
+  const vxeColumnsRef = ref(data.vxeColumns!.value || [])
+  const watchColumnsDebounce = debounce(async () => {
+    vxeColumnsRef.value = []
+    await nextTick()
+    vxeColumnsRef.value = data.vxeColumns!.value
+  }, 50)
+  watch(data.vxeColumns!, watchColumnsDebounce)
+  // update-end----author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
+
+  const vxeProps = computed(() => {
+    return {
+      ...unref(vxePropsMerge),
+      // 【issue/8695】单独抽出 columns，防止性能问题
+      columns: unref(vxeColumnsRef),
+    }
+  });
+
   return {
     vxeProps,
     prefixCls: data.prefixCls,

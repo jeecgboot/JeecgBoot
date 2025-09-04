@@ -116,7 +116,14 @@ export function getValueTypeBySchema(schema: FormSchema, formAction: FormActionT
   let valueType = 'string';
   if (schema) {
     const componentProps = formAction.getSchemaComponentProps(schema);
-    valueType = componentProps?.valueType ? componentProps?.valueType : valueType;
+    // update-begin--author:liaozhiyang---date:20250825---for：【issues/8738】componentProps是函数时获取不到valueType
+    if (isFunction(componentProps)) {
+      const result = componentProps(schema);
+      valueType = result?.valueType ?? valueType;
+    } else {
+      valueType = componentProps?.valueType ? componentProps?.valueType : valueType;
+    }
+    // update-end--author:liaozhiyang---date:20250825---for：【issues/8738】componentProps是函数时获取不到valueType
   }
   return valueType;
 }
