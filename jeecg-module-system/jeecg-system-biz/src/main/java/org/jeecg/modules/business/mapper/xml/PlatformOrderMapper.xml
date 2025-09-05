@@ -713,8 +713,8 @@
                              AND (po.logistic_channel_name IS NULL OR po.logistic_channel_name = '')
                              AND (po.invoice_logistic_channel_name IS NULL OR po.invoice_logistic_channel_name = '') THEN -1
                     WHEN po.shipping_invoice_number IS NULL AND stats.weight_count = 0 THEN -1
-                    WHEN po.shipping_invoice_number IS NOT NULL AND si.paid_amount > 0.00 THEN 2
-                    WHEN po.shipping_invoice_number IS NOT NULL AND si.paid_amount = 0.00 THEN 1
+                    WHEN po.shipping_invoice_number IS NOT NULL AND si.payment_approved = 1 THEN 2
+                    WHEN po.shipping_invoice_number IS NOT NULL AND si.payment_approved = 0 THEN 1
                     ELSE 0
                 END
             ) AS shipping_available,
@@ -722,8 +722,8 @@
                 CASE
                     WHEN poc.id IS NULL OR sku.id IS NULL THEN -1
                     WHEN po.purchase_invoice_number IS NULL AND stats.price_count = 0 THEN -1
-                    WHEN po.purchase_invoice_number IS NOT NULL AND pur.paid_amount > 0.00 THEN 2
-                    WHEN po.purchase_invoice_number IS NOT NULL AND pur.paid_amount = 0.00 THEN 1
+                    WHEN po.purchase_invoice_number IS NOT NULL AND pur.payment_approved = 1 THEN 2
+                    WHEN po.purchase_invoice_number IS NOT NULL AND pur.payment_approved = 0 THEN 1
                     ELSE 0
                 END
             ) AS purchase_available,

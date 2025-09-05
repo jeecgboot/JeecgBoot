@@ -92,12 +92,6 @@ public class PurchaseOrder implements Serializable {
     @ApiModelProperty(value = "最终金额")
     private java.math.BigDecimal finalAmount;
     /**
-     * paid amount
-     */
-    @Excel(name = "已付金额", width = 15)
-    @ApiModelProperty(value = "已付金额")
-    private java.math.BigDecimal paidAmount;
-    /**
      * 订单发票号
      */
     @Excel(name = "订单发票号", width = 15)

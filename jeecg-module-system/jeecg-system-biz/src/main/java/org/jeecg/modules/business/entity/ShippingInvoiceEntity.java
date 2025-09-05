@@ -82,11 +82,12 @@ public class ShippingInvoiceEntity implements Serializable {
     @ApiModelProperty(value = "最终金额")
     private java.math.BigDecimal finalAmount;
     /**
-     * 已付金额
+     * 是否通过付款审核
+     * 0: not approved (default), 1: approved
      */
-    @Excel(name = "已付金额", width = 15)
-    @ApiModelProperty(value = "已付金额")
-    private java.math.BigDecimal paidAmount;
+    @Excel(name = "是否通过付款审核", width = 15)
+    @ApiModelProperty(value = "是否通过付款审核")
+    private Boolean paymentApproved;
 
     @PersistenceConstructor
     public ShippingInvoiceEntity(String id,
@@ -98,7 +99,7 @@ public class ShippingInvoiceEntity implements Serializable {
                            BigDecimal totalAmount,
                            BigDecimal discountAmount,
                            BigDecimal finalAmount,
-                           BigDecimal paidAmount) {
+                                 Boolean paymentApproved) {
         this.id = id;
         this.createBy = createBy;
         this.createTime = createTime;
@@ -108,7 +109,7 @@ public class ShippingInvoiceEntity implements Serializable {
         this.totalAmount = totalAmount;
         this.discountAmount = discountAmount;
         this.finalAmount = finalAmount;
-        this.paidAmount = paidAmount;
+        this.paymentApproved = paymentApproved;
     }
 
     public static ShippingInvoiceEntity of(
@@ -116,9 +117,9 @@ public class ShippingInvoiceEntity implements Serializable {
             String invoiceNumber,
             BigDecimal totalAmount,
             BigDecimal discountAmount,
-            BigDecimal paidAmount
+            Boolean paymentApproved
     ) {
         return new ShippingInvoiceEntity(null, username, new Date(), username, new Date(),
-                invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paidAmount);
+                invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paymentApproved);
     }
 }

@@ -73,11 +73,12 @@ public class ShippingInvoicePage {
     @ApiModelProperty(value = "最终金额")
     private java.math.BigDecimal finalAmount;
     /**
-     * 已付金额
+     * 是否通过付款审核
+     * 0: not approved (default), 1: approved
      */
-    @Excel(name = "已付金额", width = 15)
-    @ApiModelProperty(value = "已付金额")
-    private java.math.BigDecimal paidAmount;
+    @Excel(name = "是否通过付款审核", width = 15)
+    @ApiModelProperty(value = "是否通过付款审核")
+    private Boolean paymentApproved;
 
 
 }
