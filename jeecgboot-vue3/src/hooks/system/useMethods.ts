@@ -59,8 +59,9 @@ export function useMethods() {
    * @param data 导入的数据
    * @param url
    * @param success 成功后的回调
+   * @param parameters 导入携带的参数
    */
-  async function importXls(data, url, success) {
+  async function importXls(data, url, success, parameters) {
     const isReturn = (fileInfo) => {
       try {
         if (fileInfo.code === 201) {
@@ -90,12 +91,14 @@ export function useMethods() {
         typeof success === 'function' ? success(fileInfo) : '';
       }
     };
-    await defHttp.uploadFile({ url }, { file: data.file }, { success: isReturn });
+    await defHttp.uploadFile({ url }, { file: data.file }, { success: isReturn }, parameters);
   }
 
   return {
     handleExportXls: (name: string, url: string, params?: object) => exportXls(name, url, params),
-    handleImportXls: (data, url, success) => importXls(data, url, success),
+    // update-begin--author:huoshicang---date:20250805
+    handleImportXls: (data, url, success, parameters) => importXls(data, url, success, parameters),
+    // update-end--author:huoshicang---date:20250805
     handleExportXlsx: (name: string, url: string, params?: object) => exportXls(name, url, params, true),
   };
 
