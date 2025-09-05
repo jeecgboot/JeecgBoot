@@ -301,6 +301,7 @@
             }
           }
         } else {
+          options.value = [];
           if (!dict) {
             console.error('搜索组件未配置字典项');
           } else {
