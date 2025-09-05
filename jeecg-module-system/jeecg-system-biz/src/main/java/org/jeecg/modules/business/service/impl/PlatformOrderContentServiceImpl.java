@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
+import org.jeecg.modules.business.mapper.SkuMapper;
 import org.jeecg.modules.business.service.IPlatformOrderContentService;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
@@ -23,6 +24,8 @@ import java.util.*;
 public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderContentMapper, PlatformOrderContent> implements IPlatformOrderContentService {
     @Autowired
     private final PlatformOrderContentMapper platformOrderContentMapper;
+    @Autowired
+    private SkuMapper skuMapper;
 
     public PlatformOrderContentServiceImpl(PlatformOrderContentMapper platformOrderContentMapper) {
         this.platformOrderContentMapper = platformOrderContentMapper;
@@ -45,12 +48,24 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
         log.info("skus : " + skuIDs);
 
         BigDecimal total = BigDecimal.ZERO;
+        List<String> missingIds = new ArrayList<>();
         for(Map.Entry<String, Integer> entry: contentMap.entrySet()) {
-            if(skuRealWeights.get(entry.getKey()) == null) {
-                errorMessages.add("Can not find weight for one sku in: " + contentMap);
+            String skuId = entry.getKey();
+            Integer qty = entry.getValue();
+            BigDecimal w = skuRealWeights.get(skuId);
+            if(w == null) {
+                missingIds.add(skuId);
                 continue;
             }
-            total = total.add(skuRealWeights.get(entry.getKey()).multiply(BigDecimal.valueOf(entry.getValue())));
+            total = total.add(w.multiply(BigDecimal.valueOf(qty)));
+            if (!missingIds.isEmpty()) {
+                List<String> erpCodes = skuMapper.listErpCodesByIds(missingIds);
+                if (erpCodes != null && !erpCodes.isEmpty()) {
+                    errorMessages.add("SKUs missing weight: " + String.join(", ", erpCodes));
+                } else {
+                    errorMessages.add("SKUs missing weight (id): " + String.join(", ", missingIds));
+                }
+                }
         }
         log.info("total weight : " + total);
         return new MutablePair<>(total, errorMessages);

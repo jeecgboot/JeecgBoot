@@ -198,14 +198,9 @@ public class PlatformOrderShippingInvoiceService {
         Date begin = platformOrderMapper.findEarliestUninvoicedPlatformOrderTime(shopIDs, erpStatuses);
         if(begin == null)
             return null;
-        ZoneId shanghai = ZoneId.of("Asia/Shanghai");
-        ZoneId paris = ZoneId.of("Europe/Paris");
-        LocalDateTime ldt = LocalDateTime.ofInstant(begin.toInstant(), shanghai);
-        Date beginZoned = Date.from(ldt.atZone(paris).toInstant());
         Date end = platformOrderMapper.findLatestUninvoicedPlatformOrderTime(shopIDs, erpStatuses);
-        ldt = LocalDateTime.ofInstant(end.toInstant(), shanghai);
-        Date endZoned = Date.from(ldt.atZone(paris).toInstant());
-        return new Period(beginZoned, endZoned, "");
+        log.info("Valid order time period: {} - {}", begin, end);
+        return new Period(begin, end, "");
     }
     public List<String> getShippingOrderIdBetweenDate(List<String> shops, String start, String end, List<String> wareHouses) {
         return platformOrderMapper.fetchUninvoicedShippedOrderIDInShops( start, end, shops, wareHouses);

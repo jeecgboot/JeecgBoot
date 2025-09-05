@@ -69,7 +69,7 @@ public class SkuWeight implements Serializable {
     /**
      * 生效日期
      */
-    @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "生效日期", width = 15, format = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "生效日期")

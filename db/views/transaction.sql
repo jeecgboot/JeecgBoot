@@ -39,10 +39,11 @@ FROM (
                 update_time,
                 'Debit'                                                                AS type,
                 client_id,
-                (
-                    SELECT MAX(po.payment_document)
-                    FROM purchase_order po
-                    WHERE po.invoice_number = si.invoice_number
+                COALESCE(
+                        (SELECT MAX(po.payment_document)
+                         FROM purchase_order po
+                         WHERE po.invoice_number = si.invoice_number),
+                        NULLIF(si.payment_document, '')
                 )                                                                      AS payment_proof,
                 invoice_number,
                 total_amount                                                           AS shipping_fee,

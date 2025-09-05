@@ -989,7 +989,9 @@ public class InvoiceController {
                         log.info("Matched SKU: {}, Qty: {}, Final Price: {}", content.getSkuId(), content.getQuantity(), price);
                     } else {
                         isCompleteInvoiceReady = false;
-                        errorMessages.add("No valid price for SKU: " + content.getSkuId());
+                        Sku sku = skuService.getById(content.getSkuId());
+                        String erpCode = sku != null ? sku.getErpCode() : "Unknown SKU";
+                        errorMessages.add("No valid price for SKU: " + erpCode);
                         log.warn("No valid price for SKU: {}", content.getSkuId());
                     }
                 }

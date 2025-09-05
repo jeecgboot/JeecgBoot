@@ -1,6 +1,5 @@
 package org.jeecg.modules.business.service.impl.purchase;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -694,6 +693,14 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         IPage<PurchaseOrderPage> result = purchaseOrderMapper.queryOrderByRole(page, clientId, role);
         page.setRecords(result.getRecords());
         page.setTotal(result.getTotal());
+    }
+
+    @Override
+    public IPage<PurchaseOrderPage> pageForPaymentProofReview(Page<PurchaseOrderPage> page, String clientId) {
+        IPage<PurchaseOrderPage> result = purchaseOrderMapper.pageForPaymentProofReview(page, clientId);
+        page.setRecords(result.getRecords());
+        page.setTotal(result.getTotal());
+        return result;
     }
 
     @Override

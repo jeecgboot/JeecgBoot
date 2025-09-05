@@ -10,6 +10,10 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
+import org.jeecg.modules.business.entity.PlatformOrder;
+import org.jeecg.modules.business.entity.PlatformOrderContent;
+import org.jeecg.modules.business.entity.PurchaseOrder;
+import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.entity.Currency;
 import org.jeecg.modules.business.mapper.*;
@@ -59,6 +63,8 @@ public class TransactionController {
     private ISysBaseAPI ISysBaseApi;
     @Autowired
     private ShippingInvoiceFactory factory;
+    @Autowired
+    private IShippingInvoiceService shippingInvoiceService;
     @Autowired
     Environment env;
 
@@ -196,20 +202,60 @@ public class TransactionController {
         // invoice number validation
         String[] parts = invoiceNumber.split("-");
         String lastPart = parts[parts.length - 1];
-        if (!(lastPart.startsWith("1") || lastPart.startsWith("7"))) {
-            return Result.error("Only invoice numbers starting with '1' or '7' are allowed");
+             if (!(lastPart.startsWith("1") || lastPart.startsWith("2") || lastPart.startsWith("7"))) {
+            return Result.error("Only invoice numbers starting with '1','2' or '7' are allowed");
         }
-        //get purchase order by invoice number
-        PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
-        if (purchaseOrder == null) {
-            return Result.error("Cannot find purchase order for invoice number: " + invoiceNumber);
+        char ticketType = lastPart.charAt(0);
+        ShippingInvoice si = shippingInvoiceService.getShippingInvoice(invoiceNumber);
+        switch (ticketType) {
+            case '1': {// Invoice 1XXX:update purchase order
+                PurchaseOrder po = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
+                if (po == null) {
+                    return Result.error("Cannot find purchase order for invoice number: " + invoiceNumber);
+                }
+                po.setPaymentDocumentString(paymentProofString);
+                if (!purchaseOrderService.updateById(po)) {
+                    return Result.error("Failed to update purchase order for invoice number: " + invoiceNumber);
+                }
+                log.info("Purchase order updated successfully, payment proof set to: {}", paymentProofString);
+                break;
+            }
+            case '2': { // Invoice 2XXX:update shipping invoice
+                if (si == null) {
+                    return Result.error("Cannot find shipping invoice for invoice number: " + invoiceNumber);
+                }
+                si.setPaymentDocumentString(paymentProofString);
+                if (!shippingInvoiceService.updateById(si)) {
+                    return Result.error("Failed to update shipping invoice for invoice number: " + invoiceNumber);
+                }
+                log.info("Shipping invoice updated successfully, payment proof set to: {}", paymentProofString);
+                break;
+            }
+            case '7': { // Invoice 7XXX:update shipping invoice and  purchase order
+                if (si == null) {
+                    return Result.error("Cannot find shipping invoice for invoice number: " + invoiceNumber);
+                }
+                si.setPaymentDocumentString(paymentProofString);
+                if (!shippingInvoiceService.updateById(si)) {
+                    return Result.error("Failed to update shipping invoice for invoice number: " + invoiceNumber);
+                }
+                // 2)  purchase order
+                PurchaseOrder po = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
+                if (po != null) {
+                    po.setPaymentDocumentString(paymentProofString);
+                    if (purchaseOrderService.updateById(po)) {
+                        log.info("Type-7: synced payment proof to purchase order for {}", invoiceNumber);
+                    } else {
+                        log.warn("Type-7: failed to sync payment proof to purchase order for {}", invoiceNumber);
+                    }
+                } else {
+                    log.info("Type-7: no related purchase order for {}, skip PO sync", invoiceNumber);
+                }
+                break;
+            }
+            default:
+                return Result.error("Unsupported ticket type: " + ticketType + ". Only type 1, 2 or 7 are allowed");
         }
-        purchaseOrder.setPaymentDocumentString(paymentProofString);
-        boolean updated = purchaseOrderService.updateById(purchaseOrder);
-        if (!updated) {
-            return Result.error("Failed to update purchase order for invoice number: " + invoiceNumber);
-        }
-        log.info("Purchase order updated successfully, payment proof set to: {}", paymentProofString);
         // email
         try {
             String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
@@ -221,7 +267,7 @@ public class TransactionController {
             templateModel.put("client", user.getUsername());
             templateModel.put("invoiceNumber", invoiceNumber);
             templateModel.put("uploadTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            templateModel.put("reviewLink", "https://app.wia-sourcing.com/business/admin/purchasing/RegisterPurchaseInvoice");
+            templateModel.put("reviewLink", "https://app.wia-sourcing.com/business/admin/purchasing/PaymentProofReview");
             List<SysUser> accountantUsers = sysUserService.getUsersByRoleCode("accountant");
 
             for (SysUser accountant : accountantUsers) {
@@ -236,7 +282,6 @@ public class TransactionController {
         } catch (Exception e) {
             log.error("Failed to send email notification for payment proof upload", e);
         }
-
         return Result.ok("Your payment proof has been submitted and will be reviewed soon.");
     }
     @GetMapping("/getAllCurrenciesByClient")

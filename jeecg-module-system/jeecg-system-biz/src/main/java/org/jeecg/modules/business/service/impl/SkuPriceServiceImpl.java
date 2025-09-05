@@ -64,4 +64,5 @@ public class SkuPriceServiceImpl extends ServiceImpl<SkuPriceMapper, SkuPrice> i
 			return priceCandidate;
 		}
 	}
+
 }

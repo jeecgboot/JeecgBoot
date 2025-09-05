@@ -202,6 +202,39 @@
             #{invoice.id}
         </foreach>
     </select>
+    <select id="pageForPaymentProofReview" resultType="org.jeecg.modules.business.vo.PurchaseOrderPage">
+        SELECT
+        v.id,
+        v.create_by         AS createBy,
+        v.create_time       AS createTime,
+        v.update_by         AS updateBy,
+        v.update_time       AS updateTime,
+        v.invoice_number    AS invoiceNumber,
+        v.client_id         AS clientId,
+        v.currency_id       AS currencyId,
+        v.total_amount      AS totalAmount,
+        v.discount_amount   AS discountAmount,
+        v.final_amount      AS finalAmount,
+        v.paid_amount       AS paidAmount,
+        v.payment_document  AS paymentDocument,
+        v.inventory_document AS inventoryDocument,
+        v.ordered,
+        v.group_id          AS groupId,
+        v.status,
+        v.platformOrderId,
+        v.payment_approved    AS paymentApproved,
+        v.poTotalAmount      AS poTotalAmount,
+        v.siTotalAmount      AS siTotalAmount,
+        v.poFinalAmount      AS poFinalAmount,
+        v.siFinalAmount      AS siFinalAmount
+        FROM payment_proof_accountant_view v
+        <where>
+            <if test="clientId != null and clientId != ''">
+                AND v.client_id = #{clientId}
+            </if>
+        </where>
+        ORDER BY v.create_time DESC
+    </select>
     <select id="getShopOwnerFromInvoiceNumber" resultType="org.jeecg.modules.business.entity.Client">
         SELECT c.*
         FROM client c

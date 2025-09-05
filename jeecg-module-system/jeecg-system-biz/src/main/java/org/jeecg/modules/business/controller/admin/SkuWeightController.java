@@ -155,9 +155,26 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			 return Result.error(403,"Forbidden.");
 		 }
 		 List<SkuWeight> weightsToDelete = skuWeightService.listByIds(ids);
+		 List<String> invalidErpCodes = new ArrayList<>();
+		 for (SkuWeight weight : weightsToDelete) {
+			if (weight == null || weight.getSkuId() == null) {
+				invalidErpCodes.add("Invalid SKU ID in deletion list: " + weight);
+				continue;
+			}
+			SkuWeight latest = skuWeightService.getLatestBySkuId(weight.getSkuId());
+			if (latest == null || weight.getEffectiveDate() == null || latest.getEffectiveDate().after(weight.getEffectiveDate())) {
+				Sku sku = skuService.getById(weight.getSkuId());
+				String erpCode = sku != null ? sku.getErpCode() : weight.getSkuId();
+				invalidErpCodes.add(erpCode);
+			}
+		 }
+		if (!invalidErpCodes.isEmpty()) {
+			return Result.error("只能删除每个 SKU 的最新重量记录，违规项 ERP: " + String.join(", ", invalidErpCodes));
+		}
 		 // delete from mysql
 		 skuWeightService.removeByIds(ids);
 		//update the latest SKU weight in MongoDB
+		List<SkuWeight> newLatestToSync = new ArrayList<>();
 		 for (SkuWeight deleted : weightsToDelete) {
 			 String skuId = deleted.getSkuId();
 			 Date deletedDate = deleted.getEffectiveDate();
@@ -173,12 +190,23 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 				 List<SkuWeight> remaining = skuWeightService.list(
 						 new QueryWrapper<SkuWeight>().eq("sku_id", skuId).orderByDesc("effective_date"));
 				 if (!remaining.isEmpty()) {
-					 skuMongoService.upsertSkuWeight(remaining.get(0));
+					 SkuWeight newLatest = remaining.get(0);
+					 skuMongoService.upsertSkuWeight(newLatest);
+					 newLatestToSync.add(newLatest);
 				 }
 			 }
 		 }
-		 log.info("Deleted SKU weights: {}", weightsToDelete);
-		 return Result.OK("SKU重量批量删除成功！");
+		 // update Mabang
+		ExecutorService executor = Executors.newFixedThreadPool(DEFAULT_NUMBER_OF_THREADS);
+		executor.submit(() -> {
+			try {
+				skuListMabangService.mabangSkuWeightUpdate(newLatestToSync);
+			} catch (Exception e) {
+				log.error("Failed to sync SKU weights with Mabang", e);
+			}
+		});
+		log.info("Deleted {} SKU weights, awaiting Mabang sync. IDs: {}", weightsToDelete.size(), ids);
+		return Result.OK("Sku weights deleted successfully and waiting for Mabang update.");
 	 }
 	
 	/**
@@ -489,20 +517,16 @@ public class SkuWeightController extends JeecgController<SkuWeight, ISkuWeightSe
 			wrapper.apply("DATE(effective_date) = {0}", new SimpleDateFormat("yyyy-MM-dd").format(param.getEffectiveDate()));
 			if (skuWeightService.count(wrapper) > 0) {
 				log.warn("SKU {} already has a weight record for the same date, skipping", sku.getErpCode());
-				responses.addSuccess(sku.getErpCode() , ": 相同日期的重量记录已存在，跳过");
+				responses.addSuccess(sku.getErpCode(), ": 相同日期的重量记录已存在，跳过");
 				continue;
 			}
-			//check if there is an existing record with the same sku_id and weight but different effective_date
-			wrapper = new QueryWrapper<>();
-			wrapper.eq("sku_id", skuId).eq("weight", param.getWeight());
-			List<SkuWeight> existing = skuWeightService.list(wrapper);
-			boolean sameContentDiffDate = existing.stream()
-					.anyMatch(e -> !e.getEffectiveDate().equals(param.getEffectiveDate()));
-			if (sameContentDiffDate) {
-				log.warn("SKU {} has the same weight but different date, skipping", sku.getErpCode());
-				responses.addSuccess(sku.getErpCode() , ": 日期不同但重量相同，跳过");
+			//check if there is the latest existing record with the same sku_id and weight but different effective_date
+			SkuWeight latest = skuWeightService.getLatestBySkuId(skuId);
+            if (latest != null && latest.getWeight() == param.getWeight()) {
+				log.warn("SKU {} latest weight equals new weight, skipping", sku.getErpCode());
+				responses.addSuccess(sku.getErpCode(), ": 与最新重量相同，跳过");
 				continue;
-			}
+            }
 			SkuWeight skuWeight = new SkuWeight();
 			skuWeight.setCreateBy(sysUser.getUsername());
 			skuWeight.setEffectiveDate(param.getEffectiveDate());
