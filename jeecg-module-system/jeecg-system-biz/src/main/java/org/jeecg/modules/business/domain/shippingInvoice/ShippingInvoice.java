@@ -26,6 +26,10 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
     @Getter
     @Setter
     private BigDecimal totalAmount;
+    @Getter
+    @Setter
+    private Boolean  paymentApprouved = false;
+
 
     public ShippingInvoice(Client targetClient, String code,
                            String subject,
@@ -184,11 +188,6 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
 
 
     public BigDecimal reducedAmount() {
-        return BigDecimal.ZERO;
-    }
-
-    public BigDecimal paidAmount() {
-        // function not implemented yet, temporarily zero
         return BigDecimal.ZERO;
     }
 

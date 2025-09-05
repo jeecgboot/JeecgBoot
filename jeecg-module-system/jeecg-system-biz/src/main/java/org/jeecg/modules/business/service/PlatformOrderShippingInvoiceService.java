@@ -306,7 +306,7 @@ public class PlatformOrderShippingInvoiceService {
                 invoice.getCode(),
                 invoice.getTotalAmount(),
                 invoice.reducedAmount(),
-                invoice.paidAmount(),
+                invoice.getPaymentApprouved(),
                 currencyId
         );
         shippingInvoiceMapper.insert(shippingInvoiceEntity);

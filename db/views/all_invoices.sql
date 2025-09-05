@@ -1,4 +1,4 @@
-CREATE VIEW all_invoices AS
+CREATE  OR REPLACE VIEW all_invoices AS
 WITH shipping AS (
     SELECT
         s.id AS id,
@@ -10,7 +10,7 @@ WITH shipping AS (
         IFNULL(s.total_amount + p.total_amount, s.total_amount) AS total_amount,
         IFNULL(s.discount_amount + p.discount_amount, s.discount_amount) AS discount_amount,
         IFNULL(s.final_amount + p.final_amount, s.final_amount) AS final_amount,
-        IFNULL(s.paid_amount + p.paid_amount, s.paid_amount) AS paid_amount,
+        s.payment_approved AS payment_approved,
         IF(SUBSTRING(s.invoice_number,9,1) = '2', 'shipping', 'complete') AS 'type',
         s.status AS status
     FROM shipping_invoice s
@@ -28,7 +28,7 @@ WITH shipping AS (
              p.total_amount AS total_amount,
              p.discount_amount AS discount_amount,
              p.final_amount AS final_amount,
-             p.paid_amount AS paid_amount,
+             p.payment_approved AS payment_approved,
              IF(SUBSTRING(p.invoice_number,9,1) = '1', 'purchase', 'error') AS 'type',
              p.status AS status
          FROM purchase_order p

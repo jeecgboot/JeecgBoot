@@ -91,12 +91,6 @@ public class ShippingInvoice implements Serializable {
     @ApiModelProperty(value = "最终金额")
     private java.math.BigDecimal finalAmount;
     /**
-     * 已付金额
-     */
-    @Excel(name = "已付金额", width = 15)
-    @ApiModelProperty(value = "已付金额")
-    private java.math.BigDecimal paidAmount;
-    /**
      * currency ID
      * */
     @Dict(dictTable = "currency", dicText = "code", dicCode = "id")
@@ -171,7 +165,7 @@ public class ShippingInvoice implements Serializable {
                                  BigDecimal totalAmount,
                                  BigDecimal discountAmount,
                                  BigDecimal finalAmount,
-                                 BigDecimal paidAmount,
+                                 Boolean paymentApproved,
                            String currencyId) {
         this.id = id;
         this.createBy = createBy;
@@ -183,7 +177,7 @@ public class ShippingInvoice implements Serializable {
         this.totalAmount = totalAmount;
         this.discountAmount = discountAmount;
         this.finalAmount = finalAmount;
-        this.paidAmount = paidAmount;
+        this.paymentApproved = paymentApproved;
         this.currencyId = currencyId;
     }
     public static ShippingInvoice of(
@@ -192,11 +186,11 @@ public class ShippingInvoice implements Serializable {
             String invoiceNumber,
             BigDecimal totalAmount,
             BigDecimal discountAmount,
-            BigDecimal paidAmount,
+            Boolean paymentApproved,
             String currencyId
     ) {
         return new ShippingInvoice(null, username, new Date(), username, new Date(), clientId,
-                invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paidAmount, currencyId);
+                invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paymentApproved, currencyId);
     }
     @Getter
     public enum Status {
