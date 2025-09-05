@@ -78,6 +78,9 @@ public class TransactionController {
     public Result<?> debit(@RequestParam("clientId") String clientId, @RequestParam("currency") String currency) {
         List<String> errorMessages = new ArrayList<>();
         List<Shop> shops = shopService.listSelfInvoiceShopsByClient(clientId);
+        if(shops.isEmpty()) {
+            return Result.OK();
+        }
         List<String> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toList());
         List<PlatformOrder> shippingOrders = platformOrderService.findUninvoicedShippingOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
         List<String> orderIds = shippingOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
