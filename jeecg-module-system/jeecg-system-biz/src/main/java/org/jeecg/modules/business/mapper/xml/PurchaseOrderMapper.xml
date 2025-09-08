@@ -215,7 +215,6 @@
         v.total_amount      AS totalAmount,
         v.discount_amount   AS discountAmount,
         v.final_amount      AS finalAmount,
-        v.paid_amount       AS paidAmount,
         v.payment_document  AS paymentDocument,
         v.inventory_document AS inventoryDocument,
         v.ordered,

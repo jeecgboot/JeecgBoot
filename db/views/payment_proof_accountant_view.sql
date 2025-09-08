@@ -31,7 +31,7 @@ WITH
         SELECT
             si.id, si.create_by, si.create_time, si.update_by, si.update_time,
             si.invoice_number, si.client_id, si.currency_id,
-            si.total_amount, si.discount_amount, si.final_amount, si.paid_amount,
+            si.total_amount, si.discount_amount, si.final_amount,
             si.payment_document, si.status,
             LEFT(SUBSTRING_INDEX(si.invoice_number,'-',-1),1) AS ticket_prefix,
             a.platformOrderId,
@@ -41,7 +41,7 @@ WITH
         WHERE si.status = 1
           AND si.create_time >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
           AND (
-            IFNULL(si.paid_amount,0) > 0
+                si.payment_approved = 1
                 OR (si.payment_document IS NOT NULL AND si.payment_document <> '')
             )
     ),
@@ -75,7 +75,7 @@ WITH
         SELECT
             po.id, po.create_by, po.create_time, po.update_by, po.update_time,
             po.invoice_number, po.client_id, po.currency_id,
-            po.total_amount, po.discount_amount, po.final_amount, po.paid_amount,
+            po.total_amount, po.discount_amount, po.final_amount,
             po.payment_document, po.inventory_document, po.ordered, po.group_id,
             po.status,
             LEFT(SUBSTRING_INDEX(po.invoice_number,'-',-1),1) AS ticket_prefix,
@@ -84,7 +84,7 @@ WITH
         WHERE po.ordered = 0
           AND po.create_time >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
           AND LEFT(SUBSTRING_INDEX(po.invoice_number,'-',-1),1) IN ('1','7')
-          AND (IFNULL(po.paid_amount,0) > 0 OR (po.payment_document IS NOT NULL AND po.payment_document <> ''))
+          AND (po.payment_approved = 1 OR (po.payment_document IS NOT NULL AND po.payment_document <> ''))
           AND po.status = 1
     ),
 
@@ -93,10 +93,10 @@ WITH
         SELECT
             s.id, s.create_by, s.create_time, s.update_by, s.update_time,
             s.invoice_number, s.client_id, s.currency_id,
-            s.total_amount, s.discount_amount, s.final_amount, s.paid_amount,
+            s.total_amount, s.discount_amount, s.final_amount,
             s.payment_document,
             NULL AS inventory_document,
-            0    AS ordered,
+            s.payment_approved AS ordered,
             NULL AS group_id,
             s.status,
             s.platformOrderId,
@@ -107,11 +107,12 @@ WITH
             0              AS poFinalAmount,
             s.final_amount AS siFinalAmount
         FROM si_base_strict s
-        WHERE s.ticket_prefix = '2'
-           OR (s.ticket_prefix = '7' AND NOT EXISTS (
+        WHERE (s.ticket_prefix = '2' OR s.ticket_prefix = '7')
+          AND s.payment_approved = 0
+          AND NOT EXISTS (
             SELECT 1 FROM po_base pb
             WHERE pb.ticket_prefix = '7' AND pb.invoice_number = s.invoice_number
-        ))
+        )
     ),
 
     -- PO BRANCH: PO + SHIPPING (prefer strict sum, fallback relaxed); platformId: PO first, else shipping
@@ -126,7 +127,7 @@ WITH
             (COALESCE(pb.final_amount,0)
                 + COALESCE(ss.siFinalAmount, ssr.siFinalAmount_any, 0))  AS final_amount,
 
-            pb.paid_amount, pb.payment_document, pb.inventory_document, pb.ordered, pb.group_id,
+            pb.payment_document, pb.inventory_document, pb.ordered, pb.group_id,
             pb.status,
             COALESCE(pa.po_platform_ids, psa.platformOrderId) AS platformOrderId,
             pb.payment_approved,
@@ -148,7 +149,7 @@ WITH
 SELECT
     id, create_by, create_time, update_by, update_time,
     invoice_number, client_id, currency_id,
-    total_amount, discount_amount, final_amount, paid_amount,
+    total_amount, discount_amount, final_amount,
     payment_document, inventory_document, ordered, group_id,
     status, platformOrderId, payment_approved,
     poTotalAmount, siTotalAmount, poFinalAmount, siFinalAmount
@@ -157,7 +158,7 @@ UNION ALL
 SELECT
     id, create_by, create_time, update_by, update_time,
     invoice_number, client_id, currency_id,
-    total_amount, discount_amount, final_amount, paid_amount,
+    total_amount, discount_amount, final_amount,
     payment_document, inventory_document, ordered, group_id,
     status, platformOrderId, payment_approved,
     poTotalAmount, siTotalAmount, poFinalAmount, siFinalAmount
