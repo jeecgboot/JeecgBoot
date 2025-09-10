@@ -1478,6 +1478,14 @@ public class ShippingInvoiceFactory {
         }
         return estimations;
     }
+
+    public List<ShippingFeesEstimationPerOrder> getShippingEstimationPerOrder(String clientId, List<String> orderIds) {
+        List<ShippingFeesEstimationPerOrder> estimations = new ArrayList<>();
+        Map<PlatformOrder, List<PlatformOrderContent>> ordersMap = platformOrderService.fetchOrderData(orderIds);
+        //todo retrieve all distinct sku infos (weight, price, declared value)
+        return estimations;
+    }
+
     @Transactional
     public ShippingInvoice buildExistingShippingInvoice(String invoiceCode, String clientId, String start, String end, String filetype, String shippingMethod ) throws UserException {
         log.info("Building existing shipping invoice : {} - Client ID : {}, ", invoiceCode, clientId);

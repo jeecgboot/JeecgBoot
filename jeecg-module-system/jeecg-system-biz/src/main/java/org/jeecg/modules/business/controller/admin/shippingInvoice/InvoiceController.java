@@ -1002,6 +1002,14 @@ public class InvoiceController {
         return Result.ok(estimationsByShop);
     }
 
+    @GetMapping("/completeFeesEstimationPerOrder")
+    public Result<?> getCompleteFeesEstimationPerOrder(@RequestBody ShippingInvoiceOrderParam param) {
+        String currency = clientService.getById(param.clientID()).getCurrency();
+        Map<String, Estimation> estimationsByOrder = new HashMap<>();
+        List<ShippingFeesEstimationPerOrder> estimations = shippingInvoiceService.getShippingEstimationPerOrder(param.clientID(), param.orderIds());
+        return Result.OK();
+    }
+
     @GetMapping(value = "/checkInvoiceValidity")
     public Result<?> checkInvoiceValidity(@RequestParam("invoiceNumber") String invoiceNumber) {
         boolean isEmployee = securityService.checkIsEmployee();
