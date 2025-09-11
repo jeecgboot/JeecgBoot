@@ -74,8 +74,6 @@ public class InvoiceController {
     @Autowired
     private IBalanceService balanceService;
     @Autowired
-    private IClientCategoryService clientCategoryService;
-    @Autowired
     private IClientService clientService;
     @Autowired
     private IClientSkuService clientSkuService;
@@ -87,6 +85,8 @@ public class InvoiceController {
     private IExtraFeeService extraFeeService;
     @Autowired
     private IShopService shopService;
+    @Autowired
+    private IShopOptionsService shopOptionsService;
     @Autowired
     private PlatformOrderShippingInvoiceService shippingInvoiceService;
     @Autowired
@@ -232,7 +232,7 @@ public class InvoiceController {
         else return Result.error("No package in the selected period");
     }
     /**
-     * Make shipping invoice for shops between 2 dates and orders with specified status.
+     * Make post shipping invoice for shops between 2 dates and orders with specified status.
      *
      * @param param  ClientID, shopIDs[], startDate, endDate, erpStatuses[], warehouses[]
      * @return Result of the generation, in case of error, message will be contained,
@@ -242,8 +242,11 @@ public class InvoiceController {
     @Transactional
     public Result<?> makeInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
+            Client client = clientService.getById(param.clientID());
             InvoiceMetaData metaData = shippingInvoiceService.makeInvoice(param);
-            balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), SHIPPING.name());
+            if(client.getUseBalance()) {
+                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), SHIPPING.name());
+            }
             return Result.OK(metaData);
         } catch (UserException e) {
             return Result.error(e.getMessage());
@@ -261,11 +264,12 @@ public class InvoiceController {
     @PostMapping(value = "/makeComplete")
     public Result<?> makeCompleteShippingInvoice(@RequestBody ShippingInvoiceParam param) {
         try {
+            Client client = clientService.getById(param.clientID());
             Response<InvoiceMetaData, List<Response<String, String>>> response = new Response<>();
             String method = param.getErpStatuses().toString().equals("[3]") ? POSTSHIPPING.getMethod() : param.getErpStatuses().toString().equals("[1, 2]") ? PRESHIPPING.getMethod() : ALL.getMethod();
             response = shippingInvoiceService.makeCompleteInvoicePostShipping(param, method);
-            balanceService.updateBalance(param.clientID(), response.getData().getInvoiceCode(), COMPLETE.name());
-
+            if(client.getUseBalance())
+                balanceService.updateBalance(param.clientID(), response.getData().getInvoiceCode(), COMPLETE.name());
             return Result.OK(response);
         } catch (UserException e) {
             return Result.error(e.getMessage());
@@ -288,18 +292,19 @@ public class InvoiceController {
     @PostMapping(value = "/makeManualInvoice")
     public Result<?> makeManualShippingInvoice(@RequestBody ShippingInvoiceOrderParam param) {
         try {
+            String clientId = param.clientID();
             InvoiceMetaData metaData = shippingInvoiceService.makeInvoice(param);
-            String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
-            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
-                balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), SHIPPING.name());
+            Client client = clientService.getById(clientId);
+            if(client.getUseBalance()) {
+                balanceService.updateBalance(clientId, metaData.getInvoiceCode(), SHIPPING.name());
             }
-            if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
-                String subject = "Self-service shipping invoice";
+            if(client.getReceiveInvoiceByEmail()) {
+                String subject = "Shipping invoice n°" + metaData.getInvoiceCode();
                 String destEmail = env.getProperty("spring.mail.username");
                 Properties prop = emailService.getMailSender();
                 Map<String, Object> templateModel = new HashMap<>();
                 templateModel.put("invoiceType", "shipping invoice");
-                templateModel.put("invoiceEntity", clientService.getById(param.clientID()).getInternalCode());
+                templateModel.put("invoiceEntity", clientService.getById(clientId).getInternalCode());
                 templateModel.put("invoiceNumber", metaData.getInvoiceCode());
 
                 Session session = Session.getInstance(prop, new Authenticator() {
@@ -345,12 +350,13 @@ public class InvoiceController {
             metaData = purchaseOrderService.makeInvoice(purchaseId);
             platformOrderService.updatePurchaseInvoiceNumber(param.orderIds(), metaData.getInvoiceCode());
 
-            String clientCategory = clientCategoryService.getClientCategoryByClientId(param.clientID());
-            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+            String clientId = param.clientID();
+            Client client = clientService.getById(clientId);
+            if(client.getUseBalance()) {
                 balanceService.updateBalance(param.clientID(), metaData.getInvoiceCode(), PURCHASE.name());
             }
-            if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
-                String subject = "Self-service purchase invoice";
+            if(client.getReceiveInvoiceByEmail()) {
+                String subject = "Purchase invoice n°" + metaData.getInvoiceCode();
                 String destEmail = env.getProperty("spring.mail.username");
                 Properties prop = emailService.getMailSender();
                 Map<String, Object> templateModel = new HashMap<>();
@@ -395,12 +401,14 @@ public class InvoiceController {
         try {
             Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse = shippingInvoiceService.makeManualCompleteInvoice(param);
             InvoiceMetaData metaData = invoiceMetaDataResponse.getData();
-            String clientCategory = clientCategoryService.getClientCategoryByClientId(param.getClientID());
-            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+
+            String clientId = param.getClientID();
+            Client client = clientService.getById(clientId);
+            if(client.getUseBalance()) {
                 balanceService.updateBalance(param.getClientID(), metaData.getInvoiceCode(), COMPLETE.name());
             }
-            if(clientCategory.equals(ClientCategory.CategoryName.SELF_SERVICE.getName())) {
-                String subject = "Self-service complete invoice";
+            if(client.getReceiveInvoiceByEmail()) {
+                String subject = "Invoice n°" + metaData.getInvoiceCode();;
                 String destEmail = env.getProperty("spring.mail.username");
                 Properties prop = emailService.getMailSender();
                 Map<String, Object> templateModel = new HashMap<>();
@@ -453,8 +461,10 @@ public class InvoiceController {
         try {
             String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
             PurchaseOrder purchaseOrder = purchaseOrderService.getById(purchaseId);
-            String clientCategory = clientCategoryService.getClientCategoryByClientId(purchaseOrder.getClientId());
-            if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+            String clientId = purchaseOrder.getClientId();
+            if(client == null)
+                client = clientService.getById(clientId);
+            if(client.getUseBalance()) {
                 balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), PURCHASE.name());
             }
             metaData = purchaseOrderService.makeInvoice(purchaseId);

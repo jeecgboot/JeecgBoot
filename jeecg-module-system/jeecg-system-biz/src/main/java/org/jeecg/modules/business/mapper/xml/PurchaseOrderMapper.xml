@@ -234,4 +234,10 @@
         </where>
         ORDER BY v.create_time DESC
     </select>
+    <select id="getShopOwnerFromInvoiceNumber" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        JOIN purchase_order po ON po.client_id = c.id
+        WHERE po.invoice_number = #{invoiceNumber};
+    </select>
 </mapper>

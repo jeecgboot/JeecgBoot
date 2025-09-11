@@ -52,11 +52,11 @@
     ORDER BY internal_code, client_id, erp_code
     LIMIT #{offset}, #{limit};
 </select>
-<select id="findByClientId" resultType="org.jeecg.modules.business.entity.ShopOptions">
-    SELECT * FROM shop_options
-    JOIN shop s ON shop_options.shop_id = s.id
-    WHERE s.owner_id = #{clientId}
-    AND s.active = 1;
+<select id="findByClientId" resultType="org.jeecg.modules.business.entity.ShopWithOptions">
+    SELECT swo.*
+    FROM shop_with_options swo
+    WHERE swo.client_id = #{clientId}
+    AND swo.is_shop_active = 1;
 </select>
 <select id="getStockBypassByOrder" resultType="org.jeecg.modules.business.vo.OrderBypassStock">
     SELECT po.id as order_id,
@@ -69,5 +69,13 @@
     <foreach item="orderId" index="index" collection="orderIds" open="(" separator="," close=")">
         #{orderId}
     </foreach>
+</select>
+<select id="getCanSelfInvoiceByClientId" resultType="java.lang.Boolean">
+SELECT so.can_self_invoice
+FROM shop_options so
+      JOIN shop s ON so.shop_id = s.id
+      JOIN client c ON s.owner_id = c.id
+WHERE c.id = #{clientId}
+AND s.active = 1
 </select>
 </mapper>

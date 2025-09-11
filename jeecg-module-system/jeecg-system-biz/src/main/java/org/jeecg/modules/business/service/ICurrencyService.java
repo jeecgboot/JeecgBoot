@@ -14,4 +14,6 @@ public interface ICurrencyService extends IService<Currency> {
     String getCodeById(String currencyId);
 
     String getIdByCode(String code);
+
+    Currency getByCode(String code);
 }

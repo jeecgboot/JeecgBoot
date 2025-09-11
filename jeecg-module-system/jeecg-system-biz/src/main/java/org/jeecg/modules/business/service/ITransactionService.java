@@ -1,8 +1,8 @@
 package org.jeecg.modules.business.service;
 
+import org.jeecg.modules.business.entity.Currency;
 import org.jeecg.modules.business.entity.Transaction;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
  * @Date:   2023-09-08
  * @Version: V1.0
  */
-@Repository
 public interface ITransactionService extends IService<Transaction> {
     List<Transaction> list();
+    List<Currency> getAllCurrenciesByClient(String clientId);
 }

@@ -9,6 +9,12 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 @TableName("shop_with_options")
 @Data
 public class ShopWithOptions {
+    /**
+     * Shop Options ID
+     */
+    @Excel(name = "ID", width = 15)
+    @ApiModelProperty(value = "ID")
+    private java.lang.String id;
     @Excel(name = "客户ID", width = 15)
     @ApiModelProperty(value = "客户ID")
     @Dict(dictTable = "client", dicText = "internal_code", dicCode = "id")
@@ -34,30 +40,14 @@ public class ShopWithOptions {
     @Excel(name = "是否店铺激活", width = 15)
     @ApiModelProperty(value = "是否店铺激活")
     private java.lang.Boolean isShopActive;
-    /**是否用余额*/
-    @Excel(name = "是否使用余额", width = 15)
-    @ApiModelProperty(value = "是否使用余额")
-    private java.lang.Boolean useBalance;
     /**店铺选项ID*/
     @Excel(name = "店铺选项ID", width = 15)
     @ApiModelProperty(value = "店铺选项ID")
     private java.lang.String shopOptionsId;
-    /**是否可发票上显示账户余额*/
-    @Excel(name = "是否可发票上显示账户余额", width = 15)
-    @ApiModelProperty(value = "是否可发票上显示账户余额")
-    private java.lang.Boolean showBalance;
-    /**余额阈值 default: -1.00 no limit, 0.00 if balance must be positive*/
-    @Excel(name = "余额阈值", width = 15)
-    @ApiModelProperty(value = "余额阈值")
-    private java.lang.Integer balanceThreshold;
     /**是否定时自动开票*/
     @Excel(name = "是否定时自动开票", width = 15)
     @ApiModelProperty(value = "是否定时自动开票")
     private java.lang.Boolean isAutoInvoice;
-    /**是否按订单时间顺序自动开票, only if threshold >= 0*/
-    @Excel(name = "是否按订单时间顺序自动开票", width = 15)
-    @ApiModelProperty(value = "是否按订单时间顺序自动开票")
-    private java.lang.Boolean isChronologicalOrder;
     /**是否每周五 系统统一开票*/
     @Excel(name = "是否每周五系统统一开票", width = 15)
     @ApiModelProperty(value = "是否每周五系统统一开票")

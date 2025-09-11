@@ -9,7 +9,6 @@ import java.util.List;
 public class ShopOptionsAddParam {
     private List<String> shopIds;
     private Boolean isAutoInvoice;
-    private Boolean isChronologicalOrder;
     private Boolean isBreakdownInvoice;
     private Boolean isCompleteInvoice;
     private Boolean canSelfInvoice;
@@ -22,7 +21,6 @@ public class ShopOptionsAddParam {
 
     public ShopOptionsAddParam(@JsonProperty("shopIds") List<String> shopIds,
                                @JsonProperty("isAutoInvoice") Boolean isAutoInvoice,
-                               @JsonProperty("isChronologicalOrder") Boolean isChronologicalOrder,
                                @JsonProperty("isBreakdownInvoice") Boolean isBreakdownInvoice,
                                @JsonProperty("isCompleteInvoice") Boolean isCompleteInvoice,
                                @JsonProperty("canSelfInvoice") Boolean canSelfInvoice,
@@ -35,7 +33,6 @@ public class ShopOptionsAddParam {
     ) {
         this.shopIds = shopIds;
         this.isAutoInvoice = isAutoInvoice;
-        this.isChronologicalOrder = isChronologicalOrder;
         this.isBreakdownInvoice = isBreakdownInvoice;
         this.isCompleteInvoice = isCompleteInvoice;
         this.canSelfInvoice = canSelfInvoice;

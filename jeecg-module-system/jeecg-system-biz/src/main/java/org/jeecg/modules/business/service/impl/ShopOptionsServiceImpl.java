@@ -57,4 +57,11 @@ public class ShopOptionsServiceImpl extends ServiceImpl<ShopOptionsMapper, ShopO
         }
         return shopOptionsMapper.getStockBypassByOrder(orderIds);
     }
+
+    @Override
+    public Boolean findCanSelfInvoiceByClientId(String clientId) {
+        List<Boolean> list = shopOptionsMapper.getCanSelfInvoiceByClientId(clientId);
+        return list.stream()
+                .filter(b-> b == true).findFirst().orElse(false);
+    }
 }

@@ -15,8 +15,10 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.Invoice;
 import org.jeecg.modules.business.entity.ShippingInvoice;
 import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.vo.InvoiceType;
 import org.jeecg.modules.business.vo.ShippingInvoicePage;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -406,7 +408,13 @@ public class ShippingInvoiceController {
     @GetMapping(value = "/getClient")
     public Result<?> getShopOwnerFromInvoice(@RequestParam("invoiceNumber") String invoiceNumber) {
         log.info("Invoice Number : " + invoiceNumber);
-        Client client =  shippingInvoiceService.getShopOwnerFromInvoiceNumber(invoiceNumber);
+        Client client;
+        String invoiceType = Invoice.getType(invoiceNumber);
+        if(invoiceType.equals(InvoiceType.PURCHASE_INVOICE.name())) {
+            client = purchaseOrderService.getShopOwnerFromInvoiceNumber(invoiceNumber);
+        }
+        else
+            client =  shippingInvoiceService.getShopOwnerFromInvoiceNumber(invoiceNumber);
         if(client == null) {
             log.error("Couldn't find shop owner from invoice number");
             return Result.error("Couldn't find shop owner from invoice number");

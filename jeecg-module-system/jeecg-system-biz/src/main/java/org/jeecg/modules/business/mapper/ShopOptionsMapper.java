@@ -29,4 +29,6 @@ public interface ShopOptionsMapper extends BaseMapper<ShopOptions> {
     Map<String, ShopWithOptions> findByClientId(@Param("clientId") String clientId);
 
     List<OrderBypassStock> getStockBypassByOrder(@Param("orderIds") List<String> orderIds);
+
+    List<Boolean> getCanSelfInvoiceByClientId(@Param("clientID") String clientId);
 }

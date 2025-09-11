@@ -44,12 +44,5 @@ public interface IBalanceService extends IService<Balance> {
 
     void deleteBatchBalance(List<String> operationIds, String operationType);
 
-    /**
-     * Get low balance clients from client list
-     * @param metaDataList list of meta data
-     * @return
-     */
-    List<BalanceData> getLowBalanceClients(List<InvoiceMetaData> metaDataList);
-
     void cancelBalance(String invoiceId, String originalOperationType, String operationType, BigDecimal amount, String currencyId, String clientId);
 }
