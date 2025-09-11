@@ -15,6 +15,7 @@ import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.entity.PurchaseOrder;
 import org.jeecg.modules.business.entity.SkuPrice;
 import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.entity.Currency;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.Estimation;
@@ -38,6 +39,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/transaction")
 @Slf4j
 public class TransactionController {
+    @Autowired
+    private ITransactionService transactionService;
     @Autowired
     private TransactionMapper transactionMapper;
     @Autowired
@@ -80,7 +83,11 @@ public class TransactionController {
     @GetMapping(value="/debit")
     public Result<?> debit(@RequestParam("clientId") String clientId, @RequestParam("currency") String currency) {
         List<String> errorMessages = new ArrayList<>();
-        List<String> shopIds = shopService.listIdByClient(clientId);
+        List<Shop> shops = shopService.listSelfInvoiceShopsByClient(clientId);
+        if(shops.isEmpty()) {
+            return Result.OK();
+        }
+        List<String> shopIds = shops.stream().map(Shop::getId).collect(Collectors.toList());
         List<PlatformOrder> shippingOrders = platformOrderService.findUninvoicedShippingOrdersByShopForClient(shopIds, Arrays.asList(1,2,3));
         List<String> orderIds = shippingOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
         Date startDate = null;
@@ -147,6 +154,11 @@ public class TransactionController {
         }
         if(!currency.equals("EUR")) {
             BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", currency);
+            if(exchangeRate == null) {
+                String errorMessage = String.format("Cannot find exchange rate from EUR to %s", currency);
+                log.error(errorMessage);
+                return Result.error(errorMessage);
+            }
 
             purchaseEstimation = purchaseEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
             shippingFeesEstimation = shippingFeesEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);
@@ -272,4 +284,10 @@ public class TransactionController {
         }
         return Result.ok("Your payment proof has been submitted and will be reviewed soon.");
     }
+    @GetMapping("/getAllCurrenciesByClient")
+    public Result<?> getAllCurrenciesByClient(@RequestParam("clientId") String clientId) {
+        List<Currency> currencies = transactionService.getAllCurrenciesByClient(clientId);
+        return Result.ok(currencies);
+    }
+
 }

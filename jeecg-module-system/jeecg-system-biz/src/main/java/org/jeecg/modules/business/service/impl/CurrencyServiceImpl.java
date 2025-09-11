@@ -29,4 +29,9 @@ public class CurrencyServiceImpl extends ServiceImpl<CurrencyMapper, Currency> i
     public String getIdByCode(String code) {
         return currencyMapper.getIdByCode(code);
     }
+
+    @Override
+    public Currency getByCode(String code) {
+        return currencyMapper.getByCode(code);
+    }
 }

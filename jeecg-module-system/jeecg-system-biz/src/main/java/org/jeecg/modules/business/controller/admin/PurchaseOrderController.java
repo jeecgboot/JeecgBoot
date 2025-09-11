@@ -63,8 +63,6 @@ public class PurchaseOrderController {
     @Autowired
     private IBalanceService balanceService;
     @Autowired
-    private IClientCategoryService clientCategoryService;
-    @Autowired
     private IPurchaseOrderService purchaseOrderService;
     @Autowired
     private IPurchaseOrderSkuService purchaseOrderSkuService;
@@ -146,8 +144,7 @@ public class PurchaseOrderController {
         purchaseOrder.setId(purchaseID);
         purchaseOrderService.save(purchaseOrder);
 
-        String clientCategory = clientCategoryService.getClientCategoryByClientId(client.getId());
-        if(clientCategory.equals(ClientCategory.CategoryName.CONFIRMED.getName()) || clientCategory.equals(ClientCategory.CategoryName.VIP.getName())) {
+        if(client.getUseBalance()) {
             balanceService.updateBalance(purchaseOrder.getClientId(), purchaseOrder.getInvoiceNumber(), Invoice.InvoiceType.PURCHASE.name());
         }
 

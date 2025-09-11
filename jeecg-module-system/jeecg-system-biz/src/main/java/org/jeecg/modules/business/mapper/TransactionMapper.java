@@ -2,6 +2,7 @@ package org.jeecg.modules.business.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.jeecg.modules.business.entity.Currency;
 import org.jeecg.modules.business.entity.Transaction;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,6 @@ public interface TransactionMapper extends BaseMapper<Transaction> {
 
     List<Transaction> listByClientId(@Param("clientId") String clientId);
     List<Transaction> listByClientIdAndCurrency(@Param("clientId") String clientId, @Param("currency") String currency, @Param("year") String year);
+
+    List<Currency> getAllCurrenciesByClient(@Param("clientId") String clientId);
 }

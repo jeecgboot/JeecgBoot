@@ -18,4 +18,29 @@
             AND YEAR(create_time) = #{year}
         ORDER BY create_time DESC;
     </select>
+    <select id="getAllCurrenciesByClient" resultType="org.jeecg.modules.business.entity.Currency">
+        SELECT 'EUR' AS code
+        WHERE EXISTS (
+            SELECT 1
+            FROM transaction t
+            WHERE t.client_id = #{clientId}
+              AND t.currency = 'EUR'
+        )
+        UNION
+        SELECT 'USD' AS code
+        WHERE EXISTS (
+            SELECT 1
+            FROM transaction t
+            WHERE t.client_id = #{clientId}
+              AND t.currency = 'USD'
+        )
+        UNION
+        SELECT 'GBP' AS code
+        WHERE EXISTS (
+            SELECT 1
+            FROM transaction t
+            WHERE t.client_id = #{clientId}
+              AND t.currency = 'GBP'
+        );
+    </select>
 </mapper>

@@ -694,6 +694,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         page.setRecords(result.getRecords());
         page.setTotal(result.getTotal());
     }
+
     @Override
     public IPage<PurchaseOrderPage> pageForPaymentProofReview(Page<PurchaseOrderPage> page, String clientId) {
         IPage<PurchaseOrderPage> result = purchaseOrderMapper.pageForPaymentProofReview(page, clientId);
@@ -701,4 +702,10 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         page.setTotal(result.getTotal());
         return result;
     }
+
+    @Override
+    public Client getShopOwnerFromInvoiceNumber(String invoiceNumber) {
+        return purchaseOrderMapper. getShopOwnerFromInvoiceNumber(invoiceNumber);
+    }
+
 }

@@ -41,4 +41,6 @@ public interface ClientMapper extends BaseMapper<Client> {
     Client getClientFromCredit(@Param("invoiceNumber") String invoiceNumber);
 
     List<String> getClientsByCode(@Param("codes") List<String> clientCodes);
+
+    void updateClientEmailPreference(@Param("clientId") String clientId, @Param("emailPreference") Boolean receiveInvoiceByEmail);
 }
