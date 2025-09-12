@@ -510,14 +510,20 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
 
                     if(!response.success()) {
                         log.error("Failed to update order status on Mabang. PlatformOrderIds : {} - Reason : {}", platformOrderIdList, response.getMessage());
-                        UpdateResult error = new UpdateResult();
-                        error.setReason(response.getMessage());
-                        updateResponse.setError(Collections.singletonList(error));
+                        for (String id : platformOrderIdList) {
+                            UpdateResult error = new UpdateResult();
+                            error.setPlatformOrderId(id +"原因" + response.getMessage());
+                            updateResponse.getError().add(error);
+                        }
                         updateResponse.setStatus(HttpStatus.SC_INTERNAL_SERVER_ERROR);
                         return false;
                     } else {
                         updateResponse.getData().addAll(response.getSuccessOrders());
-                        updateResponse.getError().addAll(response.getOrdersNotFound());
+                        for (UpdateResult failed : response.getOrdersNotFound()) {
+                            UpdateResult error = new UpdateResult();
+                            error.setPlatformOrderId(failed.getPlatformOrderNumber()+", 原因: " + failed.getReason());
+                            updateResponse.getError().add(error);
+                        }
                         updateResponse.setStatus(!response.getOrdersNotFound().isEmpty() ? HttpStatus.SC_NOT_FOUND : HttpStatus.SC_OK);
                         return true;
                     }

@@ -233,8 +233,8 @@ public class PurchaseOrderController {
             }
             boolean isEdit = shippingInvoiceService.update(
                     lambdaUpdate(ShippingInvoice.class)
-                            .set(StringUtils.isNotBlank(proof),
-                                    ShippingInvoice::getPaymentDocumentString, proof)
+                            .set(purchaseOrderPage.getPaymentDocument() != null,
+                                    ShippingInvoice::getPaymentDocument, purchaseOrderPage.getPaymentDocument())
                             .eq(ShippingInvoice::getInvoiceNumber, invoiceNumber)
                             .eq(ShippingInvoice::getClientId, clientId)
             );
@@ -296,6 +296,7 @@ public class PurchaseOrderController {
         char prefix = invoiceNumber.charAt(dash + 1);
         boolean shipUpdated = false, poUpdated = false;
         //update paymentApproved
+        // update shippingInvoice
         if (prefix == '2' || prefix == '7') {
             shipUpdated = shippingInvoiceService.update(
                     lambdaUpdate(ShippingInvoice.class)
@@ -304,6 +305,7 @@ public class PurchaseOrderController {
                             .eq(ShippingInvoice::getClientId, clientId)
             );
         }
+        // update PurchaseOrder
         if (prefix == '1' || prefix == '7') {
             poUpdated = purchaseOrderService.update(
                     lambdaUpdate(PurchaseOrder.class)
@@ -318,6 +320,15 @@ public class PurchaseOrderController {
         out.put("purchaseUpdated", poUpdated);
         // If approved and invoice is 2/7 (contains shipping),then update all related platform orders in Mabang to PREPARING.
         if (approved && (prefix == '2' || prefix == '7') && shipUpdated) {
+            if (prefix == '7') {
+                boolean hasPurchase = purchaseOrderService.lambdaQuery()
+                        .eq(PurchaseOrder::getInvoiceNumber, invoiceNumber)
+                        .eq(PurchaseOrder::getClientId, clientId)
+                        .exists();
+                if (hasPurchase) {
+                    return Result.OK("审核已通过，但存在采购部分，采购之后再转为配货中", out);
+                }
+            }
             List<String> platformOrderIds = platformOrderService
                     .getPlatformOrderIdsByInvoiceNumbers(Collections.singletonList(invoiceNumber))
                     .stream()
@@ -341,14 +352,17 @@ public class PurchaseOrderController {
                 mabang.put("httpStatus", updateResp.getStatus());
                 List<String> okIds = Optional.ofNullable(updateResp.getData()).orElse(Collections.emptyList())
                         .stream()
-                        .map(UpdateResult::getPlatformOrderNumber)
+                        .map(UpdateResult::getPlatformOrderId)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
                 List<String> failIds = Optional.ofNullable(updateResp.getError()).orElse(Collections.emptyList())
                         .stream()
-                        .map(UpdateResult::getPlatformOrderNumber)
+                        .map(UpdateResult::getPlatformOrderId)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
+                Responses updateOrderStatusResponse = new Responses();
+                updateOrderStatusResponse.getSuccesses().addAll(okIds);
+                updateOrderStatusResponse.getFailures().addAll(failIds);
                 // Aggregate all error reasons
                 List<String> reasons = Optional.ofNullable(updateResp.getError()).orElse(Collections.emptyList())
                         .stream()
@@ -362,6 +376,8 @@ public class PurchaseOrderController {
                 if (!reasons.isEmpty()) {
                     mabang.put("reasons", reasons);
                 }
+                out.put("mabangUpdate", mabang);
+                out.put("UpdateOrderStatus", updateOrderStatusResponse);
                 // 500
                 if (updateResp.getStatus() == org.apache.http.HttpStatus.SC_INTERNAL_SERVER_ERROR) {
                     out.put("mabangUpdate", mabang);
@@ -771,15 +787,22 @@ public class PurchaseOrderController {
                 responsesMappedByInvoiceNumber.put("UpdateOrderStatusError", updateOrderStatusResponse);
             } else {
                 List<String> updateOrderStatusSuccess = updateResponse.getData().stream()
-                        .map(UpdateResult::getPlatformOrderNumber)
+                        .map(UpdateResult::getPlatformOrderId)
                         .collect(Collectors.toList());
                 List<String> updateOrderStatusFailure = updateResponse.getError().stream()
-                        .map(UpdateResult::getPlatformOrderNumber)
+                        .map(UpdateResult::getPlatformOrderId)
                         .collect(Collectors.toList());
                 log.info("Update order errors : {}", updateResponse.getError());
                 updateOrderStatusResponse.getSuccesses().addAll(updateOrderStatusSuccess);
                 updateOrderStatusResponse.getFailures().addAll(updateOrderStatusFailure);
-                responsesMappedByInvoiceNumber.put("UpdateOrderStatus", updateOrderStatusResponse);
+                if (responsesMappedByInvoiceNumber.containsKey("UpdateOrderStatus")) {
+                    responsesMappedByInvoiceNumber.get("UpdateOrderStatus")
+                            .getSuccesses().addAll(updateOrderStatusResponse.getSuccesses());
+                    responsesMappedByInvoiceNumber.get("UpdateOrderStatus")
+                            .getFailures().addAll(updateOrderStatusResponse.getFailures());
+                } else {
+                    responsesMappedByInvoiceNumber.put("UpdateOrderStatus", updateOrderStatusResponse);
+                }
             }
         }
         return Result.OK(responsesMappedByInvoiceNumber);
