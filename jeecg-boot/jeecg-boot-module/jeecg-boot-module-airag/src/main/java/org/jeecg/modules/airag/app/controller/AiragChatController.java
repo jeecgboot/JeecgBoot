@@ -156,6 +156,20 @@ public class AiragChatController {
         return chatService.clearMessage(conversationId);
     }
 
+    /**
+     * 继续接收消息
+     *
+     * @param requestId
+     * @return
+     * @author chenrui
+     * @date 2025/8/11 17:49
+     */
+    @IgnoreAuth
+    @GetMapping(value = "/receive/{requestId}")
+    public SseEmitter receiveByRequestId(@PathVariable(name = "requestId", required = true) String requestId) {
+        return chatService.receiveByRequestId(requestId);
+    }
+
 
     /**
      * 根据请求ID停止某个请求的处理
