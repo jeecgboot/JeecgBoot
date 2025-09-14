@@ -80,6 +80,12 @@ public class SysDepartTreeModel implements Serializable{
     private String directorUserIds;
     //update-end---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人，新增字段部门负责人ids
     
+    /**职务*/
+    private String positionId;
+    
+    /**上级岗位id*/
+    private String depPostParentId;
+    
     private List<SysDepartTreeModel> children = new ArrayList<>();
 
 
@@ -113,6 +119,8 @@ public class SysDepartTreeModel implements Serializable{
         this.updateBy = sysDepart.getUpdateBy();
         this.updateTime = sysDepart.getUpdateTime();
         this.directorUserIds = sysDepart.getDirectorUserIds();
+        this.positionId = sysDepart.getPositionId();
+        this.depPostParentId = sysDepart.getDepPostParentId();
         if(0 == sysDepart.getIzLeaf()){
             this.isLeaf = false;
         }else{
@@ -351,6 +359,22 @@ public class SysDepartTreeModel implements Serializable{
         this.directorUserIds = directorUserIds;
     }
 
+    public String getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(String positionId) {
+        this.positionId = positionId;
+    }
+
+    public String getDepPostParentId() {
+        return depPostParentId;
+    }
+
+    public void setDepPostParentId(String depPostParentId) {
+        this.depPostParentId = depPostParentId;
+    }
+
     /**
      * 重写equals方法
      */
@@ -385,6 +409,8 @@ public class SysDepartTreeModel implements Serializable{
                 Objects.equals(updateBy, model.updateBy) &&
                 Objects.equals(updateTime, model.updateTime) &&
                 Objects.equals(directorUserIds, model.directorUserIds) &&
+                Objects.equals(positionId, model.positionId) &&
+                Objects.equals(depPostParentId, model.depPostParentId) &&
                 Objects.equals(children, model.children);
     }
     
@@ -397,7 +423,7 @@ public class SysDepartTreeModel implements Serializable{
         return Objects.hash(id, parentId, departName, departNameEn, departNameAbbr,
         		departOrder, description, orgCategory, orgType, orgCode, mobile, fax, address, 
         		memo, status, delFlag, qywxIdentifier, createBy, createTime, updateBy, updateTime,
-        		children,directorUserIds);
+        		children,directorUserIds, positionId, depPostParentId);
     }
 
 }

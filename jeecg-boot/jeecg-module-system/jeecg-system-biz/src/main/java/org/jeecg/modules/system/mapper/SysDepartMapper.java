@@ -7,9 +7,8 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
-import org.jeecg.modules.system.model.SysDepartTreeModel;
-import org.jeecg.modules.system.model.TreeModel;
 import org.jeecg.modules.system.vo.SysDepartExportVo;
+import org.jeecg.modules.system.vo.SysDepartPositionVo;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.springframework.data.repository.query.Param;
@@ -195,4 +194,61 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      */
     @InterceptorIgnore(tenantLine = "true")
     List<SysUserDepVo> getUserDepartByUserId(@Param("userList")List<SysUser> userList);
+
+    /**
+     * 根据父级id/职级/部门id获取部门岗位信息
+     * 
+     * @param parentId
+     * @param postLevel
+     * @param departId
+     */
+    List<SysDepart> getDepartPositionByParentId(@Param("parentId") String parentId, @Param("postLevel") Integer postLevel, @Param("departId") String departId);
+
+    /**
+     * 根据父级id获取部门中的数据
+     * @param parentId
+     * @return
+     */
+    @Select("select id, depart_name, parent_id, iz_leaf, org_category, org_code from sys_depart where parent_id = #{parentId} order by depart_order,create_time desc")
+    List<SysDepart> getDepartByParentId(@Param("parentId") String parentId);
+
+    /**
+     * 根据部门id查询部门信息
+     
+     * @param departId
+     * @return 部门岗位信息
+     */
+    SysDepartPositionVo getDepartPostByDepartId(@Param("departId") String departId);
+
+    /**
+     * 根据父级部门id查询部门信息
+     
+     * @param orgCode
+     * @return 部门岗位信息
+     */
+    List<SysDepartPositionVo> getDepartPostByOrgCode(@Param("orgCode") String orgCode);
+
+    /**
+     * 根据部门id获取部门code
+     * @param idList
+     * @return
+     */
+    List<String> getDepCodeByDepIds(@Param("idList") List<String> idList);
+
+    /**
+     * 根据父级部门id和职务名称查找部门id
+     * 
+     * @param parentId
+     * @param postName
+     * @return
+     */
+    String getDepIdByDepIdAndPostName(@Param("parentId") String parentId, @Param("postName") String postName);
+
+    /**
+     * 根据部门id 获取职级名称
+     * 
+     * @param depId
+     * @return
+     */
+    String getPostNameByPostId(@Param("depId") String depId);
 }

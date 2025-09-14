@@ -3,7 +3,6 @@ package org.jeecg.modules.system.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -13,10 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
-import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -28,23 +25,23 @@ import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
+import org.jeecg.modules.system.excelstyle.ExcelExportSysUserStyle;
 import org.jeecg.modules.system.model.DepartIdModel;
+import org.jeecg.modules.system.model.SysUserSysDepPostModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.*;
+import org.jeecg.modules.system.util.ImportSysUserCache;
 import org.jeecg.modules.system.vo.SysDepartUsersVO;
+import org.jeecg.modules.system.vo.SysUserExportVo;
 import org.jeecg.modules.system.vo.SysUserRoleVO;
 import org.jeecg.modules.system.vo.lowapp.DepartAndUserInfo;
 import org.jeecg.modules.system.vo.lowapp.UpdateDepartInfo;
-import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
-import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -92,9 +89,6 @@ public class SysUserController {
 
     @Autowired
     private BaseCommonService baseCommonService;
-
-    @Autowired
-    private ISysUserAgentService sysUserAgentService;
 
     @Autowired
     private ISysPositionService sysPositionService;
@@ -170,7 +164,7 @@ public class SysUserController {
 			// 保存用户走一个service 保证事务
             //获取租户ids
             String relTenantIds = jsonObject.getString("relTenantIds");
-            sysUserService.saveUser(user, selectedRoles, selectedDeparts, relTenantIds);
+            sysUserService.saveUser(user, selectedRoles, selectedDeparts, relTenantIds, false);
             baseCommonService.addLog("添加用户，username： " +user.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
 			result.success("添加成功！");
 		} catch (Exception e) {
@@ -484,15 +478,25 @@ public class SysUserController {
        }
         //update-end--Author:kangxiaolin  Date:20180825 for：[03]用户导出，如果选择数据则只导出相关数据----------------------
         List<SysUser> pageList = sysUserService.list(queryWrapper);
+        List<SysUserExportVo> list  = sysUserService.getDepartAndRoleExportMsg(pageList);
 
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "用户列表");
-        mv.addObject(NormalExcelConstants.CLASS, SysUser.class);
+        mv.addObject(NormalExcelConstants.CLASS, SysUserExportVo.class);
 		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        ExportParams exportParams = new ExportParams("用户列表数据", "导出人:"+user.getRealname(), "导出信息");
+        ExportParams exportParams = new ExportParams("导入规则：\n" +
+                "1. 用户名为必填项，仅支持新增数据导入；\n" +
+                "2. 多个部门、角色或负责部门请用英文分号 ; 分隔，如：财务部;研发部；\n" +
+                "3. 部门层级请用英文斜杠 / 分隔，如：北京公司/财务部/财务一部；\n" +
+                "4. 部门类型需与部门层级一致，也用 / 分隔，如：公司/部门/部门 或 1/3/3，多个类型用 ; 分隔。机构类型编码：公司(1)，子公司(4)，部门(3)；\n" +
+                "5. 部门根据用户名匹配，若存在多个则关联最新创建的部门，不存在时自动新增；\n" +
+                "6. 负责部门与所属部门导入规则一致，若所属部门不包含负责部门，则不关联负责部门；\n" +
+                "7. 用户主岗位导入时会在部门下自动创建新岗位，职级为空时默认不与岗位建立关联。", "导出人：" + user.getRealname(), "导出信息");
+        exportParams.setTitleHeight((short)70);
+        exportParams.setStyle(ExcelExportSysUserStyle.class);
         exportParams.setImageBasePath(upLoadPath);
         mv.addObject(NormalExcelConstants.PARAMS, exportParams);
-        mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
+        mv.addObject(NormalExcelConstants.DATA_LIST, list);
         return mv;
     }
 
@@ -506,78 +510,8 @@ public class SysUserController {
     @RequiresPermissions("system:user:import")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
-        // 错误信息
-        List<String> errorMessage = new ArrayList<>();
-        int successLines = 0, errorLines = 0;
-        for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
-            MultipartFile file = entity.getValue();// 获取上传文件对象
-            ImportParams params = new ImportParams();
-            params.setTitleRows(2);
-            params.setHeadRows(1);
-            params.setNeedSave(true);
-            try {
-                List<SysUser> listSysUsers = ExcelImportUtil.importExcel(file.getInputStream(), SysUser.class, params);
-                for (int i = 0; i < listSysUsers.size(); i++) {
-                    SysUser sysUserExcel = listSysUsers.get(i);
-                    if (StringUtils.isBlank(sysUserExcel.getPassword())) {
-                        // 密码默认为 “123456”
-                        sysUserExcel.setPassword("123456");
-                    }
-                    // 密码加密加盐
-                    String salt = oConvertUtils.randomGen(8);
-                    sysUserExcel.setSalt(salt);
-                    String passwordEncode = PasswordUtil.encrypt(sysUserExcel.getUsername(), sysUserExcel.getPassword(), salt);
-                    sysUserExcel.setPassword(passwordEncode);
-                    try {
-                        sysUserService.save(sysUserExcel);
-                        successLines++;
-                    } catch (Exception e) {
-                        errorLines++;
-                        String message = e.getMessage().toLowerCase();
-                        int lineNumber = i + 1;
-                        // 通过索引名判断出错信息
-                        if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_USER_USERNAME)) {
-                            errorMessage.add("第 " + lineNumber + " 行：用户名已经存在，忽略导入。");
-                        } else if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_USER_WORK_NO)) {
-                            errorMessage.add("第 " + lineNumber + " 行：工号已经存在，忽略导入。");
-                        } else if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_USER_PHONE)) {
-                            errorMessage.add("第 " + lineNumber + " 行：手机号已经存在，忽略导入。");
-                        } else if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_USER_EMAIL)) {
-                            errorMessage.add("第 " + lineNumber + " 行：电子邮件已经存在，忽略导入。");
-                        }  else if (message.contains(CommonConstant.SQL_INDEX_UNIQ_SYS_USER)) {
-                            errorMessage.add("第 " + lineNumber + " 行：违反表唯一性约束。");
-                        } else {
-                            errorMessage.add("第 " + lineNumber + " 行：未知错误，忽略导入");
-                            log.error(e.getMessage(), e);
-                        }
-                    }
-                    // 批量将部门和用户信息建立关联关系
-                    String departIds = sysUserExcel.getDepartIds();
-                    if (StringUtils.isNotBlank(departIds)) {
-                        String userId = sysUserExcel.getId();
-                        String[] departIdArray = departIds.split(",");
-                        List<SysUserDepart> userDepartList = new ArrayList<>(departIdArray.length);
-                        for (String departId : departIdArray) {
-                            userDepartList.add(new SysUserDepart(userId, departId));
-                        }
-                        sysUserDepartService.saveBatch(userDepartList);
-                    }
-
-                }
-            } catch (Exception e) {
-                errorMessage.add("发生异常：" + e.getMessage());
-                log.error(e.getMessage(), e);
-            } finally {
-                try {
-                    file.getInputStream().close();
-                } catch (IOException e) {
-                	log.error(e.getMessage(), e);
-                }
-            }
-        }
-        return ImportExcelUtil.imporReturnRes(errorLines,successLines,errorMessage);
+        //return ImportOldUserUtil.importOldSysUser(request);
+        return sysUserService.importSysUser(request);
     }
 
     /**
@@ -614,6 +548,17 @@ public class SysUserController {
         return result;
     }
 
+    /**
+     * @功能：根据userName查询用户以及部门信息
+     * @param userName
+     * @return
+     */
+    @RequestMapping(value = "/queryUserAndDeptByName", method = RequestMethod.GET)
+    public Result<Map<String,String>> queryUserAndDeptByName(@RequestParam(name = "userName") String userName) {
+        Map<String,String> userInfo= sysUserService.queryUserAndDeptByName(userName);
+        return Result.ok(userInfo);
+    }
+
 	/**
 	 * 首页用户重置密码
 	 */
@@ -646,7 +591,8 @@ public class SysUserController {
         Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
         String roleId = req.getParameter("roleId");
         String username = req.getParameter("username");
-        IPage<SysUser> pageList = sysUserService.getUserByRoleId(page,roleId,username);
+        String realname = req.getParameter("realname");
+        IPage<SysUser> pageList = sysUserService.getUserByRoleId(page,roleId,username,realname);
         result.setSuccess(true);
         result.setResult(pageList);
         return result;
@@ -811,38 +757,8 @@ public class SysUserController {
             SysUser userParams
     ) {
         IPage page = new Page(pageNo, pageSize);
-        IPage<SysUserSysDepartModel> pageList = sysUserService.queryUserByOrgCode(orgCode, userParams, page);
-        List<SysUserSysDepartModel> list = pageList.getRecords();
-
-        // 记录所有出现过的 user, key = userId
-        Map<String, JSONObject> hasUser = new HashMap<>(list.size());
-
-        JSONArray resultJson = new JSONArray(list.size());
-
-        for (SysUserSysDepartModel item : list) {
-            String userId = item.getId();
-            // userId
-            JSONObject getModel = hasUser.get(userId);
-            // 之前已存在过该用户，直接合并数据
-            if (getModel != null) {
-                String departName = getModel.get("departName").toString();
-                getModel.put("departName", (departName + " | " + item.getDepartName()));
-            } else {
-                // 将用户对象转换为json格式，并将部门信息合并到 json 中
-                JSONObject json = JSON.parseObject(JSON.toJSONString(item));
-                json.remove("id");
-                json.put("userId", userId);
-                json.put("departId", item.getDepartId());
-                json.put("departName", item.getDepartName());
-//                json.put("avatar", item.getSysUser().getAvatar());
-                resultJson.add(json);
-                hasUser.put(userId, json);
-            }
-        }
-
-        IPage<JSONObject> result = new Page<>(pageNo, pageSize, pageList.getTotal());
-        result.setRecords(resultJson.toJavaList(JSONObject.class));
-        return Result.ok(result);
+        IPage<SysUserSysDepPostModel> pageList = sysUserService.queryDepartPostUserByOrgCode(orgCode, userParams, page);
+        return Result.ok(pageList);
     }
 
     /**
@@ -1226,6 +1142,14 @@ public class SysUserController {
 			map.put("sysUserCode", sysUser.getUsername()); // 当前登录用户登录账号
 			map.put("sysUserName", sysUser.getRealname()); // 当前登录用户真实名称
 			map.put("sysOrgCode", sysUser.getOrgCode()); // 当前登录用户部门编号
+
+            // 【QQYUN-12930】设置部门名称
+            if (oConvertUtils.isNotEmpty(sysUser.getOrgCode())) {
+                SysDepart sysDepart = sysDepartService.lambdaQuery().select(SysDepart::getDepartName).eq(SysDepart::getOrgCode, sysUser.getOrgCode()).one();
+                if (sysDepart != null) {
+                    map.put("sysOrgName", sysDepart.getDepartName()); // 当前登录用户部门名称
+                }
+            }
 
 			log.debug(" ------ 通过令牌获取部分用户信息，已获取的用户信息： " + map);
 
@@ -1618,23 +1542,7 @@ public class SysUserController {
         IPage<SysUser> pageList = sysUserDepartService.getUserInformation(tenantId, departId,roleId, keyword, pageSize, pageNo,excludeUserIdList);
         return Result.OK(pageList);
     }
-
-    /**
-     * 用户离职(新增代理人和用户状态变更操作)【低代码应用专用接口】
-     * @param sysUserAgent
-     * @return
-     */
-    @PutMapping("/userQuitAgent")
-    public Result<String> userQuitAgent(@RequestBody SysUserAgent sysUserAgent){
-        //判断id是否为空
-        if(oConvertUtils.isNotEmpty(sysUserAgent.getId())){
-            sysUserAgentService.updateById(sysUserAgent);
-        }else{
-            sysUserAgentService.save(sysUserAgent);
-        }
-        sysUserService.userQuit(sysUserAgent.getUserName());
-        return Result.ok("离职成功");
-    }
+    
 
     /**
      * 获取被逻辑删除的用户列表，无分页【低代码应用专用接口】
@@ -1654,29 +1562,6 @@ public class SysUserController {
             quitList.forEach(item -> item.setOrgCode(useDepNames.get(item.getId())));
         }
         return Result.ok(quitList);
-    }
-
-    /**
-     * 更新刪除状态和离职状态【低代码应用专用接口】
-     * @param jsonObject
-     * @return Result<String>
-     */
-    @PutMapping("/putCancelQuit")
-    public Result<String> putCancelQuit(@RequestBody JSONObject jsonObject, HttpServletRequest request){
-        String userIds = jsonObject.getString("userIds");
-        String usernames = jsonObject.getString("usernames");
-        Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request),0);
-        //将状态改成未删除
-        if (StringUtils.isNotBlank(userIds)) {
-            userTenantService.putCancelQuit(Arrays.asList(userIds.split(SymbolConstant.COMMA)),tenantId);
-        }
-        if(StringUtils.isNotEmpty(usernames)){
-            //根据用户名删除代理人
-            LambdaQueryWrapper<SysUserAgent> query = new LambdaQueryWrapper<>();
-            query.in(SysUserAgent::getUserName,Arrays.asList(usernames.split(SymbolConstant.COMMA)));
-            sysUserAgentService.remove(query);
-        }
-        return Result.ok("取消离职成功");
     }
 
     /**
@@ -1756,7 +1641,7 @@ public class SysUserController {
         }
         return result;
     }
- 
+
     /**
      * 根据关键词搜索部门和用户【low-app】
      * @param keyword
@@ -1876,7 +1761,7 @@ public class SysUserController {
     public Result<?> importAppUser(HttpServletRequest request, HttpServletResponse response)throws IOException {
         return sysUserService.importAppUser(request);
     }
-   
+
     /**
      * 更改手机号（敲敲云个人设置专用）
      *
@@ -1890,7 +1775,7 @@ public class SysUserController {
         sysUserService.changePhone(json,username);
         return Result.ok("修改手机号成功！");
     }
-    
+
     /**
      * 发送短信验证码接口(修改手机号)
      *
@@ -1928,5 +1813,54 @@ public class SysUserController {
         result.setSuccess(true);
         result.setMessage("发送验证码成功！");
         return result;
+    }
+
+    /**
+     * 没有绑定手机号 直接修改密码
+     * @param oldPassword
+     * @param password
+     * @return
+     */
+    @PutMapping("/updatePasswordNotBindPhone")
+    public Result<String> updatePasswordNotBindPhone(@RequestParam(value="oldPassword") String oldPassword,
+                                                     @RequestParam(value="password") String password,
+                                                     @RequestParam(value="username") String username){
+        sysUserService.updatePasswordNotBindPhone(oldPassword, password, username);
+        return Result.OK("修改密码成功！");
+    }
+
+    /**
+     * 根据部门岗位选择用户【部门岗位选择用户专用】
+     * @return
+     */
+    @GetMapping("/queryDepartPostUserPageList")
+    public Result<IPage<SysUser>> queryDepartPostUserPageList( @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                                        @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+                                                        @RequestParam(name = "departId", required = false) String departId,
+                                                        @RequestParam(name="realname",required=false) String realname,
+                                                        @RequestParam(name="username",required=false) String username,
+                                                        @RequestParam(name="isMultiTranslate",required=false) String isMultiTranslate,
+                                                        @RequestParam(name="id",required = false) String id){
+        String[] arr = new String[]{departId, realname, username, id};
+        SqlInjectionUtil.filterContent(arr, SymbolConstant.SINGLE_QUOTATION_MARK);
+        IPage<SysUser> pageList = sysUserDepartService.queryDepartPostUserPageList(departId, username, realname, pageSize, pageNo,id,isMultiTranslate);
+        return Result.OK(pageList);
+    }
+
+    /**
+     * 获取上传文件的进度
+     * 
+     * @param fileKey
+     * @param type
+     * @return
+     */
+    @GetMapping("/getUploadFileProgress")
+    public Result<Double> getUploadFileProgress(@RequestParam(name = "fileKey") String fileKey,
+                                                @RequestParam("type") String type){
+        Double progress = ImportSysUserCache.getImportSysUserMap(fileKey, type);
+        if(progress == 100){
+            ImportSysUserCache.removeImportLowAppMap(fileKey);
+        }
+        return Result.ok(progress);
     }
 }

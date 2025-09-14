@@ -2,19 +2,18 @@ package org.jeecg.modules.system.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
 /**
- * @Description: 低代码用户导出
+ * @Description: 低代码用户导入
  * @author: wangshuai
- * @date: 2025/3/28 12:01
+ * @date: 2025/8/27 11:58
  */
 @Data
-public class SysUserExportVo {
+public class SysUserImportVo {
 
     /**
      * 登录账号
@@ -81,8 +80,7 @@ public class SysUserExportVo {
     /**
      * 主岗位
      */
-    @Excel(name="主岗位",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
-    @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    @Excel(name="主岗位",width = 15)
     private String mainDepPostId;
 
     /**
@@ -90,21 +88,7 @@ public class SysUserExportVo {
      */
     @Excel(name="职级", width = 15)
     private String postName;
-
-    /**
-     * 兼职岗位
-     */
-    @Excel(name="兼职岗位",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
-    @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
-    private String otherDepPostId;
-
-    /**
-     * 座机号
-     */
-    @Excel(name = "座机号", width = 15)
-    private String telephone;
-
-
+    
     /**
      * 身份（0 普通成员 1 上级）
      */
@@ -135,10 +119,11 @@ public class SysUserExportVo {
      */
     @Excel(name = "负责部门", width = 15)
     private String departIds;
-
+    
     /**
      * 职务
      */
     @Excel(name="职务", dicCode = "user_position")
     private String positionType;
+
 }

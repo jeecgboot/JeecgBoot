@@ -1,7 +1,11 @@
 package org.jeecg.modules.system.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.jeecg.common.aspect.annotation.Dict;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * @Description: 用户租户类(用户数据租户数据)
@@ -44,7 +48,14 @@ public class SysUserTenantVo {
     /**
      * 头像
      */
-    private String avatar; 
+    private String avatar;
+
+    /**
+     * 创建日期
+     */
+    @JsonFormat(timezone = "GMT+8",pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
     
     /**
      * 职位

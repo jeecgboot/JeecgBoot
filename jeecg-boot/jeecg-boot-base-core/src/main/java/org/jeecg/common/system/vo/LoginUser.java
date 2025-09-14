@@ -144,4 +144,8 @@ public class LoginUser {
 	/**设备id uniapp推送用*/
 	private String clientId;
 
+	/**
+	 * 主岗位
+	 */
+	private String mainDepPostId;
 }

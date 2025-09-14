@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
@@ -98,4 +100,12 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
      * @param count
      */
     void updateVisitsNum(String id, int count);
+
+    /**
+     * 批量下载文件
+     * @param id
+     * @param request
+     * @param response
+     */
+    void downLoadFiles(String id, HttpServletRequest request, HttpServletResponse response);
 }

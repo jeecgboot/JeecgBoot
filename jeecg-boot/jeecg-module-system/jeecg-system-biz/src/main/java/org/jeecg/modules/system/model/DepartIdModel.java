@@ -28,6 +28,10 @@ public class DepartIdModel implements Serializable {
      * 主键ID
      */
     private String value;
+    /**
+     * 部门编码
+     */
+    private String code;
 
     /**
      * 部门名称
@@ -56,6 +60,7 @@ public class DepartIdModel implements Serializable {
     public DepartIdModel convertByUserDepart(SysDepart sysDepart) {
         this.key = sysDepart.getId();
         this.value = sysDepart.getId();
+        this.code = sysDepart.getOrgCode();
         this.title = sysDepart.getDepartName();
         return this;
     } 
@@ -94,5 +99,13 @@ public class DepartIdModel implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }
