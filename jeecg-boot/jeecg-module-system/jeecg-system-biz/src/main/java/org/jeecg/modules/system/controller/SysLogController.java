@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysLog;
@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * <p>
@@ -36,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/sys/log")
 @Slf4j
-public class SysLogController {
+public class SysLogController extends JeecgController<SysLog, ISysLogService> {
 	
 	@Autowired
 	private ISysLogService sysLogService;
@@ -121,6 +122,17 @@ public class SysLogController {
 			result.success("删除成功!");
 		}
 		return result;
+	}
+
+	/**
+	 * 导出excel
+	 * for [QQYUN-13431]【jeecg】日志管理中添加大数据导出功能
+	 * @param request
+	 * @param syslog
+	 */
+	@RequestMapping(value = "/exportXls")
+	public ModelAndView exportXls(HttpServletRequest request, SysLog syslog) {
+		return super.exportXlsForBigData(request, syslog, SysLog.class, "syslog", 10000);
 	}
 	
 	
