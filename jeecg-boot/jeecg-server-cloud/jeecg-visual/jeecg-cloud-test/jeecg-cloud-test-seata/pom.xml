@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-cloud-test</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.8.2</version>
+        <version>3.8.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jeecg-cloud-test-seata</artifactId>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>org.jeecgframework.boot</groupId>
             <artifactId>jeecg-boot-starter-seata</artifactId>
-            <version>3.8.2-RC</version>
+            <version>${jeecgboot.version}</version>
         </dependency>
     </dependencies>
 </project>

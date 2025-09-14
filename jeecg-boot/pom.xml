@@ -218,7 +218,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-job</artifactId>
-				<version>3.8.2-RC</version>
+				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--redis分布式锁-->
 			<dependency>
@@ -241,7 +241,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
-				<version>3.8.2-RC</version>
+				<version>${jeecgboot.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>

@@ -24,8 +24,8 @@ services:
 
   jeecg-boot-redis:
     image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/redis:5.0
-    ports:
-      - 6379:6379
+#    ports:
+#      - 6379:6379
     restart: always
     hostname: jeecg-boot-redis
     container_name: jeecg-boot-redis
@@ -39,12 +39,26 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: vector_db
-    ports:
-      - 5432:5432
+#    ports:
+#      - 5432:5432
     restart: always
     networks:
       - jeecg-boot
-        
+  
+#  jeecg-boot-rabbitmq:
+#    image: rabbitmq:3.7.7-management
+##    ports:
+##      - 5672:5672
+##      - 15672:15672
+#    restart: always
+#    container_name: jeecg-boot-rabbitmq
+#    hostname: jeecg-boot-rabbitmq
+#    environment:
+#      RABBITMQ_DEFAULT_USER: guest
+#      RABBITMQ_DEFAULT_PASS: guest
+#    networks:
+#      - jeecg-boot
+
   jeecg-boot-system:
     build:
       context: ./jeecg-module-system/jeecg-system-start
@@ -59,6 +73,8 @@ services:
       - 8080:8080
     networks:
       - jeecg-boot
+    volumes:
+      - ./config:/jeecg-boot/config
 
 networks:
   jeecg-boot:
