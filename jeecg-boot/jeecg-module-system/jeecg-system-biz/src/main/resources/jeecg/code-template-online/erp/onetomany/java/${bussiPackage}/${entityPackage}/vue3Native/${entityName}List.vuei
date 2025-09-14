@@ -243,6 +243,7 @@
       api: list,
       columns,
       canResize:true,
+      maxHeight: 300,
       useSearchForm: false,
       clickToRowSelect: true,
       rowSelection: {type: 'radio'},

@@ -1,4 +1,3 @@
-<#--<#include "../../../../../../../common/utils.ftl">-->
 <#include "/common/utils.ftl">
 <template>
   <a-spin :spinning="confirmLoading">

@@ -4,7 +4,7 @@
   <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
 </#if>
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
+  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :maxHeight="500" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
       <BasicForm @register="registerForm" name="${entityName}Form" />
 <#if buttonList?? && buttonList?size gt 0>
    <template #insertFooter>
@@ -38,7 +38,8 @@
         </#if>
         schemas: formSchema,
         showActionButtonGroup: false,
-        baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}}
+        baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}},
+        baseRowStyle: { padding: "0 20px" }
     });
     //表单赋值
     const [registerModal, {setModalProps, closeModal}] = useModalInner(async (data) => {

@@ -1,9 +1,10 @@
+<#include "/common/utils.ftl">
 <template>
 <#assign buttonList=[]>
 <#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
   <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
 </#if>
-  <j-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
+  <j-modal :title="title" maxHeight="500px" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
     <${entityName}Form ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></${entityName}Form>
   <template #footer>
     <#if buttonList?? && buttonList?size gt 0>

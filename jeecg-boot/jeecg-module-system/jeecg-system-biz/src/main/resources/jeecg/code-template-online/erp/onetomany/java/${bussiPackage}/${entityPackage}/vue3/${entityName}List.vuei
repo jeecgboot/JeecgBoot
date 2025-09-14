@@ -154,6 +154,7 @@
            api: list,
            columns,
            canResize: true,
+           maxHeight: 300,
            clickToRowSelect: true,
            rowSelection: {type: 'radio'},
            formConfig: {

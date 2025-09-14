@@ -4,7 +4,7 @@
 <#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
   <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
 </#if>
-  <BasicModal ref="modalRef" destroyOnClose wrapClassName="j-cgform-tab-modal" v-bind="$attrs" @register="registerModal" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
+  <BasicModal ref="modalRef" destroyOnClose wrapClassName="j-cgform-tab-modal" v-bind="$attrs" @register="registerModal" :maxHeight="500" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
     <!-- 标题区域 -->
      <template #title>
         <div class="titleArea">
