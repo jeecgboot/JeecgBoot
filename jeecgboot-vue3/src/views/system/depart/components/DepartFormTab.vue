@@ -1,6 +1,17 @@
 <template>
   <a-spin :spinning="loading">
-    <BasicForm @register="registerForm" />
+    <BasicForm @register="registerForm" >
+      <template #depPostParentId="{ model, field }">
+        <a-tree-select v-model:value="depPostValue" :treeData="treeData" allowClear treeCheckable @select="treeSelect">
+          <template #title="{ orgCategory, title }">
+            <TreeIcon :orgCategory="orgCategory" :title="title"></TreeIcon>
+          </template>
+          <template #tagRender="{ option }">
+            <span style="margin-left: 10px">{{ orgNameMap[option.id] }}</span>
+          </template>
+        </a-tree-select>
+      </template>
+    </BasicForm>
     <div class="j-box-bottom-button offset-20" style="margin-top: 30px">
       <div class="j-box-bottom-button-float" :class="[`${prefixCls}`]">
         <a-button preIcon="ant-design:sync-outlined" @click="onReset">重置</a-button>
@@ -14,8 +25,10 @@
   import { watch, computed, inject, ref, unref, onMounted } from 'vue';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { saveOrUpdateDepart } from '../depart.api';
-  import { useBasicFormSchema, orgCategoryOptions } from '../depart.data';
+  import { useBasicFormSchema, orgCategoryOptions, positionChange } from '../depart.data';
   import { useDesign } from '/@/hooks/web/useDesign';
+  import TreeIcon from "@/components/Form/src/jeecg/components/TreeIcon/TreeIcon.vue";
+  import { getDepartPathNameByOrgCode } from '@/utils/common/compUtils';
 
   const { prefixCls } = useDesign('j-depart-form-content');
 
@@ -29,10 +42,15 @@
   const isUpdate = ref<boolean>(true);
   // 当前的弹窗数据
   const model = ref<object>({});
+  const treeData = ref<any>([]);
+  //上级岗位
+  const depPostValue = ref<any>([]);
+  //上级岗位名称映射
+  const orgNameMap = ref<Record<string, string>>({});
 
   //注册表单
   const [registerForm, { resetFields, setFieldsValue, validate, updateSchema }] = useForm({
-    schemas: useBasicFormSchema().basicFormSchema,
+    schemas: useBasicFormSchema(treeData).basicFormSchema,
     showActionButtonGroup: false,
   });
 
@@ -59,6 +77,11 @@
           record = {};
         }
         model.value = record;
+        if (record.depPostParentId) {
+          orgNameMap.value[record.depPostParentId] = await getDepartPathNameByOrgCode('', '', record.depPostParentId);
+          depPostValue.value = [record.depPostParentId];
+        }
+        positionChange(record.positionId, record, treeData);
         await resetFields();
         await setFieldsValue({ ...record });
       },
@@ -104,6 +127,11 @@
       loading.value = true;
       let values = await validate();
       values = Object.assign({}, model.value, values);
+      if (depPostValue.value && depPostValue.value.length > 0) {
+        values.depPostParentId = depPostValue.value[0];
+      } else {
+        values.depPostParentId = '';
+      }
       //提交表单
       await saveOrUpdateDepart(values, isUpdate.value);
       //刷新列表
@@ -111,6 +139,22 @@
       Object.assign(model.value, values);
     } finally {
       loading.value = false;
+    }
+  }
+
+  /**
+   * 树选中事件
+   *
+   * @param info
+   * @param keys
+   */
+  async function treeSelect(keys, info) {
+    if (info.checkable) {
+      orgNameMap.value[info.id] = '';
+      depPostValue.value = [info.value];
+      orgNameMap.value[info.id] = await getDepartPathNameByOrgCode(info.orgCode, info.label, info.id);
+    } else {
+      depPostValue.value = [];
     }
   }
 </script>
@@ -125,4 +169,11 @@
   }
   /*end 兼容暗夜模式*/
   // update-end-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
+</style>
+<style lang="less" scoped>
+  :deep(.ant-select-selector .ant-select-selection-item){
+    svg{
+      display: none !important;
+    }
+  }
 </style>

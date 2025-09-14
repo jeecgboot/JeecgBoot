@@ -2,8 +2,9 @@
 <template>
   <BasicModal v-bind="$attrs" @register="register" :title="modalTitle" width="1200px" @ok="handleOk" destroyOnClose @visible-change="visibleChange">
     <a-row :gutter="10">
-      <a-col :md="7" :sm="24" style="height: 613px;overflow: auto ">
+      <a-col :md="7" :sm="24">
         <a-card :style="{ minHeight: '613px', overflow: 'auto' }">
+          <a-input-search placeholder="按岗位名称搜索…" style="margin-bottom: 10px" @search="onSearch" @change="handelSearchChange"/>
           <!--组织机构-->
           <BasicTree
             ref="treeRef"
@@ -15,6 +16,7 @@
             :selectedKeys="selectedDepIds"
             :expandedKeys="expandedKeys"
             :clickRowToExpand="false"
+            :key="reloadKey"
           >
             <template #title="{ orgCategory, title }">
               <TreeIcon :orgCategory="orgCategory" :title="title"></TreeIcon>
@@ -35,23 +37,24 @@
   import { defineComponent, unref, ref } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicTree } from '/@/components/Tree/index';
-  import { queryTreeList, getTableList as getTableListOrigin } from '/@/api/common/api';
+  import { queryDepartPostUserPageList as getTableListOrigin} from '/@/api/common/api';
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
   import { useSelectBiz } from '/@/components/Form/src/jeecg/hooks/useSelectBiz';
   import { useAttrs } from '/@/hooks/core/useAttrs';
-  import { queryDepartTreeSync as queryDepartTreeSyncOrigin } from '/@/views/system/depart/depart.api';
+  import TreeIcon from '/@/components/Form/src/jeecg/components/TreeIcon/TreeIcon.vue';
+  import { queryDepartAndPostTreeSync as queryDepartTreeSyncOrigin } from '/@/views/system/depart/depart.api';
   import { selectProps } from '/@/components/Form/src/jeecg/props/props';
-  import TreeIcon from '@/components/Form/src/jeecg/components/TreeIcon/TreeIcon.vue';
+  import {defHttp} from "@/utils/http/axios";
   export default defineComponent({
-    name: 'UserSelectByDepModal',
+    name: 'UserSelectByDepPostModal',
     components: {
-      TreeIcon,
       //此处需要异步加载BasicTable
       BasicModal,
       BasicTree,
       BasicTable: createAsyncComponent(() => import('/@/components/Table/src/BasicTable.vue'), {
         loading: true,
       }),
+      TreeIcon,
     },
     props: {
       ...selectProps,
@@ -70,10 +73,13 @@
         await queryDepartTree();
       });
       const attrs = useAttrs();
-      const departTree = ref([]);
+      const departTree = ref<any>([]);
       const selectedDepIds = ref([]);
       const expandedKeys = ref([]);
       const searchInfo = {};
+      //树加载的key
+      const reloadKey = ref(Math.random());
+      
       /**
        *表格配置
        */
@@ -97,7 +103,6 @@
           {
             title: '手机号码',
             dataIndex: 'phone',
-            // width: 50,
           },
         ],
         useSearchForm: true,
@@ -114,27 +119,22 @@
             md: 6,
             lg: 8,
             xl: 6,
-            xxl: 8,
+            xxl: 10,
           },
           //update-begin-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
           actionColOptions: {
-              xs: 24,
-              sm: 12,
-              md: 12,
-              lg: 12,
-              xl: 8,
-              xxl: 8,
+            xs: 24,
+            sm: 12,
+            md: 12,
+            lg: 12,
+            xl: 8,
+            xxl: 8,
           },
           //update-end-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
           schemas: [
             {
               label: '账号',
               field: 'username',
-              component: 'Input',
-            },
-            {
-              label: '姓名',
-              field: 'realname',
               component: 'Input',
             },
           ],
@@ -146,12 +146,12 @@
 
       function getTableList(params) {
         params = parseParams(params);
-        return getTableListOrigin({...params});
+        return getTableListOrigin({ ...params });
       }
 
       function queryDepartTreeSync(params) {
         params = parseParams(params);
-        return queryDepartTreeSyncOrigin({...params});
+        return queryDepartTreeSyncOrigin({ ...params });
       }
 
       /**
@@ -163,7 +163,7 @@
           return {
             ...params,
             ...props.params,
-          }
+          };
         }
         return params;
       }
@@ -172,14 +172,13 @@
        * 加载树形数据
        */
       function queryDepartTree() {
-        queryDepartTreeSync().then((res) => {
+        queryDepartTreeSync({}).then((res) => {
           if (res) {
             departTree.value = res;
-            // 默认展开父节点
-            //expandedKeys.value = unref(departTree).map(item => item.id)
           }
         });
       }
+
       /**
        * 加载子级部门
        */
@@ -234,6 +233,35 @@
         });
       }
 
+      /**
+       * 岗位搜索
+       *
+       * @param value
+       */
+      async function onSearch(value) {
+        if(value){
+          let result = await defHttp.get({ url: "/sys/sysDepart/searchBy", params: { keyWord: value, orgCategory: "3",...props.params } });
+          if (Array.isArray(result)) {
+            departTree.value = result;
+          } else {
+            departTree.value = [];
+          }
+        } else {
+          departTree.value = [];
+          await queryDepartTree();
+        }
+      }
+
+      /**
+       * 搜索值改变事件
+       * @param value
+       */
+      function handelSearchChange(value) {
+        if(!value.target.value){
+          reloadKey.value = Math.random();
+        }
+      }
+
       return {
         //config,
         handleOk,
@@ -252,6 +280,9 @@
         getTableList,
         onDepSelect,
         loadChildrenTreeData,
+        onSearch,
+        handelSearchChange,
+        reloadKey,
       };
     },
   });
