@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Version:1.0
  */
 @Slf4j
+@Lazy(false)
 @Service
 public class AutoPoiDictConfig implements AutoPoiDictServiceI {
 	final static String EXCEL_SPLIT_TAG = "_";

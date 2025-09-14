@@ -414,9 +414,11 @@ public class QueryGenerator {
                 }
 				// update-begin-author:sunjianlei date:20220119 for: 【JTC-573】 过滤空条件查询，防止 sql 拼接多余的 and
 				List<QueryCondition> filterConditions = conditions.stream().filter(
-						rule -> oConvertUtils.isNotEmpty(rule.getField())
-								&& oConvertUtils.isNotEmpty(rule.getRule())
-								&& oConvertUtils.isNotEmpty(rule.getVal())
+						rule -> (oConvertUtils.isNotEmpty(rule.getField())
+													&& oConvertUtils.isNotEmpty(rule.getRule())
+													&& oConvertUtils.isNotEmpty(rule.getVal())
+												 )
+												|| "empty".equals(rule.getRule())
 				).collect(Collectors.toList());
 				if (filterConditions.size() == 0) {
 					return;
@@ -427,9 +429,12 @@ public class QueryGenerator {
                 queryWrapper.and(andWrapper -> {
                     for (int i = 0; i < filterConditions.size(); i++) {
                         QueryCondition rule = filterConditions.get(i);
-                        if (oConvertUtils.isNotEmpty(rule.getField())
-                                && oConvertUtils.isNotEmpty(rule.getRule())
-                                && oConvertUtils.isNotEmpty(rule.getVal())) {
+                        if (
+								(
+								    oConvertUtils.isNotEmpty(rule.getField()) && oConvertUtils.isNotEmpty(rule.getRule()) && oConvertUtils.isNotEmpty(rule.getVal())
+								)
+							    || "empty".equals(rule.getRule())
+						) {
 
                             log.debug("SuperQuery ==> " + rule.toString());
 
@@ -716,7 +721,11 @@ public class QueryGenerator {
 	 * @param value        查询条件值
 	 */
 	public static void addEasyQuery(QueryWrapper<?> queryWrapper, String name, QueryRuleEnum rule, Object value) {
-		if (name==null || value == null || rule == null || oConvertUtils.isEmpty(value)) {
+		if (
+				(
+				   name==null || value == null || rule == null || oConvertUtils.isEmpty(value)
+				) 
+				  && !QueryRuleEnum.EMPTY.equals(rule)) {
 			return;
 		}
 		name = oConvertUtils.camelToUnderline(name);
@@ -727,6 +736,9 @@ public class QueryGenerator {
 			break;
 		case GE:
 			queryWrapper.ge(name, value);
+			break;
+		case EMPTY:
+			queryWrapper.isNull(name);
 			break;
 		case LT:
 			queryWrapper.lt(name, value);

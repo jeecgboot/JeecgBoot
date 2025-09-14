@@ -56,7 +56,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             executeLogin(request, response);
             return true;
         } catch (Exception e) {
-            JwtUtil.responseError(response,401,CommonConstant.TOKEN_IS_INVALID_MSG);
+            JwtUtil.responseError((HttpServletResponse)response,401,CommonConstant.TOKEN_IS_INVALID_MSG);
             return false;
             //throw new AuthenticationException("Token失效，请重新登录", e);
         }
