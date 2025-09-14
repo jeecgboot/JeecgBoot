@@ -3,6 +3,8 @@ package org.jeecg.modules.system.mapper;
 import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.jeecg.modules.system.entity.SysTenantPack;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
 
 import java.util.List;
@@ -44,4 +46,23 @@ public interface SysTenantPackUserMapper extends BaseMapper<SysTenantPackUser> {
      * @param
      */
     void deletePackUserByTenantIds(@Param("tenantIds") List<Integer> tenantIds);
+
+    /**
+     * 根据用户id和租户id获取当前租户用户下的产品包id
+     *
+     * @param tenantId
+     * @param userId
+     * @return
+     */
+    @Select("select pack_id from sys_tenant_pack_user where tenant_id = #{tenantId} and user_id = #{userId}")
+    List<String> getPackIdByTenantIdAndUserId(@Param("tenantId") Integer tenantId, @Param("userId") String userId);
+    
+    /**
+     * 根据租户id获取用户的产品包列表
+     * 
+     * @param tenantId
+     * @return
+     */
+    @Select("select id,pack_name,pack_code,pack_type from sys_tenant_pack where tenant_id = #{tenantId}")
+    List<SysTenantPack> getPackListByTenantId(@Param("tenantId") Integer tenantId);
 }
