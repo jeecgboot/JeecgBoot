@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.8.2</version>
+  <version>3.8.3</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.8.2</jeecgboot.version>
+		<jeecgboot.version>3.8.3</jeecgboot.version>
 		<!-- JDK版本支持17和1.8 -->
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,8 +38,8 @@
 		<spring-cloud-alibaba.version>2021.0.6.2</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 		<seata.version>1.7.0</seata.version>
+
 		<xxl-job-core.version>2.4.1</xxl-job-core.version>
-		
         <fastjson.version>2.0.57</fastjson.version>
         <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
@@ -48,12 +48,12 @@
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
-		<sqljdbc4.version>4.0</sqljdbc4.version>
+		<sqljdbc4.version>12.6.1.jre8</sqljdbc4.version>
 		<mysql-connector-java.version>8.0.27</mysql-connector-java.version>
 		<hutool.version>5.8.25</hutool.version>
 		<!-- 国产数据库驱动 -->
 		<kingbase8.version>9.0.0</kingbase8.version>
-		<dm8.version>8.1.1.49</dm8.version>
+		<dm8.version>8.1.3.140</dm8.version>
 		
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>2.1.3</jimureport-spring-boot-starter.version>
@@ -65,8 +65,10 @@
 		<mybatis-plus.version>3.5.12</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.24</druid.version>
+		<minidao.version>1.10.14</minidao.version>
 
 		<commons-io.version>2.11.0</commons-io.version>
+		<commons-fileupload.version>1.5</commons-fileupload.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.11.2</aliyun.oss.version>
@@ -126,6 +128,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>asm</artifactId>
+					<groupId>org.ow2.asm</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Lombok -->
 		<dependency>
@@ -257,7 +265,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.8.2</version>
+				<version>3.8.2-beta</version>
 			</dependency>
 
 			<!--mongon db-->
@@ -301,7 +309,7 @@
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
-				<version>1.5</version>
+				<version>${commons-fileupload.version}</version>
 				<exclusions>
 					<exclusion>
 						<artifactId>commons-io</artifactId>
@@ -428,6 +436,26 @@
 						<artifactId>druid</artifactId>
 						<groupId>com.alibaba</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>jsqlparser</artifactId>
+						<groupId>com.github.jsqlparser</groupId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- AutoPoi Excel工具类-->
+			<dependency>
+				<groupId>org.jeecgframework</groupId>
+				<artifactId>autopoi-web</artifactId>
+				<version>${autopoi-web.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-codec</groupId>
+						<artifactId>commons-codec</artifactId>
+					</exclusion>
+					<exclusion>
+						<artifactId>xercesImpl</artifactId>
+						<groupId>xerces</groupId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- mongo、redis和文件数据集支持包，按需引入 -->
@@ -435,16 +463,16 @@
 				<groupId>org.jeecgframework.jimureport</groupId>
 				<artifactId>jimureport-nosql-starter</artifactId>
 				<version>2.0.0</version>
-				<exclusions>
-					<exclusion>
-						<groupId>org.apache.calcite</groupId>
-						<artifactId>calcite-elasticsearch</artifactId>
-					</exclusion>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.calcite</groupId>
+                        <artifactId>calcite-elasticsearch</artifactId>
+                    </exclusion>
 					<exclusion>
 						<artifactId>autopoi-web</artifactId>
 						<groupId>org.jeecgframework</groupId>
 					</exclusion>
-				</exclusions>
+                </exclusions>
 			</dependency>
 			<!-- 后台导出接口Echart图表支持包，按需引入 -->
 			<dependency>
@@ -452,13 +480,13 @@
 				<artifactId>jimureport-echarts-starter</artifactId>
 				<version>2.1.1</version>
 			</dependency>
-			<!-- 积木BI大屏和仪表盘 -->
-			<dependency>
-				<groupId>org.jeecgframework.jimureport</groupId>
-				<artifactId>jimubi-spring-boot-starter</artifactId>
+            <!-- 积木BI大屏和仪表盘 -->
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimubi-spring-boot-starter</artifactId>
 				<version>${jimubi-spring-boot-starter.version}</version>
-			</dependency>
-			<!-- AI集成 -->
+            </dependency>
+			<!-- chatgpt -->
 			<dependency>
 				<groupId>org.jeecgframework.boot</groupId>
 				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
