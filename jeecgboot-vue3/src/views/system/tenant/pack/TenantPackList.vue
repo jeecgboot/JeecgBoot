@@ -137,6 +137,12 @@
        return;
     }
     //update-end---author:wangshuai ---date:20230222  for：系统默认套餐包不允许删除------------
+    //update-begin---author:wangshuai---date:2025-09-03---for:默认套餐不允许删除---
+    if(record.packCode && record.packCode.indexOf("default") != -1){
+      createMessage.warning("默认套餐包不允许删除");
+      return;
+    }
+    //update-end---author:wangshuai---date:2025-09-03---for:默认套餐不允许删除---
     await deleteTenantPack({ ids: record.id }, success);
   }
 
@@ -151,6 +157,12 @@
           createMessage.warning("默认系统套餐包不允许删除");
           return;
         }
+        //update-begin---author:wangshuai---date:2025-09-03---for:默认套餐不允许删除---
+        if(value[i].packCode && value[i].packCode.indexOf("default") != -1){
+          createMessage.warning("默认套餐包不允许删除");
+          return;
+        }
+        //update-end---author:wangshuai---date:2025-09-03---for:默认套餐不允许删除---
       }
     }
     Modal.confirm({

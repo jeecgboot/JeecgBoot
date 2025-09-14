@@ -10,14 +10,14 @@
           :disabled="selectedRowKeys.length === 0"
           >邀请用户加入</a-button
         >
-        <a-button
+<!--        <a-button
           preIcon="ant-design:plus-outlined"
           type="primary"
           @click="handlePack"
           style="margin-right: 5px"
           :disabled="selectedRowKeys.length === 0"
           >套餐</a-button
-        >
+        >-->
       </template>
       <template #action="{ record }">
         <TableAction :actions="getActions(record)" />
