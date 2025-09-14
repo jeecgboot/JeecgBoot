@@ -47,6 +47,9 @@
               <li class="flex mr-14">
                 <span class="label">模型类型</span>
                 <span class="described">{{ item.modelType_dictText }}</span>
+                <a-tooltip v-if="!item.activateFlag" title="未激活模型暂无法被系统其他功能调用，激活后可正常使用。">
+                  <span class="no-activate">未激活</span>
+                </a-tooltip>
               </li>
               <li class="flex mr-14 mt-6">
                 <span class="label">基础模型</span>
@@ -313,6 +316,17 @@
     align-self: center;
     color: #8a8f98;
     overflow-wrap: break-word;
+  }
+  .no-activate{
+    font-size: 10px;
+    color: #ff4d4f;
+    border: 1px solid #ff4d4f;
+    border-radius: 10px;
+    padding: 0 6px;
+    height: 14px;
+    line-height: 12px;
+    margin-left: 6px;
+    align-self: center;
   }
   .described {
     font-weight: 400;
