@@ -23,7 +23,7 @@ public class ShiroCacheClearRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         // 清空所有授权redis缓存
-        log.info("———————清空所有用户授权缓存———————clearAllCache——————— ");
+        log.info("——— Service restart, clearing all user shiro authorization cache ——— ");
         redisUtil.removeAll(CommonConstant.PREFIX_USER_SHIRO_CACHE);
 
     }
