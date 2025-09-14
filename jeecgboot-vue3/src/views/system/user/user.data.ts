@@ -50,6 +50,11 @@ export const columns: BasicColumn[] = [
     dataIndex: 'departIds_dictText',
   },
   {
+    title: '主岗位',
+    width: 150,
+    dataIndex: 'mainDepPostId_dictText',
+  },
+  {
     title: '状态',
     dataIndex: 'status_dictText',
     width: 80,
@@ -177,17 +182,26 @@ export const formSchema: FormSchema[] = [
   {
     label: '工号',
     field: 'workNo',
-    required: true,
+    required: false,
     component: 'Input',
-    dynamicRules: ({ model, schema }) => rules.duplicateCheckRule('sys_user', 'work_no', model, schema, true),
+    dynamicRules: ({ model, schema }) => rules.duplicateCheckRule('sys_user', 'work_no', model, schema, false),
   },
-  {
+/*  {
     label: '职务',
     field: 'post',
     required: false,
     component: 'JSelectPosition',
     componentProps: {
       labelKey: 'name',
+    },
+  },*/
+  {
+    label: '职务',
+    field: 'positionType',
+    required: false,
+    component: 'JDictSelectTag',
+    componentProps: {
+      dictCode: "user_position"
     },
   },
   {
@@ -220,10 +234,21 @@ export const formSchema: FormSchema[] = [
               field: 'departIds',
               componentProps: { options },
             },
+            //修改主岗位和兼职岗位的参数
+            {
+              field: 'mainDepPostId',
+              componentProps: { params: { departIds: values?values.value.join(","): "" } },
+            },
+            {
+              field: 'otherDepPostId',
+              componentProps: { params: { departIds: values?values.value.join(","): "" } },
+            }
           ]);
           //update-begin---author:wangshuai---date:2024-05-11---for:【issues/1222】用户编辑界面“所属部门”与“负责部门”联动出错整---
           if(!values){
             formModel.departIds = [];
+            formModel.mainDepPostId = "";
+            formModel.otherDepPostId = "";
             return;
           }
           //update-end---author:wangshuai---date:2024-05-11---for:【issues/1222】用户编辑界面“所属部门”与“负责部门”联动出错整---
@@ -231,6 +256,35 @@ export const formSchema: FormSchema[] = [
           formModel.departIds && (formModel.departIds = formModel.departIds.filter((item) => values.value.indexOf(item) > -1));
         },
       };
+    },
+  },
+  {
+    label: '主岗位',
+    field: 'mainDepPostId',
+    component: 'JSelectDepartPost',
+    componentProps: {
+      rowKey: 'id',
+      multiple: false
+    },
+    ifShow:  ({ values }) => {
+      if(!values.selecteddeparts){
+        return false;
+      }
+      return !(values.selecteddeparts instanceof Array && values.selecteddeparts.length == 0);
+    },
+  },
+  {
+    label: '兼职岗位',
+    field: 'otherDepPostId',
+    component: 'JSelectDepartPost',
+    componentProps: {
+      rowKey: 'id',
+    },
+    ifShow:  ({ values }) => {
+      if(!values.selecteddeparts){
+        return false;
+      }
+      return !(values.selecteddeparts instanceof Array && values.selecteddeparts.length == 0);
     },
   },
   {
@@ -296,10 +350,10 @@ export const formSchema: FormSchema[] = [
     label: '邮箱',
     field: 'email',
     component: 'Input',
-    required: true,
+    required: false,
     dynamicRules: ({ model, schema }) => {
       return [
-        { ...rules.duplicateCheckRule('sys_user', 'email', model, schema, true)[0], trigger: 'blur' },
+        { ...rules.duplicateCheckRule('sys_user', 'email', model, schema, false)[0], trigger: 'blur' },
         { ...rules.rule('email', false)[0], trigger: 'blur' },
       ];
     },
@@ -368,131 +422,7 @@ export const formPasswordSchema: FormSchema[] = [
   },
 ];
 
-export const formAgentSchema: FormSchema[] = [
-  {
-    label: '',
-    field: 'id',
-    component: 'Input',
-    show: false,
-  },
-  {
-    field: 'userName',
-    label: '用户名',
-    component: 'Input',
-    componentProps: {
-      readOnly: true,
-      allowClear: false,
-    },
-  },
-  {
-    field: 'agentUserName',
-    label: '代理人用户名',
-    required: true,
-    component: 'JSelectUser',
-    componentProps: {
-      rowKey: 'username',
-      labelKey: 'realname',
-      maxSelectCount: 10,
-    },
-  },
-  {
-    field: 'startTime',
-    label: '代理开始时间',
-    component: 'DatePicker',
-    required: true,
-    componentProps: {
-      showTime: true,
-      valueFormat: 'YYYY-MM-DD HH:mm:ss',
-      placeholder: '请选择代理开始时间',
-      getPopupContainer: () => document.body,
-    },
-  },
-  {
-    field: 'endTime',
-    label: '代理结束时间',
-    component: 'DatePicker',
-    required: true,
-    componentProps: {
-      showTime: true,
-      valueFormat: 'YYYY-MM-DD HH:mm:ss',
-      placeholder: '请选择代理结束时间',
-      getPopupContainer: () => document.body,
-    },
-  },
-  {
-    field: 'status',
-    label: '状态',
-    component: 'JDictSelectTag',
-    defaultValue: '1',
-    componentProps: {
-      dictCode: 'valid_status',
-      type: 'radioButton',
-    },
-  },
-];
 
-export const formQuitAgentSchema: FormSchema[] = [
-  {
-    label: '',
-    field: 'id',
-    component: 'Input',
-    show: false,
-  },
-  {
-    field: 'userName',
-    label: '用户名',
-    component: 'Input',
-    componentProps: {
-      readOnly: true,
-      allowClear: false,
-    },
-  },
-  {
-    field: 'agentUserName',
-    label: '交接人员',
-    //required: true,
-    component: 'JSelectUser',
-    componentProps: {
-      rowKey: 'username',
-      labelKey: 'realname',
-      maxSelectCount: 1,
-    },
-  },
-  {
-    field: 'startTime',
-    label: '交接开始时间',
-    component: 'DatePicker',
-    //required: true,
-    componentProps: {
-      showTime: true,
-      valueFormat: 'YYYY-MM-DD HH:mm:ss',
-      placeholder: '请选择交接开始时间',
-      getPopupContainer: () => document.body,
-    },
-  },
-  {
-    field: 'endTime',
-    label: '交接结束时间',
-    component: 'DatePicker',
-    //required: true,
-    componentProps: {
-      showTime: true,
-      valueFormat: 'YYYY-MM-DD HH:mm:ss',
-      placeholder: '请选择交接结束时间',
-      getPopupContainer: () => document.body,
-    },
-  },
-  {
-    field: 'status',
-    label: '状态',
-    component: 'JDictSelectTag',
-    defaultValue: '1',
-    componentProps: {
-      dictCode: 'valid_status',
-      type: 'radioButton',
-    },
-  },
-];
 
 //租户用户列表
 export const userTenantColumns: BasicColumn[] = [
