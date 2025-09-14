@@ -15,6 +15,7 @@
     @change="onChange"
     @search="onSearch"
     :tree-checkable="treeCheckAble"
+    :tagRender="tagRender"
   >
     <template #[name]="data" v-for="name in slotNamesGroup" :key="name">
       <slot :name="name" v-bind="data"></slot>
@@ -63,6 +64,10 @@
     treeCheckAble: propTypes.bool.def(false),
     //update-end---author:wangshuai date: 20230202 for: 新增是否有复选框
     hiddenNodeKey: propTypes.string.def(''),
+    //update-begin---author:wangshuai---date:2025-09-06---for: 多选时渲染tag文本，为空不渲染，不支持单选---
+    //多选时渲染tag文本
+    tagRender: propTypes.func,
+    //update-end---author:wangshuai---date:2025-09-06---for:多选时渲染tag文本，为空不渲染，不支持单选---
   });
   const attrs = useAttrs();
   const { t } = useI18n();

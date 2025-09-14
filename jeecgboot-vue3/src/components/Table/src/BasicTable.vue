@@ -382,6 +382,9 @@
         getSize: () => {
           return unref(getBindValues).size as SizeType;
         },
+        // update-begin--author:liaozhiyang---date:20250904---for：【QQYUN-13558】erp风格主表在5条数据时也有滚动条
+        getBindValuesRef: () => getBindValues,
+        // update-end--author:liaozhiyang---date:20250904---for：【QQYUN-13558】erp风格主表在5条数据时也有滚动条
       };
       createTableContext({ ...tableAction, wrapRef, getBindValues });
 

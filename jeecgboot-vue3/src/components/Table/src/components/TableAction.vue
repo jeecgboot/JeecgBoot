@@ -7,12 +7,12 @@
       <template v-else>
         <Tooltip v-if="action.tooltip" v-bind="getTooltip(action.tooltip)">
           <PopConfirmButton v-bind="action">
-            <Icon :icon="action.icon" :class="{ 'mr-1': !!action.label }" v-if="action.icon" :color="action.iconColor"/>
+            <Icon :icon="action.icon" :class="{ 'mr-1': !!action.label }" v-if="action.icon" />
             <template v-if="action.label">{{ action.label }}</template>
           </PopConfirmButton>
         </Tooltip>
         <PopConfirmButton v-else v-bind="action">
-          <Icon :icon="action.icon" :class="{ 'mr-1': !!action.label }" v-if="action.icon" :color="action.iconColor"/>
+          <Icon :icon="action.icon" :class="{ 'mr-1': !!action.label }" v-if="action.icon" />
           <template v-if="action.label">{{ action.label }}</template>
         </PopConfirmButton>
       </template>

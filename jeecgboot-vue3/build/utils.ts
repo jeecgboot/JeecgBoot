@@ -32,6 +32,7 @@ export function wrapperEnv(envConf: Recordable): ViteEnv {
       try {
         realName = JSON.parse(realName.replace(/'/g, '"'));
       } catch (error) {
+        console.log("PARSE VITE PROXY ERROR:", error);
         realName = '';
       }
     }

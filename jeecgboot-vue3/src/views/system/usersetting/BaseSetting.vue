@@ -10,7 +10,7 @@
           @change="updateAvatar"
           width="80"
         />
-        <div class="account-right">
+        <div class="account-right border-bottom">
           <div v-if="!isEdit">
             <span class="font-size-17 account-name">{{ userInfo.realname }}</span>
             <a-tooltip content="编辑姓名">
@@ -27,7 +27,7 @@
         </div>
       </div>
     </div>
-    <div class="account-data">
+    <div class="account-data border-bottom">
       <!-- 详细资料 -->
       <div class="account-detail">
         <div class="font-size-15 font-bold font-color-gray" style="margin-bottom: 16px">详细资料</div>
@@ -61,6 +61,47 @@
         </div>
       </div>
     </div>
+    <div class="account-data">
+      <!-- 个性签名 -->
+      <div class="account-detail">
+        <div class="font-size-15 font-bold font-color-gray" style="margin-bottom: 16px">个性签名</div>
+        <div class="font-size-13 flex">
+          <span class="gray-75 item-label">签名</span>
+          <a-upload
+            accept="jpg,jpeg,png"  
+            :max-count="1"
+            :multiple="false"
+            name = "file"
+            :headers="uploadHeader"
+            :action="uploadUrl"
+            v-model:fileList="uploadFileList"
+            @beforeUpload="beforeUpload"
+            @change="handleChange"
+            list-type="picture-card"
+            @preview="handlePreview"
+          >
+            <div v-if="uploadVisible">
+              <UploadOutlined></UploadOutlined>
+              <div class="ant-upload-text">上传</div>
+            </div>
+          </a-upload>
+          <a-modal :width="500" :open="previewVisible" :footer="null" @cancel="handleCancel">
+            <img alt="example" style="width: 100%" :src="previewImage" />
+          </a-modal>
+        </div>
+        <div style="font-size: 12px;color:#93a6aa" class="margin-bottom-10">
+          <p>建议上传尺寸为200*80，大小不超过1M且格式为png或jpeg的图片</p>
+          <p>生成签名方法一：手写扫描进行上传。</p>
+          <p>生成签名方法二：使用在线转换，生成后进行上传。
+            <a href="http://www.diyiziti.com/qianming" target="_blank">http://www.diyiziti.com/qianming</a>
+          </p>
+        </div>
+        <div class="margin-bottom-10 font-size-13 flex" style="margin-top: 10px">
+          <span class="gray-75 item-label">开启状态</span>
+          <a-switch v-model:checked="userInfo.signEnable" :checkedValue="1" :unCheckedValue="0" @change="handleEnableSignChange"></a-switch>
+        </div>
+      </div>
+    </div>
   </div>
   <UserAccountModal @register="registerModal" @success="getUserDetail"></UserAccountModal>
 </template>
@@ -73,7 +114,7 @@ import headerImg from '/@/assets/images/header.jpg';
 import { defHttp } from '/@/utils/http/axios';
 import { useUserStore } from '/@/store/modules/user';
 import { uploadImg } from '/@/api/sys/upload';
-import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
+import { getFileAccessHttpUrl, getRandom } from '/@/utils/common/compUtils';
 import dayjs from 'dayjs';
 import { ajaxGetDictItems, getDictItemsByCode, initDictOptions } from '/@/utils/dict';
 import { userEdit, getUserData, queryNameByCodes } from './UserSetting.api';
@@ -81,6 +122,10 @@ import UserAccountModal from './commponents/UserAccountModal.vue';
 import { useModal } from '/@/components/Modal';
 import { cloneDeep } from 'lodash-es';
 import { useDesign } from '/@/hooks/web/useDesign';
+import { getToken } from "@/utils/auth";
+import { uploadUrl } from "@/api/common/api";
+import { UploadOutlined } from "@ant-design/icons-vue";
+
 //TODO 当字典租户隔离时，数据会查不到，默认一个
 const sexOption = getDictItemsByCode("sex") || [{text:'男',value:'1'},{text:'女',value:'2'}];
 const { createMessage } = useMessage();
@@ -97,6 +142,26 @@ const [registerModal, { openModal }] = useModal();
 const avatar = computed(() => {
   return getFileAccessHttpUrl(userInfo.value.avatar) || headerImg;
 });
+//headers
+const uploadHeader = computed(() => {
+  let headers = {};
+  headers['X-Access-Token'] = getToken();
+  return headers;
+});
+const { createMessage: $message } = useMessage();
+//上传列表
+const uploadFileList = ref<any>([]);
+//计算是否可以继续上传
+const uploadVisible = computed(() => {
+  if(!uploadFileList){
+    return true;
+  }
+  return uploadFileList.value.length < 1;
+});
+//图片预览
+const previewVisible = ref<boolean>(false);
+//图片预览路径
+const previewImage = ref<string>('');
 
 /**
  * 更新用户头像
@@ -183,6 +248,7 @@ function openEditModal() {
  * 获取用户信息
  */
 function getUserDetail() {
+  uploadFileList.value = [];
   getUserData().then((async res => {
     if (res.success) {
       if (res.result) {
@@ -190,6 +256,20 @@ function getUserDetail() {
         res.result.birthday = getBirthDay(res.result.birthday);
         res.result.createTimeText = getDiffDay(res.result.createTime);
         userInfo.value = res.result;
+        if(userInfo.value.sign){
+          let sign = userInfo.value.sign;
+          let url = getFileAccessHttpUrl(sign);
+          uploadFileList.value.push({
+            uid: getRandom(10),
+            name: getFileName(sign),
+            status: 'done',
+            url: url,
+            response: {
+              status: 'history',
+              message: sign,
+            },
+          })
+        }
       } else {
         userInfo.value = {};
       }
@@ -211,6 +291,112 @@ function getDiffDay(date) {
   totalDays = Math.floor(diffDate / (1000 * 3600 * 24)) // 向下取整
   return totalDays+" 天";
 }
+
+/**
+ * 上传图片之前进行验证
+ * 
+ * @param file
+ */
+function beforeUpload({ file }) {
+  const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png" || file.type === "image/jpg";
+  if (!isJpgOrPng) {
+    $message.error("上传文件格式只能是jpg/png");
+    return false;
+  }
+  const isLimit = file.size / 1024 / 1024 < 1;
+  if (!isLimit) {
+    $message.error("上传图片大小不能超过 1MB!");
+    return false;
+  }
+  return true;
+}
+
+/**
+ * 上传成功事件
+ */
+function handleChange({ file, fileList }) {
+  if (file.status === 'error') {
+    createMessage.error(`${file.name} 上传失败.`);
+  }
+  if (file.status === 'done' && file.response.success === false) {
+    const failIndex = uploadFileList.value.findIndex((item) => item.uid === file.uid);
+    if (failIndex != -1) {
+      uploadFileList.value.splice(failIndex, 1);
+    }
+    createMessage.warning(file.response.message);
+    return;
+  }
+  if (file.status != 'uploading') {
+    fileList.forEach((file) => {
+      if (file.status === 'done') {
+        //上传成功事件
+        uploadSuccess(file.response.message);
+      }
+    });
+    if (file.status === 'removed') {
+      handleDelete();
+    }
+  }
+}
+
+/**
+ * 移除
+ */
+function handleDelete() {
+  updateUser({ sign: "", id: userInfo.value.id },"删除个性签名成功")
+}
+
+/**
+ * 上传成功事件
+ * @param url
+ */
+function uploadSuccess(url) {
+   updateUser({ sign: url, id: userInfo.value.id },"上传个性签名成功")
+}
+
+function updateUser(params,message) {
+  userEdit(params).then((res) => {
+    if(res.success){
+      createMessage.success(message);
+    }
+  });
+}
+
+/**
+ * 图片预览
+ * @param file
+ */
+function handlePreview(file) {
+  previewImage.value = file.url || file.thumbUrl;
+  previewVisible.value = true;
+}
+
+/**
+ * 获取文件名
+ * @param path
+ */
+function getFileName(path) {
+  if (path.lastIndexOf('\\') >= 0) {
+    let reg = new RegExp('\\\\', 'g');
+    path = path.replace(reg, '/');
+  }
+  return path.substring(path.lastIndexOf('/') + 1);
+}
+
+/**
+ * 图片预览关闭
+ */
+function handleCancel() {
+  previewVisible.value = false;
+}
+
+/**
+ * 个性签名开启状态更新
+ */
+function handleEnableSignChange() {
+  updateUser({ signEnable: userInfo.value.signEnable, id: userInfo.value.id },"修改成功")
+}
+
 onMounted(async () => {
   getUserDetail();
 });
@@ -346,6 +532,19 @@ onMounted(async () => {
     }
     .font-size-13 {
       font-size: 13px;
+    }
+    .ant-upload-select,.ant-upload-list-item-container{
+      width: 200px !important;
+      height: 80px !important;
+    }
+    .ant-upload-list-item-thumbnail .ant-upload-list-item-image {
+      object-fit: cover !important;
+    }
+    p{
+      margin-bottom: 5px;
+    }
+    .border-bottom{
+      border-bottom: 1px solid @border-color-base;
     }
   }
   // update-end-author:liusq date:20230625 for: [issues/563]暗色主题部分失效

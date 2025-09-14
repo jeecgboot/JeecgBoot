@@ -29,7 +29,7 @@
   </div>
 </template>
 <script lang="ts" name="system-notice" setup>
-  import { ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import { BasicTable, TableAction } from '/@/components/Table';
   import { useModal } from '/@/components/Modal';
   import NoticeModal from './NoticeModal.vue';
@@ -40,6 +40,9 @@
   import { columns, searchFormSchema } from './notice.data';
   import { getList, deleteNotice, batchDeleteNotice,editIzTop, getExportUrl, getImportUrl, doReleaseData, doReovkeData } from './notice.api';
   import { useListPage } from '/@/hooks/system/useListPage';
+  import { useAppStore } from '/@/store/modules/app';
+
+  const appStore = useAppStore();
   const glob = useGlobSetting();
   const [registerModal, { openModal }] = useModal();
   const [register, { openModal: openDetail }] = useModal();
@@ -71,9 +74,10 @@
   /**
    * 新增事件
    */
-  function handleAdd() {
+  function handleAdd(record = {}) {
     openModal(true, {
       isUpdate: false,
+      record,
     });
   }
 
@@ -192,4 +196,15 @@
       },
     ];
   }
+
+  onMounted(() => {
+    // update-begin--author:liaozhiyang---date:20250807---for：【JHHB-128】转公告
+    const params = appStore.getMessageHrefParams;
+    if (params?.add) {
+      delete params.add;
+      handleAdd(params);
+      appStore.setMessageHrefParams('');
+    }
+    // update-begin--author:liaozhiyang---date:20250807---for：【JHHB-128】转公告
+  });
 </script>

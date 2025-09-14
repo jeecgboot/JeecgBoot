@@ -161,7 +161,7 @@ export function useSysMessage(setLocaleText) {
         }
       }
       return '去处理'
-    }else{
+    } else {
       return '查看详情'
     }
   }

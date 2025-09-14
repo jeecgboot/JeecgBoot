@@ -43,7 +43,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   // ----- [end] 【JEECG作为乾坤子应用】 -----
   
   console.log('[init] Start Port: ', VITE_PORT);
-  console.log('[init] Vite Proxy Config: ', VITE_PROXY);
+  console.debug('[init] Vite Proxy Config: ', VITE_PROXY);
   
   
   return {
