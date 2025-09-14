@@ -31,8 +31,6 @@
     </repositories>
 
     <properties>
-        <kotlin.version>1.6.21</kotlin.version>
-        <liteflow.version>2.12.4.1</liteflow.version>
         <langchain4j.version>0.35.0</langchain4j.version>
         <apache-tika.version>2.9.1</apache-tika.version>
     </properties>
