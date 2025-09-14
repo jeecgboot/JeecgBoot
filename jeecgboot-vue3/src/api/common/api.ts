@@ -16,6 +16,12 @@ enum Api {
   getCategoryData = '/sys/category/loadAllData',
   refreshDragCache = '/drag/page/refreshCache',
   refreshDefaultIndexCache = '/sys/sysRoleIndex/cleanDefaultIndexCache',
+  //异步获取部门和岗位
+  queryDepartAndPostTreeSync = '/sys/sysDepart/queryDepartAndPostTreeSync',
+  //查询部门岗位下的用户
+  queryDepartPostUserPageList = '/sys/user/queryDepartPostUserPageList',
+  //查询所选部门的所有父节点ID
+  queryAllParentId = '/sys/sysDepart/queryAllParentId',
 }
 
 /**
@@ -54,6 +60,13 @@ export const queryDepartTreeSync = (params?) => {
   return defHttp.get({ url: Api.queryDepartTreeSync, params });
 };
 /**
+ * 异步获取部门职位树列表
+ */
+export const queryDepartAndPostTreeSync = (params?) => {
+  return defHttp.get({ url: Api.queryDepartAndPostTreeSync, params });
+};
+
+/**
  * 获取部门树列表
  */
 export const queryTreeList = (params?) => {
@@ -86,6 +99,21 @@ export const getDictItems = (dictCode) => {
 export const getTableList = (params) => {
   return defHttp.get({ url: Api.getTableList, params });
 };
+
+/**
+ * 部门岗位用户modal【查询部门岗位下的用户】
+ */
+export const queryDepartPostUserPageList = (params) => {
+  return defHttp.get({ url: Api.queryDepartPostUserPageList, params });
+};
+
+/**
+ * 查询所选部门的所有父节点ID
+ */
+export const queryAllParentId = (params) => {
+  return defHttp.get({ url: Api.queryAllParentId, params });
+};
+
 /**
  * 加载全部分类字典数据
  */

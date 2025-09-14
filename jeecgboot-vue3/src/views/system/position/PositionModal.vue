@@ -34,7 +34,7 @@
     }
   });
   //设置标题
-  const getTitle = computed(() => (!unref(isUpdate) ? '新增职务' : '编辑职务'));
+  const getTitle = computed(() => (!unref(isUpdate) ? '新增职务级别' : '编辑职务级别'));
   //表单提交事件
   async function handleSubmit() {
     try {
@@ -51,3 +51,8 @@
     }
   }
 </script>
+<style lang="less" scoped>
+  :deep(.ant-input-number){
+    width: 100%;
+  }
+</style>

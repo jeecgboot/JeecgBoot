@@ -3,6 +3,8 @@ import { inject, reactive, ref, computed, unref, watch, nextTick } from 'vue';
 import { TreeActionType } from '/@/components/Tree';
 import { listToTree } from '/@/utils/common/compUtils';
 import { isEqual } from 'lodash-es';
+import { defHttp } from "@/utils/http/axios";
+import { queryAllParentId } from "/@/api/common/api";
 
 export function useTreeBiz(treeRef, getList, props, realProps, emit) {
   //接收下拉框选项
@@ -24,6 +26,10 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
   // 是否是首次加载回显，只有首次加载，才会显示 loading
   let isFirstLoadEcho = true;
   let prevSelectValues = [];
+  // 需要展开的父节点ID列表
+  const expandedKeys = ref<Array<string | number>>([]);
+  // 是否启用自动展开功能（可以通过props控制）
+  const enableAutoExpand = props.enableAutoExpand !== false;
   /**
    * 监听selectValues变化
    */
@@ -55,9 +61,47 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
   function getTree() {
     const tree = unref(treeRef);
     if (!tree) {
-      throw new Error('tree is null!');
+      //throw new Error('tree is null!');
+      return null;
     }
     return tree;
+  }
+
+  /**
+   * 获取需要展开的父节点ID
+   */
+  async function getParentIdsToExpand(selectedIds) {
+    if (!selectedIds || selectedIds.length === 0) return [];
+    
+    try {
+      const result = await queryAllParentId({ 
+        departId: selectedIds.join(','),
+        orgCode: props.params?.orgCode 
+      });
+      
+      if (result) {
+        const allParentIds = [];
+        // 处理 Map 或 Object 结构
+        const valuesToProcess = result instanceof Map 
+          ? Array.from(result.values()) 
+          : Object.values(result);
+        
+        // 遍历所有选中节点的父节点
+        valuesToProcess.forEach((nodeData: any) => {
+          if (nodeData && nodeData.parentIds && Array.isArray(nodeData.parentIds)) {
+            // 添加父节点ID（不包含选中节点本身）
+            const parentIds = nodeData.parentIds.filter(id => !selectedIds.includes(id));
+            allParentIds.push(...parentIds);
+          }
+        });
+        
+        return [...new Set(allParentIds)]; // 去重
+      }
+      return [];
+    } catch (error) {
+      console.warn('获取父节点ID失败:', error);
+      return [];
+    }
   }
 
   /**
@@ -70,7 +114,19 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
       }
       //设置列表默认选中
       checkedKeys.value = selectValues['value'];
-    }).then();
+      
+      // 如果有需要展开的父节点，则展开它们
+      if (expandedKeys.value.length > 0) {
+        getTree().setExpandedKeys(expandedKeys.value);
+      }
+    }).then(() => {
+      // 再次确保展开，因为树可能还没有完全渲染
+      if (expandedKeys.value.length > 0) {
+        setTimeout(() => {
+          getTree().setExpandedKeys(expandedKeys.value);
+        }, 100);
+      }
+    });
   }
 
   /**
@@ -171,8 +227,20 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
       startPid = '';
       params['ids'] = ids;
     }
+
+    if(props.params?.departIds){
+      params['departIds'] = props.params.departIds;
+    }
     let record = await getList(params);
     let optionData = record;
+    //只展示公司信息（公司+子公司）
+    if(props.onlyShowCompany){
+      record = getCompanyData(record)
+    }
+    //是否只选择部门岗位
+    if (props.izOnlySelectDepartPost) {
+      setCompanyDepartCheckable(record);
+    }
     if (!props.serverTreeData) {
       //前端处理数据为tree结构
       record = listToTree(record, props, startPid);
@@ -212,6 +280,14 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
     }
   }
 
+  /**
+   * 获取到公司/子公司数据
+   * @param record
+   */
+  function getCompanyData(record){
+    const companyData = record.filter(item=>item.orgCategory && ['1','4'].includes(item.orgCategory));
+    return companyData
+  }
   /**
    * 异步加载时检测是否含有下级节点
    * @param pid 父节点
@@ -256,11 +332,102 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
       //弹出框打开时加载全部数据
       openModal.value = true;
       await onLoadData(null, null);
+      
+      // 在数据加载完成后，如果有选中的值且启用了自动展开功能，则展开父节点
+      if (enableAutoExpand && selectValues.value && selectValues.value.length > 0) {
+        try {
+          const selectedIds = selectValues.value;
+          const parentIds = await getParentIdsToExpand(selectedIds);
+          
+          if (parentIds.length > 0) {
+            expandedKeys.value = parentIds;
+            
+            // 延迟展开，确保树已经渲染完成
+            nextTick(() => {
+              try {
+                const tree = getTree();
+                if (tree) {
+                  tree.setExpandedKeys(parentIds);
+
+                  // 再次确保展开
+                  setTimeout(() => {
+                    try {
+                      const tree = getTree();
+                      if (tree) {
+                        tree.setExpandedKeys(parentIds);
+                        console.log('父节点已展开:', parentIds);
+                        // 第三次确保展开，使用更长的延迟
+                        setTimeout(() => {
+                          try {
+                            const tree = getTree();
+                            if (tree) {
+                              tree.setExpandedKeys(parentIds);
+                            }
+                          } catch (error) {
+                            console.warn('展开父节点失败:', error);
+                          }
+                        }, 500);
+                      }
+                    } catch (error) {
+                      console.warn('展开父节点失败:', error);
+                    }
+                  }, 200);
+                }
+              } catch (error) {
+                console.warn('展开父节点失败:', error);
+              }
+            });
+            
+          }
+        } catch (error) {
+          console.warn('获取父节点ID失败:', error);
+        }
+      }
     } else {
       openModal.value = false;
       // update-begin--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
       emit?.('close');
       // update-end--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
+    }
+  }
+
+  /**
+   * 设置公司部门复选框显示
+   * @param record
+   */
+  function setCompanyDepartCheckable(record) {
+    if (record && record.length > 0) {
+      for (const item of record) {
+        if (item.orgCategory !== '3') {
+          item.checkable = false;
+          item.selectable = false;
+        } else {
+          item.checkable = true;
+          item.selectable = true;
+        }
+        if (item.isLeaf) {
+          setCompanyDepartCheckable(item.children);
+        }
+      }
+    }
+  }
+
+  /**
+   * 岗位搜索
+   *
+   * @param value
+   */
+  async function onSearch(value) {
+    if(value){
+      let result = await defHttp.get({ url: "/sys/sysDepart/searchBy", params: { keyWord: value, orgCategory: "3",...props.params } });
+      if (Array.isArray(result)) {
+        treeData.value = result;
+      } else {
+        treeData.value = [];
+      }
+    } else {
+      treeData.value = [];
+      await onLoadData(null, null)
     }
   }
 
@@ -279,6 +446,8 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
       treeData,
       getCheckStrictly,
       getSelectTreeData,
+      onSearch,
+      expandedKeys,
     },
   ];
 }

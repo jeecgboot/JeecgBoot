@@ -3,8 +3,6 @@
     <BasicTable @register="registerTable" :rowSelection="rowSelection">
       <template #tableTitle>
         <a-button type="primary" preIcon="ant-design:plus-outlined" @click="handleAdd">新增</a-button>
-        <a-button type="primary" preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
-        <j-upload-button type="primary" preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
         <a-dropdown v-if="selectedRowKeys.length > 0">
           <template #overlay>
             <a-menu>
@@ -27,23 +25,23 @@
     <PositionModal @register="registerModal" @success="reload" />
   </div>
 </template>
-<script lang="ts" name="system-position" setup>
-  import { ref } from 'vue';
+<script lang="ts" name="TenantPositionList" setup>
+  import { onMounted } from 'vue';
   import { BasicTable, TableAction } from '/@/components/Table';
   import { useModal } from '/@/components/Modal';
-  import { getPositionList, deletePosition, batchDeletePosition, customUpload, getExportUrl, getImportUrl } from './position.api';
+  import { getPositionList, deletePosition, batchDeletePosition, getExportUrl, getImportUrl } from './position.api';
   import { columns, searchFormSchema } from './position.data';
   import PositionModal from './PositionModal.vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useListPage } from '/@/hooks/system/useListPage';
-  const { createMessage } = useMessage();
+  import { tenantSaasMessage } from '@/utils/common/compUtils';
+  import { getTenantId } from '@/utils/auth';
   const [registerModal, { openModal }] = useModal();
 
   // 列表页面公共参数、方法
-  const { prefixCls, onExportXls, onImportXls, tableContext } = useListPage({
-    designScope: 'position-template',
+  const { onExportXls, onImportXls, tableContext } = useListPage({
     tableProps: {
-      title: '职务列表',
+      title: '租户职务列表',
       api: getPositionList,
       columns: columns,
       formConfig: {
@@ -54,12 +52,15 @@
       },
       showIndexColumn: true,
       defSort: {
-        column: "",
-        order: ""
-      }
+        column: '',
+        order: '',
+      },
+      beforeFetch(params) {
+        return Object.assign({ tenantId: getTenantId() }, params);
+      },
     },
     exportConfig: {
-      name: '职务列表',
+      name: '租户职务列表',
       url: getExportUrl,
     },
     importConfig: {
@@ -120,10 +121,13 @@
    */
   async function batchHandleDelete() {
     await batchDeletePosition({ ids: selectedRowKeys.value }, () => {
-      // update-begin--author:liaozhiyang---date:20240223---for：【QQYUN-8334】批量删除之后，按钮未隐藏，选中记录还在
       selectedRowKeys.value = [];
       reload();
-      // update-end--author:liaozhiyang---date:20240223---for：【QQYUN-8334】批量删除之后，按钮未隐藏，选中记录还在
     });
   }
+
+  onMounted(() => {
+    //提示信息
+    tenantSaasMessage('租户职务');
+  });
 </script>
