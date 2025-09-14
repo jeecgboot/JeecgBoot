@@ -2,13 +2,13 @@
 JeecgBoot AI低代码平台
 ===============
 
-当前最新版本： 3.8.2（发布日期：2025-08-04） 
+当前最新版本： 3.8.3（发布日期：2025-09-22） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](https://jeecg.com)
 [![](https://img.shields.io/badge/blog-技术博客-orange.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.8.2-brightgreen.svg)](https://github.com/jeecgboot/JeecgBoot)
+[![](https://img.shields.io/badge/version-3.8.3-brightgreen.svg)](https://github.com/jeecgboot/JeecgBoot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/jeecgboot/JeecgBoot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/jeecgboot/JeecgBoot)
 
@@ -102,7 +102,7 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
 为什么选择JeecgBoot?
 -----------------------------------
-- 1.采用最新主流前后分离框架（Spring Boot3 + MyBatis + Ant Design4 + Vue3），容易上手；代码生成器依赖性低，灵活的扩展能力，可快速实现二次开发。
+- 1.采用最新主流前后分离框架（Spring Boot3 + MyBatis + Shiro//SpringAuthorizationServer + Ant Design4 + Vue3），容易上手；代码生成器依赖性低，灵活的扩展能力，可快速实现二次开发。
 - 2.前端大版本换代，最新版采用 Vue3.0 + TypeScript + Vite6 + Ant Design Vue4 等新技术方案。
 - 3.支持微服务Spring Cloud Alibaba（Nacos、Gateway、Sentinel、Skywalking），提供简易机制，支持单体和微服务自由切换（这样可以满足各类项目需求）。
 - 4.开发效率高，支持在线建表和AI建表，提供强大代码生成器，单表、树列表、一对多、一对一等数据模型，增删改查功能一键生成，菜单配置直接使用。
@@ -169,8 +169,8 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 - 基础框架：Spring Boot 3.5.5/2.7.18
 - 微服务框架： Spring Cloud Alibaba 2021.0.6.2
 - 持久层框架：MybatisPlus 3.5.3.2
-- 报表工具： JimuReport 2.1.2
-- 安全框架：Apache Shiro 1.13.0，Jwt 4.5.0
+- 报表工具： JimuReport 2.1.3
+- 安全框架：Apache Shiro/SpringAuthorizationServer，Jwt 4.5.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.1.24
 - AI大模型：支持 `ChatGPT` `DeepSeek`切换
