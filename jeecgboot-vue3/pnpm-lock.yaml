@@ -262,8 +262,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.3(vite@6.2.3(@types/node@20.17.28)(jiti@2.4.2)(less@4.2.2)(terser@5.39.0)(tsx@4.19.3))(vue@3.5.13(typescript@4.9.5))
       '@vitejs/plugin-vue-jsx':
-        specifier: ^4.1.1
-        version: 4.1.2(vite@6.2.3(@types/node@20.17.28)(jiti@2.4.2)(less@4.2.2)(terser@5.39.0)(tsx@4.19.3))(vue@3.5.13(typescript@4.9.5))
+        specifier: 4.1.1
+        version: 4.1.1(vite@6.2.3(@types/node@20.17.28)(jiti@2.4.2)(less@4.2.2)(terser@5.39.0)(tsx@4.19.3))(vue@3.5.13(typescript@4.9.5))
       '@vue/compiler-sfc':
         specifier: ^3.5.13
         version: 3.5.13
@@ -1657,8 +1657,8 @@ packages:
   '@vant/area-data@1.5.2':
     resolution: {integrity: sha512-Gtxgt6Rjgopt6234ANpO0bBsSwtjZ23lBlVDHIy8Mi2NJqyoj1vgVWY0dri8/2LCZAWzQ6EnwRrUVViUZ0cvMA==}
 
-  '@vitejs/plugin-vue-jsx@4.1.2':
-    resolution: {integrity: sha512-4Rk0GdE0QCdsIkuMmWeg11gmM4x8UmTnZR/LWPm7QJ7+BsK4tq08udrN0isrrWqz5heFy9HLV/7bOLgFS8hUjA==}
+  '@vitejs/plugin-vue-jsx@4.1.1':
+    resolution: {integrity: sha512-uMJqv/7u1zz/9NbWAD3XdjaY20tKTf17XVfQ9zq4wY1BjsB/PjpJPMe2xiG39QpP4ZdhYNhm4Hvo66uJrykNLA==}
     engines: {node: ^18.0.0 || >=20.0.0}
     peerDependencies:
       vite: ^5.0.0 || ^6.0.0
@@ -6104,7 +6104,7 @@ packages:
     resolution: {integrity: sha512-n+YghR059YmciANGJh9SsNWRi1YZEBVlODtmnb/12zI+4R72QZSWd+EuZ5mW6auEo/yaJXgxzwsuhvALVnm73A==}
 
   vue-print-nb-jeecg@1.0.12:
-    resolution: {integrity: sha512-zlvD2qFY9wrfH3M+YCP91fe1ihVjwNFgycXX6zfC7Q1x6IHAPKvZhke599x86O/Ta4edCx+HoYchm72sANuyRw==}
+    resolution: {integrity: sha512-jHyWm6/TxB1iU2nHL7upQdHVdxb1SJQ9n3XKeYTaruFdbSphLo1vDtTunS2qVCjupk8lui7FlF5rxxSNr0zjZg==}
 
   vue-router@4.5.0:
     resolution: {integrity: sha512-HDuk+PuH5monfNuY+ct49mNmkCRK4xJAV9Ts4z9UFc4rzdDnxQLyCMGGc8pKhZhHTVzfanpNwB/lwqevcBwI4w==}
@@ -7781,7 +7781,7 @@ snapshots:
 
   '@vant/area-data@1.5.2': {}
 
-  '@vitejs/plugin-vue-jsx@4.1.2(vite@6.2.3(@types/node@20.17.28)(jiti@2.4.2)(less@4.2.2)(terser@5.39.0)(tsx@4.19.3))(vue@3.5.13(typescript@4.9.5))':
+  '@vitejs/plugin-vue-jsx@4.1.1(vite@6.2.3(@types/node@20.17.28)(jiti@2.4.2)(less@4.2.2)(terser@5.39.0)(tsx@4.19.3))(vue@3.5.13(typescript@4.9.5))':
     dependencies:
       '@babel/core': 7.26.10
       '@babel/plugin-transform-typescript': 7.27.0(@babel/core@7.26.10)
