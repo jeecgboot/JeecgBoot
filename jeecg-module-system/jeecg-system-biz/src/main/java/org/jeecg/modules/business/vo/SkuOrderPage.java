@@ -171,6 +171,18 @@ public class SkuOrderPage {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
     private java.util.Date skuPriceEffectiveDate;
     /**
+     * 币种
+     */
+    @Excel(name = "价格币种Id", width = 15)
+    @ApiModelProperty(value = "价格币种Id")
+    private String currencyId;
+    /**
+     * 优惠价起订量
+     */
+    @Excel(name = "优惠价起订量", width = 15)
+    @ApiModelProperty(value = "优惠价起订量")
+    private Integer threshold;
+    /**
      * 申报价格
      */
     @Excel(name = "申报价格", width = 15)

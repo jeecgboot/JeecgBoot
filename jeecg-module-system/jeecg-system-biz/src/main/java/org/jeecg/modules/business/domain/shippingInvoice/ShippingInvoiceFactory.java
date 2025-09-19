@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.controller.UserException;
+import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
 import org.jeecg.modules.business.domain.codeGeneration.CompleteInvoiceCodeRule;
 import org.jeecg.modules.business.domain.codeGeneration.ShippingInvoiceCodeRule;
 import org.jeecg.modules.business.domain.purchase.invoice.PurchaseInvoice;
@@ -83,6 +84,10 @@ public class ShippingInvoiceFactory {
     private EmailService emailService;
     @Autowired
     private IInvoiceNumberReservationService invoiceNumberReservationService;
+    @Autowired
+    private ISkuService skuService;
+    @Autowired
+    private ISkuPriceService skuPriceService;
     @Autowired
     private Environment env;
 
@@ -850,15 +855,15 @@ public class ShippingInvoiceFactory {
             }
 
             // calculate weight of an order
-            Pair<BigDecimal, List<String>> contentWeightResult = platformOrderContentService.calculateWeight(
+            Response<BigDecimal, List<String>> contentWeightResult = platformOrderContentService.calculateWeight(
                     contentSkuQtyMap,
                     skuRealWeights
             );
-            if(!contentWeightResult.getValue().isEmpty()) {
-                platformOrderIdsWithPb.put(uninvoicedOrder.getId(), contentWeightResult.getValue());
+            if(!contentWeightResult.getError().isEmpty()) {
+                platformOrderIdsWithPb.put(uninvoicedOrder.getId(), contentWeightResult.getError());
                 continue;
             }
-            BigDecimal contentWeight = contentWeightResult.getKey();
+            BigDecimal contentWeight = contentWeightResult.getData();
             Pair<LogisticChannel, LogisticChannelPrice> logisticChannelPair;
             Response<Pair<LogisticChannel, LogisticChannelPrice>, String> logisticChannelPriceResponse;
             try {
@@ -1054,15 +1059,15 @@ public class ShippingInvoiceFactory {
         }
 
         // calculate weight of an order
-        Pair<BigDecimal, List<String>> contentWeightResult = platformOrderContentService.calculateWeight(
+        Response<BigDecimal, List<String>> contentWeightResult = platformOrderContentService.calculateWeight(
                 contentSkuQtyMap,
                 skuRealWeights
         );
-        if(!contentWeightResult.getValue().isEmpty()) {
-            response.setError("Order: " + order.getPlatformOrderId() + " has invalid sku weight: " + contentWeightResult.getValue());
+        if(!contentWeightResult.getError().isEmpty()) {
+            response.setError("Order: " + order.getPlatformOrderId() + " has invalid sku weight: " + contentWeightResult.getError());
             return response;
         }
-        BigDecimal contentWeight = contentWeightResult.getKey();
+        BigDecimal contentWeight = contentWeightResult.getData();
         Pair<LogisticChannel, LogisticChannelPrice> logisticChannelPair;
         Response<Pair<LogisticChannel, LogisticChannelPrice>, String> logisticChannelPriceResponse;
         try {
@@ -1479,10 +1484,175 @@ public class ShippingInvoiceFactory {
         return estimations;
     }
 
-    public List<ShippingFeesEstimationPerOrder> getShippingEstimationPerOrder(String clientId, List<String> orderIds) {
-        List<ShippingFeesEstimationPerOrder> estimations = new ArrayList<>();
-        Map<PlatformOrder, List<PlatformOrderContent>> ordersMap = platformOrderService.fetchOrderData(orderIds);
-        //todo retrieve all distinct sku infos (weight, price, declared value)
+    public List<FeesEstimationPerOrder> getShippingEstimationPerOrder(String clientId, List<String> orderIds) throws UserException {
+        Client client = clientMapper.selectById(clientId);
+        List<FeesEstimationPerOrder> estimations = new ArrayList<>();
+        Map<String, List<String>> platformOrderIdsWithPb = new HashMap<>();
+        List<String> errorMessages = new ArrayList<>();
+        Map<PlatformOrder, List<PlatformOrderContent>> ordersMap = platformOrderService.fetchOrderDataWithFees(orderIds);
+        List<SkuOrderPage> orderSkus = platformOrderService.searchOrdersSkus(orderIds);
+        List<LogisticChannel> logisticChannels = logisticChannelMapper.getAll();
+        Map<String, LogisticChannel> logisticChannelMap = logisticChannels.stream()
+                .collect(toMap(LogisticChannel::getId, Function.identity()));
+        Map<LogisticChannel, List<LogisticChannelPrice>> channelPriceMap = getChannelPriceMap(logisticChannelMap, ordersMap, true);
+        Map<String, BigDecimal> orderSkusWeights = orderSkus.stream()
+                .collect(toMap(SkuOrderPage::getId, sku -> BigDecimal.valueOf(sku.getWeight())));
+        Map<String, BigDecimal> skuServiceFees = orderSkus.stream()
+                .collect(toMap(SkuOrderPage::getId, SkuOrderPage::getServiceFee));
+        Map<String, SkuPrice> skuPrices = orderSkus.stream()
+                .collect(toMap(SkuOrderPage::getId, sku -> {
+                    SkuPrice skuPrice = new SkuPrice();
+                    skuPrice.setId(sku.getId());
+                    skuPrice.setPrice(sku.getSkuPrice());
+                    skuPrice.setDiscountedPrice(sku.getDiscountedPrice());
+                    skuPrice.setDate(sku.getSkuPriceEffectiveDate());
+                    skuPrice.setThreshold(sku.getThreshold());
+                    skuPrice.setCurrencyId(sku.getCurrencyId());
+                    return skuPrice;
+                }));
+        List<Country> countryList = countryService.findAll();
+        BigDecimal exchangeRateEurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
+        Map<String, String> logisticChannelNameToId = logisticChannels.stream().collect(toMap(LogisticChannel::getInternalName, LogisticChannel::getId));
+
+        for(PlatformOrder order: ordersMap.keySet()) {
+            FeesEstimationPerOrder estimation = new FeesEstimationPerOrder();
+            BigDecimal purchaseEstimation = BigDecimal.ZERO;
+
+            List<String> skuIds = ordersMap.get(order).stream().map(PlatformOrderContent::getSkuId).distinct().collect(toList());
+            estimation.setOrderId(order.getId());
+            boolean hasProductUnavailable = (order.getProductAvailable() == null || order.getProductAvailable().equals("0"))
+                    && order.getPurchaseInvoiceNumber() == null
+                    && order.getVirtualProductAvailable().equals("0");
+
+            String logisticChannelId = logisticChannelNameToId.get(order.getLogisticChannelName());
+            List<PlatformOrderContent> contents = ordersMap.get(order).stream().filter(content -> !content.getErpStatus().equals(OrderStatus.Obsolete.getCode())).collect(toList());
+            if (contents.isEmpty()) {
+                throw new UserException("Order: {} doesn't have content", order.getId());
+            }
+            Map<String, Integer> contentSkuQtyMap = new HashMap<>();
+            for (PlatformOrderContent content : contents) {
+                if(content.getErpStatus().equals(OrderStatus.Obsolete.getCode()))
+                    continue;
+                String skuId = content.getSkuId();
+                if (contentSkuQtyMap.containsKey(skuId)) {
+                    contentSkuQtyMap.put(skuId, contentSkuQtyMap.get(skuId) + content.getQuantity());
+                } else {
+                    contentSkuQtyMap.put(skuId, content.getQuantity());
+                }
+            }
+            Response<BigDecimal, List<String>> contentWeightResult = platformOrderContentService.calculateWeight(contentSkuQtyMap, orderSkusWeights);
+            if(!contentWeightResult.getError().isEmpty()) {
+                log.error("Error for order : {} - {} : {}", order.getPlatformOrderId(), order.getPlatformOrderNumber(), contentWeightResult.getError());
+                platformOrderIdsWithPb.put(order.getId(), contentWeightResult.getError());
+                continue;
+            }
+            BigDecimal contentWeight = contentWeightResult.getData();
+            Pair<LogisticChannel, LogisticChannelPrice> logisticChannelPair;
+            Response<Pair<LogisticChannel, LogisticChannelPrice>, String> logisticChannelPriceResponse;
+            try {
+                logisticChannelPriceResponse = findAppropriatePrice(countryList, logisticChannelMap,
+                        channelPriceMap, order, contentWeight);
+            }
+            catch ( UserException e ) {
+                log.error("Error for order : {} - {} : {}", order.getPlatformOrderId(), order.getPlatformOrderNumber(), e.getMessage());
+                platformOrderIdsWithPb.put(order.getId(), Collections.singletonList(e.getMessage()));
+                continue;
+            }
+            if(logisticChannelPriceResponse.getError() != null) {
+                log.error("Error for order : {} - {} : {}", order.getPlatformOrderId(), order.getPlatformOrderNumber(), logisticChannelPriceResponse.getError());
+                platformOrderIdsWithPb.put(order.getId(), Collections.singletonList(logisticChannelPriceResponse.getError()));
+                continue;
+            }
+            logisticChannelPair = logisticChannelPriceResponse.getData();
+            LogisticChannelPrice channelPrice = logisticChannelPair.getRight();
+
+            Map<String, List<LogisticInsurance>> orderSkuInsuranceFees = logisticInsuranceService.getInsuranceFeesBySkuIds(skuIds, logisticChannelId)
+                    .stream().collect(groupingBy(LogisticInsurance::getSkuId));
+
+            BigDecimal skuInsuranceTotal = BigDecimal.ZERO;
+            BigDecimal packageMatFee = order.getPackagingMaterialFee();
+            BigDecimal orderServiceFee = order.getOrderServiceFee();
+            BigDecimal fretFee = channelPrice.getRegistrationFee();
+            BigDecimal pickingFee = channelPrice.getAdditionalCost();
+            BigDecimal totalShippingFee = channelPrice.calculateShippingPrice(contentWeight);
+            BigDecimal pickingFeePerItem = channelPrice.getPickingFeePerItem();
+            BigDecimal clientVatPercentage = client.getVatPercentage();
+            Map<PlatformOrderContent, BigDecimal> contentDeclaredValueMap = new HashMap<>();
+            List<SkuDeclaredValue> orderDeclaredValues = orderSkus.stream()
+                    .filter(sku -> skuIds.contains(sku.getId()))
+                    .map(sku -> {
+                        SkuDeclaredValue sdv = new SkuDeclaredValue();
+                        sdv.setSkuId(sku.getId());
+                        sdv.setDeclaredValue(sku.getDeclaredValue());
+                        return sdv;
+                    }).collect(toList());
+            BigDecimal totalDeclaredValue = calculateTotalDeclaredValue(contents, contentDeclaredValueMap, orderDeclaredValues);
+            BigDecimal totalVAT = BigDecimal.ZERO;
+            boolean vatApplicable = clientVatPercentage.compareTo(BigDecimal.ZERO) > 0
+                    && EU_COUNTRY_LIST.contains(order.getCountry())
+                    // If picking fee per item = 0, it means the package was sent from China so VAT applicable
+                    && channelPrice.getPickingFeePerItem().compareTo(BigDecimal.ZERO) == 0;
+
+            BigDecimal minimumDeclaredValue = channelPrice.getMinimumDeclaredValue();
+            if (vatApplicable && minimumDeclaredValue != null) {
+                totalVAT = calculateTotalVat(totalDeclaredValue, clientVatPercentage, minimumDeclaredValue);
+            }
+            for(Map.Entry<String, Integer> entry: contentSkuQtyMap.entrySet()) {
+                String skuId = entry.getKey();
+                Integer qty = entry.getValue();
+                List<LogisticInsurance> insurances = orderSkuInsuranceFees.get(skuId);
+                if (insurances == null || insurances.isEmpty())
+                    continue;
+                for(LogisticInsurance insurance: insurances) {
+                    skuInsuranceTotal = skuInsuranceTotal.add(insurance.getPrice().multiply(BigDecimal.valueOf(qty)));
+                }
+            }
+            if(!logisticChannelPair.getLeft().getWarehouseInChina().equalsIgnoreCase("0")) {
+                order.setPackagingMaterialFee(BigDecimal.ZERO);
+            }
+            order.setFretFee(fretFee);
+            order.setPickingFee(pickingFee);
+            order.setOrderServiceFee(orderServiceFee);
+            order.setInsuranceFee(skuInsuranceTotal);
+
+            BigDecimal remainingShippingFee = totalShippingFee;
+            for (PlatformOrderContent content : contents) {
+                List<LogisticInsurance> skuInsuranceList = orderSkuInsuranceFees.get(content.getSkuId());
+
+                LogisticInsurance contentSkuInsurance = skuInsuranceList == null ? null :
+                        skuInsuranceList.stream().filter(insuranceFee -> insuranceFee.getLogisticChannelId().equals(logisticChannelId)).findFirst().orElse(null);
+                remainingShippingFee = calculateAndUpdateContentFees(orderSkusWeights, skuServiceFees, order, contentWeight,
+                        totalShippingFee, clientVatPercentage, contentDeclaredValueMap, totalDeclaredValue, totalVAT,
+                        vatApplicable, pickingFeePerItem, content, remainingShippingFee, contentSkuInsurance);
+
+                if(hasProductUnavailable) {
+                    SkuPrice skuPrice = skuPrices.get(content.getSkuId());
+                    if(skuPrice == null) {
+                        Sku sku = skuService.getById(content.getSkuId());
+                        String erpCode = sku != null ? sku.getErpCode() : "Unknown SKU";
+                        errorMessages.add("No valid price for SKU: " + erpCode);
+                        log.warn("No valid price for SKU: {}", content.getSkuId());
+                        continue;
+                    }
+                    BigDecimal price = skuPriceService.getPrice(skuPrice, content.getQuantity(), exchangeRateEurToRmb);
+                    price = price.multiply(BigDecimal.valueOf(content.getQuantity()));
+                    purchaseEstimation = purchaseEstimation.add(price);
+                    log.info("Matched SKU: {}, Qty: {}, Final Price: {}", content.getSkuId(), content.getQuantity(), price);
+                }
+            }
+            platformOrderIdsWithPb.forEach((key, value) -> errorMessages.addAll(value));
+            if(platformOrderIdsWithPb.get(order.getId()) != null && !platformOrderIdsWithPb.get(order.getId()).isEmpty()) {
+                continue;
+            }
+            BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
+            ShippingInvoice invoice = new ShippingInvoice(client, "", "", Collections.singletonMap(order, contents), null, null, eurToUsd);
+            invoice.tableData();
+            estimation.setShippingEstimation(invoice.getTotalAmount());
+            estimation.setPurchaseEstimation(purchaseEstimation);
+            estimations.add(estimation);
+        }
+
+
         return estimations;
     }
 

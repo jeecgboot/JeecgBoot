@@ -318,6 +318,13 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
     }
     @Override
+    public Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataWithFees(List<String> orderIds) {
+        List<PlatformOrder> orderList = platformOrderMap.fetchOrderByIdWithFees(orderIds);
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContentByIdWithFees(orderIds);
+        Map<String, PlatformOrder> orderMap = orderList.stream().collect(toMap(PlatformOrder::getId, Function.identity()));
+        return orderContents.stream().collect(groupingBy(platformOrderContent -> orderMap.get(platformOrderContent.getPlatformOrderId())));
+    }
+    @Override
     public void selectOrderDataForUpdate(List<String> orderIds) {
         platformOrderMap.selectBatchIdsForUpdate(orderIds);
         platformOrderContentMap.fetchOrderContentForUpdate(orderIds);
@@ -659,5 +666,10 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public List<ThirdPartyStockAttributionParam> fetchThirdPartyStockAttributionParams(LocalDateTime startDateTime, List<String> shopCodes, List<String> countries) {
         return platformOrderMap.fetchThirdPartyStockAttributionParams(startDateTime, shopCodes, countries);
+    }
+
+    @Override
+    public List<SkuOrderPage> searchOrdersSkus(List<String> orderIds) {
+        return platformOrderMap.searchOrdersSkus(orderIds);
     }
 }

@@ -272,4 +272,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     Integer countOrdersByShop(@Param("shopId") String shopId);
 
     List<ThirdPartyStockAttributionParam> fetchThirdPartyStockAttributionParams(LocalDateTime startDateTime, List<String> shopCodes, List<String> countries);
+
+    List<SkuOrderPage> searchOrdersSkus(@Param("orderIds") List<String> orderIds);
+
+    List<PlatformOrder> fetchOrderByIdWithFees(@Param("orderIds") List<String> orderIds);
 }

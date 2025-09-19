@@ -1013,11 +1013,9 @@ public class InvoiceController {
     }
 
     @GetMapping("/completeFeesEstimationPerOrder")
-    public Result<?> getCompleteFeesEstimationPerOrder(@RequestBody ShippingInvoiceOrderParam param) {
-        String currency = clientService.getById(param.clientID()).getCurrency();
-        Map<String, Estimation> estimationsByOrder = new HashMap<>();
-        List<ShippingFeesEstimationPerOrder> estimations = shippingInvoiceService.getShippingEstimationPerOrder(param.clientID(), param.orderIds());
-        return Result.OK();
+    public Result<?> getCompleteFeesEstimationPerOrder(@RequestParam("clientID") String clientId, @RequestParam("orderIds[]") List<String> orderIds) throws UserException {
+        List<FeesEstimationPerOrder> estimations = shippingInvoiceService.getShippingEstimationPerOrder(clientId, orderIds);
+        return Result.OK(estimations);
     }
 
     @GetMapping(value = "/checkInvoiceValidity")

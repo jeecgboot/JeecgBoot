@@ -1,10 +1,9 @@
 package org.jeecg.modules.business.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jeecg.modules.business.controller.UserException;
-import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
+import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
 
@@ -27,7 +26,7 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
      * @param skuRealWeights All SKU's real weights
      * @return weight
      */
-    Pair<BigDecimal, List<String>> calculateWeight(Map<String, Integer> contentMap, Map<String, BigDecimal> skuRealWeights) throws UserException;
+    Response<BigDecimal, List<String>> calculateWeight(Map<String, Integer> contentMap, Map<String, BigDecimal> skuRealWeights) throws UserException;
 
     /**
      * Retrieve all SKU weights and discounts

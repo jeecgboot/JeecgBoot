@@ -465,4 +465,12 @@
           and sr.is_active = 1
           and po.platform_order_id = #{platformOrderId};
     </select>
+    <select id="fetchOrderContentByIdWithFees" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
+        SELECT *
+        FROM platform_order_content
+        WHERE platform_order_id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>;
+    </select>
 </mapper>
