@@ -5,8 +5,8 @@ import org.jeecg.modules.business.domain.api.mabang.Request;
 import org.springframework.http.ResponseEntity;
 
 /**
- * 调用马帮 order-do-change-order 接口，将订单标记为作废（orderStatus=5）。
- * 与 CancelOrderRequestBody 配套使用。
+ * CancelOrderRequest  represents a request to cancel an order（orderStatus=5）
+ * using the MaBang API (order-do-change-order).
  */
 @Slf4j
 public class CancelOrderRequest extends Request {

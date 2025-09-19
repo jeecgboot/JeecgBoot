@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 通过 order-do-change-order 将订单标记为作废（orderStatus=5）
+ *represents the body of a request to cancel orders
+ * using the MaBang API (order-do-change-order).
  */
 public class CancelOrderRequestBody implements RequestBody {
 
