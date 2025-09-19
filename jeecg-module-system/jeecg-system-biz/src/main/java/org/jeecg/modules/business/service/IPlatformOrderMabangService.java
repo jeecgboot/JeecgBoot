@@ -38,6 +38,10 @@ public interface IPlatformOrderMabangService extends IService<Order> {
 
     Responses suspendOrder(PlatformOrderOperation orderOperation);
 
+    Responses doSuspendOrder(PlatformOrderOperation orderOperation, String operator);
+
+    Responses suspendOrderBySystem(PlatformOrderOperation orderOperation);
+
     Responses cancelOrders(PlatformOrderOperation orderOperation);
 
     List<Order> getOrdersFromMabang(List<OrderListRequestBody> requests, ExecutorService executor);

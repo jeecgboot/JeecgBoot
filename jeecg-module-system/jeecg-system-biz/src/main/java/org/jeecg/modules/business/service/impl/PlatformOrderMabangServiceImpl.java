@@ -227,38 +227,53 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
     }
 
     @Override
-    public Responses suspendOrder(PlatformOrderOperation orderOperation) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        List<String> orderIds = Arrays.stream(orderOperation.getOrderIds().split(",")).map(String::trim).collect(toList());
+    public Responses doSuspendOrder(PlatformOrderOperation orderOperation, String operator) {
+        List<String> orderIds = Arrays.stream(orderOperation.getOrderIds().split(","))
+                .map(String::trim).collect(toList());
         // group id is the response from mabang API
         Responses responses = new Responses();
-        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
-                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
-
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(
+                DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE,
+                TimeUnit.MINUTES
+        );
         List<CompletableFuture<Responses>> futures =  orderIds.stream()
-            .map(id -> CompletableFuture.supplyAsync(() -> {
-                OrderSuspendRequestBody body = new OrderSuspendRequestBody(id, ABNORMAL_LABEL_NAME,sysUser.getRealname() + " : " + orderOperation.getReason());
-                OrderSuspendRequest request = new OrderSuspendRequest(body);
-                OrderSuspendResponse response = request.send();
-                Responses r = new Responses();
-                if(response.success())
-                    r.addSuccess(id);
-                else
-                    r.addFailure(id);
-                return r;
-            }, throttlingExecutorService))
-            .collect(toList());
-        List<Responses> results = futures.stream()
-            .map(CompletableFuture::join)
-            .collect(toList());
+                .map(id -> CompletableFuture.supplyAsync(() -> {
+                    String label = (orderOperation.getLabelName() != null && !orderOperation.getLabelName().isEmpty())
+                            ? orderOperation.getLabelName()
+                            : ABNORMAL_LABEL_NAME;
+                    OrderSuspendRequestBody body = new OrderSuspendRequestBody(
+                            id,
+                            label,
+                            operator + " : " + orderOperation.getReason()
+                    );
+                    OrderSuspendRequest request = new OrderSuspendRequest(body);
+                    OrderSuspendResponse response = request.send();
+                    Responses r = new Responses();
+                    if(response.success())
+                        r.addSuccess(id);
+                    else
+                        r.addFailure(id);
+                    return r;
+                }, throttlingExecutorService))
+                .collect(toList());
+        List<Responses> results = futures.stream().map(CompletableFuture::join).collect(toList());
         results.forEach(r -> {
             responses.getSuccesses().addAll(r.getSuccesses());
             responses.getFailures().addAll(r.getFailures());
         });
-        log.info("{}/{} orders suspended successfully.", responses.getSuccesses().size(), orderIds.size());
+        log.info("{}/{} orders suspended successfully by {}.", responses.getSuccesses().size(), orderIds.size(), operator);
         return responses;
     }
-
+    @Override
+    public Responses suspendOrder(PlatformOrderOperation orderOperation) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        return doSuspendOrder(orderOperation, sysUser.getRealname());
+    }
+    @Override
+    public Responses suspendOrderBySystem(PlatformOrderOperation orderOperation) {
+        return doSuspendOrder(orderOperation, "SystemJob");
+    }
     @Override
     public Responses cancelOrders(PlatformOrderOperation orderOperation) {
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();

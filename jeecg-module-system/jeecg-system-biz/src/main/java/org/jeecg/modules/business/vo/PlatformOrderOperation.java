@@ -21,6 +21,8 @@ public class PlatformOrderOperation {
     private String street1;
     @JSONField(name = "street2")
     private String street2;
+    @JSONField(name = "labelName")
+    private String labelName;
 
     public enum Action {
         CANCEL("cancel"),
