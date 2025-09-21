@@ -245,7 +245,8 @@
   function handleViewFile(filePath) {
     if (filePath) {
       console.log('glob.onlineUrl', glob.viewUrl);
-      let url = encodeURIComponent(encryptByBase64(filePath));
+      // 获取当前url
+      let url = encodeURIComponent(encryptByBase64(getFileAccessHttpUrl(filePath)));
       let previewUrl = `${glob.viewUrl}?url=` + url;
       window.open(previewUrl, '_blank');
     }

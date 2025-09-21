@@ -86,7 +86,7 @@
    */
   function handleViewFile(filePath) {
     if (filePath) {
-      let url = encodeURIComponent(encryptByBase64(filePath));
+      let url = encodeURIComponent(encryptByBase64(getFileAccessHttpUrl(filePath)));
       let previewUrl = `${glob.viewUrl}?url=` + url;
       window.open(previewUrl, '_blank');
     }
