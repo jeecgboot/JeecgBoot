@@ -29,7 +29,7 @@
 
 	<properties>
 		<jeecgboot.version>3.8.3</jeecgboot.version>
-		<!-- JDK版本支持17和1.8 -->
+		<!-- JDK版本支持17、21和1.8 -->
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
