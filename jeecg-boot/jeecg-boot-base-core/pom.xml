@@ -2,7 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<groupId>org.jeecgframework.boot</groupId>
+		<groupId>org.jeecgframework.boot3</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
 		<version>3.8.3</version>
 	</parent>
@@ -42,8 +42,8 @@
 	<dependencies>
 		<!--jeecg-tools-->
 		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-common3</artifactId>
+			<groupId>org.jeecgframework.boot3</groupId>
+			<artifactId>jeecg-boot-common</artifactId>
 		</dependency>
 		<!--集成springmvc框架并实现自动配置 -->
 		<dependency>
@@ -364,8 +364,8 @@
 		</dependency>
 		<!-- chatgpt -->
 		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
+			<groupId>org.jeecgframework.boot3</groupId>
+			<artifactId>jeecg-boot-starter-chatgpt</artifactId>
 		</dependency>
 	</dependencies>
 </project>

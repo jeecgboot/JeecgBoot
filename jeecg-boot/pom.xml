@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.jeecgframework.boot</groupId>
+  <groupId>org.jeecgframework.boot3</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
   <version>3.8.3</version>
   <packaging>pom</packaging>
@@ -184,70 +184,70 @@
 
 			<!-- system 模块-->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-system-biz</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 
 			<!-- jeecg tools -->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-common3</artifactId>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-common</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!-- jeecg core -->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-base-core</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!-- system 单体 api -->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-system-local-api</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!-- system 微服务 api -->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
+				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-system-cloud-api</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 
             <!--微服务启动依赖-->
             <dependency>
-                <groupId>org.jeecgframework.boot</groupId>
-                <artifactId>jeecg-boot-starter3-cloud</artifactId>
+                <groupId>org.jeecgframework.boot3</groupId>
+                <artifactId>jeecg-boot-starter-cloud</artifactId>
                 <version>${jeecgboot.version}</version>
             </dependency>
 			<!--xxl-job定时任务-->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter3-job</artifactId>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-job</artifactId>
                 <version>${jeecgboot.version}</version>
 			</dependency>
 			<!--redis分布式锁-->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter3-lock</artifactId>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-lock</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--rabbitmq消息队列-->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter3-rabbitmq</artifactId>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-rabbitmq</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--rocketmq-->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter3-rocketmq</artifactId>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-rocketmq</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--分库分表shardingsphere-->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter3-shardingsphere</artifactId>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<dependency>
@@ -276,8 +276,8 @@
 
 			<!--mongon db-->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter3-mongon</artifactId>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-mongon</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--人大金仓驱动 版本号V008R006C005B0013 -->
@@ -525,8 +525,8 @@
             </dependency>
 			<!-- chatgpt -->
 			<dependency>
-				<groupId>org.jeecgframework.boot</groupId>
-				<artifactId>jeecg-boot-starter3-chatgpt</artifactId>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
 				<version>${jeecgboot.version}</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->

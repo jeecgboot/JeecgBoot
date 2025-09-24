@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.jeecgframework.boot</groupId>
+        <groupId>org.jeecgframework.boot3</groupId>
         <artifactId>jeecg-boot-module</artifactId>
         <version>3.8.3</version>
     </parent>
@@ -38,16 +38,16 @@
     <dependencies>
         <!-- system单体 api-->
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
+            <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-system-local-api</artifactId>
         </dependency>
         <!-- 微服务starter和system微服务 api
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
+            <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-boot-starter-cloud</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
+            <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-system-cloud-api</artifactId>
         </dependency>-->
 

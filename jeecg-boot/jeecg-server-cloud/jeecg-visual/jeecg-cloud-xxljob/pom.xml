@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>jeecg-visual</artifactId>
-        <groupId>org.jeecgframework.boot</groupId>
+        <groupId>org.jeecgframework.boot3</groupId>
         <version>3.8.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
