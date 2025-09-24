@@ -37,6 +37,11 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-job</artifactId>
+        </dependency>
+
         <!-- feign 熔断限流、分布式锁、xxljob示例 
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>

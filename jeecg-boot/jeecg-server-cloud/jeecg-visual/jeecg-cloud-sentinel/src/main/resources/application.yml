@@ -29,7 +29,7 @@ logging:
     name: ${user.home}/logs/csp/sentinel-dashboard.log
 nacos:
   server:
-    ip: localhost:8848
+    ip: @config.server-addr@
 sentinel:
   dashboard:
     version: 1.8.2

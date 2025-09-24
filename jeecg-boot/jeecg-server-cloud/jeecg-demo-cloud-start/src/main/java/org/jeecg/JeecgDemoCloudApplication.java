@@ -1,16 +1,19 @@
 package org.jeecg;
 
+import com.xkcoding.justauth.autoconfigure.JustAuthAutoConfiguration;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.GlobalConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootApplication
 @EnableFeignClients
+@ImportAutoConfiguration(JustAuthAutoConfiguration.class)  // spring boot 3.x justauth 兼容性处理
 public class JeecgDemoCloudApplication implements CommandLineRunner {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
