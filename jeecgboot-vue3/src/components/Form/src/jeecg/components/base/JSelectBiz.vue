@@ -25,7 +25,16 @@
           style="width: 100%"
           @click="!disabled && openModal(false)"
           v-bind="attrs"
-        ></a-select>
+        >
+          <template v-if="isCustomRenderTag" #tagRender="{ label, value, option}">
+            <a-tag class="ant-select-selection-item">
+              <span class="ant-select-selection-item-content" style="font-size: 14px;max-width: 300px" :title="tagRender(label, value, option)">{{ tagRender(label, value, option) }}</span>
+              <span class="ant-select-selection-item-remove">
+                <Icon icon="ant-design:close-outlined" size="12" @click="handleRemoveClick(value)"></Icon>
+              </span>
+            </a-tag>
+          </template>
+        </a-select>
       </a-col>
       <a-col v-if="showButton" class="right">
         <a-button v-if="buttonIcon" :preIcon="buttonIcon" type="primary" @click="openModal(true)" :disabled="disabled">
@@ -43,6 +52,7 @@
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { LoadingOutlined } from '@ant-design/icons-vue';
+  import { getDepartPathNameByOrgCode } from "@/utils/common/compUtils";
 
   export default defineComponent({
     name: 'JSelectBiz',
@@ -69,6 +79,11 @@
       buttonIcon: propTypes.string.def(''),
       // 【TV360X-1002】是否是详情模式
       isDetailsMode: propTypes.bool.def(false),
+      //update-begin---author:wangshuai---date:2025-09-06---for: 多选时是否自定义渲染tag文本，为空不渲染，不支持单选---
+      //是否自定义渲染tag
+      isCustomRenderTag: propTypes.bool.def(false),
+      rowKey: propTypes.string.def('id'),
+      //update-end---author:wangshuai---date:2025-09-06---for:多选时是否自定义渲染tag文本，为空不渲染，不支持单选---
     },
     emits: ['handleOpen', 'change'],
     setup(props, { emit, refs }) {
@@ -78,6 +93,10 @@
       const selectValues = inject('selectValues') || ref({});
       const attrs = useAttrs();
       const detailStr = ref('');
+
+      //存放部门名称
+      const departNamePath = ref<Record<string, string>>({});
+      
       /**
        * 打开弹出框
        */
@@ -98,7 +117,54 @@
         selectValues.change = true;
         emit('change', value);
       }
+      
+      /**
+       * 多选tag自定义渲染
+       *
+       * @param label
+       * @param value
+       * @param isEllipsis 是否省略
+       */
+      function tagRender(label, value, isEllipsis) {
+        if (departNamePath.value[value]) {
+           //是否需要省略显示
+           if(!isEllipsis){
+             return departNamePath.value[value];
+           } else {
+             let departName = departNamePath.value[value];
+             //超过20则截取后20位的字符，前面加省略号
+             if(departName && departName.length >= 20){
+               const name:any = departName.substring(departName.length - 20);
+               return '...' + name;
+             } else {
+               return departName;
+             }
+           }
+        }
+        //判断rowKey是否为orgCode
+        if(props?.rowKey && props?.rowKey === 'orgCode'){
+          getDepartPathNameByOrgCode(value, label, '').then((data) => {
+            departNamePath.value[value] = data;
+          });
+        } else {
+          //否则按照id处理
+          getDepartPathNameByOrgCode('', label, value).then((data) => {
+            departNamePath.value[value] = data;
+          });
+        }
+      }
 
+      /**
+       * tag删除
+       * 
+       * @param value
+       */
+      function handleRemoveClick(value) {
+        if(selectValues?.value){
+          let values = selectValues?.value.filter(item => item !== value);
+          handleChange(values);
+        }
+      }
       // -update-begin--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化
       watch(
         [selectValues, options],
@@ -121,6 +187,8 @@
         handleChange,
         openModal,
         detailStr,
+        tagRender,
+        handleRemoveClick,
       };
     },
   });

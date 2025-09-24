@@ -77,6 +77,7 @@
                 </AutoComplete>
               </template>
             </BasicForm>
+            <a-alert v-if="!modelActivate" message="模型未激活，请通过下方「保存并激活」按钮激活当前模型" type="warning" show-icon />
           </div>
         </a-tab-pane>
         <a-tab-pane :key="2"  v-if="modelParamsShow">
@@ -96,9 +97,9 @@
 
     </div>
     <template v-if="dataIndex === 'add' || dataIndex === 'edit'" #footer>
-      <a-button @click="test" :loading="testLoading">测试</a-button>
       <a-button @click="cancel">关闭</a-button>
-      <a-button @click="save" type="primary">保存</a-button>
+      <a-button @click="save" type="primary" ghost="true">保存</a-button>
+      <a-button @click="test" v-if="!modelActivate" :loading="testLoading" type="primary" >保存并激活</a-button>
     </template>
     <template v-else #footer> </template>
   </BasicModal>
@@ -159,6 +160,8 @@
       const modelParamsRef = ref();
       //测试按钮loading状态
       const testLoading = ref<boolean>(false);
+      //模型是否已激活
+      const modelActivate = ref<boolean>(false);
 
       const getImage = (name) => {
         return imageList.value[name];
@@ -208,6 +211,11 @@
             }
             if(values.result.modelType && values.result.modelType === 'LLM'){
               modelParamsShow.value = true;
+            }
+            if (values.result.activateFlag) {
+              modelActivate.value = true;
+            }else{
+              modelActivate.value = false;
             }
             if(values.result.modelParams){
               modelParams.value = JSON.parse(values.result.modelParams)
@@ -303,6 +311,11 @@
               values.modelParams = JSON.stringify(modelParams);
             }
           }
+          if(modelActivate.value){
+            values.activateFlag = 1
+          }else{
+            values.activateFlag = 0;
+          }
           values.credential = JSON.stringify(credential);
           //新增
           if (!values.id) {
@@ -330,6 +343,7 @@
       function cancel() {
         dataIndex.value = 'list';
         closeModal();
+        emit('success');
       }
 
       /**
@@ -354,7 +368,10 @@
             values.provider = modelData.value.value;
           }
           //测试
-          await testConn(values);
+          await testConn(values).then((result) => {
+            modelActivate.value = true;
+            save();
+          });
         } catch (e) {
           if (e.hasOwnProperty('errorFields')) {
             activeKey.value = 1;
@@ -424,6 +441,7 @@
         activeKey,
         modelParams,
         modelParamsShow,
+        modelActivate,
         modelParamsRef,
         filterOption,
         getTitle,

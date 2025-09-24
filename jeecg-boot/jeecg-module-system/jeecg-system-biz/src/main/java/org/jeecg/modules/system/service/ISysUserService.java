@@ -11,6 +11,7 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.model.SysUserSysDepPostModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.vo.SysUserExportVo;
 import org.jeecg.modules.system.vo.lowapp.DepartAndUserInfo;
@@ -175,10 +176,11 @@ public interface ISysUserService extends IService<SysUser> {
 	 * 根据角色Id查询
 	 * @param page
      * @param roleId 角色id
-     * @param username 用户账户名称
+     * @param username 用户账户
+     * @param realname 用户姓名
 	 * @return
 	 */
-	public IPage<SysUser> getUserByRoleId(Page<SysUser> page,String roleId, String username);
+	public IPage<SysUser> getUserByRoleId(Page<SysUser> page,String roleId, String username, String realname);
 
 	/**
 	 * 通过用户名获取用户角色集合
@@ -298,13 +300,15 @@ public interface ISysUserService extends IService<SysUser> {
 	List<SysUser> queryByDepIds(List<String> departIds, String username);
 
 	/**
-	 * 保存用户
-	 * @param user 用户
-	 * @param selectedRoles 选择的角色id，多个以逗号隔开
-	 * @param selectedDeparts 选择的部门id，多个以逗号隔开
-	 * @param relTenantIds 多个租户id
-	 */
-	void saveUser(SysUser user, String selectedRoles, String selectedDeparts, String relTenantIds);
+     * 保存用户
+     *
+     * @param user            用户
+     * @param selectedRoles   选择的角色id，多个以逗号隔开
+     * @param selectedDeparts 选择的部门id，多个以逗号隔开
+     * @param relTenantIds    多个租户id
+     * @param izSyncPack 是否需要同步租户套餐包
+     */
+	void saveUser(SysUser user, String selectedRoles, String selectedDeparts, String relTenantIds, boolean izSyncPack);
 
 	/**
 	 * 编辑用户
@@ -481,4 +485,22 @@ public interface ISysUserService extends IService<SysUser> {
      * @param username
      */
     void updatePasswordNotBindPhone(String oldPassword, String password, String username);
+
+	/**
+	 * 根据用户名称查询用户和部门信息
+	 * @param userName
+	 * @return
+	 */
+	Map<String, String> queryUserAndDeptByName(String userName);
+
+    /**
+     * 查询部门、岗位下的用户 包括子部门下的用户
+     * 
+     * @param orgCode
+     * @param userParams
+     * @param page
+     * @return
+     */
+    IPage<SysUserSysDepPostModel> queryDepartPostUserByOrgCode(String orgCode, SysUser userParams, IPage page);
+
 }

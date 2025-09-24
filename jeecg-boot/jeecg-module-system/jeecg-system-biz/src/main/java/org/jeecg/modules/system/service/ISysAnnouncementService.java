@@ -2,6 +2,8 @@ package org.jeecg.modules.system.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.jeecg.modules.system.entity.SysAnnouncement;
 
 import java.util.Date;
@@ -98,4 +100,12 @@ public interface ISysAnnouncementService extends IService<SysAnnouncement> {
      * @param count
      */
     void updateVisitsNum(String id, int count);
+
+    /**
+     * 批量下载文件
+     * @param id
+     * @param request
+     * @param response
+     */
+    void downLoadFiles(String id, HttpServletRequest request, HttpServletResponse response);
 }

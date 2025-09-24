@@ -102,4 +102,13 @@ public interface IAiragChatService {
      * @date 2025/4/21 14:17
      */
     Result<?> initChat(String appId);
+
+    /**
+     * 继续接收消息
+     * @param requestId
+     * @return
+     * @author chenrui
+     * @date 2025/8/11 17:39
+     */
+    SseEmitter receiveByRequestId(String requestId);
 }

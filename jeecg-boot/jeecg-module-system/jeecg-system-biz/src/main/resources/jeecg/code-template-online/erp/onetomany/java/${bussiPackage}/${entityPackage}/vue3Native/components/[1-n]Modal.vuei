@@ -2,7 +2,7 @@
 <#list subTables as sub>
 #segment#${sub.entityName}Modal.vue
 <template>
-  <j-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
+  <j-modal :title="title" maxHeight="500px" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
       <${sub.entityName}Form ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></${sub.entityName}Form>
   </j-modal>
 </template>

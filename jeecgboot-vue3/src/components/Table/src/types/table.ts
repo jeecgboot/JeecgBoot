@@ -121,6 +121,7 @@ export interface TableActionType {
   getShowPagination: () => boolean;
   setCacheColumnsByField?: (dataIndex: string | undefined, value: BasicColumn) => void;
   getColumnsRef: () => ComputedRef<BasicColumn[]>;
+  getBindValuesRef: () => ComputedRef<any>;
 }
 
 export interface FetchSetting {

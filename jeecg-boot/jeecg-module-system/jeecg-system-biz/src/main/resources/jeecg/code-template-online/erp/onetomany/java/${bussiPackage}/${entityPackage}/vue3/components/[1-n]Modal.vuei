@@ -2,7 +2,7 @@
 <#list subTables as sub>
 #segment#${sub.entityName}Modal.vue
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
+  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :maxHeight="500" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
       <BasicForm @register="registerForm" name="${sub.entityName}Form" />
   </BasicModal>
 </template>
@@ -36,7 +36,8 @@
         </#if>
         schemas: ${sub.entityName?uncap_first}FormSchema,
         showActionButtonGroup: false,
-        baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}}
+        baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}},
+        baseRowStyle: { padding: "0 20px" }
     });
     //表单赋值
     const [registerModal, {setModalProps, closeModal}] = useModalInner(async (data) => {

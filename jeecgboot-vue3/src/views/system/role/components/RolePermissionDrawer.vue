@@ -3,7 +3,10 @@
     <template #title>
       角色权限配置
       <a-dropdown>
-        <Icon icon="ant-design:more-outlined" class="more-icon" />
+        <a-button class="more-icon">
+          更多操作
+          <Icon icon="ant-design:down-outlined" size="14px" style="position: relative;top: 1px;right: 5px"></Icon>
+        </a-button>
         <template #overlay>
           <a-menu @click="treeMenuClick">
             <a-menu-item key="checkAll">选择全部</a-menu-item>
@@ -294,9 +297,9 @@
     border-bottom: 1px solid #f0f0f0;
   }
   .more-icon {
-    font-size: 20px !important;
+/*    font-size: 20px !important;
     color: black;
-    display: inline-flex;
+    display: inline-flex;*/
     float: right;
     margin-right: 2px;
     cursor: pointer;

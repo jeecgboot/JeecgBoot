@@ -22,7 +22,7 @@
         <a-tag color="#87d068" v-if="text == 1">启用</a-tag>
       </template>
       <template #relationType="{ text, record }">
-        <span>{{ record.roleCode == 'DEF_INDEX_ALL' ? '--' : text }}</span>
+        <span>{{ record.roleCode == 'DEF_INDEX_ALL' ? '全局默认' : text }}</span>
       </template>
       <template #roleCode="{ text, record }">
         <span>{{ record.roleCode == 'DEF_INDEX_ALL' ? '菜单默认首页' : text }}</span>

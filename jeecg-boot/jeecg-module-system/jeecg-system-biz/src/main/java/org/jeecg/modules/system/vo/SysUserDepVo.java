@@ -21,4 +21,14 @@ public class SysUserDepVo {
      * 部门的父级id
      */
     private String parentId;
+
+    /**
+     * 部门类型
+     */
+    private String orgCategory;
+
+    /**
+     * 职级
+     */
+    private String positionId;
 }

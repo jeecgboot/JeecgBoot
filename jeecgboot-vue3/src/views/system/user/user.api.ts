@@ -6,9 +6,6 @@ enum Api {
   list = '/sys/user/list',
   save = '/sys/user/add',
   edit = '/sys/user/edit',
-  agentSave = '/sys/sysUserAgent/add',
-  agentEdit = '/sys/sysUserAgent/edit',
-  deleteAgent = '/sys/sysUserAgent/delete',
   getUserRole = '/sys/user/queryUserRole',
   duplicateCheck = '/sys/duplicate/check',
   deleteUser = '/sys/user/delete',
@@ -196,36 +193,7 @@ export const frozenBatch = (params, handleSuccess) => {
     handleSuccess();
   });
 };
-/**
- * 获取用户代理
- * @param params
- */
-export const getUserAgent = (params) => defHttp.get({ url: Api.getUserAgent, params }, { isTransformResponse: false });
-/**
- * 保存或者更新用户代理
- * @param params
- */
-export const saveOrUpdateAgent = (params) => {
-  let url = params.id ? Api.agentEdit : Api.agentSave;
-  return defHttp.post({ url: url, params });
-};
-/**
- * 代理删除
- * @param params
- */
-export const deleteAgent = (params, handleSuccess) => {
-  return defHttp.delete({ url: Api.deleteAgent, params }, { joinParamsToUrl: true }).then(() => {
-    handleSuccess();
-  });
-};
 
-/**
- * 用户离职(新增代理人和用户状态变更操作)
- * @param params
- */
-export const userQuitAgent = (params) => {
-  return defHttp.put({ url: Api.userQuitAgent, params });
-};
 
 /**
  * 用户离职列表

@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -163,6 +164,10 @@ public class CommonUtils {
             }
             // 获取文件名
             String orgName = mf.getOriginalFilename();
+            // 无中文情况下进行转码
+            if (orgName != null && !CommonUtils.ifContainChinese(orgName)) {
+                orgName = new String(orgName.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            }
             orgName = CommonUtils.getFileName(orgName);
             if(orgName.indexOf(SymbolConstant.SPOT)!=-1){
                 fileName = orgName.substring(0, orgName.lastIndexOf(".")) + "_" + System.currentTimeMillis() + orgName.substring(orgName.lastIndexOf("."));
@@ -242,6 +247,10 @@ public class CommonUtils {
         try {
             DataSource dataSource = SpringContextUtils.getApplicationContext().getBean(DataSource.class);
             dbTypeEnum = JdbcUtils.getDbType(dataSource.getConnection().getMetaData().getURL());
+            //【采用SQL_SERVER2005引擎】QQYUN-13298 解决升级mybatisPlus后SqlServer分页使用OFFSET，无排序字段报错问题
+            if (dbTypeEnum == DbType.SQL_SERVER) {
+                dbTypeEnum = DbType.SQL_SERVER2005;
+            }
             return dbTypeEnum;
         } catch (SQLException e) {
             log.warn(e.getMessage(), e);

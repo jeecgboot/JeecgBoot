@@ -8,8 +8,11 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.config.mqtoken.UserTokenContext;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -96,7 +99,13 @@ public class SysDataLog implements Serializable {
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
             this.setCreateName(sysUser.getRealname());
         } catch (Exception e) {
-            log.warn("SecurityUtils.getSubject() 获取用户信息异常：" + e.getMessage());
+            // QQYUN-13669 进一步优化：解决某些异步场景下获取用户信息为空的问题
+            String token = UserTokenContext.getToken();
+            if (StringUtils.hasText(token)) {
+                this.setCreateName(JwtUtil.getUsername(token));
+            } else {
+                log.warn("SecurityUtils.getSubject() 获取用户信息异常：" + e.getMessage());
+            }
         }
     }
 

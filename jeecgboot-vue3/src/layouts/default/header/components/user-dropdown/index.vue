@@ -35,7 +35,7 @@
   // components
   import { Dropdown, Menu } from 'ant-design-vue';
 
-  import { defineComponent, computed, ref, nextTick } from 'vue';
+  import { defineComponent, computed, ref } from 'vue';
 
   import { SITE_URL } from '/@/settings/siteSetting';
 

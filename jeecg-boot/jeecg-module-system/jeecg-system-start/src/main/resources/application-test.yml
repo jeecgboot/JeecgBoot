@@ -1,12 +1,7 @@
 server:
   port: 8080
-  undertow:
-    decode-url: true # 启用URL解码
-    # 4核CPU标准配置
-    worker-threads: 16
-    buffers:
-      websocket: 8192
-      io: 16384
+  tomcat:
+    max-swallow-size: -1
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -291,7 +286,6 @@ jeecg:
     app-id: ??
     api-key: ??
     secret-key: ??
-
 #Mybatis输出sql日志
 logging:
   level:

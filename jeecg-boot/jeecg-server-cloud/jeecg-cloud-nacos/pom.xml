@@ -5,7 +5,7 @@
     <artifactId>jeecg-cloud-nacos</artifactId>
     <name>jeecg-cloud-nacos</name>
     <description>nacos启动模块</description>
-    <version>3.8.2</version>
+    <version>3.8.3</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -36,7 +36,7 @@
     <properties>
         <log4j2.version>2.17.0</log4j2.version>
         <nacos.version>2.3.2</nacos.version>
-        <dm8.version>8.1.1.49</dm8.version>
+        <dm8.version>8.1.3.140</dm8.version>
     </properties>
     
     <dependencies>
@@ -72,7 +72,7 @@
         <!--达梦数据库驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->
         <dependency>
             <groupId>com.dameng</groupId>
-            <artifactId>Dm8JdbcDriver18</artifactId>
+            <artifactId>DmJdbcDriver18</artifactId>
             <version>${dm8.version}</version>
         </dependency>
         <dependency>

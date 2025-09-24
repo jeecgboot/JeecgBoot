@@ -65,6 +65,10 @@ public class TokenUtils {
         if (tenantId == null) {
             tenantId = oConvertUtils.getString(request.getHeader(CommonConstant.TENANT_ID));
         }
+
+        if (oConvertUtils.isNotEmpty(tenantId) && "undefined".equals(tenantId)) {
+            return null;
+        }
         return tenantId;
     }
 

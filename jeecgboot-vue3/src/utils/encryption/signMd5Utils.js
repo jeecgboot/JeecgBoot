@@ -39,7 +39,7 @@ export default class signMd5Utils {
     //update-end---author:wangshuai---date:2024-04-16---for:【QQYUN-9005】发送短信加签---
     let requestBody = this.sortAsc(jsonObj);
     delete requestBody._t;
-    console.log('sign requestBody:', requestBody);
+    // console.log('sign requestBody:', requestBody);
     return md5(JSON.stringify(requestBody) + signatureSecret).toUpperCase();
   }
 

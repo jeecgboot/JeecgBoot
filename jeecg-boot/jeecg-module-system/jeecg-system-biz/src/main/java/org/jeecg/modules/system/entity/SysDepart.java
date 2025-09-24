@@ -35,6 +35,9 @@ public class SysDepart implements Serializable {
 	/**机构/部门名称*/
 	@Excel(name="机构/部门名称",width=15)
 	private String departName;
+	/**机构/部门路径名称（非持久化字段）*/
+	@TableField(exist = false)
+	private String departPathName;
 	/**英文名*/
 	@Excel(name="英文名",width=15)
 	private String departNameEn;
@@ -46,7 +49,7 @@ public class SysDepart implements Serializable {
 	/**描述*/
 	@Excel(name="描述",width=15)
 	private String description;
-	/**机构类别 1=公司，2=组织机构，3=岗位*/
+	/**机构类别 1=公司，2=组织机构，3=岗位 4=子公司*/
 	@Excel(name="机构类别",width=15,dicCode="org_category")
 	private String orgCategory;
 	/**机构类型*/
@@ -102,7 +105,21 @@ public class SysDepart implements Serializable {
 	@TableField(exist = false)
     private String oldDirectorUserIds;
     //update-end---author:wangshuai ---date:20200308  for：[JTC-119]新增字段负责人ids和旧的负责人ids
-	
+
+    /**
+     * 职级id
+     */
+    @Excel(name="职级",width=15,dictTable = "sys_position", dicCode = "id", dicText = "name")
+    @Dict(dictTable = "sys_position", dicCode = "id", dicText = "name")
+    private String positionId;
+
+    /**
+     * 部门岗位id
+     */
+    @Excel(name="上级岗位",width=15,dictTable = "sys_depart", dicCode = "id", dicText = "depart_name")
+    @Dict(dictTable = "sys_depart", dicCode = "id", dicText = "depart_name")
+    private String depPostParentId;
+    
 	/**
 	 * 重写equals方法
 	 */

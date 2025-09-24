@@ -3,7 +3,7 @@ import { defHttp } from '/@/utils/http/axios';
 export enum Api {
   list = '/sys/user/queryByOrgCodeForAddressList',
   positionList = '/sys/position/list',
-  queryDepartTreeSync = '/sys/sysDepart/queryDepartTreeSync',
+  queryDepartTreeSync = '/sys/sysDepart/queryDepartAndPostTreeSync',
 }
 /**
  * 获取部门树列表

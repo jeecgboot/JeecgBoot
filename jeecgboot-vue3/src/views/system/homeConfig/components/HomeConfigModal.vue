@@ -27,12 +27,17 @@
     setModalProps({ confirmLoading: false });
     isUpdate.value = !!data?.isUpdate;
     if (unref(isUpdate)) {
+      const record = {...data.values}
       //表单赋值
-      if (data.values.relationType == 'USER') {
-        data.values.userCode = data.values.roleCode;
+      if (record.relationType == 'USER') {
+        record.userCode = record.roleCode;
+      }
+      //表单赋值
+      if (record.relationType == 'DEFAULT') {
+        record.roleCode = '';
       }
       await setFieldsValue({
-        ...data.values,
+        ...record,
       });
     }
   });
@@ -45,6 +50,9 @@
       //提交表单
       if(values.relationType == 'USER'){
         values.roleCode = values.userCode;
+      }
+      if(values.relationType == 'DEFAULT'){
+        values.roleCode = 'DEF_INDEX_ALL';
       }
       await saveOrUpdate(values, isUpdate.value);
       //关闭弹窗

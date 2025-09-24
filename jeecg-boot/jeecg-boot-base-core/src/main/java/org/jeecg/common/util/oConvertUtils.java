@@ -475,6 +475,23 @@ public class oConvertUtils {
 	}
 
 	/**
+	 * 判断字符串是否为JSON格式
+	 * @param str
+	 * @return
+	 */
+	public static boolean isJson(String str) {
+		if (str == null || str.trim().isEmpty()) {
+			return false;
+		}
+		try {
+			com.alibaba.fastjson.JSON.parse(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	/**
 	 * 获取Map对象
 	 */
 	public static Map<Object, Object> getHashMap() {
@@ -1132,7 +1149,15 @@ public class oConvertUtils {
 	 * @date 2020/9/12 15:50
 	 */
 	public static <T> boolean isIn(T obj, T... objs) {
-		return isIn(obj, objs);
+		if (isEmpty(objs)) {
+			return false;
+		}
+		for (T obj1 : objs) {
+			if (isEqual(obj, obj1)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

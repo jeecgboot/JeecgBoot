@@ -220,6 +220,22 @@ export const schemas: FormSchema[] = [
     colProps: { span: 12 },
   },
   {
+    field: 'depart4',
+    component: 'JSelectDepartPost',
+    label: '选择岗位',
+    helpMessage: ['component模式'],
+    componentProps: { showButton: false },
+    colProps: {
+      span: 12,
+    },
+  },
+  {
+    field: 'depart4',
+    component: 'JEllipsis',
+    label: '选择岗位',
+    colProps: { span: 12 },
+  },
+  {
     field: 'user2',
     component: 'JSelectUser',
     label: '用户选择组件',
@@ -254,6 +270,25 @@ export const schemas: FormSchema[] = [
   },
   {
     field: 'user3',
+    component: 'JEllipsis',
+    label: '选中用户',
+    colProps: { span: 12 },
+  },
+  {
+    field: 'userPost1',
+    component: 'JSelectUserByDeptPost',
+    label: '部门岗位选择用户',
+    helpMessage: ['component模式'],
+    componentProps: {
+      labelKey: 'realname',
+      rowKey: 'username',
+    },
+    colProps: {
+      span: 12,
+    },
+  },
+  {
+    field: 'userPost1',
     component: 'JEllipsis',
     label: '选中用户',
     colProps: { span: 12 },

@@ -31,6 +31,7 @@ import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.util.RandImageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,6 +39,9 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -67,9 +71,12 @@ public class LoginController {
 	private BaseCommonService baseCommonService;
 	@Autowired
 	private JeecgBaseConfig jeecgBaseConfig;
-
 	private final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
-
+	/**
+	 * 线程池用于异步发送纪要
+	 */
+	public static ExecutorService cachedThreadPool = new ShiroThreadPoolExecutor(0, 1024, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+	
 	@Operation(summary="登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
@@ -192,23 +199,33 @@ public class LoginController {
 	    String username = JwtUtil.getUsername(token);
 		LoginUser sysUser = sysBaseApi.getUserByName(username);
 	    if(sysUser!=null) {
-			//update-begin--Author:wangshuai  Date:20200714  for：登出日志没有记录人员
-			baseCommonService.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null,sysUser);
-			//update-end--Author:wangshuai  Date:20200714  for：登出日志没有记录人员
-	    	log.info(" 用户名:  "+sysUser.getRealname()+",退出成功！ ");
-	    	//清空用户登录Token缓存
-	    	redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + token);
-	    	//清空用户登录Shiro权限缓存
-			redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
-			//清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
-			redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
-			//调用shiro的logout
+			asyncClearLogoutCache(token, sysUser); // 异步清理
 			SecurityUtils.getSubject().logout();
 	    	return Result.ok("退出登录成功！");
 	    }else {
 	    	return Result.error("Token无效!");
 	    }
 	}
+
+	/**
+	 * 清理用户缓存
+	 *
+	 * @param token
+	 * @param sysUser
+	 */
+	private void asyncClearLogoutCache(String token, LoginUser sysUser) {
+		cachedThreadPool.execute(()->{
+			//清空用户登录Token缓存
+			redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + token);
+			//清空用户登录Shiro权限缓存
+			redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
+			//清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
+			redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
+			baseCommonService.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null, sysUser);
+			log.info("【退出成功操作】异步处理，退出后，清理用户缓存： "+sysUser.getRealname());
+		});
+	}
+	
 	
 	/**
 	 * 获取访问量

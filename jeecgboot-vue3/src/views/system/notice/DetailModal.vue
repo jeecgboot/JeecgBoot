@@ -28,6 +28,9 @@
           </div>
         </div>
       </template>
+      <a v-if="noticeFiles.length > 1" :href="downLoadFiles + '?id=' + noticeId + '&token=' + getToken()" target="_blank"  style="margin: 15px 6px;color: #5ac0fa;">
+        <download-outlined class="item-icon" style="margin-right: 5px"  /><span>批量下载所有附件</span>
+      </a>
     </template>
   </BasicModal>
 </template>
@@ -40,16 +43,25 @@
   import { DownloadOutlined, EyeOutlined, PaperClipOutlined } from '@ant-design/icons-vue';
   import { encryptByBase64 } from '@/utils/cipher';
   import { useGlobSetting } from '@/hooks/setting';
+  import { getToken } from "@/utils/auth";
   const glob = useGlobSetting();
   // 获取props
   defineProps({
     frameSrc: propTypes.string.def(''),
   });
+  /**
+   * 下载文件路径
+   */
+  const downLoadFiles = `${glob.domainUrl}/sys/annountCement/downLoadFiles`;
+
   //附件内容
   const noticeFiles = ref([]);
+  //数据ID
+  const noticeId = ref('');
   //表单赋值
   const [registerModal] = useModalInner((data) => {
     noticeFiles.value = [];
+    noticeId.value = data.record.id;
     if (data.record?.files && data.record?.files.length > 0) {
       noticeFiles.value = data.record.files.split(',').map((item) => {
         return {
@@ -96,8 +108,8 @@
 <style scoped lang="less">
   .print-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 80px;
+    right: 40px;
     cursor: pointer;
     color: #a3a3a5;
     z-index: 999;

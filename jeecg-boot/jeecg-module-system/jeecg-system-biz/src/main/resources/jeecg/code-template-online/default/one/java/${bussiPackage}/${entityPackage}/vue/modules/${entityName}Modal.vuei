@@ -1,4 +1,3 @@
-<#--<#include "../../../../../../../common/utils.ftl">-->
 <#include "/common/utils.ftl">
 <#assign modal_width = 800>
 <#if tableVo.fieldRowNum==2>

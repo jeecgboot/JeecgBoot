@@ -12,9 +12,7 @@ enum Api {
   releaseData = '/sys/annountCement/doReleaseData',
   reovkeData = '/sys/annountCement/doReovkeData',
   editIzTop = '/sys/annountCement/editIzTop',
-
   addVisitsNum = '/sys/annountCement/addVisitsNumber',
-
   tempList = '/sys/message/sysMessageTemplate/list',
 }
 
@@ -88,12 +86,6 @@ export const addVisitsNum = (params) => defHttp.get({ url: Api.addVisitsNum, par
  * @param id
  */
 export const queryById = (params) => defHttp.get({ url: Api.queryById, params }, { isTransformResponse: false });
-/**
- * 发起流程
- *  import { startProcess } from '/@/api/common/api';
- * @param params
- */
-export const startProcess = (params) => defHttp.post({ url: Api.startProcess, params }, { isTransformResponse: false });
 /**
  * 查询模板列表
  * @param params

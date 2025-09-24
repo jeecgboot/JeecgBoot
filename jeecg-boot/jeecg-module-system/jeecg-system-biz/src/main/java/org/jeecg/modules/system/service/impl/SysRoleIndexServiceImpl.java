@@ -56,7 +56,7 @@ public class SysRoleIndexServiceImpl extends ServiceImpl<SysRoleIndexMapper, Sys
             entity.setUrl(url);
             entity.setComponent(component);
             entity.setRoute(isRoute);
-            entity.setRelationType(CommonConstant.HOME_RELATION_ROLE);
+            entity.setRelationType(CommonConstant.HOME_RELATION_DEFAULT);
             success = super.updateById(entity);
         }
         // 4. 清理缓存
@@ -84,7 +84,7 @@ public class SysRoleIndexServiceImpl extends ServiceImpl<SysRoleIndexMapper, Sys
         entity.setComponent(indexComponent);
         entity.setRoute(isRoute);
         entity.setStatus(CommonConstant.STATUS_1);
-        entity.setRelationType(CommonConstant.HOME_RELATION_ROLE);
+        entity.setRelationType(CommonConstant.HOME_RELATION_DEFAULT);
         return entity;
     }
 

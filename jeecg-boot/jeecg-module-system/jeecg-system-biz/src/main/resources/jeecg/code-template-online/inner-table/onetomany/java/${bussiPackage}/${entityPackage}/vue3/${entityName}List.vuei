@@ -1,6 +1,5 @@
 <#-- ** 引入全局工具方法 ** -->
-<#--<#include "/common/utils.ftl">-->
-<#include "../../../../../../common/utils.ftl">
+<#include "/common/utils.ftl">
 <template>
   <div>
 <#assign list_need_category=false>

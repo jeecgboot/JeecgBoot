@@ -70,7 +70,7 @@
     
     <!--联查用户和租户审核状态-->
     <select id="getUserTenantPageList" resultType="org.jeecg.modules.system.vo.SysUserTenantVo">
-        SELECT su.id,su.realname,su.username,su.email,su.phone,su.avatar,su.work_no,su.org_code,sut.status,st.create_by
+        SELECT su.id,su.realname,su.username,su.email,su.phone,su.avatar,su.work_no,su.org_code,sut.status,su.create_time,st.create_by
         FROM sys_user_tenant sut
         RIGHT JOIN sys_user su on sut.user_id = su.id and su.del_flag = 0
         JOIN sys_tenant st ON sut.tenant_id = st.id

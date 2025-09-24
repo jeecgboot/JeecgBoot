@@ -168,6 +168,8 @@ export function useBaseInfoForm(treeData: Ref<any[]>) {
           return '部门';
         } else if (val === '3') {
           return '岗位';
+        } else if(val === '4'){
+          return '子公司';
         }
         return val;
       },

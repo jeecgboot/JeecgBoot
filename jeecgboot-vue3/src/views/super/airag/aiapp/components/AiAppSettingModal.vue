@@ -183,7 +183,7 @@
                           v-model:value="formState.modelId"
                           :disabled="isRelease"
                           placeholder="请选择AI模型"
-                          dict-code="airag_model where model_type = 'LLM',name,id"
+                          dict-code="airag_model where model_type = 'LLM' and activate_flag = 1,name,id"
                           style="width: 100%;"
                       ></JDictSelectTag>
                     </a-form-item>

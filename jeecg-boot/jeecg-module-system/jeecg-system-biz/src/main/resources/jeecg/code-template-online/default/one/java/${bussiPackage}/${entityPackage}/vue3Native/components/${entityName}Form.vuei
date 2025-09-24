@@ -251,6 +251,6 @@
 
 <style lang="less" scoped>
   .antd-modal-form {
-    padding: 14px;
+    padding: 14px 20px;
   }
 </style>

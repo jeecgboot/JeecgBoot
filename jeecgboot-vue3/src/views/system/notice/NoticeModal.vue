@@ -52,6 +52,13 @@
         ...data.record,
       });
       record.value = data.record;
+    } else {
+      // update-begin--author:liaozhiyang---date:20250807---for：【JHHB-128】转公告
+      //表单赋值
+      await setFieldsValue({
+        ...data.record,
+      });
+      // update-end--author:liaozhiyang---date:20250807---for：【JHHB-128】转公告
     }
   });
   //设置标题

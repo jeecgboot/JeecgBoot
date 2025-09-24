@@ -326,7 +326,7 @@
     background: white;
     display: flex;
     overflow: hidden;
-    z-index: 999;
+    z-index: 800;
     border: 1px solid #eeeeee;
     :deep(.ant-spin) {
       position: absolute;

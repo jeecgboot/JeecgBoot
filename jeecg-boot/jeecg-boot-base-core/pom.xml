@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.8.2</version>
+		<version>3.8.3</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
@@ -49,16 +49,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-tomcat</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-undertow</artifactId>
 		</dependency>
 		<!-- websocket -->
 		<dependency>
@@ -147,7 +137,7 @@
 		<!--  sqlserver-->
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>sqljdbc4</artifactId>
+			<artifactId>mssql-jdbc</artifactId>
 			<version>${sqljdbc4.version}</version>
 			<scope>runtime</scope>
 		</dependency>
@@ -169,13 +159,13 @@
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
 			<artifactId>kingbase8</artifactId>
-			<version>9.0.0</version>
+			<version>${kingbase8.version}</version>
 			<scope>runtime</scope>
 		</dependency>
 		<!--达梦数据库驱动 版本号1-3-26-2023.07.26-197096-20046-ENT -->
 		<dependency>
 			<groupId>com.dameng</groupId>
-			<artifactId>Dm8JdbcDriver18</artifactId>
+			<artifactId>DmJdbcDriver18</artifactId>
 			<version>${dm8.version}</version>
 		</dependency>
 		<dependency>
@@ -303,17 +293,6 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>autopoi-web</artifactId>
-			<version>${autopoi-web.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-codec</groupId>
-					<artifactId>commons-codec</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>xercesImpl</artifactId>
-					<groupId>xerces</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>

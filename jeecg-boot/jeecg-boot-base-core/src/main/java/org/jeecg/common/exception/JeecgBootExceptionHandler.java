@@ -3,7 +3,6 @@ package org.jeecg.common.exception;
 import cn.hutool.core.util.ObjectUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import io.undertow.server.RequestTooBigException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shiro.SecurityUtils;
@@ -180,7 +179,7 @@ public class JeecgBootExceptionHandler {
 	@ExceptionHandler(MultipartException.class)
 	public Result<?> handleMaxUploadSizeExceededException(MultipartException e) {
 		Throwable cause = e.getCause();
-		if (cause instanceof IllegalStateException && cause.getCause() instanceof RequestTooBigException) {
+		if (cause instanceof IllegalStateException) {
 			log.error("文件大小超出限制: {}", cause.getMessage(), e);
 			addSysLog(e);
 			return Result.error("文件大小超出限制, 请压缩或降低文件质量!");
@@ -291,7 +290,7 @@ public class JeecgBootExceptionHandler {
 		boolean isTooBigException = false;
 		if(e instanceof MultipartException){
 			Throwable cause = e.getCause();
-			if (cause instanceof IllegalStateException && cause.getCause() instanceof RequestTooBigException){
+			if (cause instanceof IllegalStateException){
 				isTooBigException = true;
 			}
 		}

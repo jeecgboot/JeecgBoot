@@ -121,7 +121,7 @@ public class ProvinceCityArea {
 
     public void getAreaByCode(String code,List<String> ls){
         for(Area area: areaList){
-            if(area.getId().equals(code)){
+            if(null != area && area.getId().equals(code)){
                 String pid = area.getPid();
                 ls.add(0,area.getText());
                 getAreaByCode(pid,ls);

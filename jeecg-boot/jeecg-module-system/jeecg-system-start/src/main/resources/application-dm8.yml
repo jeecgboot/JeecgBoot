@@ -1,12 +1,7 @@
 server:
   port: 8080
-  undertow:
-    decode-url: true # 启用URL解码
-    # max-http-post-size: 10MB # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
-    worker-threads: 16  # 4核CPU标准配置
-    buffers:
-      websocket: 8192 # WebSocket缓冲 以字节为单位，这里设置为8 KB
-      io: 16384 # IO操作缓冲 以字节为单位，这里设置为16 KB
+  tomcat:
+    max-swallow-size: -1
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -135,7 +130,7 @@ spring:
       datasource:
         # 重点是将数据源指向oracle 用compatibleMode=oracle即可
         master:
-          url: jdbc:dm://127.0.0.1:30236/?schema=SYSDBA&compatibleMode=oracle&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8
+          url: jdbc:dm://127.0.0.1:30236?schema=SYSDBA&compatibleMode=oracle&zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8
           username: SYSDBA
           password: SYSDBA
           driverClassName: dm.jdbc.driver.DmDriver

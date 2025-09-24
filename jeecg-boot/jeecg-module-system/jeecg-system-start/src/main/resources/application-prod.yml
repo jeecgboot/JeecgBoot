@@ -1,11 +1,7 @@
 server:
   port: 8080
-  undertow:
-    decode-url: true # 启用URL解码
-    worker-threads: 16
-    buffers:
-      websocket: 8192
-      io: 16384
+  tomcat:
+    max-swallow-size: -1
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -288,7 +284,6 @@ jeecg:
     app-id: ??
     api-key: ??
     secret-key: ??
-
 #cas单点登录
 cas:
   prefixUrl: http://cas.example.org:8443/cas

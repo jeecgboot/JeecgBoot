@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.Joiner;
 import com.jeecg.dingtalk.api.core.response.Response;
@@ -20,9 +21,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.UrlMatchEnum;
 import org.jeecg.common.constant.*;
 import org.jeecg.common.constant.enums.*;
@@ -32,12 +35,13 @@ import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryCondition;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.query.QueryRuleEnum;
-import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.*;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
 import org.jeecg.config.firewall.SqlInjection.IDictTableWhiteListHandler;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.modules.airag.flow.service.IAiragFlowService;
+import org.jeecg.modules.airag.flow.vo.api.FlowRunParams;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.handle.impl.DdSendMsgHandle;
 import org.jeecg.modules.message.handle.impl.EmailSendMsgHandle;
@@ -138,6 +142,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Autowired
 	private ISysAnnouncementService sysAnnouncementService;
+
+    @Autowired
+    IAiragFlowService airagFlowService;
 
 	@Override
 	//@SensitiveDecode
@@ -441,7 +448,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				message.getContent(),
 				message.getCategory(),
 				message.getBusType(),
-				message.getBusId());
+				message.getBusId(),
+				message.getNoticeType());
 		try {
 			// 同步发送第三方APP消息
 			wechatEnterpriseService.sendMessage(message, true);
@@ -521,7 +529,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		try {
 			// 同步企业微信、钉钉的消息通知
 			dingtalkService.sendActionCardMessage(announcement, mobileOpenUrl, true);
-			wechatEnterpriseService.sendTextCardMessage(announcement, true);
+			wechatEnterpriseService.sendTextCardMessage(announcement, mobileOpenUrl, true);
 		} catch (Exception e) {
 			log.error("同步发送第三方APP消息失败！", e);
 		}
@@ -574,7 +582,17 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		if(tmplateParam!=null && oConvertUtils.isNotEmpty(tmplateParam.get(CommonConstant.MSG_HREF_URL))){
 			mobileOpenUrl = tmplateParam.get(CommonConstant.MSG_HREF_URL);
 		}
-	
+
+		// 如果传递扩展json，说明是个性化业务，有意见remark则设置为通知内容
+		if(oConvertUtils.isJson(announcement.getMsgAbstract())) {
+			// 获取announcement.getMsgAbstract()的字段remark
+			JSONObject jsonObject = JSON.parseObject(announcement.getMsgAbstract());
+			String remark = jsonObject.containsKey("remark")? jsonObject.getString("remark"): null;
+			if(oConvertUtils.isNotEmpty(remark)){
+				announcement.setMsgContent(remark);
+			}
+		}
+
 		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
 		announcement.setBusId(busId);
@@ -609,7 +627,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			// 钉钉的消息通知
 			dingtalkService.sendActionCardMessage(announcement, mobileOpenUrl, true);
 			// 企业微信通知
-			wechatEnterpriseService.sendTextCardMessage(announcement, true);
+			wechatEnterpriseService.sendTextCardMessage(announcement, mobileOpenUrl, true);
 		} catch (Exception e) {
 			log.error("同步发送第三方APP消息失败！", e);
 		}
@@ -763,7 +781,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return json;
 	}
 
-	@Override
 	public List<ComboModel> queryAllRole() {
 		List<ComboModel> list = new ArrayList<ComboModel>();
 		List<SysRole> roleList = roleMapper.selectList(new QueryWrapper<SysRole>());
@@ -1357,8 +1374,9 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	 * @param setMsgCategory
 	 * @param busType
 	 * @param busId
+	 * @param noticeType 消息类型,for [JHHB-136]【vue3】协同工作系统消息需要添加一个类型
 	 */
-	private void sendBusAnnouncement(String fromUser, String toUser, String title, String msgContent, String setMsgCategory, String busType, String busId) {
+	private void sendBusAnnouncement(String fromUser, String toUser, String title, String msgContent, String setMsgCategory, String busType, String busId, String noticeType) {
 		SysAnnouncement announcement = new SysAnnouncement();
 		announcement.setTitile(title);
 		announcement.setMsgContent(msgContent);
@@ -1373,7 +1391,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setBusType(busType);
 		announcement.setOpenType(SysAnnmentTypeEnum.getByType(busType).getOpenType());
 		announcement.setOpenPage(SysAnnmentTypeEnum.getByType(busType).getOpenPage());
-        announcement.setNoticeType(NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue());
+		//update-begin---author:chenrui ---date:20250807  for：[JHHB-136]【vue3】协同工作系统消息需要添加一个类型------------
+		if(oConvertUtils.isEmpty(noticeType)){
+			noticeType = NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue();
+		}
+		announcement.setNoticeType(noticeType);
+		//update-end---author:chenrui ---date:20250807  for：[JHHB-136]【vue3】协同工作系统消息需要添加一个类型------------
 		//update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		announcement.setIzTop(CommonConstant.IZ_TOP_0);
 		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
@@ -1764,8 +1787,23 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		queryWrapper.lambda().select(SysUserDepart::getUserId).in(true,SysUserDepart::getDepId,deptIds);
 		return sysUserDepartService.listObjs(queryWrapper,e->e.toString());
 	}
-	
-	@Override
+
+    @Override
+    public List<String> queryUserIdsByCascadeDeptIds(List<String> deptIds) {
+        Set<String> userIds = new HashSet<>();
+        List<SysDepart> departs = sysDepartService.list(Wrappers.lambdaQuery(SysDepart.class)
+                .select(SysDepart::getOrgCode)
+                .in(SysDepart::getId, deptIds));
+        departs.forEach(depart -> {
+            List<SysUser> sysUsers = sysUserDepartService.queryUserByDepCode(depart.getOrgCode(), null);
+            if(oConvertUtils.isObjectNotEmpty(sysUsers)){
+                userIds.addAll(sysUsers.stream().map(SysUser::getId).collect(Collectors.toSet()));
+            }
+        });
+        return new ArrayList<>(userIds);
+    }
+
+    @Override
 	public List<String> queryUserAccountsByDeptIds(List<String> deptIds) {
 		return departMapper.queryUserAccountByDepartIds(deptIds);
 	}
@@ -1920,7 +1958,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			try {
 				// 同步企业微信、钉钉的消息通知
 				Response<String> dtResponse = dingtalkService.sendActionCardMessage(sysAnnouncement, null, true);
-				wechatEnterpriseService.sendTextCardMessage(sysAnnouncement, true);
+				wechatEnterpriseService.sendTextCardMessage(sysAnnouncement, null,true);
 
 				if (dtResponse != null && dtResponse.isSuccess()) {
 					String taskId = dtResponse.getResult();
@@ -1933,4 +1971,129 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 	}
 
+	@Override
+	public SysDepartModel queryCompByOrgCode(String orgCode) {
+		AssertUtils.assertNotEmpty("请输入部门编码",orgCode);
+		SysDepart comp = sysDepartService.queryCompByOrgCode(orgCode);
+		if(comp == null) {
+			log.error("未查询到对应的公司信息");
+			return null;
+		}
+		SysDepartModel respData = new SysDepartModel();
+		BeanUtils.copyProperties(comp, respData);
+		return respData;
+	}
+
+    /**
+     * 根据部门编码和层次查询上级公司
+     * 
+     * @param orgCode 部门编码
+     * @param level 可以传空 默认为1 最小值为1
+     * @return
+     */
+    @Override
+    public SysDepartModel queryCompByOrgCodeAndLevel(String orgCode, Integer level) {
+        if (null == level || 0 == level) {
+            level = 1;
+        }
+        int codeNum = YouBianCodeUtil.ZHANWEI_LENGTH;
+
+        //先判断父级code
+        String parendCode = "";
+        if (orgCode.length() > codeNum) {
+            parendCode = orgCode.substring(0, codeNum);
+        } else {
+            return null;
+        }
+        //根据部门编码查询公司和子公司的数据
+        List<String> categoryList = new ArrayList<>();
+        categoryList.add(DepartCategoryEnum.DEPART_CATEGORY_COMPANY.getValue());
+        categoryList.add(DepartCategoryEnum.DEPART_CATEGORY_SUB_COMPANY.getValue());
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+        query.like(SysDepart::getOrgCode, parendCode);
+        query.in(SysDepart::getOrgCategory, categoryList);
+        query.orderByAsc(SysDepart::getOrgType);
+        List<SysDepart> sysDepartList = sysDepartService.list(query);
+        if (!CollectionUtils.isEmpty(sysDepartList)) {
+            //获取上级公司
+            SysDepart depart = getParentCompanyByOrgCode(orgCode, sysDepartList, level, 1);
+            if(depart == null){
+                depart = sysDepartList.get(0);
+            }
+            SysDepartModel respData = new SysDepartModel();
+            BeanUtils.copyProperties(depart, respData);
+            return respData;
+        }
+        return null;
+    }
+
+    @Override
+    public Object runAiragFlow(AiragFlowDTO airagFlowDTO) {
+        if(oConvertUtils.isEmpty(airagFlowDTO.getFlowId())) {
+            throw new JeecgBootException("流程ID不能为空");
+        }
+        FlowRunParams params = new FlowRunParams();
+        params.setFlowId(airagFlowDTO.getFlowId());
+        params.setInputParams(airagFlowDTO.getInputParams());
+        params.setResponseMode("blocking");
+        Result<Object> o = (Result<Object>)airagFlowService.runFlow(params);
+        return o.getResult();
+    }
+
+    /**
+     * 根据orgCode找上级
+     * 
+     * @param orgCode
+     * @param sysDepartList
+     * @param level 指定那第几级 从下往上
+     * @param nowLevel
+     * @return
+     */
+    public SysDepart getParentCompanyByOrgCode(String orgCode,List<SysDepart> sysDepartList, int level, int nowLevel) {
+        //获取上一级公司的编码
+        String code = this.getPrefix(orgCode);
+        if(oConvertUtils.isEmpty(code)) {
+            return null;
+        }
+        List<SysDepart> list = sysDepartList.stream().filter(sysDepart -> sysDepart.getOrgCode().equals(code)).toList();
+        //判断去上级的级别
+        if(!CollectionUtils.isEmpty(list) && nowLevel == level) {
+            return list.get(0);
+        } else {
+            if(!CollectionUtils.isEmpty(list)) {
+                nowLevel++;
+            }
+            return getParentCompanyByOrgCode(code, sysDepartList, level, nowLevel);
+        }
+    }
+
+    /**
+     * 根据指定值获取编码前缀（每级固定YouBianCodeUtil.ZHANWEI_LENGTH位）
+     *
+     * @param fullCode 完整编码（如"A01A01A01"）
+     * @return 提取后的前缀编码（如"A01A01"）
+     */
+    private String getPrefix(String fullCode) {
+        if(fullCode.length() < YouBianCodeUtil.ZHANWEI_LENGTH){
+            return "";
+        }
+        // 计算总层级数,根据ZHANWEI_LENGTH
+        int totalLevels = fullCode.length() / YouBianCodeUtil.ZHANWEI_LENGTH;
+        int keepLevels = totalLevels - 1;
+        // 计算需要截取的长度（保留层级数 × YouBianCodeUtil.ZHANWEI_LENGTH）
+        int prefixLength = keepLevels * YouBianCodeUtil.ZHANWEI_LENGTH;
+        return prefixLength == 0 ? "" : fullCode.substring(0, prefixLength);
+    }
+
+    /**
+     * 根据部门code或部门id获取部门名称(当前和上级部门)
+     *
+     * @param orgCode 部门编码
+     * @param depId 部门id
+     * @return String 部门名称
+     */
+    @Override
+    public String getDepartPathNameByOrgCode(String orgCode, String depId) {
+        return sysDepartService.getDepartPathNameByOrgCode(orgCode, depId);
+    }
 }

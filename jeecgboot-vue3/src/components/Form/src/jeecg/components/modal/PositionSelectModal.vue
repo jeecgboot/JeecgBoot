@@ -122,20 +122,13 @@
       //定义表格列
       const columns = [
         {
-          title: '职务编码',
-          dataIndex: 'code',
-          width: 180,
-          align: 'left',
-        },
-        {
           title: '职务名称',
           dataIndex: 'name',
           // width: 180,
         },
         {
-          title: '职务等级',
-          dataIndex: 'postRank_dictText',
-          width: 180,
+          title: '职务级别',
+          dataIndex: 'postLevel',
         },
       ];
       //已选择的table信息

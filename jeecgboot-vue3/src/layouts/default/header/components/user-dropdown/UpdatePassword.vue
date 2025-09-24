@@ -1,5 +1,5 @@
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" :title="title" @ok="handleSubmit" width="600px">
+  <BasicModal v-bind="$attrs" @register="registerModal" :title="title" @ok="handleSubmit" width="500px" :bodyStyle="{ padding: '20px 40px 20px 20px'}">
     <BasicForm @register="registerForm" />
   </BasicModal>
 </template>

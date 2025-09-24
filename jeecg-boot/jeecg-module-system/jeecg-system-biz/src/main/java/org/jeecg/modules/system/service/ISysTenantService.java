@@ -240,4 +240,11 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @param tenantId
      */
     void deleteUser(SysUser sysUser, Integer tenantId);
+
+    /**
+     * 为用户添加租户下所有套餐
+     * @param userId
+     * @param tenantId
+     */
+    void addPackUser(String userId, String tenantId);
 }

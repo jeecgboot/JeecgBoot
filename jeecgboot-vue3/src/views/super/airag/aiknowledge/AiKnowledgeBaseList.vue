@@ -277,7 +277,7 @@
       async function handleVectorization(id) {
         rebuild({ knowIds: id }).then((res) =>{
           if(res.success){
-            createMessage.success("向量化成功！");
+            createMessage.success("操作成功，开始异步重建知识库，请稍后查看！");
             reload();
           }else{
             createMessage.warning("向量化失败！");

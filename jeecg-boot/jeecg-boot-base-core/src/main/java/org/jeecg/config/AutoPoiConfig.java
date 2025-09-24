@@ -3,13 +3,14 @@ package org.jeecg.config;
 import org.jeecgframework.core.util.ApplicationContextUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * @Author: Scott
  * @Date: 2018/2/7
  * @description: autopoi 配置类
  */
-
+@Lazy(false)
 @Configuration
 public class AutoPoiConfig {
 

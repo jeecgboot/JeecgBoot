@@ -2,12 +2,14 @@ package org.jeecg.common.system.api;
 
 import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.api.CommonAPI;
+import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.system.vo.*;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Map;
@@ -504,6 +506,14 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     List<String> queryUserIdsByDeptIds(List<String> deptIds);
+
+
+    /**
+     * 根据部门ID查询部门及其子部门下用户ID <br/>
+     * @param deptIds
+     * @return
+     */
+    List<String> queryUserIdsByCascadeDeptIds(List<String> deptIds);
     
     /**
      * 根据部门ID查询用户账号
@@ -557,4 +567,42 @@ public interface ISysBaseAPI extends CommonAPI {
      * @param currentUserName
      */
     void announcementAutoRelease(String dataId, String currentUserName);
+
+    /**
+     * 根据部门编码查询公司信息
+     * @param orgCode 部门编码
+     * @return
+     * @author chenrui
+     * @date 2025/8/12 14:53
+     */
+    SysDepartModel queryCompByOrgCode(@RequestParam(name = "sysCode") String orgCode);
+
+    /**
+     * 根据部门编码和层次查询上级公司
+     * 
+     * @param orgCode 部门编码
+     * @param level 可以传空 默认为1级 最小值为1
+     * @return
+     */
+    SysDepartModel queryCompByOrgCodeAndLevel(String orgCode, Integer level);
+
+    /**
+     * 16 运行AIRag流程
+     * for [QQYUN-13634]在baseapi里面封装方法，方便其他模块调用
+     *
+     * @param airagFlowDTO
+     * @return 流程执行结果,可能是String或者Map
+     * @author chenrui
+     * @date 2025/9/2 11:43
+     */
+    Object runAiragFlow(AiragFlowDTO airagFlowDTO);
+
+    /**
+     * 根据部门code或部门id获取部门名称(当前和上级部门)
+     *
+     * @param orgCode 部门编码
+     * @param depId   部门id
+     * @return String 部门名称
+     */
+    String getDepartPathNameByOrgCode(String orgCode, String depId);
 }

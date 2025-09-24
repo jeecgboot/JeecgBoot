@@ -335,7 +335,7 @@
           searchParams.realname = options[0].label;
         }
       }
-
+      
       function openSelectPerson(){
         openModal(true, {})
       }

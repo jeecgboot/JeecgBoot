@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-server-cloud</artifactId>
         <groupId>org.jeecgframework.boot</groupId>
-        <version>3.8.2</version>
+        <version>3.8.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jeecg-cloud-gateway</artifactId>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version>
+            <version>3.18.0</version>
         </dependency>
     </dependencies>
     <build>

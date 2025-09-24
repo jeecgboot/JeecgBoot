@@ -171,6 +171,7 @@
             component: (hasCustomApi.value && !props.customApiJInput) ? 'Input' : 'JInput',
           },
         ],
+        autoSubmitOnEnter: true
       };
       //定义表格列
       const columns = [

@@ -1,8 +1,8 @@
 package org.jeecg.modules.system.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -77,13 +77,26 @@ public class SysUserExportVo {
      */
     @Excel(name = "工号", width = 15)
     private String workNo;
+    
+    /**
+     * 主岗位
+     */
+    @Excel(name="主岗位",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    private String mainDepPostId;
 
     /**
-     * 职务，关联职务表
+     * 职级
      */
-    @Excel(name = "职务", width = 15)
-    @TableField(exist = false)
-    private String post;
+    @Excel(name="职级", width = 15)
+    private String postName;
+
+    /**
+     * 兼职岗位
+     */
+    @Excel(name="兼职岗位",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    private String otherDepPostId;
 
     /**
      * 座机号
@@ -111,9 +124,21 @@ public class SysUserExportVo {
     private String departNames;
 
     /**
+     * 机构类型
+     * 公司(1)、部门(2)、岗位(3)、子公司(4)
+     */
+    @Excel(name = "部门类型(1-公司,2-部门,3-岗位,4-子公司)",width = 15)
+    private String orgCategorys;
+
+    /**
      * 负责部门
      */
     @Excel(name = "负责部门", width = 15)
     private String departIds;
 
+    /**
+     * 职务
+     */
+    @Excel(name="职务", dicCode = "user_position")
+    private String positionType;
 }
