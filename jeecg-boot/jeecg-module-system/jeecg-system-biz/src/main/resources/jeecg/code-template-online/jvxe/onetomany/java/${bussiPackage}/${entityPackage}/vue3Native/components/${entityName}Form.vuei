@@ -36,7 +36,7 @@
   <a-spin :spinning="loading">
     <JFormContainer :disabled="disabled">
       <template #detail>
-        <a-form v-bind="formItemLayout" name="${entityName}Form" ref="formRef">
+        <a-form v-bind="formItemLayout" name="${entityName}Form" ref="formRef" class="jeecg-native-form">
           <a-row>
             <#list columns as po>
               <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
@@ -54,7 +54,7 @@
     </JFormContainer>
 
 		<!-- 子表单区域 -->
-    <a-tabs v-model:activeKey="activeKey" animated style="overflow:hidden;">
+    <a-tabs v-model:activeKey="activeKey" animated style="overflow:hidden;" class="jeecg-native-tab">
 <#list subTables as sub><#rt/>
       <#if sub.foreignRelationType =='1'>
       <a-tab-pane class="sub-one-form" tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" :forceRender="true">
@@ -407,5 +407,9 @@
   .ant-tabs-tabpane.sub-one-form {
     max-height: 340px;
     overflow: auto;
+  }
+  .jeecg-native-form,
+  .jeecg-native-tab {
+    padding: 0 20px;
   }
 </style>

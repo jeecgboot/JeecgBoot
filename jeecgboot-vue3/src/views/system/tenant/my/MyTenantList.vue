@@ -1,6 +1,6 @@
 <template>
   <div>
-    <BasicTable @register="registerTable" :rowSelection="rowSelection">
+    <BasicTable @register="registerTable" :rowSelection="rowSelection" @fetch-success="onFetchSuccess">
       <template #tableTitle>
         <a-button
           preIcon="ant-design:user-add-outlined"
@@ -10,14 +10,14 @@
           :disabled="selectedRowKeys.length === 0"
           >邀请用户加入</a-button
         >
-        <a-button
+<!--        <a-button
           preIcon="ant-design:plus-outlined"
           type="primary"
           @click="handlePack"
           style="margin-right: 5px"
           :disabled="selectedRowKeys.length === 0"
           >套餐</a-button
-        >
+        >-->
       </template>
       <template #action="{ record }">
         <TableAction :actions="getActions(record)" />
@@ -67,7 +67,7 @@
         fixed: 'right',
       },
       rowSelection:{
-        type: "radio"
+        type: "radio",
       },
       beforeFetch: (params) => {
         return Object.assign(params, { userTenantStatus: '1,3,4' });
@@ -75,6 +75,26 @@
     },
   });
   const [registerTable, { reload }, { rowSelection, selectedRowKeys, selectedRows }] = tableContext;
+
+  // 默认选中当前租户
+  function onFetchSuccess(data) {
+    let items = data.items;
+    console.log('items:', items);
+    // 当前登录租户ID
+    let loginTenantId = getTenantId();
+    console.log('loginTenantId:', loginTenantId);
+    // 如果当前登录租户ID在列表中，则默认选中
+    if (items && items.length > 0 && loginTenantId) {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].id == loginTenantId) {
+          console.log('items[i].id:', items[i].id);
+          selectedRowKeys.value = [items[i].id];
+          selectedRows.value = [items[i]];
+          return;
+        }
+      }
+    }
+  }
 
   /**
    * 操作列定义
@@ -99,11 +119,15 @@
   /**
    * 用户选择回调事件
    * @param options
-   * @param value
+   * @param phone
+   * @param userSelectId
    */
-  async function handleInviteUserOk(value) {
-    if (value) {
-      await invitationUserJoin({ ids: selectedRowKeys.value.join(','), phone: value });
+  async function handleInviteUserOk(phone, username) {
+    if (phone) {
+      await invitationUserJoin({ ids: selectedRowKeys.value.join(','), phone: phone });
+    }
+    if (username) {
+      await invitationUserJoin({ ids: selectedRowKeys.value.join(','), username: username });
     }
   }
 

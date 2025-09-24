@@ -14,7 +14,11 @@
           :load-data="loadChildrenTreeData"
           v-model:expandedKeys="expandedKeys"
           @select="onSelect"
-        ></a-tree>
+        >
+          <template #title="{ orgCategory, title }">
+            <TreeIcon :orgCategory="orgCategory" :title="title"></TreeIcon>
+          </template>
+        </a-tree>
       </template>
       <a-empty v-else description="暂无数据" />
     </a-spin>
@@ -26,6 +30,7 @@
   import { queryDepartTreeSync } from '../address.api';
   import { searchByKeywords } from '/@/views/system/departUser/depart.user.api';
   import { Popconfirm } from 'ant-design-vue';
+  import TreeIcon from "@/components/Form/src/jeecg/components/TreeIcon/TreeIcon.vue";
 
   const prefixCls = inject('prefixCls');
   // 定义props
@@ -142,7 +147,7 @@
       try {
         loading.value = true;
         treeData.value = [];
-        let result = await searchByKeywords({ keyWord: value });
+        let result = await searchByKeywords({ keyWord: value, orgCategory: '1,2,3,4' });
         if (Array.isArray(result)) {
           treeData.value = result;
         }

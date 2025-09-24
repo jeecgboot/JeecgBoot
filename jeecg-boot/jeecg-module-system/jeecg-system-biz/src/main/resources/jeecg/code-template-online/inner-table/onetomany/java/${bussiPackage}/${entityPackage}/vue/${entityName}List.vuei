@@ -1,7 +1,6 @@
 <#-- noinspection JSDuplicatedDeclaration,RequiredAttributes,NpmUsedModulesInstalled -->
 <#-- ** 引入全局工具方法 ** -->
-<#--<#include "/common/utils.ftl">-->
-<#include "../../../../../../common/utils.ftl">
+<#include "/common/utils.ftl">
 <#-- ** 定义全局使用的变量 ** -->
 <#-- 是否有查询条件 -->
 <#assign query_flag=false>

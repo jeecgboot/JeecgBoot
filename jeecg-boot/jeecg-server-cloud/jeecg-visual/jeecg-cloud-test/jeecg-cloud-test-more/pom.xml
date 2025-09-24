@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>jeecg-cloud-test</artifactId>
-        <groupId>org.jeecgframework.boot</groupId>
-        <version>3.8.2</version>
+        <groupId>org.jeecgframework.boot3</groupId>
+        <version>3.8.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>公共测试模块</description>
@@ -14,30 +14,30 @@
     <dependencies>
         <!-- 引入jeecg-boot-starter-cloud依赖 -->
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter3-cloud</artifactId>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-cloud</artifactId>
             <!--system模块需要排除jeecg-system-cloud-api-->
             <exclusions>
                 <exclusion>
-                    <groupId>org.jeecgframework.boot</groupId>
+                    <groupId>org.jeecgframework.boot3</groupId>
                     <artifactId>jeecg-system-cloud-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <!--定时任务-->
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter3-job</artifactId>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-job</artifactId>
         </dependency>
         <!--rabbitmq消息队列-->
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter3-rabbitmq</artifactId>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-rabbitmq</artifactId>
         </dependency>
         <!-- 分布式锁依赖 -->
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter3-lock</artifactId>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-lock</artifactId>
         </dependency>
     </dependencies>
 

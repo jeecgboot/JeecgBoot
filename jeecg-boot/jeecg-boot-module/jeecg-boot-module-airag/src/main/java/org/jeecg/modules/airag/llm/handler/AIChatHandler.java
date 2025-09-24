@@ -6,6 +6,7 @@ import dev.langchain4j.rag.query.router.QueryRouter;
 import dev.langchain4j.service.TokenStream;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.ai.handler.LLMHandler;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.AssertUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.common.handler.AIChatParams;
@@ -22,9 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 
 /**
@@ -83,6 +82,7 @@ public class AIChatHandler implements IAIChatHandler {
         AssertUtils.assertNotEmpty("请选择模型", modelId);
 
         AiragModel airagModel = airagModelMapper.getByIdIgnoreTenant(modelId);
+        AssertUtils.assertSame("模型未激活,请先在[AI模型配置]中[测试激活]模型", airagModel.getActivateFlag(), 1);
         return completions(airagModel, messages, params);
     }
 
@@ -98,7 +98,25 @@ public class AIChatHandler implements IAIChatHandler {
      */
     public String completions(AiragModel airagModel, List<ChatMessage> messages, AIChatParams params) {
         params = mergeParams(airagModel, params);
-        String resp = llmHandler.completions(messages, params);
+        String resp;
+        try {
+            resp = llmHandler.completions(messages, params);
+        } catch (Exception e) {
+            // langchain4j 异常友好提示
+            String errMsg = "调用大模型接口失败，详情请查看后台日志。";
+            if (oConvertUtils.isNotEmpty(e.getMessage())) {
+//                // 根据常见异常关键字做细致翻译
+//                for (Map.Entry<String, String> entry : MODEL_ERROR_MAP.entrySet()) {
+//                    String key = entry.getKey();
+//                    String value = entry.getValue();
+//                    if (errMsg.contains(key)) {
+//                        errMsg = value;
+//                    }
+//                }
+            }
+            log.error("AI模型调用异常: {}", errMsg, e);
+            throw new JeecgBootException(errMsg);
+        }
         if (resp.contains("</think>")
                 && (null == params.getNoThinking() || params.getNoThinking())) {
             String[] thinkSplit = resp.split("</think>");
@@ -151,6 +169,7 @@ public class AIChatHandler implements IAIChatHandler {
         AssertUtils.assertNotEmpty("请选择模型", modelId);
 
         AiragModel airagModel = airagModelMapper.getByIdIgnoreTenant(modelId);
+        AssertUtils.assertSame("模型未激活,请先在[AI模型配置]中[测试激活]模型", airagModel.getActivateFlag(), 1);
         return chat(airagModel, messages, params);
     }
 

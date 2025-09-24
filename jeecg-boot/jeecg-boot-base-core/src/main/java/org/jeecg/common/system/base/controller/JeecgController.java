@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
@@ -19,6 +20,7 @@ import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
+import org.jeecgframework.poi.handler.inter.IExcelExportServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
@@ -126,6 +128,53 @@ public class JeecgController<T, S extends IService<T>> {
         //此处设置的filename无效 ,前端会重更新设置一下
         mv.addObject(NormalExcelConstants.FILE_NAME, title);
         mv.addObject(NormalExcelConstants.MAP_LIST, listMap);
+        return mv;
+    }
+
+    /**
+     * 大数据导出
+     * @param request
+     * @param object
+     * @param clazz
+     * @param title
+     * @param pageSize 每次查询的数据量
+     * @return
+     * @author chenrui
+     * @date 2025/8/11 16:11
+     */
+    protected ModelAndView exportXlsForBigData(HttpServletRequest request, T object, Class<T> clazz, String title,Integer pageSize) {
+        // 组装查询条件
+        QueryWrapper<T> queryWrapper = QueryGenerator.initQueryWrapper(object, request.getParameterMap());
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        // 计算分页数
+        double total = service.count();
+        int count = (int) Math.ceil(total / pageSize);
+        // 过滤选中数据
+        String selections = request.getParameter("selections");
+        if (oConvertUtils.isNotEmpty(selections)) {
+            List<String> selectionList = Arrays.asList(selections.split(","));
+            queryWrapper.in("id", selectionList);
+        }
+
+        // 定义IExcelExportServer
+        IExcelExportServer excelExportServer = (queryParams, pageNum) -> {
+            if (pageNum > count) {
+                return null;
+            }
+            Page<T> page = new Page<T>(pageNum, pageSize);
+            IPage<T> pageList = service.page(page, (QueryWrapper<T>) queryParams);
+            return new ArrayList<>(pageList.getRecords());
+        };
+
+        // AutoPoi 导出Excel
+        ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
+        //此处设置的filename无效 ,前端会重更新设置一下
+        mv.addObject(NormalExcelConstants.FILE_NAME, title);
+        mv.addObject(NormalExcelConstants.CLASS, clazz);
+        ExportParams exportParams = new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title, jeecgBaseConfig.getPath().getUpload());
+        mv.addObject(NormalExcelConstants.PARAMS, exportParams);
+        mv.addObject(NormalExcelConstants.EXPORT_SERVER, excelExportServer);
+        mv.addObject(NormalExcelConstants.QUERY_PARAMS, queryWrapper);
         return mv;
     }
 

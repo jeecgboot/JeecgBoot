@@ -50,7 +50,7 @@ export const treeProps = {
   //初始展开的层级
   defaultExpandLevel: {
     type: [Number],
-    default: 0,
+    default: 1,
   },
   //根pid值
   startPid: {
@@ -78,10 +78,14 @@ export const treeProps = {
   sync: propTypes.bool.def(true),
   //是否显示选择按钮
   showButton: propTypes.bool.def(true),
+  //是否只显示公司
+  onlyShowCompany: propTypes.bool.def(false),
   //是否显示复选框
   checkable: propTypes.bool.def(true),
   //checkable 状态下节点选择完全受控（父子节点选中状态不再关联）
   checkStrictly: propTypes.bool.def(false),
   // 是否允许多选，默认 true
   multiple: propTypes.bool.def(true),
+  // 是否只选择岗位
+  izOnlySelectDepartPost: propTypes.bool.def(false),
 };

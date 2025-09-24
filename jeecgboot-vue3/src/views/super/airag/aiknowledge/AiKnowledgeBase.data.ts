@@ -40,7 +40,7 @@ export const formSchema: FormSchema[] = [
     required: true,
     component: 'JDictSelectTag',
     componentProps: {
-      dictCode: "airag_model where model_type = 'EMBED',name,id",
+      dictCode: "airag_model where model_type = 'EMBED' and activate_flag = 1,name,id",
     },
   },
   {

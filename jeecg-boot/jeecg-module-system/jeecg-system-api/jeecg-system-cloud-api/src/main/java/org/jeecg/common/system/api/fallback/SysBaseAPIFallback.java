@@ -3,6 +3,7 @@ package org.jeecg.common.system.api.fallback;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
@@ -473,6 +474,31 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     @Override
     public void announcementAutoRelease(String dataId, String currentUserName) {
 
+    }
+
+    @Override
+    public SysDepartModel queryCompByOrgCode(String orgCode) {
+        return null;
+    }
+
+    @Override
+    public SysDepartModel queryCompByOrgCodeAndLevel(String orgCode, Integer level) {
+        return null;
+    }
+
+    @Override
+    public Object runAiragFlow(AiragFlowDTO airagFlowDTO) {
+        return null;
+    }
+
+    @Override
+    public String getDepartPathNameByOrgCode(String orgCode, String depId) {
+        return "";
+    }
+
+    @Override
+    public List<String> queryUserIdsByCascadeDeptIds(List<String> deptIds) {
+        return null;
     }
 
     @Override

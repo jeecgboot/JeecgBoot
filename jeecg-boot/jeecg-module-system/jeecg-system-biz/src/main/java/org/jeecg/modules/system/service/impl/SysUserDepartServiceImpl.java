@@ -1,14 +1,17 @@
 package org.jeecg.modules.system.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.constant.enums.DepartCategoryEnum;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
@@ -174,6 +177,19 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 				}
 			}
 			//update-end---author:liusq ---date:20231215  for：逗号分割多个用户翻译问题------------
+
+			//update-begin---author:liusq ---date:20250908  for：JHHB-304 流程转办 人员选择时，加姓名搜索------------
+			if(oConvertUtils.isNotEmpty(realname)){
+				String COMMA = ",";
+				if(oConvertUtils.isNotEmpty(isMultiTranslate) && realname.contains(COMMA)){
+					String[] realnameArr = realname.split(COMMA);
+					query.in(SysUser::getRealname,realnameArr);
+				}else {
+					query.like(SysUser::getRealname, realname);
+				}
+			}
+			//update-end---author:liusq ---date:20250908  for：JHHB-304 流程转办 人员选择时，加姓名搜索------------
+
             //update-begin---author:wangshuai ---date:20220608  for：[VUEN-1238]邮箱回复时，发送到显示的为用户id------------
             if(oConvertUtils.isNotEmpty(id)){
 				//update-begin---author:wangshuai ---date:2024-06-25  for：【TV360X-1482】写信，选择用户后第一次回显没翻译------------
@@ -353,4 +369,87 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 		return res;
 	}
 
+
+    /**
+     * 查询部门岗位下的用户
+     * @param departId
+     * @param username
+     * @param realname
+     * @param pageSize
+     * @param pageNo
+     * @param id
+     * @param isMultiTranslate
+     * @return
+     */
+    @Override
+    public IPage<SysUser> queryDepartPostUserPageList(String departId, String username, String realname, Integer pageSize, Integer pageNo, String id, String isMultiTranslate) {
+        Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
+        if (oConvertUtils.isEmpty(departId)) {
+            // 部门ID不存在 直接查询用户表即可
+            return getDepPostListByIdUserName(username,id,isMultiTranslate,page);
+        } else {
+            // 有部门ID 需要走部门岗位用户查询
+            return getDepartPostListByIdUserRealName(departId,username,realname,page);
+        }
+    }
+
+    /**
+     * 根据部门id和用户名获取部门岗位用户分页列表
+     *
+     * @param id
+     * @param username
+     * @param isMultiTranslate
+     * @param page
+     * @return
+     */
+    private IPage<SysUser> getDepPostListByIdUserName(String username, String id, String isMultiTranslate, Page<SysUser> page) {
+        //需要查询部门下的用户，故将写成自定义sql，非Lambda表达式的用法
+        List<String> userIdList = new ArrayList<>();
+        List<String> userNameList = new ArrayList<>();
+        String userId = "";
+        String userName = "";
+        if (oConvertUtils.isNotEmpty(username)) {
+            String COMMA = ",";
+            if (oConvertUtils.isNotEmpty(isMultiTranslate) && username.contains(COMMA)) {
+                String[] usernameArr = username.split(COMMA);
+                userNameList.addAll(Arrays.asList(usernameArr));
+            } else {
+                userName = username;
+            }
+        }
+        if (oConvertUtils.isNotEmpty(id)) {
+            String COMMA = ",";
+            if (oConvertUtils.isNotEmpty(isMultiTranslate) && id.contains(COMMA)) {
+                String[] idArr = id.split(COMMA);
+                userIdList.addAll(Arrays.asList(idArr));
+            } else {
+                userId = "";
+            }
+        }
+        //------------------------------------------------------------------------------------------------
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            String tenantId = oConvertUtils.getString(TenantContext.getTenant(), "0");
+            List<String> userIdsList = userTenantMapper.getUserIdsByTenantId(Integer.valueOf(tenantId));
+            if (null != userIdsList && !userIdsList.isEmpty()) {
+                userIdList.addAll(userIdsList);
+            }
+        }
+        //------------------------------------------------------------------------------------------------
+        return sysUserMapper.getDepPostListByIdUserName(page,userIdList,userId,userName,userNameList);
+    }
+
+    /**
+     * 根据部门id、用户名和真实姓名获取部门岗位用户分页列表
+     *
+     * @param departId
+     * @param username
+     * @param realname
+     * @param page
+     * @return
+     */
+    private IPage<SysUser> getDepartPostListByIdUserRealName(String departId, String username, String realname, Page<SysUser> page) {
+        SysDepart sysDepart = sysDepartService.getById(departId);
+        return sysUserMapper.getDepartPostListByIdUserRealName(page, username, realname, sysDepart.getOrgCode());
+    }
 }

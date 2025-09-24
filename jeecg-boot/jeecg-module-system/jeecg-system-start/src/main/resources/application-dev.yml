@@ -1,12 +1,7 @@
 server:
   port: 8080
-  undertow:
-    decode-url: true # 启用URL解码
-    # max-http-post-size: 10MB # 平替 tomcat server.tomcat.max-swallow-siz， undertow该值默认为-1
-    worker-threads: 16  # 4核CPU标准配置
-    buffers:
-      websocket: 8192 # WebSocket缓冲 以字节为单位，这里设置为8 KB
-      io: 16384 # IO操作缓冲 以字节为单位，这里设置为16 KB
+  tomcat:
+    max-swallow-size: -1
   error:
     include-exception: true
     include-stacktrace: ALWAYS
@@ -25,6 +20,9 @@ management:
         include: metrics,httpexchanges,jeecghttptrace
 
 spring:
+#  main:
+#    # 启动加速 (建议开发环境，开启后flyway自动升级失效)
+#    lazy-initialization: true
   flyway:
     # 是否启用flyway
     enabled: true
@@ -46,7 +44,7 @@ spring:
       mail.smtp.writetimeout: 10000  # 写入超时（毫秒）
       mail.smtp.auth: true
       smtp.ssl.enable: true
-      mail.debug: true  # 启用调试模式(查看详细日志)
+#      mail.debug: true  # 启用调试模式(查看详细日志)
   ## quartz定时任务,采用数据库方式
   quartz:
     job-store-type: jdbc
@@ -180,7 +178,7 @@ mybatis-plus:
       # 默认数据库表下划线命名
       table-underline: true
   configuration:
-    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+#    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
     #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 返回类型为Map,显示null对应的字段
     call-setters-on-nulls: true
@@ -261,6 +259,12 @@ jeecg:
       dataSourceSafe: false
       # 低代码开发模式（dev:开发模式，prod:发布模式—关闭在线报表设计功能，分配角色admin、lowdeveloper可以放开限制）
       lowCodeMode: dev
+    # 高德地图Api配置(v2.1.3+ BI新增高德地图)
+    gao-de-api:
+      # 应用key
+      api-key: ??
+      # 应用秘钥
+      secret-key: ??
   #xxl-job配置
   xxljob:
     enabled: false
@@ -292,6 +296,7 @@ logging:
     org.springframework.context.support.PostProcessorRegistrationDelegate: error
     org.flywaydb: debug
     org.jeecg.modules.system.mapper: info
+    org.jeecg.modules.demo.test.mapper: info
 #swagger
 knife4j:
   #开启增强配置

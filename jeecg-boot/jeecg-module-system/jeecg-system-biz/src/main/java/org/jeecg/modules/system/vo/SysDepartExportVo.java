@@ -28,6 +28,9 @@ public class SysDepartExportVo {
     /**机构类别 1=公司，2=组织机构，3=岗位*/
     @Excel(name="机构类别",width=15,dicCode="org_category")
     private String orgCategory;
+    /** 职级id */
+    @Excel(name="职级",width=15,dictTable = "sys_position", dicCode = "id", dicText = "name")
+    private String positionId;
     /**机构编码*/
     @Excel(name="机构编码",width=15)
     private String orgCode;

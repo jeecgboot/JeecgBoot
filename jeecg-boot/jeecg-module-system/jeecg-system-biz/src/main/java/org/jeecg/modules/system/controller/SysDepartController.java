@@ -21,12 +21,14 @@ import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.excelstyle.ExcelExportSysUserStyle;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.SysDepartExportVo;
+import org.jeecg.modules.system.vo.SysPositionSelectTreeVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
@@ -149,6 +151,32 @@ public class SysDepartController {
 		}
 		return result;
 	}
+
+    /**
+     * 异步查询部门和岗位list
+     * @param parentId 父节点 异步加载时传递
+     * @param ids 前端回显是传递
+     * @param primaryKey 主键字段（id或者orgCode）
+     * @return
+     */
+    @RequestMapping(value = "/queryDepartAndPostTreeSync", method = RequestMethod.GET)
+    public Result<List<SysDepartTreeModel>> queryDepartAndPostTreeSync(@RequestParam(name = "pid", required = false) String parentId,
+																	   @RequestParam(name = "ids", required = false) String ids,
+																	   @RequestParam(name = "primaryKey", required = false) String primaryKey,
+                                                                       @RequestParam(name = "departIds", required = false) String departIds,
+																	   @RequestParam(name = "name", required = false) String orgName) {
+        Result<List<SysDepartTreeModel>> result = new Result<>();
+        try {
+            List<SysDepartTreeModel> list = sysDepartService.queryDepartAndPostTreeSync(parentId,ids, primaryKey, departIds, orgName);
+            result.setResult(list);
+            result.setSuccess(true);
+        } catch (Exception e) {
+            log.error(e.getMessage(),e);
+            result.setSuccess(false);
+            result.setMessage("查询失败");
+        }
+        return result;
+    }
 
 	/**
 	 * 获取某个部门的所有父级部门的ID
@@ -323,7 +351,10 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/searchBy", method = RequestMethod.GET)
-	public Result<List<SysDepartTreeModel>> searchBy(@RequestParam(name = "keyWord", required = true) String keyWord,@RequestParam(name = "myDeptSearch", required = false) String myDeptSearch) {
+	public Result<List<SysDepartTreeModel>> searchBy(@RequestParam(name = "keyWord", required = true) String keyWord,
+                                                     @RequestParam(name = "myDeptSearch", required = false) String myDeptSearch,
+                                                     @RequestParam(name = "orgCategory", required = false) String orgCategory,
+                                                     @RequestParam(name = "departIds", required = false) String depIds) {
 		Result<List<SysDepartTreeModel>> result = new Result<List<SysDepartTreeModel>>();
 		//部门查询，myDeptSearch为1时为我的部门查询，登录用户为上级时查只查负责部门下数据
 		LoginUser user = SecureUtil.currentUser();
@@ -331,7 +362,7 @@ public class SysDepartController {
 		if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals( CommonConstant.USER_IDENTITY_2 )){
 			departIds = user.getDepartIds();
 		}
-		List<SysDepartTreeModel> treeList = this.sysDepartService.searchByKeyWord(keyWord,myDeptSearch,departIds);
+		List<SysDepartTreeModel> treeList = this.sysDepartService.searchByKeyWord(keyWord,myDeptSearch,departIds,orgCategory,depIds);
 		if (treeList == null || treeList.size() == 0) {
 			result.setSuccess(false);
 			result.setMessage("未查询匹配数据！");
@@ -384,11 +415,14 @@ public class SysDepartController {
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
         mv.addObject(NormalExcelConstants.CLASS, SysDepartExportVo.class);
         LoginUser user = SecureUtil.currentUser();
-        mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("导入规则：\n" +
-				"1、标题为第三行，部门路径和部门名称的标题不允许修改，否则会匹配失败；第四行为数据填写范围;\n" +
-				"2、部门路径用英文字符/分割，部门名称为部门路径的最后一位;\n" +
-				"3、部门从一级名称开始创建，如果有同级就需要多添加一行，如研发部/研发一部;研发部/研发二部;\n" +
-				"4、自定义的部门编码需要满足规则才能导入。如一级部门编码为A01,那么子部门为A01A01,同级子部门为A01A02,编码固定为三位，首字母为A-Z,后两位为数字0-99，依次递增;", "导出人:"+user.getRealname(), "导出信息"));
+        ExportParams exportParams = new ExportParams("导入规则：\n" +
+                "1、标题为第三行，部门路径和部门名称的标题不允许修改，否则会匹配失败；第四行为数据填写范围;\n" +
+                "2、部门路径用英文字符/分割，部门名称为部门路径的最后一位;\n" +
+                "3、部门从一级名称开始创建，如果有同级就需要多添加一行，如研发部/研发一部;研发部/研发二部;\n" +
+                "4、自定义的部门编码需要满足规则才能导入。如一级部门编码为A01,那么子部门为A01A01,同级子部门为A01A02,编码固定为三位，首字母为A-Z,后两位为数字0-99，依次递增;", "导出人:" + user.getRealname(), "导出信息");
+        exportParams.setTitleHeight((short)70);
+        exportParams.setStyle(ExcelExportSysUserStyle.class);
+        mv.addObject(NormalExcelConstants.PARAMS, exportParams);
         mv.addObject(NormalExcelConstants.DATA_LIST, sysDepartExportVos);
 		//update-end---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
         
@@ -582,6 +616,11 @@ public class SysDepartController {
 		String[] ids = deptIds.split(",");
 		Collection<String> idList = Arrays.asList(ids);
 		Collection<SysDepart> deptList = sysDepartService.listByIds(idList);
+		// 设置部门路径名称
+		for (SysDepart depart : deptList) {
+			String departPathName = sysDepartService.getDepartPathNameByOrgCode(depart.getOrgCode(),null);
+			depart.setDepartPathName(departPathName);
+		}
 		result.setSuccess(true);
 		result.setResult(deptList);
 		return result;
@@ -687,5 +726,40 @@ public class SysDepartController {
 		}
 		return Result.error("文件导入失败！");
 	}
-	
+
+    /**
+     * 根据部门id和职级id获取岗位信息
+     */
+    @GetMapping("/getPositionByDepartId")
+	public Result<List<SysPositionSelectTreeVo>> getPositionByDepartId(@RequestParam(name = "parentId") String parentId,
+                                                                       @RequestParam(name = "departId",required = false) String departId,
+                                                                       @RequestParam(name = "positionId") String positionId){
+        List<SysPositionSelectTreeVo> positionByDepartId = sysDepartService.getPositionByDepartId(parentId, departId, positionId);
+        return Result.OK(positionByDepartId);
+    }
+
+    /**
+     * 获取职级关系
+     * @param departId
+     * @return
+     */
+    @GetMapping("/getRankRelation")
+    public Result<List<SysPositionSelectTreeVo>> getRankRelation(@RequestParam(name = "departId") String departId){
+        List<SysPositionSelectTreeVo> list = sysDepartService.getRankRelation(departId);
+        return Result.ok(list);
+    }
+
+    /**
+     * 根据部门code获取当前和上级部门名称
+     *
+     * @param orgCode
+     * @param depId
+     * @return String 部门名称
+     */
+    @GetMapping("/getDepartPathNameByOrgCode")
+    public Result<String> getDepartPathNameByOrgCode(@RequestParam(name = "orgCode", required = false) String orgCode,
+                                                 @RequestParam(name = "depId", required = false) String depId) {
+        String departName = sysDepartService.getDepartPathNameByOrgCode(orgCode, depId);
+        return Result.OK(departName);
+    }
 }

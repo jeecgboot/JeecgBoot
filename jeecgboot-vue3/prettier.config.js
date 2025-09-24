@@ -15,6 +15,6 @@ module.exports = {
   requirePragma: false,
   proseWrap: 'never',
   htmlWhitespaceSensitivity: 'strict',
-  endOfLine: 'auto',
+  endOfLine: 'auto', // 自动处理换行符（LF/CRLF）
   rangeStart: 0,
 };

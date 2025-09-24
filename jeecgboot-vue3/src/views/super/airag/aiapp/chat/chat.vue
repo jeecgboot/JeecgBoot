@@ -447,7 +447,7 @@
     uploadUrlList.value = [];
     fileInfoList.value = [];
     knowList.value = [];
-
+    options.message = message;
     const readableStream = await defHttp.post(
       {
         url: props.url,
@@ -473,72 +473,7 @@
       console.error(e)
       //update-end---author:wangshuai---date:2025-04-28---for:【QQYUN-12297】【AI】聊天，超时以后提示---
     });
-    const reader = readableStream.getReader();
-    const decoder = new TextDecoder('UTF-8');
-    let conversationId = '';
-    let buffer = '';
-    let text = ''; // 按 SSE 协议分割消息
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      //update-begin---author:wangshuai---date:2025-03-12---for:【QQYUN-11555】聊天时要流式显示消息---
-      let result = decoder.decode(value, { stream: true });
-      result = buffer + result;
-      const lines = result.split('\n\n');
-      for (let line of lines) {
-        if (line.startsWith('data:')) {
-          let content = line.replace('data:', '').trim();
-          if(!content){
-            continue;
-          }
-          if(!content.endsWith('}')){
-            buffer = buffer + line;
-            continue;
-          }
-          buffer = "";
-          try {
-            //update-begin---author:wangshuai---date:2025-03-13---for:【QQYUN-11572】发布到线上不能实时动态，内容不能加载出来，得刷新才能看到全部回答---
-            if(content.indexOf(":::card:::") !== -1){
-              content = content.replace(/\s+/g, '');
-            }
-            let parse = JSON.parse(content);
-            await renderText(parse,conversationId,text,options).then((res)=>{
-              text = res.returnText;
-              conversationId = res.conversationId;
-            });
-            //update-end---author:wangshuai---date:2025-03-13---for:【QQYUN-11572】发布到线上不能实时动态，内容不能加载出来，得刷新才能看到全部回答---
-          } catch (error) {
-            console.log('Error parsing update:', error);
-          }
-          //update-end---author:wangshuai---date:2025-03-12---for:【QQYUN-11555】聊天时要流式显示消息---
-        }else{
-          if(!line){
-            continue;
-          }
-          if(!line.endsWith('}')){
-            buffer = buffer + line;
-            continue;
-          }
-          buffer = "";
-          //update-begin---author:wangshuai---date:2025-03-13---for:【QQYUN-11572】发布到线上不能实时动态，内容不能加载出来，得刷新才能看到全部回答---
-          try {
-            if(line.indexOf(":::card:::") !== -1){
-              line = line.replace(/\s+/g, '');
-            }
-            let parse = JSON.parse(line);
-            await renderText(parse, conversationId, text, options).then((res) => {
-              text = res.returnText;
-              conversationId = res.conversationId;
-            });
-          }catch (error) {
-            console.log('Error parsing update:', error);
-          }
-          //update-end---author:wangshuai---date:2025-03-13---for:【QQYUN-11572】发布到线上不能实时动态，内容不能加载出来，得刷新才能看到全部回答---
-        }
-      }
-    }
+    await renderChatByResult(readableStream,options);
   }
   // 是否使用上下文
   const handleUsingContext = () => {
@@ -598,12 +533,14 @@
     if(item.event == 'INIT_REQUEST_ID'){
       if (item.requestId) {
         requestId.value = item.requestId;
+        localStorage.setItem('chat_requestId_' + uuid.value, JSON.stringify({ requestId: item.requestId, message: options.message }));
       }
     }
     if (item.event == 'MESSAGE_END') {
       topicId.value = item.topicId;
       conversationId = item.conversationId;
       uuid.value = item.conversationId;
+      localStorage.removeItem('chat_requestId_' + uuid.value);
       handleStop();
     }
     if (item.event == 'FLOW_FINISHED') {
@@ -831,6 +768,135 @@
     await defHttp.uploadFile({ url: "/airag/chat/upload" }, { file: image }, { success: isReturn });
   }
 
+  /**
+   * 渲染返回来的结果
+   * @param readableStream
+   * @param options
+   */
+  async function renderChatByResult(readableStream, options) {
+    const reader = readableStream.getReader();
+    const decoder = new TextDecoder('UTF-8');
+    let conversationId = '';
+    let buffer = '';
+    let text = ''; // 按 SSE 协议分割消息
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      //update-begin---author:wangshuai---date:2025-03-12---for:【QQYUN-11555】聊天时要流式显示消息---
+      let result = decoder.decode(value, { stream: true });
+      result = buffer + result;
+      const lines = result.split('\n\n');
+      for (let line of lines) {
+        if (line.startsWith('data:')) {
+          let content = line.replace('data:', '').trim();
+          if(!content){
+            continue;
+          }
+          if(!content.endsWith('}')){
+            buffer = buffer + line;
+            continue;
+          }
+          buffer = "";
+          try {
+            //update-begin---author:wangshuai---date:2025-03-13---for:【QQYUN-11572】发布到线上不能实时动态，内容不能加载出来，得刷新才能看到全部回答---
+            if(content.indexOf(":::card:::") !== -1){
+              content = content.replace(/\s+/g, '');
+            }
+            let parse = JSON.parse(content);
+            await renderText(parse,conversationId,text,options).then((res)=>{
+              text = res.returnText;
+              conversationId = res.conversationId;
+            });
+            //update-end---author:wangshuai---date:2025-03-13---for:【QQYUN-11572】发布到线上不能实时动态，内容不能加载出来，得刷新才能看到全部回答---
+          } catch (error) {
+            console.log('Error parsing update:', error);
+          }
+          //update-end---author:wangshuai---date:2025-03-12---for:【QQYUN-11555】聊天时要流式显示消息---
+        }else{
+          if(!line){
+            continue;
+          }
+          if(!line.endsWith('}')){
+            buffer = buffer + line;
+            continue;
+          }
+          buffer = "";
+          //update-begin---author:wangshuai---date:2025-03-13---for:【QQYUN-11572】发布到线上不能实时动态，内容不能加载出来，得刷新才能看到全部回答---
+          try {
+            if(line.indexOf(":::card:::") !== -1){
+              line = line.replace(/\s+/g, '');
+            }
+            let parse = JSON.parse(line);
+            await renderText(parse, conversationId, text, options).then((res) => {
+              text = res.returnText;
+              conversationId = res.conversationId;
+            });
+          } catch (error) {
+            console.log('Error parsing update:', error);
+          }
+          //update-end---author:wangshuai---date:2025-03-13---for:【QQYUN-11572】发布到线上不能实时动态，内容不能加载出来，得刷新才能看到全部回答---
+        }
+      }
+    }
+  }
+
+  /**
+   * ai重连
+   */
+  async function aiReConnection() {
+    //查询requestId
+    let chat = localStorage.getItem("chat_requestId_" + uuid.value);
+    if(chat) {
+      let array = JSON.parse(chat);
+      let message = array.message;
+      let requestId = array.requestId;
+      const result = await defHttp.get({ url: '/airag/chat/receive/' + requestId ,
+        adapter: 'fetch',
+        responseType: 'stream',
+        timeout: 5 * 60 * 1000
+      }, { isTransformResponse: false }).catch(async (err)=>{
+        loading.value = false;
+      });
+      if(result && message){
+        loading.value = true;
+        //发送用户消息
+        addChat(uuid.value, {
+          dateTime: new Date().toLocaleString(),
+          content: message,
+          images:uploadUrlList.value?uploadUrlList.value:[],
+          inversion: 'user',
+          error: false,
+          conversationOptions: null,
+          requestOptions: { prompt: message, options: null },
+        });
+        let options: any = {};
+        const lastContext = conversationList.value[conversationList.value.length - 1]?.conversationOptions;
+        if (lastContext && usingContext.value) {
+          options = { ...lastContext };
+        }
+        //添加ai消息
+        addChat(uuid.value, {
+          dateTime: new Date().toLocaleString(),
+          content: '请稍后',
+          loading: false,
+          inversion: 'ai',
+          error: false,
+          conversationOptions: null,
+          requestOptions: { prompt: message, options: { ...options } },
+          referenceKnowledge: [],
+        });
+        options.message = message;
+        scrollToBottom();
+        //流式输出
+        await renderChatByResult(result,options);
+      } else {
+        loading.value = false;
+      }
+    }
+  }
+
   //监听开场白
   watch(
     () => props.prologue,
@@ -882,6 +948,8 @@
         if(props.prologue && props.chatTitle){
           topChat(props.prologue)
         }
+        //ai回复重连
+        aiReConnection();
       } catch (e) {
         console.log(e)
       }

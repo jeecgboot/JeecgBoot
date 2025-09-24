@@ -62,7 +62,7 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @Operation(summary = "获取Demo数据列表")
     @GetMapping(value = "/list")
-    @PermissionData(pageComponent = "jeecg/JeecgDemoList")
+    @PermissionData(pageComponent = "system/examples/demo/index")
     public Result<?> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
         QueryWrapper<JeecgDemo> queryWrapper = QueryGenerator.initQueryWrapper(jeecgDemo, req.getParameterMap());

@@ -8,21 +8,30 @@ import java.util.List;
 
 /**
  * 消息类型
+ *
  * @author: jeecg-boot
  */
 @EnumDict("messageType")
 public enum MessageTypeEnum {
 
-    /** 系统消息 */
-    XT("system",  "系统消息"),
-    /** 邮件消息 */
-    YJ("email",  "邮件消息"),
-    /** 钉钉消息 */
+    /**
+     * 系统消息
+     */
+    XT("system", "系统消息"),
+    /**
+     * 邮件消息
+     */
+    YJ("email", "邮件消息"),
+    /**
+     * 钉钉消息
+     */
     DD("dingtalk", "钉钉消息"),
-    /** 企业微信 */
+    /**
+     * 企业微信
+     */
     QYWX("wechat_enterprise", "企业微信");
 
-    MessageTypeEnum(String type, String note){
+    MessageTypeEnum(String type, String note) {
         this.type = type;
         this.note = note;
     }
@@ -56,12 +65,13 @@ public enum MessageTypeEnum {
 
     /**
      * 获取字典数据
+     *
      * @return
      */
-    public static List<DictModel> getDictList(){
+    public static List<DictModel> getDictList() {
         List<DictModel> list = new ArrayList<>();
         DictModel dictModel = null;
-        for(MessageTypeEnum e: MessageTypeEnum.values()){
+        for (MessageTypeEnum e : MessageTypeEnum.values()) {
             dictModel = new DictModel();
             dictModel.setValue(e.getType());
             dictModel.setText(e.getNote());

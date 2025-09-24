@@ -13,6 +13,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -812,6 +814,46 @@ public class DateUtils extends PropertyEditorSupport {
         Calendar calendar2 = Calendar.getInstance();
         calendar2.setTime(date2);
         return calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
+    }
+
+    /**
+     * 获取两个日期之间的所有日期列表，包含开始和结束日期
+     *
+     * @param begin
+     * @param end
+     * @return
+     */
+    public static List<Date> getDateRangeList(Date begin, Date end) {
+        List<Date> dateList = new ArrayList<>();
+        if (begin == null || end == null) {
+            return dateList;
+        }
+
+        // 清除时间部分，只比较日期
+        Calendar beginCal = Calendar.getInstance();
+        beginCal.setTime(begin);
+        beginCal.set(Calendar.HOUR_OF_DAY, 0);
+        beginCal.set(Calendar.MINUTE, 0);
+        beginCal.set(Calendar.SECOND, 0);
+        beginCal.set(Calendar.MILLISECOND, 0);
+
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(end);
+        endCal.set(Calendar.HOUR_OF_DAY, 0);
+        endCal.set(Calendar.MINUTE, 0);
+        endCal.set(Calendar.SECOND, 0);
+        endCal.set(Calendar.MILLISECOND, 0);
+
+        if (endCal.before(beginCal)) {
+            return dateList;
+        }
+
+        dateList.add(beginCal.getTime());
+        while (beginCal.before(endCal)) {
+            beginCal.add(Calendar.DAY_OF_YEAR, 1);
+            dateList.add(beginCal.getTime());
+        }
+        return dateList;
     }
 
 }

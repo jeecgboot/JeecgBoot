@@ -1,7 +1,7 @@
 <!--部门选择组件-->
 <template>
   <div class="JSelectDept">
-    <JSelectBiz  @change="handleSelectChange" @handleOpen="handleOpen" :loading="loadingEcho" v-bind="attrs"/>
+    <JSelectBiz  @change="handleSelectChange" @handleOpen="handleOpen" :loading="loadingEcho" v-bind="attrs" :isCustomRenderTag="isCustomRenderTag" :rowKey="getBindValue?.rowKey"/>
     <!-- update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
     <a-form-item>
       <DeptSelectModal @register="regModal" @getSelectResult="setValue" v-bind="getBindValue" :multiple="multiple" @close="handleClose"/>
@@ -31,6 +31,8 @@
       value: propTypes.oneOfType([propTypes.string, propTypes.array]),
       // 是否允许多选，默认 true
       multiple: propTypes.bool.def(true),
+      // 自定义渲染tag
+      isCustomRenderTag: propTypes.bool.def(true),
     },
     emits: ['options-change', 'change', 'select', 'update:value'],
     setup(props, { emit, refs }) {

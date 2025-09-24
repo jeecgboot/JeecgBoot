@@ -151,29 +151,34 @@ public class LoginUser implements Serializable {
 	/**设备id uniapp推送用*/
 	private String clientId;
 
-	@SensitiveField
-	private String salt;
+	/**
+	 * 主岗位
+	 */
+	private String mainDepPostId;
 
-	@Override
-	public String toString() {
-		// 重新构建对象过滤一些敏感字段
-		LoginUser loginUser = new LoginUser();
-		loginUser.setId(id);
-		loginUser.setUsername(username);
-		loginUser.setRealname(realname);
-		loginUser.setOrgCode(orgCode);
-		loginUser.setSex(sex);
-		loginUser.setEmail(email);
-		loginUser.setPhone(phone);
-		loginUser.setDelFlag(delFlag);
-		loginUser.setStatus(status);
-		loginUser.setActivitiSync(activitiSync);
-		loginUser.setUserIdentity(userIdentity);
-		loginUser.setDepartIds(departIds);
-		loginUser.setPost(post);
-		loginUser.setTelephone(telephone);
-		loginUser.setRelTenantIds(relTenantIds);
-		loginUser.setClientId(clientId);
-		return JSON.toJSONString(loginUser);
-	}
+    @SensitiveField
+    private String salt;
+
+    @Override
+    public String toString() {
+        // 重新构建对象过滤一些敏感字段
+        LoginUser loginUser = new LoginUser();
+        loginUser.setId(id);
+        loginUser.setUsername(username);
+        loginUser.setRealname(realname);
+        loginUser.setOrgCode(orgCode);
+        loginUser.setSex(sex);
+        loginUser.setEmail(email);
+        loginUser.setPhone(phone);
+        loginUser.setDelFlag(delFlag);
+        loginUser.setStatus(status);
+        loginUser.setActivitiSync(activitiSync);
+        loginUser.setUserIdentity(userIdentity);
+        loginUser.setDepartIds(departIds);
+        loginUser.setPost(post);
+        loginUser.setTelephone(telephone);
+        loginUser.setRelTenantIds(relTenantIds);
+        loginUser.setClientId(clientId);
+        return JSON.toJSONString(loginUser);
+    }
 }

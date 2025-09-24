@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
@@ -213,9 +216,7 @@ public class CommonController {
         if(oConvertUtils.isEmpty(imgPath) || CommonConstant.STRING_NULL.equals(imgPath)){
             return;
         }
-        // 其余处理略
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
+        
         try {
             imgPath = imgPath.replace("..", "").replace("../","");
             if (imgPath.endsWith(SymbolConstant.COMMA)) {
@@ -236,33 +237,21 @@ public class CommonController {
             // 设置强制下载不打开
             response.setContentType("application/force-download");
             response.addHeader("Content-Disposition", "attachment;fileName=" + new String(file.getName().getBytes("UTF-8"),"iso-8859-1"));
-            inputStream = new BufferedInputStream(new FileInputStream(filePath));
-            outputStream = response.getOutputStream();
-            byte[] buf = new byte[1024];
-            int len;
-            while ((len = inputStream.read(buf)) > 0) {
-                outputStream.write(buf, 0, len);
+            
+            // 结合 StreamingResponseBody 的流式写法
+            try (InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+                 OutputStream outputStream = response.getOutputStream()) {
+                byte[] buf = new byte[8192];
+                int len;
+                while ((len = inputStream.read(buf)) != -1) {
+                    outputStream.write(buf, 0, len);
+                }
+                outputStream.flush();
             }
-            response.flushBuffer();
         } catch (IOException e) {
             log.error("预览文件失败" + e.getMessage());
             response.setStatus(404);
             e.printStackTrace();
-        } finally {
-            if (inputStream != null) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
         }
 
     }

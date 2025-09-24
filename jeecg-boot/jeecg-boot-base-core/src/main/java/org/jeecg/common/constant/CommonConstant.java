@@ -642,11 +642,12 @@ public interface CommonConstant {
 
 
     /**
-     * 自定义首页关联关系(ROLE:表示角色 USER:表示用户)
+     * 自定义首页关联关系(ROLE:表示角色 USER:表示用户 DEFAULT:默认首页)
      *
      */
     String HOME_RELATION_ROLE = "ROLE";
     String HOME_RELATION_USER = "USER";
+    String HOME_RELATION_DEFAULT = "DEFAULT";
 
     /**
      * 是否置顶(0否 1是)
@@ -659,4 +660,53 @@ public interface CommonConstant {
     String FLOW_FOCUS_NOTICE_PREFIX = "flow:runtimeData:focus:notice:";
     //任务缓办时间缓存前缀
     String FLOW_TASK_DELAY_PREFIX = "flow:runtimeData:task:delay:";
+    /**
+     * 用户代理类型：离职：quit 代理：agent
+     */
+    String USER_AGENT_TYPE_QUIT = "quit";
+    String USER_AGENT_TYPE_AGENT = "agent";
+    /**
+     * 督办流程首节点任务taskKey
+     */
+    String SUPERVISE_FIRST_TASK_KEY = "Task_1bhxpt0";
+
+    /**
+     * wps模板预览数据缓存前缀
+     */
+    String EOA_WPS_TEMPLATE_VIEW_DATA ="eoa:wps:templateViewData:";
+
+    /**
+     * wps模板预览版本号缓存前缀
+     */
+    String EOA_WPS_TEMPLATE_VIEW_VERSION ="eoa:wps:templateViewVersion:";
+    /**
+     * 表单设计器oa新增字段
+     * x_oa_timeout_date:逾期时间
+     * x_oa_archive_status:归档状态
+     */
+    String X_OA_TIMEOUT_DATE ="x_oa_timeout_date";
+    String X_OA_ARCHIVE_STATUS ="x_oa_archive_status";
+    /**
+     * 流程状态
+     * 待提交: 1
+     * 处理中: 2
+     * 已完成: 3
+     * 已作废: 4
+     * 已挂起: 5
+     */
+    String BPM_STATUS_1 ="1";
+    String BPM_STATUS_2 ="2";
+    String BPM_STATUS_3 ="3";
+    String BPM_STATUS_4 ="4";
+    String BPM_STATUS_5 ="5";
+
+    /**
+     * 默认租户产品包
+     */
+    String TENANT_PACK_DEFAULT = "default";
+
+    /**
+     * 部门名称redisKey(全路径)
+     */
+    String DEPART_NAME_REDIS_KEY_PRE = "sys:cache:departPathName:";
 }

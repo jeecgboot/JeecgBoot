@@ -2,7 +2,7 @@
 <template>
   <BasicModal v-bind="$attrs" @register="register" :title="modalTitle" width="1200px" @ok="handleOk" destroyOnClose @visible-change="visibleChange">
     <a-row :gutter="10">
-      <a-col :md="7" :sm="24">
+      <a-col :md="7" :sm="24" style="height: 613px;overflow: auto ">
         <a-card :style="{ minHeight: '613px', overflow: 'auto' }">
           <!--组织机构-->
           <BasicTree
@@ -15,7 +15,11 @@
             :selectedKeys="selectedDepIds"
             :expandedKeys="expandedKeys"
             :clickRowToExpand="false"
-          ></BasicTree>
+          >
+            <template #title="{ orgCategory, title }">
+              <TreeIcon :orgCategory="orgCategory" :title="title"></TreeIcon>
+            </template>
+          </BasicTree>
         </a-card>
       </a-col>
       <a-col :md="17" :sm="24">
@@ -37,9 +41,11 @@
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { queryDepartTreeSync as queryDepartTreeSyncOrigin } from '/@/views/system/depart/depart.api';
   import { selectProps } from '/@/components/Form/src/jeecg/props/props';
+  import TreeIcon from '@/components/Form/src/jeecg/components/TreeIcon/TreeIcon.vue';
   export default defineComponent({
     name: 'UserSelectByDepModal',
     components: {
+      TreeIcon,
       //此处需要异步加载BasicTable
       BasicModal,
       BasicTree,
@@ -108,7 +114,7 @@
             md: 6,
             lg: 8,
             xl: 6,
-            xxl: 10,
+            xxl: 8,
           },
           //update-begin-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
           actionColOptions: {
@@ -124,6 +130,11 @@
             {
               label: '账号',
               field: 'username',
+              component: 'Input',
+            },
+            {
+              label: '姓名',
+              field: 'realname',
               component: 'Input',
             },
           ],

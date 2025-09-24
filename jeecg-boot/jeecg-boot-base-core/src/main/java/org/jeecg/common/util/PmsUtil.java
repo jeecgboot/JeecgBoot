@@ -2,6 +2,7 @@ package org.jeecg.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedWriter;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
+@Lazy(false)
 public class PmsUtil {
 
 

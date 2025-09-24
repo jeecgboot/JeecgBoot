@@ -129,7 +129,7 @@
       }
       
       function getMyAvatar(){
-        return userInfo.avatar;
+        return getFileAccessHttpUrl(userInfo.avatar);
       }
       
       // 获取头像

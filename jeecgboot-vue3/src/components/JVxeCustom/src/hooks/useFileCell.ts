@@ -57,6 +57,7 @@ export function useFileCell(props, fileType: UploadTypeEnum, options?) {
       ...originColumn.value.props,
       maxCount: maxCount.value,
       fileType: fileType,
+      action: originColumn.value.action ?? void 0,
     });
   }
 

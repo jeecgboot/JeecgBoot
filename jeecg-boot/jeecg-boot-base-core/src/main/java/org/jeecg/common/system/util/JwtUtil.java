@@ -121,7 +121,7 @@ public class JwtUtil {
 			DecodedJWT jwt = JWT.decode(token);
 			return jwt.getClaim("username").asString();
 		} catch (JWTDecodeException e) {
-			log.warn(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			return null;
 		}
 	}

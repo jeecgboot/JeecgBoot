@@ -25,6 +25,7 @@ module.exports = defineConfig({
     'plugin:jest/recommended',
   ],
   rules: {
+    'prettier/prettier': 'off', // 彻底关闭 prettier 校验规则
     'vue/script-setup-uses-vars': 'error',
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -67,8 +68,8 @@ module.exports = defineConfig({
       {
         html: {
           void: 'always',
-          normal: 'never',
-          component: 'always',
+          normal: 'any',
+          component: 'any',
         },
         svg: 'always',
         math: 'always',

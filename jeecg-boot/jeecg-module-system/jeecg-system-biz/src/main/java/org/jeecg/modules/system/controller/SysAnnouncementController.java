@@ -323,7 +323,7 @@ public class SysAnnouncementController {
 				try {
 					// 同步企业微信、钉钉的消息通知
 					Response<String> dtResponse = dingtalkService.sendActionCardMessage(sysAnnouncement, null, true);
-					wechatEnterpriseService.sendTextCardMessage(sysAnnouncement, true);
+					wechatEnterpriseService.sendTextCardMessage(sysAnnouncement, null,true);
 
 					if (dtResponse != null && dtResponse.isSuccess()) {
 						String taskId = dtResponse.getResult();
@@ -727,6 +727,18 @@ public class SysAnnouncementController {
 		return Result.ok("公告消息访问次数+1次");
 	}
 
+	/**
+	 * 批量下载文件
+	 * @param id
+	 * @param request
+	 * @param response
+	 */
+	@GetMapping("/downLoadFiles")
+	public void downLoadFiles(@RequestParam(name="id") String id,
+							  HttpServletRequest request,
+							  HttpServletResponse response){
+		sysAnnouncementService.downLoadFiles(id,request,response);
+	}
 	/**
 	 * 根据异常信息确定友好的错误提示
 	 */

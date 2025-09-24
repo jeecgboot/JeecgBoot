@@ -2,6 +2,7 @@ package org.jeecg.modules.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
@@ -1037,6 +1038,64 @@ public class SystemApiController {
     @GetMapping("/sys/api/setLoginTenant")
     public JSONObject setLoginTenant(@RequestParam("username") String username) {
         return sysBaseApi.setLoginTenant(username);
+    }
+    
+    /**
+     * 根据部门编码查询公司信息
+     * @param orgCode 部门编码
+     * @return
+     * @author chenrui
+     * @date 2025/8/12 14:45
+     */
+    @GetMapping(value = "/queryCompByOrgCode")
+    SysDepartModel queryCompByOrgCode(@RequestParam(name = "sysCode") String orgCode) {
+        return sysBaseApi.queryCompByOrgCode(orgCode);
+    }
+
+    /**
+     * 根据部门编码和层次查询上级公司
+     *
+     * @param orgCode 部门编码
+     * @param level 可以传空 默认为1级 最小值为1
+     * @return
+     */
+    @GetMapping(value = "/queryCompByOrgCodeAndLevel")
+    SysDepartModel queryCompByOrgCodeAndLevel(@RequestParam("orgCode") String orgCode, @RequestParam("level") Integer level){
+        return sysBaseApi.queryCompByOrgCodeAndLevel(orgCode,level);
+    }
+
+    /**
+     * 运行AIRag流程
+     * for  [QQYUN-13634]在baseapi里面封装方法，方便其他模块调用
+     * @param airagFlowDTO
+     * @return 流程执行结果,可能是String或者Map
+     * @return
+     */
+    @PostMapping(value = "/runAiragFlow")
+    Object runAiragFlow(@RequestBody AiragFlowDTO airagFlowDTO) {
+        return sysBaseApi.runAiragFlow(airagFlowDTO);
+    }
+
+    /**
+     * 根据部门code或部门id获取部门名称(当前和上级部门)
+     *
+     * @param orgCode 部门编码
+     * @param depId 部门id
+     * @return String 部门名称
+     */
+    @GetMapping(value = "/getDepartPathNameByOrgCode")
+    String getDepartPathNameByOrgCode(@RequestParam(name = "orgCode", required = false) String orgCode, @RequestParam(name = "depId", required = false) String depId) {
+        return sysBaseApi.getDepartPathNameByOrgCode(orgCode, depId);
+    }
+
+    /**
+     * 根据部门ID查询用户ID
+     * @param deptIds
+     * @return
+     */
+    @GetMapping("/queryUserIdsByCascadeDeptIds")
+    public List<String> queryUserIdsByCascadeDeptIds(@RequestParam("deptIds") List<String> deptIds){
+        return sysBaseApi.queryUserIdsByCascadeDeptIds(deptIds);
     }
 
 }

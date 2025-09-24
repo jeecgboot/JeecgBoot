@@ -14,7 +14,7 @@
   <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
 </#if>
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :title="getTitle" @ok="handleSubmit">
+  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :maxHeight="500" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :title="getTitle" @ok="handleSubmit">
     <BasicForm @register="registerForm" name="${entityName}Form" />
   <#if buttonList?? && buttonList?size gt 0>
      <template #insertFooter>
@@ -65,6 +65,7 @@
       xs: { span: 24 },
       sm: { span: 18 },
     },
+    baseRowStyle: { padding: "0 20px" }
   });
   //表单赋值
   const [registerModal, {setModalProps, closeModal}] = useModalInner(async (data) => {
@@ -80,8 +81,20 @@
       await setFieldsValue({
         ...data.record,
       });
+      updateSchema([
+        {
+          field: '${pidFieldName}',
+          componentProps: { hiddenNodeKey: data.record.id },
+        },
+      ]);
     } else {
       model = null;
+      updateSchema([
+        {
+          field: '${pidFieldName}',
+          componentProps: { hiddenNodeKey: '' },
+        },
+      ]);
     }
     //父级节点树信息
     treeData.value = await loadTreeData({'async': false,'pcode':''});
@@ -157,7 +170,7 @@
   };
 
 <#if buttonList?size gt 0>
-<#list buttonList?sort_by('orderNum') as btn>
+<#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
     <#if btn.buttonStyle=='form'>
        function handle${btn.buttonCode?cap_first}(){
           createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');

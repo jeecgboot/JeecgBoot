@@ -58,6 +58,9 @@
           </div>
         </div>
       </template>
+      <a v-if="noticeFiles.length > 1" :href="downLoadFiles + '?id=' + content.id + '&token=' + getToken()" target="_blank" style="margin: 15px 6px; color: #5ac0fa">
+        <download-outlined class="item-icon" style="margin-right: 5px" /><span>批量下载所有附件</span>
+      </a>
     </template>
   </BasicModal>
 </template>
@@ -72,15 +75,21 @@
   import { getFileAccessHttpUrl } from '@/utils/common/compUtils';
   import { useGlobSetting } from '@/hooks/setting';
   import { encryptByBase64 } from '@/utils/cipher';
+  import { getToken } from '@/utils/auth';
   const router = useRouter();
   const glob = useGlobSetting();
   const isUpdate = ref(true);
   const content = ref<any>({});
   const noticeFiles = ref([]);
+  /**
+   * 下载文件路径
+   */
+  const downLoadFiles = `${glob.domainUrl}/sys/annountCement/downLoadFiles`;
   const emit = defineEmits(['close', 'register']);
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
     isUpdate.value = !!data?.isUpdate;
+    noticeFiles.value = [];
     if (unref(isUpdate)) {
       //data.record.msgContent = '<p>2323</p><input onmouseover=alert(1)>xss test';
       //update-begin-author:taoyan date:2022-7-14 for: VUEN-1702 【禁止问题】sql注入漏洞
@@ -194,6 +203,24 @@
             padding: 0;
           }
         }
+        .ant-card-meta-detail {
+            display: flex !important ;
+            justify-content: center !important;
+            align-items: center !important;
+            flex-direction: column !important;
+        }
+        .ant-card-meta-title {
+            font-size: 22px !important;
+            color: rgba(51, 51, 51, 0.88);
+            font-weight: 600;
+            font-size: 16px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .ant-card .ant-card-meta-description {
+            color: rgba(51, 51, 51, 0.45);
+        }
       `;
       frameDoc.head.appendChild(style);
 
@@ -273,8 +300,8 @@
 
   .print-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 80px;
+    right: 40px;
     cursor: pointer;
     color: #a3a3a5;
     z-index: 999;

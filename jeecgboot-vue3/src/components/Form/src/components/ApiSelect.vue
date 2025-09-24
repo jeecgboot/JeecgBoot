@@ -3,6 +3,8 @@
     v-bind="attrs_"
     v-model:value="state"
     :options="getOptions"
+    show-search
+    :filter-option="filterOption"
     @change="handleChange"
     @dropdownVisibleChange="handleFetch"
     @popupScroll="handlePopupScroll"
@@ -152,7 +154,14 @@
       watchEffect(() => {
         props.value && handleFetch();
       });
-
+      /**
+       * 筛选流程
+       * @param input
+       * @param option
+       */
+      const filterOption = (input: string, option: any) => {
+        return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.label.indexOf(input) >= 0;
+      };
       async function fetch() {
         const api = props.api;
         if (!api || !isFunction(api)) return;
@@ -240,7 +249,7 @@
         }
       }
       // update-end--author:liusq---date:20250407---for：【QQYUN-11831】ApiSelect 分页下拉方案 #7883
-      return { state, attrs_, attrs, getOptions, loading, t, handleFetch, handleChange, handlePopupScroll };
+      return { state, attrs_, attrs, getOptions, loading, t, handleFetch, handleChange, handlePopupScroll,filterOption };
     },
   });
 </script>

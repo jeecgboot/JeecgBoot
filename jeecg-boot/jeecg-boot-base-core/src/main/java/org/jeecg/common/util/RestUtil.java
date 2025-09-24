@@ -222,6 +222,63 @@ public class RestUtil {
     }
 
     /**
+     * 发送请求（支持自定义超时时间）
+     *
+     * @param url          请求地址
+     * @param method       请求方式
+     * @param headers      请求头  可空
+     * @param variables    请求url参数 可空
+     * @param params       请求body参数 可空
+     * @param responseType 返回类型
+     * @param timeout      超时时间（毫秒），如果为0或负数则使用默认超时
+     * @return ResponseEntity<responseType>
+     */
+    public static <T> ResponseEntity<T> request(String url, HttpMethod method, HttpHeaders headers,
+                                                JSONObject variables, Object params, Class<T> responseType, int timeout) {
+        log.info(" RestUtil  --- request ---  url = "+ url + ", timeout = " + timeout);
+
+        if (StringUtils.isEmpty(url)) {
+            throw new RuntimeException("url 不能为空");
+        }
+        if (method == null) {
+            throw new RuntimeException("method 不能为空");
+        }
+        if (headers == null) {
+            headers = new HttpHeaders();
+        }
+
+        // 创建自定义RestTemplate（如果需要设置超时）
+        RestTemplate restTemplate = RT;
+        if (timeout > 0) {
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            requestFactory.setConnectTimeout(timeout);
+            requestFactory.setReadTimeout(timeout);
+            restTemplate = new RestTemplate(requestFactory);
+            // 解决乱码问题
+            restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        }
+
+        // 请求体
+        String body = "";
+        if (params != null) {
+            if (params instanceof JSONObject) {
+                body = ((JSONObject) params).toJSONString();
+            } else {
+                body = params.toString();
+            }
+        }
+
+        // 拼接 url 参数
+        if (variables != null && !variables.isEmpty()) {
+            url += ("?" + asUrlVariables(variables));
+        }
+
+        // 发送请求
+        HttpEntity<String> request = new HttpEntity<>(body, headers);
+        return restTemplate.exchange(url, method, request, responseType);
+    }
+    
+    /**
      * 获取JSON请求头
      */
     public static HttpHeaders getHeaderApplicationJson() {

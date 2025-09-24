@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>jeecg-server-cloud</artifactId>
-        <groupId>org.jeecgframework.boot</groupId>
-        <version>3.8.2</version>
+        <groupId>org.jeecgframework.boot3</groupId>
+        <version>3.8.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jeecg-cloud-gateway</artifactId>
@@ -13,11 +13,11 @@
     <dependencies>
         <!-- jeecg 微服务基础依赖-->
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter3-cloud</artifactId>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-cloud</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>org.jeecgframework.boot</groupId>
+                    <groupId>org.jeecgframework.boot3</groupId>
                     <artifactId>jeecg-system-cloud-api</artifactId>
                 </exclusion>
             </exclusions>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version>
+            <version>3.18.0</version>
         </dependency>
     </dependencies>
     <build>

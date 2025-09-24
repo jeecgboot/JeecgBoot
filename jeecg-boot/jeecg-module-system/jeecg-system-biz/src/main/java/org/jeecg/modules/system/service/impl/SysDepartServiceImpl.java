@@ -17,11 +17,10 @@ import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.FillRuleConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.constant.enums.DepartCategoryEnum;
+import org.jeecg.common.exception.JeecgBootBizTipException;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.FillRuleUtil;
-import org.jeecg.common.util.ImportExcelUtil;
-import org.jeecg.common.util.YouBianCodeUtil;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.security.utils.SecureUtil;
 import org.jeecg.modules.system.entity.*;
@@ -31,12 +30,15 @@ import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.util.FindsDepartsChildrenUtil;
 import org.jeecg.modules.system.vo.SysDepartExportVo;
+import org.jeecg.modules.system.vo.SysDepartPositionVo;
+import org.jeecg.modules.system.vo.SysPositionSelectTreeVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -67,7 +69,11 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	private SysUserMapper sysUserMapper;
 	@Autowired
 	private SysDepartMapper departMapper;
-
+    @Autowired
+    private SysPositionMapper sysPositionMapper;
+    @Autowired
+    private RedisUtil redisUtil;
+    
 	@Override
 	public List<SysDepartTreeModel> queryMyDeptTreeList(String departIds) {
 		//根据部门id获取所负责部门
@@ -82,7 +88,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			query.or().likeRight(SysDepart::getOrgCode,codeArr[i]);
 		}
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
-		
+        query.ne(SysDepart::getOrgCategory,DepartCategoryEnum.DEPART_CATEGORY_POST.getValue());
 		//------------------------------------------------------------------------------------------------
 		//是否开启系统管理模块的 SASS 控制
 		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
@@ -119,6 +125,9 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}   
 		//------------------------------------------------------------------------------------------------
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
+        //update-begin---author:wangshuai---date:2025-08-18---for:【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
+        query.ne(SysDepart::getOrgCategory, DepartCategoryEnum.DEPART_CATEGORY_POST.getValue());
+        //update-end---author:wangshuai---date:2025-08-18---for:【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
 		query.orderByAsc(SysDepart::getDepartOrder);
 		List<SysDepart> list = this.list(query);
         //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
@@ -138,6 +147,9 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		List<SysDepartTreeModel> listResult=new ArrayList<>();
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
+        //update-begin---author:wangshuai---date:2025-08-18---for:【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
+         query.ne(SysDepart::getOrgCategory,DepartCategoryEnum.DEPART_CATEGORY_POST.getValue());
+        //update-end---author:wangshuai---date:2025-08-18---for:【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
 		if(oConvertUtils.isNotEmpty(ids)){
 			query.in(true,SysDepart::getId,ids.split(","));
 		}
@@ -313,6 +325,8 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		if (sysDepart != null && username != null) {
 			sysDepart.setUpdateTime(new Date());
 			sysDepart.setUpdateBy(username);
+            //验证部门类型
+            this.verifyOrgCategory(sysDepart);
 			this.updateById(sysDepart);
             //update-begin---author:wangshuai ---date:20220307  for：[JTC-119]在部门管理菜单下设置部门负责人 创建用户的时候不需要处理
 			//修改部门管理的时候，修改负责部门
@@ -324,8 +338,46 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}
 
 	}
-	
-	@Override
+
+    /**
+     * 验证部门类型
+     *
+     * @param sysDepart
+     */
+    private void verifyOrgCategory(SysDepart sysDepart) {
+        //update-begin---author:wangshuai---date:2025-08-21---for: 当部门类型为岗位的时候，需要查看是否存在下级，存在下级无法变更为岗位---
+        //如果是岗位的情况下，不能存在子级
+        if (oConvertUtils.isNotEmpty(sysDepart.getOrgCategory()) && DepartCategoryEnum.DEPART_CATEGORY_POST.getValue().equals(sysDepart.getOrgCategory())) {
+            long count = this.count(new QueryWrapper<SysDepart>().lambda().eq(SysDepart::getParentId, sysDepart.getId()));
+            if (count > 0) {
+                throw new JeecgBootBizTipException("当前子公司/部门下存在子级，无法变更为岗位!");
+            }
+        }
+        //如果是子公司的情况下，则上级不能为部门或者岗位
+        if (oConvertUtils.isNotEmpty(sysDepart.getOrgCategory()) && DepartCategoryEnum.DEPART_CATEGORY_SUB_COMPANY.getValue().equals(sysDepart.getOrgCategory())
+                && oConvertUtils.isNotEmpty(sysDepart.getParentId())) {
+            LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SysDepart::getId, sysDepart.getParentId());
+            queryWrapper.in(SysDepart::getOrgCategory, DepartCategoryEnum.DEPART_CATEGORY_POST.getValue(), DepartCategoryEnum.DEPART_CATEGORY_DEPART.getValue());
+            long count = this.count(queryWrapper);
+            if (count > 0) {
+                throw new JeecgBootBizTipException("当前父级为部门或岗位，无法变更为子公司!");
+            }
+        }
+        //如果是部门的情况下，下级不能为子公司或者公司
+        if (oConvertUtils.isNotEmpty(sysDepart.getOrgCategory()) && DepartCategoryEnum.DEPART_CATEGORY_DEPART.getValue().equals(sysDepart.getOrgCategory())) {
+            LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(SysDepart::getParentId, sysDepart.getId());
+            queryWrapper.in(SysDepart::getOrgCategory, DepartCategoryEnum.DEPART_CATEGORY_COMPANY.getValue(), DepartCategoryEnum.DEPART_CATEGORY_SUB_COMPANY.getValue());
+            long count = this.count(queryWrapper);
+            if (count > 0) {
+                throw new JeecgBootBizTipException("当前子级存在子公司，无法变更为部门!");
+            }
+        }
+        //update-end---author:wangshuai---date:2025-08-21---for: 当部门类型为岗位的时候，需要查看是否存在下级，存在下级无法变更为岗位---
+    }
+    
+    @Override
 	@Transactional(rollbackFor = Exception.class)
 	public void deleteBatchWithChildren(List<String> ids) {
 		//存放子级的id
@@ -393,7 +445,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	 * </p>
 	 */
 	@Override
-	public List<SysDepartTreeModel> searchByKeyWord(String keyWord,String myDeptSearch,String departIds) {
+	public List<SysDepartTreeModel> searchByKeyWord(String keyWord, String myDeptSearch, String departIds, String orgCategory, String depIds) {
 		LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<SysDepart>();
 		List<SysDepartTreeModel> newList = new ArrayList<>();
 		//myDeptSearch不为空时为我的部门搜索，只搜索所负责部门
@@ -416,7 +468,26 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 			query.eq(SysDepart::getDelFlag, CommonConstant.DEL_FLAG_0.toString());
 		}
 		query.like(SysDepart::getDepartName, keyWord);
-		//update-begin--Author:huangzhilin  Date:20140417 for：[bugfree号]组织机构搜索回显优化--------------------
+        //update-begin---author:wangshuai---date:2025-08-20---for:【QQYUN-13428】增加岗位选择组件---
+        //需要根据部门类型进行数据筛选
+        if(oConvertUtils.isNotEmpty(orgCategory)){
+            query.in(SysDepart::getOrgCategory, Arrays.asList(orgCategory.split(SymbolConstant.COMMA)));
+        }else{
+            query.ne(SysDepart::getOrgCategory,DepartCategoryEnum.DEPART_CATEGORY_POST.getValue());
+        }
+        //如果前端传过来的部门id不为空的时候，说明是系统用户根据所属部门选择主岗位或者兼职岗位，需要进行数据过滤
+        if(oConvertUtils.isNotEmpty(depIds)){
+            List<String> codeList = baseMapper.getDepCodeByDepIds(Arrays.asList(depIds.split(SymbolConstant.COMMA)));
+            if(CollectionUtil.isNotEmpty(codeList)){
+                query.and(i -> {
+                    for (String code : codeList) {
+                        i.or().likeRight(SysDepart::getOrgCode,code);
+                    }
+                });
+            }
+        }
+        //update-end---author:wangshuai---date:2025-08-20---for:【QQYUN-13428】增加岗位选择组件---
+        //update-begin--Author:huangzhilin  Date:20140417 for：[bugfree号]组织机构搜索回显优化--------------------
 		SysDepartTreeModel model = new SysDepartTreeModel();
 		List<SysDepart> departList = this.list(query);
 		if(departList.size() > 0) {
@@ -625,6 +696,9 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}
 		//------------------------------------------------------------------------------------------------
 		lqw.eq(true,SysDepart::getDelFlag,CommonConstant.DEL_FLAG_0.toString());
+        //update-begin---author:wangshuai---date:2025-08-18---for:【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
+        lqw.ne(SysDepart::getOrgCategory,DepartCategoryEnum.DEPART_CATEGORY_POST.getValue());
+        //update-end---author:wangshuai---date:2025-08-18---for:【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
 		lqw.func(square);
         //update-begin---author:wangshuai ---date:20220527  for：[VUEN-1143]排序不对，vue3和2应该都有问题，应该按照升序排------------
 		lqw.orderByAsc(SysDepart::getDepartOrder);
@@ -637,6 +711,12 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		List<SysDepartTreeModel> records = new ArrayList<>();
 		for (int i = 0; i < list.size(); i++) {
 			SysDepart depart = list.get(i);
+            //update-begin---author:wangshuai---date:2025-08-18---for:【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
+            long count = getNoDepartPostCount(depart.getId());
+            if(count == 0){
+                depart.setIzLeaf(CommonConstant.IS_LEAF);
+            }
+            //update-end---author:wangshuai---date:2025-08-18---for:【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
             SysDepartTreeModel treeModel = new SysDepartTreeModel(depart);
             //TODO 异步树加载key拼接__+时间戳,以便于每次展开节点会刷新数据
 			//treeModel.setKey(treeModel.getKey()+"__"+System.currentTimeMillis());
@@ -644,6 +724,85 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         }
 		return records;
 	}
+
+    /**
+     * 获取部门数量
+     * @param departId
+     * @return
+     */
+    private long getNoDepartPostCount(String departId) {
+        LambdaQueryWrapper<SysDepart> queryNoPosition = new LambdaQueryWrapper<>();
+        queryNoPosition.ne(SysDepart::getOrgCategory,DepartCategoryEnum.DEPART_CATEGORY_POST.getValue());
+        queryNoPosition.eq(SysDepart::getParentId,departId);
+        return this.count(queryNoPosition);
+    }
+
+    /**
+     * 部门管理异步树
+     *
+     * @param parentId
+     * @param ids
+     * @param primaryKey
+     * @param departIds
+     * @return
+     */
+    @Override
+    public List<SysDepartTreeModel> queryDepartAndPostTreeSync(String parentId, String ids, String primaryKey, 
+															   String departIds, String orgName) {
+        Consumer<LambdaQueryWrapper<SysDepart>> square = i -> {
+            if (oConvertUtils.isNotEmpty(ids)) {
+                if (CommonConstant.DEPART_KEY_ORG_CODE.equals(primaryKey)) {
+                    i.in(SysDepart::getOrgCode, ids.split(SymbolConstant.COMMA));
+                } else {
+                    i.in(SysDepart::getId, ids.split(SymbolConstant.COMMA));
+                }
+            } else {
+                if(oConvertUtils.isEmpty(parentId)){
+                    //update-begin---author:wangshuai---date:2025-08-20---for:如果前端传过来的部门id不为空的时候，说明是系统用户根据所属部门选择主岗位或者兼职岗位---
+                    if(oConvertUtils.isNotEmpty(departIds)){
+                        i.in(SysDepart::getId,Arrays.asList(departIds.split(SymbolConstant.COMMA)));
+                    }else{
+						if(oConvertUtils.isEmpty(orgName)){
+                        	i.and(q->q.isNull(true,SysDepart::getParentId).or().eq(true,SysDepart::getParentId,""));
+						}else{
+							i.like(SysDepart::getDepartName, orgName);
+						}
+                    }
+                    //update-end---author:wangshuai---date:2025-08-20---for:如果前端传过来的部门id不为空的时候，说明是系统用户根据所属部门选择主岗位或者兼职岗位---
+                }else{
+                    i.eq(true,SysDepart::getParentId,parentId);
+                }
+            }
+        };
+        LambdaQueryWrapper<SysDepart> lqw=new LambdaQueryWrapper<>();
+        //是否开启系统管理模块的 SASS 控制
+        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
+            lqw.eq(SysDepart::getTenantId, oConvertUtils.getInt(TenantContext.getTenant(), 0));
+        }
+        lqw.eq(true,SysDepart::getDelFlag,CommonConstant.DEL_FLAG_0.toString());
+        lqw.func(square);
+        lqw.orderByAsc(SysDepart::getDepartOrder);
+        List<SysDepart> list = list(lqw);
+        //设置用户id,让前台显示
+        this.setUserIdsByDepList(list);
+        List<String> departIdList = new ArrayList<>();
+        //如果前端传过来的部门id不为空的时候，说明是系统用户根据所属部门选择主岗位或者兼职岗位
+        if(oConvertUtils.isNotEmpty(departIds) && oConvertUtils.isEmpty(parentId)){
+            departIdList = list.stream().map(SysDepart::getId).toList();
+        }
+        List<SysDepartTreeModel> records = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            SysDepart depart = list.get(i);
+            //如果部门id和父级部门id再同一列的时候，不用添加到树结构里面去了
+            if(oConvertUtils.isNotEmpty(departIds) && oConvertUtils.isEmpty(parentId)
+               && departIdList.contains(depart.getParentId())){
+                continue;
+            }
+            SysDepartTreeModel treeModel = new SysDepartTreeModel(depart);
+            records.add(treeModel);
+        }
+        return records;
+    }
 
 	@Override
 	public JSONObject queryAllParentIdByDepartId(String departId) {
@@ -1342,6 +1501,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				sysDepart.setFax(departExportVo.getFax());
 				sysDepart.setAddress(departExportVo.getAddress());
 				sysDepart.setMemo(departExportVo.getMemo());
+                sysDepart.setPositionId(departExportVo.getPositionId());
 				ImportExcelUtil.importDateSaveOne(sysDepart, ISysDepartService.class, errorMessageList, num, CommonConstant.SQL_INDEX_UNIQ_DEPART_ORG_CODE);
 				departMap.put(departExportVo.getDepartNameUrl(),sysDepart);
 			}
@@ -1388,4 +1548,348 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 		}
 	}
 	//========================end 系统下部门与人员导入 ==================================================================
+
+
+    //=========================begin 部门岗位改造 ==================================================================
+    @Override
+    public List<SysPositionSelectTreeVo> getPositionByDepartId(String parentId, String departId, String positionId) {
+        //step1 根据职级获取当前岗位的级别
+        SysPosition sysPosition = sysPositionMapper.selectById(positionId);
+        if(null == sysPosition){
+            return null;
+        }
+        Integer postLevel = sysPosition.getPostLevel();
+        //先获取上级部门的信息
+        SysDepart sysDepart = baseMapper.getDepartById(parentId);
+        //step2 如果是总公司 即数据为空的时候，则说明没有上级领导了
+        if (null == sysDepart) {
+            return null;
+        }
+        
+        //可能是老数据
+        if(null == postLevel){
+            throw new JeecgBootBizTipException("当前选择职级的职务等级为空，请前往职务管理进行修改！");
+        }
+        
+        //step3 查看是否为董事长
+        if (1 == postLevel) {
+            //step4 如果是董事长查询上级子公司或者总公司下部门的所有的岗位
+            return this.getChairmanDepartPosition(sysDepart, departId);
+        } else {
+            //step5 如果不是董事长组查询当前父级部门、公司和子公司的岗位 和当前部门下的岗位，但是必须比当前职务的级别高
+            return this.getNotChairmanDepartPosition(sysDepart, postLevel, departId);
+        }
+    }
+
+    /**
+     * 获取董事长职位
+     *
+     * @param sysDepart
+     * @param id
+     * @return
+     */
+    private List<SysPositionSelectTreeVo> getChairmanDepartPosition(SysDepart sysDepart, String id) {
+        //step1 先递归获取为子公司或者总共司的id
+        String departId = getCompanyDepartId(sysDepart.getParentId());
+        if (oConvertUtils.isNotEmpty(departId)) {
+            SysDepart depart = baseMapper.getDepartById(departId);
+            //如果当前上级部门就是子公司或者总公司的情况下
+            if (DepartCategoryEnum.DEPART_CATEGORY_COMPANY.getValue().equals(sysDepart.getOrgCategory()) || DepartCategoryEnum.DEPART_CATEGORY_SUB_COMPANY.getValue().equals(sysDepart.getOrgCategory())) {
+                depart.setParentId(departId);
+                List<SysPositionSelectTreeVo> departPosition = getDepartPosition(depart, null, id);
+                if (CollectionUtil.isNotEmpty(departPosition)) {
+                    if (CollectionUtil.isNotEmpty(departPosition)) {
+                        //父级id不为空并且当前部门不是子公司或者总公司，则需要寻上顶级公司
+                        return getSuperiorCompany(departPosition);
+                    }
+                }
+                return departPosition;
+            } else {
+                //step2 获取上一个子公司或者总公司下的岗位
+                String parentId = getCompanyDepartId(depart.getParentId());
+                if (oConvertUtils.isNotEmpty(departId)) {
+                    depart = baseMapper.getDepartById(parentId);
+                    if (null != depart) {
+                        depart.setParentId(parentId);
+                        List<SysPositionSelectTreeVo> departPosition = getDepartPosition(depart, null, id);
+                        //step3 获取上级部门信息，一直获取到子公司或者总公司为止
+                        if (CollectionUtil.isNotEmpty(departPosition)) {
+                            //父级id不为空并且当前部门不是子公司或者总公司，则需要寻上顶级公司
+                            return getSuperiorCompany(departPosition);
+                        }
+                        return departPosition;
+                    }
+                }
+            }
+
+        }
+        return null;
+    }
+
+    /*
+     * 获取不是董事长的数据
+     *
+     * @param sysDepart
+     * @param postLevel
+     * @param id
+     * @return
+     */
+    private List<SysPositionSelectTreeVo> getNotChairmanDepartPosition(SysDepart sysDepart, Integer postLevel, String id) {
+        //step1 先获取上级部门下的数据
+        List<SysPositionSelectTreeVo> departPosition = getDepartPosition(sysDepart, postLevel, id);
+        //step2 获取上级部门信息，一直获取到子公司或者总公司为止
+        if (CollectionUtil.isNotEmpty(departPosition)) {
+            if (CollectionUtil.isNotEmpty(departPosition)) {
+                //父级id不为空并且当前部门不是子公司或者总公司，则需要寻上顶级公司
+                return getSuperiorCompany(departPosition);
+            }
+            return departPosition;
+        }
+        return departPosition;
+    }
+
+    /**
+     * 获取上级公司
+     *
+     * @param departPosition
+     */
+    private List<SysPositionSelectTreeVo> getSuperiorCompany(List<SysPositionSelectTreeVo> departPosition) {
+        String parentId = departPosition.get(0).getParentId();
+        SysDepart depart = baseMapper.getDepartById(parentId);
+        if (null == depart) {
+            return departPosition;
+        }
+        List<SysPositionSelectTreeVo> childrenList = new ArrayList<>();
+        SysPositionSelectTreeVo childrenTreeModel = new SysPositionSelectTreeVo(depart);
+        childrenTreeModel.setChildren(departPosition);
+        childrenList.add(childrenTreeModel);
+        if (DepartCategoryEnum.DEPART_CATEGORY_COMPANY.getValue().equals(depart.getOrgCategory()) || DepartCategoryEnum.DEPART_CATEGORY_SUB_COMPANY.getValue().equals(depart.getOrgCategory())) {
+            return childrenList;
+        } else {
+            return this.getSuperiorCompany(childrenList);
+        }
+    }
+
+    /**
+     * 获取部门职务
+     *
+     * @param sysDepart
+     * @param postLevel
+     */
+    private List<SysPositionSelectTreeVo> getDepartPosition(SysDepart sysDepart, Integer postLevel, String id) {
+        //step1 获取部门下的所有部门
+        String parentId = sysDepart.getParentId();
+        List<SysDepart> departList = baseMapper.getDepartByParentId(parentId);
+        List<SysPositionSelectTreeVo> treeModels = new ArrayList<>();
+        for (int i = 0; i < departList.size(); i++) {
+            SysDepart depart = departList.get(i);
+            //如果是叶子节点说明没有岗位直接跳出循环
+            if (depart.getIzLeaf() == 1) {
+                if (DepartCategoryEnum.DEPART_CATEGORY_POST.getValue().equals(depart.getOrgCategory())) {
+                    SysPositionSelectTreeVo sysDepartTreeModel = new SysPositionSelectTreeVo(depart);
+                    treeModels.add(sysDepartTreeModel);
+                }
+                continue;
+            }
+            //step2 查找子部门下大于当前职别的数据
+            List<SysDepart> departParentPosition = baseMapper.getDepartPositionByParentId(depart.getId(), postLevel, id);
+            if (CollectionUtil.isNotEmpty(departParentPosition)) {
+                List<SysPositionSelectTreeVo> sysDepartTreeModels = sysDepartToTreeModel(departParentPosition);
+                SysPositionSelectTreeVo parentDepartTree = new SysPositionSelectTreeVo(depart);
+                parentDepartTree.setChildren(sysDepartTreeModels);
+                treeModels.add(parentDepartTree);
+            }
+        }
+        return treeModels;
+    }
+
+    /**
+     * 将SysDepart中的属性转到SysDepartTreeModel中
+     *
+     * @return
+     */
+    private List<SysPositionSelectTreeVo> sysDepartToTreeModel(List<SysDepart> sysDeparts) {
+        List<SysPositionSelectTreeVo> records = new ArrayList<>();
+        for (int i = 0; i < sysDeparts.size(); i++) {
+            SysDepart depart = sysDeparts.get(i);
+            SysPositionSelectTreeVo treeModel = new SysPositionSelectTreeVo(depart);
+            records.add(treeModel);
+        }
+        return records;
+    }
+
+    /**
+     * 获取公司或者子公司的id
+     *
+     * @param parentDepartId
+     * @return
+     */
+    private String getCompanyDepartId(String parentDepartId) {
+        SysDepart sysDepart = baseMapper.getDepartById(parentDepartId);
+        if (sysDepart != null) {
+            if (DepartCategoryEnum.DEPART_CATEGORY_COMPANY.getValue().equals(sysDepart.getOrgCategory()) || DepartCategoryEnum.DEPART_CATEGORY_SUB_COMPANY.getValue().equals(sysDepart.getOrgCategory())) {
+                return sysDepart.getId();
+            }
+            //如果不是公司或者子公司的时候，需要递归查询
+            if (oConvertUtils.isNotEmpty(sysDepart.getParentId())) {
+                return getCompanyDepartId(sysDepart.getParentId());
+            } else {
+                return parentDepartId;
+            }
+        } else {
+            return "";
+        }
+    }
+
+    @Override
+    public List<SysPositionSelectTreeVo> getRankRelation(String departId) {
+        //记录当前部门 key为部门id,value为部门名称
+        Map<String, String> departNameMap = new HashMap<>(5);
+        //step1 根据id查询部门信息
+        SysDepartPositionVo sysDepartPosition = baseMapper.getDepartPostByDepartId(departId);
+        if (null == sysDepartPosition) {
+            throw new JeecgBootBizTipException("当前所选部门数据为空");
+        }
+        List<SysPositionSelectTreeVo> selectTreeVos = new ArrayList<>();
+        //step2 查看是否有子级部门，存在递归查询职位
+        if (!CommonConstant.IS_LEAF.equals(sysDepartPosition.getIzLeaf())) {
+            //获取子级职位根据部门编码
+            this.getChildrenDepartPositionByOrgCode(selectTreeVos, departNameMap, sysDepartPosition);
+            return buildTree(selectTreeVos);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * 获取子级职位根据部门编码
+     *
+     * @param selectTreeVos
+     * @param departNameMap
+     * @param sysDepartPosition
+     */
+    private void getChildrenDepartPositionByOrgCode(List<SysPositionSelectTreeVo> selectTreeVos, Map<String, String> departNameMap, SysDepartPositionVo sysDepartPosition) {
+        String orgCode = sysDepartPosition.getOrgCode();
+        //step1 根据父级id获取子级部门信息
+        List<SysDepartPositionVo> positionList = baseMapper.getDepartPostByOrgCode(orgCode + "%");
+        if (CollectionUtil.isNotEmpty(positionList)) {
+            for (SysDepartPositionVo position : positionList) {
+                //初始化map
+                if (departNameMap == null) {
+                    departNameMap = new HashMap<>(5);
+                }
+                SysDepart depart = baseMapper.getDepartById(position.getParentId());
+                if(null != depart){
+                    position.setDepartName(depart.getDepartName());
+                }
+                if(oConvertUtils.isNotEmpty(position.getDepPostParentId())){
+                    LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+                    query.eq(SysDepart::getId,position.getDepPostParentId());
+                    query.likeRight(SysDepart::getOrgCode,orgCode);
+                    Long count = baseMapper.selectCount(query);
+                    if(null== count || count == 0){
+                        position.setDepPostParentId(null);
+                    }
+                }
+                departNameMap.put(position.getParentId(), position.getPositionName());
+                //查看是否为部门岗位，不是则不需要处理
+                SysPositionSelectTreeVo treeVo = new SysPositionSelectTreeVo(position);
+                selectTreeVos.add(treeVo);
+            }
+        }
+    }
+
+
+    /**
+     * 构建树形结构，只返回没有父级的一级节点
+     */
+    public static List<SysPositionSelectTreeVo> buildTree(List<SysPositionSelectTreeVo> nodes) {
+        // 存储一级节点（没有父级的节点）
+        List<SysPositionSelectTreeVo> rootNodes = new ArrayList<>();
+        // 先找出所有一级节点（parentId为null或空）
+        for (SysPositionSelectTreeVo node : nodes) {
+            if (node.getParentId() == null || node.getParentId().trim().isEmpty()) {
+                rootNodes.add(node);
+            }
+        }
+        // 为每个一级节点递归设置子节点
+        for (SysPositionSelectTreeVo root : rootNodes) {
+            setChildren(root, nodes);
+        }
+        return rootNodes;
+    }
+
+    /**
+     * 递归为节点设置子节点
+     */
+    private static void setChildren(SysPositionSelectTreeVo parentNode, List<SysPositionSelectTreeVo> allNodes) {
+        for (SysPositionSelectTreeVo node : allNodes) {
+            // 如果当前节点的父ID等于父节点的ID，则是子节点
+            if (parentNode.getId().equals(node.getParentId())) {
+                // 递归为子节点设置它的子节点
+                setChildren(node, allNodes);
+                // 将子节点添加到父节点的子节点列表
+                parentNode.getChildren().add(node);
+            }
+        }
+    }
+
+    //=========================end 部门岗位改造 ==================================================================
+
+    @Override
+    public String getDepartPathNameByOrgCode(String orgCode, String depId) {
+        //部门id为空需要查询当前部门下的编码
+        if(oConvertUtils.isNotEmpty(depId)){
+            SysDepart departById = baseMapper.getDepartById(depId);
+            if(null != departById){
+                orgCode = departById.getOrgCode();
+            }
+        }
+        if(oConvertUtils.isEmpty(orgCode)){
+            return "";
+        }
+        //从redis 获取不为空直接返回
+        Object departName  = redisUtil.get(CommonConstant.DEPART_NAME_REDIS_KEY_PRE + orgCode);
+        if(null != departName){
+            return String.valueOf(departName);
+        }
+        //获取长度
+        int codeNum = YouBianCodeUtil.ZHANWEI_LENGTH;
+        List<String> list = this.getCodeHierarchy(orgCode, codeNum);
+        //根据部门编码查询公司和子公司的数据
+        LambdaQueryWrapper<SysDepart> query = new LambdaQueryWrapper<>();
+        query.in(SysDepart::getOrgCode, list);
+        query.orderByAsc(SysDepart::getOrgCode);
+        List<SysDepart> sysDepartList = departMapper.selectList(query);
+        if(!CollectionUtils.isEmpty(sysDepartList)){
+            //获取部门名称拼接返回给前台
+            List<String> departNameList = sysDepartList.stream().map(SysDepart::getDepartName).toList();
+            String departNames = String.join("/", departNameList);
+            redisUtil.set(CommonConstant.DEPART_NAME_REDIS_KEY_PRE + orgCode,departNames);
+            return departNames;
+        }
+        return "";
+    }
+    
+    /**
+     * 获取编码及其所有上级编码
+     * 
+     * @param code 完整编码，如 "A01A01A01"
+     * @param fixedLength 固定位数，如 3
+     * @return 包含所有上级编码的列表，如 ['A01','A01A01','A01A01A01']
+     */
+    public List<String> getCodeHierarchy(String code, int fixedLength) {
+        List<String> hierarchy = new ArrayList<>();
+        if (code == null || code.isEmpty() || fixedLength <= 0) {
+            return hierarchy;
+        }
+        // 检查编码长度是否能被固定位数整除
+        if (code.length() % fixedLength != 0) {
+            throw new IllegalArgumentException("编码长度必须能被固定位数整除");
+        }
+        // 按固定位数分割并生成所有上级编码
+        for (int i = fixedLength; i <= code.length(); i += fixedLength) {
+            hierarchy.add(code.substring(0, i));
+        }
+        return hierarchy;
+    }
 }

@@ -91,6 +91,8 @@ public class SysPositionController {
         }
         //------------------------------------------------------------------------------------------------
         QueryWrapper<SysPosition> queryWrapper = QueryGenerator.initQueryWrapper(sysPosition, req.getParameterMap());
+        queryWrapper.orderByAsc("post_level");
+        queryWrapper.orderByDesc("create_time");
         Page<SysPosition> page = new Page<SysPosition>(pageNo, pageSize);
         IPage<SysPosition> pageList = sysPositionService.page(page, queryWrapper);
         result.setSuccess(true);
