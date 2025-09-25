@@ -123,6 +123,8 @@ services:
        - jeecg-boot-gateway
      container_name: jeecg-boot-sentinel
      hostname: jeecg-boot-sentinel
+     networks:
+       - jeecg-boot
 
   jeecg-boot-xxljob:
      build:
@@ -131,7 +133,9 @@ services:
        - 9080:9080
      container_name: jeecg-boot-xxljob
      hostname: jeecg-boot-xxljob
-
+     networks:
+       - jeecg-boot
+       
   jeecg-vue:
     build:
       context: ./jeecgboot-vue3
