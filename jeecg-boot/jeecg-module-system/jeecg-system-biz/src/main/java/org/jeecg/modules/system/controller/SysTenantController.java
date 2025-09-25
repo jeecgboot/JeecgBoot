@@ -136,7 +136,7 @@ public class SysTenantController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result<SysTenant> add(@RequestBody SysTenant sysTenant) {
         Result<SysTenant> result = new Result();
-        if(sysTenantService.getById(sysTenant.getId())!=null){
+        if(sysTenant!=null && oConvertUtils.isNotEmpty(sysTenant.getId()) && sysTenantService.getById(sysTenant.getId())!=null){
             return result.error500("该编号已存在!");
         }
         try {

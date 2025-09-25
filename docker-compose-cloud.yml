@@ -109,28 +109,33 @@ services:
 #    environment:
 #      RABBITMQ_DEFAULT_USER: guest
 #      RABBITMQ_DEFAULT_PASS: guest
-#  jeecg-boot-sentinel:
-#    restart: on-failure
-#    build:
-#      context: ./jeecg-visual/jeecg-cloud-sentinel
-#    ports:
-#      - 9000:9000
-#    depends_on:
-#      - jeecg-boot-nacos
-#      - jeecg-boot-demo
-#      - jeecg-boot-system
-#      - jeecg-boot-gateway
-#    container_name: jeecg-boot-sentinel
-#    hostname: jeecg-boot-sentinel
-#
-#  jeecg-boot-xxljob:
-#    build:
-#      context: ./jeecg-visual/jeecg-cloud-xxljob
-#    ports:
-#      - 9080:9080
-#    container_name: jeecg-boot-xxljob
-#    hostname: jeecg-boot-xxljob
 
+  jeecg-boot-sentinel:
+     restart: on-failure
+     build:
+       context: ./jeecg-boot/jeecg-server-cloud/jeecg-visual/jeecg-cloud-sentinel
+     ports:
+       - 9000:9000
+     depends_on:
+       - jeecg-boot-nacos
+       - jeecg-boot-demo
+       - jeecg-boot-system
+       - jeecg-boot-gateway
+     container_name: jeecg-boot-sentinel
+     hostname: jeecg-boot-sentinel
+     networks:
+       - jeecg-boot
+
+  jeecg-boot-xxljob:
+     build:
+       context: ./jeecg-boot/jeecg-server-cloud/jeecg-visual/jeecg-cloud-xxljob
+     ports:
+       - 9080:9080
+     container_name: jeecg-boot-xxljob
+     hostname: jeecg-boot-xxljob
+     networks:
+       - jeecg-boot
+       
   jeecg-vue:
     build:
       context: ./jeecgboot-vue3
