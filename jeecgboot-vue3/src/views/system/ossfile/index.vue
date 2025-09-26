@@ -36,6 +36,7 @@
   import { useGlobSetting } from '/@/hooks/setting';
   import { getToken } from '/@/utils/auth';
   import {encryptByBase64} from "@/utils/cipher";
+  import { getFileAccessHttpUrl } from '@/utils/common/compUtils';
 
   const { createMessage } = useMessage();
   const glob = useGlobSetting();
@@ -82,7 +83,7 @@
       console.log('glob.onlineUrl', glob.viewUrl);
       //update-begin---author:scott ---date:2024-06-03  for：【TV360X-952】升级到kkfileview4.1.0---
       // let filePath = encodeURIComponent(record.url);
-      let url = encodeURIComponent(encryptByBase64(record.url));
+      let url = encodeURIComponent(encryptByBase64(getFileAccessHttpUrl(record.url)));
       // //文档采用pdf预览高级模式
       // if(filePath.endsWith(".pdf") || filePath.endsWith(".doc") || filePath.endsWith(".docx")){
       //   filePath = filePath
