@@ -12,9 +12,17 @@
     <artifactId>jeecg-cloud-test-shardingsphere</artifactId>
 
     <dependencies>
+        <!-- 动态数据源 -->
         <dependency>
-            <groupId>org.jeecgframework.boot</groupId>
-            <artifactId>jeecg-boot-starter-shardingsphere</artifactId>
+            <groupId>com.baomidou</groupId>
+            <artifactId>dynamic-datasource-spring-boot-starter</artifactId>
+            <version>${dynamic-datasource-spring-boot-starter.version}</version>
+        </dependency>
+        <!-- 分库分表 -->
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+            <version>5.0.0</version>
         </dependency>
     </dependencies>
 
