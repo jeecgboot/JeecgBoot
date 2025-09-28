@@ -158,7 +158,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getTotalDataByCompId", "anon");
         filterChainDefinitionMap.put("/drag/mock/json/**", "anon");
         filterChainDefinitionMap.put("/drag/onlDragDatasetHead/getDictByCodes", "anon");
-
+        filterChainDefinitionMap.put("/drag/onlDragDatasetHead/queryAllById", "anon");
         filterChainDefinitionMap.put("/jimubi/view", "anon");
         filterChainDefinitionMap.put("/jimubi/share/view/**", "anon");
 
