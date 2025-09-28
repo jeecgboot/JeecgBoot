@@ -192,9 +192,9 @@ public class SecurityConfig {
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/jimubi/share/view/**")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getMapDataByCode")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getTotalDataByCompId")).permitAll()
+                        .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/queryAllById")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/drag/onlDragDatasetHead/getDictByCodes")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/dragChannelSocket/**")).permitAll()
-
                         //大屏模板例子
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/test/bigScreen/**")).permitAll()
                         .requestMatchers(AntPathRequestMatcher.antMatcher("/bigscreen/template1/**")).permitAll()
