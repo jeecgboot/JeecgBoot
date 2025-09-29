@@ -97,9 +97,8 @@ public class OssBootUtil {
      * @return oss 中的相对文件路径
      */
     public static String upload(MultipartFile file, String fileDir,String customBucket) throws Exception {
-        //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
+        // 文件安全校验，防止上传漏洞文件
         SsrfFileTypeFilter.checkUploadFileType(file);
-        //update-end-author:liusq date:20210809 for: 过滤上传文件类型
 
         String filePath = null;
         initOss(endPoint, accessKeyId, accessKeySecret);

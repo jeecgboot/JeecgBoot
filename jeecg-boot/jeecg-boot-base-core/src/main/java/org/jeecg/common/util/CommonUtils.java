@@ -153,9 +153,9 @@ public class CommonUtils {
      */
     public static String uploadLocal(MultipartFile mf,String bizPath,String uploadpath){
         try {
-            //update-begin-author:liusq date:20210809 for: 过滤上传文件类型
-            SsrfFileTypeFilter.checkUploadFileType(mf);
-            //update-end-author:liusq date:20210809 for: 过滤上传文件类型
+            // 文件安全校验，防止上传漏洞文件
+            SsrfFileTypeFilter.checkUploadFileType(mf, bizPath);
+            
             String fileName = null;
             File file = new File(uploadpath + File.separator + bizPath + File.separator );
             if (!file.exists()) {

@@ -2,6 +2,7 @@ package org.jeecg.common.util.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.exception.JeecgBootException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -149,14 +150,13 @@ public class SsrfFileTypeFilter {
     public static void checkDownloadFileType(String filePath) throws IOException {
         //文件后缀
         String suffix = getFileTypeBySuffix(filePath);
-        log.info("suffix:{}", suffix);
+        log.debug(" 【文件下载校验】文件后缀 suffix: {}", suffix);
         boolean isAllowExtension = FILE_TYPE_WHITE_LIST.contains(suffix.toLowerCase());
         //是否允许下载的文件
         if (!isAllowExtension) {
-            throw new IOException("下载失败，存在非法文件类型：" + suffix);
+            throw new JeecgBootException("下载失败，存在非法文件类型：" + suffix);
         }
     }
-
 
     /**
      * 上传文件类型过滤
@@ -164,14 +164,24 @@ public class SsrfFileTypeFilter {
      * @param file
      */
     public static void checkUploadFileType(MultipartFile file) throws Exception {
-        //获取文件真是后缀
-        String suffix = getFileType(file);
-
-        log.info("suffix:{}", suffix);
+        checkUploadFileType(file, null);
+    }
+    
+    /**
+     * 上传文件类型过滤
+     *
+     * @param file
+     */
+    public static void checkUploadFileType(MultipartFile file, String customPath) throws Exception {
+        //1. 路径安全校验
+        validatePathSecurity(customPath);
+        //2. 校验文件后缀和头
+        String suffix = getFileType(file, customPath);
+        log.info("【文件上传校验】文件后缀 suffix: {}，customPath：{}", suffix, customPath);
         boolean isAllowExtension = FILE_TYPE_WHITE_LIST.contains(suffix.toLowerCase());
         //是否允许下载的文件
         if (!isAllowExtension) {
-            throw new Exception("上传失败，存在非法文件类型：" + suffix);
+            throw new JeecgBootException("上传失败，存在非法文件类型：" + suffix);
         }
     }
 
@@ -183,7 +193,7 @@ public class SsrfFileTypeFilter {
      * @throws Exception
      */
 
-    private static String getFileType(MultipartFile file) throws Exception {
+    private static String getFileType(MultipartFile file, String customPath) throws Exception {
         //update-begin-author:liusq date:20230404 for: [issue/4672]方法造成的文件被占用，注释掉此方法tomcat就能自动清理掉临时文件
         String fileExtendName = null;
         InputStream is = null;
@@ -203,7 +213,7 @@ public class SsrfFileTypeFilter {
                     break;
                 }
             }
-            log.info("-----获取到的指定文件类型------"+fileExtendName);
+            log.debug("-----获取到的指定文件类型------"+fileExtendName);
             // 如果不是上述类型，则判断扩展名
             if (StringUtils.isBlank(fileExtendName)) {
                 String fileName = file.getOriginalFilename();
@@ -214,7 +224,6 @@ public class SsrfFileTypeFilter {
                 // 如果有扩展名，则返回扩展名
                 return getFileTypeBySuffix(fileName);
             }
-            log.info("-----最終的文件类型------"+fileExtendName);
             is.close();
             return fileExtendName;
         } catch (Exception e) {
@@ -249,4 +258,34 @@ public class SsrfFileTypeFilter {
         }
         return stringBuilder.toString();
     }
+
+    /**
+     * 路径安全校验
+     */
+    private static void validatePathSecurity(String customPath) throws JeecgBootException {
+        if (customPath == null || customPath.trim().isEmpty()) {
+            return;
+        }
+
+        // 统一分隔符为 /
+        String normalized = customPath.replace("\\", "/");
+
+        // 1. 防止路径遍历攻击
+        if (normalized.contains("..") || normalized.contains("~")) {
+            throw new JeecgBootException("上传业务路径包含非法字符！");
+        }
+
+        // 2. 限制路径深度
+        int depth = normalized.split("/").length;
+        if (depth > 5) {
+            throw new JeecgBootException("上传业务路径深度超出限制！");
+        }
+
+        // 3. 限制字符集（只允许字母、数字、下划线、横线、斜杠）
+        if (!normalized.matches("^[a-zA-Z0-9/_-]+$")) {
+            throw new JeecgBootException("上传业务路径包含非法字符！");
+        }
+    }
+
+    
 }
