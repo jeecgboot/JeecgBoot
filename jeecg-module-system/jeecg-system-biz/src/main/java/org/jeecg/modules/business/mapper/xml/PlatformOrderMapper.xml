@@ -1487,4 +1487,93 @@
           AND p.create_time > #{startDateTime}
           AND poc.erp_status in (1, 2);
     </select>
+    <select id="searchOrdersSkus" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
+    WITH orders_skus AS (
+        SELECT DISTINCT s.id,
+                        s.erp_code,
+                        s.service_fee,
+                        s.shipping_discount
+        FROM sku s
+        JOIN platform_order_content poc ON s.id = poc.sku_id
+        WHERE poc.platform_order_id IN
+        <foreach collection="orderIds" index="index" item="orderId" open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+    ), latest_sku_weights AS (
+        SELECT
+        sku_id as weight_id,
+        weight,
+        effective_date as weight_effective_date,
+        ROW_NUMBER() OVER (PARTITION BY sku_id ORDER BY effective_date DESC) AS rn
+        FROM sku_weight
+        WHERE sku_id IN (SELECT id FROM orders_skus)
+    ), latest_sku_prices AS (
+        SELECT
+        sku_id as price_id,
+        price as sku_price,
+        threshold,
+        discounted_price,
+        currency_id,
+        date as sku_price_effective_date,
+        ROW_NUMBER() OVER (PARTITION BY sku_id ORDER BY date DESC) AS rn
+        FROM sku_price
+        WHERE sku_id IN (SELECT id FROM orders_skus)
+    ), latest_declared_values AS (
+        SELECT
+        sku_id as declared_value_id,
+        declared_value,
+        effective_date as declared_value_effective_date,
+        ROW_NUMBER() OVER (PARTITION BY sku_id ORDER BY effective_date DESC) AS rn
+        FROM sku_declared_value
+        WHERE sku_id IN (SELECT id FROM orders_skus)
+    )
+    SELECT
+        os.id,
+        os.erp_code,
+        lsw.weight,
+        lsw.weight_effective_date,
+        lsp.sku_price,
+        lsp.threshold,
+        lsp.currency_id,
+        lsp.discounted_price,
+        lsp.sku_price_effective_date,
+        ldv.declared_value,
+        ldv.declared_value_effective_date,
+        os.service_fee,
+        os.shipping_discount
+    FROM orders_skus os
+    LEFT JOIN latest_sku_weights lsw ON os.id = lsw.weight_id AND lsw.rn = 1
+    LEFT JOIN latest_sku_prices lsp ON os.id = lsp.price_id AND lsp.rn = 1
+    LEFT JOIN latest_declared_values ldv ON os.id = ldv.declared_value_id AND ldv.rn = 1
+    ORDER BY os.erp_code;
+    </select>
+    <select id="fetchOrderByIdWithFees" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT po.id,
+               po.shop_id,
+               po.logistic_channel_name,
+               po.platform_order_id,
+               po.platform_order_number,
+               po.tracking_number,
+               po.order_time,
+               po.shipping_time,
+               po.recipient,
+               po.country,
+               po.postcode,
+               po.fret_fee,
+               po.target,
+               po.erp_status,
+               po.invoice_logistic_channel_name,
+               po.product_available,
+               po.virtual_product_available,
+               po.picking_fee,
+               po.insurance_fee,
+               s.packaging_material_fee,
+               s.order_service_fee
+        FROM platform_order po
+        JOIN shop s ON po.shop_id = s.id
+        WHERE po.id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>
+    </select>
 </mapper>

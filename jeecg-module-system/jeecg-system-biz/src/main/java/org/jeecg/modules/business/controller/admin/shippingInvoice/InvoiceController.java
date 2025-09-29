@@ -1012,6 +1012,12 @@ public class InvoiceController {
         return Result.ok(estimationsByShop);
     }
 
+    @GetMapping("/completeFeesEstimationPerOrder")
+    public Result<?> getCompleteFeesEstimationPerOrder(@RequestParam("clientID") String clientId, @RequestParam("orderIds[]") List<String> orderIds) throws UserException {
+        List<FeesEstimationPerOrder> estimations = shippingInvoiceService.getShippingEstimationPerOrder(clientId, orderIds);
+        return Result.OK(estimations);
+    }
+
     @GetMapping(value = "/checkInvoiceValidity")
     public Result<?> checkInvoiceValidity(@RequestParam("invoiceNumber") String invoiceNumber) {
         boolean isEmployee = securityService.checkIsEmployee();

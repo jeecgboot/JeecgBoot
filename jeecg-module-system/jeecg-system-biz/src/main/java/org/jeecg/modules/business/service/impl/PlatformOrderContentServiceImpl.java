@@ -1,21 +1,17 @@
 package org.jeecg.modules.business.service.impl;
 
-import com.amazonaws.services.dynamodbv2.xspec.NULL;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.entity.PlatformOrderContent;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.SkuMapper;
 import org.jeecg.modules.business.service.IPlatformOrderContentService;
+import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.SkuQuantity;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -40,9 +36,10 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
     }
 
     @Override
-    public Pair<BigDecimal, List<String>> calculateWeight(Map<String, Integer> contentMap,
+    public Response<BigDecimal, List<String>> calculateWeight(Map<String, Integer> contentMap,
                                                           Map<String, BigDecimal> skuRealWeights)
     {
+        Response<BigDecimal, List<String>> response = new Response<>();
         List<String> errorMessages = new ArrayList<>();
         List<String> skuIDs = new ArrayList<>(contentMap.keySet());
         log.info("skus : " + skuIDs);
@@ -65,10 +62,12 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
                 } else {
                     errorMessages.add("SKUs missing weight (id): " + String.join(", ", missingIds));
                 }
-                }
+            }
         }
         log.info("total weight : " + total);
-        return new MutablePair<>(total, errorMessages);
+        response.setData(total);
+        response.setError(errorMessages);
+        return response;
 
     }
     @Override

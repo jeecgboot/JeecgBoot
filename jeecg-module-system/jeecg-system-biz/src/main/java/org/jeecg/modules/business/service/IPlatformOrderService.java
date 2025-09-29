@@ -305,4 +305,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     Integer countOrdersByShop(String shopId);
 
     List<ThirdPartyStockAttributionParam> fetchThirdPartyStockAttributionParams(LocalDateTime startDateTime, List<String> shopCodes, List<String> countries);
+
+    List<SkuOrderPage> searchOrdersSkus(List<String> orderIds);
+
+    Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataWithFees(List<String> orderIds);
 }

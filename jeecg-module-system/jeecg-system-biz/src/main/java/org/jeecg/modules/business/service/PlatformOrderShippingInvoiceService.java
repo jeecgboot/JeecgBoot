@@ -1119,4 +1119,8 @@ public class PlatformOrderShippingInvoiceService {
         }
         return pathList.get(0).toString();
     }
+
+    public List<FeesEstimationPerOrder> getShippingEstimationPerOrder(String clientId, List<String> orderIds) throws UserException {
+        return factory.getShippingEstimationPerOrder(clientId, orderIds);
+    }
 }

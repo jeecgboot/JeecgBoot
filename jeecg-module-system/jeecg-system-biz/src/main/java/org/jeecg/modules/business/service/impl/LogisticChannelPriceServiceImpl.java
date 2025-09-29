@@ -15,6 +15,7 @@ import org.jeecg.modules.business.service.ILogisticChannelPriceService;
 import org.jeecg.modules.business.service.IPlatformOrderContentService;
 import org.jeecg.modules.business.vo.CountryName;
 import org.jeecg.modules.business.vo.PopularCountry;
+import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.SkuWeightDiscountServiceFees;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,11 +82,11 @@ public class LogisticChannelPriceServiceImpl extends ServiceImpl<LogisticChannel
 
         String logisticChannelName = order.getInvoiceLogisticChannelName() == null ?
                 order.getLogisticChannelName() : order.getInvoiceLogisticChannelName();
-        Pair<BigDecimal, List<String>> calculateWeightRes = platformOrderContentService.calculateWeight(
+        Response<BigDecimal, List<String>> calculateWeightRes = platformOrderContentService.calculateWeight(
                 contentMap,
                 skuRealWeights
         );
-        BigDecimal weight = calculateWeightRes.getKey();
+        BigDecimal weight = calculateWeightRes.getData();
 
 
         String countryCode = countryService.findByEnName(order.getCountry()).getCode();
