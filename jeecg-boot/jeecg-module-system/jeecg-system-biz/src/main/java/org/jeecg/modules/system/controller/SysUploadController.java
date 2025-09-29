@@ -2,9 +2,9 @@ package org.jeecg.modules.system.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.MinioUtil;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.oss.entity.OssFile;
 import org.jeecg.modules.oss.service.IOssFileService;
@@ -35,20 +35,18 @@ public class SysUploadController {
     @PostMapping(value = "/uploadMinio")
     public Result<?> uploadMinio(HttpServletRequest request) throws Exception {
         Result<?> result = new Result<>();
+        // 获取业务路径
         String bizPath = request.getParameter("biz");
-
-        //LOWCOD-2580 sys/common/upload接口存在任意文件上传漏洞
-        boolean flag = oConvertUtils.isNotEmpty(bizPath) && (bizPath.contains("../") || bizPath.contains("..\\"));
-        if (flag) {
-            throw new JeecgBootException("上传目录bizPath，格式非法！");
-        }
+        // 获取上传文件对象
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        MultipartFile file = multipartRequest.getFile("file");
+        
+        // 文件安全校验，防止上传漏洞文件
+        SsrfFileTypeFilter.checkUploadFileType(file, bizPath);
 
         if(oConvertUtils.isEmpty(bizPath)){
             bizPath = "";
         }
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        // 获取上传文件对象
-        MultipartFile file = multipartRequest.getFile("file");
         // 获取文件名
         String orgName = file.getOriginalFilename();
         orgName = CommonUtils.getFileName(orgName);
