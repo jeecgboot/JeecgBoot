@@ -79,7 +79,7 @@
 		<shiro-redis.version>3.2.3</shiro-redis.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
 		<codegenerate.version>1.5.4</codegenerate.version>
-		<minio.version>8.5.7</minio.version>
+		<minio.version>8.6.0</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
