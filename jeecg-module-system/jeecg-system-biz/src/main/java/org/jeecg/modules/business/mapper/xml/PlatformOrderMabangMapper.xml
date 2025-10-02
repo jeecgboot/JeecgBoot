@@ -125,7 +125,13 @@
         <foreach collection="orders" separator=" " open="" close="" index="index" item="item">
             when #{item.id} then #{item.canSend}
         </foreach>
+        end,
+        shipping_service = case id
+        <foreach collection="orders" item="item" index="index" open="" close="" separator=" ">
+            when #{item.id} then #{item.shippingService}
+        </foreach>
         end
+
         where id in
         <foreach collection="orders" separator="," open="(" close=")" index="index" item="item">
             #{item.id}
@@ -172,7 +178,7 @@
         update_time, shop_id, logistic_channel_name,
         platform_order_id, platform_order_number, erp_order_id,
         tracking_number, internal_tracking_number, order_time, shipping_time, recipient,
-        country, city, postcode, tax_number, erp_status, product_available, can_send, has_phone_number)
+        country, city, postcode, tax_number, erp_status, product_available, can_send, has_phone_number, shipping_service)
         VALUES
         <foreach collection="orders" separator="," open="" close="" item="order" index="index">
             (
@@ -198,7 +204,8 @@
             #{order.status},
             #{order.productAvailable},
             #{order.canSend},
-            #{order.hasPhoneNumber}
+            #{order.hasPhoneNumber},
+            #{order.shippingService}
             )
         </foreach>
     </insert>

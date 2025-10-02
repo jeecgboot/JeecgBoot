@@ -161,6 +161,12 @@ public class Order {
     @JSONField(name = "hasPhoneNumber")
     private String hasPhoneNumber;
 
+    /**
+     * 买家自选物流
+     */
+    @JSONField(name = "shippingService")
+    private String shippingService;
+
     public void setTrackingNumber(String trackingNumber) {
         if (trackingNumber != null && trackingNumber.isEmpty()) {
             this.trackingNumber = null;

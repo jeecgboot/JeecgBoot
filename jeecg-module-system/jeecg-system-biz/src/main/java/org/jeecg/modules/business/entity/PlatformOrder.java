@@ -277,4 +277,10 @@ public class PlatformOrder implements Serializable {
     @Excel(name = "目的地转单号", width = 15)
     @ApiModelProperty(value = "目的地转单号")
     private String localTrackingNumber;
+    /**
+     * 买家自选物流
+     */
+    @Excel(name = "买家自选物流", width = 15)
+    @ApiModelProperty(value = "买家自选物流")
+    private String shippingService;
 }
