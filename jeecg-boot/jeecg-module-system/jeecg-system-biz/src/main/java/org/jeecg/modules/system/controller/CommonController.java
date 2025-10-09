@@ -1,16 +1,15 @@
 package org.jeecg.modules.system.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.constant.enums.FileTypeEnum;
-import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +21,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 
 /**
@@ -68,50 +65,19 @@ public class CommonController {
         Result<?> result = new Result<>();
         String savePath = "";
         String bizPath = request.getParameter("biz");
-
-        //LOWCOD-2580 sys/common/upload接口存在任意文件上传漏洞
-        if (oConvertUtils.isNotEmpty(bizPath)) {
-            if(bizPath.contains(SymbolConstant.SPOT_SINGLE_SLASH) || bizPath.contains(SymbolConstant.SPOT_DOUBLE_BACKSLASH)){
-                throw new JeecgBootException("上传目录bizPath，格式非法！");
-            }
-        }
-
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
-        // 获取上传文件对象
         MultipartFile file = multipartRequest.getFile("file");
-        if(oConvertUtils.isEmpty(bizPath)){
-            if(CommonConstant.UPLOAD_TYPE_OSS.equals(uploadType)){
-                //未指定目录，则用阿里云默认目录 upload
-                bizPath = "upload";
-                //result.setMessage("使用阿里云文件上传时，必须添加目录！");
-                //result.setSuccess(false);
-                //return result;
-            }else{
-                bizPath = "";
-            }
+        
+        // 文件安全校验，防止上传漏洞文件
+        SsrfFileTypeFilter.checkUploadFileType(file, bizPath);
+  
+        if (oConvertUtils.isEmpty(bizPath)) {
+            bizPath = CommonConstant.UPLOAD_TYPE_OSS.equals(uploadType) ? "upload" : "";
         }
         if(CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)){
-            //update-begin-author:liusq date:20221102 for: 过滤上传文件类型
-            SsrfFileTypeFilter.checkUploadFileType(file);
-            //update-end-author:liusq date:20221102 for: 过滤上传文件类型
-            //update-begin-author:lvdandan date:20200928 for:修改JEditor编辑器本地上传
             savePath = this.uploadLocal(file,bizPath);
-            //update-begin-author:lvdandan date:20200928 for:修改JEditor编辑器本地上传
-            /**  富文本编辑器及markdown本地上传时，采用返回链接方式
-            //针对jeditor编辑器如何使 lcaol模式，采用 base64格式存储
-            String jeditor = request.getParameter("jeditor");
-            if(oConvertUtils.isNotEmpty(jeditor)){
-                result.setMessage(CommonConstant.UPLOAD_TYPE_LOCAL);
-                result.setSuccess(true);
-                return result;
-            }else{
-                savePath = this.uploadLocal(file,bizPath);
-            }
-            */
         }else{
-            //update-begin-author:taoyan date:20200814 for:文件上传改造
             savePath = CommonUtils.upload(file, bizPath, uploadType);
-            //update-end-author:taoyan date:20200814 for:文件上传改造
         }
         if(oConvertUtils.isNotEmpty(savePath)){
             result.setMessage(savePath);

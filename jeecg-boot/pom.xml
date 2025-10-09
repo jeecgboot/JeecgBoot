@@ -75,7 +75,7 @@
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.17.3</aliyun.oss.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
-		<codegenerate.version>1.5.1</codegenerate.version>
+		<codegenerate.version>1.5.4</codegenerate.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<justauth.version>1.16.6</justauth.version>
@@ -83,9 +83,6 @@
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
 		<jedis.version>3.8.0</jedis.version>
 		<baidu-java-sdk.version>4.16.19</baidu-java-sdk.version>
-		<!-- spring boot 3 不支持下列两个版本-->
-		<!--<log4j2.version>2.17.0</log4j2.version>
-		<logback.version>1.4.12</logback.version>-->
 	</properties>
 
 	<modules>
@@ -262,7 +259,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.8.2</version>
+				<version>3.8.2.2</version>
 			</dependency>
 			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 			<dependency>

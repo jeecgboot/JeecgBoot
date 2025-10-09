@@ -11,22 +11,19 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.ObjectProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.context.event.EventListener;
 import org.springframework.http.CacheControl;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -50,6 +47,7 @@ import java.util.concurrent.TimeUnit;
  * @Author qinfeng
  *
  */
+@Slf4j
 @Configuration
 public class WebMvcConfiguration implements WebMvcConfigurer {
 
@@ -157,16 +155,17 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 
 
     /**
-     * 监听应用启动完成事件，确保 PrometheusMeterRegistry 已经初始化
+     * 在Bean初始化完成后立即配置PrometheusMeterRegistry，避免在Meter注册后才配置MeterFilter
      * for [QQYUN-12558]【监控】系统监控的头两个tab不好使，接口404
-     * @param event
      * @author chenrui
      * @date 2025/5/26 16:46
      */
-    @EventListener
-    public void onApplicationReady(ApplicationReadyEvent event) {
-        if(null != meterRegistryPostProcessor){
-            meterRegistryPostProcessor.postProcessAfterInitialization(prometheusMeterRegistry, "");
+    @PostConstruct
+    public void initPrometheusMeterRegistry() {
+        // 确保在应用启动早期就配置MeterFilter，避免警告
+        if (null != meterRegistryPostProcessor && null != prometheusMeterRegistry) {
+            meterRegistryPostProcessor.postProcessAfterInitialization(prometheusMeterRegistry, "prometheusMeterRegistry");
+            log.info("PrometheusMeterRegistry配置完成");
         }
     }
 
