@@ -100,11 +100,11 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
                 // 提取已存在的用户ID
                 List<String> existingUserIds = existingUsers.stream()
                         .map(SysTenantPackUser::getUserId)
-                        .toList();
+                        .collect(Collectors.toList());
                 // 过滤出需要新增的用户ID
                 List<String> newUserIds = userIds.stream()
                         .filter(userId -> !existingUserIds.contains(userId))
-                        .toList();
+                        .collect(Collectors.toList());
                 for (String userId : newUserIds) {
                 //update-end---author:wangshuai---date:2025-09-03---for: 编辑时需要查看有没有未分配的用户---
                     SysTenantPackUser tenantPackUser = new SysTenantPackUser(tenantId, packId, userId);

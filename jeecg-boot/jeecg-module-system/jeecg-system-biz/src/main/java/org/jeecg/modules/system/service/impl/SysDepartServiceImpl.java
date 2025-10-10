@@ -785,7 +785,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         List<String> departIdList = new ArrayList<>();
         //如果前端传过来的部门id不为空的时候，说明是系统用户根据所属部门选择主岗位或者兼职岗位
         if(oConvertUtils.isNotEmpty(departIds) && oConvertUtils.isEmpty(parentId)){
-            departIdList = list.stream().map(SysDepart::getId).toList();
+            departIdList = list.stream().map(SysDepart::getId).collect(Collectors.toList());
         }
         List<SysDepartTreeModel> records = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -1859,7 +1859,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         List<SysDepart> sysDepartList = departMapper.selectList(query);
         if(!CollectionUtils.isEmpty(sysDepartList)){
             //获取部门名称拼接返回给前台
-            List<String> departNameList = sysDepartList.stream().map(SysDepart::getDepartName).toList();
+            List<String> departNameList = sysDepartList.stream().map(SysDepart::getDepartName).collect(Collectors.toList());
             String departNames = String.join("/", departNameList);
             redisUtil.set(CommonConstant.DEPART_NAME_REDIS_KEY_PRE + orgCode,departNames);
             return departNames;

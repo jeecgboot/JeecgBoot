@@ -2055,7 +2055,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
         if(oConvertUtils.isEmpty(code)) {
             return null;
         }
-        List<SysDepart> list = sysDepartList.stream().filter(sysDepart -> sysDepart.getOrgCode().equals(code)).toList();
+		List<SysDepart> list = sysDepartList.stream()
+				.filter(sysDepart -> sysDepart.getOrgCode().equals(code))
+				.collect(Collectors.toList());
+		
         //判断去上级的级别
         if(!CollectionUtils.isEmpty(list) && nowLevel == level) {
             return list.get(0);

@@ -2734,7 +2734,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     public IPage<SysUserSysDepPostModel> queryDepartPostUserByOrgCode(String orgCode, SysUser userParams, IPage page) {
         List<SysUserSysDepPostModel> sysDepartModels = baseMapper.queryDepartPostUserByOrgCode(page, orgCode, userParams);
         if(CollectionUtil.isNotEmpty(sysDepartModels)){
-            List<String> userIds = sysDepartModels.stream().map(SysUserSysDepPostModel::getId).toList();
+            List<String> userIds = sysDepartModels.stream().map(SysUserSysDepPostModel::getId).collect(Collectors.toList());
             //获取部门名称
             Map<String, String> useDepNames = this.getDepNamesByUserIds(userIds);
             sysDepartModels.forEach(item -> {
