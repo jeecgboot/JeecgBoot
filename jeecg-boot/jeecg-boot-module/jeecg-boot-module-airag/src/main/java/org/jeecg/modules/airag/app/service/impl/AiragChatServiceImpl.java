@@ -860,7 +860,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
          */
         AtomicBoolean isThinking = new AtomicBoolean(false);
         // ai聊天响应逻辑
-        chatStream.onNext((String resMessage) -> {
+        chatStream.onPartialResponse((String resMessage) -> {
             // 兼容推理模型
             if ("<think>".equals(resMessage)) {
                 isThinking.set(true);
@@ -886,12 +886,12 @@ public class AiragChatServiceImpl implements IAiragChatService {
                 return;
             }
             sendMessage2Client(emitter, eventData);
-        }).onComplete((responseMessage) -> {
+        }).onCompleteResponse((responseMessage) -> {
             // 打印流程耗时日志
             printChatDuration(requestId, "LLM输出消息完成");
             AiragLocalCache.remove(AiragConsts.CACHE_TYPE_SSE_SEND_TIME, requestId);
             // 记录ai的回复
-            AiMessage aiMessage = responseMessage.content();
+            AiMessage aiMessage = responseMessage.aiMessage();
             FinishReason finishReason = responseMessage.finishReason();
             String respText = aiMessage.text();
             // sse
