@@ -71,7 +71,11 @@
            <groupId>org.jeecgframework.boot3</groupId>
            <artifactId>jeecg-cloud-test-shardingsphere</artifactId>
            <version>${jeecgboot.version}</version>
-       </dependency>-->
+       </dependency>
+        <dependency>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-shardingsphere-nacos</artifactId>
+        </dependency>-->
 
     </dependencies>
 

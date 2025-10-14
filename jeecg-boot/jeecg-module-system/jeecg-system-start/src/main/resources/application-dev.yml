@@ -153,12 +153,10 @@ spring:
           username: root
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
-          # 多数据源配置
-          #multi-datasource1:
-          #url: jdbc:mysql://localhost:3306/jeecg-boot2?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
-          #username: root
-          #password: root
-          #driver-class-name: com.mysql.cj.jdbc.Driver
+#        # shardingjdbc数据源
+#        sharding-db:
+#          driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+#          url: jdbc:shardingsphere:classpath:sharding.yaml
   #redis 配置
   data:
     redis:

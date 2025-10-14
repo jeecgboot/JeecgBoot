@@ -53,13 +53,6 @@ public class StandardModTableShardAlgorithm implements StandardShardingAlgorithm
     }
 
     /**
-     * 初始化对象的时候调用的方法
-     */
-    @Override
-    public void init() {
-    }
-
-    /**
      * 对应分片算法（sharding-algorithms）的类型
      *
      * @return
@@ -67,20 +60,5 @@ public class StandardModTableShardAlgorithm implements StandardShardingAlgorithm
     @Override
     public String getType() {
         return "STANDARD_MOD";
-    }
-
-    @Override
-    public Properties getProps() {
-        return this.props;
-    }
-
-    /**
-     * 获取分片相关属性
-     *
-     * @param properties
-     */
-    @Override
-    public void setProps(Properties properties) {
-        this.props = properties;
     }
 }

@@ -1,0 +1,40 @@
+# !!!数据源名称要和动态数据源中配置的名称一致
+databaseName: sharding-db
+
+# 具体参看官网文档说明
+dataSources:
+  db_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    password: root
+    username: root
+
+rules:
+  - !SHARDING
+    tables: # 数据分片规则配置
+      sys_log: # 逻辑表名称
+        actualDataNodes: db_0.sys_log$->{0..1} # 由数据源名 + 表名组成（参考 Inline 语法规则）
+        databaseStrategy: # 分库策略，缺省表示使用默认分库策略，以下的分片策略只能选其一
+          none:
+        tableStrategy: # 分表策略
+          standard: # 用于单分片键的标准分片场景
+            shardingColumn: log_type # 分片列名称
+            shardingAlgorithmName: user_inline
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worker-id: 123
+    # 分片算法配置
+    shardingAlgorithms:
+      user_inline:
+        type: INLINE
+        props:
+          algorithm-expression: sys_log$->{log_type % 2}
+
+props:
+  sql-show: true
