@@ -189,7 +189,9 @@ public class ResourceUtil {
                         break;
                     }
                 }
+                list.add(new DictModel(value, dm.getText()));
             }
+            map.put(code,list);
         }
         return map;
     }
