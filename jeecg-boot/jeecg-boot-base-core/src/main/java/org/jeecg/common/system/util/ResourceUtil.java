@@ -186,7 +186,7 @@ public class ResourceUtil {
                         List<DictModel> list = new ArrayList<>();
                         list.add(new DictModel(value, dm.getText()));
                         map.put(code, list);
-                        break;
+                        continue;
                     }
                 }
             }
