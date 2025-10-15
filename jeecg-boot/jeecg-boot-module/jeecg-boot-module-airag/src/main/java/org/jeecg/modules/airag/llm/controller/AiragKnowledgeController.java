@@ -1,10 +1,10 @@
 package org.jeecg.modules.airag.llm.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.AssertUtils;
@@ -77,7 +77,7 @@ public class AiragKnowledgeController {
      * @date 2025/2/18 17:09
      */
     @PostMapping(value = "/add")
-    @RequiresPermissions("airag:knowledge:add")
+    @SaCheckPermission("airag:knowledge:add")
     public Result<String> add(@RequestBody AiragKnowledge airagKnowledge) {
         airagKnowledge.setStatus(LLMConsts.STATUS_ENABLE);
         airagKnowledgeService.save(airagKnowledge);
@@ -94,7 +94,7 @@ public class AiragKnowledgeController {
      */
     @Transactional(rollbackFor = Exception.class)
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
-    @RequiresPermissions("airag:knowledge:edit")
+    @SaCheckPermission("airag:knowledge:edit")
     public Result<String> edit(@RequestBody AiragKnowledge airagKnowledge) {
         AiragKnowledge airagKnowledgeEntity = airagKnowledgeService.getById(airagKnowledge.getId());
         if (airagKnowledgeEntity == null) {
@@ -118,7 +118,7 @@ public class AiragKnowledgeController {
      * @date 2025/3/12 17:05
      */
     @PutMapping(value = "/rebuild")
-    @RequiresPermissions("airag:knowledge:rebuild")
+    @SaCheckPermission("airag:knowledge:rebuild")
     public Result<?> rebuild(@RequestParam("knowIds") String knowIds) {
         String[] knowIdArr = knowIds.split(",");
         for (String knowId : knowIdArr) {
@@ -137,7 +137,7 @@ public class AiragKnowledgeController {
      */
     @Transactional(rollbackFor = Exception.class)
     @DeleteMapping(value = "/delete")
-    @RequiresPermissions("airag:knowledge:delete")
+    @SaCheckPermission("airag:knowledge:delete")
     public Result<String> delete(HttpServletRequest request, @RequestParam(name = "id", required = true) String id) {
         //update-begin---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
         //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
@@ -204,7 +204,7 @@ public class AiragKnowledgeController {
      * @date 2025/2/18 15:47
      */
     @PostMapping(value = "/doc/edit")
-    @RequiresPermissions("airag:knowledge:doc:edit")
+    @SaCheckPermission("airag:knowledge:doc:edit")
     public Result<?> addDocument(@RequestBody AiragKnowledgeDoc airagKnowledgeDoc) {
         return airagKnowledgeDocService.editDocument(airagKnowledgeDoc);
     }
@@ -217,7 +217,7 @@ public class AiragKnowledgeController {
      * @date 2025/3/20 11:29
      */
     @PostMapping(value = "/doc/import/zip")
-    @RequiresPermissions("airag:knowledge:doc:zip")
+    @SaCheckPermission("airag:knowledge:doc:zip")
     public Result<?> importDocumentFromZip(@RequestParam(name = "knowId", required = true) String knowId,
                                            @RequestParam(name = "file", required = true) MultipartFile file) {
         return airagKnowledgeDocService.importDocumentFromZip(knowId,file);
@@ -244,7 +244,7 @@ public class AiragKnowledgeController {
      * @date 2025/2/18 15:47
      */
     @PutMapping(value = "/doc/rebuild")
-    @RequiresPermissions("airag:knowledge:doc:rebuild")
+    @SaCheckPermission("airag:knowledge:doc:rebuild")
     public Result<?> rebuildDocument(@RequestParam("docIds") String docIds) {
         return airagKnowledgeDocService.rebuildDocument(docIds);
     }
@@ -259,7 +259,7 @@ public class AiragKnowledgeController {
      */
     @Transactional(rollbackFor = Exception.class)
     @DeleteMapping(value = "/doc/deleteBatch")
-    @RequiresPermissions("airag:knowledge:doc:deleteBatch")
+    @SaCheckPermission("airag:knowledge:doc:deleteBatch")
     public Result<String> deleteDocumentBatch(HttpServletRequest request, @RequestParam(name = "ids", required = true) String ids) {
         List<String> idsList = Arrays.asList(ids.split(","));
         //update-begin---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
@@ -287,7 +287,7 @@ public class AiragKnowledgeController {
      */
     @Transactional(rollbackFor = Exception.class)
     @DeleteMapping(value = "/doc/deleteAll")
-    @RequiresPermissions("airag:knowledge:doc:deleteAll")
+    @SaCheckPermission("airag:knowledge:doc:deleteAll")
     public Result<?> deleteDocumentAll(HttpServletRequest request, @RequestParam(name = "knowId") String knowId) {
         //update-begin---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
         //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的

@@ -10,8 +10,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.stp.StpUtil;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.config.TenantContext;
@@ -136,7 +136,7 @@ public class SysUserController {
      * @param req
      * @return
      */
-    @RequiresPermissions("system:user:listAll")
+    @SaCheckPermission("system:user:listAll")
     @RequestMapping(value = "/listAll", method = RequestMethod.GET)
     public Result<IPage<SysUser>> queryAllPageList(SysUser user, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                    @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
@@ -144,7 +144,7 @@ public class SysUserController {
         return sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
     }
 
-    @RequiresPermissions("system:user:add")
+    @SaCheckPermission("system:user:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysUser> add(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -174,7 +174,7 @@ public class SysUserController {
 		return result;
 	}
 
-    @RequiresPermissions("system:user:edit")
+    @SaCheckPermission("system:user:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysUser> edit(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -213,7 +213,7 @@ public class SysUserController {
 	/**
 	 * 删除用户
 	 */
-    @RequiresPermissions("system:user:delete")
+    @SaCheckPermission("system:user:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		baseCommonService.addLog("删除用户，id： " +id ,CommonConstant.LOG_TYPE_2, 3);
@@ -229,7 +229,7 @@ public class SysUserController {
 	/**
 	 * 批量删除用户
 	 */
-    @RequiresPermissions("system:user:deleteBatch")
+    @SaCheckPermission("system:user:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		baseCommonService.addLog("批量删除用户， ids： " +ids ,CommonConstant.LOG_TYPE_2, 3);
@@ -248,7 +248,7 @@ public class SysUserController {
 	 * @param jsonObject
 	 * @return
 	 */
-    @RequiresPermissions("system:user:frozenBatch")
+    @SaCheckPermission("system:user:frozenBatch")
 	@RequestMapping(value = "/frozenBatch", method = RequestMethod.PUT)
 	public Result<SysUser> frozenBatch(@RequestBody JSONObject jsonObject) {
 		Result<SysUser> result = new Result<SysUser>();
@@ -273,7 +273,7 @@ public class SysUserController {
 
     }
 
-    @RequiresPermissions("system:user:queryById")
+    @SaCheckPermission("system:user:queryById")
     @RequestMapping(value = "/queryById", method = RequestMethod.GET)
     public Result<SysUser> queryById(@RequestParam(name = "id", required = true) String id) {
         Result<SysUser> result = new Result<SysUser>();
@@ -287,7 +287,7 @@ public class SysUserController {
         return result;
     }
 
-    @RequiresPermissions("system:user:queryUserRole")
+    @SaCheckPermission("system:user:queryUserRole")
     @RequestMapping(value = "/queryUserRole", method = RequestMethod.GET)
     public Result<List<String>> queryUserRole(@RequestParam(name = "userid", required = true) String userid) {
         Result<List<String>> result = new Result<>();
@@ -340,7 +340,7 @@ public class SysUserController {
     /**
      * 修改密码
      */
-    @RequiresPermissions("system:user:changepwd")
+    @SaCheckPermission("system:user:changepwd")
     @RequestMapping(value = "/changePassword", method = RequestMethod.PUT)
     public Result<?> changePassword(@RequestBody SysUser sysUser) {
         SysUser u = this.sysUserService.getOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUsername, sysUser.getUsername()));
@@ -349,7 +349,7 @@ public class SysUserController {
         }
         sysUser.setId(u.getId());
         //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = LoginUserUtils.getLoginUser();
         baseCommonService.addLog("修改用户 "+sysUser.getUsername()+" 的密码，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
         //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
         return sysUserService.changePassword(sysUser);
@@ -464,7 +464,7 @@ public class SysUserController {
      * @param request
      * @param sysUser
      */
-    @RequiresPermissions("system:user:export")
+    @SaCheckPermission("system:user:export")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysUser sysUser,HttpServletRequest request) {
         // Step.1 组装查询条件
@@ -483,7 +483,7 @@ public class SysUserController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "用户列表");
         mv.addObject(NormalExcelConstants.CLASS, SysUserExportVo.class);
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = LoginUserUtils.getLoginUser();
         ExportParams exportParams = new ExportParams("导入规则：\n" +
                 "1. 用户名为必填项，仅支持新增数据导入；\n" +
                 "2. 多个部门、角色或负责部门请用英文分号 ; 分隔，如：财务部;研发部；\n" +
@@ -507,7 +507,7 @@ public class SysUserController {
      * @param response
      * @return
      */
-    @RequiresPermissions("system:user:import")
+    @SaCheckPermission("system:user:import")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
         //return ImportOldUserUtil.importOldSysUser(request);
@@ -562,14 +562,14 @@ public class SysUserController {
 	/**
 	 * 首页用户重置密码
 	 */
-    @RequiresPermissions("system:user:updatepwd")
+    @SaCheckPermission("system:user:updatepwd")
     @RequestMapping(value = "/updatePassword", method = RequestMethod.PUT)
 	public Result<?> updatePassword(@RequestBody JSONObject json) {
 		String username = json.getString("username");
 		String oldpassword = json.getString("oldpassword");
 		String password = json.getString("password");
 		String confirmpassword = json.getString("confirmpassword");
-        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         if(!sysUser.getUsername().equals(username)){
             return Result.error("只允许修改自己的密码！");
         }
@@ -578,7 +578,7 @@ public class SysUserController {
 			return Result.error("用户不存在！");
 		}
         //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = LoginUserUtils.getLoginUser();
         baseCommonService.addLog("修改密码，username： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
         //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]修改密码添加敏感日志------------
 		return sysUserService.resetPassword(username,oldpassword,password,confirmpassword);
@@ -604,7 +604,7 @@ public class SysUserController {
      * @param
      * @return
      */
-    @RequiresPermissions("system:user:addUserRole")
+    @SaCheckPermission("system:user:addUserRole")
     @RequestMapping(value = "/addSysUserRole", method = RequestMethod.POST)
     public Result<String> addSysUserRole(@RequestBody SysUserRoleVO sysUserRoleVO) {
         Result<String> result = new Result<String>();
@@ -636,7 +636,7 @@ public class SysUserController {
      * @param
      * @return
      */
-    @RequiresPermissions("system:user:deleteRole")
+    @SaCheckPermission("system:user:deleteRole")
     @RequestMapping(value = "/deleteUserRole", method = RequestMethod.DELETE)
     public Result<SysUserRole> deleteUserRole(@RequestParam(name="roleId") String roleId,
                                                     @RequestParam(name="userId",required=true) String userId
@@ -660,7 +660,7 @@ public class SysUserController {
      * @param
      * @return
      */
-    @RequiresPermissions("system:user:deleteRoleBatch")
+    @SaCheckPermission("system:user:deleteRoleBatch")
     @RequestMapping(value = "/deleteUserRoleBatch", method = RequestMethod.DELETE)
     public Result<SysUserRole> deleteUserRoleBatch(
             @RequestParam(name="roleId") String roleId,
@@ -692,7 +692,7 @@ public class SysUserController {
         List<String> subDepids = new ArrayList<>();
         //部门id为空时，查询我的部门下所有用户
         if(oConvertUtils.isEmpty(depId)){
-            LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser user = LoginUserUtils.getLoginUser();
             int userIdentity = user.getUserIdentity() != null?user.getUserIdentity():CommonConstant.USER_IDENTITY_1;
             //update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
             if(oConvertUtils.isNotEmpty(userIdentity) && userIdentity == CommonConstant.USER_IDENTITY_2
@@ -764,7 +764,7 @@ public class SysUserController {
     /**
      * 给指定部门添加对应的用户
      */
-    @RequiresPermissions("system:user:editDepartWithUser")
+    @SaCheckPermission("system:user:editDepartWithUser")
     @RequestMapping(value = "/editSysDepartWithUser", method = RequestMethod.POST)
     public Result<String> editSysDepartWithUser(@RequestBody SysDepartUsersVO sysDepartUsersVO) {
         Result<String> result = new Result<String>();
@@ -793,7 +793,7 @@ public class SysUserController {
     /**
      *   删除指定机构的用户关系
      */
-    @RequiresPermissions("system:user:deleteUserInDepart")
+    @SaCheckPermission("system:user:deleteUserInDepart")
     @RequestMapping(value = "/deleteUserInDepart", method = RequestMethod.DELETE)
     public Result<SysUserDepart> deleteUserInDepart(@RequestParam(name="depId") String depId,
                                                     @RequestParam(name="userId",required=true) String userId
@@ -825,7 +825,7 @@ public class SysUserController {
     /**
      * 批量删除指定机构的用户关系
      */
-    @RequiresPermissions("system:user:deleteUserInDepartBatch")
+    @SaCheckPermission("system:user:deleteUserInDepartBatch")
     @RequestMapping(value = "/deleteUserInDepartBatch", method = RequestMethod.DELETE)
     public Result<SysUserDepart> deleteUserInDepartBatch(
             @RequestParam(name="depId") String depId,
@@ -857,7 +857,7 @@ public class SysUserController {
     public Result<Map<String,Object>> getCurrentUserDeparts() {
         Result<Map<String,Object>> result = new Result<Map<String,Object>>();
         try {
-        	LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+        	LoginUser sysUser = LoginUserUtils.getLoginUser();
             List<SysDepart> list = this.sysDepartService.queryUserDeparts(sysUser.getId());
             Map<String,Object> map = new HashMap(5);
             map.put("list", list);
@@ -1242,7 +1242,7 @@ public class SysUserController {
      * @param userIds 被删除的用户ID，多个id用半角逗号分割
      * @return
      */
-    @RequiresPermissions("system:user:deleteRecycleBin")
+    @SaCheckPermission("system:user:deleteRecycleBin")
     @RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
     public Result deleteRecycleBin(@RequestParam("userIds") String userIds) {
         if (StringUtils.isNotBlank(userIds)) {
@@ -1257,7 +1257,7 @@ public class SysUserController {
      * @param jsonObject
      * @return
      */
-    @RequiresPermissions("system:user:app:edit")
+    @SaCheckPermission("system:user:app:edit")
     @RequestMapping(value = "/appEdit", method = {RequestMethod.PUT,RequestMethod.POST})
     public Result<SysUser> appEdit(HttpServletRequest request,@RequestBody JSONObject jsonObject) {
         Result<SysUser> result = new Result<SysUser>();
@@ -1609,7 +1609,7 @@ public class SysUserController {
      * @return
      */
     @PostMapping("/login/setting/userEdit")
-    @RequiresPermissions("system:user:setting:edit")
+    @SaCheckPermission("system:user:setting:edit")
     public Result<String> userEdit(@RequestBody SysUser sysUser, HttpServletRequest request) {
         String username = JwtUtil.getUserNameByToken(request);
         SysUser user = sysUserService.getById(sysUser.getId());
@@ -1721,7 +1721,7 @@ public class SysUserController {
     public Result<?> changeLoginTenantId(@RequestBody SysUser sysUser){
         Result<String> result = new Result<>();
         Integer tenantId = sysUser.getLoginTenantId();
-        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser loginUser = LoginUserUtils.getLoginUser();
         String userId = loginUser.getId();
         
         // 判断 指定的租户ID是不是当前登录用户的租户

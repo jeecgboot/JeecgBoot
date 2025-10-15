@@ -1,5 +1,6 @@
 package org.jeecg.modules.airag.llm.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -7,7 +8,6 @@ import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.ai.factory.AiModelFactory;
 import org.jeecg.ai.factory.AiModelOptions;
 import org.jeecg.common.api.vo.Result;
@@ -72,7 +72,7 @@ public class AiragModelController extends JeecgController<AiragModel, IAiragMode
      * @return
      */
     @PostMapping(value = "/add")
-    @RequiresPermissions("airag:model:add")
+    @SaCheckPermission("airag:model:add")
     public Result<String> add(@RequestBody AiragModel airagModel) {
         // 验证 模型名称/模型类型/基础模型
         AssertUtils.assertNotEmpty("模型名称不能为空", airagModel.getName());
@@ -94,7 +94,7 @@ public class AiragModelController extends JeecgController<AiragModel, IAiragMode
      * @return
      */
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
-    @RequiresPermissions("airag:model:edit")
+    @SaCheckPermission("airag:model:edit")
     public Result<String> edit(@RequestBody AiragModel airagModel) {
         airagModelService.updateById(airagModel);
         return Result.OK("编辑成功!");
@@ -107,7 +107,7 @@ public class AiragModelController extends JeecgController<AiragModel, IAiragMode
      * @return
      */
     @DeleteMapping(value = "/delete")
-    @RequiresPermissions("airag:model:delete")
+    @SaCheckPermission("airag:model:delete")
     public Result<String> delete(HttpServletRequest request, @RequestParam(name = "id", required = true) String id) {
         //update-begin---author:chenrui ---date:20250606  for：[issues/8337]关于ai工作列表的数据权限问题 #8337------------
         //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的

@@ -2,7 +2,7 @@ package org.jeecg.common.aspect;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.PropertyFilter;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.util.LoginUserUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -100,7 +100,7 @@ public class AutoLogAspect {
         //设置IP地址
         dto.setIp(IpUtils.getIpAddr(request));
         //获取登录用户信息
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         if(sysUser!=null){
             dto.setUserid(sysUser.getUsername());
             dto.setUsername(sysUser.getRealname());
@@ -244,7 +244,7 @@ public class AutoLogAspect {
         sysLog.setIp(IPUtils.getIpAddr(request));
 
         //获取登录用户信息
-        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         if(sysUser!=null){
             sysLog.setUserid(sysUser.getUsername());
             sysLog.setUsername(sysUser.getRealname());

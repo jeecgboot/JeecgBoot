@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
@@ -237,7 +237,7 @@ public class SysCategoryController {
       //导出文件名称
       mv.addObject(NormalExcelConstants.FILE_NAME, "分类字典列表");
       mv.addObject(NormalExcelConstants.CLASS, SysCategory.class);
-      LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+      LoginUser user = LoginUserUtils.getLoginUser();
       mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("分类字典列表数据", "导出人:"+user.getRealname(), "导出信息"));
       return mv;
   }

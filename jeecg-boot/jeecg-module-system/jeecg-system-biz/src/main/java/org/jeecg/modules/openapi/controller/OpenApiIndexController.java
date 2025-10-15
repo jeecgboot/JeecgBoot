@@ -1,7 +1,7 @@
 package org.jeecg.modules.openapi.controller;
 
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.config.shiro.IgnoreAuth;
+import org.jeecg.config.satoken.IgnoreAuth;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

@@ -15,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.config.TenantContext;
@@ -48,7 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.jeecg.common.system.vo.LoginUser;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.util.LoginUserUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -96,7 +96,7 @@ public class SysRoleController {
 	 * @param req
 	 * @return
 	 */
-	@RequiresPermissions("system:role:list")
+	@SaCheckPermission("system:role:list")
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysRole>> queryPageList(SysRole role,
 									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -152,7 +152,7 @@ public class SysRoleController {
 	 * @return
 	 */
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
-    @RequiresPermissions("system:role:add")
+    @SaCheckPermission("system:role:add")
 	public Result<SysRole> add(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
 		try {
@@ -177,7 +177,7 @@ public class SysRoleController {
 	 * @param role
 	 * @return
 	 */
-    @RequiresPermissions("system:role:edit")
+    @SaCheckPermission("system:role:edit")
 	@RequestMapping(value = "/edit",method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<SysRole> edit(@RequestBody SysRole role) {
 		Result<SysRole> result = new Result<SysRole>();
@@ -191,7 +191,7 @@ public class SysRoleController {
 			//如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
 			if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
 				//获取当前用户
-				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				LoginUser sysUser = LoginUserUtils.getLoginUser();
 				Integer tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 				String username = "admin";
 				if (!tenantId.equals(sysrole.getTenantId()) && !username.equals(sysUser.getUsername())) {
@@ -214,13 +214,13 @@ public class SysRoleController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:role:delete")
+    @SaCheckPermission("system:role:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
     	//如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
     	if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 			//获取当前用户
-			LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			LoginUser sysUser = LoginUserUtils.getLoginUser();
 			int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 			Long getRoleCount = sysRoleService.getRoleCountByTenantId(id, tenantId);
 			String username = "admin";
@@ -245,7 +245,7 @@ public class SysRoleController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:role:deleteBatch")
+    @SaCheckPermission("system:role:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		baseCommonService.addLog("删除角色操作，角色ids：" + ids, CommonConstant.LOG_TYPE_2, CommonConstant.OPERATE_TYPE_4);
@@ -257,7 +257,7 @@ public class SysRoleController {
 			if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 				int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 				String[] roleIds = ids.split(SymbolConstant.COMMA);
-				LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+				LoginUser sysUser = LoginUserUtils.getLoginUser();
 				String username = "admin";
 				for (String id:roleIds) {
 					Long getRoleCount = sysRoleService.getRoleCountByTenantId(id, tenantId);
@@ -324,7 +324,7 @@ public class SysRoleController {
 	 *
 	 * @return
 	 */
-	@RequiresPermissions("system:role:queryallNoByTenant")
+	@SaCheckPermission("system:role:queryallNoByTenant")
 	@RequestMapping(value = "/queryallNoByTenant", method = RequestMethod.GET)
 	public Result<List<SysRole>> queryallNoByTenant() {
 		Result<List<SysRole>> result = new Result<>();
@@ -400,7 +400,7 @@ public class SysRoleController {
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME,"角色列表");
 		mv.addObject(NormalExcelConstants.CLASS,SysRole.class);
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = LoginUserUtils.getLoginUser();
 		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("角色列表数据","导出人:"+user.getRealname(),"导出信息"));
 		mv.addObject(NormalExcelConstants.DATA_LIST,pageList);
 		return mv;

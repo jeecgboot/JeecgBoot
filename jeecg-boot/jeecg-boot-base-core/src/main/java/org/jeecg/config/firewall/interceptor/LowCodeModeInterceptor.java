@@ -2,7 +2,7 @@ package org.jeecg.config.firewall.interceptor;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -68,7 +68,7 @@ public class LowCodeModeInterceptor implements HandlerInterceptor {
         if (jeecgBaseConfig.getFirewall()!=null && LowCodeModeInterceptor.LOW_CODE_MODE_PROD.equals(jeecgBaseConfig.getFirewall().getLowCodeMode())) {
             String requestURI = request.getRequestURI().substring(request.getContextPath().length());
             log.info("低代码模式，拦截请求路径：" + requestURI);
-            LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser loginUser = LoginUserUtils.getLoginUser();
             Set<String> hasRoles = null;
             if (loginUser == null) {
                 loginUser = commonAPI.getUserByName(JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest()));

@@ -8,8 +8,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.jeecg.common.util.LoginUserUtils;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.config.TenantContext;
@@ -74,7 +74,7 @@ public class SysTenantController {
      * @param req
      * @return
      */
-    @RequiresPermissions("system:tenant:list")
+    @SaCheckPermission("system:tenant:list")
     @PermissionData(pageComponent = "system/TenantList")
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysTenant>> queryPageList(SysTenant sysTenant,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -113,7 +113,7 @@ public class SysTenantController {
      * @return
      */
     @GetMapping("/recycleBinPageList")
-    @RequiresPermissions("system:tenant:recycleBinPageList")
+    @SaCheckPermission("system:tenant:recycleBinPageList")
     public Result<IPage<SysTenant>> recycleBinPageList(SysTenant sysTenant,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req){
         Result<IPage<SysTenant>> result = new Result<IPage<SysTenant>>();
@@ -129,7 +129,7 @@ public class SysTenantController {
      * @param
      * @return
      */
-    @RequiresPermissions("system:tenant:add")
+    @SaCheckPermission("system:tenant:add")
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result<SysTenant> add(@RequestBody SysTenant sysTenant) {
         Result<SysTenant> result = new Result();
@@ -155,7 +155,7 @@ public class SysTenantController {
      * @author chenrui
      * @date 2025/2/6 18:24
      */
-    @RequiresPermissions("system:tenant:syncDefaultPack")
+    @SaCheckPermission("system:tenant:syncDefaultPack")
     @PostMapping(value = "/syncDefaultPack")
     public Result<?> syncDefaultPack(@RequestParam(name="tenantId",required=true) Integer tenantId) {
         //同步默认产品包
@@ -168,7 +168,7 @@ public class SysTenantController {
      * @param
      * @return
      */
-    @RequiresPermissions("system:tenant:edit")
+    @SaCheckPermission("system:tenant:edit")
     @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<SysTenant> edit(@RequestBody SysTenant tenant) {
         Result<SysTenant> result = new Result();
@@ -191,14 +191,14 @@ public class SysTenantController {
      * @param id
      * @return
      */
-    @RequiresPermissions("system:tenant:delete")
+    @SaCheckPermission("system:tenant:delete")
     @RequestMapping(value = "/delete", method ={RequestMethod.DELETE, RequestMethod.POST})
     public Result<?> delete(@RequestParam(name="id",required=true) String id) {
         //------------------------------------------------------------------
         //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
             //获取当前用户
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser sysUser = LoginUserUtils.getLoginUser();
             SysTenant sysTenant = sysTenantService.getById(id);
 
             String username = "admin";
@@ -219,7 +219,7 @@ public class SysTenantController {
      * @param ids
      * @return
      */
-    @RequiresPermissions("system:tenant:deleteBatch")
+    @SaCheckPermission("system:tenant:deleteBatch")
     @RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
     public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
         Result<?> result = new Result<>();
@@ -234,7 +234,7 @@ public class SysTenantController {
                 //如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
                 if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
                     //获取当前用户
-                    LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+                    LoginUser sysUser = LoginUserUtils.getLoginUser();
                     SysTenant sysTenant = sysTenantService.getById(id);
 
                     String username = "admin";
@@ -269,7 +269,7 @@ public class SysTenantController {
         }
         //------------------------------------------------------------------------------------------------
         //获取登录用户信息
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】, admin给特权可以管理所有租户
         if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && !"admin".equals(sysUser.getUsername())){
             Integer loginSessionTenant = oConvertUtils.getInt(TenantContext.getTenant());
@@ -294,7 +294,7 @@ public class SysTenantController {
      * 查询有效的 租户数据
      * @return
      */
-    @RequiresPermissions("system:tenant:queryList")
+    @SaCheckPermission("system:tenant:queryList")
     @RequestMapping(value = "/queryList", method = RequestMethod.GET)
     public Result<List<SysTenant>> queryList(@RequestParam(name="ids",required=false) String ids) {
         Result<List<SysTenant>> result = new Result<List<SysTenant>>();
@@ -320,7 +320,7 @@ public class SysTenantController {
      * @return
      */
     @GetMapping(value = "/packList")
-    @RequiresPermissions("system:tenant:packList")
+    @SaCheckPermission("system:tenant:packList")
     public Result<IPage<SysTenantPack>> queryPackPageList(SysTenantPack sysTenantPack,
                                                           @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                           @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
@@ -342,7 +342,7 @@ public class SysTenantController {
      * @return
      */
     @PostMapping(value = "/addPackPermission")
-    @RequiresPermissions("system:tenant:add:pack")
+    @SaCheckPermission("system:tenant:add:pack")
     public Result<String> addPackPermission(@RequestBody SysTenantPack sysTenantPack) {
         sysTenantPackService.addPackPermission(sysTenantPack);
         return Result.ok("创建租户产品包成功");
@@ -355,7 +355,7 @@ public class SysTenantController {
      * @return
      */
     @PutMapping(value = "/editPackPermission")
-    @RequiresPermissions("system:tenant:edit:pack")
+    @SaCheckPermission("system:tenant:edit:pack")
     public Result<String> editPackPermission(@RequestBody SysTenantPack sysTenantPack) {
         sysTenantPackService.editPackPermission(sysTenantPack);
         return Result.ok("修改租户产品包成功");
@@ -368,7 +368,7 @@ public class SysTenantController {
      * @return
      */
     @DeleteMapping("/deleteTenantPack")
-    @RequiresPermissions("system:tenant:delete:pack")
+    @SaCheckPermission("system:tenant:delete:pack")
     public Result<String> deleteTenantPack(@RequestParam(value = "ids") String ids) {
         sysTenantPackService.deleteTenantPack(ids);
         return Result.ok("删除租户产品包成功");
@@ -385,7 +385,7 @@ public class SysTenantController {
     public Result<Map<String,Object>> getCurrentUserTenant() {
         Result<Map<String,Object>> result = new Result<Map<String,Object>>();
         try {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser sysUser = LoginUserUtils.getLoginUser();
             //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
             List<Integer> tenantIdList = relationService.getTenantIdsByUserId(sysUser.getId());
             Map<String,Object> map = new HashMap(5);
@@ -411,7 +411,7 @@ public class SysTenantController {
      * @return
      */
     @PutMapping("/invitationUserJoin")
-    @RequiresPermissions("system:tenant:invitation:user")
+    @SaCheckPermission("system:tenant:invitation:user")
     public Result<String> invitationUserJoin(@RequestParam("ids") String ids,@RequestParam(value = "phone", required = false) String phone, @RequestParam(value = "username", required = false) String username){
         if(oConvertUtils.isEmpty(phone) && oConvertUtils.isEmpty(username)){
             return Result.error("手机号和用户账号不能同时为空！");
@@ -429,7 +429,7 @@ public class SysTenantController {
      * @return
      */
     @RequestMapping(value = "/getTenantUserList", method = RequestMethod.GET)
-    @RequiresPermissions("system:tenant:user:list")
+    @SaCheckPermission("system:tenant:user:list")
     public Result<IPage<SysUser>> getTenantUserList(SysUser user,
                                                     @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                                     @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
@@ -450,12 +450,12 @@ public class SysTenantController {
      * @return
      */
     @PutMapping("/leaveTenant")
-    @RequiresPermissions("system:tenant:leave")
+    @SaCheckPermission("system:tenant:leave")
     public Result<String> leaveTenant(@RequestParam("userIds") String userIds,
                                       @RequestParam("tenantId") String tenantId){
         Result<String> result = new Result<>();
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && !"admin".equals(sysUser.getUsername())){
             Integer loginSessionTenant = oConvertUtils.getInt(TenantContext.getTenant());
             if(loginSessionTenant!=null && !loginSessionTenant.equals(Integer.valueOf(tenantId))){
@@ -501,7 +501,7 @@ public class SysTenantController {
     @PostMapping("/saveTenantJoinUser")
     public Result<Integer> saveTenantJoinUser(@RequestBody SysTenant sysTenant){
         Result<Integer> result = new Result<>();
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         Integer tenantId = sysTenantService.saveTenantJoinUser(sysTenant, sysUser.getId());
         result.setSuccess(true);
         result.setMessage("创建成功");
@@ -515,7 +515,7 @@ public class SysTenantController {
      */
     @PostMapping("/joinTenantByHouseNumber")
     public Result<Integer> joinTenantByHouseNumber(@RequestBody SysTenant sysTenant){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         Integer tenantId = sysTenantService.joinTenantByHouseNumber(sysTenant, sysUser.getId());
         Result<Integer> result = new Result<>();
         if(tenantId != 0){
@@ -542,7 +542,7 @@ public class SysTenantController {
      * @return
      */
     @GetMapping("/getUserTenantPageList")
-    //@RequiresPermissions("system:tenant:tenantPageList")
+    //@SaCheckPermission("system:tenant:tenantPageList")
     public Result<IPage<SysUserTenantVo>> getUserTenantPageList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                                 @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                                 @RequestParam(name = "userTenantStatus") String userTenantStatus,
@@ -550,7 +550,7 @@ public class SysTenantController {
                                                                 SysUser user,
                                                                 HttpServletRequest req) {
         Page<SysUserTenantVo> page = new Page<SysUserTenantVo>(pageNo, pageSize);
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         String tenantId = oConvertUtils.getString(TenantContext.getTenant(), "0");
         IPage<SysUserTenantVo> list = relationService.getUserTenantPageList(page, Arrays.asList(userTenantStatus.split(SymbolConstant.COMMA)), user, Integer.valueOf(tenantId));
         return Result.ok(list);
@@ -563,9 +563,9 @@ public class SysTenantController {
      * @return
      */
     @GetMapping("/getTenantListByUserId")
-    //@RequiresPermissions("system:tenant:getTenantListByUserId")
+    //@SaCheckPermission("system:tenant:getTenantListByUserId")
     public Result<List<SysUserTenantVo>> getTenantListByUserId(@RequestParam(name = "userTenantStatus", required = false) String userTenantStatus) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         List<String> list = null;
         if (oConvertUtils.isNotEmpty(userTenantStatus)) {
             list = Arrays.asList(userTenantStatus.split(SymbolConstant.COMMA));
@@ -579,7 +579,7 @@ public class SysTenantController {
      * 更新用户租户关系状态【低代码应用专用接口】
      */
     @PutMapping("/updateUserTenantStatus")
-    //@RequiresPermissions("system:tenant:updateUserTenantStatus")
+    //@SaCheckPermission("system:tenant:updateUserTenantStatus")
     public Result<String> updateUserTenantStatus(@RequestBody SysUserTenant userTenant) {
         String tenantId = TenantContext.getTenant();
         if (oConvertUtils.isEmpty(tenantId)) {
@@ -596,9 +596,9 @@ public class SysTenantController {
      * @return
      */
     @PutMapping("/cancelTenant")
-    //@RequiresPermissions("system:tenant:cancelTenant")
+    //@SaCheckPermission("system:tenant:cancelTenant")
     public Result<String> cancelTenant(@RequestBody SysTenant sysTenant,HttpServletRequest request) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         SysTenant tenant = sysTenantService.getById(sysTenant.getId());
         if (null == tenant) {
             return Result.error("未找到当前租户信息");
@@ -641,7 +641,7 @@ public class SysTenantController {
      */
     @PutMapping("/cancelApplyTenant")
     public Result<String> cancelApplyTenant(@RequestParam("tenantId") String tenantId){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         sysTenantService.leaveTenant(sysUser.getId(),tenantId);
         return Result.ok("取消申请成功");
     }
@@ -654,7 +654,7 @@ public class SysTenantController {
      * @return
      */
     @DeleteMapping("/deleteLogicDeleted")
-    @RequiresPermissions("system:tenant:deleteTenantLogic")
+    @SaCheckPermission("system:tenant:deleteTenantLogic")
     public Result<String> deleteTenantLogic(@RequestParam("ids") String ids){
         sysTenantService.deleteTenantLogic(ids);
         return Result.ok("彻底删除成功");
@@ -666,7 +666,7 @@ public class SysTenantController {
      * @return
      */
     @PutMapping("/revertTenantLogic")
-    @RequiresPermissions("system:tenant:revertTenantLogic")
+    @SaCheckPermission("system:tenant:revertTenantLogic")
     public Result<String> revertTenantLogic(@RequestParam("ids") String ids){
         sysTenantService.revertTenantLogic(ids);
         return Result.ok("还原成功");
@@ -680,7 +680,7 @@ public class SysTenantController {
      */
     @DeleteMapping("/exitUserTenant")
     public Result<String> exitUserTenant(@RequestBody SysTenant sysTenant,HttpServletRequest request){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         //验证用户是否已存在
         Integer count = relationService.userTenantIzExist(sysUser.getId(),sysTenant.getId());
         if (count == 0) {
@@ -905,7 +905,7 @@ public class SysTenantController {
     public Result<IPage<SysTenant>> getTenantPageListByUserId(SysUserTenantVo sysUserTenantVo,
                                                               @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
                                                               @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         List<String> list = null;
         String userTenantStatus = sysUserTenantVo.getUserTenantStatus();
         if (oConvertUtils.isNotEmpty(userTenantStatus)) {
@@ -923,7 +923,7 @@ public class SysTenantController {
     public Result<String> agreeOrRefuseJoinTenant(@RequestParam("tenantId") Integer tenantId, 
                                                   @RequestParam("status") String status){
         //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         String userId = sysUser.getId();
         SysTenant tenant = sysTenantService.getById(tenantId);
         if(null == tenant){
@@ -974,7 +974,7 @@ public class SysTenantController {
     public Result<Map<String,Object>> getCurrentUserTenantForFile() {
         Result<Map<String,Object>> result = new Result<Map<String,Object>>();
         try {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser sysUser = LoginUserUtils.getLoginUser();
             List<SysTenant> tenantList = sysTenantService.getTenantListByUserId(sysUser.getId());
             Map<String,Object> map = new HashMap<>(5);
             //在开启saas租户隔离的时候并且租户数据不为空，则返回租户信息

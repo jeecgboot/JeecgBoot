@@ -3,7 +3,7 @@ package org.jeecg.modules.system.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
@@ -57,7 +57,7 @@ public class SysAppVersionController{
      * @param sysAppVersion
      * @return
      */
-    @RequiresRoles({"admin"})
+    @SaCheckRole({"admin"})
     @Operation(summary="app系统配置-保存")
     @PostMapping(value = "/saveVersion")
     public Result<?> saveVersion(@RequestBody SysAppVersion sysAppVersion) {

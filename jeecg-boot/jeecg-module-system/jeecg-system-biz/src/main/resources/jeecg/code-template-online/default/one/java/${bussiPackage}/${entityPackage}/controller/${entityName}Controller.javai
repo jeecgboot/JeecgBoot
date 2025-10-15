@@ -37,7 +37,7 @@ import com.alibaba.fastjson.JSON;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import org.jeecg.common.aspect.annotation.AutoLog;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 <#assign bpm_flag=false>
 <#assign has_multi_query_field=false>
 <#list originalColumns as po>
@@ -126,7 +126,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-添加")
 	@Operation(summary="${tableVo.ftlDescription}-添加")
-	@RequiresPermissions("${entityPackage}:${tableName}:add")
+	@SaCheckPermission("${entityPackage}:${tableName}:add")
 	@PostMapping(value = "/add")
 	public Result<String> add(@RequestBody ${entityName} ${entityName?uncap_first}) {
 <#if enhanceJavaList?size gt 0>
@@ -161,7 +161,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-编辑")
 	@Operation(summary="${tableVo.ftlDescription}-编辑")
-	@RequiresPermissions("${entityPackage}:${tableName}:edit")
+	@SaCheckPermission("${entityPackage}:${tableName}:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<String> edit(@RequestBody ${entityName} ${entityName?uncap_first}) {
 <#if enhanceJavaList?size gt 0>
@@ -192,7 +192,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-通过id删除")
 	@Operation(summary="${tableVo.ftlDescription}-通过id删除")
-	@RequiresPermissions("${entityPackage}:${tableName}:delete")
+	@SaCheckPermission("${entityPackage}:${tableName}:delete")
 	@DeleteMapping(value = "/delete")
 	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
 		${entityName?uncap_first}Service.removeById(id);
@@ -207,7 +207,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${tableVo.ftlDescription}-批量删除")
 	@Operation(summary="${tableVo.ftlDescription}-批量删除")
-	@RequiresPermissions("${entityPackage}:${tableName}:deleteBatch")
+	@SaCheckPermission("${entityPackage}:${tableName}:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.${entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
@@ -237,7 +237,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     * @param request
     * @param ${entityName?uncap_first}
     */
-    @RequiresPermissions("${entityPackage}:${tableName}:exportXls")
+    @SaCheckPermission("${entityPackage}:${tableName}:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, ${entityName} ${entityName?uncap_first}) {
 <#if enhanceJavaList?size gt 0>
@@ -258,7 +258,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
     * @param response
     * @return
     */
-    @RequiresPermissions("${entityPackage}:${tableName}:importExcel")
+    @SaCheckPermission("${entityPackage}:${tableName}:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
     <#if enhanceJavaList?size gt 0>

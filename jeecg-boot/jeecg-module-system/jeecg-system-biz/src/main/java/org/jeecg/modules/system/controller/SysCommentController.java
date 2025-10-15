@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -126,7 +126,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
         if(comment==null){
             return Result.error("该评论已被删除！");
         }
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         String username = sysUser.getUsername();
         String admin = "admin";
         //除了admin外 其他人只能删除自己的评论
@@ -182,7 +182,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @return
      */
     @Operation(summary = "系统评论回复表-添加")
-    //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:add")
+    //@SaCheckPermission("org.jeecg.modules.demo:sys_comment:add")
     @PostMapping(value = "/add")
     public Result<String> add(@RequestBody SysComment sysComment) {
         sysCommentService.save(sysComment);
@@ -197,7 +197,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      */
     //@AutoLog(value = "系统评论回复表-编辑")
     @Operation(summary = "系统评论回复表-编辑")
-    //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:edit")
+    //@SaCheckPermission("org.jeecg.modules.demo:sys_comment:edit")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     public Result<String> edit(@RequestBody SysComment sysComment) {
         sysCommentService.updateById(sysComment);
@@ -212,7 +212,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      */
     //@AutoLog(value = "系统评论回复表-通过id删除")
     @Operation(summary = "系统评论回复表-通过id删除")
-    //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:delete")
+    //@SaCheckPermission("org.jeecg.modules.demo:sys_comment:delete")
     @DeleteMapping(value = "/delete")
     public Result<String> delete(@RequestParam(name = "id", required = true) String id) {
         sysCommentService.removeById(id);
@@ -227,7 +227,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      */
     //@AutoLog(value = "系统评论回复表-批量删除")
     @Operation(summary = "系统评论回复表-批量删除")
-    //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:deleteBatch")
+    //@SaCheckPermission("org.jeecg.modules.demo:sys_comment:deleteBatch")
     @DeleteMapping(value = "/deleteBatch")
     public Result<String> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.sysCommentService.removeByIds(Arrays.asList(ids.split(",")));
@@ -257,7 +257,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param request
      * @param sysComment
      */
-    //@RequiresPermissions("org.jeecg.modules.demo:sys_comment:exportXls")
+    //@SaCheckPermission("org.jeecg.modules.demo:sys_comment:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, SysComment sysComment) {
         return super.exportXls(request, sysComment, SysComment.class, "系统评论回复表");
@@ -270,7 +270,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param response
      * @return
      */
-    //@RequiresPermissions("sys_comment:importExcel")
+    //@SaCheckPermission("sys_comment:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, SysComment.class);

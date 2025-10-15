@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.util.oConvertUtils;
@@ -70,7 +70,7 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
      * @param id
      * @return
      */
-    @RequiresPermissions("system:getway:delete")
+    @SaCheckPermission("system:getway:delete")
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         sysGatewayRouteService.deleteById(id);
@@ -96,7 +96,7 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
 	 * @param jsonObject
 	 * @return
 	 */
-	@RequiresPermissions("system:gateway:putRecycleBin")
+	@SaCheckPermission("system:gateway:putRecycleBin")
 	@RequestMapping(value = "/putRecycleBin", method = RequestMethod.PUT)
 	public Result putRecycleBin(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
 		try {
@@ -117,7 +117,7 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
 	 * @param ids 被删除的路由ID，多个id用半角逗号分割
 	 * @return
 	 */
-	@RequiresPermissions("system:gateway:deleteRecycleBin")
+	@SaCheckPermission("system:gateway:deleteRecycleBin")
 	@RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
 	public Result deleteRecycleBin(@RequestParam("ids") String ids) {
 		try {
@@ -136,7 +136,7 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
 	 * @param id 路由id
 	 * @return
 	 */
-	@RequiresPermissions("system:gateway:copyRoute")
+	@SaCheckPermission("system:gateway:copyRoute")
 	@RequestMapping(value = "/copyRoute", method = RequestMethod.GET)
 	public Result<SysGatewayRoute> copyRoute(@RequestParam(name = "id", required = true) String id, HttpServletRequest req) {
 		Result<SysGatewayRoute> result = new Result<>();

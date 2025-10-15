@@ -7,9 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.jeecg.common.util.LoginUserUtils;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -78,7 +78,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 								   HttpServletRequest req) {
 		QueryWrapper<SysDepartRole> queryWrapper = QueryGenerator.initQueryWrapper(sysDepartRole, req.getParameterMap());
 		Page<SysDepartRole> page = new Page<SysDepartRole>(pageNo, pageSize);
-//		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+//		LoginUser user = LoginUserUtils.getLoginUser();
 //		List<String> deptIds = null;
 //		if(oConvertUtils.isEmpty(deptId)){
 //			if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals(CommonConstant.USER_IDENTITY_2) ){
@@ -109,7 +109,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @param sysDepartRole
 	 * @return
 	 */
-    @RequiresPermissions("system:depart:role:add")
+    @SaCheckPermission("system:depart:role:add")
 	@Operation(summary="部门角色-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysDepartRole sysDepartRole) {
@@ -124,7 +124,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 * @return
 	 */
 	@Operation(summary="部门角色-编辑")
-    @RequiresPermissions("system:depart:role:edit")
+    @SaCheckPermission("system:depart:role:edit")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody SysDepartRole sysDepartRole) {
 		sysDepartRoleService.updateById(sysDepartRole);
@@ -139,7 +139,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 */
 	@AutoLog(value = "部门角色-通过id删除")
 	@Operation(summary="部门角色-通过id删除")
-    @RequiresPermissions("system:depart:role:delete")
+    @SaCheckPermission("system:depart:role:delete")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name="id",required=true) String id) {
 		sysDepartRoleService.removeById(id);
@@ -154,7 +154,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 */
 	@AutoLog(value = "部门角色-批量删除")
 	@Operation(summary="部门角色-批量删除")
-    @RequiresPermissions("system:depart:role:deleteBatch")
+    @SaCheckPermission("system:depart:role:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.sysDepartRoleService.deleteDepartRole(Arrays.asList(ids.split(",")));
@@ -195,7 +195,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	  * @param json
 	  * @return
 	  */
-     @RequiresPermissions("system:depart:role:userAdd")
+     @SaCheckPermission("system:depart:role:userAdd")
 	 @RequestMapping(value = "/deptRoleUserAdd", method = RequestMethod.POST)
 	 public Result<?> deptRoleAdd(@RequestBody JSONObject json) {
 		 String newRoleId = json.getString("newRoleId");
@@ -203,7 +203,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 		 String userId = json.getString("userId");
 		 departRoleUserService.deptRoleUserAdd(userId,newRoleId,oldRoleId);
          //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色分配添加敏感日志------------
-         LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+         LoginUser loginUser = LoginUserUtils.getLoginUser();
          baseCommonService.addLog("给部门用户ID："+userId+"分配角色，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
          //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色分配添加敏感日志------------
          return Result.ok("添加成功！");

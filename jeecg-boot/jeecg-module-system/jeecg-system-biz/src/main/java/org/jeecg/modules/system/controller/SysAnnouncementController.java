@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jeecg.dingtalk.api.core.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
@@ -378,7 +378,7 @@ public class SysAnnouncementController {
 		long start = System.currentTimeMillis();
 		Result<Map<String,Object>> result = new Result<Map<String,Object>>();
 		Map<String,Object> sysMsgMap = new HashMap(5);
-		LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = LoginUserUtils.getLoginUser();
 		String userId = sysUser.getId();
 
 
@@ -423,7 +423,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/getUnreadMessageCount", method = RequestMethod.GET)
 	public Result<Map<String, Integer>> getUnreadMessageCount(@RequestParam(required = false, defaultValue = "5") Integer pageSize, HttpServletRequest request) {
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = LoginUserUtils.getLoginUser();
 		String userId = sysUser.getId();
 
 		// 获取上个月的第一天（只查近两个月的通知）
@@ -466,7 +466,7 @@ public class SysAnnouncementController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "系统通告列表");
         mv.addObject(NormalExcelConstants.CLASS, SysAnnouncement.class);
-        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser user = LoginUserUtils.getLoginUser();
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("系统通告列表数据", "导出人:"+user.getRealname(), "导出信息"));
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;
@@ -643,7 +643,7 @@ public class SysAnnouncementController {
 		
 		JSONObject obj = new JSONObject();
 		obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = LoginUserUtils.getLoginUser();
 		webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
 
 		// 4、性能统计耗时

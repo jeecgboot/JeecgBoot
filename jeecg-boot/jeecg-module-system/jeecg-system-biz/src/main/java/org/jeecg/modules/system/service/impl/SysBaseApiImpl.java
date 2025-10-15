@@ -20,7 +20,7 @@ import freemarker.template.TemplateException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
@@ -658,7 +658,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public void updateSysAnnounReadFlag(String busType, String busId) {
 		SysAnnouncement announcement = sysAnnouncementMapper.selectOne(new QueryWrapper<SysAnnouncement>().eq("bus_type",busType).eq("bus_id",busId));
 		if(announcement != null){
-			LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+			LoginUser sysUser = LoginUserUtils.getLoginUser();
 			String userId = sysUser.getId();
 			LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 			updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);

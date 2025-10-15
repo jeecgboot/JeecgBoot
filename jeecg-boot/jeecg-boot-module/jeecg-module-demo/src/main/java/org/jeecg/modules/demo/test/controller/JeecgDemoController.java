@@ -10,8 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.aspect.annotation.PermissionData;
@@ -21,7 +19,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.DateUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.UUIDGenerator;
-import org.jeecg.config.shiro.IgnoreAuth;
+import org.jeecg.config.satoken.IgnoreAuth;
 import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -477,11 +475,6 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      */
     @GetMapping(value ="/test")
     public Mono<String> test() {
-        //解决shiro报错No SecurityManager accessible to the calling code, either bound to the org.apache.shiro
-        // https://blog.csdn.net/Japhet_jiu/article/details/131177210
-        DefaultSecurityManager securityManager = new DefaultSecurityManager();
-        SecurityUtils.setSecurityManager(securityManager);
-        
         return Mono.just("测试");
     }
 

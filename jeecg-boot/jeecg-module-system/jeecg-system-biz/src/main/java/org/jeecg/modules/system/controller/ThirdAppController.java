@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.jeecg.dingtalk.api.core.response.Response;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.jeecg.common.util.LoginUserUtils;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
@@ -429,7 +429,7 @@ public class ThirdAppController {
      * @return
      */
     @DeleteMapping(value = "/deleteThirdAppConfig")
-    @RequiresPermissions("system:third:config:delete")
+    @SaCheckPermission("system:third:config:delete")
     public Result<String> deleteThirdAppConfig(@RequestParam(name="id",required=true) String id) {
         Result<String> result = new Result<>();
         SysThirdAppConfig config = appConfigService.getById(id);
@@ -509,7 +509,7 @@ public class ThirdAppController {
      */
     @GetMapping("/getThirdAccountByUserId")
     public Result<List<SysThirdAccount>> getThirdAccountByUserId(@RequestParam(name="thirdType") String thirdType){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
         //根据id查询
         query.eq(SysThirdAccount::getSysUserId,sysUser.getId());
@@ -540,7 +540,7 @@ public class ThirdAppController {
      */
     @DeleteMapping("/deleteThirdAccount")
     public Result<String> deleteThirdAccountById(@RequestBody SysThirdAccount sysThirdAccount){
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        LoginUser sysUser = LoginUserUtils.getLoginUser();
         if(!sysUser.getId().equals(sysThirdAccount.getSysUserId())){
             return Result.error("无权修改他人信息");
         }

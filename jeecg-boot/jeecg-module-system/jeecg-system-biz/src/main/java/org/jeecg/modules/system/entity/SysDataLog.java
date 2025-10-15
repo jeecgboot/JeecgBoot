@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.config.mqtoken.UserTokenContext;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
@@ -96,7 +96,7 @@ public class SysDataLog implements Serializable {
      */
     public void autoSetCreateName() {
         try {
-            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            LoginUser sysUser = LoginUserUtils.getLoginUser();
             this.setCreateName(sysUser.getRealname());
         } catch (Exception e) {
             // QQYUN-13669 进一步优化：解决某些异步场景下获取用户信息为空的问题

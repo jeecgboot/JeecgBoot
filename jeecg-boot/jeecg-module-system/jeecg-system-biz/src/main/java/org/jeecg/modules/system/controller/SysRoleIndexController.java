@@ -9,7 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
@@ -80,7 +80,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param sysRoleIndex
      * @return
      */
-    @RequiresPermissions("system:roleindex:add")
+    @SaCheckPermission("system:roleindex:add")
     @AutoLog(value = "角色首页配置-添加")
     @Operation(summary = "角色首页配置-添加")
     @PostMapping(value = "/add")
@@ -101,7 +101,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param sysRoleIndex
      * @return
      */
-    @RequiresPermissions("system:roleindex:edit")
+    @SaCheckPermission("system:roleindex:edit")
     @AutoLog(value = "角色首页配置-编辑")
     @Operation(summary = "角色首页配置-编辑")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
@@ -124,7 +124,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      */
     @AutoLog(value = "角色首页配置-通过id删除")
     @Operation(summary = "角色首页配置-通过id删除")
-    @RequiresPermissions("system:roleindex:delete")
+    @SaCheckPermission("system:roleindex:delete")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         sysRoleIndexService.removeById(id);
@@ -139,7 +139,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      */
     @AutoLog(value = "角色首页配置-批量删除")
     @Operation(summary = "角色首页配置-批量删除")
-    @RequiresPermissions("system:roleindex:deleteBatch")
+    @SaCheckPermission("system:roleindex:deleteBatch")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         baseCommonService.addLog("批量删除用户， ids： " +ids ,CommonConstant.LOG_TYPE_2, 3);
@@ -211,7 +211,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
     /**
      * 更新默认首页配置
      */
-    @RequiresPermissions("system:permission:setDefIndex")
+    @SaCheckPermission("system:permission:setDefIndex")
     @PutMapping("/updateDefIndex")
     public Result<?> updateDefIndex(
             @RequestParam("url") String url,

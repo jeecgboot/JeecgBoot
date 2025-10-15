@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -56,7 +56,7 @@ public class SysLogController extends JeecgController<SysLog, ISysLogService> {
 	 * @return
 	 */
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	//@RequiresPermissions("system:log:list")
+	//@SaCheckPermission("system:log:list")
 	public Result<IPage<SysLog>> queryPageList(SysLog syslog,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
 		Result<IPage<SysLog>> result = new Result<IPage<SysLog>>();
@@ -87,7 +87,7 @@ public class SysLogController extends JeecgController<SysLog, ISysLogService> {
 	 * @return
 	 */
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-	//@RequiresPermissions("system:log:delete")
+	//@SaCheckPermission("system:log:delete")
 	public Result<SysLog> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysLog> result = new Result<SysLog>();
 		SysLog sysLog = sysLogService.getById(id);
@@ -108,7 +108,7 @@ public class SysLogController extends JeecgController<SysLog, ISysLogService> {
 	 * @return
 	 */
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
-	//@RequiresPermissions("system:log:deleteBatch")
+	//@SaCheckPermission("system:log:deleteBatch")
 	public Result<SysRole> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysRole> result = new Result<SysRole>();
 		if(ids==null || "".equals(ids.trim())) {
