@@ -64,9 +64,6 @@ public class SysUserApiTest {
     private BaseCommonService baseCommonService;
 
     @MockBean
-    private ISysUserAgentService sysUserAgentService;
-
-    @MockBean
     private ISysPositionService sysPositionService;
 
     @MockBean

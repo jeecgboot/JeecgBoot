@@ -17,7 +17,7 @@
         <a-collapse-panel key="2">
           <template #header>
             <div style="width: 100%; justify-content: space-between; display: flex">
-              <div style="font-size: 16px"> 2.对接信息录入</div>
+              <div style="font-size: 16px"> 2.对接信息录入及解绑</div>
             </div>
           </template>
           <div class="base-desc">完成步骤1后，填入Agentld、 AppKey、AppSecret后 可对接应用与同步通讯录</div>
@@ -47,6 +47,7 @@
           </div>
           <div style="margin-top: 20px; width: 100%; text-align: right">
             <a-button @click="dingEditClick">编辑</a-button>
+            <a-button v-if="appConfigData.id" @click="cancelBindClick" danger style="margin-left: 10px">取消绑定</a-button>
           </div>
         </a-collapse-panel>
       </a-collapse>
@@ -76,7 +77,7 @@
 
 <script lang="ts">
   import { defineComponent, h, inject, onMounted, reactive, ref, watch } from 'vue';
-  import { getThirdConfigByTenantId, syncDingTalkDepartUserToLocal } from './ThirdApp.api';
+  import { getThirdConfigByTenantId, syncDingTalkDepartUserToLocal, deleteThirdAppConfig } from './ThirdApp.api';
   import { useModal } from '/@/components/Modal';
   import ThirdAppConfigModal from './ThirdAppConfigModal.vue';
   import { Modal } from 'ant-design-vue';
@@ -122,6 +123,8 @@
         let values = await getThirdConfigByTenantId(params);
         if (values) {
           appConfigData.value = values;
+        } else {
+          appConfigData.value = "";
         }
       }
 
@@ -214,6 +217,25 @@
       function handleIconClick(){
         window.open("https://help.qiaoqiaoyun.com/expand/dingdingsyn.html","_target")
       }
+
+      /**
+       * 取消绑定
+       */
+      function cancelBindClick() {
+        if(!appConfigData.value.id){
+          createMessage.warning("请先绑定钉钉应用！");
+          return;
+        }
+        Modal.confirm({
+          title: '取消绑定',
+          content: '是否要解除当前组织的钉钉应用配置绑定？',
+          okText: '确认',
+          cancelText: '取消',
+          onOk: () => {
+            deleteThirdAppConfig({ id: appConfigData.value.id }, handleSuccess);
+          },
+        });
+      }
       
       onMounted(() => {
         let tenantId = getTenantId();
@@ -229,6 +251,7 @@
         syncDingTalk,
         btnLoading,
         handleIconClick,
+        cancelBindClick,
       };
     },
   });

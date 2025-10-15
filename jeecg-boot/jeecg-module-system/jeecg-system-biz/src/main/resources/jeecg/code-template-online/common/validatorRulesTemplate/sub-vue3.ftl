@@ -1,4 +1,4 @@
-<#include "../utils.ftl">
+<#include "/common/utils.ftl">
     <#if col.isShow == 'Y' && poHasCheck(col)>
         validateRules: [
         <#if col.fieldName != 'id'>

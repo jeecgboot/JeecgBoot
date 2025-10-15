@@ -293,3 +293,33 @@ html[data-theme='dark'] {
   margin-inline: 0;
 }
 // update-end--author:wangshuai---date:20240611---for：【TV360X-1070】一对多内嵌，为什么多这一块，不从头对齐
+
+// 单行文本溢出省略号
+.ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+// 两行省略
+.ellipsis-2 {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-all;
+}
+// 三行省略
+.ellipsis-3 {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.table-action-item {
+  &.color-red {
+    color: red !important;
+  }
+}

@@ -49,8 +49,9 @@ public interface ISysTenantService extends IService<SysTenant> {
      * 邀请用户加入租户,通过手机号
      * @param ids
      * @param phone
+     * @param username
      */
-    void invitationUserJoin(String ids, String phone);
+    void invitationUserJoin(String ids, String phone,String username);
 
     /**
      * 请离用户（租户）
@@ -232,4 +233,18 @@ public interface ISysTenantService extends IService<SysTenant> {
      * @return
      */
     List<SysTenant> getTenantListByUserId(String userId);
+
+    /**
+     * 删除用户
+     * @param sysUser
+     * @param tenantId
+     */
+    void deleteUser(SysUser sysUser, Integer tenantId);
+
+    /**
+     * 为用户添加租户下所有套餐
+     * @param userId
+     * @param tenantId
+     */
+    void addPackUser(String userId, String tenantId);
 }

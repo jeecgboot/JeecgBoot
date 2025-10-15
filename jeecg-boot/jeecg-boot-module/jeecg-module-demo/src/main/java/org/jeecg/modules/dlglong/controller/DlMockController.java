@@ -409,4 +409,30 @@ public class DlMockController {
         return null;
     }
 
+    /**
+     * 获取车辆最后一个位置
+     *
+     * @return
+     */
+    @PostMapping("/findLatestCarLngLat")
+    public List findLatestCarLngLat() {
+        // 模拟JSON数据路径
+        String path = "classpath:org/jeecg/modules/dlglong/json/CarLngLat.json";
+        // 读取JSON数据
+        return readJsonData(path);
+    }
+
+    /**
+     * 获取车辆最后一个位置
+     *
+     * @return
+     */
+    @PostMapping("/findCarTrace")
+    public List findCarTrace() {
+        // 模拟JSON数据路径
+        String path = "classpath:org/jeecg/modules/dlglong/json/CarTrace.json";
+        // 读取JSON数据
+        return readJsonData(path);
+    }
+
 }

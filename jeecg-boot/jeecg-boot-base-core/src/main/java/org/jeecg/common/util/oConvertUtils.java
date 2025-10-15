@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.springframework.beans.BeanUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -473,6 +474,23 @@ public class oConvertUtils {
 		return true;
 	}
 
+	/**
+	 * 判断字符串是否为JSON格式
+	 * @param str
+	 * @return
+	 */
+	public static boolean isJson(String str) {
+		if (str == null || str.trim().isEmpty()) {
+			return false;
+		}
+		try {
+			com.alibaba.fastjson.JSON.parse(str);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
 	/**
 	 * 获取Map对象
 	 */
@@ -1131,7 +1149,24 @@ public class oConvertUtils {
 	 * @date 2020/9/12 15:50
 	 */
 	public static <T> boolean isIn(T obj, T... objs) {
-		return isIn(obj, objs);
+		if (isEmpty(objs)) {
+			return false;
+		}
+		for (T obj1 : objs) {
+			if (isEqual(obj, obj1)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 判断租户ID是否有效
+	 * @param tenantId
+	 * @return
+	 */
+	public static boolean isEffectiveTenant(String tenantId) {
+		return MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && isNotEmpty(tenantId) && !("0").equals(tenantId);
 	}
 	
 }

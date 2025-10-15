@@ -18,20 +18,33 @@ services:
       --max_allowed_packet=128M
       --default-authentication-plugin=caching_sha2_password
     ports:
-      - 3306:3306
+      - 13306:3306
     networks:
       - jeecg-boot
 
   jeecg-boot-redis:
     image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/redis:5.0
-    ports:
-      - 6379:6379
+    # ports:
+    #   - 3792:6379
     restart: always
     hostname: jeecg-boot-redis
     container_name: jeecg-boot-redis
     networks:
       - jeecg-boot
 
+  jeecg-boot-pgvector:
+    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/pgvector
+    container_name: jeecg-boot-pgvector
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vector_db
+    ports:
+      - 5432:5432
+    restart: always
+    networks:
+      - jeecg-boot
+      
   jeecg-boot-system:
     build:
       context: ./jeecg-boot/jeecg-module-system/jeecg-system-start

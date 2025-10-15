@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +14,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 /**
- * @Description: 职务表
+ * @Description: 职务级别
  * @Author: jeecg-boot
  * @Date: 2019-09-19
  * @Version: V1.0
@@ -22,7 +23,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @TableName("sys_position")
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Schema(description = "职务表")
+@Schema(description="职务级别表")
 public class SysPosition {
 
     /**
@@ -38,18 +39,17 @@ public class SysPosition {
     @Schema(description = "职务编码")
     private java.lang.String code;
     /**
-     * 职务名称
+     * 职务级别名称
      */
-    @Excel(name = "职务名称", width = 15)
-    @Schema(description = "职务名称")
+    @Excel(name = "职务级别名称", width = 15)
+    @Schema(description = "职务级别名称")
     private java.lang.String name;
     /**
      * 职级
      */
     //@Excel(name = "职级", width = 15,dicCode ="position_rank")
-    @Schema(description = "职级")
-    @Dict(dicCode = "position_rank")
-    private java.lang.String postRank;
+    @Schema(description = "职务等级")
+    private java.lang.Integer postLevel;
     /**
      * 公司id
      */

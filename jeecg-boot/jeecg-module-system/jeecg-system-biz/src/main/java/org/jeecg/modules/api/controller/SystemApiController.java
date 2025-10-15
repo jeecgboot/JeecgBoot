@@ -2,10 +2,13 @@ package org.jeecg.modules.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.constant.enums.DySmsEnum;
+import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.system.vo.*;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -579,6 +582,27 @@ public class SystemApiController {
          this.sysBaseApi.sendEmailMsg(email,title,content);
     };
     /**
+     * 发送html模版邮件消息
+     * @param email
+     * @param title
+     * @param emailTemplateEnum 邮件模版枚举
+     * @param params            模版参数
+     */
+    @GetMapping("/sendHtmlTemplateEmail")
+    public void sendHtmlTemplateEmail(@RequestParam("email")String email, @RequestParam("title")String title, @RequestParam("emailEnum") EmailTemplateEnum emailTemplateEnum, @RequestParam("params") JSONObject params){
+         this.sysBaseApi.sendHtmlTemplateEmail(email,title,emailTemplateEnum,params);
+    };
+    /**
+     * 发送短信消息
+     * @param phone  手机号码
+     * @param params  模版参数
+     * @param dySmsEnum 短信模版枚举
+     */
+    @GetMapping("/sendSmsMsg")
+    public void sendSmsMsg(@RequestParam("phone")String phone, @RequestParam("params") JSONObject params, @RequestParam("dySmsEnum") DySmsEnum dySmsEnum){
+         this.sysBaseApi.sendSmsMsg(phone,params,dySmsEnum);
+    };
+    /**
      * 41 获取公司下级部门和公司下所有用户信息
      * @param orgCode
      */
@@ -976,5 +1000,76 @@ public class SystemApiController {
     ) {
         return sysBaseApi.dictTableWhiteListCheckByDict(tableOrDictCode, fields);
     }
+    /**
+     * 自动发布通告
+     *
+     * @param dataId 通告ID
+     * @param currentUserName 发送人
+     * @return
+     */
+    @GetMapping("/announcementAutoRelease")
+    public void announcementAutoRelease(
+            @RequestParam("dataId") String dataId,
+            @RequestParam(value = "currentUserName", required = false) String currentUserName
+    ) {
+       sysBaseApi.announcementAutoRelease(dataId, currentUserName);
+    }
 
+    /**
+     * 根据部门编码查询公司信息
+     * @param orgCode 部门编码
+     * @return
+     * @author chenrui
+     * @date 2025/8/12 14:45
+     */
+    @GetMapping(value = "/queryCompByOrgCode")
+    SysDepartModel queryCompByOrgCode(@RequestParam(name = "sysCode") String orgCode) {
+        return sysBaseApi.queryCompByOrgCode(orgCode);
+    }
+
+    /**
+     * 根据部门编码和层次查询上级公司
+     *
+     * @param orgCode 部门编码
+     * @param level 可以传空 默认为1级 最小值为1
+     * @return
+     */
+    @GetMapping(value = "/queryCompByOrgCodeAndLevel")
+    SysDepartModel queryCompByOrgCodeAndLevel(@RequestParam("orgCode") String orgCode, @RequestParam("level") Integer level){
+        return sysBaseApi.queryCompByOrgCodeAndLevel(orgCode,level);
+    }
+
+    /**
+     * 运行AIRag流程
+     * for  [QQYUN-13634]在baseapi里面封装方法，方便其他模块调用
+     * @param airagFlowDTO
+     * @return 流程执行结果,可能是String或者Map
+     * @return
+     */
+    @PostMapping(value = "/runAiragFlow")
+    Object runAiragFlow(@RequestBody AiragFlowDTO airagFlowDTO) {
+        return sysBaseApi.runAiragFlow(airagFlowDTO);
+    }
+
+    /**
+     * 根据部门code或部门id获取部门名称(当前和上级部门)
+     *
+     * @param orgCode 部门编码
+     * @param depId 部门id
+     * @return String 部门名称
+     */
+    @GetMapping(value = "/getDepartPathNameByOrgCode")
+    String getDepartPathNameByOrgCode(@RequestParam(name = "orgCode", required = false) String orgCode, @RequestParam(name = "depId", required = false) String depId) {
+        return sysBaseApi.getDepartPathNameByOrgCode(orgCode, depId);
+    }
+
+    /**
+     * 根据部门ID查询用户ID
+     * @param deptIds
+     * @return
+     */
+    @GetMapping("/queryUserIdsByCascadeDeptIds")
+    public List<String> queryUserIdsByCascadeDeptIds(@RequestParam("deptIds") List<String> deptIds){
+        return sysBaseApi.queryUserIdsByCascadeDeptIds(deptIds);
+    }
 }

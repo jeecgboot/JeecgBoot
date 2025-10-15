@@ -1,8 +1,8 @@
 //package org.jeecg.modules.demo.cloud.controller;
 //
 //import com.alibaba.csp.sentinel.annotation.SentinelResource;
-//import io.swagger.annotations.Api;
-//import io.swagger.annotations.ApiOperation;
+//import io.swagger.v3.oas.annotations.tags.Tag;
+//import io.swagger.v3.oas.annotations.Operation;
 //import lombok.extern.slf4j.Slf4j;
 //import org.jeecg.common.api.vo.Result;
 //import org.jeecg.common.system.api.ISysBaseAPI;
@@ -18,7 +18,7 @@
 // *
 // */
 //@Slf4j
-//@Api(tags = "【微服务】单元测试")
+//@Tag(name = "【微服务】单元测试")
 //@RestController
 //@RequestMapping("/test")
 //public class JcloudDemoFeignController {
@@ -34,7 +34,7 @@
 //     */
 //    @GetMapping("/callSystem")
 //    //@SentinelResource(value = "remoteDict",fallback = "getDefaultHandler")
-//    @ApiOperation(value = "通过feign调用system服务", notes = "测试jeecg-demo服务，是否通过fegin调用system服务接口")
+//    @Operation(summary = "通过feign调用system服务")
 //    public Result getRemoteDict() {
 //        List<DictModel> list = sysBaseApi.queryAllDict();
 //        return Result.OK(list);
@@ -48,7 +48,7 @@
 ////     * @return
 ////     */
 ////    @GetMapping("/callErp")
-////    @ApiOperation(value = "测试feign erp", notes = "测试feign erp")
+////    @Operation(summary = "测试feign erp")
 ////    public Result callErp() {
 ////        log.info("call erp 服务");
 ////        String res = erpHelloApi.callHello();

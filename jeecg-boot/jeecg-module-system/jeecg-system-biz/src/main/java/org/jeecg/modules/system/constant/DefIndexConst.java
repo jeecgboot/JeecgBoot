@@ -14,6 +14,16 @@ public interface DefIndexConst {
      * 默认首页的缓存key
      */
     String CACHE_KEY = "sys:cache:def_index";
+    /**
+     * 缓存默认首页的类型前缀
+     */
+    String CACHE_TYPE = "sys:cache:home_type::";
+    /**
+     * 默认首页类型
+     */
+    String HOME_TYPE_SYSTEM = "system";
+    String HOME_TYPE_PERSONAL = "personal";
+    String HOME_TYPE_MENU = "menuHome";
 
     /**
      * 默认首页的初始值

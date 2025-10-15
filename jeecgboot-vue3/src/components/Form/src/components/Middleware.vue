@@ -1,5 +1,5 @@
 <template>
-  <div :id="formItemId" style="flex: 1; width: 100%">
+  <div :id="formItemId" class="j-form-item-middleware">
     <slot></slot>
   </div>
 </template>
@@ -8,8 +8,8 @@
   import { ref } from 'vue';
   // update-begin--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
   const formItemId = ref(null);
-  const props = defineProps(['formName', 'fieldName']);
-  if (props.formName && props.fieldName) {
+  const props = defineProps(['formName', 'fieldName', 'source']);
+  if (props.formName && props.fieldName && props.source !== 'table-query') {
     formItemId.value = `${props.formName}_${props.fieldName}`;
   }
   // update-end--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效

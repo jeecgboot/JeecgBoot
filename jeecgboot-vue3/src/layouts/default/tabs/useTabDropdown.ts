@@ -8,6 +8,7 @@ import { useMultipleTabStore } from '/@/store/modules/multipleTab';
 import { RouteLocationNormalized, useRouter } from 'vue-router';
 import { useTabs } from '/@/hooks/web/useTabs';
 import { useI18n } from '/@/hooks/web/useI18n';
+import { useHideHomeDesign } from './useHideHomeDesign';
 
 export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: ComputedRef<boolean>) {
   const state = reactive({
@@ -18,11 +19,15 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
   const { t } = useI18n();
   const tabStore = useMultipleTabStore();
   const { currentRoute } = useRouter();
-  const { refreshPage, closeAll, close, closeLeft, closeOther, closeRight } = useTabs();
+  const { refreshPage, closeAll, close, closeLeft, closeOther, closeRight, changeDesign } = useTabs();
 
   const getTargetTab = computed((): RouteLocationNormalized => {
     return unref(getIsTabs) ? tabContentProps.tabItem : unref(currentRoute);
   });
+  // update-begin--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
+  // 隐藏下拉菜单中的门户设计项
+  const { getHideHomeDesign, isHideHomeDesign } = useHideHomeDesign(currentRoute);
+  // update-end--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
 
   /**
    * @description: drop-down list
@@ -65,12 +70,23 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
     // Close right
     const closeRightDisabled = index === tabStore.getTabList.length - 1 && tabStore.getLastDragEndIndex >= 0;
     // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
+    // update-begin--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
+    // 隐藏下拉菜单中的门户设计项
+    getHideHomeDesign(isCurItem, path);
+    // update-end--author:liaozhiyang---date:20250701---for：【QQYUN-12994】门户
     const dropMenuList: DropMenu[] = [
       {
         icon: 'jam:refresh-reverse',
         event: MenuEventEnum.REFRESH_PAGE,
         text: t('layout.multipleTab.reload'),
         disabled: refreshDisabled,
+      },
+      {
+        icon: 'ant-design:setting-outlined',
+        event: MenuEventEnum.HOME_DESIGN,
+        text: t('layout.multipleTab.homeDesign'),
+        disabled: !/^\/portal-view\/[^/]+$/.test(path),
+        hide: isHideHomeDesign.value,
         divider: true,
       },
       // {
@@ -161,6 +177,12 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
       case MenuEventEnum.CLOSE_ALL:
         // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         closeAll(state.current);
+        // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
+        break;
+      // Close all
+      case MenuEventEnum.HOME_DESIGN:
+        // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
+        changeDesign();
         // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         break;
     }

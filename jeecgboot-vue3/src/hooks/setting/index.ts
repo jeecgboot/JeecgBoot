@@ -13,6 +13,7 @@ export const useGlobSetting = (): Readonly<GlobConfig> => {
     VITE_GLOB_APP_OPEN_QIANKUN,
     VITE_GLOB_DOMAIN_URL,
     VITE_GLOB_ONLINE_VIEW_URL,
+    VITE_GLOB_RUN_PLATFORM,
 
     // 【JEECG作为乾坤子应用】
     VITE_GLOB_QIANKUN_MICRO_APP_NAME,
@@ -40,6 +41,8 @@ export const useGlobSetting = (): Readonly<GlobConfig> => {
     urlPrefix: VITE_GLOB_API_URL_PREFIX,
     uploadUrl: VITE_GLOB_DOMAIN_URL,
     viewUrl: VITE_GLOB_ONLINE_VIEW_URL,
+    // 当前是否运行在 electron 平台
+    isElectronPlatform: VITE_GLOB_RUN_PLATFORM === 'electron',
 
     // 【JEECG作为乾坤子应用】是否以乾坤子应用模式启动
     isQiankunMicro: VITE_GLOB_QIANKUN_MICRO_APP_NAME != null && VITE_GLOB_QIANKUN_MICRO_APP_NAME !== '',

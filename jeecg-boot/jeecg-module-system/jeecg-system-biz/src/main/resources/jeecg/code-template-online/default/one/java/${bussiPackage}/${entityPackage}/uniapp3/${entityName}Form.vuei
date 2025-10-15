@@ -8,8 +8,8 @@ navigationBarTitleText: '${tableVo.ftlDescription}',
 },
 }
 </route>
-
 <template>
+<#assign onlyFields = []>
   <PageLayout :navTitle="navTitle" :backRouteName="backRouteName">
     <scroll-view class="scrollArea" scroll-y>
       <view class="form-container">
@@ -49,19 +49,11 @@ navigationBarTitleText: '${tableVo.ftlDescription}',
                 :required="true"
                 </#if>
              >
-           <!-- #ifndef APP-PLUS -->
-           <online-file
-            v-model:value="myFormData[${autoStringSuffix(po)}]"
-            name=${autoStringSuffix(po)}
-             ></online-file>
-           <!-- #endif -->
 
-           <!-- #ifdef APP-PLUS -->
             <online-file-custom
             v-model:value="myFormData[${autoStringSuffix(po)}]"
             name=${autoStringSuffix(po)}
             ></online-file-custom>
-           <!-- #endif -->
             </wd-cell>
             <#elseif po.classType =='datetime' || po.classType =='time'>
               <DateTime
@@ -166,6 +158,15 @@ navigationBarTitleText: '${tableVo.ftlDescription}',
                  clearable
                 v-model="myFormData[${autoStringSuffix(po)}]"
               ></wd-input>
+            <#elseif po.classType =='pca'>
+              <online-pca
+                :label="get4Label('${po.filedComment}')"
+                 labelWidth="100px"
+                 name=${autoStringSuffix(po)}
+                 prop=${autoStringSuffix(po)}
+                 clearable
+                v-model:value="myFormData[${autoStringSuffix(po)}]"
+              ></online-pca>
             <#elseif po.classType =='popup_dict'>
              <PopupDict
                   labelWidth="100px"
@@ -291,9 +292,12 @@ navigationBarTitleText: '${tableVo.ftlDescription}',
                        <#-- 金额 -->
                        <#elseif fieldValidType == 'money'>
                              { pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '请输入正确的金额!'},
+                       <#-- 唯一校验 -->
+                       <#elseif fieldValidType != '' && fieldValidType == 'only'>
+                          <#assign onlyFields = onlyFields + [autoStringSuffix(po)]>
                        <#-- 正则校验 -->
                        <#elseif fieldValidType != '' && fieldValidType != '*'>
-                             { pattern: '${fieldValidType}', message: '不符合校验规则!'},
+                             { pattern: /${fieldValidType}/, message: '不符合校验规则!'},
                        <#-- 无校验 -->
                        <#else>
                            <#t>
@@ -352,9 +356,12 @@ navigationBarTitleText: '${tableVo.ftlDescription}',
                             <#-- 金额 -->
                             <#elseif fieldValidType == 'money'>
                                   { pattern: /^(([1-9][0-9]*)|([0]\.\d{0,2}|[1-9][0-9]*\.\d{0,2}))$/, message: '请输入正确的金额!'},
+                            <#-- 唯一校验 -->
+                            <#elseif fieldValidType != '' && fieldValidType == 'only'>
+                                <#assign onlyFields = onlyFields + [autoStringSuffix(po)]>
                             <#-- 正则校验 -->
                             <#elseif fieldValidType != '' && fieldValidType != '*'>
-                                  { pattern: '${fieldValidType}', message: '不符合校验规则!'},
+                                  { pattern:  /${fieldValidType}/, message: '不符合校验规则!'},
                             <#-- 无校验 -->
                             <#else>
                                 <#t>
@@ -393,8 +400,10 @@ import OnlineRadio from '@/components/online/view/online-radio.vue'
 import OnlineCheckbox from '@/components/online/view/online-checkbox.vue'
 import OnlineMulti from '@/components/online/view/online-multi.vue'
 import OnlinePopupLinkRecord from '@/components/online/view/online-popup-link-record.vue'
+import OnlinePca from '@/components/online/view/online-pca.vue'
 import SelectDept from '@/components/SelectDept/SelectDept.vue'
 import SelectUser from '@/components/SelectUser/SelectUser.vue'
+import {duplicateCheck} from "@/service/api";
 defineOptions({
   name: '${entityName}Form',
   options: {
@@ -434,8 +443,40 @@ const handleSuccess = () => {
   uni.$emit('refreshList');
   router.back()
 }
+/**
+ * 校验唯一
+ * @param values
+ * @returns {boolean}
+ */
+async function fieldCheck(values: any) {
+   const onlyField = [
+     <#list onlyFields as field>
+       ${field}<#sep>, </#sep>
+     </#list>
+   ];
+   for (const field of onlyField) {
+      if (values[field]) {
+          // 仅校验有值的字段
+          const res: any = await duplicateCheck({
+              tableName: '${tableName}',
+              fieldName: field,  // 使用处理后的字段名
+              fieldVal: values[field],
+              dataId: values.id,
+          });
+          if (!res.success) {
+              toast.warning(res.message);
+              return true;  // 校验失败
+          }
+      }
+   }
+   return false;  // 校验通过
+}
 // 提交表单
-const handleSubmit = () => {
+const handleSubmit = async () => {
+ // 判断字段必填和正则
+  if (await fieldCheck(myFormData)) {
+    return
+  }
   let url = dataId.value?'/${entityPackagePath}/${entityName?uncap_first}/edit':'/${entityPackagePath}/${entityName?uncap_first}/add';
   form.value
     .validate()
@@ -508,5 +549,12 @@ onLoad((option) => {
   padding: 10px 20px;
   padding-bottom: calc(constant(safe-area-inset-bottom) + 10px);
   padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+}
+:deep(.wd-cell__label) {
+  font-size: 14px;
+  color: #444;
+}
+:deep(.wd-cell__value) {
+  text-align: left;
 }
 </style>

@@ -441,7 +441,7 @@
         const showTitle = title || toolbar || search || slots.headerTitle;
         const scrollStyle: CSSProperties = { height: 'calc(100% - 38px)' };
         return (
-          <div class={[bem(), 'h-full', attrs.class]}>
+          <div class={[bem(), 'h-full',unref(getBindValues).multiple === false ? 'custom-radio':'' , attrs.class]}>
             {showTitle && (
               <TreeHeader
                 checkable={checkable}
@@ -475,3 +475,27 @@
     },
   });
 </script>
+<style lang="less" scoped>
+// update-begin--author:liaozhiyang---date:20250908---for：【JHHB-192】主职务选择，多选框改成单选
+.custom-radio {
+  :deep(.ant-tree) {
+    .ant-tree-checkbox {
+      .ant-tree-checkbox-inner {
+          border-style: solid;
+          border-width: 1px;
+          border-radius: 50%;
+        &::after {
+          width: 0;
+          height: 0;
+          left: 50%;
+          border-width: 6px;
+          border-radius: 50%;
+          margin-left: -3px;
+          margin-top: 1px;
+        }
+      }
+    }
+  }
+}
+// update-end--author:liaozhiyang---date:20250908---for：【JHHB-192】主职务选择，多选框改成单选
+</style>

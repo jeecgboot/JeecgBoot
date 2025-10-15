@@ -25,10 +25,12 @@
   import { provide, ref, unref } from 'vue';
   import { useDesign } from '/@/hooks/web/useDesign';
   import DepartLeftTree from './components/DepartLeftTree.vue';
-  import { BasicTable } from '/@/components/Table';
+  import { BasicTable, TableAction } from '/@/components/Table';
   import { useListPage } from '/@/hooks/system/useListPage';
   import { columns, searchFormSchema } from './address.data';
   import { list, positionList } from './address.api';
+  import { getCacheByDynKey } from "@/utils/auth";
+  import { JEECG_CHAT_UID } from "@/enums/cacheEnum";
 
   const { prefixCls } = useDesign('address-list');
   provide('prefixCls', prefixCls);
@@ -46,14 +48,13 @@
       api: list,
       columns,
       //update-begin---author:wangshuai ---date:20220629  for：[VUEN-1485]进入系统管理--通讯录页面后，网页命令行报错------------
-      rowKey: 'userId',
+      rowKey: 'id',
       //update-end---author:wangshuai ---date:20220629  for：[VUEN-1485]进入系统管理--通讯录页面后，网页命令行报错--------------
       showIndexColumn: true,
       formConfig: {
         schemas: searchFormSchema,
       },
       canResize: false,
-      actionColumn: null,
       showTableSetting: false,
       // 请求之前对参数做处理
       beforeFetch(params) {

@@ -44,12 +44,12 @@
     if (unref(isUpdate)) {
       rowId.value = data.record.id;
       //租户信息定义成数组
-      if (data.record.relTenantIds && !Array.isArray(data.record.relTenantIds)) {
+   /*   if (data.record.relTenantIds && !Array.isArray(data.record.relTenantIds)) {
         data.record.relTenantIds = data.record.relTenantIds.split(',');
       } else {
         //【issues/I56C5I】用户管理中连续点两次编辑租户配置就丢失了
         //data.record.relTenantIds = [];
-      }
+      }*/
 
       //查角色/赋值/try catch 处理，不然编辑有问题
       try {
@@ -139,6 +139,26 @@
     //update-begin-author:taoyan date:2022-5-24 for: VUEN-1117【issue】0523周开源问题
     setProps({ disabled: !showFooter.value });
     //update-end-author:taoyan date:2022-5-24 for: VUEN-1117【issue】0523周开源问题
+    if(unref(isUpdate)){
+      updateSchema([
+        //修改主岗位和兼职岗位的参数
+        {
+          field: 'mainDepPostId',
+          componentProps: { params: { departIds: data.record.selecteddeparts, parentId: data.record.selecteddeparts } },
+        },
+        {
+          field: 'otherDepPostId',
+          componentProps: { params: { departIds: data.record.selecteddeparts, parentId: data.record.selecteddeparts } },
+        }
+      ]);
+    }
+    //部门管理，新增用户，在岗位下添加人员的时候默认当前岗位为主岗位
+    updateSchema([
+      {
+        field: 'mainDepPostId',
+        defaultValue: data?.mainDepPostId || '',
+      }
+    ])
   });
   //获取标题
   const getTitle = computed(() => {

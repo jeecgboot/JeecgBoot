@@ -70,7 +70,7 @@ public class JeecgBaseConfig {
     /**
      * 百度开放API配置
      */
-    private BaiduApi baiduApi;
+    private BaiduApi baiduApi;    
 
     public String getCustomResourcePrefixPath() {
         return customResourcePrefixPath;

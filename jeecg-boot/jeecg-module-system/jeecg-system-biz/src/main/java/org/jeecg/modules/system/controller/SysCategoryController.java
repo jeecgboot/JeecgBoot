@@ -265,6 +265,9 @@ public class SysCategoryController {
           params.setNeedSave(true);
           try {
               List<SysCategory> listSysCategorys = ExcelImportUtil.importExcel(file.getInputStream(), SysCategory.class, params);
+			  //update-begin---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
+			  Set<String> parentCategoryIds = new HashSet<>();
+			  //update-end---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
 			 //按照编码长度排序
               Collections.sort(listSysCategorys);
 			  log.info("排序后的list====>",listSysCategorys);
@@ -278,6 +281,9 @@ public class SysCategoryController {
 					  log.info("pId====>",pId);
 					  if(StringUtils.isNotBlank(pId)){
 						  sysCategoryExcel.setPid(pId);
+						  //update-begin---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
+						  parentCategoryIds.add(pId);
+						  //update-end---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
 					  }
 				  }else{
 					  sysCategoryExcel.setPid("0");
@@ -298,6 +304,17 @@ public class SysCategoryController {
 					  }
 				  }
               }
+			  //update-begin---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
+			  if(oConvertUtils.isObjectNotEmpty(parentCategoryIds)){
+				  for (String parentCategoryId : parentCategoryIds) {
+					  SysCategory parentCategory = sysCategoryService.getById(parentCategoryId);
+					  if(oConvertUtils.isObjectNotEmpty(parentCategory)){
+						  parentCategory.setHasChild(CommonConstant.STATUS_1);
+						  sysCategoryService.updateById(parentCategory);
+					  }
+				  }
+			  }
+			  //update-end---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
           } catch (Exception e) {
 			  errorMessage.add("发生异常：" + e.getMessage());
 			  log.error(e.getMessage(), e);

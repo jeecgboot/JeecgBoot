@@ -43,7 +43,7 @@ export function useGo(_router?: Router) {
 /**
  * @description: redo current page
  */
-export const useRedo = (_router?: Router) => {
+export const useRedo = (_router?: Router, otherQuery?: Recordable) => {
   const { push, currentRoute } = _router || useRouter();
   const { query, params = {}, name, fullPath } = unref(currentRoute.value);
   function redo(): Promise<boolean> {
@@ -54,6 +54,11 @@ export const useRedo = (_router?: Router) => {
       }
       // update-begin--author:liaozhiyang---date:20231123---for：【QQYUN-7099】动态路由匹配右键重新加载404
       const tabStore = useMultipleTabStore();
+      if (otherQuery && Object.keys(otherQuery).length > 0) {
+        Object.keys(otherQuery).forEach((key) => {
+          params[key] = otherQuery[key];
+        });
+      }
       if (name && Object.keys(params).length > 0) {
         tabStore.setRedirectPageParam({
           redirect_type: 'name',

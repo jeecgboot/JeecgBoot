@@ -8,6 +8,8 @@ import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysRole;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.vo.SysUserPositionVo;
 
 import java.util.List;
 
@@ -73,4 +75,12 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
      */
     @Select("select count(*) from sys_role where id=#{id} and tenant_id=#{tenantId}")
     Long getRoleCountByTenantId(@Param("id") String id, @Param("tenantId") Integer tenantId);
+
+    /**
+     * 根据用户id获取角色信息
+     * 
+     * @param userList
+     * @return
+     */
+    List<SysUserPositionVo> getUserRoleByUserId(@Param("userList") List<SysUser> userList);
 }

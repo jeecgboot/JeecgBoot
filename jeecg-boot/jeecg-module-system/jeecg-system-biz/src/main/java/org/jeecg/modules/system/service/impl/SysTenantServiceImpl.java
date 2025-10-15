@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -104,15 +105,27 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
 
     @Override
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
-    public void invitationUserJoin(String ids, String phone) {
+    public void invitationUserJoin(String ids, String phone,String username) {
         String[] idArray = ids.split(SymbolConstant.COMMA);
+        String userId = null;
+        SysUser userByPhone = null;
         //update-begin---author:wangshuai ---date:20230313  for：【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户，通过手机号邀请------------
-        SysUser userByPhone = userService.getUserByPhone(phone);
-        //说明用户不存在
-        if(null == userByPhone){
-            throw new JeecgBootException("当前用户不存在，请核对手机号");
+        if(oConvertUtils.isNotEmpty(phone)){
+            userByPhone = userService.getUserByPhone(phone);
+            //说明用户不存在
+            if(null == userByPhone){
+                throw new JeecgBootException("当前用户不存在，请核对手机号");
+            }
+            userId = userByPhone.getId();
+        }else{
+            userByPhone = userService.getUserByName(username);
+            //说明用户不存在
+            if(null == userByPhone){
+                throw new JeecgBootException("当前用户不存在，请核对手机号");
+            }
+            userId = userByPhone.getId();
         }
-        String userId = userByPhone.getId();
+
         //循环租户id
         for (String id:idArray) {
             //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
@@ -124,6 +137,12 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                 relation.setTenantId(Integer.valueOf(id));
                 relation.setStatus(CommonConstant.USER_TENANT_NORMAL);
                 userTenantMapper.insert(relation);
+                //给当前用户添加租户下的所有套餐
+                this.addPackUser(userId,id);
+                //update-begin---author:wangshuai---date:2025-09-06---for:【QQYUN-13720】邀请用户加入租户，没有系统提醒，移除有---
+                //邀请用户加入租户，发送消息
+                this.sendInvitationTenantMessage(userByPhone,id);
+                //update-end---author:wangshuai---date:2025-09-06---for:【QQYUN-13720】邀请用户加入租户，没有系统提醒，移除有---
             }else{
                 //update-begin---author:wangshuai ---date:20230711  for：【QQYUN-5723】2、用户已经在租户里了，再次要求提示成功，应该提示用户已经存在------------
                 //update-begin---author:wangshuai ---date:20230724  for：【QQYUN-5885】邀请用户加入提示不准确------------
@@ -138,6 +157,30 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         }
     }
 
+    /**
+     * 低代码下发送邀请加入租户消息
+     * 
+     * @param user
+     * @param id
+     */
+    private void sendInvitationTenantMessage(SysUser user, String id) {
+        LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+        // 发消息
+        SysTenant sysTenant = this.baseMapper.querySysTenant((Integer.valueOf(id)));
+        MessageDTO messageDTO = new MessageDTO();
+        messageDTO.setToAll(false);
+        messageDTO.setToUser(user.getUsername());
+        messageDTO.setFromUser("system");
+        String title = sysUser.getRealname() + " 邀请您加入了 "+sysTenant.getName()+"。";
+        messageDTO.setTitle(title);
+        Map<String, Object> data = new HashMap<>();
+        messageDTO.setData(data);
+        messageDTO.setContent(title);
+        messageDTO.setType("system");
+        messageDTO.setCategory(CommonConstant.MSG_CATEGORY_1);
+        sysBaseApi.sendSysAnnouncement(messageDTO);
+    }
+
     @Override
     @CacheEvict(value={CacheConstant.SYS_USERS_CACHE}, allEntries=true)
     public void leaveTenant(String userIds, String tenantId) {
@@ -149,6 +192,13 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
             query.eq(SysUserTenant::getUserId,userId);
             userTenantMapper.delete(query);
             //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+            //update-begin---author:wangshuai---date:2025-09-06---for:【QQYUN-13720】移出用户当前租户，没有系统提醒---
+            // 给移除人员发送消息
+            SysTenantPackUser sysTenantPackUser = new SysTenantPackUser();
+            sysTenantPackUser.setTenantId(Integer.valueOf(tenantId));
+            sysTenantPackUser.setUserId(userId);
+            sendMsgForDelete(sysTenantPackUser);
+            //update-end---author:wangshuai---date:2025-09-06---for:【QQYUN-13720】移出用户当前租户，没有系统提醒---
         }
         //租户移除用户，直接删除用户租户产品包
         sysTenantPackUserMapper.deletePackUserByTenantId(Integer.valueOf(tenantId),Arrays.asList(userIds.split(SymbolConstant.COMMA)));
@@ -636,7 +686,13 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setToAll(false);
         messageDTO.setToUser(user.getUsername());
-        String title = "您已被 "+loginUser.getRealname()+" 从 "+sysTenant.getName()+"的"+sysTenantPackUser.getPackName()+"中移除。";
+        //低代码下移出用户已做提醒，用户移出没有套餐包名称的概念
+        String title = "";
+        if(oConvertUtils.isNotEmpty(sysTenantPackUser.getPackName())){
+            title = "您已被 "+loginUser.getRealname()+" 从 "+sysTenant.getName()+"的"+sysTenantPackUser.getPackName()+"中移除。";
+        } else {
+            title = "您已被 "+loginUser.getRealname()+" 从 "+sysTenant.getName() + "中移除。";
+        }
         messageDTO.setTitle(title);
         messageDTO.setFromUser("system");
         Map<String, Object> data = new HashMap<>();
@@ -889,20 +945,42 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         if(!sysUserData.getCreateBy().equals(user.getUsername())){
             throw new JeecgBootException("您不是该用户的创建人，无法删除！");
         }
-        Date createTime = sysUserData.getCreateTime();
-        boolean sameDay = DateUtils.isSameDay(createTime, new Date());
-        if(!sameDay){
-            throw new JeecgBootException("用户不是今天创建的，无法删除！"); 
-        }
-        //step4 验证密码
-        String passwordEncode = PasswordUtil.encrypt(sysUserData.getUsername(), password, sysUserData.getSalt());
-        if(!passwordEncode.equals(sysUserData.getPassword())){
-            throw new JeecgBootException("您输入的密码不正确，无法删除该用户！");
-        }
+        
+        //update-begin---author:wangshuai---date:2025-04-11---for:【QQYUN-11839】删除用户，需要输入被删除用户的密码，这逻辑对吗？不应该是管理员的密码吗---
+        this.verifyCreateTimeAndPassword(sysUserData,password);
+        //update-end---author:wangshuai---date:2025-04-11---for:【QQYUN-11839】删除用户，需要输入被删除用户的密码，这逻辑对吗？不应该是管理员的密码吗---
+
         //step5 逻辑删除用户
         userService.deleteUser(userId);
         //step6 真实删除用户
         userService.removeLogicDeleted(Collections.singletonList(userId));
+    }
+
+    /**
+     * 验证创建时间和密码
+     * 
+     * @param sysUser
+     * @param password
+     */
+    private void verifyCreateTimeAndPassword(SysUser sysUser,String password) {
+        if(null == sysUser){
+            throw new JeecgBootException("该用户不存在，无法删除！");
+        }
+        //step1 验证创建时间
+        //当前登录用户
+        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        Date createTime = sysUser.getCreateTime();
+        boolean sameDay = DateUtils.isSameDay(createTime, new Date());
+        if(!sameDay){
+            throw new JeecgBootException("用户不是今天创建的，无法删除！");
+        }
+        //step2 验证密码
+        //获取admin的用户
+        SysUser adminUser = userService.getById(user.getId());
+        String passwordEncode = PasswordUtil.encrypt(adminUser.getUsername(), password, adminUser.getSalt());
+        if(!passwordEncode.equals(adminUser.getPassword())){
+            throw new JeecgBootException("您输入的密码不正确，无法删除该用户！");
+        }
     }
 
     @Override
@@ -910,4 +988,57 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         return tenantMapper.getTenantListByUserId(userId);
     }
 
+    @Override
+    public void deleteUser(SysUser sysUser, Integer tenantId) {
+        //被删除人的用户id
+        String userId = sysUser.getId();
+        //被删除人的密码
+        String password = sysUser.getPassword();
+        //当前登录用户
+        LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        //step1 判断当前用户是否为当前租户的创建者才可以删除
+        SysTenant sysTenant = this.getById(tenantId);
+        if(null == sysTenant || !user.getUsername().equals(sysTenant.getCreateBy())){
+            throw new JeecgBootException("您不是当前组织的创建者，无法删除用户！");
+        }
+        //step2 判断除了当前组织之外是否还有加入了其他组织
+        LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
+        query.eq(SysUserTenant::getUserId,userId);
+        query.ne(SysUserTenant::getTenantId,tenantId);
+        List<SysUserTenant> sysUserTenants = userTenantMapper.selectList(query);
+        if(CollectionUtils.isNotEmpty(sysUserTenants)){
+            throw new JeecgBootException("该用户还存在于其它组织中，无法删除用户！");
+        }
+        //step3 验证创建时间和密码
+        SysUser sysUserData = userService.getById(userId);
+        this.verifyCreateTimeAndPassword(sysUserData,password);
+        //step4 真实删除用户
+        userService.deleteUser(userId);
+        userService.removeLogicDeleted(Collections.singletonList(userId));
+    }
+
+    /**
+     * 为用户添加租户下所有套餐
+     *
+     * @param userId   用户id
+     * @param tenantId 租户id
+     */
+    public void addPackUser(String userId, String tenantId) {
+        //根据租户id和产品包的code获取租户套餐id
+        List<String> packIds = sysTenantPackMapper.getPackIdByPackCodeAndTenantId(oConvertUtils.getInt(tenantId));
+        if (CollectionUtil.isNotEmpty(packIds)) {
+            for (String packId : packIds) {
+                SysTenantPackUser sysTenantPackUser = new SysTenantPackUser();
+                sysTenantPackUser.setUserId(userId);
+                sysTenantPackUser.setTenantId(oConvertUtils.getInt(tenantId));
+                sysTenantPackUser.setPackId(packId);
+                sysTenantPackUser.setStatus(CommonConstant.STATUS_1_INT);
+                try {
+                    this.addTenantPackUser(sysTenantPackUser);
+                } catch (Exception e) {
+                    log.warn("添加用户套餐包失败，原因：" + e.getMessage());
+                }
+            }
+        }
+    }
 }

@@ -1,5 +1,5 @@
 import type { AppRouteModule } from '/@/router/types';
-
+import { PageEnum } from '/@/enums/pageEnum';
 import { LAYOUT } from '/@/router/constant';
 import { t } from '/@/hooks/web/useI18n';
 
@@ -7,7 +7,7 @@ const dashboard: AppRouteModule = {
   path: '/dashboard',
   name: 'Dashboard',
   component: LAYOUT,
-  redirect: '/dashboard/analysis',
+  redirect: PageEnum.BASE_HOME,
   meta: {
     orderNo: 10,
     icon: 'ion:grid-outline',

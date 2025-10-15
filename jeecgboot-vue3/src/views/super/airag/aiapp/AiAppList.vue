@@ -1,23 +1,23 @@
 <!--知识库文档列表-->
 <template>
-  <div class="p-2 knowledge">
+  <div class="knowledge">
     <!--查询区域-->
     <div class="jeecg-basic-table-form-container">
       <a-form
         ref="formRef"
-        @keyup.enter.native="reload"
+        @keyup.enter.native="searchQuery"
         :model="queryParam"
         :label-col="labelCol"
         :wrapper-col="wrapperCol"
         style="background-color: #f7f8fc"
       >
         <a-row :gutter="24">
-          <a-col :lg="6">
+          <a-col :xl="7" :lg="7" :md="8" :sm="24">
             <a-form-item name="name" label="应用名称">
               <JInput v-model:value="queryParam.name" placeholder="请输入应用名称" />
             </a-form-item>
           </a-col>
-          <a-col :lg="6">
+          <a-col :xl="7" :lg="7" :md="8" :sm="24">
             <a-form-item name="type" label="应用类型">
               <j-dict-select-tag v-model:value="queryParam.type" dict-code="ai_app_type" placeholder="请选择应用类型" />
             </a-form-item>
@@ -25,7 +25,7 @@
           <a-col :xl="6" :lg="7" :md="8" :sm="24">
             <span style="float: left; overflow: hidden" class="table-page-search-submitButtons">
               <a-col :lg="6">
-                <a-button type="primary" preIcon="ant-design:search-outlined" @click="reload">查询</a-button>
+                <a-button type="primary" preIcon="ant-design:search-outlined" @click="searchQuery">查询</a-button>
                 <a-button type="primary" preIcon="ant-design:reload-outlined" @click="searchReset" style="margin-left: 8px">重置</a-button>
               </a-col>
             </span>
@@ -35,11 +35,10 @@
     </div>
     <a-row :span="24" class="knowledge-row">
       <a-col :xxl="4" :xl="6" :lg="6" :md="6" :sm="12" :xs="24">
-        <a-card class="add-knowledge-card" :bodyStyle="cardBodyStyle">
-          <span style="line-height: 18px; font-weight: 500; color: #676f83; font-size: 12px">创建应用</span>
-          <div class="add-knowledge-doc" @click="handleCreateApp">
-            <Icon icon="ant-design:form-outlined" size="13"></Icon>
-            <span>创建空白应用</span>
+        <a-card class="add-knowledge-card" @click="handleCreateApp">
+          <div class="flex">
+            <Icon icon="ant-design:plus-outlined" class="add-knowledge-card-icon" size="20"></Icon>
+            <span class="add-knowledge-card-title">创建应用</span>
           </div>
         </a-card>
       </a-col>
@@ -49,7 +48,11 @@
             <img class="header-img" :src="getImage(item.icon)" />
             <div class="header-text">
               <span class="header-text-top header-name ellipsis"> {{ item.name }} </span>
-              <span class="header-text-top header-create ellipsis"> 创建者：{{ item.createBy }} </span>
+              <span class="header-text-top header-create ellipsis">
+                <a-tag v-if="item.status === 'release'" color="green">已发布</a-tag>
+                <a-tag v-if="item.status === 'disable'">已禁用</a-tag>
+                <span>创建者：{{ item.createBy_dictText || item.createBy }}</span>
+              </span>
             </div>
           </div>
           <div class="header-tag">
@@ -69,25 +72,41 @@
                 <Icon class="operation" icon="ant-design:youtube-outlined" size="20" color="#1F2329"></Icon>
               </div>
             </a-tooltip>
-            <a-divider type="vertical" style="float: left" />
-            <a-tooltip title="删除">
-              <div class="card-footer-icon" @click.prevent.stop="handleDeleteClick(item)">
-                <Icon icon="ant-design:delete-outlined" class="operation" size="20" color="#1F2329"></Icon>
-              </div>
-            </a-tooltip>
+            <template v-if="item.status !== 'release'">
+              <a-divider type="vertical" style="float: left" />
+              <a-tooltip title="删除">
+                <div class="card-footer-icon" @click.prevent.stop="handleDeleteClick(item)">
+                  <Icon icon="ant-design:delete-outlined" class="operation" size="18" color="#1F2329"></Icon>
+                </div>
+              </a-tooltip>
+            </template>
             <a-divider type="vertical" style="float: left" />
             <a-tooltip title="发布">
               <a-dropdown class="card-footer-icon" placement="bottomRight" :trigger="['click']">
                 <div @click.prevent.stop>
-                  <Icon icon="ant-design:send-outlined"></Icon>
+                  <Icon style="position: relative;top: 1px" icon="ant-design:send-outlined" size="16" color="#1F2329"></Icon>
                 </div>
                 <template #overlay>
                   <a-menu>
+                    <template v-if="item.status === 'enable'">
+                      <a-menu-item key="release" @click.prevent.stop="handleSendClick(item,'release')">
+                        <Icon icon="lineicons:rocket-5" size="16"></Icon>
+                        发布
+                      </a-menu-item>
+                      <a-menu-divider/>
+                    </template>
+                    <template v-else-if="item.status === 'release'">
+                      <a-menu-item key="un-release" @click.prevent.stop="handleSendClick(item,'un-release')">
+                        <Icon icon="tabler:rocket-off" size="16"></Icon>
+                        取消发布
+                      </a-menu-item>
+                      <a-menu-divider/>
+                    </template>
                     <a-menu-item key="web" @click.prevent.stop="handleSendClick(item,'web')">
                       <Icon icon="ant-design:dribbble-outlined" size="16"></Icon>
                       嵌入网站
                     </a-menu-item>
-                    <a-menu-item key="menu" @click.prevent.stop="handleSendClick(item,'menu')">
+                    <a-menu-item v-if="isShowMenu" key="menu" @click.prevent.stop="handleSendClick(item,'menu')">
                       <Icon icon="ant-design:menu-outlined" size="16"></Icon> 配置菜单
                     </a-menu-item>
                   </a-menu>
@@ -109,6 +128,7 @@
       @change="handlePageChange"
       class="list-footer"
       size="small"
+      :show-total="() => `共${total}条` "
     />
     <!-- Ai新增弹窗  -->
     <AiAppModal @register="registerModal" @success="handleSuccess"></AiAppModal>
@@ -120,7 +140,7 @@
 </template>
 
 <script lang="ts">
-  import { ref, reactive } from 'vue';
+  import { ref, reactive, onMounted } from 'vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { useModal, useModalInner } from '@/components/Modal';
   import { LoadingOutlined } from '@ant-design/icons-vue';
@@ -131,10 +151,12 @@
   import AiAppSettingModal from './components/AiAppSettingModal.vue';
   import AiAppSendModal from './components/AiAppSendModal.vue';
   import Icon from '@/components/Icon';
-  import { appList, deleteApp } from './AiApp.api';
+  import { $electron } from "@/electron";
+  import { appList, deleteApp, releaseApp } from './AiApp.api';
   import { useMessage } from '@/hooks/web/useMessage';
   import JInput from '@/components/Form/src/jeecg/components/JInput.vue';
   import JDictSelectTag from '@/components/Form/src/jeecg/components/JDictSelectTag.vue';
+  import { useRouter } from "vue-router";
 
   export default {
     name: 'AiAppList',
@@ -168,7 +190,7 @@
       const [registerModal, { openModal }] = useModal();
       const [registerSettingModal, { openModal: openAppModal }] = useModal();
       const [registerAiAppSendModal, { openModal: openAiAppSendModal }] = useModal();
-      const { createMessage } = useMessage();
+      const { createMessage, createConfirmSync } = useMessage();
       //查询参数
       const queryParam = reactive<any>({});
       //查询区域label宽度
@@ -185,7 +207,7 @@
       });
       //表单的ref
       const formRef = ref();
-      
+
       reload();
 
       /**
@@ -263,14 +285,27 @@
       /**
        * 演示
        */
-      function handleViewClick(id) {
-        window.open('/ai/app/chat/' + id , '_blank');
+      function handleViewClick(id: string) {
+        let url = '/ai/app/chat/' + id;
+
+        // update-begin--author:sunjianlei---date:20250411---for：【QQYUN-9685】构建 electron 桌面应用
+        if ($electron.isElectron()) {
+          url = $electron.resolveRoutePath(url);
+          window.open(url, '_blank', 'width=1200,height=800');
+          return
+        }
+        // update-end----author:sunjianlei---date:20250411---for：【QQYUN-9685】构建 electron 桌面应用
+
+        window.open(url, '_blank');
       }
 
       /**
        * 删除
        */
       function handleDeleteClick(item) {
+        if(knowledgeAppDataList.value.length == 1 && pageNo.value > 1) {
+          pageNo.value = pageNo.value - 1;
+        }
         deleteApp({ id: item.id, name: item.name }, reload);
       }
 
@@ -280,21 +315,77 @@
        * @param type 类别
        */
       function handleSendClick(item,type) {
+        if (type === 'release' || type === 'un-release') {
+          return onRelease(item);
+        }
+
         openAiAppSendModal(true,{
           type: type,
           data: item
         })
       }
 
+      async function onRelease(item) {
+        const toRelease = item.status === 'enable';
+        let flag = await createConfirmSync({
+          title: toRelease ? '发布应用' : '取消发布应用',
+          content: toRelease ? '确定要发布应用吗？发布后将不允许修改应用。' : '确定要取消发布应用吗？',
+          okText: '确定',
+          cancelText: '取消',
+        });
+        if (!flag) {
+          return
+        }
+        doRelease(item, item.status === 'enable');
+      }
+
+      /**
+       * 发布
+       */
+      async function doRelease(item, release: boolean) {
+        let success: boolean = await releaseApp(item.id, release);
+        if (success) {
+          // 发布成功
+          if (release) {
+            item.status = 'release'
+          } else {
+            item.status = 'enable'
+          }
+        }
+      }
+
       /**
        * 重置
        */
       function searchReset() {
+        pageNo.value = 1;
         formRef.value.resetFields();
         queryParam.name = '';
         //刷新数据
         reload();
       }
+
+      /**
+       * 查询
+       */
+      function searchQuery(){
+        pageNo.value = 1; 
+        //刷新数据
+        reload();
+      }
+
+      const router = useRouter();
+      //是否显示菜单配置选项
+      const isShowMenu = ref<boolean>(false);
+      onMounted((()=>{
+        let fullPath = router.currentRoute.value.fullPath;
+        console.log(fullPath)
+        if(fullPath === '/myapps/ai/app'){
+          isShowMenu.value = false;
+        } else {
+          isShowMenu.value = true;
+        }
+      }))
 
       return {
         handleCreateApp,
@@ -320,6 +411,8 @@
         registerAiAppSendModal,
         searchReset,
         formRef,
+        isShowMenu,
+        searchQuery,
       };
     },
   };
@@ -327,29 +420,37 @@
 
 <style scoped lang="less">
   .knowledge {
-    display: grid;
-    height: 100%;
+    height: calc(100vh - 115px);
     background: #f7f8fc;
     padding: 24px;
     overflow-y: auto;
   }
 
   .add-knowledge-card {
-    border-radius: 10px;
     margin-bottom: 20px;
-    display: inline-flex;
-    font-size: 16px;
-    height: 152px;
-    width: calc(100% - 20px);
     background: #fcfcfd;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
+    border-radius: 10px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+    height: 152px;
+    width: calc(100% - 20px);
     .add-knowledge-card-icon {
       padding: 8px;
       color: #1f2329;
       background-color: #f5f6f7;
       margin-right: 12px;
+    }
+    .add-knowledge-card-title {
+      font-size: 16px;
+      color:#1f2329;
+      font-weight: 400;
+      align-self: center;
     }
   }
 
@@ -360,7 +461,7 @@
     height: 152px;
     background: #fcfcfd;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
     .header-img {
       width: 40px;
@@ -396,10 +497,12 @@
 
   .add-knowledge-card:hover,
   .knowledge-card:hover {
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 12px #d0d3d8;
   }
 
   .knowledge-row {
+    max-height: calc(100% - 100px);
+    margin-top: 20px;
     overflow-y: auto;
   }
 
@@ -455,7 +558,7 @@
 
   .card-footer-icon:hover {
     color: #000000;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: #e9ecf2;
     border: none;
   }
 

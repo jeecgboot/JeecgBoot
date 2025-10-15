@@ -54,6 +54,7 @@
                   pidField="${tableVo.extendParams.pidField}"
                   pidValue="0"
                   hasChildField="${tableVo.extendParams.hasChildren}"
+                  :hiddenNodeKey="hiddenNodeKey"
                   <#if po.readonly=='Y'>disabled<#else>:disabled="disabled"</#if>>
                 </j-tree-select>
               </a-form-item>
@@ -79,7 +80,7 @@
   import { defHttp } from '/@/utils/http/axios';
   import { useMessage } from '/@/hooks/web/useMessage';
   <#include "/common/form/native/vue3NativeImport.ftl">
-  import { getValueType } from '/@/utils';
+  import { getDateByPicker, getValueType } from '/@/utils';
   import {loadTreeData, saveOrUpdateDict} from '../${entityName}.api';
   import { Form } from 'ant-design-vue';
   import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
@@ -106,11 +107,21 @@
   const labelCol = ref<any>({ xs: { span: 24 }, sm: { span: 5 } });
   const wrapperCol = ref<any>({ xs: { span: 24 }, sm: { span: 16 } });
   const confirmLoading = ref<boolean>(false);
+  //需要隐藏的key
+  const hiddenNodeKey = ref<string>('');
   //表单验证
   const validatorRules = reactive({
   <#include "/common/validatorRulesTemplate/native/vue3MainNative.ftl">
   });
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
+  //日期个性化选择
+  const fieldPickers = reactive({
+  <#list columns as po>
+    <#if po.extendParams?exists && po.extendParams.picker?exists>
+    ${po.fieldName}: '${po.extendParams.picker}',
+    </#if>
+  </#list>
+  });
   const props = defineProps({
     formDisabled: { type: Boolean, default: false },
     formData: { type: Object, default: () => ({}) },
@@ -178,6 +189,11 @@
       })
       //赋值
       Object.assign(formData,tmpData);
+      if(tmpData.id) {
+        hiddenNodeKey.value = tmpData.id;
+      } else {
+        hiddenNodeKey.value = "";
+      }
       model = tmpData
     });
   }
@@ -224,6 +240,8 @@
     }
     //循环数据
     for (let data in formData) {
+      // 更新个性化日期选择器的值
+      model[data] = getDateByPicker(model[data], fieldPickers[data]);
       //如果该数据是数组并且是字符串类型
       if (formData[data] instanceof Array) {
         let valueType = getValueType(formRef.value.getProps, data);
@@ -293,6 +311,6 @@
 
 <style lang="less" scoped>
   .antd-modal-form {
-    padding: 14px;
+    padding: 14px 20px;
   }
 </style>

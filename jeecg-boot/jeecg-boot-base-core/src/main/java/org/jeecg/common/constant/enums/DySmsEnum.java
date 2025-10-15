@@ -9,14 +9,14 @@ import org.apache.commons.lang3.StringUtils;
 public enum DySmsEnum {
 
     /**登录短信模板编码*/
-	LOGIN_TEMPLATE_CODE("SMS_175435174","敲敲云","code"),
+    LOGIN_TEMPLATE_CODE("SMS_175435174","敲敲云","code"),
     /**忘记密码短信模板编码*/
-	FORGET_PASSWORD_TEMPLATE_CODE("SMS_175435174","敲敲云","code"),
-	/**修改密码短信模板编码*/
-	CHANGE_PASSWORD_TEMPLATE_CODE("SMS_465391221","敲敲云","code"),
-	/**注册账号短信模板编码*/
-	REGISTER_TEMPLATE_CODE("SMS_175430166","敲敲云","code");
-
+    FORGET_PASSWORD_TEMPLATE_CODE("SMS_175435174","敲敲云","code"),
+    /**修改密码短信模板编码*/
+    CHANGE_PASSWORD_TEMPLATE_CODE("SMS_465391221","敲敲云","code"),
+    /**注册账号短信模板编码*/
+    REGISTER_TEMPLATE_CODE("SMS_175430166","敲敲云","code");
+	
 	/**
 	 * 短信模板编码
 	 */

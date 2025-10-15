@@ -86,4 +86,18 @@ public interface ISysUserDepartService extends IService<SysUserDepart> {
 	 * @return
 	 */
 	List<SysUser> getUsersByDepartTenantId(String departId,Integer tenantId);
+
+    /**
+     * 查询部门岗位下的用户
+     * 
+     * @param departId
+     * @param username
+     * @param realname
+     * @param pageSize
+     * @param pageNo
+     * @param id
+     * @param isMultiTranslate
+     * @return
+     */
+    IPage<SysUser> queryDepartPostUserPageList(String departId, String username, String realname, Integer pageSize, Integer pageNo, String id, String isMultiTranslate);
 }

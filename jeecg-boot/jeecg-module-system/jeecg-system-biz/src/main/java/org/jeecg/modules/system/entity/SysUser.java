@@ -211,4 +211,36 @@ public class SysUser implements Serializable {
      */
     @TableField(exist = false)
     private boolean izBindThird;
+
+    /**
+     * 个性签名
+     */
+    private String sign;
+
+    /**
+     * 是否开启个性签名
+     */
+    private Integer signEnable;
+
+    /**
+     * 主岗位
+     */
+    @Excel(name="主岗位",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    private String mainDepPostId;
+
+    /**
+     * 兼职岗位
+     */
+    @Excel(name="兼职岗位",width = 15,dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    @Dict(dictTable ="sys_depart",dicText = "depart_name",dicCode = "id")
+    @TableField(exist = false)
+    private String otherDepPostId;
+
+    /**
+     * 职务(字典)
+     */
+    @Excel(name = "职务", width = 15, dicCode = "position_type")
+    @Dict(dicCode = "position_type")
+    private String positionType;
 }

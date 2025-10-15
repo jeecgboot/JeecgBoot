@@ -36,7 +36,7 @@
   <a-spin :spinning="loading">
     <JFormContainer :disabled="disabled">
       <template #detail>
-        <a-form v-bind="formItemLayout" name="${entityName}Form" ref="formRef">
+        <a-form v-bind="formItemLayout" name="${entityName}Form" ref="formRef" class="jeecg-native-form">
           <a-row>
             <#list columns as po>
               <#if po.isShow == 'Y' && po.fieldValidType?default("") == 'only'>
@@ -54,7 +54,7 @@
     </JFormContainer>
 
 		<!-- 子表单区域 -->
-    <a-tabs v-model:activeKey="activeKey" animated style="overflow:hidden;">
+    <a-tabs v-model:activeKey="activeKey" animated style="overflow:hidden;" class="jeecg-native-tab">
 <#list subTables as sub><#rt/>
       <#if sub.foreignRelationType =='1'>
       <a-tab-pane class="sub-one-form" tab="${sub.ftlDescription}" key="${sub.entityName?uncap_first}" :forceRender="true">
@@ -116,6 +116,8 @@
   </#if>
   import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
   import { Form } from 'ant-design-vue';
+  import { getDateByPicker } from '/@/utils';
+  import dayjs from 'dayjs';
   const useForm = Form.useForm;
 
   export default defineComponent({
@@ -174,6 +176,14 @@
       </#list>
       });
       const {resetFields, validate, validateInfos} = useForm(formData, validatorRules, {immediate: false});
+      //日期个性化选择
+      const fieldPickers = reactive({
+      <#list columns as po>
+        <#if po.extendParams?exists && po.extendParams.picker?exists>
+        ${po.fieldName}: '${po.extendParams.picker}',
+        </#if>
+      </#list>
+      });
       const dbData = {};
       const formItemLayout = {
         labelCol: {xs: {span: 24}, sm: {span: 5}},
@@ -296,6 +306,8 @@
       async function submitForm() {
         const mainData = await getFormData();
         const subData = await getSubFormAndTableData();
+        // 预处理日期数据
+        changeDateValue(mainData, subData);
         const values = Object.assign({}, dbData, mainData, subData);
         console.log('表单提交数据', values)
         const isUpdate = values.id ? true : false
@@ -311,6 +323,38 @@
           });
         }
       }
+
+      /**
+       * 处理日期值
+       * @param formData 表单数据
+       */
+      const changeDateValue = (mainData, subData) => {
+        for (let key in mainData) {
+          // 更新个性化日期选择器的值
+          mainData[key] = getDateByPicker(mainData[key], fieldPickers[key]);
+        }
+        <#list subTables as sub>
+          <#if sub.foreignRelationType =='0'>
+        if(subData.${sub.entityName?uncap_first}List && subData.${sub.entityName?uncap_first}List.length > 0){
+          ${sub.entityName?uncap_first}Columns.forEach(subFormField => {
+            if(subFormField && subFormField.picker && subFormField.key){
+              let subPicker = subFormField.picker;
+              const subFieldName = subFormField.key
+              subData.${sub.entityName?uncap_first}List.forEach(subFormData=>{
+                if (subPicker === 'year') {
+                  subFormData[subFieldName] = dayjs(subFormData[subFieldName]).set('month', 0).set('date', 1).format('YYYY-MM-DD');
+                } else if (subPicker === 'month') {
+                  subFormData[subFieldName] = dayjs(subFormData[subFieldName]).set('date', 1).format('YYYY-MM-DD');
+                } else if (subPicker === 'week') {
+                  subFormData[subFieldName] = dayjs(subFormData[subFieldName]).startOf('week').format('YYYY-MM-DD');
+                }
+              })
+            }
+          })
+        }
+          </#if>
+        </#list>
+      };
 
       /**
        * 值改变事件触发-树控件回调
@@ -363,5 +407,9 @@
   .ant-tabs-tabpane.sub-one-form {
     max-height: 340px;
     overflow: auto;
+  }
+  .jeecg-native-form,
+  .jeecg-native-tab {
+    padding: 0 20px;
   }
 </style>

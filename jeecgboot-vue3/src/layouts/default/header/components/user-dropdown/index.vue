@@ -57,8 +57,9 @@
   import { removeAuthCache, setAuthCache } from '/src/utils/auth';
   import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
   import { getRefPromise } from '/@/utils/index';
+  import { refreshDragCache, refreshHomeCache } from "@/api/common/api";
 
-  type MenuEvent = 'logout' | 'doc' | 'lock' | 'cache' | 'depart';
+  type MenuEvent = 'logout' | 'doc' | 'lock' | 'cache' | 'depart' | 'defaultHomePage' | 'password' | 'account';
   const { createMessage } = useMessage();
   export default defineComponent({
     name: 'UserDropdown',
@@ -81,6 +82,7 @@
       const userStore = useUserStore();
       const go = useGo();
       const passwordVisible = ref(false);
+      const homeSelectVisible = ref(false);
       const lockActionVisible = ref(false);
       const lockActionRef = ref(null);
 
@@ -122,6 +124,8 @@
       // 清除缓存
       async function clearCache() {
         const result = await refreshCache();
+        const dragRes = await refreshDragCache();
+        console.log('dragRes', dragRes);
         if (result.success) {
           const res = await queryAllDictItems();
           removeAuthCache(DB_DICT_DATA_KEY);
@@ -251,4 +255,13 @@
       }
     }
   }
+  // update-begin--author:liaozhiyang---date:20250702---for：【QQYUN-13013】切换到英文模式下拉菜单宽度有点窄
+  html[lang="en"] {
+    .@{prefix-cls} {
+      &-dropdown-overlay {
+        width: 175px;
+      }
+    }
+  }
+  // update-end--author:liaozhiyang---date:20250702---for：【QQYUN-13013】切换到英文模式下拉菜单宽度有点窄
 </style>

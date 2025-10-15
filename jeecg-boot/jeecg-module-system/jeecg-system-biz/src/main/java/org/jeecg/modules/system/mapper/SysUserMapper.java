@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.system.model.SysUserSysDepPostModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.vo.SysUserDepVo;
 
@@ -74,9 +75,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param page
 	 * @param roleId 角色id
      * @param username 用户登录账户
+     * @param realname 用户姓名
 	 * @return
 	 */
-	IPage<SysUser> getUserByRoleId(Page page, @Param("roleId") String roleId, @Param("username") String username);
+	IPage<SysUser> getUserByRoleId(Page page, @Param("roleId") String roleId, @Param("username") String username, @Param("realname") String realname);
 	
 	/**
 	 * 根据用户名设置部门ID
@@ -222,4 +224,34 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 */
 	@Select("select id,phone from sys_user where phone = #{phone} and username = #{username}")
     SysUser getUserByNameAndPhone(@Param("phone") String phone, @Param("username") String username);
+
+    /**
+     * 查询部门、岗位下的用户 包括子部门下的用户
+     * 
+     * @param page
+     * @param orgCode
+     * @param userParams
+     * @return
+     */
+    List<SysUserSysDepPostModel> queryDepartPostUserByOrgCode(@Param("page") IPage page, @Param("orgCode") String orgCode, @Param("userParams") SysUser userParams);
+
+    /**
+     * 根据部门id和用户名获取部门岗位用户分页列表
+     * 
+     * @param page
+     * @param userIdList
+     * @return
+     */
+    IPage<SysUser> getDepPostListByIdUserName(@Param("page") Page<SysUser> page, @Param("userIdList") List<String> userIdList, @Param("userId") String userId, @Param("userName") String userName, @Param("userNameList") List<String> userNameList);
+
+    /**
+     * 根据部门id、用户名和真实姓名获取部门岗位用户分页列表
+     *
+     * @param page
+     * @param username
+     * @param realname
+     * @param orgCode
+     * @return
+     */
+    IPage<SysUser> getDepartPostListByIdUserRealName(@Param("page") Page<SysUser> page, @Param("username") String username, @Param("realname") String realname, @Param("orgCode") String orgCode);
 }

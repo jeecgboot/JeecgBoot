@@ -53,6 +53,10 @@
         width: 180,
       },
       showIndexColumn: true,
+      defSort: {
+        column: "",
+        order: ""
+      }
     },
     exportConfig: {
       name: '职务列表',

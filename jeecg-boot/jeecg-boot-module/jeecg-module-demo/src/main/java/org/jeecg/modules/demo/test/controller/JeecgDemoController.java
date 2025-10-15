@@ -4,8 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,9 +62,9 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * @param req
      * @return
      */
-    @Operation(summary = "获取所有Demo数据列表")
+    @Operation(summary = "获取Demo数据列表")
     @GetMapping(value = "/list")
-    @PermissionData(pageComponent = "jeecg/JeecgDemoList")
+    @PermissionData(pageComponent = "system/examples/demo/index")
     public Result<?> list(JeecgDemo jeecgDemo, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo, @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                           HttpServletRequest req) {
         QueryWrapper<JeecgDemo> queryWrapper = QueryGenerator.initQueryWrapper(jeecgDemo, req.getParameterMap());
@@ -477,7 +475,6 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
      * 测试Mono对象
      * @return
      */
-    @Operation(summary = "Mono测试")
     @GetMapping(value ="/test")
     public Mono<String> test() {
         //解决shiro报错No SecurityManager accessible to the calling code, either bound to the org.apache.shiro

@@ -16,6 +16,7 @@ import { MULTIPLE_TABS_KEY } from '/@/enums/cacheEnum';
 import projectSetting from '/@/settings/projectSetting';
 import { useUserStore } from '/@/store/modules/user';
 import type { LocationQueryRaw, RouteParamsRaw } from 'vue-router';
+import { getMenus } from '/@/router/menus';
 
 export interface MultipleTabState {
   cacheTabList: Set<string>;
@@ -65,6 +66,25 @@ const closeTabContainCurrentRoute = (router, pathList) => {
   }
   return false;
 };
+/**
+ * 2025-05-08
+ * liaozhiyang
+ * 【issues/8216】online生成的菜单sql 自动带上组件名称
+ * */
+function getMatchingRoute(menus, path) {
+  for (let i = 0, len = menus.length; i < len; i++) {
+    const item = menus[i];
+    if (item.path === path && !item.redirect && !item.paramPath) {
+      return item;
+    } else if (item.children?.length) {
+      const result = getMatchingRoute(item.children, path);
+      if (result) {
+        return result;
+      }
+    }
+  }
+  return null;
+}
 
 const cacheTab = projectSetting.multiTabsSetting.cache;
 
@@ -97,7 +117,7 @@ export const useMultipleTabStore = defineStore({
      */
     async updateCacheTab() {
       const cacheMap: Set<string> = new Set();
-
+      const allMenus = await getMenus();
       for (const tab of this.tabList) {
         const item = getRawRoute(tab);
         // Ignore the cache
@@ -105,6 +125,19 @@ export const useMultipleTabStore = defineStore({
         if (!needCache) {
           continue;
         }
+        // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-12348】online生成的菜单sql 自动带上组件名称
+        if (
+          ['OnlineAutoList', 'DefaultOnlineList', 'CgformErpList', 'OnlCgformInnerTableList', 'OnlCgformTabList', 'OnlCgReportList', 'GraphreportAutoChart', 'AutoDesformDataList'].includes(item.name as string) &&
+          allMenus?.length
+        ) {
+          const route = getMatchingRoute(allMenus, item.path);
+          if (route?.meta?.keepAlive) {
+            // 如果keepAlive为true，则添加到缓存中
+          } else {
+            continue;
+          }
+        }
+        // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-12348】online生成的菜单sql 自动带上组件名称
         const name = item.name as string;
         cacheMap.add(name);
       }
@@ -124,6 +157,22 @@ export const useMultipleTabStore = defineStore({
         this.cacheTabList.delete(findTab);
       }
       const redo = useRedo(router);
+      await redo();
+    },
+    /**
+     * 修改设计模式
+     * changeDesign
+     */
+    async changeDesign(router: Router) {
+      const { currentRoute } = router;
+      const route = unref(currentRoute);
+      const name = route.name;
+
+      const findTab = this.getCachedTabList.find((item) => item === name);
+      if (findTab) {
+        this.cacheTabList.delete(findTab);
+      }
+      const redo = useRedo(router, { isDesign: true });
       await redo();
     },
     clearCacheTabs(): void {
@@ -183,6 +232,15 @@ export const useMultipleTabStore = defineStore({
         curTab.fullPath = fullPath || curTab.fullPath;
         this.tabList.splice(updateIndex, 1, curTab);
       } else {
+        // update-begin--author:liaozhiyang---date:20250709---for：【QQYUN-13058】菜单检测同样的地址(忽略query查询参数)只打开一个
+        // 只比较path，忽略query
+        const findIndex = this.tabList.findIndex((tab) => tab.path === path);
+        const isTabExist = findIndex !== -1;
+        if (isTabExist) {
+          this.tabList.splice(findIndex, 1, route);
+          return;
+        }
+        // update-end--author:liaozhiyang---date:20250709---for：【QQYUN-13058】菜单检测同样的地址(忽略query查询参数)只打开一个
         // Add tab
         // 获取动态路由打开数，超过 0 即代表需要控制打开数
         const dynamicLevel = meta?.dynamicLevel ?? -1;
@@ -348,7 +406,7 @@ export const useMultipleTabStore = defineStore({
       this.clearCacheTabs();
       this.goToPage(router);
     },
-    
+
 
     /**
      * Close other tabs
@@ -412,6 +470,9 @@ export const useMultipleTabStore = defineStore({
     },
     setRedirectPageParam(data) {
       this.redirectPageParam = data;
+    },
+    getRedirectPageParam() {
+      return this.redirectPageParam;
     },
   },
 });

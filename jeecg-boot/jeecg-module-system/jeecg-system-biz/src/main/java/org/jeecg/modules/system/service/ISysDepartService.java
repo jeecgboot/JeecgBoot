@@ -5,13 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDepart;
-import org.jeecg.modules.system.entity.SysUserDepart;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.vo.SysDepartExportVo;
+import org.jeecg.modules.system.vo.SysPositionSelectTreeVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -75,12 +74,15 @@ public interface ISysDepartService extends IService<SysDepart>{
     
     /**
      * 根据关键字搜索相关的部门数据
+     *
      * @param keyWord
      * @param myDeptSearch
-     * @param departIds 多个部门id
+     * @param departIds    多个部门id
+     * @param orgCategory
+     * @param depIds
      * @return
      */
-    List<SysDepartTreeModel> searchByKeyWord(String keyWord,String myDeptSearch,String departIds);
+    List<SysDepartTreeModel> searchByKeyWord(String keyWord, String myDeptSearch, String departIds, String orgCategory, String depIds);
     
     /**
      * 根据部门id删除并删除其可能存在的子级部门
@@ -240,4 +242,40 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @param errorMessageList
      */
     void importSysDepart(List<SysDepartExportVo> listSysDeparts, List<String> errorMessageList);
+
+    /**
+     * 根据部门id和职级id获取岗位信息
+     *
+     * @param parentId
+     * @param departId
+     * @param positionId
+     */
+    List<SysPositionSelectTreeVo> getPositionByDepartId(String parentId, String departId, String positionId);
+
+    /**
+     * 获取职级关系
+     * @param departId
+     * @return
+     */
+    List<SysPositionSelectTreeVo> getRankRelation(String departId);
+
+    /**
+     * 异步查询部门和岗位接口
+     *
+     * @param parentId
+     * @param ids
+     * @param primaryKey
+     * @param departIds
+     * @return
+     */
+    List<SysDepartTreeModel> queryDepartAndPostTreeSync(String parentId, String ids, String primaryKey, String departIds,String orgName);
+
+    /**
+     * 根据部门code获取当前和上级部门名称
+     *
+     * @param orgCode
+     * @param depId
+     * @return
+     */
+    String getDepartPathNameByOrgCode(String orgCode, String depId);
 }

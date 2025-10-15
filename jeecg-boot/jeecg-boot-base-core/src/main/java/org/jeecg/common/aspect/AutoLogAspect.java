@@ -143,7 +143,7 @@ public class AutoLogAspect {
             //  https://my.oschina.net/mengzhang6/blog/2395893
             Object[] arguments  = new Object[paramsArray.length];
             for (int i = 0; i < paramsArray.length; i++) {
-                if (paramsArray[i] instanceof BindingResult || paramsArray[i] instanceof ServletRequest || paramsArray[i] instanceof ServletResponse || paramsArray[i] instanceof MultipartFile) {
+                if (paramsArray[i] instanceof BindingResult || paramsArray[i] instanceof ServletRequest || paramsArray[i] instanceof ServletResponse || paramsArray[i] instanceof MultipartFile || paramsArray[i] instanceof MultipartFile[]) {
                     //ServletRequest不能序列化，从入参里排除，否则报异常：java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
                     //ServletResponse不能序列化 从入参里排除，否则报异常：java.lang.IllegalStateException: getOutputStream() has already been called for this response
                     continue;

@@ -285,7 +285,7 @@ export function useColumns(
   // update-end--author:sunjianlei---date:20220523---for: 【VUEN-1089】合并vben最新版代码，解决表格字段排序问题
 
   function getColumns(opt?: GetColumnsParams) {
-    const { ignoreIndex, ignoreAction, sort } = opt || {};
+    const { ignoreIndex, ignoreAction, ignoreAuth, ignoreIfShow, sort } = opt || {};
     let columns = toRaw(unref(getColumnsRef));
     if (ignoreIndex) {
       columns = columns.filter((item) => item.flag !== INDEX_COLUMN_FLAG);
@@ -297,7 +297,27 @@ export function useColumns(
     // 过滤自定义选择列
     columns = columns.filter((item) => item.key !== CUS_SEL_COLUMN_KEY);
     // update-enb--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
-
+    // update-begin--author:liaozhiyang---date:20250729---for：【issues/8502】解决权限列在列表中不显示，列配置中还显示
+    if (ignoreAuth) {
+      columns = columns.filter((item) => {
+        if (item.auth) {
+          return hasPermission(item.auth);
+        }
+        return true;
+      });
+    }
+    if (ignoreIfShow) {
+      columns = columns.filter((item) => {
+        if (isBoolean(item.ifShow)) {
+          return item.ifShow;
+        }
+        if (isFunction(item.ifShow)) {
+          return item.ifShow(item);
+        }
+        return true;
+      });
+    }
+    // update-end--author:liaozhiyang---date:20250729---for：【issues/8502】解决权限列在列表中不显示，列配置中还显示
     if (sort) {
       columns = sortFixedColumn(columns);
     }

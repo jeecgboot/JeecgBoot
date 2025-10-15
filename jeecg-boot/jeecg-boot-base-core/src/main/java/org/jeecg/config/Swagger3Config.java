@@ -68,17 +68,15 @@ public class Swagger3Config implements WebMvcConfigurer {
                 openApi.getPaths().forEach((path, pathItem) -> {
                     //log.debug("path: {}", path);
                     // 检查当前路径是否在排除列表中
-                    boolean isExcluded = excludedPaths.stream().anyMatch(excludedPath ->
-                            excludedPath.equals(path) ||
-                                    (excludedPath.endsWith("**") && path.startsWith(excludedPath.substring(0, excludedPath.length() - 2)))
+                    boolean isExcluded = excludedPaths.stream().anyMatch(
+                            excludedPath -> excludedPath.equals(path) || (excludedPath.endsWith("**") && path.startsWith(excludedPath.substring(0, excludedPath.length() - 2)))
                     );
 
                     if (!isExcluded) {
                         // 接口添加鉴权参数
-                        pathItem.readOperations()
-                                .forEach(operation ->
-                                        operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
-                                );
+                        pathItem.readOperations().forEach(operation ->
+                                operation.addSecurityItem(new SecurityRequirement().addList(CommonConstant.X_ACCESS_TOKEN))
+                        );
                     }
                 });
             }
@@ -90,7 +88,7 @@ public class Swagger3Config implements WebMvcConfigurer {
         return new OpenAPI()
                 .info(new Info()
                         .title("JeecgBoot 后台服务API接口文档")
-                        .version("3.8.0")
+                        .version("3.8.3")
                         .contact(new Contact().name("北京国炬信息技术有限公司").url("www.jeccg.com").email("jeecgos@163.com"))
                         .description( "后台API接口")
                         .termsOfService("NO terms of service")

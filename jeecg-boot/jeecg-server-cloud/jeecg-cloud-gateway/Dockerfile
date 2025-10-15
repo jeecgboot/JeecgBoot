@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/java:21-anolis
+FROM registry.cn-hangzhou.aliyuncs.com/dockerhub_mirror/java:17-anolis
 
 MAINTAINER jeecgos@163.com
 
@@ -10,6 +10,6 @@ WORKDIR /jeecg-cloud-gateway
 
 EXPOSE 9999
 
-ADD ./target/jeecg-cloud-gateway-3.8.0.jar ./
+ADD ./target/jeecg-cloud-gateway-3.8.3.jar ./
 
-CMD sleep 100;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-gateway-3.8.0.jar
+CMD sleep 100;java -Dfile.encoding=utf-8 -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-gateway-3.8.3.jar

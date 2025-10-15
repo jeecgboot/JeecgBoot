@@ -9,22 +9,21 @@ export const columns: BasicColumn[] = [
   //   align: 'left',
   // },
   {
-    title: '职务名称',
+    title: '职务级别名称',
     dataIndex: 'name',
     align: 'left'
     // width: 200,
   },
-  // {
-  //   title: '职务等级',
-  //   dataIndex: 'postRank_dictText',
-  //   width: 100,
-  // },
+  {
+    title: '职务级别(越小级别越高)',
+    dataIndex: 'postLevel',
+  },
 ];
 
 export const searchFormSchema: FormSchema[] = [
   {
     field: 'name',
-    label: '职务名称',
+    label: '职务级别名称',
     component: 'Input',
     colProps: { span: 8 },
   },
@@ -37,24 +36,24 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
     show: false,
   },
-  // {
-  //   label: '职级',
-  //   field: 'postRank',
-  //   component: 'JDictSelectTag',
-  //   required: true,
-  //   componentProps: {
-  //     dictCode: 'position_rank',
-  //     dropdownStyle: {
-  //       maxHeight: '100vh',
-  //     },
-  //     getPopupContainer: () => document.body,
-  //   },
-  // },
   {
     field: 'name',
-    label: '职务名称',
+    label: '职务级别名称',
     component: 'Input',
     required: true,
+  },
+  {
+    label: '职务级别',
+    field: 'postLevel',
+    component: 'InputNumber',
+    required: true,
+    componentProps: {
+      min: 1,
+      max: 99
+    },
+    dynamicRules: ({ model, schema }) => {
+      return [{ required: true, message: '请输入职务级别!' }];
+    },
   },
   // {
   //   field: 'code',

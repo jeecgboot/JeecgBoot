@@ -1,9 +1,9 @@
 <template>
   <div ref="chatContainerRef" class="chat-container" :style="chatContainerStyle">
     <template v-if="dataSource">
-      <div class="leftArea" :class="[expand ? 'expand' : 'shrink']">
+      <div v-if="isMultiSession" class="leftArea" :class="[expand ? 'expand' : 'shrink']">
         <div class="content">
-          <slide v-if="uuid" :dataSource="dataSource" @save="handleSave" :prologue="prologue" :appData="appData" @click="handleChatClick"></slide>
+          <slide :source="source" v-if="uuid" :dataSource="dataSource" @save="handleSave" :prologue="prologue" :appData="appData" @click="handleChatClick"></slide>
         </div>
         <div class="toggle-btn" @click="handleToggle">
           <span class="icon">
@@ -30,10 +30,11 @@
           @reload-message-title="reloadMessageTitle"
           :chatTitle="chatTitle"
           :quickCommandData="quickCommandData"
+          :showAdvertising = "showAdvertising"
         ></chat>
       </div>
     </template>
-    <Spin v-else :spinning="true"></Spin>
+    <Loading :loading="loading" tip="加载中，请稍后"></Loading>
   </div>
 </template>
 
@@ -46,6 +47,8 @@
   import { JEECG_CHAT_KEY } from '/@/enums/cacheEnum';
   import { defHttp } from '/@/utils/http/axios';
   import { useRouter } from 'vue-router';
+  import { useAppInject } from "@/hooks/web/useAppInject";
+  import Loading from '@/components/Loading/src/Loading.vue';
 
   const router = useRouter();
   const userId = useUserStore().getUserInfo?.id;
@@ -65,6 +68,8 @@
   const chatActiveKey = ref<number>(0);
   //预置开场白
   const presetQuestion = ref<string>('');
+  //加载
+  const loading = ref<any>(true);
 
   const handleToggle = () => {
     expand.value = !expand.value;
@@ -77,6 +82,8 @@
   const prologue = ref<string>('');
   //快捷指令
   const quickCommandData = ref<any>([]);
+  //是否显示广告位
+  const showAdvertising = ref<boolean>(false);
 
   const priming = () => {
     dataSource.value = {
@@ -142,6 +149,13 @@
     );
   };
 
+  //是否为多会话模式
+  const isMultiSession = ref<boolean>(true);
+  //是否为手机
+  const { getIsMobile } = useAppInject();
+  //来源
+  const source = ref<string>('');
+  
   /**
    * 初始化聊天信息
    * @param appId
@@ -168,10 +182,13 @@
       })
       .catch(() => {
         priming();
-      });
+      }).finally(()=>{
+        loading.value = false
+    });
   }
 
   onMounted(() => {
+    loading.value = true;
     let params: any = router.currentRoute.value.params;
     if (params.appId) {
       appId.value = params.appId;
@@ -183,6 +200,13 @@
           { name: '请介绍一下JeecgBoot', descr: "请介绍一下JeecgBoot" },
           { name: 'JEECG有哪些优势？', descr: "JEECG有哪些优势？" },
           { name: 'JEECG可以做哪些事情？', descr: "JEECG可以做哪些事情？" },];
+    }
+    let query: any = router.currentRoute.value.query;
+    source.value = query.source;
+    if(query.source){
+      showAdvertising.value = query.source === 'chatJs';
+    }else{
+      showAdvertising.value = false;
     }
   });
 
@@ -203,7 +227,7 @@
     await defHttp
       .get(
         {
-          url: '/airag/app/queryById',
+          url: '/airag/chat/init',
           params: { id: appId },
         },
         { isTransformResponse: false }
@@ -219,6 +243,23 @@
           } 
           if (res.result && res.result.presetQuestion) {
             presetQuestion.value = res.result.presetQuestion;
+          }
+          if (res.result && res.result.metadata) {
+            let metadata = JSON.parse(res.result.metadata);
+            //判斷是否为手机模式
+            if(!getIsMobile.value){
+              //是否为多会话模式
+              if((metadata.multiSession && metadata.multiSession === '1') || !metadata.multiSession) {
+                isMultiSession.value = true;
+              } else {
+                isMultiSession.value = false;
+                expand.value = false;
+              }
+            }
+          }
+          if(getIsMobile.value){
+            isMultiSession.value = false;
+            expand.value = false;
           }
         } else {
           appData.value = {};
@@ -281,11 +322,11 @@
   .chat-container {
     height: 100%;
     width: 100%;
-    position: relative;
+    position: absolute;
     background: white;
     display: flex;
     overflow: hidden;
-    z-index: 999;
+    z-index: 800;
     border: 1px solid #eeeeee;
     :deep(.ant-spin) {
       position: absolute;
@@ -339,7 +380,7 @@
       color: rgb(51, 54, 57);
       border: 1px solid rgb(239, 239, 245);
       background-color: #fff;
-      box-shadow: 0 2px 4px 0px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 2px 4px 0px #e7e9ef;
       transform: translateX(50%) translateY(-50%);
       z-index: 1;
     }

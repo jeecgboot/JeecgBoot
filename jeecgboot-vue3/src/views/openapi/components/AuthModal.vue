@@ -1,20 +1,20 @@
 <template>
   <!--  <j-modal :title="title" :width="width" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">-->
   <div style="position: relative;">
-    <a-drawer
+    <a-modal
       v-model:open="authDrawerOpen"
       class="custom-class"
       root-class-name="root-class-name"
       :root-style="{ color: 'blue' }"
+      :body-style="{ padding: '20px' }"
       style="color: red"
-      title="Basic Drawer"
-      placement="right"
-      :width="800"
+      :title="title"
+      :width="600"
       @after-open-change="authDrawerOpenChange"
+      @ok="handleOk"
     >
       <AuthForm ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></AuthForm>
-      <a-button type="primary" style="position: absolute;bottom: 2%;right: 2%" @click="handleOk">确定</a-button>
-    </a-drawer>
+    </a-modal>
   </div>
   <!--  </j-modal>-->
 </template>

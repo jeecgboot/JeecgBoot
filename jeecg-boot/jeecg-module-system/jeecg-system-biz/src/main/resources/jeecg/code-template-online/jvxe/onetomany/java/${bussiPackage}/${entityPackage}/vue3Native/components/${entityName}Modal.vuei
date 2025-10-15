@@ -1,7 +1,20 @@
 <#include "/common/utils.ftl">
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" :title="title" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
+<#assign buttonList=[]>
+<#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
+  <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
+</#if>
+  <BasicModal v-bind="$attrs" @register="registerModal" :title="title" maxHeight="500px" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
     <${Format.humpToShortbar(entityName)}-form ref="formComponent" :formDisabled="formDisabled" :formBpm="false" @success="submitSuccess"></${Format.humpToShortbar(entityName)}-form>
+<#if buttonList?? && buttonList?size gt 0>
+   <template #insertFooter>
+    <#list buttonList as btn>
+     <#if btn.buttonStyle=='form'>
+       <a-button type="primary" @click="handle${btn.buttonCode?cap_first}" <#if btn.buttonIcon??> preIcon="${btn.buttonIcon}" </#if>>${btn.buttonName}</a-button>
+     </#if>
+    </#list>
+   </template>
+</#if>
   </BasicModal>
 </template>
 
@@ -9,7 +22,8 @@
   import { ref, unref } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import ${entityName}Form from './${entityName}Form.vue';
-
+  import { useMessage } from '/@/hooks/web/useMessage';
+  const { createMessage } = useMessage();
   export default {
     name: "TestCgMainVxeModal",
     components:{
@@ -44,14 +58,29 @@
         emit('success');
         closeModal();
       }
-
+<#if buttonList?size gt 0>
+  <#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
+      <#if btn.buttonStyle=='form'>
+         function handle${btn.buttonCode?cap_first}(){
+            createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+         }
+      </#if>
+  </#list>
+</#if>
       return {
         registerModal,
         title,
         formComponent,
         formDisabled,
         handleSubmit,
-        submitSuccess
+        submitSuccess,
+<#if buttonList?size gt 0>
+  <#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
+      <#if btn.buttonStyle=='form'>
+        handle${btn.buttonCode?cap_first},
+      </#if>
+  </#list>
+</#if>
       }
     }
   }

@@ -220,6 +220,22 @@ export const schemas: FormSchema[] = [
     colProps: { span: 12 },
   },
   {
+    field: 'depart4',
+    component: 'JSelectDepartPost',
+    label: '选择岗位',
+    helpMessage: ['component模式'],
+    componentProps: { showButton: false },
+    colProps: {
+      span: 12,
+    },
+  },
+  {
+    field: 'depart4',
+    component: 'JEllipsis',
+    label: '选择岗位',
+    colProps: { span: 12 },
+  },
+  {
     field: 'user2',
     component: 'JSelectUser',
     label: '用户选择组件',
@@ -259,6 +275,25 @@ export const schemas: FormSchema[] = [
     colProps: { span: 12 },
   },
   {
+    field: 'userPost1',
+    component: 'JSelectUserByDeptPost',
+    label: '部门岗位选择用户',
+    helpMessage: ['component模式'],
+    componentProps: {
+      labelKey: 'realname',
+      rowKey: 'username',
+    },
+    colProps: {
+      span: 12,
+    },
+  },
+  {
+    field: 'userPost1',
+    component: 'JEllipsis',
+    label: '选中用户',
+    colProps: { span: 12 },
+  },
+  {
     field: 'user4',
     component: 'JSelectUserByDepartment',
     label: '部门选择用户',
@@ -271,6 +306,12 @@ export const schemas: FormSchema[] = [
     colProps: {
       span: 12,
     },
+  },
+  {
+    field: 'user4',
+    component: 'JEllipsis',
+    label: '选中用户',
+    colProps: { span: 12 },
   },
   {
     field: 'role2',
@@ -614,6 +655,42 @@ export const schemas: FormSchema[] = [
   },
   {
     field: 'pop1',
+    component: 'JEllipsis',
+    label: '选中值',
+    colProps: {
+      span: 12,
+    },
+  },
+  {
+    field: 'pop2',
+    component: 'Input',
+    label: 'JPopup带参数示例',
+    helpMessage: ['插槽模式'],
+    slot: 'JPopup2',
+    colProps: {
+      span: 12,
+    },
+  },
+  {
+    field: 'pop2',
+    component: 'JEllipsis',
+    label: '选中值',
+    colProps: {
+      span: 12,
+    },
+  },
+  {
+    field: 'pop3',
+    component: 'Input',
+    label: 'JPopup带查询条件参数示例',
+    helpMessage: ['插槽模式'],
+    slot: 'JPopup3',
+    colProps: {
+      span: 12,
+    },
+  },
+  {
+    field: 'pop3',
     component: 'JEllipsis',
     label: '选中值',
     colProps: {

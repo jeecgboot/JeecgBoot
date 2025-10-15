@@ -58,7 +58,7 @@
   import { defHttp } from '/@/utils/http/axios';
   import { useMessage } from '/@/hooks/web/useMessage';
   <#include "/common/form/native/vue3NativeImport.ftl">
-  import { getValueType } from '/@/utils';
+  import { getDateByPicker, getValueType } from '/@/utils';
   import { ${sub.entityName?uncap_first}SaveOrUpdate } from '../${entityName}.api';
   import { Form } from 'ant-design-vue';
   import JFormContainer from '/@/components/Form/src/container/JFormContainer.vue';
@@ -88,6 +88,14 @@
    </#list>
   };
   const { resetFields, validate, validateInfos } = useForm(formData, validatorRules, { immediate: false });
+  //日期个性化选择
+  const fieldPickers = reactive({
+  <#list sub.colums as po>
+    <#if po.extendParams?exists && po.extendParams.picker?exists>
+    ${po.fieldName}: '${po.extendParams.picker}',
+    </#if>
+  </#list>
+  });
   const props = defineProps({
     disabled: { type: Boolean, default: false },
   });
@@ -147,6 +155,8 @@
    
     //循环数据
     for (let data in model) {
+      // 更新个性化日期选择器的值
+      model[data] = getDateByPicker(model[data], fieldPickers[data]);
       //如果该数据是数组并且是字符串类型
       if (model[data] instanceof Array) {
         let valueType = getValueType(formRef.value.getProps, data);
@@ -212,7 +222,7 @@
 
 <style lang="less" scoped>
   .antd-modal-form {
-    padding: 14px;
+    padding: 14px 20px;
   }
 </style>
 </#list>

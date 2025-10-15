@@ -25,7 +25,7 @@
     <upload-chunk ref="uploadRef" :visible="uploadVisible" @select="selectFirstFile"></upload-chunk>
   </div>
   <UserSelectModal  rowKey="username" @register="registerModal" @selected="setValue" :multi="false"></UserSelectModal>
-  <a-modal v-model:open="visibleEmoji" :footer="null" wrapClassName="emoji-modal" :closable="false" :width="490">
+  <a-modal v-model:open="visibleEmoji" :footer="null" wrapClassName="emoji-modal" :closable="false" :width="460">
     <template #title>
       <span></span>
     </template>
@@ -235,7 +235,7 @@
       }
 
       const pickerStyles = {
-        width: '490px'
+        width: '460px'
         /* height: '350px',
         top: '0px',
         left: '-75px',

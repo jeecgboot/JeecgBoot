@@ -98,6 +98,7 @@ export function transformRouteToMenu(routeModList: AppRouteModule[], routerMappi
         hideMenu,
         alwaysShow:node.alwaysShow||false,
         path: node.path,
+        originComponent: node.originComponent,
         ...(node.redirect ? { redirect: node.redirect } : {}),
       };
     },

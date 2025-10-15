@@ -1,16 +1,40 @@
 <#include "/common/utils.ftl">
 <template>
-  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
+<#assign buttonList=[]>
+<#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
+  <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
+</#if>
+  <BasicModal v-bind="$attrs" @register="registerModal" destroyOnClose :title="title" :maxHeight="500" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" @ok="handleSubmit">
       <BasicForm @register="registerForm" name="${entityName}Form" />
+  <#if buttonList?? && buttonList?size gt 0>
+     <template #insertFooter>
+      <#list buttonList as btn>
+       <#if btn.buttonStyle=='form'>
+         <a-button type="primary" @click="handle${btn.buttonCode?cap_first}" <#if btn.buttonIcon??> preIcon="ant-design:${btn.buttonIcon}" </#if>>${btn.buttonName}</a-button>
+       </#if>
+      </#list>
+     </template>
+  </#if>
   </BasicModal>
 </template>
 
 <script lang="ts" setup>
-    import {ref, computed, unref} from 'vue';
+    import {ref, computed, unref, reactive} from 'vue';
     import {BasicModal, useModalInner} from '/@/components/Modal';
     import {BasicForm, useForm} from '/@/components/Form/index';
     import {formSchema} from '../${entityName}.data';
     import {saveOrUpdate} from '../${entityName}.api';
+    import { useMessage } from '/@/hooks/web/useMessage';
+    import { getDateByPicker } from '/@/utils';
+    //日期个性化选择
+    const fieldPickers = reactive({
+    <#list columns as po>
+      <#if po.extendParams?exists && po.extendParams.picker?exists>
+      ${po.fieldName}: '${po.extendParams.picker}',
+      </#if>
+    </#list>
+    });
+    const { createMessage } = useMessage();
     // Emits声明
     const emit = defineEmits(['register','success']);
     const isUpdate = ref(true);
@@ -22,7 +46,8 @@
         </#if>
         schemas: formSchema,
         showActionButtonGroup: false,
-        baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}}
+        baseColProps: {span: ${getFormSpan(tableVo.fieldRowNum?default(1))}},
+        baseRowStyle: { padding: "0 20px" }
     });
     //表单赋值
     const [registerModal, {setModalProps, closeModal}] = useModalInner(async (data) => {
@@ -46,6 +71,8 @@
     async function handleSubmit(v) {
         try {
             let values = await validate();
+            // 预处理日期数据
+            changeDateValue(values);
             setModalProps({confirmLoading: true});
             //提交表单
             await saveOrUpdate(values, isUpdate.value);
@@ -65,6 +92,29 @@
             setModalProps({confirmLoading: false});
         }
     }
+
+    /**
+     * 处理日期值
+     * @param formData 表单数据
+     */
+    const changeDateValue = (formData) => {
+        if (formData && fieldPickers) {
+            for (let key in fieldPickers) {
+                if (formData[key]) {
+                    formData[key] = getDateByPicker(formData[key], fieldPickers[key]);
+                }
+            }
+        }
+    };
+<#if buttonList?size gt 0>
+  <#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
+      <#if btn.buttonStyle=='form'>
+         function handle${btn.buttonCode?cap_first}(){
+            createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+         }
+      </#if>
+  </#list>
+</#if>
 </script>
 
 <style lang="less" scoped>

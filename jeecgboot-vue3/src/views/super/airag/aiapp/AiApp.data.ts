@@ -42,7 +42,7 @@ export const formSchema: FormSchema[] = [
     label: '选择应用类型',
     field: 'type',
     component: 'Input',
-    ifShow:({ values })=>{
+    show:({ values })=>{
       return !values.id;
     },
     slot: 'typeSlot',

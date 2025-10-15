@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.WebsocketConst;
+import org.jeecg.common.constant.enums.NoticeTypeEnum;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.util.SpringContextUtils;
@@ -74,11 +75,13 @@ public class SystemSendMsgHandle implements ISendMsgHandle {
         Map<String,Object> data = messageDTO.getData();
         String[] arr = messageDTO.getToUser().split(",");
         for(String username: arr){
-            doSend(title, content, fromUser, username, data);
+            //update-begin---author:wangshuai---date:2025-06-26---for:【QQYUN-12162】OA项目改造，系统重消息拆分，目前消息都在一起 需按分类进行拆分---
+            doSend(title, content, fromUser, username, data, messageDTO.getNoticeType());
+            //update-end---author:wangshuai---date:2025-06-26---for:【QQYUN-12162】OA项目改造，系统重消息拆分，目前消息都在一起 需按分类进行拆分---
         }
     }
 
-    private void doSend(String title, String msgContent, String fromUser, String toUser, Map<String, Object> data){
+    private void doSend(String title, String msgContent, String fromUser, String toUser, Map<String, Object> data, String noticeType){
         SysAnnouncement announcement = new SysAnnouncement();
         if(data!=null){
             //摘要信息
@@ -91,12 +94,14 @@ public class SystemSendMsgHandle implements ISendMsgHandle {
             if(taskId!=null){
                 announcement.setBusId(taskId.toString());
                 announcement.setBusType(Vue3MessageHrefEnum.BPM_TASK.getBusType());
+                noticeType = NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue();
             }
 
             // 流程内消息节点 发消息会传一个busType
             Object busType = data.get(CommonConstant.NOTICE_MSG_BUS_TYPE);
             if(busType!=null){
                 announcement.setBusType(busType.toString());
+                noticeType = NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue();
             }
         }
         announcement.setTitile(title);
@@ -109,6 +114,11 @@ public class SystemSendMsgHandle implements ISendMsgHandle {
         //系统消息
         announcement.setMsgCategory("2");
         announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
+        if(oConvertUtils.isEmpty(noticeType)){
+            noticeType = NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue();
+        }
+        announcement.setNoticeType(noticeType);
+        announcement.setIzTop(CommonConstant.IZ_TOP_0);
         sysAnnouncementMapper.insert(announcement);
         // 2.插入用户通告阅读标记表记录
         String userId = toUser;
@@ -130,6 +140,7 @@ public class SystemSendMsgHandle implements ISendMsgHandle {
                 obj.put(WebsocketConst.MSG_USER_ID, sysUser.getId());
                 obj.put(WebsocketConst.MSG_ID, announcement.getId());
                 obj.put(WebsocketConst.MSG_TXT, announcement.getTitile());
+                obj.put(CommonConstant.NOTICE_TYPE,noticeType);
                 webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
             }
         }

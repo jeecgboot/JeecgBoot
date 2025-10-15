@@ -5,7 +5,9 @@ interface ScriptOptions {
 }
 
 export function useScript(opts: ScriptOptions) {
-  const isLoading = ref(false);
+  // date-begin--author:liaozhiyang---date:20250716---for：【issues/8552】useScript的isLoading默认值应该是true
+  const isLoading = ref(true);
+  // date-end--author:liaozhiyang---date:20250716---for：【issues/8552】useScript的isLoading默认值应该是true
   const error = ref(false);
   const success = ref(false);
   let script: HTMLScriptElement;

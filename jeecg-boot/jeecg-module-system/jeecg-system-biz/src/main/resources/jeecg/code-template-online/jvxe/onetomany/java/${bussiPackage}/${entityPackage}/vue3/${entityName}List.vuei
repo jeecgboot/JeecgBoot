@@ -4,6 +4,10 @@
 <#assign list_need_pca=false>
 <#assign bpm_flag=false>
 <#assign list_has_popup_dict=false>
+<#assign buttonList=[]>
+<#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
+  <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
+</#if>
 <#-- 开始循环 -->
 <#list columns as po>
 <#if po.fieldDbName=='bpm_status'>
@@ -27,6 +31,13 @@
           <a-button type="primary" v-auth="'${entityPackage}:${tableName}:add'"  @click="handleAdd" preIcon="ant-design:plus-outlined"> 新增</a-button>
           <a-button  type="primary" v-auth="'${entityPackage}:${tableName}:exportXls'"  preIcon="ant-design:export-outlined" @click="onExportXls"> 导出</a-button>
           <j-upload-button  type="primary" v-auth="'${entityPackage}:${tableName}:importExcel'"  preIcon="ant-design:import-outlined" @click="onImportXls">导入</j-upload-button>
+     <#if buttonList?size gt 0>
+      <#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
+         <#if btn.buttonStyle == 'button'>
+           <a-button type="primary" @click="handle${btn.buttonCode?cap_first}" <#if btn.buttonIcon??> preIcon="${btn.buttonIcon}" </#if>>${btn.buttonName}</a-button>
+         </#if>
+       </#list>
+     </#if>
           <a-dropdown v-if="selectedRowKeys.length > 0">
               <template #overlay>
                 <a-menu>
@@ -74,6 +85,10 @@
     </BasicTable>
     <!-- 表单区域 -->
     <${entityName}Modal @register="registerModal" @success="handleSuccess"></${entityName}Modal>
+    <#if bpm_flag==true>
+      <!-- 审批记录 -->
+      <BpmPictureModal @register="registerBpmModal" />
+    </#if>
   </div>
 </template>
 
@@ -87,6 +102,7 @@
   import {list, deleteOne, batchDelete, getImportUrl,getExportUrl} from './${entityName}.api';
   import {downloadFile} from '/@/utils/common/renderUtils';
   import { useUserStore } from '/@/store/modules/user';
+  import { useMessage } from '/@/hooks/web/useMessage';
 <#if list_need_pca>
   import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
 </#if>
@@ -99,12 +115,24 @@
   import {getPopDictByCode} from "@/utils/dict";
   import {filterMultiDictText} from "@/utils/dict/JDictSelectUtil";
 </#if>
+  import { getDateByPicker } from '/@/utils';
+  //日期个性化选择
+  const fieldPickers = reactive({
+  <#list columns as po>
+    <#if po.extendParams?exists && po.extendParams.picker?exists>
+    ${po.fieldName}: '${po.extendParams.picker}',
+    </#if>
+  </#list>
+  });
   <#if bpm_flag==true>
   import { startProcess } from '/@/api/common/api';
+
+  const [registerBpmModal, { openModal: bpmPicModal }] = useModal();
   </#if>
   const queryParam = reactive<any>({});
   const checkedKeys = ref<Array<string | number>>([]);
   const userStore = useUserStore();
+  const { createMessage } = useMessage();
   //注册model
   const [registerModal, {openModal}] = useModal();
    //注册table数据
@@ -113,7 +141,7 @@
            title: '${tableVo.ftlDescription}',
            api: list,
            columns,
-           canResize:false,
+           canResize:true,
            formConfig: {
                 //labelWidth: 120,
                 schemas: searchFormSchema,
@@ -151,6 +179,13 @@
                fixed:'right'
            },
            beforeFetch: (params) => {
+              if (params && fieldPickers) {
+                for (let key in fieldPickers) {
+                  if (params[key]) {
+                    params[key] = getDateByPicker(params[key], fieldPickers[key]);
+                  }
+                }
+              }
              return Object.assign(params, queryParam);
            },
            <#if list_has_popup_dict>
@@ -259,6 +294,16 @@
     await startProcess(params);
     handleSuccess();
   }
+
+   /**
+   * 审批进度
+   */
+  async function handlePreviewPic(record) {
+    bpmPicModal(true, {
+      flowCode: 'dev_${tableName}_001',
+      dataId: record.id,
+    });
+  }
   </#if>
 
   /**
@@ -278,7 +323,22 @@
           placement: 'topLeft'
         },
         auth: '${entityPackage}:${tableName}:delete'
-      }
+      },
+        {
+          label: '审批进度',
+          onClick: handlePreviewPic.bind(null, record),
+          ifShow: !!record.bpmStatus && record.bpmStatus !== '1',
+        }
+ <#if buttonList?size gt 0>
+     <#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
+        <#if btn.buttonStyle == 'link'>
+        ,{
+           label: '${btn.buttonName}',
+           onClick: handle${btn.buttonCode?cap_first}.bind(null, record),
+         }
+        </#if>
+      </#list>
+  </#if>
     ];
     if(record.bpmStatus == '1' || !record.bpmStatus){
       dropDownAction.push({
@@ -305,6 +365,16 @@
         },
         auth: '${entityPackage}:${tableName}:delete'
       }
+   <#if buttonList?size gt 0>
+       <#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
+          <#if btn.buttonStyle == 'link'>
+          ,{
+             label: '${btn.buttonName}',
+             onClick: handle${btn.buttonCode?cap_first}.bind(null, record),
+           }
+          </#if>
+        </#list>
+    </#if>
     ]
     </#if>
   }
@@ -353,6 +423,21 @@
      return records;
    }
     </#if>
+
+<#if buttonList?size gt 0>
+  <#list buttonList?filter(it -> it.orderNum?? && it.orderNum != null)?sort_by("orderNum") as btn>
+  <#if btn.buttonStyle=='button'>
+     function handle${btn.buttonCode?cap_first}(){
+        createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+     }
+  </#if>
+   <#if btn.buttonStyle=='link'>
+    function handle${btn.buttonCode?cap_first}(record){
+      createMessage.info('点击了${btn.buttonName}按钮，对应的业务逻辑需自行实现!');
+    }
+   </#if>
+  </#list>
+</#if>
 </script>
 
 <style lang="less" scoped>

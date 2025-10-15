@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
@@ -90,6 +90,8 @@ public class SysPositionController {
         }
         //------------------------------------------------------------------------------------------------
         QueryWrapper<SysPosition> queryWrapper = QueryGenerator.initQueryWrapper(sysPosition, req.getParameterMap());
+        queryWrapper.orderByAsc("post_level");
+        queryWrapper.orderByDesc("create_time");
         Page<SysPosition> page = new Page<SysPosition>(pageNo, pageSize);
         IPage<SysPosition> pageList = sysPositionService.page(page, queryWrapper);
         result.setSuccess(true);

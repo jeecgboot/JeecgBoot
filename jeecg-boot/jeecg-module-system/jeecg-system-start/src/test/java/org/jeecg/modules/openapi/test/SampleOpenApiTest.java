@@ -3,19 +3,21 @@ package org.jeecg.modules.openapi.test;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.Test;
-import java.security.MessageDigest;
 
+import java.security.MessageDigest;
 
 
 public class SampleOpenApiTest {
     private final String base_url = "http://localhost:8080/jeecg-boot";
     private final String appKey = "ak-pFjyNHWRsJEFWlu6";
     private final String searchKey = "4hV5dBrZtmGAtPdbA5yseaeKRYNpzGsS";
+    
     @Test
     public void test() throws Exception {
         // 根据部门ID查询用户
@@ -41,7 +43,17 @@ public class SampleOpenApiTest {
 
             // 解析JSON响应
             JSONObject res = JSON.parseObject(responseBody);
-            System.out.println("[info] 调用成功： " + res.toJSONString());
+            //错误日志判断
+            if(res.containsKey("success")){
+                Boolean success = res.getBoolean("success");
+                if(success){
+                    System.out.println("[info] 调用成功： " + res.toJSONString());  
+                }else{
+                    System.out.println("[error] 调用失败： " + res.getString("message"));
+                }
+            }else{
+                System.out.println("[error] 调用失败： " + res.getString("message"));
+            }
         }
 
     }

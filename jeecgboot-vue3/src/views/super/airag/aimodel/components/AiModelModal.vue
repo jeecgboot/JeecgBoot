@@ -3,7 +3,14 @@
     <div class="modal">
       <div class="header">
         <span class="header-title">
-          <span v-if="dataIndex ==='list' || dataIndex ==='add'" :class="dataIndex === 'list' ? '' : 'add-header-title pointer'" @click="goToList">选择供应商</span>
+          <span v-if="dataIndex ==='list' || dataIndex ==='add'" :class="dataIndex === 'list' ? '' : 'add-header-title pointer'" @click="goToList">
+            选择供应商
+            <a-tooltip title="供应商文档" v-if="dataIndex ==='list'">
+              <a style="color: #333333" href="https://help.jeecg.com/aigc/guide/model/#2-%E4%BE%9B%E5%BA%94%E5%95%86%E9%80%89%E6%8B%A9" target="_blank">
+                <Icon style="position:relative;left: -2px;top:1px" icon="ant-design:question-circle-outlined"></Icon>
+              </a>
+            </a-tooltip>
+          </span>
           <span v-if="dataIndex === 'add'" class="add-header-title"> > </span>
           <span v-if="dataIndex === 'add'" style="color: #1f2329">添加 {{ providerName }}</span>
         </span>
@@ -27,7 +34,17 @@
         </a-row>
       </div>
       <a-tabs v-model:activeKey="activeKey" v-if="dataIndex === 'add' || dataIndex === 'edit'">
-        <a-tab-pane :key="1" tab="基础信息">
+        <a-tab-pane :key="1">
+          <template #tab>
+            <span style="display: flex">
+            基础信息
+            <a-tooltip title="基础信息文档">
+              <a @click.stop style="color: unset" href="https://help.jeecg.com/aigc/guide/model/#31-%E5%A1%AB%E5%86%99%E5%9F%BA%E7%A1%80%E4%BF%A1%E6%81%AF" target="_blank">
+                <Icon style="position:relative;left:2px;top:1px" icon="ant-design:question-circle-outlined"></Icon>
+              </a>
+            </a-tooltip>
+          </span>
+          </template>
           <div class="model-content">
             <BasicForm @register="registerForm">
               <template #modelType="{ model, field }">
@@ -60,9 +77,20 @@
                 </AutoComplete>
               </template>
             </BasicForm>
+            <a-alert v-if="!modelActivate" message="模型未激活，请通过下方「保存并激活」按钮激活当前模型" type="warning" show-icon />
           </div>
         </a-tab-pane>
-        <a-tab-pane :key="2" tab="高级配置"  v-if="modelParamsShow">
+        <a-tab-pane :key="2"  v-if="modelParamsShow">
+          <template #tab>
+            <span style="display: flex">
+            高级配置
+            <a-tooltip title="高级配置文档">
+              <a @click.stop style="color: unset" href="https://help.jeecg.com/aigc/guide/model/#32-%E9%85%8D%E7%BD%AE%E9%AB%98%E7%BA%A7%E5%8F%82%E6%95%B0" target="_blank">
+                <Icon style="position:relative;left:2px;top:1px" icon="ant-design:question-circle-outlined"></Icon>
+              </a>
+            </a-tooltip>
+          </span>
+          </template>
           <AiModelSeniorForm ref="modelParamsRef" :modelParams="modelParams"></AiModelSeniorForm>
         </a-tab-pane>
       </a-tabs>
@@ -70,7 +98,8 @@
     </div>
     <template v-if="dataIndex === 'add' || dataIndex === 'edit'" #footer>
       <a-button @click="cancel">关闭</a-button>
-      <a-button @click="save" type="primary">保存</a-button>
+      <a-button @click="save" type="primary" ghost="true">保存</a-button>
+      <a-button @click="test" v-if="!modelActivate" :loading="testLoading" type="primary" >保存并激活</a-button>
     </template>
     <template v-else #footer> </template>
   </BasicModal>
@@ -87,9 +116,10 @@
   import BasicForm from '@/components/Form/src/BasicForm.vue';
   import { useForm } from '@/components/Form';
   import { formSchema, imageList } from '../model.data';
-  import { editModel, queryById, saveModel } from '../model.api';
+  import { editModel, queryById, saveModel, testConn } from '../model.api';
   import { useMessage } from '/@/hooks/web/useMessage';
   import AiModelSeniorForm from './AiModelSeniorForm.vue';
+  import { cloneDeep } from "lodash-es";
   export default {
     name: 'AddModelModal',
     components: {
@@ -128,6 +158,10 @@
       const modelParamsShow = ref<boolean>(false);
       //模型参数ref
       const modelParamsRef = ref();
+      //测试按钮loading状态
+      const testLoading = ref<boolean>(false);
+      //模型是否已激活
+      const modelActivate = ref<boolean>(false);
 
       const getImage = (name) => {
         return imageList.value[name];
@@ -178,6 +212,11 @@
             if(values.result.modelType && values.result.modelType === 'LLM'){
               modelParamsShow.value = true;
             }
+            if (values.result.activateFlag) {
+              modelActivate.value = true;
+            }else{
+              modelActivate.value = false;
+            }
             if(values.result.modelParams){
               modelParams.value = JSON.parse(values.result.modelParams)
             }
@@ -206,7 +245,7 @@
        */
       function initModelTypeOption() {
         initDictOptions('model_type').then((data) => {
-          modelTypeOption.value = data;
+          modelTypeOption.value = cloneDeep(data);
           //update-begin---author:wangshuai---date:2025-03-04---for: 解决页面tab刷新一次就多一个全部类型的选项---
           if(data[0].value != 'all'){
             modelTypeOption.value.unshift({
@@ -272,6 +311,11 @@
               values.modelParams = JSON.stringify(modelParams);
             }
           }
+          if(modelActivate.value){
+            values.activateFlag = 1
+          }else{
+            values.activateFlag = 0;
+          }
           values.credential = JSON.stringify(credential);
           //新增
           if (!values.id) {
@@ -299,6 +343,42 @@
       function cancel() {
         dataIndex.value = 'list';
         closeModal();
+        emit('success');
+      }
+
+      /**
+       * 测试连接
+       */
+      async function test() {
+        try {
+          testLoading.value = true;
+          let values = await validate();
+          let credential = {
+            apiKey: values.apiKey,
+            secretKey: values.secretKey,
+          };
+          if (modelParamsRef.value) {
+            let modelParams = modelParamsRef.value.emitChange();
+            if (modelParams) {
+              values.modelParams = JSON.stringify(modelParams);
+            }
+          }
+          values.credential = JSON.stringify(credential);
+          if (!values.provider) {
+            values.provider = modelData.value.value;
+          }
+          //测试
+          await testConn(values).then((result) => {
+            modelActivate.value = true;
+            save();
+          });
+        } catch (e) {
+          if (e.hasOwnProperty('errorFields')) {
+            activeKey.value = 1;
+          }
+        } finally {
+          testLoading.value = false;
+        }
       }
 
       /**
@@ -361,9 +441,12 @@
         activeKey,
         modelParams,
         modelParamsShow,
+        modelActivate,
         modelParamsRef,
         filterOption,
         getTitle,
+        test,
+        testLoading,
       };
     },
   };

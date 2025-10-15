@@ -5,11 +5,15 @@ enum Api {
   save = '/sys/annountCement/add',
   edit = '/sys/annountCement/edit',
   delete = '/sys/annountCement/delete',
+  queryById = '/sys/annountCement/queryById',
   deleteBatch = '/sys/annountCement/deleteBatch',
   exportXls = '/sys/annountCement/exportXls',
   importExcel = '/sys/annountCement/importExcel',
   releaseData = '/sys/annountCement/doReleaseData',
   reovkeData = '/sys/annountCement/doReovkeData',
+  editIzTop = '/sys/annountCement/editIzTop',
+  addVisitsNum = '/sys/annountCement/addVisitsNumber',
+  tempList = '/sys/message/sysMessageTemplate/list',
 }
 
 /**
@@ -21,7 +25,7 @@ export const getExportUrl = Api.exportXls;
  */
 export const getImportUrl = Api.importExcel;
 /**
- * 查询租户列表
+ * 查询消息列表
  * @param params
  */
 export const getList = (params) => {
@@ -33,7 +37,7 @@ export const getList = (params) => {
  * @param params
  */
 export const saveOrUpdate = (params, isUpdate) => {
-  let url = isUpdate ? Api.edit : Api.save;
+  const url = isUpdate ? Api.edit : Api.save;
   return defHttp.post({ url: url, params });
 };
 
@@ -43,6 +47,15 @@ export const saveOrUpdate = (params, isUpdate) => {
  */
 export const deleteNotice = (params, handleSuccess) => {
   return defHttp.delete({ url: Api.delete, data: params }, { joinParamsToUrl: true }).then(() => {
+    handleSuccess();
+  });
+};
+/**
+ * 置顶编辑
+ * @param params
+ */
+export const editIzTop = (params, handleSuccess) => {
+  return defHttp.post({ url: Api.editIzTop, data: params }).then(() => {
     handleSuccess();
   });
 };
@@ -63,3 +76,20 @@ export const doReleaseData = (params) => defHttp.get({ url: Api.releaseData, par
  * @param id
  */
 export const doReovkeData = (params) => defHttp.get({ url: Api.reovkeData, params });
+/**
+ * 新增访问量
+ * @param id
+ */
+export const addVisitsNum = (params) => defHttp.get({ url: Api.addVisitsNum, params }, { successMessageMode: 'none' });
+/**
+ * 根据ID查询数据
+ * @param id
+ */
+export const queryById = (params) => defHttp.get({ url: Api.queryById, params }, { isTransformResponse: false });
+/**
+ * 查询模板列表
+ * @param params
+ */
+export const getTempList = (params) => {
+  return defHttp.get({ url: Api.tempList, params });
+};

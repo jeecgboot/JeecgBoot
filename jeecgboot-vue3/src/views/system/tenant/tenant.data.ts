@@ -40,19 +40,19 @@ export const columns: BasicColumn[] = [
     title: '门牌号',
     width: 100,
   },
-  {
-    dataIndex: 'position_dictText',
-    title: '职级',
-    width: 150
-  },
-  {
-    dataIndex: 'department_dictText',
-    title: '部门',
-    width: 150
-  },
+  // {
+  //   dataIndex: 'position_dictText',
+  //   title: '职级',
+  //   width: 150
+  // },
+  // {
+  //   dataIndex: 'department_dictText',
+  //   title: '部门',
+  //   width: 150
+  // },
   {
     dataIndex: 'createBy_dictText',
-    title: '创建者(拥有者)',
+    title: '创建者(拥有)',
     width: 150
   },
 /*  {
@@ -147,9 +147,18 @@ export const formSchema: FormSchema[] = [
   }, {
     field: 'companyAddress',
     label: '公司地址',
-    component: 'InputTextArea',
+    component: 'JAreaSelect',
     componentProps: {
       placeholder: '请输入公司地址',
+      rows: 4,
+    }
+  },
+  {
+    field: 'workPlace',
+    label: '工作地点',
+    component: 'InputTextArea',
+    componentProps: {
+      placeholder: '请输入工作地点',
       rows: 4,
     }
   },
@@ -257,6 +266,25 @@ export const packColumns: BasicColumn[] = [
     title: '套餐包名称',
     dataIndex: 'packName',
     width: 100,
+    customRender: ( { record, text }) => {
+      if(record.packCode && record.packCode.indexOf('default') != -1) {
+        return text + '(默认产品包)';
+      } else {
+        return text;
+      }
+    }
+  },
+  {
+    title: '是否自动分配用户',
+    dataIndex: 'izSysn',
+    width: 100,
+    customRender: ( { text }) => {
+      if(text === '1') {
+        return '是';
+      } else {
+        return '否';
+      }
+    }
   },
   {
     title: '状态',
@@ -271,7 +299,66 @@ export const packColumns: BasicColumn[] = [
     },
   },
   {
-    title: '备注',
+    title: '备注说明',
+    dataIndex: 'remarks',
+    width: 150,
+  },
+];
+
+//套餐包列表
+export const tenantPackColumns: BasicColumn[] = [
+  {
+    title: '套餐包名称',
+    dataIndex: 'packName',
+    width: 100,
+    customRender: ( { record, text }) => {
+      if(record.packCode && record.packCode.indexOf('default') != -1) {
+        return text + '(默认产品包)';
+      } else {
+        return text;
+      }
+    }
+  },
+  {
+    title: '是否自动分配用户',
+    dataIndex: 'izSysn',
+    width: 100,
+    customRender: ( { text }) => {
+      if(text === '1') {
+        return '是';
+      } else {
+        return '否';
+      }
+    }
+  },
+  {
+    title: '备注说明',
+    dataIndex: 'remarks',
+    width: 150,
+  },
+];
+
+//套餐包列表
+export const defalutPackColumns: BasicColumn[] = [
+  {
+    title: '默认套餐名称',
+    dataIndex: 'packName',
+    width: 100,
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    width: 100,
+    customRender: ({ text }) => {
+      if (text === '1') {
+        return '开启';
+      } else {
+        return '关闭';
+      }
+    },
+  },
+  {
+    title: '备注说明',
     dataIndex: 'remarks',
     width: 150,
   },
@@ -281,7 +368,17 @@ export const packColumns: BasicColumn[] = [
 export const packFormSchema: FormSchema[] = [
   {
     field: 'packName',
-    label: '套餐包名称',
+    label: '套餐包名',
+    component: 'JInput',
+    colProps: { xxl: 8 },
+  },
+];
+
+//套餐包搜索表单
+export const defaultPackFormSchema: FormSchema[] = [
+  {
+    field: 'packName',
+    label: '默认套餐名',
     component: 'JInput',
     colProps: { xxl: 8 },
   },
@@ -296,22 +393,37 @@ export const packMenuFormSchema: FormSchema[] = [
   },
   {
     field: 'permissionIds',
-    label: '菜单列表',
+    label: '授权菜单',
     component: 'JTreeSelect',
     componentProps: {
       dict: 'sys_permission,name,id',
       pidField: 'parent_id',
+      hasChildField:'is_leaf',
       multiple: true,
       treeCheckAble:true,
       treeCheckStrictly: true,
+      converIsLeafVal: 0,
       getPopupContainer: () => document.body,
     },
   },
   {
     field: 'remarks',
-    label: '描述',
+    label: '备注说明',
     component: 'InputTextArea',
   },
+  {
+    field: 'izSysn',
+    label: '自动分配用户',
+    component: 'Switch',
+    componentProps: {
+      checkedValue: "1",
+      checkedChildren: '是',
+      unCheckedValue: "0",
+      unCheckedChildren: '否',
+    },
+    defaultValue: "1",
+    helpMessage: "默认会自动分配给用户，个性高级套餐，需要租户管理员手工分配人员(拥有更灵活性权限控制)"
+  },  
   {
     field: 'status',
     label: '开启状态',
@@ -327,6 +439,18 @@ export const packMenuFormSchema: FormSchema[] = [
   {
     field: 'id',
     label: '开启状态',
+    component: 'Input',
+    show: false
+  },
+  {
+    field: 'packCode',
+    label: '产品包编码',
+    component: 'Input',
+    show: false
+  },  
+  {
+    field: 'packType',
+    label: '产品包类型',
     component: 'Input',
     show: false
   },
@@ -443,7 +567,7 @@ export const tenantUserSchema: FormSchema[] = [
     },
   },
   { field: 'selecteddeparts', label: '部门', component: 'JSelectDept', componentProps: { checkStrictly: true } },
-  {
+ /* {
     field: 'post',
     label: '职位',
     component: 'JSelectPosition',
@@ -453,9 +577,33 @@ export const tenantUserSchema: FormSchema[] = [
     label: '工号',
     component: 'Input',
     dynamicRules: ({ model, schema }) => {
-      return [{ required: true, message: '请输入工号' }, { ...rules.duplicateCheckRule('sys_user', 'work_no', model, schema, false)[0] }];
+      return [{ required: false, message: '请输入工号' }, { ...rules.duplicateCheckRule('sys_user', 'work_no', model, schema, false)[0] }];
     },
-  },
+  },*/
   { field: 'relTenantIds', label: '租户', component: 'Input',show:false },
   { field: 'selectedroles', label: '角色', component: 'Input',show:false },
+];
+
+// 分配用户套餐
+export const packUserAllotSchemas: FormSchema[] = [
+  { 
+    field: 'userId', 
+    label: '用户id', 
+    component: 'Input',
+    show: false
+  },
+  {
+    field: 'realname',
+    label: '用户姓名',
+    component: 'Input',
+    componentProps:{
+      readonly : true
+    },
+  },
+  {
+    field: 'packId',
+    label: '套餐',
+    component: 'Select',
+    slot: 'packId'
+  }
 ];

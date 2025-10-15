@@ -57,6 +57,9 @@
 		<if test="username!=null and username!=''">
 			and username = #{username}
 		</if>
+		<if test="realname!=null and realname!=''">
+			and realname LIKE concat(concat('%',#{realname}),'%')
+		</if>
 	</select>
 	
 	<!--  修改用户部门code -->
@@ -298,4 +301,125 @@
 		and sut.tenant_id=#{tenantId}
         and sut.status = '1'
 	</select>
+    
+
+    <!-- SQL片段：getDepPostListByIdUserName WHERE 部分 -->
+    <sql id="getDepPostListByIdUserNameSql">
+        WHERE
+        su.status = 1
+        and su.del_flag = 0
+        and username <![CDATA[ != ]]> '_reserve_user_external'
+        <if test="userId!= null and userId != ''">
+            and su.id = #{userId}
+        </if> 
+        <if test="userName!= null and userName != ''">
+            <bind name="bindUserName" value="userName+'%'"/>
+            and su.username like #{bindUserName}
+        </if>
+        <if test="userIdList != null and userIdList.size() > 0">
+            <foreach item="idItem" index="index" collection="userIdList" open=" and su.id IN (" separator="," close=")">
+                #{idItem}
+            </foreach>
+        </if>
+        <if test="userNameList != null and userNameList.size() > 0">
+            <foreach item="usernameItem" index="index" collection="userNameList" open=" and su.username IN (" separator="," close=")">
+                #{usernameItem}
+            </foreach>
+        </if>
+    </sql>
+    
+    <!-- 根据部门id和用户名获取部门岗位用户分页列表 -->
+	<select id="getDepPostListByIdUserName" resultType="org.jeecg.modules.system.entity.SysUser">
+        SELECT su.* from
+        (
+            SELECT su.create_time,su.realname,su.username,su.phone FROM sys_user su
+            <include refid="getDepPostListByIdUserNameSql"/>
+            union
+            select DISTINCT su.create_time,su.realname,su.username,su.phone FROM sys_user su
+            JOIN sys_user_dep_post sudp ON su.id = sudp.user_id
+            <include refid="getDepPostListByIdUserNameSql"/>
+        ) su
+        order by su.create_time desc
+    </select>
+
+    <!-- SQL片段：getDepartPostListByIdUserRealName WHERE部分 -->
+    <sql id="getDepartPostListByIdUserRealNameSql">
+        WHERE
+        su.status = 1
+        and su.del_flag = 0
+        and username <![CDATA[ != ]]> '_reserve_user_external'
+        <if test="realname!= null and realname != ''">
+            <bind name="bindRealname" value="realname+'%'"/>
+            and su.id like #{bindRealname}
+        </if>
+        <if test="username!= null and username != ''">
+            <bind name="bindUserName" value="username+'%'"/>
+            and su.username like #{bindUserName}
+        </if>
+        <if test="orgCode!= null and orgCode != ''">
+            <bind name="bindOrgCode" value="orgCode+'%'"/>
+            and sd.org_code like #{bindOrgCode}
+        </if>
+    </sql>
+    
+    <!-- 根据部门id、用户名和真实姓名获取部门岗位用户分页列表 -->
+	<select id="getDepartPostListByIdUserRealName" resultType="org.jeecg.modules.system.entity.SysUser">
+        SELECT su.* from
+        (
+            SELECT su.create_time,su.realname,su.username,su.phone FROM sys_user su 
+            join sys_depart sd on su.main_dep_post_id = sd.id
+            <include refid="getDepartPostListByIdUserRealNameSql"/>
+            union
+            SELECT DISTINCT su.create_time,su.realname,su.username,su.phone FROM sys_user su 
+            join sys_depart sd on su.main_dep_post_id = sd.id
+            join sys_user_dep_post sudp on su.id = sudp.user_id
+            <include refid="getDepartPostListByIdUserRealNameSql"/>
+        ) su
+        order by su.create_time desc
+    </select>
+
+    <!-- SQL片段：queryDepartPostUserByOrgCode WHERE部分 -->
+    <sql id="queryDepartPostUserByOrgCodeSql">
+        WHERE
+        <if test="orgCode == null">
+            <bind name="bindOrgCode" value="'%'"/>
+        </if>
+        <if test="orgCode != null">
+            <bind name="bindOrgCode" value="orgCode+'%'"/>
+        </if>
+        su.del_flag = 0 AND sd.org_code LIKE #{bindOrgCode}
+        <if test="userParams != null">
+            <if test="userParams.realname != null and userParams.realname != ''">
+                <bind name="bindRealname" value="'%'+ userParams.realname +'%'"/>
+                AND su.realname LIKE bindRealname
+            </if>
+            <if test="userParams.workNo != null and userParams.workNo != ''">
+                <bind name="bindWorkNo" value="'%'+ userParams.workNo +'%'"/>
+                AND su.work_no LIKE bindWorkNo
+            </if>
+        </if>
+    </sql>
+    <!-- 查询部门、岗位下的用户 包括子部门下的用户 -->
+	<select id="queryDepartPostUserByOrgCode" resultType="org.jeecg.modules.system.model.SysUserSysDepPostModel">
+        SELECT su.* from
+        (
+            SELECT su.id, su.create_time, su.realname, su.username, su.phone, su.avatar, su.birthday, su.sex, su.email,
+            su.status, su.del_flag, su.telephone, su.activiti_sync, su.user_identity, su.depart_ids, su.main_dep_post_id 
+            FROM sys_user su join sys_user_depart sud on su.id = sud.user_id
+            join sys_depart sd on sud.dep_id = sd.id
+            <include refid="queryDepartPostUserByOrgCodeSql"/>
+            union
+            SELECT su.id, su.create_time, su.realname, su.username, su.phone, su.avatar, su.birthday, su.sex, su.email,
+            su.status, su.del_flag, su.telephone, su.activiti_sync, su.user_identity, su.depart_ids, su.main_dep_post_id 
+            FROM sys_user su join sys_depart sd on su.main_dep_post_id = sd.id
+            <include refid="queryDepartPostUserByOrgCodeSql"/>
+            union
+            SELECT su.id, su.create_time, su.realname, su.username, su.phone, su.avatar, su.birthday, su.sex, su.email,
+            su.status, su.del_flag, su.telephone, su.activiti_sync, su.user_identity, su.depart_ids, su.main_dep_post_id
+            FROM sys_user su join sys_user_dep_post sudp on su.id = sudp.user_id
+            join sys_depart sd on sd.id = sudp.dep_id 
+            <include refid="queryDepartPostUserByOrgCodeSql"/>
+        ) su
+        order by su.create_time desc
+    </select>
 </mapper>

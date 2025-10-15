@@ -1,11 +1,18 @@
 package org.jeecg.config.mybatis;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
+import com.baomidou.mybatisplus.extension.toolkit.JdbcUtils;
+import lombok.extern.slf4j.Slf4j;
+import me.zhyd.oauth.log.Log;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.LongValue;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.TenantConstant;
@@ -13,26 +20,27 @@ import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
-import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
-
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.LongValue;
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 单数据源配置（jeecg.datasource.open = false时生效）
  * @Author zhoujf
  *
  */
+@Slf4j
 @Configuration
 @MapperScan(value={"org.jeecg.**.mapper*"})
 public class MybatisPlusSaasConfig {
-
+    @Autowired
+    private DataSource dataSource;
+    
     /**
      * 是否开启系统模块的租户隔离
      *  控制范围：用户、角色、部门、我的部门、字典、分类字典、多数据源、职务、通知公告
@@ -122,7 +130,23 @@ public class MybatisPlusSaasConfig {
         //update-begin-author:zyf date:20220425 for:【VUEN-606】注入动态表名适配拦截器解决多表名问题
         interceptor.addInnerInterceptor(dynamicTableNameInnerInterceptor());
         //update-end-author:zyf date:20220425 for:【VUEN-606】注入动态表名适配拦截器解决多表名问题
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        
+        //update-begin---author:scott ---date:2025-08-02  for：【issues/8666】升级mybatisPlus后SqlServer分页使用OFFSET ？ ROWS FETCH NEXT ？ ROWS ONLY，导致online报表报错---
+        DbType dbType = null;
+        try {
+             dbType = JdbcUtils.getDbType(dataSource.getConnection().getMetaData().getURL());
+             log.info("当前数据库类型: {}", dbType);
+        } catch (SQLException e) {
+            Log.error(e.getMessage(), e);
+        }
+        if (dbType!=null && (dbType == DbType.SQL_SERVER || dbType == DbType.SQL_SERVER2005)) {
+            // 如果是SQL Server则覆盖为2005分页方式
+            interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.SQL_SERVER2005));
+        } else {
+            interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        }
+        //update-end---author:scott ---date::2025-08-02  for：【issues/8666】升级mybatisPlus后SqlServer分页使用OFFSET ？ ROWS FETCH NEXT ？ ROWS ONLY，导致online报表报错---
+        
         //【jeecg-boot/issues/3847】增加@Version乐观锁支持 
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         return interceptor;

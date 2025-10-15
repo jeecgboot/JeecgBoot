@@ -49,24 +49,24 @@ public class JwtUtil {
      * @param code
      * @param errorMsg
      */
-    public static void responseError(ServletResponse response, Integer code, String errorMsg) {
-		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-		// issues/I4YH95浏览器显示乱码问题
-		httpServletResponse.setHeader("Content-type", "text/html;charset=UTF-8");
-        Result jsonResult = new Result(code, errorMsg);
-		jsonResult.setSuccess(false);
-        OutputStream os = null;
-        try {
-            os = httpServletResponse.getOutputStream();
-			httpServletResponse.setCharacterEncoding("UTF-8");
-			httpServletResponse.setStatus(code);
-            os.write(new ObjectMapper().writeValueAsString(jsonResult).getBytes("UTF-8"));
-            os.flush();
-            os.close();
-        } catch (IOException e) {
+	public static void responseError(HttpServletResponse response, Integer code, String errorMsg) {
+		try {
+			Result jsonResult = new Result(code, errorMsg);
+			jsonResult.setSuccess(false);
+			
+			// 设置响应头和内容类型
+			response.setStatus(code);
+			response.setHeader("Content-type", "text/html;charset=UTF-8");
+			response.setContentType("application/json;charset=UTF-8");
+			// 使用 ObjectMapper 序列化为 JSON 字符串
+			ObjectMapper objectMapper = new ObjectMapper();
+			String json = objectMapper.writeValueAsString(jsonResult);
+			response.getWriter().write(json);
+			response.getWriter().flush();
+		} catch (IOException e) {
 			log.error(e.getMessage(), e);
-        }
-    }
+		}
+	}
 
 	/**
 	 * 校验token是否正确
@@ -99,7 +99,7 @@ public class JwtUtil {
 			DecodedJWT jwt = JWT.decode(token);
 			return jwt.getClaim("username").asString();
 		} catch (JWTDecodeException e) {
-			log.warn(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			return null;
 		}
 	}

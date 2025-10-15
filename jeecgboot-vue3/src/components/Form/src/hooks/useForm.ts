@@ -137,7 +137,7 @@ export function useForm(props?: Props): UseFormReturnType {
       let values = form.validate(nameList).then((values) => {
         for (let key in values) {
           if (values[key] instanceof Array) {
-            let valueType = getValueTypeBySchema(form.getSchemaByField(key)!);
+            let valueType = getValueTypeBySchema(form.getSchemaByField(key)!, form);
             if (valueType === 'string') {
               values[key] = values[key].join(',');
             }

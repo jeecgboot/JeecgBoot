@@ -16,18 +16,46 @@
         </a-layout-sider>
         <a-layout-content :style="contentStyle">
           <div v-if="selectedKey === 'document'">
-            <a-input v-model:value="searchText" placeholder="请输入文档名称，回车搜索" class="search-title" @pressEnter="reload"/>
+            <div class="search-header" style="text-align: left;">
+              <a-space align="center" wrap>
+                <a-input
+                    class="search-input"
+                    v-model:value="searchText"
+                    placeholder="请输入文档名称，回车搜索"
+                    @pressEnter="searchTextEnter"
+                />
+                <template v-if="selectedRows.length > 0">
+                  <div>
+                    <span>已进入多选模式，当前选中</span>
+                    <a style="margin: 0 4px;"> {{ selectedRows.length }} </a>
+                    <span>条文档</span>
+                  </div>
+                  <div>
+                    <a @click="onClearSelected">清空选择</a>
+                    <a-divider type="vertical"/>
+                    <a @click="onDeleteBatch">批量删除</a>
+                  </div>
+                </template>
+              </a-space>
+            </div>
             <a-row :span="24" class="knowledge-row">
               <a-col :xxl="4" :xl="6" :lg="6" :md="6" :sm="12" :xs="24">
                 <a-card class="add-knowledge-card" :bodyStyle="cardBodyStyle">
-                  <span style="line-height: 18px;font-weight: 500;color:#676f83;font-size: 12px">创建文档</span>
+                  <span style="line-height: 18px;font-weight: 500;color:#676f83;font-size: 12px">
+                    创建文档
+                    <a-tooltip title="知识库文档">
+                      <a style="color: unset" href="https://help.jeecg.com/aigc/guide/knowledge#4-%E7%9F%A5%E8%AF%86%E5%BA%93%E6%96%87%E6%A1%A3" target="_blank">
+                        <Icon style="position:relative;top:1px" icon="ant-design:question-circle-outlined" size="14"></Icon>
+                      </a>
+                    </a-tooltip>
+                  </span>
                   <div class="add-knowledge-doc" @click="handleCreateText">
                     <Icon icon="ant-design:form-outlined" size="13"></Icon><span>手动录入</span>
                   </div>
                   <div class="add-knowledge-doc" @click="handleCreateUpload">
                     <Icon icon="ant-design:cloud-upload-outlined" size="13"></Icon><span>文件上传</span>
                   </div>
-                  <div class="add-knowledge-doc" @click="handleCreateUploadLibrary">
+                  <div class="add-knowledge-doc">
                     <a-upload
                         accept=".zip"
                         name="file"
@@ -37,15 +65,36 @@
                         :beforeUpload="beforeUpload"
                         :action="uploadUrl"
                         @change="handleUploadChange"
+                        style="width: 100%;"
                     >
-                      <Icon style="margin-left: 0" icon="ant-design:project-outlined" size="13"></Icon>
-                      <span>文档库上传</span>
+                        <div style="display: flex;width: 100%">
+                          <Icon style="margin-left: 0;color:#676f83" icon="ant-design:project-outlined" size="13"></Icon>
+                          <span style="color:#676f83;font-size: 12px">文档库上传</span>
+                        </div>
                     </a-upload>
                   </div>
+                  <a-dropdown placement="bottomRight" :trigger="['click']">
+                    <div class="ant-dropdown-link pointer operation" @click.prevent.stop>
+                      <Icon icon="ant-design:ellipsis-outlined" size="16"></Icon>
+                    </div>
+                    <template #overlay>
+                      <a-menu>
+                        <a-menu-item key="delete" @click="onDeleteAll">
+                          <Icon icon="ant-design:delete-outlined" size="16"></Icon>
+                          清空文档
+                        </a-menu-item>
+                      </a-menu>
+                    </template>
+                  </a-dropdown>
                 </a-card>
               </a-col>
               <a-col :xxl="4" :xl="6" :lg="6" :md="6" :sm="12" :xs="24" v-for="item in knowledgeDocDataList">
-                <a-card class="knowledge-card pointer" @click="handleEdit(item)">
+                <a-card :class="['knowledge-card','pointer', {
+                  checked: item.__checked,
+                }]" @click="handleEdit(item)">
+                  <div class="knowledge-checkbox">
+                    <a-checkbox v-model:checked="item.__checked" @click.stop=""/>
+                  </div>
                   <div class="knowledge-header">
                     <div class="header-text flex">
                       <Icon v-if="item.type==='text'" icon="ant-design:file-text-outlined" size="32" color="#00a7d0"></Icon>
@@ -77,6 +126,12 @@
                         <img src="../icon/draft.png" style="width: 16px;height: 16px" />
                         <span class="ml-2">草稿</span>
                       </div>
+                      <a-tooltip v-else-if="item.status==='failed'" :title="getDocFailedReason(item)">
+                        <div class="card-text-status">
+                          <Icon icon="ant-design:close-circle-outlined" size="16" color="#FF4D4F"></Icon>
+                          <span class="ml-2">失败</span>
+                        </div>
+                      </a-tooltip>
                     </div>
                     <a-dropdown placement="bottomRight" :trigger="['click']">
                       <div class="ant-dropdown-link pointer operation" @click.prevent.stop>
@@ -114,6 +169,7 @@
               @change="handlePageChange"
               class="list-footer"
               size="small"
+              :show-total="() => `共${total}条` "
             />
           </div>
 
@@ -186,6 +242,7 @@
           </div>
         </a-layout-content>
       </a-layout>
+      <Loading tip="上传中，请稍后" :loading="uploadLoading"></Loading>
     </BasicModal>
 
     <!--  手工录入文本  -->
@@ -195,11 +252,12 @@
   </div>
 </template>
 
-<script lang="ts">
-  import { onBeforeMount, reactive, ref, unref, h } from 'vue';
+<script lang="tsx">
+  import { onBeforeMount, computed, ref, unref, h } from 'vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { useModal, useModalInner } from '@/components/Modal';
-  import { knowledgeDocList, knowledgeDeleteBatchDoc, knowledgeRebuildDoc, knowledgeEmbeddingHitTest } from '../AiKnowledgeBase.api';
+  import { knowledgeDocList, knowledgeDeleteBatchDoc, knowledgeDeleteAllDoc, knowledgeRebuildDoc, knowledgeEmbeddingHitTest } from '../AiKnowledgeBase.api';
+  import { doDeleteAllDoc } from '../AiKnowledgeBase.api.util';
   import { ActionItem, BasicTable, TableAction } from '@/components/Table';
   import { useListPage } from '@/hooks/system/useListPage';
   import AiragKnowledgeDocTextModal from './AiragKnowledgeDocTextModal.vue';
@@ -212,6 +270,7 @@
   import defaultImg from '/@/assets/images/header.jpg';
   import Icon from "@/components/Icon";
   import { useGlobSetting } from '/@/hooks/setting';
+  import Loading from '@/components/Loading/src/Loading.vue';
 
   export default {
     name: 'AiragKnowledgeDocListModal',
@@ -225,6 +284,7 @@
       BasicModal,
       AiragKnowledgeDocTextModal,
       AiTextDescModal,
+      Loading,
     },
     emits: ['success', 'register'],
     setup(props, { emit }) {
@@ -274,7 +334,9 @@
       const globSetting = useGlobSetting();
       //上传路径
       const uploadUrl = ref<string>(globSetting.domainUrl+"/airag/knowledge/doc/import/zip");
-      
+      //上传加载
+      const uploadLoading = ref<boolean>(false);
+
       //菜单项
       const menuItems = ref<any>([
         {
@@ -290,6 +352,10 @@
           title: '命中测试',
         },
       ]);
+
+      // 当前选中的行
+      const selectedRows = computed(() => knowledgeDocDataList.value.filter(item => item.__checked))
+
       //注册modal
       const [docTextRegister, { openModal: docTextOpenModal }] = useModal();
       const [docTextDescRegister, { openModal: docTextDescOpenModal }] = useModal();
@@ -329,8 +395,8 @@
         },
         spin: true,
       });
-      
-      const { createMessage } = useMessage();
+
+      const { createMessage, createConfirmSync } = useMessage();
 
       /**
        * 手工录入文本
@@ -343,6 +409,7 @@
        * 文件上传
        */
       function handleCreateUpload() {
+        console.log("11111111111")
         docTextOpenModal(true, { knowledgeId: knowledgeId.value, type: "file" });
       }
 
@@ -357,6 +424,13 @@
        * 编辑
        */
       function handleEdit(record) {
+        // 判断如果有选中的行，则说明是批量操作模式
+        if (selectedRows.value.length > 0) {
+          record.__checked = !record.__checked;
+          return
+        }
+
+
         if (record.type === 'text' || record.type === 'file') {
           docTextOpenModal(true, {
             record,
@@ -376,9 +450,26 @@
           okText: '确认',
           cancelText: '取消',
           onOk: () => {
+            if(knowledgeDocDataList.value.length == 1 && pageNo.value > 1) {
+              pageNo.value = pageNo.value - 1;
+            }
             knowledgeDeleteBatchDoc({ ids: id }, reload);
           }
         })
+      }
+
+      function getDocFailedReason(doc) {
+        let metadata = doc?.metadata;
+        if (!metadata) {
+          return '构建失败，原因未知';
+        }
+        try {
+          metadata = JSON.parse(metadata);
+          return metadata?.failedReason || '构建失败，原因未知';
+        } catch (e) {
+          console.log('getDocFailedReason', e);
+          return '构建失败，原因未知';
+        }
       }
 
       /**
@@ -394,11 +485,9 @@
        * 文档新增和编辑成功回调
        */
       function handleSuccess() {
-        if(!timer.value){
-          reload();
-        }
         clearInterval(timer.value);
         timer.value = null;
+        reload();
         triggeringTimer();
       }
 
@@ -421,7 +510,7 @@
             pageNo.value = 1;
             pageSize.value = 10;
             searchText.value = "";
-            
+
             reload();
           });
         } else {
@@ -511,7 +600,10 @@
               }
             }
             //update-end---author:wangshuai---date:2025-03-21---for:【QQYUN-11636】向量化功能改成异步---
-            knowledgeDocDataList.value = res.result.records;
+            knowledgeDocDataList.value = res.result.records.map((item)=>{
+              item.__checked = false;
+              return item;
+            });
             total.value = res.result.total;
           } else {
             knowledgeDocDataList.value = [];
@@ -519,7 +611,7 @@
           }
         });
       }
-      
+
       /**
        * 分页改变事件
        * @param page
@@ -548,10 +640,11 @@
        */
       function beforeUpload(file) {
         let fileType = file.type;
-        if (fileType !== 'application/x-zip-compressed') {
+        if (fileType !== 'application/zip' && fileType !== 'application/x-zip-compressed') {
             createMessage.warning('请上传zip文件');
             return false;
         }
+        uploadLoading.value = true;
         return true;
       }
 
@@ -561,24 +654,63 @@
        */
       function handleUploadChange(info) {
         let { file } = info;
-        if (file.status === 'error') {
-          createMessage.error(file.response.message ||`${file.name} 上传失败.`);
+        if (file.status === 'error' || (file.response && file.response.code == 500)) {
+          createMessage.error(file.response?.message ||`${file.name} 上传失败,请查看服务端日志`);
+          uploadLoading.value = false;
+          return;
         }
         if (file.status === 'done') {
+
           if(!file.response.success){
             createMessage.warning(file.response.message);
+            uploadLoading.value = false;
             return;
           }
+          uploadLoading.value = false;
           createMessage.success(file.response.message);
           handleSuccess();
         }
+      }
+
+      function onClearSelected() {
+        knowledgeDocDataList.value.forEach(item => {
+          item.__checked = false;
+        });
+      }
+
+      // 清空文档
+      async function onDeleteAll() {
+        pageNo.value = 1;
+        doDeleteAllDoc(knowledgeId.value, reload);
+      }
+
+      // 批量删除
+      async function onDeleteBatch() {
+        const flag = await createConfirmSync({ title: '批量删除', content: `确定要删除这 ${selectedRows.value.length} 条数据吗？` });
+        if (!flag) {
+          return;
+        }
+        const ids = selectedRows.value.map(item => item.id)
+        let number = knowledgeDocDataList.value.length - ids.length;
+        if(number == 0 && pageNo.value > 1) {
+          pageNo.value = pageNo.value - 1;
+        }
+        knowledgeDeleteBatchDoc({ ids }, reload);
+      }
+
+      /**
+       * 回车搜索
+       */
+      function searchTextEnter(){
+        pageNo.value = 1;
+        reload();
       }
 
       onBeforeMount(()=>{
         clearInterval(timer.value);
         timer.value = null;
       })
-      
+
       return {
         registerModal,
         title,
@@ -607,6 +739,7 @@
         knowledgeDocDataList,
         handleEdit,
         handleDelete,
+        getDocFailedReason,
         handleVectorization,
         pageNo,
         pageSize,
@@ -623,6 +756,12 @@
         uploadUrl,
         handleUploadChange,
         knowledgeId,
+        uploadLoading,
+        selectedRows,
+        onClearSelected,
+        onDeleteAll,
+        onDeleteBatch,
+        searchTextEnter,
       };
     },
   };
@@ -703,7 +842,7 @@
         border-radius: 10px;
         background: #fcfcfd;
         border: 1px solid #f0f0f0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 4px #e6e6e6;
         transition: all 0.3s ease;
         .card-title {
           justify-content: space-between;
@@ -715,12 +854,12 @@
     }
   }
   .hit-card:hover {
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 6px 12px #d0d3d8 !important;
   }
   .pointer {
     cursor: pointer;
   }
-  
+
   .card-description {
     display: -webkit-box;
     -webkit-box-orient: vertical;
@@ -734,16 +873,16 @@
     font-size: 12px;
     color: #676F83;
   }
-  
+
   .card-title-tag {
     color: #477dee;
   }
-  
+
   .knowledge-row {
     padding: 16px;
     overflow-y: auto;
   }
-  
+
   .add-knowledge-card {
     border-radius: 10px;
     margin-bottom: 20px;
@@ -753,14 +892,14 @@
     width: calc(100% - 20px);
     background: #fcfcfd;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
     .add-knowledge-card-icon {
       padding: 8px;
       margin-right: 12px;
     }
   }
-  
+
   .knowledge-card {
     border-radius: 10px;
     margin-right: 20px;
@@ -768,8 +907,29 @@
     height: 166px;
     background: #fcfcfd;
     border: 1px solid #f0f0f0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
+
+    .knowledge-checkbox {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 1;
+      align-items: center;
+      justify-content: center;
+      display: none;
+    }
+
+    &:hover, &.checked {
+      .knowledge-checkbox {
+        display: flex;
+      }
+    }
+
+    &.checked {
+      border: 1px solid @primary-color;
+    }
+
     .knowledge-header {
       position: relative;
       font-size: 14px;
@@ -786,7 +946,7 @@
         margin-left: 4px;
         align-self: center;
       }
-      
+
       .header-text {
         overflow: hidden;
         position: relative;
@@ -801,34 +961,37 @@
   }
 
   .add-knowledge-card:hover,.knowledge-card:hover{
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 12px #d0d3d8;
   }
-  
+
   .ellipsis {
     text-overflow: ellipsis;
     overflow: hidden;
     text-wrap: nowrap;
     width: calc(100% - 30px);
   }
-  
+
   :deep(.ant-card .ant-card-body) {
     padding: 16px;
   }
-  
+
   .card-text{
     font-size: 12px;
     display: flex;
     margin-top: 10px;
     align-items: center;
   }
-  
-  .search-title{
-    width: 200px;
+
+  .search-header {
     margin-top: 10px;
-    display: block;
-    margin-left: 20px;
+    margin-left: 26px;
+
+    .search-input {
+      width: 240px;
+      display: block;
+    }
   }
-  
+
   .operation{
     border: none;
     margin-top: 10px;
@@ -838,13 +1001,13 @@
     right: 4px;
     position: absolute;
   }
-  
-  .knowledge-card:hover{
+
+  .add-knowledge-card:hover, .knowledge-card:hover{
     .operation{
       display: block !important;
     }
   }
-  
+
   .add-knowledge-doc{
     margin-top: 6px;
     color:#6F6F83;
@@ -867,7 +1030,7 @@
   }
   .operation:hover{
     color: #000000;
-    background-color: rgba(0,0,0,0.05);
+    background-color: #e9ecf2;
     border: none;
   }
   .ant-dropdown-link{
@@ -891,6 +1054,11 @@
   }
   .ml-2{
     margin-left: 2px;
+  }
+  .add-knowledge-doc {
+    :deep(.ant-upload) {
+      width: 100%;
+    }
   }
 </style>
 <style lang="less">

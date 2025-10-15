@@ -11,6 +11,7 @@
           :allDefaultValues="defaultValueRef"
           :formModel="formModel"
           :formName="getBindValue.name"
+          :source="getBindValue.source"
           :setFormModel="setFormModel"
           :validateFields="validateFields"
           :clearValidate="clearValidate"
@@ -60,6 +61,7 @@
   import { useDesign } from '/@/hooks/web/useDesign';
   import dayjs from 'dayjs';
   import { useDebounceFn } from '@vueuse/core';
+  import { isFunction, isObject } from '/@/utils/is';
 
   export default defineComponent({
     name: 'BasicForm',
@@ -126,7 +128,15 @@
         };
       });
 
-      const getBindValue = computed(() => ({ ...attrs, ...props, ...unref(getProps) } as Recordable));
+      const getBindValue = computed(() => {
+        const bindValue = { ...attrs, ...props, ...unref(getProps) } as Recordable;
+        // update-begin--author:liaozhiyang---date:20250630---for：【issues/8484】分类字典中的新增弹窗的label点击会触发查询区域的input
+        if (bindValue.name === undefined && bindValue.source === 'table-query') {
+          bindValue.name = 'top-query-form';
+        }
+        // update-end--author:liaozhiyang---date:20250630---for：【issues/8484】分类字典中的新增弹窗的label点击会触发查询区域的input
+        return bindValue;
+      });
 
       const getSchema = computed((): FormSchema[] => {
         const schemas: FormSchema[] = unref(schemaRef) || (unref(getProps).schemas as any);
@@ -136,9 +146,17 @@
           if (defaultValue && dateItemType.includes(component)) {
             //update-begin---author:wangshuai ---date:20230410  for：【issues/435】代码生成的日期控件赋默认值报错------------
             let valueFormat:string = "";
-            if(componentProps){
+            // update-begin--author:liaozhiyang---date:20250818---for：【issues/8683】DatePicker组件的componentProps使用函数形式时初始值获取不对
+            if(isObject(componentProps)) {
               valueFormat = componentProps?.valueFormat;
+            } else if (isFunction(componentProps)) {
+              try {
+                // @ts-ignore
+                valueFormat = componentProps({schema, tableAction: props.tableAction, formModel})?.valueFormat;
+              } catch (error) {
+              }
             }
+            // update-end--author:liaozhiyang---date:20250818---for【issues/8683】DatePicker组件的componentProps使用函数形式时初始值获取不对
             if(!valueFormat){
               console.warn("未配置valueFormat,可能导致格式化错误！");
             }
@@ -302,6 +320,22 @@
         }
       }
 
+      /**
+       * 获取 componentProps，处理可能是函数的情况
+       * @param schema
+       */
+      function getSchemaComponentProps(schema: FormSchema) {
+        if (typeof schema.componentProps === 'function') {
+          return schema.componentProps({
+            schema,
+            tableAction: props.tableAction,
+            formActionType,
+            formModel,
+          })
+        }
+        return schema.componentProps
+      }
+
       const formActionType: Partial<FormActionType> = {
         getFieldsValue,
         setFieldsValue,
@@ -318,6 +352,7 @@
         validate,
         submit: handleSubmit,
         scrollToField: scrollToField,
+        getSchemaComponentProps,
       };
 
       onMounted(() => {
@@ -367,6 +402,13 @@
         margin-bottom: 24px;
       }
       // update-end--author:liaozhiyang---date:20240620---for：【TV360X-1420】校验时闪动
+
+      // 表单组件中间件样式
+      .j-form-item-middleware {
+        flex: 1;
+        width: 100%
+      }
+
       &.suffix-item {
         .ant-form-item-children {
           display: flex;
@@ -374,6 +416,12 @@
 
         .ant-form-item-control {
           margin-top: 4px;
+        }
+
+        // 【QQYUN-12876】当紧凑型 suffix 时，表单组件中间件的宽度不占满
+        &.suffix-compact .j-form-item-middleware {
+          flex: unset;
+          width: auto;
         }
 
         .suffix {

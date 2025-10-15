@@ -1,6 +1,7 @@
 package org.jeecg.common.api.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.jeecg.common.constant.CommonConstant;

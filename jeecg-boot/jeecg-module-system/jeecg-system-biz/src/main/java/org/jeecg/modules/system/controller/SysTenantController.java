@@ -133,7 +133,7 @@ public class SysTenantController {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public Result<SysTenant> add(@RequestBody SysTenant sysTenant) {
         Result<SysTenant> result = new Result();
-        if(sysTenantService.getById(sysTenant.getId())!=null){
+        if(sysTenant!=null && oConvertUtils.isNotEmpty(sysTenant.getId()) && sysTenantService.getById(sysTenant.getId())!=null){
             return result.error500("该编号已存在!");
         }
         try {
@@ -412,8 +412,11 @@ public class SysTenantController {
      */
     @PutMapping("/invitationUserJoin")
     @RequiresPermissions("system:tenant:invitation:user")
-    public Result<String> invitationUserJoin(@RequestParam("ids") String ids,@RequestParam("phone") String phone){
-        sysTenantService.invitationUserJoin(ids,phone);
+    public Result<String> invitationUserJoin(@RequestParam("ids") String ids,@RequestParam(value = "phone", required = false) String phone, @RequestParam(value = "username", required = false) String username){
+        if(oConvertUtils.isEmpty(phone) && oConvertUtils.isEmpty(username)){
+            return Result.error("手机号和用户账号不能同时为空！");
+        }
+        sysTenantService.invitationUserJoin(ids,phone,username);
         return Result.ok("邀请用户成功");
     }
 
@@ -985,5 +988,39 @@ public class SysTenantController {
             result.error500("查询失败！");
         }
         return result;
+    }
+
+    /**
+     * 目前只给敲敲云人员与部门下的用户删除使用
+     *
+     * 删除用户
+     */
+    @DeleteMapping("/deleteUser")
+    public Result<String> deleteUser(@RequestBody SysUser sysUser,HttpServletRequest request){
+        Integer tenantId = oConvertUtils.getInteger(TokenUtils.getTenantIdByRequest(request), null);
+        sysTenantService.deleteUser(sysUser, tenantId);
+        return Result.ok("删除用户成功");
+    }
+
+    /**
+     * 根据租户id和用户id获取用户的产品包列表和当前用户下的产品包id
+     *
+     * @param tenantId
+     * @param request
+     * @return
+     */
+    @GetMapping("/listPackByTenantUserId")
+    public Result<Map<String, Object>> listPackByTenantUserId(@RequestParam("tenantId") String tenantId,
+                                                              @RequestParam("userId") String userId,
+                                                              HttpServletRequest request) {
+        if (null == tenantId) {
+            return null;
+        }
+        List<SysTenantPack> list = sysTenantPackService.getPackListByTenantId(tenantId);
+        List<String> userPackIdList = sysTenantPackService.getPackIdByUserIdAndTenantId(userId, oConvertUtils.getInt(tenantId));
+        Map<String, Object> map = new HashMap<>(5);
+        map.put("packList", list);
+        map.put("userPackIdList", userPackIdList);
+        return Result.ok(map);
     }
 }

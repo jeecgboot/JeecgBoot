@@ -126,6 +126,9 @@
         <#if data.sendTime??>
         <span class="rich_media_meta text">${data.sendTime?string('yyyy年MM月dd日')}</span>
         </#if>
+        <#if data.visitsNum??>
+            <span class="rich_media_meta text">访问量:${data.visitsNum}</span>
+        </#if>
     </div>
 </div>
 <div id="content"></div>
@@ -154,6 +157,15 @@
         iframe.src = iframe.getAttribute('src');
     });
     //update-end-author:liusq---date:2023-10-30--for: 【QQYUN-6802】查看公告详情，此段端渲染有问题
+
+    // 监听父窗口发来的消息
+    window.addEventListener('message', (event) => {
+        // 1. 验证消息结构
+        let { type,printSessionId } = event.data
+        if(type == "action:print" && printSessionId ){
+            window.print();
+        }
+    });
 </script>
 </body>
 </html>

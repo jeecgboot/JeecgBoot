@@ -15,6 +15,9 @@
     @search="loadData"
     @change="handleAsyncChange"
     @popupScroll="handlePopupScroll"
+    :mode="multiple?'multiple':''"
+    @select="handleSelect"
+    @deselect="handleDeSelect"
   >
     <template #notFoundContent>
       <a-spin size="small" />
@@ -33,6 +36,9 @@
     :notFoundContent="loading ? undefined : null"
     :dropdownAlign="{overflow: {adjustY: adjustY }}"
     @change="handleChange"
+    :mode="multiple?'multiple':''"
+    @select="handleSelect"
+    @deselect="handleDeSelect"
   >
     <template #notFoundContent>
       <a-spin v-if="loading" size="small" />
@@ -83,6 +89,13 @@
         default: ()=>{}
       },
       //update-end-author:taoyan date:2022-8-15 for: VUEN-1971 【online 专项测试】关联记录和他表字段 1
+      //update-begin---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
+      //是否为多选
+      multiple:{
+        type: Boolean,
+        default: false
+      },
+      //update-end---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
     },
     emits: ['change', 'update:value'],
     setup(props, { emit, refs }) {
@@ -210,28 +223,55 @@
           if (!selectedAsyncValue || !selectedAsyncValue.key || selectedAsyncValue.key !== value) {
             defHttp.get({ url: `/sys/dict/loadDictItem/${dict}`, params: { key: value } }).then((res) => {
               if (res && res.length > 0) {
-                let obj = {
-                  key: value,
-                  label: res,
-                };
-                if (props.value == value) {
-                  selectedAsyncValue.value = { ...obj };
+                //update-begin---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
+                //判断组件是否为多选
+                if(props.multiple){
+                  if(value){
+                    let arr: any = [];
+                    //多选返回的是以逗号拼接的方式
+                    let values = value.toString().split(',');
+                    for (let i = 0; i < res.length; i++) {
+                      let obj = {
+                        key: values[i],
+                        label: res[i],
+                      };
+                      arr.push(obj);
+                      selectedValue.value.push(obj.key);
+                    }
+                    selectedAsyncValue.value = arr;
+                  }
+                } else {
+                  let obj = {
+                    key: value,
+                    label: res,
+                  };
+                  if (props.value == value) {
+                    selectedAsyncValue.value = { ...obj };
+                  }
+                  //update-begin-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online关联记录配置页面
+                  if(props.immediateChange == true){
+                    emit('change', props.value);
+                  }
+                  //update-end-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online关联记录配置页面
+                  //update-end---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
                 }
-                //update-begin-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online关联记录配置页面
-                if(props.immediateChange == true){
-                  emit('change', props.value);
-                }
-                //update-end-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online关联记录配置页面
               }
             });
           }
         } else {
-          selectedValue.value = value.toString();
-          //update-begin-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online他表字段配置界面
-          if(props.immediateChange == true){
-            emit('change', value.toString());
+          //update-begin---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
+          if(!props.multiple){
+            selectedValue.value = value.toString();
+            //update-begin-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online他表字段配置界面
+            if(props.immediateChange == true){
+              emit('change', value.toString());
+            }
+            //update-end-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online他表字段配置界面
+          }else{
+            //多选的情况下需要转成数组
+            selectedValue.value = value.toString().split(',');
           }
-          //update-end-author:taoyan date:2022-8-11 for: 值改变触发change事件--用于online他表字段配置界面
+          //update-begin---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
         }
       }
 
@@ -306,35 +346,100 @@
        * 同步改变事件
        * */
       function handleChange(value) {
-        selectedValue.value = value;
-        callback();
+        //update-begin---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
+        //多选也会触发change事件，需要判断如果时多选不需要赋值
+        if(!props.multiple){
+          selectedValue.value = value;
+          callback();
+        }
+        //update-end---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
       }
       /**
        * 异步改变事件
        * */
       function handleAsyncChange(selectedObj) {
-        if (selectedObj) {
-          selectedAsyncValue.value = selectedObj;
-          selectedValue.value = selectedObj.key;
-        } else {
-          selectedAsyncValue.value = null;
-          selectedValue.value = null;
-          options.value = null;
-          loadData('');
-        }
-        callback();
-        // update-begin--author:liaozhiyang---date:20240524---for：【TV360X-426】下拉搜索设置了默认值，把查询条件删掉，再点击重置，没附上值
-        // 点x清空时需要把loadSelectText设置true
-        selectedObj ?? (loadSelectText.value = true);
-        // update-end--author:liaozhiyang---date:20240524---for：【TV360X-426】下拉搜索设置了默认值，把查询条件删掉，再点击重置，没附上值
+          //update-begin---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
+          // 单选情况下使用change事件
+          if(!props.multiple){
+            if (selectedObj) {
+              selectedAsyncValue.value = selectedObj;
+              selectedValue.value = selectedObj.key;
+            } else {
+              selectedAsyncValue.value = null;
+              selectedValue.value = null;
+              options.value = null;
+              loadData('');
+            }
+            callback();
+            // update-begin--author:liaozhiyang---date:20240524---for：【TV360X-426】下拉搜索设置了默认值，把查询条件删掉，再点击重置，没附上值
+            // 点x清空时需要把loadSelectText设置true
+            selectedObj ?? (loadSelectText.value = true);
+            // update-end--author:liaozhiyang---date:20240524---for：【TV360X-426】下拉搜索设置了默认值，把查询条件删掉，再点击重置，没附上值
+          }
+          //update-end---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
       }
+
+      //update-begin---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
+      /**
+       * 异步值选中事件
+       * @param selectedObj
+       */
+      function handleSelect(selectedObj){
+        let key = selectedObj;
+        if(props.async){
+          key = selectedObj.key;
+        }
+        //多选情况下使用select事件
+        if(props.multiple && key){
+          //异步的时候才需要在selectedValue数组中添加值操作，同步的情况下直接走更新值操作
+          if(props.async){
+            selectedValue.value.push(key);
+          }
+          selectedObj ?? (loadSelectText.value = true);
+          callback();
+        }
+      }
+      
+      /**
+       * 异步值取消选中事件
+       * @param selectedObj
+       */
+      function handleDeSelect(selectedObj){
+        let key = selectedObj;
+        if(props.async){
+          key = selectedObj.key;
+        }
+        //多选情况下使用select事件
+        if(props.multiple){
+          //异步的时候才需要在selectedValue数组中删除值操作，同步的情况下直接走更新值操作
+          if(props.async){
+            let findIndex = selectedValue.value.findIndex(item => item === key);
+            if(findIndex != -1){
+              selectedValue.value.splice(findIndex,1);
+            }
+          }
+          selectedObj ?? (loadSelectText.value = true);
+          callback();
+        }
+      }
+      //update-end---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
+      
       /**
        *回调方法
        * */
       function callback() {
         loadSelectText.value = false;
-        emit('change', unref(selectedValue));
-        emit('update:value', unref(selectedValue));
+        //update-begin---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
+        //单选直接走更新值操作
+        if(!props.multiple){
+          emit('change', unref(selectedValue));
+          emit('update:value', unref(selectedValue));
+        } else {
+          //多选需要把数组转成字符串
+          emit('change', unref(selectedValue).join(","));
+          emit('update:value', unref(selectedValue).join(","));
+        }
+        //update-end---author:wangshuai---date:2025-04-17---for:【issues/8101】前端dict组件导致内存溢出问题：搜索组件支持多选---
       }
       /**
        * 过滤选中option
@@ -461,6 +566,8 @@
         handleAsyncChange,
         handleAsyncFocus,
         handlePopupScroll,
+        handleSelect,
+        handleDeSelect,
       };
     },
   });

@@ -1,10 +1,11 @@
 import type { RouteLocationNormalized, RouteRecordNormalized } from 'vue-router';
 import type { App, Plugin } from 'vue';
-import type { FormSchema } from "@/components/Form";
+import type { FormSchema, FormActionType } from "@/components/Form";
 
 import { unref } from 'vue';
 import { isObject, isFunction, isString } from '/@/utils/is';
 import Big from 'big.js';
+import dayjs from "dayjs";
 // update-begin--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
 export const URL_HASH_TAB = `__AGWE4H__HASH__TAG__PWHRG__`;
 // update-end--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
@@ -109,14 +110,46 @@ export function getValueType(props, field) {
 /**
  * 获取表单字段值数据类型
  * @param schema
+ * @param formAction
  */
-export function getValueTypeBySchema(schema: FormSchema) {
+export function getValueTypeBySchema(schema: FormSchema, formAction: FormActionType) {
   let valueType = 'string';
   if (schema) {
-    const componentProps = schema.componentProps as Recordable;
-    valueType = componentProps?.valueType ? componentProps?.valueType : valueType;
+    const componentProps = formAction.getSchemaComponentProps(schema);
+    // update-begin--author:liaozhiyang---date:20250825---for：【issues/8738】componentProps是函数时获取不到valueType
+    if (isFunction(componentProps)) {
+      const result = componentProps(schema);
+      valueType = result?.valueType ?? valueType;
+    } else {
+      valueType = componentProps?.valueType ? componentProps?.valueType : valueType;
+    }
+    // update-end--author:liaozhiyang---date:20250825---for：【issues/8738】componentProps是函数时获取不到valueType
   }
   return valueType;
+}
+
+/**
+ * 通过picker属性获取日期数据
+ * @param data
+ * @param picker
+ */
+export function getDateByPicker(data, picker) {
+  if (!data || !picker) {
+    return data;
+  }
+  /**
+   * 需要把年、年月、设置成这段时间内的第一天（[年季度]不需要处理antd回传的就是该季度的第一天，[年周]也不处理）
+   * 例如日期格式是年，传给数据库的时间必须是20240101
+   * 例如日期格式是年月（选择了202502），传给数据库的时间必须是20250201
+   */
+  if (picker === 'year') {
+    return dayjs(data).set('month', 0).set('date', 1).format('YYYY-MM-DD');
+  } else if (picker === 'month') {
+    return dayjs(data).set('date', 1).format('YYYY-MM-DD');
+  } else if (picker === 'week') {
+    return dayjs(data).startOf('week').format('YYYY-MM-DD');
+  }
+  return data;
 }
 
 export function getRawRoute(route: RouteLocationNormalized): RouteLocationNormalized {

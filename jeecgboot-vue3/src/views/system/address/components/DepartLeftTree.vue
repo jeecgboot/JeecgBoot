@@ -1,11 +1,12 @@
 <template>
-  <a-card :bordered="false" style="height: 100%">
+  <a-card :bordered="false" style="height: 100%;" :body-style="{ background: backgroundColor }" >
     <a-spin :spinning="loading">
-      <a-input-search placeholder="按部门名称搜索…" style="margin-bottom: 10px" @search="onSearch" allowClear />
+      <a-input-search v-if="showSearch" placeholder="按部门名称搜索…" style="margin-bottom: 10px" @search="onSearch" allowClear />
       <!--组织机构树-->
       <template v-if="treeData.length > 0">
         <a-tree
           v-if="!treeReloading"
+          :style="{ background: backgroundColor }"
           showLine
           :clickRowToExpand="false"
           :treeData="treeData"
@@ -13,7 +14,11 @@
           :load-data="loadChildrenTreeData"
           v-model:expandedKeys="expandedKeys"
           @select="onSelect"
-        ></a-tree>
+        >
+          <template #title="{ orgCategory, title }">
+            <TreeIcon :orgCategory="orgCategory" :title="title"></TreeIcon>
+          </template>
+        </a-tree>
       </template>
       <a-empty v-else description="暂无数据" />
     </a-spin>
@@ -25,8 +30,22 @@
   import { queryDepartTreeSync } from '../address.api';
   import { searchByKeywords } from '/@/views/system/departUser/depart.user.api';
   import { Popconfirm } from 'ant-design-vue';
+  import TreeIcon from "@/components/Form/src/jeecg/components/TreeIcon/TreeIcon.vue";
 
   const prefixCls = inject('prefixCls');
+  // 定义props
+  const props = defineProps({
+    // 是否显示搜索框
+    showSearch: {
+      type: Boolean,
+      default: true,
+    },
+    // 背景色
+    backgroundColor: {
+      type: String,
+      default: 'inherit',
+    },
+  });
   const emit = defineEmits(['select', 'rootTreeData']);
 
   const loading = ref<boolean>(false);
@@ -128,7 +147,7 @@
       try {
         loading.value = true;
         treeData.value = [];
-        let result = await searchByKeywords({ keyWord: value });
+        let result = await searchByKeywords({ keyWord: value, orgCategory: '1,2,3,4' });
         if (Array.isArray(result)) {
           treeData.value = result;
         }

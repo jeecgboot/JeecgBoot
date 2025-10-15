@@ -52,6 +52,7 @@ export enum HandlerEnum {
   OPEN_PROGRESS,
   OPEN_PAGE_LOADING,
   OPEN_ROUTE_TRANSITION,
+  AI_ICON_SHOW,
 }
 
 // 标签页样式

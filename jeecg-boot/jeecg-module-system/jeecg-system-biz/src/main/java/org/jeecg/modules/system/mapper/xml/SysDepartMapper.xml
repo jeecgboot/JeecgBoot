@@ -170,7 +170,7 @@
     
     <!--系统后台导出，根据父级id和租户id查询部门数据-->
     <select id="getSysDepartList" resultType="org.jeecg.modules.system.vo.SysDepartExportVo">
-        SELECT id,depart_name,parent_id,depart_name_en,depart_order,description,org_category,org_code,mobile,fax,address,memo FROM sys_depart
+        SELECT id,depart_name,parent_id,depart_name_en,depart_order,description,org_category,org_code,mobile,fax,address,memo, position_id FROM sys_depart
         WHERE
         1=1
         <if test="null != tenantId and 0 != tenantId">
@@ -192,5 +192,80 @@
             </foreach>
         </if>
         ORDER BY depart_order DESC
+    </select>
+    
+    <!--根据多个部门id获取部门数据-->
+	<select id="getDepartByIds" resultType="org.jeecg.modules.system.vo.SysUserDepVo">
+        SELECT id,depart_name,org_code,parent_id FROM sys_depart
+        where
+        1=1
+        <if test="departIds != null and !departIds.isEmpty()">
+            and id in
+            <foreach item="id" index="index" collection="departIds" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+    
+    <!--根据用户id获取部门信息-->
+	<select id="getUserDepartByUserId" resultType="org.jeecg.modules.system.vo.SysUserDepVo">
+        SELECT sd.depart_name, sud.user_id, sd.id as deptId, sd.parent_id, sd.org_category
+        FROM sys_depart sd
+        RIGHT JOIN sys_user_depart sud on sd.id = sud.dep_id and sd.del_flag = 0
+        WHERE sud.user_id IN
+        <foreach collection="userList" index="index" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+        order by sd.org_code;
+    </select>
+    
+    <!--根据父级id/职级/部门id获取部门岗位信息-->
+	<select id="getDepartPositionByParentId" resultType="org.jeecg.modules.system.entity.SysDepart">
+        select sd.depart_name, sd.id, sd.iz_leaf, sd.org_category, sd.parent_id, sd.org_code from sys_depart sd left join sys_position sp on sd.position_id = sp.id
+        where sd.parent_id = #{parentId}
+        and sd.org_category = '3' 
+        <if test="postLevel != null">
+            and sp.post_level <![CDATA[ < ]]> #{postLevel}
+        </if>
+        <if test="departId != null and departId != ''">
+            and sd.id != #{departId}
+        </if>
+        order by sd.depart_order,sd.create_time desc
+    </select>
+    
+    <!--根据部门id获取部门信息-->
+	<select id="getDepartPostByDepartId" resultType="org.jeecg.modules.system.vo.SysDepartPositionVo">
+        select depart_name as positionName,id,iz_leaf,parent_id,org_category,org_code, dep_post_parent_id from sys_depart
+        where id = #{departId}
+    </select>
+    
+    <!--根据部门编码查询部门信息-->
+	<select id="getDepartPostByOrgCode" resultType="org.jeecg.modules.system.vo.SysDepartPositionVo">
+        select depart_name as positionName,id,iz_leaf,parent_id,org_category,org_code, dep_post_parent_id from sys_depart
+        where org_code like #{orgCode} 
+        and org_category = '3'
+        order by depart_order,create_time desc
+    </select>
+    
+    <!--根据部门id获取部门编码-->
+	<select id="getDepCodeByDepIds" resultType="java.lang.String">
+        SELECT org_code
+        FROM sys_depart
+        WHERE id IN
+        <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    
+    <!--  根据父级部门id和职务名称查找部门id  -->
+	<select id="getDepIdByDepIdAndPostName" resultType="java.lang.String">
+        SELECT id FROM sys_depart
+        WHERE parent_id = #{parentId} and depart_name = #{postName}
+    </select>
+
+    <!--根据部门id获取职级名称-->
+	<select id="getPostNameByPostId" resultType="java.lang.String">
+        select sp.name from sys_depart sd join sys_position sp on sd.position_id = sp.id
+        where sd.id = #{depId}
     </select>
 </mapper>

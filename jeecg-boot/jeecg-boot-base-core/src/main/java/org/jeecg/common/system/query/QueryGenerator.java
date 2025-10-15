@@ -11,6 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.DataBaseConstant;
@@ -257,8 +258,69 @@ public class QueryGenerator {
 		if(parameterMap!=null&& parameterMap.containsKey(ORDER_TYPE)) {
 			order = parameterMap.get(ORDER_TYPE)[0];
 		}
-        log.debug("排序规则>>列:" + column + ",排序方式:" + order);
+		
+		if(oConvertUtils.isNotEmpty(column)){
+			log.info("单字段排序规则>> column:" + column + ",排序方式:" + order);
+		}
 
+		// 1. 列表多字段排序优先
+		if(parameterMap!=null&& parameterMap.containsKey("sortInfoString")) {
+			// 多字段排序
+			String sortInfoString = parameterMap.get("sortInfoString")[0];
+			log.info("多字段排序规则>> sortInfoString:" + sortInfoString);
+			List<OrderItem> orderItemList = SqlConcatUtil.getQueryConditionOrders(column, order, sortInfoString);
+			log.info(orderItemList.toString());
+			if (orderItemList != null && !orderItemList.isEmpty()) {
+				for (OrderItem item : orderItemList) {
+					// 一、获取排序数据库字段
+					String columnName = item.getColumn();
+					// 1.字典字段，去掉字典翻译文本后缀
+					if(columnName.endsWith(CommonConstant.DICT_TEXT_SUFFIX)) {
+						columnName = columnName.substring(0, column.lastIndexOf(CommonConstant.DICT_TEXT_SUFFIX));
+					}
+					// 2.实体驼峰字段转为数据库字段
+					columnName = SqlInjectionUtil.getSqlInjectSortField(columnName);
+
+					// 二、设置字段排序规则
+					if (item.isAsc()) {
+						queryWrapper.orderByAsc(columnName);
+					} else {
+						queryWrapper.orderByDesc(columnName);
+					}
+				}
+			}
+			return;
+		}
+
+		// 2. 列表单字段默认排序
+		if(oConvertUtils.isEmpty(column) && parameterMap!=null&& parameterMap.containsKey("defSortString")) {
+			// 多字段排序
+			String sortInfoString = parameterMap.get("defSortString")[0];
+			log.info("默认多字段排序规则>> defSortString:" + sortInfoString);
+			List<OrderItem> orderItemList = SqlConcatUtil.getQueryConditionOrders(column, order, sortInfoString);
+			log.info(orderItemList.toString());
+			if (orderItemList != null && !orderItemList.isEmpty()) {
+				for (OrderItem item : orderItemList) {
+					// 一、获取排序数据库字段
+					String columnName = item.getColumn();
+					// 1.字典字段，去掉字典翻译文本后缀
+					if(columnName.endsWith(CommonConstant.DICT_TEXT_SUFFIX)) {
+						columnName = columnName.substring(0, column.lastIndexOf(CommonConstant.DICT_TEXT_SUFFIX));
+					}
+					// 2.实体驼峰字段转为数据库字段
+					columnName = SqlInjectionUtil.getSqlInjectSortField(columnName);
+					
+					// 二、设置字段排序规则
+					if (item.isAsc()) {
+						queryWrapper.orderByAsc(columnName);
+					} else {
+						queryWrapper.orderByDesc(columnName);
+					}
+				}
+			}
+			return;
+		}
+		
 		//update-begin-author:scott date:2022-11-07 for:避免用户自定义表无默认字段{创建时间}，导致排序报错
 		//TODO 避免用户自定义表无默认字段创建时间，导致排序报错
 		if(DataBaseConstant.CREATE_TIME.equals(column) && !fieldColumnMap.containsKey(DataBaseConstant.CREATE_TIME)){
@@ -352,9 +414,11 @@ public class QueryGenerator {
                 }
 				// update-begin-author:sunjianlei date:20220119 for: 【JTC-573】 过滤空条件查询，防止 sql 拼接多余的 and
 				List<QueryCondition> filterConditions = conditions.stream().filter(
-						rule -> oConvertUtils.isNotEmpty(rule.getField())
-								&& oConvertUtils.isNotEmpty(rule.getRule())
-								&& oConvertUtils.isNotEmpty(rule.getVal())
+						rule -> (oConvertUtils.isNotEmpty(rule.getField())
+													&& oConvertUtils.isNotEmpty(rule.getRule())
+													&& oConvertUtils.isNotEmpty(rule.getVal())
+												 )
+												|| "empty".equals(rule.getRule())
 				).collect(Collectors.toList());
 				if (filterConditions.size() == 0) {
 					return;
@@ -365,9 +429,12 @@ public class QueryGenerator {
                 queryWrapper.and(andWrapper -> {
                     for (int i = 0; i < filterConditions.size(); i++) {
                         QueryCondition rule = filterConditions.get(i);
-                        if (oConvertUtils.isNotEmpty(rule.getField())
-                                && oConvertUtils.isNotEmpty(rule.getRule())
-                                && oConvertUtils.isNotEmpty(rule.getVal())) {
+                        if (
+								(
+								    oConvertUtils.isNotEmpty(rule.getField()) && oConvertUtils.isNotEmpty(rule.getRule()) && oConvertUtils.isNotEmpty(rule.getVal())
+								)
+							    || "empty".equals(rule.getRule())
+						) {
 
                             log.debug("SuperQuery ==> " + rule.toString());
 
@@ -654,7 +721,11 @@ public class QueryGenerator {
 	 * @param value        查询条件值
 	 */
 	public static void addEasyQuery(QueryWrapper<?> queryWrapper, String name, QueryRuleEnum rule, Object value) {
-		if (name==null || value == null || rule == null || oConvertUtils.isEmpty(value)) {
+		if (
+				(
+				   name==null || value == null || rule == null || oConvertUtils.isEmpty(value)
+				) 
+				  && !QueryRuleEnum.EMPTY.equals(rule)) {
 			return;
 		}
 		name = oConvertUtils.camelToUnderline(name);
@@ -665,6 +736,9 @@ public class QueryGenerator {
 			break;
 		case GE:
 			queryWrapper.ge(name, value);
+			break;
+		case EMPTY:
+			queryWrapper.isNull(name);
 			break;
 		case LT:
 			queryWrapper.lt(name, value);

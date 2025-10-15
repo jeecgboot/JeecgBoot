@@ -45,6 +45,7 @@ public class AiragModel implements Serializable {
      * 创建人
      */
     @Schema(description = "创建人")
+    @Dict(dictTable = "sys_user",dicCode = "username",dicText = "realname")
     private String createBy;
     /**
      * 创建日期
@@ -120,4 +121,11 @@ public class AiragModel implements Serializable {
     @Excel(name = "模型参数", width = 15)
     @Schema(description = "模型参数")
     private String modelParams;
+
+    /**
+     * 是否激活(0=未激活,1=已激活)
+     */
+    @Excel(name = "是否激活", width = 15)
+    @Schema(description = "是否激活")
+    private Integer activateFlag;
 }

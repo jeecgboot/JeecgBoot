@@ -83,4 +83,16 @@ public class AnnouncementSendModel implements Serializable {
 	 * 发布结束日期
 	 */
 	private java.lang.String sendTimeEnd;
+	/**
+	 * 附件
+	 */
+	private java.lang.String files;
+	/**
+	 * 访问量
+	 */
+	private java.lang.Integer visitsNum;
+	/**
+	 * 是否置顶（0否 1是）
+	 */
+	private java.lang.Integer izTop;
 }

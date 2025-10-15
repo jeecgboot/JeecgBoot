@@ -18,20 +18,33 @@ services:
       --max_allowed_packet=128M
       --default-authentication-plugin=caching_sha2_password
     ports:
-      - 3306:3306
+      - 13306:3306
     networks:
       - jeecg-boot
 
   jeecg-boot-redis:
     image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/redis:5.0
-    ports:
-      - 6379:6379
+#    ports:
+#      - 6379:6379
     restart: always
     hostname: jeecg-boot-redis
     container_name: jeecg-boot-redis
     networks:
       - jeecg-boot
 
+  jeecg-boot-pgvector:
+    image: registry.cn-hangzhou.aliyuncs.com/jeecgdocker/pgvector
+    container_name: jeecg-boot-pgvector
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vector_db
+    ports:
+      - 5432:5432
+    restart: always
+    networks:
+      - jeecg-boot
+      
   jeecg-boot-nacos:
     restart: always
     build:
@@ -96,31 +109,37 @@ services:
 #    environment:
 #      RABBITMQ_DEFAULT_USER: guest
 #      RABBITMQ_DEFAULT_PASS: guest
-#  jeecg-boot-sentinel:
-#    restart: on-failure
-#    build:
-#      context: ./jeecg-visual/jeecg-cloud-sentinel
-#    ports:
-#      - 9000:9000
-#    depends_on:
-#      - jeecg-boot-nacos
-#      - jeecg-boot-demo
-#      - jeecg-boot-system
-#      - jeecg-boot-gateway
-#    container_name: jeecg-boot-sentinel
-#    hostname: jeecg-boot-sentinel
-#
-#  jeecg-boot-xxljob:
-#    build:
-#      context: ./jeecg-visual/jeecg-cloud-xxljob
-#    ports:
-#      - 9080:9080
-#    container_name: jeecg-boot-xxljob
-#    hostname: jeecg-boot-xxljob
 
+  jeecg-boot-sentinel:
+     restart: on-failure
+     build:
+       context: ./jeecg-boot/jeecg-server-cloud/jeecg-visual/jeecg-cloud-sentinel
+     ports:
+       - 9000:9000
+     depends_on:
+       - jeecg-boot-nacos
+       - jeecg-boot-demo
+       - jeecg-boot-system
+       - jeecg-boot-gateway
+     container_name: jeecg-boot-sentinel
+     hostname: jeecg-boot-sentinel
+     networks:
+       - jeecg-boot
+  
+  jeecg-boot-xxljob:
+     build:
+       context: ./jeecg-boot/jeecg-server-cloud/jeecg-visual/jeecg-cloud-xxljob
+     ports:
+       - 9080:9080
+     container_name: jeecg-boot-xxljob
+     hostname: jeecg-boot-xxljob
+     networks:
+       - jeecg-boot
+  
   jeecg-vue:
     build:
       context: ./jeecgboot-vue3
+      dockerfile: Dockerfile.cloud
     container_name: jeecgboot-vue3-nginx
     image: jeecgboot-vue3
     depends_on:

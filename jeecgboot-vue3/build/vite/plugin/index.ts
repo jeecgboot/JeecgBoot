@@ -16,6 +16,8 @@ import { configVisualizerConfig } from './visualizer';
 import { configThemePlugin } from './theme';
 import { configSvgIconsPlugin } from './svgSprite';
 import { configQiankunMicroPlugin } from './qiankunMicro';
+// // electron plugin
+// import { configElectronPlugin } from "./electron";
 // //预编译加载插件(不支持vite3作废)
 // import OptimizationPersist from 'vite-plugin-optimize-persist';
 // import PkgConfig from 'vite-plugin-package-config';
@@ -67,6 +69,12 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, isQiankunM
     // vite-plugin-qiankun
     vitePlugins.push(...configQiankunMicroPlugin(viteEnv))
   }
+
+  // // electron plugin
+  // const isElectron = viteEnv.VITE_GLOB_RUN_PLATFORM === 'electron';
+  // if (isElectron) {
+  //   vitePlugins.push(configElectronPlugin(viteEnv, isBuild))
+  // }
 
   // The following plugins only work in the production environment
   if (isBuild) {

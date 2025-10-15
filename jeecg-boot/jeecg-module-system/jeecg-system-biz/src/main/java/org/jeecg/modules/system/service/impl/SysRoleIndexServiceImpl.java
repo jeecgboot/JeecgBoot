@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.constant.DefIndexConst;
 import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.mapper.SysRoleIndexMapper;
@@ -11,7 +12,9 @@ import org.jeecg.modules.system.service.ISysRoleIndexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.List;
 /**
  * @Description: 角色首页配置
  * @Author: jeecg-boot
@@ -53,6 +56,7 @@ public class SysRoleIndexServiceImpl extends ServiceImpl<SysRoleIndexMapper, Sys
             entity.setUrl(url);
             entity.setComponent(component);
             entity.setRoute(isRoute);
+            entity.setRelationType(CommonConstant.HOME_RELATION_DEFAULT);
             success = super.updateById(entity);
         }
         // 4. 清理缓存
@@ -80,12 +84,70 @@ public class SysRoleIndexServiceImpl extends ServiceImpl<SysRoleIndexMapper, Sys
         entity.setComponent(indexComponent);
         entity.setRoute(isRoute);
         entity.setStatus(CommonConstant.STATUS_1);
+        entity.setRelationType(CommonConstant.HOME_RELATION_DEFAULT);
         return entity;
     }
 
     @Override
     public void cleanDefaultIndexCache() {
         redisUtil.del(DefIndexConst.CACHE_KEY + "::" + DefIndexConst.DEF_INDEX_ALL);
+    }
+
+    /**
+     * 切换默认门户
+     * @param sysRoleIndex
+     */
+    @Override
+    public void changeDefHome(SysRoleIndex sysRoleIndex) {
+        // 1. 先查询出配置信息
+        String username = sysRoleIndex.getRoleCode();
+        //当前状态(1:工作台/门户 0：菜单默认)
+        String status = sysRoleIndex.getStatus();
+        LambdaQueryWrapper<SysRoleIndex> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysRoleIndex::getRoleCode, username);
+        queryWrapper.eq(SysRoleIndex::getRelationType,CommonConstant.HOME_RELATION_USER);
+        queryWrapper.orderByAsc(SysRoleIndex::getPriority);
+        List<SysRoleIndex> list = super.list(queryWrapper);
+        boolean success = false;
+        if(CommonConstant.STATUS_1.equalsIgnoreCase(status)){
+            // 2. 如果存在则编辑
+            if (!CollectionUtils.isEmpty(list)) {
+                sysRoleIndex.setId(list.get(0).getId());
+                sysRoleIndex.setStatus(CommonConstant.STATUS_1);
+                sysRoleIndex.setRoute(true);
+                success = super.updateById(sysRoleIndex);
+            } else {
+                // 3. 如果不存在则新增
+                sysRoleIndex.setRelationType(CommonConstant.HOME_RELATION_USER);
+                sysRoleIndex.setStatus(CommonConstant.STATUS_1);
+                sysRoleIndex.setRoute(true);
+                success = super.save(sysRoleIndex);
+            }
+        }else {
+            // 0：菜单默认，则是菜单默认首页
+            if (!CollectionUtils.isEmpty(list)) {
+                //将用户级别的首页配置状态设置成0
+                for (int i = 0; i < list.size(); i++) {
+                    SysRoleIndex roleIndex = list.get(i);
+                    roleIndex.setStatus(CommonConstant.STATUS_0);
+                    success = super.updateById(roleIndex);
+                }
+            }
+        }
+        // 4. 清理缓存
+        if (success) {
+            this.cleanDefaultIndexCache();
+            redisUtil.del(DefIndexConst.CACHE_TYPE + username);
+        }
+        // 5. 缓存类型
+        //当前地址
+        String url = sysRoleIndex.getUrl();
+        //首页类型(默认首页)
+        String type = DefIndexConst.HOME_TYPE_MENU;
+        if(oConvertUtils.isNotEmpty(url) && CommonConstant.STATUS_1.equalsIgnoreCase(status)){
+           type = url.contains(DefIndexConst.HOME_TYPE_SYSTEM) ? DefIndexConst.HOME_TYPE_SYSTEM : DefIndexConst.HOME_TYPE_PERSONAL;
+        }
+        redisUtil.set(DefIndexConst.CACHE_TYPE + username,type);
     }
 
 }

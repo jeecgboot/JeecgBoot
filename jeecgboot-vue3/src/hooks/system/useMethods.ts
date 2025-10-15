@@ -22,12 +22,23 @@ export function useMethods() {
    */
   async function exportXls(name, url, params, isXlsx = false) {
     //update-begin---author:wangshuai---date:2024-01-25---for:【QQYUN-8118】导出超时时间设置长点---
-    const data = await defHttp.get({ url: url, params: params, responseType: 'blob', timeout: 60000 }, { isTransformResponse: false });
+    // 修改为返回原生 response，便于获取 headers
+    const response = await defHttp.get(
+      { url: url, params: params, responseType: 'blob', timeout: 60000 },
+      { isTransformResponse: false, isReturnNativeResponse: true }
+    );
     //update-end---author:wangshuai---date:2024-01-25---for:【QQYUN-8118】导出超时时间设置长点---
-    if (!data) {
+    if (!response || !response.data) {
       createMessage.warning('文件下载失败');
       return;
     }
+    // 判断 header 中 content-disposition 是否包含 .xlsx
+    let isXlsxByHeader = isXlsx;
+    const disposition = response.headers && response.headers['content-disposition'];
+    if (disposition && disposition.indexOf('.xlsx') !== -1) {
+      isXlsxByHeader = true;
+    }
+    const data = response.data;
     //update-begin---author:wangshuai---date:2024-04-18---for: 导出excel失败提示，不进行导出---
     let reader = new FileReader()
     reader.readAsText(data, 'utf-8')
@@ -40,16 +51,16 @@ export function useMethods() {
             if (!success) {
               createMessage.warning('导出失败，失败原因：' + message);
             } else {
-              exportExcel(name, isXlsx, data);
+              exportExcel(name, isXlsxByHeader, data);
             }
             return;
           } catch (error) {
-            exportExcel(name, isXlsx, data);
+            exportExcel(name, isXlsxByHeader, data);
           }
           // update-end---author:liaozhiyang---date:2025-02-11---for:【issues/7738】文件中带"success"导出报错 ---
         }
       }
-      exportExcel(name, isXlsx, data);
+      exportExcel(name, isXlsxByHeader, data);
       //update-end---author:wangshuai---date:2024-04-18---for: 导出excel失败提示，不进行导出---
     }
   }

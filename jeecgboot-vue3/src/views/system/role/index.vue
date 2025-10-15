@@ -184,10 +184,6 @@
           confirm: handleDelete.bind(null, record),
         },
       },
-      {
-        label: '首页配置',
-        onClick: handleIndexConfig.bind(null, record.roleCode),
-      },
     ];
   }
 </script>

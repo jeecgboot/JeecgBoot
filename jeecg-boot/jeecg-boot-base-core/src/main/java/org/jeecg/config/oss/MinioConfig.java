@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * Minio文件上传配置文件
  * @author: jeecg-boot
  */
+@Lazy(false)
 @Slf4j
 @Configuration
 @ConditionalOnProperty(prefix = "jeecg.minio", name = "minio_url")

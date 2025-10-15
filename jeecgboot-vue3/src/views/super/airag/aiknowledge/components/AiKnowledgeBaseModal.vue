@@ -1,6 +1,16 @@
 <template>
   <div class="p-2">
     <BasicModal destroyOnClose @register="registerModal" :canFullscreen="false" width="600px" :title="title" @ok="handleOk" @cancel="handleCancel">
+      <template #title>
+         <span style="display: flex">
+          {{title}}
+          <a-tooltip title="AI知识库文档">
+            <a style="color: unset" href="https://help.jeecg.com/aigc/guide/knowledge" target="_blank">
+              <Icon style="position:relative;left:2px;top:1px" icon="ant-design:question-circle-outlined"></Icon>
+            </a>
+          </a-tooltip>
+        </span>
+      </template>
       <BasicForm @register="registerForm"></BasicForm>
     </BasicModal>
   </div>

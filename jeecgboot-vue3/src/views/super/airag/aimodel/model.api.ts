@@ -4,6 +4,7 @@ import { Modal } from 'ant-design-vue';
 enum Api {
   list = '/airag/airagModel/list',
   save = '/airag/airagModel/add',
+  testConn = '/airag/airagModel/test',
   delete = '/airag/airagModel/delete',
   queryById = '/airag/airagModel/queryById',
   edit = '/airag/airagModel/edit',
@@ -44,12 +45,21 @@ export const editModel = (params) => {
 };
 
 /**
+ * 测试链接
+ *
+ * @param params
+ */
+export const testConn = (params) => {
+  return defHttp.post({ url: Api.testConn, params });
+};
+
+/**
  * 删除数据权限
  */
 export const deleteModel = (params, handleSuccess) => {
   Modal.confirm({
     title: '确认删除',
-    content: '是否删除名称为'+params.name+'的模型吗？',
+    content: '是否删除名称为' + params.name + '的模型吗？',
     okText: '确认',
     cancelText: '取消',
     onOk: () => {

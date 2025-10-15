@@ -17,7 +17,7 @@ declare global {
 
   // vue
   declare type PropType<T> = VuePropType<T>;
-  declare type VueNode = VNodeChild | JSX.Element;
+  declare type VueNode = VNodeChild | JSX.Element | JSX.IntrinsicElements;
 
   export type Writable<T> = {
     -readonly [P in keyof T]: T[P];
@@ -63,6 +63,8 @@ declare global {
     VITE_GLOB_QIANKUN_MICRO_APP_NAME?: string;
     // 【JEECG作为乾坤子应用】非必填，需与qiankun主应用注册子应用时填写的 entry 保持一致
     VITE_GLOB_QIANKUN_MICRO_APP_ENTRY?: string;
+    // 当前运行在什么平台
+    VITE_GLOB_RUN_PLATFORM?: 'web' | 'electron';
   }
 
   declare function parseInt(s: string | number, radix?: number): number;

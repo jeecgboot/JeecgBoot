@@ -13,6 +13,7 @@ enum TableActionEnum {
   CLOSE_RIGHT,
   CLOSE_OTHER,
   CLOSE_CURRENT,
+  HOME_DESIGN,
   CLOSE,
 }
 
@@ -66,6 +67,10 @@ export function useTabs(_router?: Router) {
         await tabStore.refreshPage(router);
         break;
 
+      case TableActionEnum.HOME_DESIGN:
+        await tabStore.changeDesign(router);
+        break;
+
       case TableActionEnum.CLOSE_ALL:
         await tabStore.closeAllTab(router);
         break;
@@ -111,6 +116,7 @@ export function useTabs(_router?: Router) {
 
   return {
     refreshPage: () => handleTabAction(TableActionEnum.REFRESH),
+    changeDesign: () => handleTabAction(TableActionEnum.HOME_DESIGN),
     // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
     closeAll: (tab) => handleTabAction(TableActionEnum.CLOSE_ALL, tab),
     closeLeft: (tab) => handleTabAction(TableActionEnum.CLOSE_LEFT, tab),

@@ -69,6 +69,12 @@ public class LoginUser {
 	private String avatar;
 
 	/**
+	 * 工号
+	 */
+	@SensitiveField
+	private String workNo;
+
+	/**
 	 * 生日
 	 */
 	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
@@ -138,4 +144,8 @@ public class LoginUser {
 	/**设备id uniapp推送用*/
 	private String clientId;
 
+	/**
+	 * 主岗位
+	 */
+	private String mainDepPostId;
 }

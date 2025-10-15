@@ -106,8 +106,8 @@ public class ShiroRealm extends AuthorizingRealm {
         try {
             loginUser = this.checkUserTokenIsEffect(token);
         } catch (AuthenticationException e) {
+            log.error("—————校验 check token 失败——————————"+ e.getMessage(), e);
             JwtUtil.responseError(SpringContextUtils.getHttpServletResponse(),401,e.getMessage());
-            e.printStackTrace();
             return null;
         }
         return new SimpleAuthenticationInfo(loginUser, token, getName());
@@ -122,7 +122,7 @@ public class ShiroRealm extends AuthorizingRealm {
         // 解密获得username，用于和数据库进行对比
         String username = JwtUtil.getUsername(token);
         if (username == null) {
-            throw new AuthenticationException("token非法无效!");
+            throw new AuthenticationException("Token非法无效!");
         }
 
         // 查询用户信息

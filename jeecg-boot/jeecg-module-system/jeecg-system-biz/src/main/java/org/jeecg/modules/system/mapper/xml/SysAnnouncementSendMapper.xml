@@ -16,6 +16,9 @@
 		<result column="bus_type" property="busType" jdbcType="VARCHAR"/>
 		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
 		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
+		<result column="files" property="files" jdbcType="VARCHAR"/>
+		<result column="visits_num" property="visitsNum" jdbcType="INTEGER"/>
+		<result column="iz_top" property="izTop" jdbcType="INTEGER"/>
 	</resultMap>
 	
 	<select id="getMyAnnouncementSendList" parameterType="Object"  resultMap="AnnouncementSendModel">
@@ -34,7 +37,10 @@
 	   		sa.bus_type as bus_type,
 			sa.open_type as open_type,
 			sa.open_page as open_page,
-			sa.msg_abstract
+			sa.msg_abstract,
+			sa.files,
+			sa.visits_num,
+		    sa.iz_top
 	   from sys_announcement_send sas
 	   left join sys_announcement sa ON sas.annt_id = sa.id
 	   where sa.send_status = '1'
@@ -62,7 +68,7 @@
 		and announcementSendModel.sendTimeEnd != '' and announcementSendModel.sendTimeEnd != ''">
 			and sa.send_time between #{announcementSendModel.sendTimeBegin} and #{announcementSendModel.sendTimeEnd}
 		</if>
-	   order by sas.read_flag,sa.send_time desc
+	   order by sa.iz_top DESC, sas.read_flag,sa.send_time desc
 	</select>
 
 

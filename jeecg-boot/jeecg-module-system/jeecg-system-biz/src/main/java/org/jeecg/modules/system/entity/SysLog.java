@@ -3,6 +3,7 @@ package org.jeecg.modules.system.entity;
 import java.util.Date;
 
 import org.jeecg.common.aspect.annotation.Dict;
+import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -41,6 +42,7 @@ public class SysLog implements Serializable {
 	/**
 	 * 创建时间
 	 */
+	@Excel(name = "创建时间", width = 20, format = "yyyy-MM-dd HH:mm:ss")
 	@JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
 	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private Date createTime;
@@ -58,11 +60,13 @@ public class SysLog implements Serializable {
 	/**
 	 * 耗时
 	 */
+	@Excel(name = "耗时（毫秒）", width = 15)
 	private Long costTime;
 
 	/**
 	 * IP
 	 */
+	@Excel(name = "IP", width = 15)
 	private String ip;
 
 	/**
@@ -91,10 +95,12 @@ public class SysLog implements Serializable {
 	/**
 	 * 操作人用户账户
 	 */
+	@Excel(name = "操作人", width = 15)
 	private String userid;
 	/**
 	 * 操作详细日志
 	 */
+	@Excel(name = "日志内容", width = 50)
 	private String logContent;
 
 	/**
@@ -112,6 +118,7 @@ public class SysLog implements Serializable {
 	/**
 	 * 客户终端类型 pc:电脑端 app:手机端 h5:移动网页端
 	 */
+	@Excel(name = "客户端类型", width = 15, dicCode = "client_type")
 	@Dict(dicCode = "client_type")
 	private String clientType;
 

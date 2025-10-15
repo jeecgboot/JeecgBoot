@@ -68,6 +68,13 @@ public class DbTypeUtils {
         return dbTypeIf(dbType, DbType.ORACLE, DbType.ORACLE_12C, DbType.DM);
     }
 
+    /**
+     * 是否是达梦
+     */
+    public static boolean dbTypeIsDm(DbType dbType) {
+        return dbTypeIf(dbType, DbType.DM);
+    }
+
     public static boolean dbTypeIsSqlServer(DbType dbType) {
         return dbTypeIf(dbType, DbType.SQL_SERVER, DbType.SQL_SERVER2005);
     }

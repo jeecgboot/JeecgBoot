@@ -25,6 +25,9 @@
 		<result column="bus_id" property="busId" jdbcType="VARCHAR"/>
 		<result column="open_type" property="openType" jdbcType="VARCHAR"/>
 		<result column="open_page" property="openPage" jdbcType="VARCHAR"/>
+		<result column="files" property="files" jdbcType="VARCHAR"/>
+		<result column="visits_num" property="visitsNum" jdbcType="INTEGER"/>
+		<result column="iz_top" property="izTop" jdbcType="INTEGER"/>
 
 		<result column="read_flag" property="readFlag" jdbcType="INTEGER"/>
 		<result column="star_flag" property="starFlag" jdbcType="VARCHAR"/>
@@ -51,6 +54,9 @@
 		select count(1) from sys_announcement_send sas
 		right join sys_announcement sa on sas.annt_id = sa.id and sa.send_status = '1'
 	    where sas.user_id = #{userId} and sas.read_flag = 0 and sas.create_time &gt;= #{beginDate}
+        <if test="noticeType != null and noticeType != ''">
+            and sa.notice_type = #{noticeType}
+        </if>
 	</select>
 	
 	<!-- 查询消息记录 -->
@@ -71,7 +77,10 @@
 			a.open_page,
 			a.msg_abstract,
 			a.dt_task_id,
-	   		b.read_flag, 
+		    a.files,
+		    a.visits_num,
+		    a.iz_top,
+	   		b.read_flag,
 	   		b.star_flag,
 	   		b.id as send_id
 	   from sys_announcement a
@@ -92,7 +101,16 @@
 		<if test="starFlag!=null and starFlag!=''">
 			and b.star_flag = #{starFlag}
 		</if>
-		order by b.read_flag ASC, a.create_time DESC
+		<if test="busType!=null and busType!=''">
+			and a.bus_type = #{busType}
+		</if>	
+        <if test="noticeType!=null and noticeType!=''">
+			and a.notice_type = #{noticeType}
+		</if>
+		<if test="msgCategory!=null and msgCategory!=''">
+			and a.msg_category = #{msgCategory}
+		</if>
+		order by a.iz_top DESC, b.read_flag ASC, a.create_time DESC
 	</select>
 
 	<!-- 查询用户未阅读的通知公告 -->

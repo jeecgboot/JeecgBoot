@@ -33,9 +33,10 @@ public interface SysAnnouncementMapper extends BaseMapper<SysAnnouncement> {
      * 获取用户未读消息数量
      *
      * @param userId 用户id
+     * @param noticeType
      * @return
      */
-    Integer getUnreadMessageCountByUserId(@Param("userId") String userId, @Param("beginDate") Date beginDate);
+    Integer getUnreadMessageCountByUserId(@Param("userId") String userId, @Param("beginDate") Date beginDate, @Param("noticeType") String noticeType);
 
     /**
      * 分页查询全部消息列表
@@ -44,9 +45,10 @@ public interface SysAnnouncementMapper extends BaseMapper<SysAnnouncement> {
      * @param fromUser
      * @param beginDate
      * @param endDate
+     * @param noticeType
      * @return
      */
-	List<SysAnnouncement> queryAllMessageList(Page<SysAnnouncement> page, @Param("userId")String userId, @Param("fromUser")String fromUser, @Param("starFlag")String starFlag, @Param("beginDate")Date beginDate, @Param("endDate")Date endDate);
+	List<SysAnnouncement> queryAllMessageList(Page<SysAnnouncement> page, @Param("userId")String userId, @Param("fromUser")String fromUser, @Param("starFlag")String starFlag, @Param("busType")String busType, @Param("msgCategory")String msgCategory, @Param("beginDate")Date beginDate, @Param("endDate")Date endDate, @Param("noticeType") String noticeType);
    
     /**
      * 查询用户未阅读的通知公告

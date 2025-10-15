@@ -23,7 +23,25 @@ public enum SysAnnmentTypeEnum {
     /**
      * 邀请用户跳转到个人设置
      */
-    TENANT_INVITE("tenant_invite", "url", "/system/usersetting");
+    TENANT_INVITE("tenant_invite", "url", "/system/usersetting"),
+    /**
+     * 协同工作-待办通知
+     * for [JHHB-136]【vue3】协同工作系统消息需要添加一个类型
+     */
+    EOA_CO_NOTIFY("eoa_co_notify", "url", "/collaboration/pending"),
+    /**
+     * 协同工作-催办通知
+     * for [JHHB-136]【vue3】协同工作系统消息需要添加一个类型
+     */
+    EOA_CO_REMIND("eoa_co_remind", "url", "/collaboration/pending"),
+    /**
+     * 督办管理-催办
+     */
+    EOA_SUP_REMIND("eoa_sup_remind", "url", "/superivse/list"),
+    /**
+     * 督办管理-通知
+     */
+    EOA_SUP_NOTIFY("eoa_sup_notify", "url", "/superivse/list");
 
     /**
      * 业务类型(email:邮件 bpm:流程)

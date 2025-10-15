@@ -13,31 +13,33 @@ import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
- * 资源加载工具类
+ * 枚举字典数据 资源加载工具类
+ *
  * @Author taoYan
  * @Date 2022/7/8 10:40
  **/
 @Slf4j
 public class ResourceUtil {
 
-
+    /**
+     * 多个包扫描根路径
+     *
+     * 之所以让用户手工配置扫描路径，是为了避免不必要的类加载开销，提升启动性能。
+     * 请务必将所有枚举类所在包路径添加到此配置中。
+     */
+    private final static String[] BASE_SCAN_PACKAGES = {
+            "org.jeecg.common.constant.enums",
+            "org.jeecg.modules.message.enums"
+    };
+    
     /**
      * 枚举字典数据
      */
     private final static Map<String, List<DictModel>> enumDictData = new HashMap<>(5);
-
-    /**
-     * 所有java类
-     */
-    private final static String CLASS_PATTERN="/**/*.class";
-
     /**
      * 所有枚举java类
      */
@@ -45,9 +47,9 @@ public class ResourceUtil {
     private final static String CLASS_ENUM_PATTERN="/**/*Enum.class";
 
     /**
-     * 包路径 org.jeecg
+     * 初始化状态标识
      */
-    private final static String BASE_PACKAGE = "org.jeecg";
+    private static volatile boolean initialized = false;
 
     /**
      * 枚举类中获取字典数据的方法名
@@ -55,60 +57,137 @@ public class ResourceUtil {
     private final static String METHOD_NAME = "getDictList";
 
     /**
+     * 获取枚举字典数据
      * 获取枚举类对应的字典数据 SysDictServiceImpl#queryAllDictItems()
-     * @return
+     *
+     * @return 枚举字典数据
      */
-    public static Map<String, List<DictModel>> getEnumDictData(){
-        if(enumDictData.keySet().size()>0){
-            return enumDictData;
-        }
-        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
-        String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + ClassUtils.convertClassNameToResourcePath(BASE_PACKAGE) + CLASS_ENUM_PATTERN;
-        try {
-            Resource[] resources = resourcePatternResolver.getResources(pattern);
-            MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
-            for (Resource resource : resources) {
-                MetadataReader reader = readerFactory.getMetadataReader(resource);
-                String classname = reader.getClassMetadata().getClassName();
-                Class<?> clazz = Class.forName(classname);
-                EnumDict enumDict = clazz.getAnnotation(EnumDict.class);
-                if (enumDict != null) {
-                    EnumDict annotation = clazz.getAnnotation(EnumDict.class);
-                    String key = annotation.value();
-                    if(oConvertUtils.isNotEmpty(key)){
-                        List<DictModel> list = (List<DictModel>) clazz.getDeclaredMethod(METHOD_NAME).invoke(null);
-                        enumDictData.put(key, list);
-                    }
+    public static Map<String, List<DictModel>> getEnumDictData() {
+        if (!initialized) {
+            synchronized (ResourceUtil.class) {
+                if (!initialized) {
+                    long startTime = System.currentTimeMillis();
+                    log.info("【枚举字典加载】开始初始化枚举字典数据...");
+
+                    initEnumDictData();
+                    initialized = true;
+
+                    long endTime = System.currentTimeMillis();
+                    log.info("【枚举字典加载】枚举字典数据初始化完成，共加载 {} 个字典，总耗时: {}ms", enumDictData.size(), endTime - startTime);
                 }
             }
-        }catch (Exception e){
-            log.error("获取枚举类字典数据异常", e.getMessage());
-            // e.printStackTrace();
         }
         return enumDictData;
     }
 
     /**
-     * 用于后端字典翻译 SysDictServiceImpl#queryManyDictByKeys(java.util.List, java.util.List)
-     * @param dictCodeList
-     * @param keys
-     * @return
+     * 使用多包路径扫描方式初始化枚举字典数据
      */
-    public static Map<String, List<DictModel>> queryManyDictByKeys(List<String> dictCodeList, List<String> keys){
-        if(enumDictData.keySet().size()==0){
-            getEnumDictData();
-        }
-        Map<String, List<DictModel>> map = new HashMap<>();
-        for (String code : enumDictData.keySet()) {
-            if(dictCodeList.indexOf(code)<0){
-                continue;
+    private static void initEnumDictData() {
+        ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+
+        long scanStartTime = System.currentTimeMillis();
+        List<Resource> allResources = new ArrayList<>();
+
+        // 扫描多个包路径
+        for (String basePackage : BASE_SCAN_PACKAGES) {
+            String pattern = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + ClassUtils.convertClassNameToResourcePath(basePackage) + CLASS_ENUM_PATTERN;
+
+            try {
+                Resource[] resources = resourcePatternResolver.getResources(pattern);
+                allResources.addAll(Arrays.asList(resources));
+                log.debug("【枚举字典加载】扫描包 {} 找到 {} 个枚举类文件", basePackage, resources.length);
+            } catch (Exception e) {
+                log.warn("【枚举字典加载】扫描包 {} 时出现异常: {}", basePackage, e.getMessage());
             }
-            List<DictModel> dictItemList = enumDictData.get(code);
-            List<DictModel> list = new ArrayList<>();
-            for(DictModel dm: dictItemList){
-                String value = dm.getValue();
-                if(keys.indexOf(value)<0){
-                   continue; 
+        }
+
+        long scanEndTime = System.currentTimeMillis();
+        log.info("【枚举字典加载】文件扫描完成，总共找到 {} 个枚举类文件，扫描耗时: {}ms", allResources.size(), scanEndTime - scanStartTime);
+
+        MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
+
+        long processStartTime = System.currentTimeMillis();
+        int processedCount = 0;
+
+        for (Resource resource : allResources) {
+            try {
+                MetadataReader reader = readerFactory.getMetadataReader(resource);
+                String classname = reader.getClassMetadata().getClassName();
+
+                // 提前检查是否有@EnumDict注解，避免不必要的Class.forName
+                if (hasEnumDictAnnotation(reader)) {
+                    processEnumClass(classname);
+                    processedCount++;
+                }
+            } catch (Exception e) {
+                log.debug("处理资源异常: {} - {}", resource.getFilename(), e.getMessage());
+            }
+        }
+
+        long processEndTime = System.currentTimeMillis();
+        log.info("【枚举字典加载】处理完成，实际处理 {} 个带注解的枚举类，处理耗时: {}ms", processedCount, processEndTime - processStartTime);
+    }
+
+    /**
+     * 检查类是否有EnumDict注解（通过元数据，避免类加载）
+     */
+    private static boolean hasEnumDictAnnotation(MetadataReader reader) {
+        try {
+            return reader.getAnnotationMetadata().hasAnnotation(EnumDict.class.getName());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 处理单个枚举类
+     */
+    private static void processEnumClass(String classname) {
+        try {
+            Class<?> clazz = Class.forName(classname);
+            EnumDict enumDict = clazz.getAnnotation(EnumDict.class);
+
+            if (enumDict != null) {
+                String key = enumDict.value();
+                if (oConvertUtils.isNotEmpty(key)) {
+                    Method method = clazz.getDeclaredMethod(METHOD_NAME);
+                    List<DictModel> list = (List<DictModel>) method.invoke(null);
+                    enumDictData.put(key, list);
+                    log.debug("成功加载枚举字典: {} -> {}", key, classname);
+                }
+            }
+        } catch (Exception e) {
+            log.debug("处理枚举类异常: {} - {}", classname, e.getMessage());
+        }
+    }
+
+    /**
+     * 用于后端字典翻译 SysDictServiceImpl#queryManyDictByKeys(java.util.List, java.util.List)
+     *
+     * @param dictCodeList 字典编码列表
+     * @param keys         键值列表
+     * @return 字典数据映射
+     */
+    public static Map<String, List<DictModel>> queryManyDictByKeys(List<String> dictCodeList, List<String> keys) {
+        Map<String, List<DictModel>> enumDict = getEnumDictData();
+        Map<String, List<DictModel>> map = new HashMap<>();
+
+        // 使用更高效的查找方式
+        Set<String> dictCodeSet = new HashSet<>(dictCodeList);
+        Set<String> keySet = new HashSet<>(keys);
+
+        for (String code : enumDict.keySet()) {
+            if (dictCodeSet.contains(code)) {
+                List<DictModel> dictItemList = enumDict.get(code);
+                for (DictModel dm : dictItemList) {
+                    String value = dm.getValue();
+                    if (keySet.contains(value)) {
+                        List<DictModel> list = new ArrayList<>();
+                        list.add(new DictModel(value, dm.getText()));
+                        map.put(code, list);
+                        break;
+                    }
                 }
                 list.add(new DictModel(value, dm.getText()));
             }
@@ -116,22 +195,5 @@ public class ResourceUtil {
         }
         return map;
     }
-
-    /**
-     * 获取实现类
-     * 
-     * @param classPath 
-     */
-    public static Object getImplementationClass(String classPath){
-        try {
-            Class<?> aClass = Class.forName(classPath);
-            return SpringContextUtils.getBean(aClass);
-        } catch (ClassNotFoundException e) {
-            log.error("类没有找到",e);
-            return null;
-        } catch (NoSuchBeanDefinitionException e){
-            log.error(classPath + "没有实现",e);
-            return null;
-        }
-    }
+    
 }

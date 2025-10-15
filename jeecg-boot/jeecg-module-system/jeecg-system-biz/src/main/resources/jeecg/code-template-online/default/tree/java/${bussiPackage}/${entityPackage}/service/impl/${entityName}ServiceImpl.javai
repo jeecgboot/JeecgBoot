@@ -177,7 +177,7 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
      */
     private ${entityName} getTreeRoot(String pidVal){
         ${entityName} data =  baseMapper.selectById(pidVal);
-        if(data != null && !I${entityName}Service.ROOT_PID_VALUE.equals(data.get${pidFieldName?cap_first}())){
+        if(data != null && !I${entityName}Service.ROOT_PID_VALUE.equals(data.get${pidFieldName?cap_first}()) && !data.get${pidFieldName?cap_first}().equals(data.getId())){
             return this.getTreeRoot(data.get${pidFieldName?cap_first}());
         }else{
             return data;

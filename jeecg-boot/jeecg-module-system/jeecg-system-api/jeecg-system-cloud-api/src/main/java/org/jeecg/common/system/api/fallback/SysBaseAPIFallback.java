@@ -3,9 +3,11 @@ package org.jeecg.common.system.api.fallback;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
 import org.jeecg.common.api.dto.message.*;
+import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
@@ -342,6 +344,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     }
 
     @Override
+    public void sendSmsMsg(String phone, JSONObject params, DySmsEnum dySmsEnum) {
+
+    }
+
+    @Override
     public List<Map> getDeptUserByOrgCode(String orgCode) {
         return null;
     }
@@ -464,4 +471,33 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
         return false;
     }
 
+    @Override
+    public void announcementAutoRelease(String dataId, String currentUserName) {
+
+    }
+
+    @Override
+    public SysDepartModel queryCompByOrgCode(String orgCode) {
+        return null;
+    }
+
+    @Override
+    public SysDepartModel queryCompByOrgCodeAndLevel(String orgCode, Integer level) {
+        return null;
+    }
+
+    @Override
+    public Object runAiragFlow(AiragFlowDTO airagFlowDTO) {
+        return null;
+    }
+
+    @Override
+    public String getDepartPathNameByOrgCode(String orgCode, String depId) {
+        return "";
+    }
+
+    @Override
+    public List<String> queryUserIdsByCascadeDeptIds(List<String> deptIds) {
+        return null;
+    }
 }

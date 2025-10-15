@@ -3,6 +3,8 @@
     v-bind="attrs_"
     v-model:value="state"
     :options="getOptions"
+    show-search
+    :filter-option="filterOption"
     @change="handleChange"
     @dropdownVisibleChange="handleFetch"
     @popupScroll="handlePopupScroll"
@@ -123,9 +125,22 @@
         }, [] as OptionsItem[]);
       });
       // update-begin--author:liaozhiyang---date:20240823---for：【issues/6999】ApiSelect联动更新字段不生效（代码还原）
-      watchEffect(() => {
-        props.immediate && fetch();
-      });
+      // update-begin--author:liaozhiyang---date:20250707---for:【issues/8527】apiSelect分页加载重复请求
+      watch(
+        () => props.immediate,
+        () => {
+          props.immediate && fetch();
+        },
+        { immediate: true }
+      );
+      watch(
+        () => [props.api, props.pageConfig, props.resultField, props.params],
+        () => {
+          props.immediate && fetch();
+        },
+        { deep: true }
+      );
+      // update-end--author:liaozhiyang---date:20250707---for:【issues/8527】apiSelect分页加载重复请求
       // update-end--author:liaozhiyang---date:20240823---for：【issues/6999】ApiSelect联动更新字段不生效（代码还原）
 
       watch(
@@ -139,7 +154,14 @@
       watchEffect(() => {
         props.value && handleFetch();
       });
-
+      /**
+       * 筛选流程
+       * @param input
+       * @param option
+       */
+      const filterOption = (input: string, option: any) => {
+        return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0 || option.label.indexOf(input) >= 0;
+      };
       async function fetch() {
         const api = props.api;
         if (!api || !isFunction(api)) return;
@@ -177,7 +199,7 @@
         } finally {
           loading.value = false;
           //--@updateBy-begin----author:liusq---date:20210914------for:判断选择模式，multiple多选情况下的value值空的情况下需要设置为数组------
-          unref(attrs).mode == 'multiple' && !Array.isArray(unref(state)) && setState([]);
+          ['multiple', 'tags'].includes(unref(attrs).mode) && !Array.isArray(unref(state)) && setState([]);
           //--@updateBy-end----author:liusq---date:20210914------for:判断选择模式，multiple多选情况下的value值空的情况下需要设置为数组------
 
           //update-begin---author:wangshuai ---date:20230505  for：初始化value值，如果是多选字符串的情况下显示不出来------------
@@ -189,7 +211,7 @@
       function initValue() {
         let value = props.value;
         // update-begin--author:liaozhiyang---date:20250407---for：【issues/8037】初始化值单选的值被错误地写入数组值
-        if (unref(attrs).mode == 'multiple') {
+        if (['multiple', 'tags'].includes(unref(attrs).mode)) {
           if (value && typeof value === 'string' && value != 'null' && value != 'undefined') {
             state.value = value.split(',');
           } else if (isNumber(value)) {
@@ -227,7 +249,7 @@
         }
       }
       // update-end--author:liusq---date:20250407---for：【QQYUN-11831】ApiSelect 分页下拉方案 #7883
-      return { state, attrs_, attrs, getOptions, loading, t, handleFetch, handleChange, handlePopupScroll };
+      return { state, attrs_, attrs, getOptions, loading, t, handleFetch, handleChange, handlePopupScroll,filterOption };
     },
   });
 </script>
