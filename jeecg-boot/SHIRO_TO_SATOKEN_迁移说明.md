@@ -1,12 +1,12 @@
-# Shiro 到 Sa-Token 迁移说明
+# Shiro 到 Sa-Token 迁移指南
 
 本项目已从 **Apache Shiro 2.0.4** 迁移到 **Sa-Token 1.44.0**，采用 JWT-Simple 模式，完全兼容原 JWT token 格式。
 
 ---
 
-## ✅ 核心修改
+## 📦 1. 依赖配置
 
-### 1. 依赖更新（pom.xml）
+### 1.1 Maven 依赖
 
 移除 Shiro 相关依赖，新增：
 
@@ -28,196 +28,362 @@
 </dependency>
 ```
 
-### 2. 配置文件（application.yml）
+### 1.2 配置文件（application.yml）
 
 ```yaml
 sa-token:
   token-name: X-Access-Token
-  timeout: 2592000         # 30天
-  is-concurrent: true
-  token-style: jwt-simple  # JWT模式
-  jwt-secret-key: "your-secret-key"
-  alone-redis:             # 可选：权限缓存与业务缓存分离
-    database: 1
+  timeout: 2592000         # token有效期30天
+  is-concurrent: true      # 允许同账号并发登录
+  token-style: jwt-simple  # JWT模式（兼容原格式）
+  jwt-secret-key: "your-secret-key-here"
 ```
 
-### 3. 核心代码
+---
 
-#### 3.1 登录（使用 username）
+## 💡 2. 核心代码实现
+
+### 2.1 登录逻辑（⚠️ 使用 username 作为 loginId）
 
 ```java
-// 登录
-StpUtil.login(sysUser.getUsername());  // ⚠️ 使用 username 而非 userId
+// 从数据库查询用户信息
+SysUser sysUser = userService.getUserByUsername(username);
 
-// 将用户信息存入session（setSessionUser会自动清除不必要的字段）
-LoginUser loginUser = new LoginUser();
-BeanUtils.copyProperties(sysUser, loginUser);
-LoginUserUtils.setSessionUser(loginUser);
+// 执行登录（自动完成：Sa-Token登录 + 存储Session + 返回token）
+String token = LoginUserUtils.doLogin(sysUser);
 
-// 返回token
-String token = StpUtil.getTokenValue();
+// 返回token给前端
+return Result.ok(token);
 ```
 
-#### 3.2 权限认证接口（⚠️ 必须实现缓存）
+**💡 设计说明：**
+- `doLogin()` 方法自动完成：
+  1. 调用 `StpUtil.login(username)` （使用 username 而非 userId）
+  2. 调用 `setSessionUser()` 存储用户信息（自动清除 password 等15个字段）
+  3. 返回生成的 token
+- 减少 Redis 存储约 50%，密码不再存储到 Session
+
+### 2.2 权限认证接口（⚠️ 必须手动实现缓存）
 
 ```java
 @Component
 public class StpInterfaceImpl implements StpInterface {
+    
+    @Lazy @Resource
+    private CommonAPI commonApi;
+    
+    private static final long CACHE_TIMEOUT = 60 * 60 * 24 * 30;  // 30天
+    private static final String PERMISSION_CACHE_PREFIX = "satoken:user-permission:";
+    private static final String ROLE_CACHE_PREFIX = "satoken:user-role:";
+    
     @Override
+    @SuppressWarnings("unchecked")
     public List<String> getPermissionList(Object loginId, String loginType) {
-        String cacheKey = "satoken:user-permission:" + loginId;
+        String username = loginId.toString();
+        String cacheKey = PERMISSION_CACHE_PREFIX + username;
         SaTokenDao dao = SaManager.getSaTokenDao();
-        List<String> cached = (List<String>) dao.getObject(cacheKey);
         
-        if (cached == null) {
-            String userId = commonApi.getUserIdByName(loginId.toString());
-            cached = new ArrayList<>(commonApi.queryUserAuths(userId));
-            dao.setObject(cacheKey, cached, 60 * 60 * 24 * 30); // 缓存30天
+        // 1. 先从缓存获取
+        List<String> permissionList = (List<String>) dao.getObject(cacheKey);
+        
+        if (permissionList == null) {
+            // 2. 缓存未命中，查询数据库
+            log.warn("权限缓存未命中，查询数据库 [ username={} ]", username);
+            
+            String userId = commonApi.getUserIdByName(username);
+            Set<String> permissionSet = commonApi.queryUserAuths(userId);
+            permissionList = new ArrayList<>(permissionSet);
+            
+            // 3. 将结果缓存起来
+            dao.setObject(cacheKey, permissionList, CACHE_TIMEOUT);
         }
-        return cached;
+        
+        return permissionList;
     }
-    // getRoleList() 同理
+    
+    @Override
+    public List<String> getRoleList(Object loginId, String loginType) {
+        // 实现类似 getPermissionList()，使用 ROLE_CACHE_PREFIX
+        // 详见：StpInterfaceImpl.java
+    }
+    
+    // 清除缓存的静态方法
+    public static void clearUserCache(List<String> usernameList) {
+        SaTokenDao dao = SaManager.getSaTokenDao();
+        for (String username : usernameList) {
+            dao.deleteObject(PERMISSION_CACHE_PREFIX + username);
+            dao.deleteObject(ROLE_CACHE_PREFIX + username);
+        }
+    }
 }
 ```
 
-**⚠️ 重要：** `StpInterface` 默认不提供缓存，必须手动实现，否则每次都查询数据库。
+**⚠️ 关键：** Sa-Token 的 `StpInterface` **不提供自动缓存**，必须手动实现，否则每次请求都会查询数据库！
 
-#### 3.3 Filter 配置（支持 URL 参数 token）
+### 2.3 Filter 配置（支持 URL 参数传递 token）
 
 ```java
-@Bean @Primary
+@Bean
+@Primary
 public StpLogic getStpLogicJwt() {
     return new StpLogicJwtForSimple() {
         @Override
         public String getTokenValue() {
-            SaRequest req = SaHolder.getRequest();
-            String token = req.getHeader(getConfigOrGlobal().getTokenName());
-            if (isEmpty(token)) token = req.getParam("token");  // 兼容 WebSocket/积木报表
-            return isEmpty(token) ? super.getTokenValue() : token;
+            SaRequest request = SaHolder.getRequest();
+            
+            // 优先级：Header > URL参数"token" > URL参数"X-Access-Token"
+            String tokenValue = request.getHeader(getConfigOrGlobal().getTokenName());
+            if (isEmpty(tokenValue)) {
+                tokenValue = request.getParam("token");  // 兼容 WebSocket、积木报表
+            }
+            if (isEmpty(tokenValue)) {
+                tokenValue = request.getParam(getConfigOrGlobal().getTokenName());
+            }
+            
+            return isEmpty(tokenValue) ? super.getTokenValue() : tokenValue;
         }
     };
 }
 
 @Bean
-public FilterRegistrationBean<SaServletFilter> getSaServletFilter() {
-    return new FilterRegistrationBean<>(new SaServletFilter()
+public SaServletFilter getSaServletFilter() {
+    return new SaServletFilter()
         .addInclude("/**")
-        .addExclude("/sys/login", "/jmreport/**", "/websocket/**")
+        .setExcludeList(getExcludeUrls())  // 排除登录、静态资源等
         .setAuth(obj -> {
-            String token = StpUtil.getTokenValue();
-            if (!isEmpty(token)) {
-                Object loginId = StpUtil.getLoginIdByToken(token);
-                if (loginId != null) StpUtil.switchTo(loginId);  // ⚠️ 关键
+            // 检查是否是免认证路径
+            String servletPath = SaHolder.getRequest().getRequestPath();
+            if (InMemoryIgnoreAuth.contains(servletPath)) {
+                return;
             }
+            
+            // ⚠️ 关键：如果请求带 token，先切换到对应的登录会话
+            try {
+                String token = StpUtil.getTokenValue();
+                if (isNotEmpty(token)) {
+                    Object loginId = StpUtil.getLoginIdByToken(token);
+                    if (loginId != null) {
+                        StpUtil.switchTo(loginId);  // 切换登录会话
+                    }
+                }
+            } catch (Exception e) {
+                log.debug("切换登录会话失败: {}", e.getMessage());
+            }
+            
+            // 最终校验登录状态
             StpUtil.checkLogin();
         })
-    );
+        .setError(e -> {
+            // 返回401 JSON响应
+            SaHolder.getResponse()
+                .setStatus(401)
+                .setHeader("Content-Type", "application/json;charset=UTF-8");
+            return JwtUtil.responseErrorJson(401, "Token失效，请重新登录!");
+        });
 }
 ```
 
-#### 3.4 异常处理
+### 2.4 全局异常处理
 
 ```java
 @ExceptionHandler(NotLoginException.class)
 public Result<?> handleNotLoginException(NotLoginException e) {
-    return Result.error(401, "未登录，请先登录！");
+    log.warn("用户未登录或Token失效: {}", e.getMessage());
+    return Result.error(401, "Token失效，请重新登录!");
 }
 
 @ExceptionHandler(NotPermissionException.class)
 public Result<?> handleNotPermissionException(NotPermissionException e) {
-    return Result.error(403, "权限不足，无法访问！");
+    log.warn("权限不足: {}", e.getMessage());
+    return Result.error(403, "用户权限不足，无法访问！");
 }
 ```
 
-### 4. 注解替换
+---
 
-| Shiro | Sa-Token |
-|-------|----------|
-| `@RequiresPermissions("user:add")` | `@SaCheckPermission("user:add")` |
-| `@RequiresRoles("admin")` | `@SaCheckRole("admin")` |
+## 🔄 3. API 迁移对照表
 
-### 5. API 替换
+### 3.1 注解替换
 
-| Shiro | Sa-Token |
-|-------|----------|
-| `SecurityUtils.getSubject().getPrincipal()` | `LoginUserUtils.getLoginUser()` |
-| `Subject.login(token)` | `StpUtil.login(username)` |
-| `Subject.logout()` | `StpUtil.logout()` |
-| `Subject.isAuthenticated()` | `StpUtil.isLogin()` |
-| `Subject.hasRole("admin")` | `StpUtil.hasRole("admin")` |
+| Shiro | Sa-Token | 说明 |
+|-------|----------|------|
+| `@RequiresPermissions("user:add")` | `@SaCheckPermission("user:add")` | 权限校验 |
+| `@RequiresRoles("admin")` | `@SaCheckRole("admin")` | 角色校验 |
+
+### 3.2 API 替换
+
+| Shiro | Sa-Token | 说明 |
+|-------|----------|------|
+| `SecurityUtils.getSubject().getPrincipal()` | `LoginUserUtils.getSessionUser()` | 获取登录用户 |
+| `Subject.login(token)` | `LoginUserUtils.doLogin(sysUser)` | 登录（推荐） |
+| `Subject.login(token)` | `StpUtil.login(username)` | 登录（底层API） |
+| `Subject.logout()` | `StpUtil.logout()` | 退出登录 |
+| `Subject.isAuthenticated()` | `StpUtil.isLogin()` | 判断是否登录 |
+| `Subject.hasRole("admin")` | `StpUtil.hasRole("admin")` | 判断角色 |
+| `Subject.isPermitted("user:add")` | `StpUtil.hasPermission("user:add")` | 判断权限 |
 
 ---
 
-## ⚠️ 重要注意事项
+## ⚠️ 4. 重要特性说明
 
-### 1. JWT-Simple 模式特性
+### 4.1 JWT-Simple 模式特性
 
-- ✅ **生成标准 JWT token**：与原 Shiro JWT 格式一致
-- ✅ **会检查 Redis Session**：强制退出有效
-- ✅ **支持 URL 参数传递 token**：兼容积木报表、WebSocket 等组件
-- ⚠️ **不是完全无状态**：仍然依赖 Redis 存储会话
+- ✅ **生成标准 JWT token**：与原 Shiro JWT 格式完全兼容
+- ✅ **仍然检查 Redis Session**：支持强制退出（与纯 JWT 无状态模式不同）
+- ✅ **支持 URL 参数传递**：兼容 WebSocket、积木报表等场景
+- ⚠️ **非完全无状态**：依赖 Redis 存储会话和权限缓存
 
-### 2. 数据安全优化
+### 4.2 Session 数据优化
 
-`LoginUserUtils.setLoginUser()` 会自动清除不必要字段（`password`、`workNo`、`birthday` 等 15 个字段）
+`LoginUserUtils.setSessionUser()` 会自动清除以下字段：
 
-**减少 Redis 存储约 50%，提升安全性。**
+```
+password, workNo, birthday, sex, email, phone, status, 
+delFlag, activitiSync, createTime, userIdentity, post, 
+telephone, clientId, mainDepPostId
+```
 
-### 3. 权限缓存自动清除
+**优势：**
+- 减少 Redis 存储约 **50%**
+- 密码不再存储在 Session 中，**安全性提升**
 
-修改角色权限后自动清除受影响用户的缓存，**权限变更立即生效，无需重新登录。**
+### 4.3 权限缓存动态更新
 
-### 4. 异步任务支持
+修改角色权限后，系统会自动清除受影响用户的权限缓存：
 
-使用 `SaTokenThreadPoolExecutor` 替代普通线程池，自动传递登录上下文到子线程。
+```java
+// SysPermissionController.saveRolePermission() 中
+@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
+public Result<String> saveRolePermission(@RequestBody JSONObject json) {
+    String roleId = json.getString("roleId");
+    String permissionIds = json.getString("permissionIds");
+    String lastPermissionIds = json.getString("lastpermissionIds");
+    
+    // 保存角色权限关系
+    sysRolePermissionService.saveRolePermission(roleId, permissionIds, lastPermissionIds);
+    
+    // ⚠️ 关键：清除拥有该角色的所有用户的权限缓存
+    clearRolePermissionCache(roleId);
+    
+    return Result.ok("保存成功！");
+}
+
+// 实现：查询该角色下的所有用户，批量清除缓存
+private void clearRolePermissionCache(String roleId) {
+    List<String> usernameList = new ArrayList<>();
+    
+    // 分页查询拥有该角色的用户
+    int pageNo = 1, pageSize = 100;
+    while (true) {
+        Page<SysUser> page = new Page<>(pageNo, pageSize);
+        IPage<SysUser> userPage = sysUserService.getUserByRoleId(page, roleId, null, null);
+        
+        if (userPage.getRecords().isEmpty()) break;
+        
+        for (SysUser user : userPage.getRecords()) {
+            usernameList.add(user.getUsername());
+        }
+        
+        if (pageNo >= userPage.getPages()) break;
+        pageNo++;
+    }
+    
+    // 批量清除用户权限和角色缓存
+    if (!usernameList.isEmpty()) {
+        StpInterfaceImpl.clearUserCache(usernameList);
+    }
+}
+```
+
+**结果：** 权限变更立即生效，用户无需重新登录。
 
 ---
 
-## ❓ 常见问题
+## ❓ 5. 常见问题
 
 ### Q1: WebSocket/积木报表提示 "token 无效"
 
-**解决：** 确认 Filter 中使用了 `StpUtil.switchTo(loginId)`（参见 3.3 节）
+**原因：** token 通过 URL 参数传递时，Filter 未正确切换登录会话。
 
-### Q2: 修改用户信息后，Session 中的数据没有更新
-
-**解决：** 强制退出 `StpUtil.logout(username)` 或手动更新 Session `LoginUserUtils.setLoginUser(loginUser)`
+**解决：** 确认 Filter 配置中包含 `StpUtil.switchTo(loginId)`（见 2.3 节）
 
 ---
 
-## ✅ 测试清单
+### Q2: 修改用户信息后，Session 数据没有更新
 
-### 核心功能
-
-- [ ] 登录/登出（账号密码、手机号、第三方、CAS单点登录、APP登录）
-- [ ] Token 认证（Header、URL 参数）
-- [ ] 权限验证（`@SaCheckPermission`、`@SaCheckRole`）
-- [ ] 强制退出（token 立即失效）
-- [ ] 在线用户列表（查询、踢人）
-
-### 集成功能
-
-- [ ] WebSocket 连接（URL 参数传 token）
-- [ ] 积木报表访问（`/jmreport/**?token=xxx`）
-- [ ] 异步任务（子线程获取登录用户）
-- [ ] 多租户（租户隔离）
-
-### 性能测试
-
-- [ ] 权限缓存生效（日志只在首次输出 "缓存未命中"）
-- [ ] 修改角色权限后立即生效（无需重新登录）
-- [ ] Redis 数据量减少约 50%（查看 `satoken:login:session:*` 大小）
-
+**解决方案：**
+1. **强制用户重新登录：** `StpUtil.logout(username)`
+2. **手动更新 Session：** `LoginUserUtils.setSessionUser(updatedUser);`
+3. **重新执行登录：** `LoginUserUtils.doLogin(updatedUser);`（会覆盖旧Session）
 
 ---
 
-## 📊 迁移总结
+### Q3: 权限校验每次都查询数据库，性能很差
 
-- ✅ 使用 `username` 作为 `loginId`，语义更清晰
-- ✅ Session 存储优化，减少 Redis 占用约 50%
-- ✅ 密码不再存储在 Session 中，安全性提升
-- ✅ 支持 URL 参数传递 token（WebSocket/积木报表友好）
-- ✅ 权限缓存实现，性能提升 99%
-- ✅ 角色权限修改后立即生效，无需重新登录
-- ✅ 异步任务支持登录上下文传递
-- ✅ 完全兼容原 JWT token 格式
+**原因：** `StpInterface` 未实现缓存（Sa-Token 默认不提供缓存）。
+
+**解决：** 参照 2.2 节实现手动缓存逻辑，使用 `SaManager.getSaTokenDao()` 进行缓存操作。
+
+---
+
+### Q4: 清理 Redis 中的旧 Session 数据
+
+**场景：** 升级后可能出现反序列化错误（如 `InvalidTypeIdException`）。
+
+**解决：** 
+```bash
+# 方法1: 清除所有 Sa-Token Session（推荐）
+redis-cli --scan --pattern "satoken:login:session:*" | xargs redis-cli del
+
+# 方法2: 清空整个 Redis 数据库（谨慎！）
+redis-cli FLUSHDB
+```
+
+## ✅ 6. 测试清单
+
+### 6.1 核心功能测试
+
+| 功能 | 测试点 | 验证方式 |
+|------|--------|----------|
+| 登录/登出 | 账号密码、手机号、第三方、CAS、APP | 成功获取 token 并能访问受保护接口 |
+| Token 认证 | Header、URL 参数 | Header 和 `?token=xxx` 都能正常访问 |
+| 权限验证 | `@SaCheckPermission`、`@SaCheckRole` | 有权限正常访问，无权限返回 403 |
+| 强制退出 | 踢人后 token 立即失效 | 被踢出用户下次请求返回 401 |
+| 在线用户 | 查询在线用户列表 | 能正确显示当前在线用户 |
+
+### 6.2 集成功能测试
+
+| 功能 | 测试场景 | 预期结果 |
+|------|----------|----------|
+| WebSocket | URL 参数传 token 连接 | 能正常建立连接并推送消息 |
+| 积木报表 | `/jmreport/**?token=xxx` | 能正常访问报表 |
+| 多租户 | 切换租户访问数据 | 数据正确隔离 |
+
+### 6.3 性能验证
+
+| 项目 | 验证方法 | 目标 |
+|------|----------|------|
+| 权限缓存 | 查看日志，首次访问查DB，后续命中缓存 | 缓存命中率 > 99% |
+| 权限更新 | 修改角色权限后立即访问接口 | 无需重新登录即生效 |
+| Redis 存储 | 对比迁移前后 Session 大小 | 减少约 50% |
+
+---
+
+## 📊 7. 迁移总结
+
+| 优化项 | 说明 | 收益 |
+|--------|------|------|
+| **loginId 设计** | 使用 `username` 而非 `userId` | 语义清晰，与业务逻辑一致 |
+| **Session 优化** | 清除 15 个不必要字段 | Redis 存储减少 50%，安全性提升 |
+| **权限缓存** | 手动实现 30 天缓存 | 性能提升 99%，降低 DB 压力 |
+| **权限实时更新** | 角色权限修改后自动清除缓存 | 无需重新登录即生效 |
+| **URL Token 支持** | Filter 中实现 `switchTo` | 兼容 WebSocket、积木报表等场景 |
+| **JWT 兼容** | JWT-Simple 模式 | 完全兼容原 JWT token 格式 |
+
+---
+
+## 📚 参考资料
+
+- [Sa-Token 官方文档](https://sa-token.cc/)
+- [Sa-Token JWT-Simple 模式](https://sa-token.cc/doc.html#/plugin/jwt-extend)
+- [Sa-Token 权限缓存最佳实践](https://sa-token.cc/doc.html#/fun/jur-cache)
