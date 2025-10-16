@@ -143,7 +143,7 @@ public class LoginUserUtils {
         loginUser.setUserIdentity(null);    // 用户身份
         loginUser.setPost(null);            // 职务
         loginUser.setTelephone(null);       // 座机
-        loginUser.setClientId(null);        // 设备ID
+        loginUser.setRelTenantIds(null);   // 关联租户
         loginUser.setMainDepPostId(null);   // 主岗位
         
         StpUtil.getSession().set(SESSION_KEY_LOGIN_USER, loginUser);

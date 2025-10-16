@@ -2,6 +2,7 @@ package org.jeecg.config.satoken;
 
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.context.model.SaRequest;
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.filter.SaServletFilter;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
@@ -12,9 +13,14 @@ import cn.dev33.satoken.stp.StpUtil;
 import jakarta.annotation.Resource;
 import jakarta.servlet.DispatcherType;
 import lombok.extern.slf4j.Slf4j;
+import org.jeecg.common.api.CommonAPI;
+import org.jeecg.common.config.TenantContext;
+import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.*;
 import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.satoken.ignore.InMemoryIgnoreAuth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -44,9 +50,12 @@ public class SaTokenConfig implements WebMvcConfigurer {
 
     @Resource
     private JeecgBaseConfig jeecgBaseConfig;
-    
     @Autowired
     private Environment env;
+    @Autowired
+    private CommonAPI commonAPI;
+    @Autowired
+    private RedisUtil redisUtil;
 
     /**
      * Sa-Token 整合 jwt (Simple 模式)
@@ -150,6 +159,9 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     
                     // 最终校验登录状态
                     StpUtil.checkLogin();
+                    
+                    // 租户校验逻辑
+                    checkTenantAuthorization();
                 })
                 // 异常处理函数：每次认证函数发生异常时执行此函数
                 .setError(e -> {
@@ -157,9 +169,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     log.warn("请求路径: {}, Method: {}，Token: {}", SaHolder.getRequest().getRequestPath(), SaHolder.getRequest().getMethod(), StpUtil.getTokenValue());
                     
                     // 返回401状态码
-                    SaHolder.getResponse()
-                        .setStatus(401)
-                        .setHeader("Content-Type", "application/json;charset=UTF-8");
+                    SaHolder.getResponse().setStatus(401).setHeader("Content-Type", "application/json;charset=UTF-8");
                     return org.jeecg.common.system.util.JwtUtil.responseErrorJson(401, CommonConstant.TOKEN_IS_INVALID_MSG);
                 })
                 // 前置函数：在每次认证函数之前执行（BeforeAuth 不受 includeList 与 excludeList 的限制，所有请求都会进入）
@@ -185,6 +195,11 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     SaRouter.match(SaHttpMethod.OPTIONS).free(r2 -> {
                         SaHolder.getResponse().setStatus(HttpStatus.OK.value());
                     });
+
+                    // 每次请求前，获取请求头中的租户ID，放入当前线程上下文
+                    String tenantId = SaHolder.getRequest().getHeader(CommonConstant.TENANT_ID);
+                    TenantContext.setTenant(tenantId);
+                    log.info("===【TenantContext 线程设置】=== 请求路径: {}, 租户ID: {}", SaHolder.getRequest().getRequestPath(), tenantId);
                 });
     }
 
@@ -321,6 +336,85 @@ public class SaTokenConfig implements WebMvcConfigurer {
         ));
 
         return excludeUrls;
+    }
+    
+    /**
+     * 校验用户的tenant_id和前端传过来的是否一致
+     * 
+     * <p>实现逻辑：
+     * <ul>
+     *   <li>1. 获取当前登录用户信息</li>
+     *   <li>2. 检查用户是否配置了租户信息</li>
+     *   <li>3. 获取前端请求头中的租户ID</li>
+     *   <li>4. 校验用户所属租户中是否包含当前请求的租户ID</li>
+     *   <li>5. 如果校验失败，从数据库重新查询用户信息并再次校验</li>
+     *   <li>6. 最终校验失败则抛出异常</li>
+     * </ul>
+     * 
+     * @throws NotLoginException 租户授权变更异常
+     */
+    private void checkTenantAuthorization() {
+        log.debug("------ 租户校验开始 ------");
+        // 如果未开启租户控制，直接返回
+        if (!MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            return;
+        }
+        
+        try {
+            // 获取当前登录用户信息
+            LoginUser loginUser = TokenUtils.getLoginUser(LoginUserUtils.getUsername(), commonAPI, redisUtil);
+            if (loginUser == null) {
+                return;
+            }
+            
+            String username = loginUser.getUsername();
+            String userTenantIds = loginUser.getRelTenantIds();
+            
+            // 如果用户未配置租户信息，直接返回
+            if (oConvertUtils.isEmpty(userTenantIds)) {
+                return;
+            }
+            
+            // 获取前端请求头中的租户ID
+            String loginTenantId = TokenUtils.getTenantIdByRequest(SpringContextUtils.getHttpServletRequest());
+            log.info("登录租户：{}", loginTenantId);
+            log.info("用户拥有那些租户：{}", userTenantIds);
+            
+            // 登录用户无租户，前端header中租户ID值为 0
+            String str = "0";
+            if (oConvertUtils.isEmpty(loginTenantId) || str.equals(loginTenantId)) {
+                return;
+            }
+            
+            String[] userTenantIdsArray = userTenantIds.split(",");
+            if (!oConvertUtils.isIn(loginTenantId, userTenantIdsArray)) {
+                boolean isAuthorization = false;
+                
+                //========================================================================
+                // 查询用户信息（如果租户不匹配从数据库中重新查询一次用户信息）
+                String loginUserKey = CacheConstant.SYS_USERS_CACHE + "::" + username;
+                redisUtil.del(loginUserKey);
+                
+                LoginUser loginUserFromDb = commonAPI.getUserByName(username);
+                LoginUserUtils.setSessionUser(loginUserFromDb);
+                if (loginUserFromDb != null && oConvertUtils.isNotEmpty(loginUserFromDb.getRelTenantIds())) {
+                    String[] newArray = loginUserFromDb.getRelTenantIds().split(",");
+                    if (oConvertUtils.isIn(loginTenantId, newArray)) {
+                        isAuthorization = true;
+                    }
+                }
+                //========================================================================
+
+                if (!isAuthorization) {
+                    log.info("租户异常——登录租户：{}", loginTenantId);
+                    log.info("租户异常——用户拥有租户组：{}", userTenantIds);
+                    throw new NotLoginException("登录租户授权变更，请重新登陆!", StpUtil.TYPE, NotLoginException.KICK_OUT);
+                }
+            }
+            
+        }catch (Exception e) {
+            log.error("租户校验异常：{}", e.getMessage(), e);
+        }
     }
 }
 
