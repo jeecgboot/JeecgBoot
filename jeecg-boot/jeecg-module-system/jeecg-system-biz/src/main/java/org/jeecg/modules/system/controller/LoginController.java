@@ -219,7 +219,7 @@ public class LoginController {
 			//清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
 			redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
 			baseCommonService.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null, sysUser);
-			log.info("【退出成功操作】异步处理，退出后，清理用户缓存： "+sysUser.getRealname());
+			log.info("【退出成功】异步清理用户缓存: {} ： ", sysUser.getRealname());
 		});
 	}
 	
