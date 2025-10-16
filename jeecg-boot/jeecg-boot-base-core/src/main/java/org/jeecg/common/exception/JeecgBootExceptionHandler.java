@@ -5,9 +5,10 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.UnauthorizedException;
+import org.jeecg.common.util.LoginUserUtils;
+import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
+import cn.dev33.satoken.exception.NotRoleException;
 import org.jeecg.common.api.dto.LogDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -112,10 +113,32 @@ public class JeecgBootExceptionHandler {
 		return Result.error("数据库中已存在该记录");
 	}
 
-	@ExceptionHandler({UnauthorizedException.class, AuthorizationException.class})
-	public Result<?> handleAuthorizationException(AuthorizationException e){
+	/**
+	 * 处理Sa-Token未登录异常
+	 */
+	@ExceptionHandler(NotLoginException.class)
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	public Result<?> handleNotLoginException(NotLoginException e){
+		log.error("Sa-Token未登录异常: {}", e.getMessage());
+		return new Result(401, "未登录，请先登录！");
+	}
+
+	/**
+	 * 处理Sa-Token无权限异常
+	 */
+	@ExceptionHandler(NotPermissionException.class)
+	public Result<?> handleNotPermissionException(NotPermissionException e){
 		log.error(e.getMessage(), e);
 		return Result.noauth("没有权限，请联系管理员分配权限！");
+	}
+
+	/**
+	 * 处理Sa-Token无角色异常
+	 */
+	@ExceptionHandler(NotRoleException.class)
+	public Result<?> handleNotRoleException(NotRoleException e){
+		log.error(e.getMessage(), e);
+		return Result.noauth("没有角色权限，请联系管理员分配角色！");
 	}
 
 	@ExceptionHandler(Exception.class)

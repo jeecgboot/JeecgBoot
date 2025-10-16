@@ -180,77 +180,23 @@
 			<artifactId>spring-boot-starter-quartz</artifactId>
 		</dependency>
 
-		<!--JWT-->
+		<!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
 		<dependency>
-			<groupId>com.auth0</groupId>
-			<artifactId>java-jwt</artifactId>
-			<version>${java-jwt.version}</version>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-spring-boot3-starter</artifactId>
+			<version>${sa-token.version}</version>
 		</dependency>
-
-		<!--shiro-->
+		<!-- Sa-Token 整合 Redis (使用 jackson 序列化方式) -->
 		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring-boot-starter</artifactId>
-			<classifier>jakarta</classifier>
-			<version>${shiro.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-spring</artifactId>
-				</exclusion>
-			</exclusions>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-redis-jackson</artifactId>
+			<version>${sa-token.version}</version>
 		</dependency>
+		<!-- Sa-Token 整合 jwt (Simple模式)，保持与原JWT token格式兼容 -->
 		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-spring</artifactId>
-			<classifier>jakarta</classifier>
-			<version>${shiro.version}</version>
-			<!-- 排除仍使用了javax.servlet的依赖 -->
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-web</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- 引入适配jakarta的依赖包 -->
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-core</artifactId>
-			<classifier>jakarta</classifier>
-			<version>${shiro.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.shiro</groupId>
-			<artifactId>shiro-web</artifactId>
-			<classifier>jakarta</classifier>
-			<version>${shiro.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- shiro-redis -->
-		<dependency>
-			<groupId>org.crazycake</groupId>
-			<artifactId>shiro-redis</artifactId>
-			<version>${shiro-redis.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>checkstyle</artifactId>
-					<groupId>com.puppycrawl.tools</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>cn.dev33</groupId>
+			<artifactId>sa-token-jwt</artifactId>
+			<version>${sa-token.version}</version>
 		</dependency>
 
 

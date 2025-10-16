@@ -87,13 +87,6 @@ public interface CommonConstant {
     /**访问权限认证未通过 510*/
     Integer SC_JEECG_NO_AUTHZ=510;
 
-    /** 登录用户Shiro权限缓存KEY前缀 */
-    public static String PREFIX_USER_SHIRO_CACHE  = "shiro:cache:org.jeecg.config.shiro.ShiroRealm.authorizationCache:";
-    /** 登录用户Token令牌缓存KEY前缀 */
-    String PREFIX_USER_TOKEN  = "prefix_user_token:";
-//    /** Token缓存时间：3600秒即一小时 */
-//    int  TOKEN_EXPIRE_TIME  = 3600;
-
     /** 登录二维码 */
     String  LOGIN_QRCODE_PRE  = "QRCODELOGIN:";
     String  LOGIN_QRCODE  = "LQ:";
