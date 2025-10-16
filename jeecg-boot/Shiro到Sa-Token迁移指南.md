@@ -1,4 +1,4 @@
-# Shiro 到 Sa-Token 迁移指南
+# `Shiro 到 Sa-Token 迁移指南`
 
 本项目已从 **Apache Shiro 2.0.4** 迁移到 **Sa-Token 1.44.0**，采用 JWT-Simple 模式，完全兼容原 JWT token 格式。
 
