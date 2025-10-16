@@ -197,9 +197,10 @@ public class SaTokenConfig implements WebMvcConfigurer {
         registration.setName("SaServletFilter");
         // 支持异步请求
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
-        // 拦截所有请求（修复：原来只拦截特定异步接口，导致其他接口不检查登录状态）
+        // 拦截所有请求
         registration.addUrlPatterns("/*");
         registration.setOrder(1);
+        registration.setAsyncSupported(true);  // 支持异步请求
         return registration;
     }
 
