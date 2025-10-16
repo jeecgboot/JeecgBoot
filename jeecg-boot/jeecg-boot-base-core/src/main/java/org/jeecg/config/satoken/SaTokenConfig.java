@@ -127,6 +127,20 @@ public class SaTokenConfig implements WebMvcConfigurer {
                             Object loginId = StpUtil.getLoginIdByToken(token);
                             if (loginId != null) {
                                 StpUtil.switchTo(loginId);
+
+                                // 需要手工自动续签，默认参数auto-renew:true 不好使
+                                long activeTimeout = StpUtil.stpLogic.getConfigOrGlobal().getActiveTimeout();
+                                if (activeTimeout > 0) {
+                                    // 获取当前token的活跃剩余时间
+                                    long tokenActiveTimeout = StpUtil.getTokenActiveTimeout();
+
+                                    // 如果剩余活跃时间少于总活跃时间的一半，进行续签
+                                    if (tokenActiveTimeout > 0 && tokenActiveTimeout < (activeTimeout / 2)) {
+                                        StpUtil.stpLogic.updateLastActiveToNow(token);
+                                        log.info("【Sa-Token拦截器】Token续签成功，剩余活跃时间: {}秒", tokenActiveTimeout);
+                                    }
+                                }
+
                             }
                         }
                     } catch (Exception e) {
