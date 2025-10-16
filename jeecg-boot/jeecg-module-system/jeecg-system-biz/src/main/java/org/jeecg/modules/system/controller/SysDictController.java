@@ -9,9 +9,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.Subject;
+import org.jeecg.common.util.LoginUserUtils;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
@@ -23,7 +22,6 @@ import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
-import org.jeecg.config.shiro.ShiroRealm;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
@@ -73,8 +71,6 @@ public class SysDictController {
 	public RedisTemplate<String, Object> redisTemplate;
 	@Autowired
 	private RedisUtil redisUtil;
-	@Autowired
-	private ShiroRealm shiroRealm;
 
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysDict>> queryPageList(
@@ -389,7 +385,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:add")
+    @SaCheckPermission("system:dict:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysDict> add(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -410,7 +406,7 @@ public class SysDictController {
 	 * @param sysDict
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:edit")
+    @SaCheckPermission("system:dict:edit")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysDict> edit(@RequestBody SysDict sysDict) {
 		Result<SysDict> result = new Result<SysDict>();
@@ -432,7 +428,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:delete")
+    @SaCheckPermission("system:dict:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	@CacheEvict(value={CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> delete(@RequestParam(name="id",required=true) String id) {
@@ -451,7 +447,7 @@ public class SysDictController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:deleteBatch")
+    @SaCheckPermission("system:dict:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	@CacheEvict(value= {CacheConstant.SYS_DICT_CACHE, CacheConstant.SYS_ENABLE_DICT_CACHE}, allEntries=true)
 	public Result<SysDict> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
@@ -490,7 +486,7 @@ public class SysDictController {
 //		redisTemplate.delete(keys6);
 //		redisTemplate.delete(keys7);
 
-		//update-begin-author:liusq date:20230404 for:  [issue/4358]springCache中的清除缓存的操作使用了“keys”
+		// springCache中的清除缓存的操作使用了“keys”
 		redisUtil.removeAll(CacheConstant.SYS_DICT_CACHE);
 		redisUtil.removeAll(CacheConstant.SYS_ENABLE_DICT_CACHE);
 		redisUtil.removeAll(CacheConstant.SYS_DICT_TABLE_CACHE);
@@ -499,15 +495,6 @@ public class SysDictController {
 		redisUtil.removeAll(CacheConstant.SYS_DEPART_IDS_CACHE);
 		redisUtil.removeAll("jmreport:cache:dict");
 		redisUtil.removeAll("jmreport:cache:dictTable");
-		//update-end-author:liusq date:20230404 for:  [issue/4358]springCache中的清除缓存的操作使用了“keys”
-		
-		//update-begin---author:scott ---date:2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
-		// 清除当前用户的授权缓存信息
-		Subject currentUser = SecurityUtils.getSubject();
-		if (currentUser.isAuthenticated()) {
-			shiroRealm.clearCache(currentUser.getPrincipals());
-		}
-		//update-end---author:scott ---date::2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
 		return result;
 	}
 
@@ -564,7 +551,7 @@ public class SysDictController {
 	 * @param
 	 * @return
 	 */
-    @RequiresPermissions("system:dict:importExcel")
+    @SaCheckPermission("system:dict:importExcel")
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
  		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -703,7 +690,7 @@ public class SysDictController {
 	 * @param ids 被删除的字典ID，多个id用半角逗号分割
 	 * @return
 	 */
-	@RequiresPermissions("system:dict:deleteRecycleBin")
+	@SaCheckPermission("system:dict:deleteRecycleBin")
 	@RequestMapping(value = "/deleteRecycleBin", method = RequestMethod.DELETE)
 	public Result deleteRecycleBin(@RequestParam("ids") String ids) {
 		try {

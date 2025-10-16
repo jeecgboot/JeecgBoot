@@ -1,14 +1,15 @@
 package org.jeecg.modules.system.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.subject.Subject;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgBootException;
@@ -16,7 +17,6 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.Md5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
-import org.jeecg.config.shiro.ShiroRealm;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.constant.DefIndexConst;
 import org.jeecg.modules.system.entity.*;
@@ -67,9 +67,6 @@ public class SysPermissionController {
 
 	@Autowired
 	private ISysRoleIndexService sysRoleIndexService;
-	
-	@Autowired
-	private ShiroRealm shiroRealm;
 
     /**
      * 子菜单
@@ -81,7 +78,7 @@ public class SysPermissionController {
 	 *
 	 * @return
 	 */
-	//@RequiresPermissions("system:permission:list")
+	//@SaCheckPermission("system:permission:list")
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<List<SysPermissionTree>> list(SysPermission sysPermission, HttpServletRequest req) {
         long start = System.currentTimeMillis();
@@ -244,8 +241,8 @@ public class SysPermissionController {
 	public Result<?> getUserPermissionByToken(HttpServletRequest request) {
 		Result<JSONObject> result = new Result<JSONObject>();
 		try {
-			//直接获取当前用户不适用前端token
-			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			//直接获取当前用户
+			LoginUser loginUser = LoginUserUtils.getSessionUser();
 			if (oConvertUtils.isEmpty(loginUser)) {
 				return Result.error("请登录系统！");
 			}
@@ -357,7 +354,7 @@ public class SysPermissionController {
 	public Result<?> getPermCode() {
 		try {
 			// 直接获取当前用户
-			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			LoginUser loginUser = LoginUserUtils.getSessionUser();
 			if (oConvertUtils.isEmpty(loginUser)) {
 				return Result.error("请登录系统！");
 			}
@@ -398,7 +395,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:add")
+    @SaCheckPermission("system:permission:add")
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public Result<SysPermission> add(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<SysPermission>();
@@ -418,7 +415,7 @@ public class SysPermissionController {
 	 * @param permission
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:edit")
+    @SaCheckPermission("system:permission:edit")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermission> edit(@RequestBody SysPermission permission) {
 		Result<SysPermission> result = new Result<>();
@@ -460,7 +457,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:delete")
+    @SaCheckPermission("system:permission:delete")
 	@RequestMapping(value = "/delete", method = RequestMethod.DELETE)
 	public Result<SysPermission> delete(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermission> result = new Result<>();
@@ -479,7 +476,7 @@ public class SysPermissionController {
 	 * @param ids
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:deleteBatch")
+    @SaCheckPermission("system:permission:deleteBatch")
 	@RequestMapping(value = "/deleteBatch", method = RequestMethod.DELETE)
 	public Result<SysPermission> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		Result<SysPermission> result = new Result<>();
@@ -587,7 +584,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveRolePermission", method = RequestMethod.POST)
-    @RequiresPermissions("system:permission:saveRole")
+    @SaCheckPermission("system:permission:saveRole")
 	public Result<String> saveRolePermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
@@ -596,26 +593,60 @@ public class SysPermissionController {
 			String permissionIds = json.getString("permissionIds");
 			String lastPermissionIds = json.getString("lastpermissionIds");
 			this.sysRolePermissionService.saveRolePermission(roleId, permissionIds, lastPermissionIds);
-			//update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
-            LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-			baseCommonService.addLog("修改角色ID: "+roleId+" 的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
-            //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]用户管理角色授权添加敏感日志------------
+			
+			// 清除拥有该角色的所有用户的权限和角色缓存
+			clearRolePermissionCache(roleId);
+			
+			LoginUser loginUser = LoginUserUtils.getSessionUser();
+			baseCommonService.addLog("修改角色ID: " +roleId+" 的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
 			result.success("保存成功！");
 			log.info("======角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
-
-			//update-begin---author:scott ---date:2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
-			// 清除当前用户的授权缓存信息
-			Subject currentUser = SecurityUtils.getSubject();
-			if (currentUser.isAuthenticated()) {
-				shiroRealm.clearCache(currentUser.getPrincipals());
-			}
-			//update-end---author:scott ---date::2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
-
 		} catch (Exception e) {
 			result.error500("授权失败！");
 			log.error(e.getMessage(), e);
 		}
 		return result;
+	}
+	
+	/**
+	 * 清除拥有指定角色的所有用户的权限和角色缓存
+	 * <p>原理：查询拥有该角色的所有用户，调用 StpInterfaceImpl.clearUserCache() 清除缓存</p>
+	 * 
+	 * @param roleId 角色ID
+	 */
+	private void clearRolePermissionCache(String roleId) {
+		log.info("开始清除角色权限缓存 [ roleId={} ]", roleId);
+		List<String> usernameList = new ArrayList<>();
+		
+		// 分页查询拥有该角色的用户（避免一次性加载大量数据）
+		int pageNo = 1, pageSize = 100;
+		while (true) {
+			Page<SysUser> page = new Page<>(pageNo, pageSize);
+			IPage<SysUser> userPage = sysUserService.getUserByRoleId(page, roleId, null, null);
+			
+			if (userPage.getRecords().isEmpty()) {
+				break;
+			}
+			
+			// 收集用户名
+			for (SysUser user : userPage.getRecords()) {
+				usernameList.add(user.getUsername());
+			}
+			
+			// 判断是否还有下一页
+			if (pageNo >= userPage.getPages()) {
+				break;
+			}
+			pageNo++;
+		}
+		
+		// 批量清除缓存
+		if (!usernameList.isEmpty()) {
+			org.jeecg.config.satoken.StpInterfaceImpl.clearUserCache(usernameList);
+			log.info("角色权限缓存清理完成 [ roleId={}, affectedUsers={} ]", roleId, usernameList.size());
+		} else {
+			log.info("该角色下无用户，无需清除缓存 [ roleId={} ]", roleId);
+		}
 	}
 
 	private void getTreeList(List<SysPermissionTree> treeList, List<SysPermission> metaList, SysPermissionTree temp) {
@@ -924,7 +955,7 @@ public class SysPermissionController {
 	 * @param sysPermissionDataRule
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:addRule")
+    @SaCheckPermission("system:permission:addRule")
 	@RequestMapping(value = "/addPermissionRule", method = RequestMethod.POST)
 	public Result<SysPermissionDataRule> addPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -939,7 +970,7 @@ public class SysPermissionController {
 		return result;
 	}
 
-    @RequiresPermissions("system:permission:editRule")
+    @SaCheckPermission("system:permission:editRule")
 	@RequestMapping(value = "/editPermissionRule", method = { RequestMethod.PUT, RequestMethod.POST })
 	public Result<SysPermissionDataRule> editPermissionRule(@RequestBody SysPermissionDataRule sysPermissionDataRule) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -959,7 +990,7 @@ public class SysPermissionController {
 	 * @param id
 	 * @return
 	 */
-    @RequiresPermissions("system:permission:deleteRule")
+    @SaCheckPermission("system:permission:deleteRule")
 	@RequestMapping(value = "/deletePermissionRule", method = RequestMethod.DELETE)
 	public Result<SysPermissionDataRule> deletePermissionRule(@RequestParam(name = "id", required = true) String id) {
 		Result<SysPermissionDataRule> result = new Result<SysPermissionDataRule>();
@@ -1016,7 +1047,7 @@ public class SysPermissionController {
 	 * @return
 	 */
 	@RequestMapping(value = "/saveDepartPermission", method = RequestMethod.POST)
-    @RequiresPermissions("system:permission:saveDepart")
+    @SaCheckPermission("system:permission:saveDepart")
 	public Result<String> saveDepartPermission(@RequestBody JSONObject json) {
 		long start = System.currentTimeMillis();
 		Result<String> result = new Result<>();
