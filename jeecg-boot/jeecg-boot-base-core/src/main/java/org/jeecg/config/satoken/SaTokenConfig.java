@@ -154,7 +154,9 @@ public class SaTokenConfig implements WebMvcConfigurer {
                 // 异常处理函数：每次认证函数发生异常时执行此函数
                 .setError(e -> {
                     log.warn("Sa-Token 认证失败：用户未登录或token无效");
-                    // Filter 层的异常无法被 @ExceptionHandler 捕获，需要直接返回 JSON 响应
+                    log.warn("请求路径: {}, Method: {}，Token: {}", SaHolder.getRequest().getRequestPath(), SaHolder.getRequest().getMethod(), StpUtil.getTokenValue());
+                    
+                    // 返回401状态码
                     SaHolder.getResponse()
                         .setStatus(401)
                         .setHeader("Content-Type", "application/json;charset=UTF-8");
@@ -274,9 +276,11 @@ public class SaTokenConfig implements WebMvcConfigurer {
                 // 排除消息通告查看详情页面（用于第三方APP）
                 "/sys/annountCement/show/**",
                 
-                // 积木报表排除
+                // 积木报表和积木BI排除
                 "/jmreport/**",
-                // 积木BI大屏和仪表盘排除
+                "/drag/lib/**",
+                "/drag/list/**",
+                "/drag/favicon.ico",
                 "/drag/view",
                 "/drag/page/queryById",
                 "/drag/page/addVisitsNumber",
