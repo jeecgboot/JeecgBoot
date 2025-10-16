@@ -297,47 +297,6 @@ private void clearRolePermissionCache(String roleId) {
 
 **结果：** 权限变更立即生效，用户无需重新登录。
 
----
-
-## ❓ 5. 常见问题
-
-### Q1: WebSocket/积木报表提示 "token 无效"
-
-**原因：** token 通过 URL 参数传递时，Filter 未正确切换登录会话。
-
-**解决：** 确认 Filter 配置中包含 `StpUtil.switchTo(loginId)`（见 2.3 节）
-
----
-
-### Q2: 修改用户信息后，Session 数据没有更新
-
-**解决方案：**
-1. **强制用户重新登录：** `StpUtil.logout(username)`
-2. **手动更新 Session：** `LoginUserUtils.setSessionUser(updatedUser);`
-3. **重新执行登录：** `LoginUserUtils.doLogin(updatedUser);`（会覆盖旧Session）
-
----
-
-### Q3: 权限校验每次都查询数据库，性能很差
-
-**原因：** `StpInterface` 未实现缓存（Sa-Token 默认不提供缓存）。
-
-**解决：** 参照 2.2 节实现手动缓存逻辑，使用 `SaManager.getSaTokenDao()` 进行缓存操作。
-
----
-
-### Q4: 清理 Redis 中的旧 Session 数据
-
-**场景：** 升级后可能出现反序列化错误（如 `InvalidTypeIdException`）。
-
-**解决：** 
-```bash
-# 方法1: 清除所有 Sa-Token Session（推荐）
-redis-cli --scan --pattern "satoken:login:session:*" | xargs redis-cli del
-
-# 方法2: 清空整个 Redis 数据库（谨慎！）
-redis-cli FLUSHDB
-```
 
 ## ✅ 6. 测试清单
 
