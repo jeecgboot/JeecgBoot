@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
@@ -8,8 +9,9 @@ import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.tomcat.util.threads.ThreadPoolExecutor;
+import org.jeecg.common.util.LoginUserUtils;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -23,7 +25,6 @@ import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysRoleIndex;
-import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.*;
@@ -31,7 +32,6 @@ import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.util.RandImageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +42,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * @Author scott
@@ -75,7 +74,7 @@ public class LoginController {
 	/**
 	 * 线程池用于异步发送纪要
 	 */
-	public static ExecutorService cachedThreadPool = new ShiroThreadPoolExecutor(0, 1024, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+	public static ExecutorService cachedThreadPool = new ThreadPoolExecutor(0, 1024, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
 	
 	@Operation(summary="登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -149,7 +148,8 @@ public class LoginController {
 	public Result<JSONObject> getUserInfo(HttpServletRequest request){
 		long start = System.currentTimeMillis();
 		Result<JSONObject> result = new Result<JSONObject>();
-		String  username = JwtUtil.getUserNameByToken(request);
+		// 使用Sa-Token获取登录用户名（loginId现在是username）
+		String username = StpUtil.getLoginIdAsString();
 		if(oConvertUtils.isNotEmpty(username)) {
 			// 根据用户名查询用户信息
 			SysUser sysUser = sysUserService.getUserByName(username);
@@ -200,7 +200,8 @@ public class LoginController {
 		LoginUser sysUser = sysBaseApi.getUserByName(username);
 	    if(sysUser!=null) {
 			asyncClearLogoutCache(token, sysUser); // 异步清理
-			SecurityUtils.getSubject().logout();
+			// 使用Sa-Token退出登录
+			StpUtil.logout();
 	    	return Result.ok("退出登录成功！");
 	    }else {
 	    	return Result.error("Token无效!");
@@ -208,17 +209,13 @@ public class LoginController {
 	}
 
 	/**
-	 * 清理用户缓存
+	 * 清理用户缓存（使用Sa-Token）
 	 *
 	 * @param token
 	 * @param sysUser
 	 */
 	private void asyncClearLogoutCache(String token, LoginUser sysUser) {
 		cachedThreadPool.execute(()->{
-			//清空用户登录Token缓存
-			redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + token);
-			//清空用户登录Shiro权限缓存
-			redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
 			//清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
 			redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
 			baseCommonService.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null, sysUser);
@@ -290,7 +287,7 @@ public class LoginController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = user.getUsername();
 		if(oConvertUtils.isEmpty(username)) {
-			LoginUser sysUser = (LoginUser)SecurityUtils.getSubject().getPrincipal();
+			LoginUser sysUser = LoginUserUtils.getSessionUser();
 			username = sysUser.getUsername();
 		}
 		
@@ -478,15 +475,13 @@ public class LoginController {
 	 */
 	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result, HttpServletRequest request) {
 		String username = sysUser.getUsername();
-		String syspassword = sysUser.getPassword();
 		// 获取用户部门信息
 		JSONObject obj = new JSONObject(new LinkedHashMap<>());
 
-		//1.生成token
-		String token = JwtUtil.sign(username, syspassword);
-		// 设置token缓存有效时间
-		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
+		//1.使用sa-token生成token（使用username作为loginId，将用户信息存入session）
+		LoginUser loginUser = new LoginUser();
+		BeanUtils.copyProperties(sysUser, loginUser);
+		String token = LoginUserUtils.doLogin(loginUser);
 		obj.put("token", token);
 
 		//2.设置登录租户
@@ -584,7 +579,7 @@ public class LoginController {
 	/**
 	 * 切换菜单表为vue3的表
 	 */
-	@RequiresRoles({"admin"})
+	@SaCheckRole({"admin"})
 	@GetMapping(value = "/switchVue3Menu")
 	public Result<String> switchVue3Menu(HttpServletResponse response) {
 		Result<String> res = new Result<String>();	
@@ -656,11 +651,11 @@ public class LoginController {
 		//5. 设置登录用户信息
 		obj.put("userInfo", sysUser);
 		
-		//6. 生成token
-		String token = JwtUtil.sign(username, syspassword);
-		// 设置超时时间
-		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
+		//6. 使用Sa-Token生成token（使用username作为loginId、将用户信息存入session）
+		LoginUser loginUser = new LoginUser();
+		BeanUtils.copyProperties(sysUser, loginUser);
+		String token = LoginUserUtils.doLogin(loginUser);
+		log.info("App登录成功，用户名：{}，token={}", username, token);
 
 		//token 信息
 		obj.put("token", token);
@@ -792,7 +787,7 @@ public class LoginController {
 			result.setSuccess(false);
 			return result;
 		}
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		String username = sysUser.getUsername();
 		LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
 		query.eq(SysUser::getUsername, username).eq(SysUser::getPhone, mobile);

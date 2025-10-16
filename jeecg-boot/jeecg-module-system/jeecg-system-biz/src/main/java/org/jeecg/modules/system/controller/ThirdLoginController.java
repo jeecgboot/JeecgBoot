@@ -17,7 +17,9 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
+import org.springframework.beans.BeanUtils;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysThirdAccount;
@@ -211,12 +213,10 @@ public class ThirdLoginController {
 	}
 
 	private String saveToken(SysUser user) {
-		// 生成token
-		String token = JwtUtil.sign(user.getUsername(), user.getPassword());
-		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		// 设置超时时间
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
-		return token;
+		// 使用封装方法：一步完成登录和设置用户信息
+		LoginUser loginUser = new LoginUser();
+		BeanUtils.copyProperties(user, loginUser);
+		return LoginUserUtils.doLogin(loginUser);
 	}
 
 	/**

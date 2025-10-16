@@ -1,28 +1,23 @@
 package org.jeecg.modules.system.controller;
 
+import cn.dev33.satoken.session.SaSession;
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.base.service.BaseCommonService;
-import org.jeecg.modules.system.service.ISysUserService;
-import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.jeecg.modules.system.vo.SysUserOnlineVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,43 +34,58 @@ public class SysUserOnlineController {
 
     @Autowired
     private RedisUtil redisUtil;
-    @Autowired
-    public RedisTemplate redisTemplate;
-    @Autowired
-    public ISysUserService userService;
-    @Autowired
-    private SysBaseApiImpl sysBaseApi;
     @Resource
     private BaseCommonService baseCommonService;
 
+    /**
+     * 获取在线用户列表（使用Sa-Token）
+     */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result<Page<SysUserOnlineVO>> list(@RequestParam(name="username", required=false) String username,
-                                              @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,@RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
-        Collection<String> keys = redisUtil.scan(CommonConstant.PREFIX_USER_TOKEN + "*");
-        List<SysUserOnlineVO> onlineList = new ArrayList<SysUserOnlineVO>();
-        for (String key : keys) {
-            String token = (String)redisUtil.get(key);
-            if (StringUtils.isNotEmpty(token)) {
-                SysUserOnlineVO online = new SysUserOnlineVO();
-                online.setToken(token);
-                //TODO 改成一次性查询
-                LoginUser loginUser = sysBaseApi.getUserByName(JwtUtil.getUsername(token));
-                if (loginUser != null && !"_reserve_user_external".equals(loginUser.getUsername())) {
-                    //update-begin---author:wangshuai ---date:20220104  for：[JTC-382]在线用户查询无效------------
-                    //验证用户名是否与传过来的用户名相同
-                    boolean isMatchUsername=true;
-                    //判断用户名是否为空，并且当前循环的用户不包含传过来的用户名，那么就设成false
-                    if(oConvertUtils.isNotEmpty(username) && !loginUser.getUsername().contains(username)){
-                        isMatchUsername = false;
+                                              @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                              @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
+        List<SysUserOnlineVO> onlineList = new ArrayList<>();
+        
+        try {
+            // 使用Sa-Token获取所有在线用户的session ID列表
+            List<String> sessionIdList = StpUtil.searchSessionId("", 0, -1, false);
+            
+            for (String sessionId : sessionIdList) {
+                try {
+                    // 获取session
+                    SaSession session = StpUtil.getSessionBySessionId(sessionId);
+                    if (session == null) {
+                        continue;
                     }
-                    if(isMatchUsername){
-                        BeanUtils.copyProperties(loginUser, online);
-                        onlineList.add(online);
+                    
+                    // 从session中获取用户信息
+                    LoginUser loginUser = (LoginUser) session.get("loginUser");
+                    if (loginUser != null && !"_reserve_user_external".equals(loginUser.getUsername())) {
+                        // 用户名筛选
+                        if (oConvertUtils.isEmpty(username) || loginUser.getUsername().contains(username)) {
+                            SysUserOnlineVO online = new SysUserOnlineVO();
+                            BeanUtils.copyProperties(loginUser, online);
+                            
+                            // 获取该用户的token（loginId现在是username）
+                            try {
+                                String token = StpUtil.getTokenValueByLoginId(loginUser.getUsername());
+                                online.setToken(token);
+                            } catch (Exception e) {
+                                log.debug("获取用户token失败: {}", e.getMessage());
+                            }
+                            
+                            onlineList.add(online);
+                        }
                     }
-                    //update-end---author:wangshuai ---date:20220104  for：[JTC-382]在线用户查询无效------------
+                } catch (Exception e) {
+                    // 旧的Session数据可能导致反序列化失败，记录debug级别日志即可
+                    log.debug("获取session失败（可能是旧数据）: {}", e.getMessage());
                 }
             }
+        } catch (Exception e) {
+            log.error("获取在线用户列表失败: {}", e.getMessage(), e);
         }
+        
         Collections.reverse(onlineList);
 
         Page<SysUserOnlineVO> page = new Page<SysUserOnlineVO>(pageNo, pageSize);
@@ -100,30 +110,33 @@ public class SysUserOnlineController {
     }
 
     /**
-     * 强退用户
+     * 强退用户（使用Sa-Token）
      */
     @RequestMapping(value = "/forceLogout",method = RequestMethod.POST)
     public Result<Object> forceLogout(@RequestBody SysUserOnlineVO online) {
-        //用户退出逻辑
-        if(oConvertUtils.isEmpty(online.getToken())) {
-            return Result.error("退出登录失败！");
-        }
-        String username = JwtUtil.getUsername(online.getToken());
-        LoginUser sysUser = sysBaseApi.getUserByName(username);
-        if(sysUser!=null) {
-            baseCommonService.addLog("强制: "+sysUser.getRealname()+"退出成功！", CommonConstant.LOG_TYPE_1, null,sysUser);
-            log.info(" 强制  "+sysUser.getRealname()+"退出成功！ ");
-            //清空用户登录Token缓存
-            redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + online.getToken());
-            //清空用户登录Shiro权限缓存
-            redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
-            //清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
-            redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
-            //调用shiro的logout
-            SecurityUtils.getSubject().logout();
+        try {
+            // 验证参数
+            if (oConvertUtils.isEmpty(online.getToken())) {
+                return Result.error("Token不能为空！");
+            }
+            
+            // 使用Sa-Token通过token强制退出登录
+            StpUtil.logoutByTokenValue(online.getToken());
+            
+            // 清空用户的缓存信息（如果有用户名）
+            if (oConvertUtils.isNotEmpty(online.getUsername())) {
+                redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, online.getUsername()));
+            }
+            
+            // 记录日志
+            String username = oConvertUtils.isNotEmpty(online.getUsername()) ? online.getUsername() : "未知用户";
+            baseCommonService.addLog("强制: " + username + " 退出成功！", CommonConstant.LOG_TYPE_1, null);
+            log.info("强制 {} 退出成功！", username);
+            
             return Result.ok("退出登录成功！");
-        }else {
-            return Result.error("Token无效!");
+        } catch (Exception e) {
+            log.error("强制退出失败: {}", e.getMessage(), e);
+            return Result.error("退出登录失败：" + e.getMessage());
         }
     }
 }

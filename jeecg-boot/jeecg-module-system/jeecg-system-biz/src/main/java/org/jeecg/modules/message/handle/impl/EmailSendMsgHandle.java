@@ -6,10 +6,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
-import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.springframework.beans.BeanUtils;
 import org.jeecg.config.StaticConfig;
 import org.jeecg.modules.message.entity.SysMessage;
 import org.jeecg.modules.message.handle.ISendMsgHandle;
@@ -240,12 +242,10 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
      * @return
      */
     private String getToken(SysUser user) {
-        // 生成token
-        String token = JwtUtil.sign(user.getUsername(), user.getPassword());
-        redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-        // 设置超时时间 1个小时
-        redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 1 / 1000);
-        return token;
+        // 使用封装方法：一步完成登录和设置用户信息
+        LoginUser loginUser = new LoginUser();
+        BeanUtils.copyProperties(user, loginUser);
+        return LoginUserUtils.doLogin(loginUser);
     }
 
     /**

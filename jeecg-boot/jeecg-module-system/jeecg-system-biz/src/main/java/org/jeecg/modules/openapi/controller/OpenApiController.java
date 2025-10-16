@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import jakarta.servlet.http.HttpServletRequest;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.modules.openapi.entity.OpenApi;
@@ -24,6 +26,7 @@ import org.jeecg.modules.openapi.service.OpenApiService;
 import org.jeecg.modules.openapi.swagger.*;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,7 +36,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -163,7 +165,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         String appkey = request.getHeader("appkey");
         OpenApiAuth openApiAuth = openApiAuthService.getByAppkey(appkey);
         SysUser systemUser = sysUserService.getUserByName(openApiAuth.getCreateBy());
-        String token = this.getToken(systemUser.getUsername(), systemUser.getPassword());
+        String token = this.getToken(systemUser);
         httpHeaders.put("X-Access-Token", Lists.newArrayList(token));
         httpHeaders.put("Content-Type",Lists.newArrayList("application/json"));
         HttpEntity<String> httpEntity = new HttpEntity<>(json, httpHeaders);
@@ -202,15 +204,13 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
     /**
      * 生成接口访问令牌 Token
      *
-     * @param USERNAME
-     * @param PASSWORD
      * @return
      */
-    private String getToken(String USERNAME, String PASSWORD) {
-        String token = JwtUtil.sign(USERNAME, PASSWORD);
-        redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-        redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, 60);
-        return token;
+    private String getToken(SysUser user) {
+        // 使用封装方法：一步完成登录和设置用户信息
+        LoginUser loginUser = new LoginUser();
+        BeanUtils.copyProperties(user, loginUser);
+        return LoginUserUtils.doLogin(loginUser);
     }
 
 
