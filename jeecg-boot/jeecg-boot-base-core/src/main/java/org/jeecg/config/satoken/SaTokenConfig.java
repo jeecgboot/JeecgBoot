@@ -144,7 +144,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     SaHolder.getResponse()
                         .setStatus(401)
                         .setHeader("Content-Type", "application/json;charset=UTF-8");
-                    return org.jeecg.common.system.util.JwtUtil.responseErrorJson(401, "未登录，请先登录！");
+                    return org.jeecg.common.system.util.JwtUtil.responseErrorJson(401, CommonConstant.TOKEN_IS_INVALID_MSG);
                 })
                 // 前置函数：在每次认证函数之前执行（BeforeAuth 不受 includeList 与 excludeList 的限制，所有请求都会进入）
                 .setBeforeAuth(r -> {

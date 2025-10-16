@@ -120,7 +120,7 @@ public class JeecgBootExceptionHandler {
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
 	public Result<?> handleNotLoginException(NotLoginException e){
 		log.error("Sa-Token未登录异常: {}", e.getMessage());
-		return new Result(401, "未登录，请先登录！");
+		return new Result(401, CommonConstant.TOKEN_IS_INVALID_MSG);
 	}
 
 	/**
