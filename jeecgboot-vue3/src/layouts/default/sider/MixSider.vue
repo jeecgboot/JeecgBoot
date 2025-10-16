@@ -251,8 +251,13 @@
         }
       }
 
-      function handleMenuClick(path: string) {
-        go(path);
+      function handleMenuClick(path: string, item?: any) {
+        // 检查是否有保存的query参数，如果有则携带跳转
+        if (item?.meta?.queryParams) {
+          go({ path, query: item.meta.queryParams } as any);
+        } else {
+          go(path);
+        }
       }
 
       function handleClickOutside() {
@@ -266,7 +271,14 @@
             onMouseenter: () => handleModuleClick(item.path, true),
             onClick: async () => {
               const children = await getChildrenMenus(item.path);
-              if (item.path && (!children || children.length === 0)) go(item.path);
+              if (item.path && (!children || children.length === 0)) {
+                // 检查是否有保存的query参数
+                if (item?.meta?.queryParams) {
+                  go({ path: item.path, query: item.meta.queryParams } as any);
+                } else {
+                  go(item.path);
+                }
+              }
             },
           };
         }
