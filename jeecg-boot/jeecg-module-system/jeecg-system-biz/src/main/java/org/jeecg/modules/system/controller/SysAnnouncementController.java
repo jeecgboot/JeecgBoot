@@ -378,7 +378,7 @@ public class SysAnnouncementController {
 		long start = System.currentTimeMillis();
 		Result<Map<String,Object>> result = new Result<Map<String,Object>>();
 		Map<String,Object> sysMsgMap = new HashMap(5);
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		String userId = sysUser.getId();
 
 
@@ -423,7 +423,7 @@ public class SysAnnouncementController {
 	 */
 	@RequestMapping(value = "/getUnreadMessageCount", method = RequestMethod.GET)
 	public Result<Map<String, Integer>> getUnreadMessageCount(@RequestParam(required = false, defaultValue = "5") Integer pageSize, HttpServletRequest request) {
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		String userId = sysUser.getId();
 
 		// 获取上个月的第一天（只查近两个月的通知）
@@ -466,7 +466,7 @@ public class SysAnnouncementController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "系统通告列表");
         mv.addObject(NormalExcelConstants.CLASS, SysAnnouncement.class);
-        LoginUser user = LoginUserUtils.getLoginUser();
+        LoginUser user = LoginUserUtils.getSessionUser();
         mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("系统通告列表数据", "导出人:"+user.getRealname(), "导出信息"));
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
         return mv;
@@ -567,7 +567,7 @@ public class SysAnnouncementController {
             boolean tokenOk = false;
             try {
                 // 验证Token有效性
-                tokenOk = TokenUtils.verifyToken(request, sysBaseApi, redisUtil);
+                tokenOk = TokenUtils.verifyToken(request, sysBaseApi);
             } catch (Exception ignored) {
             }
             // 判断是否传递了Token，并且Token有效，如果传了就不做查看限制，直接返回
@@ -643,7 +643,7 @@ public class SysAnnouncementController {
 		
 		JSONObject obj = new JSONObject();
 		obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
 
 		// 4、性能统计耗时

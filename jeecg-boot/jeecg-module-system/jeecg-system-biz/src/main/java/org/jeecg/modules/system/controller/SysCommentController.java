@@ -126,7 +126,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
         if(comment==null){
             return Result.error("该评论已被删除！");
         }
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         String username = sysUser.getUsername();
         String admin = "admin";
         //除了admin外 其他人只能删除自己的评论

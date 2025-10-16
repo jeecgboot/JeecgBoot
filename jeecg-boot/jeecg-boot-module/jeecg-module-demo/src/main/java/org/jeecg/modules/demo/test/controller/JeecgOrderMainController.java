@@ -13,12 +13,9 @@ import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.LoginUserUtils;
-import org.jeecg.common.util.oConvertUtils;
-import org.jeecg.modules.demo.test.entity.JeecgDemo;
 import org.jeecg.modules.demo.test.entity.JeecgOrderCustomer;
 import org.jeecg.modules.demo.test.entity.JeecgOrderMain;
 import org.jeecg.modules.demo.test.entity.JeecgOrderTicket;
-import org.jeecg.modules.demo.test.service.IJeecgDemoService;
 import org.jeecg.modules.demo.test.service.IJeecgOrderCustomerService;
 import org.jeecg.modules.demo.test.service.IJeecgOrderMainService;
 import org.jeecg.modules.demo.test.service.IJeecgOrderTicketService;
@@ -33,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -184,7 +180,7 @@ public class JeecgOrderMainController extends JeecgController<JeecgOrderMain, IJ
         //Step.2 AutoPoi 导出Excel
         ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
         //获取当前用户
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
 
         List<JeecgOrderMainPage> pageList = new ArrayList<JeecgOrderMainPage>();
 

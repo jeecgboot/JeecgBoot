@@ -56,7 +56,7 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public Boolean verifyToken(String token) {
-        return TokenUtils.verifyToken(token, sysBaseApi, redisUtil);
+        return TokenUtils.verifyToken(token, sysBaseApi);
     }
 
     @Override

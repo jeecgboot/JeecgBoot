@@ -11,7 +11,6 @@ import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
-import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.base.service.BaseCommonService;
@@ -260,7 +259,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 			 this.sysDepartRolePermissionService.saveDeptRolePermission(roleId, permissionIds, lastPermissionIds);
 			 result.success("保存成功！");
              //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色授权添加敏感日志------------
-             LoginUser loginUser = LoginUserUtils.getLoginUser();
+             LoginUser loginUser = LoginUserUtils.getSessionUser();
              baseCommonService.addLog("修改部门角色ID:"+roleId+"的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
              //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色授权添加敏感日志------------
              log.info("======部门角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");

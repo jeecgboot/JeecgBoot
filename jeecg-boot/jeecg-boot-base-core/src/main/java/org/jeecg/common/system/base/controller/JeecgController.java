@@ -52,7 +52,7 @@ public class JeecgController<T, S extends IService<T>> {
     protected ModelAndView exportXls(HttpServletRequest request, T object, Class<T> clazz, String title) {
         // Step.1 组装查询条件
         QueryWrapper<T> queryWrapper = QueryGenerator.initQueryWrapper(object, request.getParameterMap());
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
 
         // 过滤选中数据
         String selections = request.getParameter("selections");
@@ -90,7 +90,7 @@ public class JeecgController<T, S extends IService<T>> {
     protected ModelAndView exportXlsSheet(HttpServletRequest request, T object, Class<T> clazz, String title,String exportFields,Integer pageNum) {
         // Step.1 组装查询条件
         QueryWrapper<T> queryWrapper = QueryGenerator.initQueryWrapper(object, request.getParameterMap());
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         // Step.2 计算分页sheet数据
         double total = service.count();
         int count = (int)Math.ceil(total/pageNum);
@@ -142,7 +142,7 @@ public class JeecgController<T, S extends IService<T>> {
     protected ModelAndView exportXlsForBigData(HttpServletRequest request, T object, Class<T> clazz, String title,Integer pageSize) {
         // 组装查询条件
         QueryWrapper<T> queryWrapper = QueryGenerator.initQueryWrapper(object, request.getParameterMap());
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         // 计算分页数
         double total = service.count();
         int count = (int) Math.ceil(total / pageSize);

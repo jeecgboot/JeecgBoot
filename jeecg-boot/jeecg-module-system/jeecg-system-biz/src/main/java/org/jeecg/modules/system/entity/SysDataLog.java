@@ -96,7 +96,7 @@ public class SysDataLog implements Serializable {
      */
     public void autoSetCreateName() {
         try {
-            LoginUser sysUser = LoginUserUtils.getLoginUser();
+            LoginUser sysUser = LoginUserUtils.getSessionUser();
             this.setCreateName(sysUser.getRealname());
         } catch (Exception e) {
             // QQYUN-13669 进一步优化：解决某些异步场景下获取用户信息为空的问题

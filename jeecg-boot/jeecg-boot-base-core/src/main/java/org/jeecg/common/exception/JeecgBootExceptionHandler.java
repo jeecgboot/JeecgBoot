@@ -267,7 +267,7 @@ public class JeecgBootExceptionHandler {
 
        
 		//获取登录用户信息
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		if(sysUser!=null){
 			log.setUserid(sysUser.getUsername());
 			log.setUsername(sysUser.getRealname());

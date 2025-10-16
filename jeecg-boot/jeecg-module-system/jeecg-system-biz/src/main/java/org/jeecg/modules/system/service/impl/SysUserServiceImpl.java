@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
@@ -54,11 +53,9 @@ import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -1662,7 +1659,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME, "用户列表");
 		mv.addObject(NormalExcelConstants.CLASS, AppExportUserVo.class);
-		LoginUser user = LoginUserUtils.getLoginUser();
+		LoginUser user = LoginUserUtils.getSessionUser();
 		ExportParams exportParams = new ExportParams("导入规则：\n" +
 				"1、存在用户编号时，数据会根据用户编号进行匹配，匹配成功后只会更新职位和工号;\n" +
 				"2、不存在用户编号时，支持手机号、邮箱、姓名、部们、职位、工号导入,其中手机号必填;\n" +
@@ -2046,7 +2043,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		userTenantMapper.insert(userTenant);
 		//update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5731】导入用户时，没有提醒------------
 		//发送系统消息通知
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		MessageDTO messageDTO = new MessageDTO();
 		String title = sysUser.getRealname() + " 邀请您加入 " + tenantName + "。";
 		messageDTO.setTitle(title);
@@ -2652,7 +2649,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 
     @Override
     public void updatePasswordNotBindPhone(String oldPassword, String password, String username) {
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         //step1 只能修改自己的密码
         if(!sysUser.getUsername().equals(username)){
             throw new JeecgBootBizTipException("只允许修改自己的密码！");

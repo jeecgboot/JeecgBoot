@@ -192,7 +192,7 @@ public class MybatisInterceptor implements Interceptor {
 	private LoginUser getLoginUser() {
 		LoginUser sysUser = null;
 		try {
-			sysUser = LoginUserUtils.getLoginUser() != null ? LoginUserUtils.getLoginUser() : null;
+			sysUser = LoginUserUtils.getSessionUser() != null ? LoginUserUtils.getSessionUser() : null;
 		} catch (Exception e) {
 			//e.printStackTrace();
 			sysUser = null;

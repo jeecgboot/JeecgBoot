@@ -1,10 +1,8 @@
 package org.jeecg.modules.system.controller;
 
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +15,6 @@ import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.PageDTO;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -191,7 +188,7 @@ public class SysRoleController {
 			//如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
 			if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
 				//获取当前用户
-				LoginUser sysUser = LoginUserUtils.getLoginUser();
+				LoginUser sysUser = LoginUserUtils.getSessionUser();
 				Integer tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 				String username = "admin";
 				if (!tenantId.equals(sysrole.getTenantId()) && !username.equals(sysUser.getUsername())) {
@@ -220,7 +217,7 @@ public class SysRoleController {
     	//如果是saas隔离的情况下，判断当前租户id是否是当前租户下的
     	if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 			//获取当前用户
-			LoginUser sysUser = LoginUserUtils.getLoginUser();
+			LoginUser sysUser = LoginUserUtils.getSessionUser();
 			int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 			Long getRoleCount = sysRoleService.getRoleCountByTenantId(id, tenantId);
 			String username = "admin";
@@ -257,7 +254,7 @@ public class SysRoleController {
 			if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 				int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
 				String[] roleIds = ids.split(SymbolConstant.COMMA);
-				LoginUser sysUser = LoginUserUtils.getLoginUser();
+				LoginUser sysUser = LoginUserUtils.getSessionUser();
 				String username = "admin";
 				for (String id:roleIds) {
 					Long getRoleCount = sysRoleService.getRoleCountByTenantId(id, tenantId);
@@ -400,7 +397,7 @@ public class SysRoleController {
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME,"角色列表");
 		mv.addObject(NormalExcelConstants.CLASS,SysRole.class);
-		LoginUser user = LoginUserUtils.getLoginUser();
+		LoginUser user = LoginUserUtils.getSessionUser();
 		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("角色列表数据","导出人:"+user.getRealname(),"导出信息"));
 		mv.addObject(NormalExcelConstants.DATA_LIST,pageList);
 		return mv;

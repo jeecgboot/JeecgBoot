@@ -190,7 +190,7 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         String thirdUserUuid = sysThirdAccount.getThirdUserUuid();
         String thirdType = sysThirdAccount.getThirdType();
         //获取当前登录用户
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         //当前第三方用户已被其他用户所绑定
         SysThirdAccount oneByThirdUserId = this.getOneByUuidAndThirdType(thirdUserUuid, thirdType,CommonConstant.TENANT_ID_DEFAULT_VALUE, null);
         if(null != oneByThirdUserId){

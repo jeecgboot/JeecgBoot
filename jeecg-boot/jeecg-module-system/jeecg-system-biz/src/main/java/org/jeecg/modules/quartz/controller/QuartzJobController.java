@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.util.LoginUserUtils;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaCheckRole;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
@@ -221,7 +220,7 @@ public class QuartzJobController {
 		mv.addObject(NormalExcelConstants.CLASS, QuartzJob.class);
         //获取当前登录用户
         //update-begin---author:wangshuai ---date:20211227  for：[JTC-116]导出人写死了------------
-        LoginUser user = LoginUserUtils.getLoginUser();
+        LoginUser user = LoginUserUtils.getSessionUser();
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("定时任务列表数据", "导出人:"+user.getRealname(), "导出信息"));
         //update-end---author:wangshuai ---date:20211227  for：[JTC-116]导出人写死了------------
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);

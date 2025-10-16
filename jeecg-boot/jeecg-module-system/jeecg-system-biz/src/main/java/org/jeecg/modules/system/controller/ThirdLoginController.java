@@ -233,7 +233,7 @@ public class ThirdLoginController {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = JwtUtil.getUsername(token);
 		//update-begin---author:chenrui ---date:20250210  for：[QQYUN-11021]三方登录接口通过token获取用户信息漏洞修复------------
-		if (!TokenUtils.verifyToken(token, sysBaseAPI, redisUtil)) {
+		if (!TokenUtils.verifyToken(token, sysBaseAPI)) {
 			return Result.noauth("token验证失败");
 		}
 		//update-end---author:chenrui ---date:20250210  for：[QQYUN-11021]三方登录接口通过token获取用户信息漏洞修复------------

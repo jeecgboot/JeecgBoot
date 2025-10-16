@@ -195,7 +195,7 @@ public class SysAnnouncementSendController {
 	public Result<SysAnnouncementSend> editById(@RequestBody JSONObject json) {
 		Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
 		String anntId = json.getString("anntId");
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		String userId = sysUser.getId();
 		LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 		updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);
@@ -220,7 +220,7 @@ public class SysAnnouncementSendController {
 			@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 		    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
 		Result<IPage<AnnouncementSendModel>> result = new Result<IPage<AnnouncementSendModel>>();
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		String userId = sysUser.getId();
 		announcementSendModel.setUserId(userId);
 		announcementSendModel.setPageNo((pageNo-1)*pageSize);
@@ -247,7 +247,7 @@ public class SysAnnouncementSendController {
 	@PutMapping(value = "/readAll")
 	public Result<SysAnnouncementSend> readAll() {
 		Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		String userId = sysUser.getId();
 		LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 		updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);

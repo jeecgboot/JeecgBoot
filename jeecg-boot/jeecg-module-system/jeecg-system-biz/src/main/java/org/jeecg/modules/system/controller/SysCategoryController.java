@@ -237,7 +237,7 @@ public class SysCategoryController {
       //导出文件名称
       mv.addObject(NormalExcelConstants.FILE_NAME, "分类字典列表");
       mv.addObject(NormalExcelConstants.CLASS, SysCategory.class);
-      LoginUser user = LoginUserUtils.getLoginUser();
+      LoginUser user = LoginUserUtils.getSessionUser();
       mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("分类字典列表数据", "导出人:"+user.getRealname(), "导出信息"));
       return mv;
   }

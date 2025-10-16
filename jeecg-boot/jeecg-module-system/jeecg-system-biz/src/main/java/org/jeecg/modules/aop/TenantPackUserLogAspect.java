@@ -79,7 +79,7 @@ public class TenantPackUserLogAspect {
                 dto.setOperateType(opType);
                 dto.setTenantId(tenantId);
                 //获取登录用户信息
-                LoginUser sysUser = LoginUserUtils.getLoginUser();
+                LoginUser sysUser = LoginUserUtils.getSessionUser();
                 if(sysUser!=null){
                     dto.setUserid(sysUser.getUsername());
                     dto.setUsername(sysUser.getRealname());

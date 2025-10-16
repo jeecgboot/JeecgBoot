@@ -9,7 +9,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.jeecg.common.util.LoginUserUtils;
 import cn.dev33.satoken.annotation.SaCheckPermission;
-import cn.dev33.satoken.annotation.SaCheckRole;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -203,7 +202,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 		 String userId = json.getString("userId");
 		 departRoleUserService.deptRoleUserAdd(userId,newRoleId,oldRoleId);
          //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色分配添加敏感日志------------
-         LoginUser loginUser = LoginUserUtils.getLoginUser();
+         LoginUser loginUser = LoginUserUtils.getSessionUser();
          baseCommonService.addLog("给部门用户ID："+userId+"分配角色，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
          //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色分配添加敏感日志------------
          return Result.ok("添加成功！");

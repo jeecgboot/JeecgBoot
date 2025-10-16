@@ -24,15 +24,10 @@ public class WebsocketFilter implements Filter {
 
     private static CommonAPI commonApi;
 
-    private static RedisUtil redisUtil;
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         if (commonApi == null) {
             commonApi = SpringContextUtils.getBean(CommonAPI.class);
-        }
-        if (redisUtil == null) {
-            redisUtil = SpringContextUtils.getBean(RedisUtil.class);
         }
         HttpServletRequest request = (HttpServletRequest)servletRequest;
         String token = request.getHeader(TOKEN_KEY);
@@ -40,7 +35,7 @@ public class WebsocketFilter implements Filter {
         log.debug("Websocket连接 Token安全校验，Path = {}，token:{}", request.getRequestURI(), token);
 
         try {
-            TokenUtils.verifyToken(token, commonApi, redisUtil);
+            TokenUtils.verifyToken(token, commonApi);
         } catch (Exception exception) {
             //log.error("Websocket连接 Token安全校验失败，IP:{}, Token:{}, Path = {}，异常：{}", oConvertUtils.getIpAddrByRequest(request), token, request.getRequestURI(), exception.getMessage());
             log.debug("Websocket连接 Token安全校验失败，IP:{}, Token:{}, Path = {}，异常：{}", oConvertUtils.getIpAddrByRequest(request), token, request.getRequestURI(), exception.getMessage());

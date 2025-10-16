@@ -97,7 +97,7 @@ public class JeecgDemoServiceImpl extends ServiceImpl<JeecgDemoMapper, JeecgDemo
 
 	@Override
 	public String getExportFields() {
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		//权限配置列导出示例
 		//1.配置前缀与菜单中配置的列前缀一致
 		List<String> noAuthList = new ArrayList<>();

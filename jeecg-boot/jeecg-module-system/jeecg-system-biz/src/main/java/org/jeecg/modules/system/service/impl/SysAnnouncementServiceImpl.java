@@ -165,7 +165,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 
 	@Override
 	public void completeAnnouncementSendInfo() {
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		String userId = sysUser.getId();
 		List<String> announcementIds = this.getNotSendedAnnouncementlist(userId);
 		List<SysAnnouncementSend> sysAnnouncementSendList = new ArrayList<>();
@@ -215,7 +215,7 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 //			completeAnnouncementSendInfo();
 //		});
 		
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		log.info(" 获取登录人 LoginUser id: {}", sysUser.getId());
 		Page<SysAnnouncement> page = new Page<SysAnnouncement>(pageNo,pageSize);
 		List<SysAnnouncement> list = baseMapper.queryAllMessageList(page, sysUser.getId(), fromUser, starFlag, busType, msgCategory,beginDate, endDate, noticeType);
@@ -224,13 +224,13 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 
 	@Override
 	public void updateReaded(List<String> annoceIdList) {
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		sysAnnouncementSendMapper.updateReaded(sysUser.getId(), annoceIdList);
 	}
 
 	@Override
 	public void clearAllUnReadMessage() {
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		sysAnnouncementSendMapper.clearAllUnReadMessage(sysUser.getId());
 	}
 

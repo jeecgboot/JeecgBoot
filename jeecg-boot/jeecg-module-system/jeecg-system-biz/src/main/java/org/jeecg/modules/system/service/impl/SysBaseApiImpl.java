@@ -658,7 +658,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public void updateSysAnnounReadFlag(String busType, String busId) {
 		SysAnnouncement announcement = sysAnnouncementMapper.selectOne(new QueryWrapper<SysAnnouncement>().eq("bus_type",busType).eq("bus_id",busId));
 		if(announcement != null){
-			LoginUser sysUser = LoginUserUtils.getLoginUser();
+			LoginUser sysUser = LoginUserUtils.getSessionUser();
 			String userId = sysUser.getId();
 			LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 			updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);

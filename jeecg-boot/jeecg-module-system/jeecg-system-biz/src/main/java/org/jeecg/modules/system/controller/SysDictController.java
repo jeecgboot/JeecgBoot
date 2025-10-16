@@ -550,7 +550,7 @@ public class SysDictController {
 		// 注解对象Class
 		mv.addObject(NormalExcelConstants.CLASS, SysDictPage.class);
 		// 自定义表格参数
-		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser user = LoginUserUtils.getSessionUser();
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("数据字典列表", "导出人:"+user.getRealname(), "数据字典"));
 		// 导出数据列表
 		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);

@@ -13,7 +13,6 @@ import org.jeecg.modules.aop.TenantLog;
 import org.jeecg.modules.system.entity.SysPackPermission;
 import org.jeecg.modules.system.entity.SysTenantPack;
 import org.jeecg.modules.system.entity.SysTenantPackUser;
-import org.jeecg.modules.system.entity.SysUserTenant;
 import org.jeecg.modules.system.mapper.*;
 import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.springframework.beans.BeanUtils;
@@ -226,7 +225,7 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
             packId = sysTenantPackSuperAdmin.getId();
         }
         //step.1.2 补充人员与套餐包的关系数据
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         SysTenantPackUser packUser = new SysTenantPackUser(tenantId, packId, sysUser.getId());
         packUser.setRealname(sysUser.getRealname());
         packUser.setPackName(superAdminPack.getPackName());

@@ -74,7 +74,7 @@ public class BaseCommonServiceImpl implements BaseCommonService {
         //获取登录用户信息
         if(user==null){
             try {
-                user = LoginUserUtils.getLoginUser();
+                user = LoginUserUtils.getSessionUser();
             } catch (Exception e) {
                 //e.printStackTrace();
             }

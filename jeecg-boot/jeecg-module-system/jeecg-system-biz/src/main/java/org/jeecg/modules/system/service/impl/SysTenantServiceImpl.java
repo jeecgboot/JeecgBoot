@@ -32,11 +32,8 @@ import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.jeecg.modules.system.service.ISysTenantService;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.vo.tenant.*;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -164,7 +161,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
      * @param id
      */
     private void sendInvitationTenantMessage(SysUser user, String id) {
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         // 发消息
         SysTenant sysTenant = this.baseMapper.querySysTenant((Integer.valueOf(id)));
         MessageDTO messageDTO = new MessageDTO();
@@ -227,7 +224,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         this.save(sysTenant);
         //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
         //当前登录人的id
-        LoginUser loginUser = LoginUserUtils.getLoginUser();
+        LoginUser loginUser = LoginUserUtils.getSessionUser();
         this.saveTenantRelation(sysTenant.getId(),loginUser.getId());
         //update-end---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
     }
@@ -428,7 +425,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     public Result<String> invitationUser(String phone, String departId) {
         Result<String> result = new Result<>();
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
 
         //1、查询用户信息,判断用户是否存在
         SysUser userByPhone = userService.getUserByPhone(phone);
@@ -492,7 +489,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         }
 
         TenantDepartAuthInfo info = new TenantDepartAuthInfo();
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         String userId = sysUser.getId();
         boolean superAdmin = false;
         // 查询pack表
@@ -682,7 +679,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         // 发消息
         SysUser user = userService.getById(sysTenantPackUser.getUserId());
         SysTenant sysTenant = this.baseMapper.querySysTenant(sysTenantPackUser.getTenantId());
-        LoginUser loginUser = LoginUserUtils.getLoginUser();
+        LoginUser loginUser = LoginUserUtils.getSessionUser();
         MessageDTO messageDTO = new MessageDTO();
         messageDTO.setToAll(false);
         messageDTO.setToUser(user.getUsername());
@@ -860,7 +857,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     
     @Override
     public Long getApplySuperAdminCount() {
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
         return baseMapper.getApplySuperAdminCount(sysUser.getId(),tenantId);
     }
@@ -925,7 +922,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         //被删除人的密码
         String password = sysUser.getPassword();
         //当前登录用户
-        LoginUser user = LoginUserUtils.getLoginUser();
+        LoginUser user = LoginUserUtils.getSessionUser();
         //step1 判断当前用户是否为当前租户的管理员(只有超级管理员和账号管理员可以删除)
         Long isHaveAdmin = sysTenantPackUserMapper.izHaveBuyAuth(user.getId(), tenantId);
         if(null == isHaveAdmin || 0 == isHaveAdmin){
@@ -968,7 +965,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         }
         //step1 验证创建时间
         //当前登录用户
-        LoginUser user = LoginUserUtils.getLoginUser();
+        LoginUser user = LoginUserUtils.getSessionUser();
         Date createTime = sysUser.getCreateTime();
         boolean sameDay = DateUtils.isSameDay(createTime, new Date());
         if(!sameDay){
@@ -995,7 +992,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         //被删除人的密码
         String password = sysUser.getPassword();
         //当前登录用户
-        LoginUser user = LoginUserUtils.getLoginUser();
+        LoginUser user = LoginUserUtils.getSessionUser();
         //step1 判断当前用户是否为当前租户的创建者才可以删除
         SysTenant sysTenant = this.getById(tenantId);
         if(null == sysTenant || !user.getUsername().equals(sysTenant.getCreateBy())){

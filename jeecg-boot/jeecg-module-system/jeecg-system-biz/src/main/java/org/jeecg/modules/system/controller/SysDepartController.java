@@ -75,7 +75,7 @@ public class SysDepartController {
 	@RequestMapping(value = "/queryMyDeptTreeList", method = RequestMethod.GET)
 	public Result<List<SysDepartTreeModel>> queryMyDeptTreeList() {
 		Result<List<SysDepartTreeModel>> result = new Result<>();
-		LoginUser user = LoginUserUtils.getLoginUser();
+		LoginUser user = LoginUserUtils.getSessionUser();
 		try {
 			if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals( CommonConstant.USER_IDENTITY_2 )){
 				//update-begin--Author:liusq  Date:20210624  for:部门查询ids为空后的前端显示问题 issues/I3UD06
@@ -352,7 +352,7 @@ public class SysDepartController {
                                                      @RequestParam(name = "departIds", required = false) String depIds) {
 		Result<List<SysDepartTreeModel>> result = new Result<List<SysDepartTreeModel>>();
 		//部门查询，myDeptSearch为1时为我的部门查询，登录用户为上级时查只查负责部门下数据
-		LoginUser user = LoginUserUtils.getLoginUser();
+		LoginUser user = LoginUserUtils.getSessionUser();
 		String departIds = null;
 		if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals( CommonConstant.USER_IDENTITY_2 )){
 			departIds = user.getDepartIds();
@@ -409,7 +409,7 @@ public class SysDepartController {
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
         mv.addObject(NormalExcelConstants.CLASS, SysDepartExportVo.class);
-        LoginUser user = LoginUserUtils.getLoginUser();
+        LoginUser user = LoginUserUtils.getSessionUser();
         ExportParams exportParams = new ExportParams("导入规则：\n" +
                 "1、标题为第三行，部门路径和部门名称的标题不允许修改，否则会匹配失败；第四行为数据填写范围;\n" +
                 "2、部门路径用英文字符/分割，部门名称为部门路径的最后一位;\n" +
@@ -674,7 +674,7 @@ public class SysDepartController {
 		//导出文件名称
 		mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
 		mv.addObject(NormalExcelConstants.CLASS, ExportDepartVo.class);
-		LoginUser user = LoginUserUtils.getLoginUser();
+		LoginUser user = LoginUserUtils.getSessionUser();
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("部门列表数据", "导出人:"+user.getRealname(), "导出信息"));
 		mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
 		return mv;

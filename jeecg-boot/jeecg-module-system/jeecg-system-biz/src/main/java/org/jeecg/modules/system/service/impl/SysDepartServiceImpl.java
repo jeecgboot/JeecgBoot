@@ -1016,7 +1016,7 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
      */
     @Override
     public List<SysDepart> getMyDepartList() {
-        LoginUser user = LoginUserUtils.getLoginUser();
+        LoginUser user = LoginUserUtils.getSessionUser();
         String userId = user.getId();
         //字典code集合
         List<String> list = new ArrayList<>();

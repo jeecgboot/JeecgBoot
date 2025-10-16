@@ -1081,7 +1081,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
             } else {
                 token = TokenUtils.getTokenByRequest();
             }
-            if (TokenUtils.verifyToken(token, sysBaseApi, redisUtil)) {
+            if (TokenUtils.verifyToken(token, sysBaseApi)) {
                 return JwtUtil.getUsername(token);
             }
         } catch (Exception e) {

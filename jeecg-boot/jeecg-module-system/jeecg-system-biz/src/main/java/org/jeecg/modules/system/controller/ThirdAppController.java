@@ -509,7 +509,7 @@ public class ThirdAppController {
      */
     @GetMapping("/getThirdAccountByUserId")
     public Result<List<SysThirdAccount>> getThirdAccountByUserId(@RequestParam(name="thirdType") String thirdType){
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
         //根据id查询
         query.eq(SysThirdAccount::getSysUserId,sysUser.getId());
@@ -540,7 +540,7 @@ public class ThirdAppController {
      */
     @DeleteMapping("/deleteThirdAccount")
     public Result<String> deleteThirdAccountById(@RequestBody SysThirdAccount sysThirdAccount){
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         if(!sysUser.getId().equals(sysThirdAccount.getSysUserId())){
             return Result.error("无权修改他人信息");
         }

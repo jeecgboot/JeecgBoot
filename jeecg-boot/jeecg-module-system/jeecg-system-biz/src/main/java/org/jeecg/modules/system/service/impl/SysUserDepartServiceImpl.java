@@ -1,6 +1,5 @@
 package org.jeecg.modules.system.service.impl;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,7 +9,6 @@ import org.jeecg.common.util.LoginUserUtils;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.constant.enums.DepartCategoryEnum;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
@@ -248,7 +246,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
         IPage<SysUser> pageList = null;
         // 部门ID不存在 直接查询用户表即可
         Page<SysUser> page = new Page<>(pageNo, pageSize);
-        LoginUser sysUser = LoginUserUtils.getLoginUser();
+        LoginUser sysUser = LoginUserUtils.getSessionUser();
         if(oConvertUtils.isEmpty(departId)){
             LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
             query.eq(SysUser::getStatus,Integer.parseInt(CommonConstant.STATUS_1));
@@ -286,7 +284,7 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 		IPage<SysUser> pageList = null;
 		// 部门ID不存在 直接查询用户表即可
 		Page<SysUser> page = new Page<>(pageNo, pageSize);
-		LoginUser sysUser = LoginUserUtils.getLoginUser();
+		LoginUser sysUser = LoginUserUtils.getSessionUser();
 		
 		List<String> userIdList = new ArrayList<>();
 		if(oConvertUtils.isNotEmpty(excludeUserIdList)){
