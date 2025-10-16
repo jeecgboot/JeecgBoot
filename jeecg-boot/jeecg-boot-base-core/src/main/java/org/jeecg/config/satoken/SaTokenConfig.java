@@ -196,7 +196,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                         SaHolder.getResponse().setStatus(HttpStatus.OK.value());
                     });
 
-                    // 每次请求前，获取请求头中的租户ID，放入当前线程上下文
+                    // 设置当前线程上下文的租户ID
                     String tenantId = SaHolder.getRequest().getHeader(CommonConstant.TENANT_ID);
                     TenantContext.setTenant(tenantId);
                     log.info("===【TenantContext 线程设置】=== 请求路径: {}, 租户ID: {}", SaHolder.getRequest().getRequestPath(), tenantId);
