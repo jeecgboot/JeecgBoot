@@ -50,7 +50,7 @@ JeecgBoot低代码平台兼容所有J2EE项目开发，支持信创国产化，�
 版本说明
 -----------------------------------
 
-|下载 | SpringBoot3.3 + Shiro  |SpringBoot3.3+ SpringAuthorizationServer | SpringBoot3.3 + Sa-Token | SpringBoot2.7(JDK17/JDK8) |
+|下载 | SpringBoot3.5 + Shiro  |SpringBoot3.5+ SpringAuthorizationServer | SpringBoot3.5 + Sa-Token | SpringBoot2.7(JDK17/JDK8) |
 |------|----------------|----------------------------|-------------------|--------------------------------------------|
 | Github |  [`springboot3`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3) | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支  |  [`springboot3-satoken`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3-satoken) 分支|[`master`](https://github.com/jeecgboot/JeecgBoot) 分支|
 | Gitee |  [`springboot3`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3/)      | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支|  [`springboot3-satoken`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3-satoken) 分支|[`master`](https://gitee.com/jeecg/JeecgBoot)     分支 |
