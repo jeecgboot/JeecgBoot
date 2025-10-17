@@ -168,6 +168,8 @@ public class AddGiftJob implements Job {
             List<GiftRule> nonMatchingQuantityRules = rulesByType.get(Boolean.FALSE);
 
             for (Order order : entry.getValue()) {
+                // Determine whether order is pending or preparing
+                order.resolveStatus();
                 log.info("Processing order {} ", order.getPlatformOrderId());
                 // Non matching-quantity rules only apply once per order
                 boolean nonMatchingRulesApplied = false;
@@ -184,6 +186,8 @@ public class AddGiftJob implements Job {
                     String erpCode = orderItem.getErpCode();
                     if (!nonMatchingRulesApplied && nonMatchingQuantityRules != null) {
                         for (GiftRule giftRule : nonMatchingQuantityRules) {
+                            // Ignore gift rule if its erp status is present yet different from the order item's
+                            if (shouldIgnoreForErpStatus(order, giftRule)) continue;
                             if (erpCode.matches(giftRule.getRegex())) {
                                 nonMatchingRulesApplied = true;
                                 putValueInMapOrReduce(giftRule.getSku(), 1, newGiftMap);
@@ -191,7 +195,9 @@ public class AddGiftJob implements Job {
                             }
                         }
                     }
+                    if (matchingQuantityRules == null) continue;
                     for (GiftRule giftRule : matchingQuantityRules) {
+                        if (shouldIgnoreForErpStatus(order, giftRule)) continue;
                         if (erpCode.matches(giftRule.getRegex())) {
                             putValueInMapOrReduce(giftRule.getSku(), orderItem.getQuantity(), newGiftMap);
                         }
@@ -223,6 +229,19 @@ public class AddGiftJob implements Job {
             log.info("Ended processing orders from shop {}", shopCode);
         }
         return giftInsertionRequests;
+    }
+
+    private static boolean shouldIgnoreForErpStatus(Order order, GiftRule giftRule) {
+        // Ignore gift rule if its erp status is present yet different from the order item's
+        if (giftRule.getErpStatus() != null && !giftRule.getErpStatus().equalsIgnoreCase(order.getStatus())) {
+            log.info("Gift rule only applies to status {} while order item status {},  rule on {} to be ignored", giftRule.getErpStatus(),
+                    order.getStatus(), giftRule.getSku());
+            return true;
+        } else {
+            log.info("Gift rule status {} matches order item status {},  rule on {} to be applied", giftRule.getErpStatus(),
+                    order.getStatus(), giftRule.getSku());
+            return false;
+        }
     }
 
     private static void putValueInMapOrReduce(String key, Integer value, HashMap<String, Integer> giftMap) {
