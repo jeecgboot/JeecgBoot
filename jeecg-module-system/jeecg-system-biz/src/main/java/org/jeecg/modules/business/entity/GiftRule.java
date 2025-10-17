@@ -12,4 +12,6 @@ public class GiftRule {
     private final String regex;
 
     private final Boolean matchQuantity;
+
+    private final String erpStatus;
 }
