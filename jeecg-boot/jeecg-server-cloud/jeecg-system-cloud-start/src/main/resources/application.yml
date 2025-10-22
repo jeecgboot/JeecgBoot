@@ -22,3 +22,10 @@ spring:
     import:
       - optional:nacos:jeecg.yaml
       - optional:nacos:jeecg-@profile.name@.yaml
+#  #shardingjdbc数据源
+#  datasource:
+#    dynamic:
+#      datasource:
+#        sharding-db:
+#          driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+#          url: jdbc:shardingsphere:nacos:sharding.yaml?serverAddr=@config.server-addr@&namespace=@config.namespace@&group=@config.group@

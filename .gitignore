@@ -14,3 +14,5 @@ os_del_doc.cmd
 .svn
 derby.log
 *.log
+.cursor
+.history

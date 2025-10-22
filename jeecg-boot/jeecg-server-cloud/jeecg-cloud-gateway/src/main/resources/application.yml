@@ -28,17 +28,21 @@ spring:
         username: @config.username@
         password: @config.password@
     gateway:
-      discovery:
-        locator:
-          enabled: true
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowCredentials: true
-            #springboot2.4后需用allowedOriginPatterns
-            allowedOriginPatterns: "*"
-            allowedMethods: "*"
-            allowedHeaders: "*"
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allow-credentials: true
+                allowed-origin-patterns:
+                  - "*"
+                allowed-methods:
+                  - "*"
+                allowed-headers:
+                  - "*"
     #Sentinel配置
     sentinel:
       transport:

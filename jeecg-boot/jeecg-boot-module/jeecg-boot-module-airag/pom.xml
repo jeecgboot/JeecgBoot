@@ -31,9 +31,27 @@
     </repositories>
 
     <properties>
-        <langchain4j.version>0.35.0</langchain4j.version>
         <apache-tika.version>2.9.1</apache-tika.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-bom</artifactId>
+                <version>1.3.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>dev.langchain4j</groupId>
+                <artifactId>langchain4j-community-bom</artifactId>
+                <version>1.3.0-beta9</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- system单体 api-->
@@ -55,7 +73,7 @@
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-aiflow</artifactId>
-            <version>1.2.0</version>
+            <version>3.8.3.1</version>
         </dependency>
 
         <!-- beigin 这两个依赖太多每个包50M左右，如果你发布需要使用，请把<scope>provided</scope>删掉 -->
@@ -72,7 +90,6 @@
             <scope>provided</scope>
         </dependency>
         <!-- end 这两个依赖太多每个包50M左右，如果你发布需要使用，请把<scope>provided</scope>删掉 -->
-
         <!-- aiflow 脚本依赖 -->
         <dependency>
             <groupId>com.yomahub</groupId>
@@ -105,17 +122,19 @@
             </exclusions>
         </dependency>
         <!-- aiflow 脚本依赖 -->
-
+        
         <!-- langChain4j model support -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-ollama</artifactId>
-            <version>${langchain4j.version}</version>
+            <artifactId>langchain4j-open-ai</artifactId>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-zhipu-ai</artifactId>
-            <version>${langchain4j.version}</version>
+            <artifactId>langchain4j-ollama</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-community-zhipu-ai</artifactId>
             <exclusions>
                 <exclusion>
                     <artifactId>checker-qual</artifactId>
@@ -129,13 +148,11 @@
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-qianfan</artifactId>
-            <version>${langchain4j.version}</version>
+            <artifactId>langchain4j-community-qianfan</artifactId>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-dashscope</artifactId>
-            <version>${langchain4j.version}</version>
+            <artifactId>langchain4j-community-dashscope</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -151,7 +168,7 @@
         <dependency>
             <groupId>org.jeecgframework</groupId>
             <artifactId>langchain4j-pgvector</artifactId>
-            <version>${langchain4j.version}</version>
+            <version>1.3.0-beta9</version>
         </dependency>
         <!-- langChain4j Document Parser -->
         <dependency>

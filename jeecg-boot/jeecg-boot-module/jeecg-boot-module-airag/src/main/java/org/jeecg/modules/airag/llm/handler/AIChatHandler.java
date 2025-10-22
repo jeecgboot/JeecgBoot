@@ -105,14 +105,14 @@ public class AIChatHandler implements IAIChatHandler {
             // langchain4j 异常友好提示
             String errMsg = "调用大模型接口失败，详情请查看后台日志。";
             if (oConvertUtils.isNotEmpty(e.getMessage())) {
-//                // 根据常见异常关键字做细致翻译
-//                for (Map.Entry<String, String> entry : MODEL_ERROR_MAP.entrySet()) {
-//                    String key = entry.getKey();
-//                    String value = entry.getValue();
-//                    if (errMsg.contains(key)) {
-//                        errMsg = value;
-//                    }
-//                }
+                // 根据常见异常关键字做细致翻译
+                for (Map.Entry<String, String> entry : MODEL_ERROR_MAP.entrySet()) {
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+                    if (errMsg.contains(key)) {
+                        errMsg = value;
+                    }
+                }
             }
             log.error("AI模型调用异常: {}", errMsg, e);
             throw new JeecgBootException(errMsg);

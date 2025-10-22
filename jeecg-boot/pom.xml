@@ -59,14 +59,14 @@
 		<liteflow.version>2.15.0</liteflow.version>
 		
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>2.1.3</jimureport-spring-boot-starter.version>
-		<jimubi-spring-boot-starter.version>2.1.4</jimubi-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>2.1.5</jimureport-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.1.5</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.14</minidao.version>
 		<autopoi-web.version>1.4.18</autopoi-web.version>
 		
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.12</mybatis-plus.version>
-		<dynamic-datasource-spring-boot-starter.version>4.1.3</dynamic-datasource-spring-boot-starter.version>
+		<dynamic-datasource-spring-boot-starter.version>4.3.1</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.24</druid.version>
 
 		<commons-io.version>2.11.0</commons-io.version>
@@ -243,7 +243,12 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>3.8.3.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-shardingsphere-nacos</artifactId>
+				<version>3.8.3.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -528,7 +533,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>3.8.3.2</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
 			<!--mysql5.6，需要把版本号改成5.2.1-->

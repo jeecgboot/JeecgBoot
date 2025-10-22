@@ -71,7 +71,7 @@ public class AiragAppServiceImpl extends ServiceImpl<AiragAppMapper, AiragApp> i
             AtomicBoolean isThinking = new AtomicBoolean(false);
             String requestId = UUIDGenerator.generate();
             // ai聊天响应逻辑
-            tokenStream.onNext((String resMessage) -> {
+            tokenStream.onPartialResponse((String resMessage) -> {
                         // 兼容推理模型
                         if ("<think>".equals(resMessage)) {
                             isThinking.set(true);
@@ -99,9 +99,9 @@ public class AiragAppServiceImpl extends ServiceImpl<AiragAppMapper, AiragApp> i
                             throw new RuntimeException(e);
                         }
                     })
-                    .onComplete((responseMessage) -> {
+                    .onCompleteResponse((responseMessage) -> {
                         // 记录ai的回复
-                        AiMessage aiMessage = responseMessage.content();
+                        AiMessage aiMessage = responseMessage.aiMessage();
                         FinishReason finishReason = responseMessage.finishReason();
                         String respText = aiMessage.text();
                         if (FinishReason.STOP.equals(finishReason) || null == finishReason) {
@@ -114,9 +114,6 @@ public class AiragAppServiceImpl extends ServiceImpl<AiragAppMapper, AiragApp> i
                                 throw new RuntimeException(e);
                             }
                             closeSSE(emitter, eventData);
-                        } else if (FinishReason.TOOL_EXECUTION.equals(finishReason)) {
-                            // 需要执行工具
-                            // TODO author: chenrui for: date:2025/3/7
                         } else {
                             // 异常结束
                             log.error("调用模型异常:" + respText);

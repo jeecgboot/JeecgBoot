@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.*;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
@@ -56,12 +56,22 @@ public class RestUtil {
     private final static RestTemplate RT;
 
     static {
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        //update-begin---author:chenrui ---date:20251011  for：[issues/8859]online表单java增强失效------------
+        // 使用 Apache HttpClient 避免 JDK HttpURLConnection 的 too many bytes written 问题
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        //update-end---author:chenrui ---date:20251011  for：[issues/8859]online表单java增强失效------------
         requestFactory.setConnectTimeout(30000);
         requestFactory.setReadTimeout(30000);
         RT = new RestTemplate(requestFactory);
-        // 解决乱码问题
-        RT.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+        //update-begin---author:chenrui ---date:20251011  for：[issues/8859]online表单java增强失效------------
+        // 解决乱码问题（替换 StringHttpMessageConverter 为 UTF-8）
+        for (int i = 0; i < RT.getMessageConverters().size(); i++) {
+            if (RT.getMessageConverters().get(i) instanceof StringHttpMessageConverter) {
+                RT.getMessageConverters().set(i, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+                break;
+            }
+        }
+        //update-end---author:chenrui ---date:20251011  for：[issues/8859]online表单java增强失效------------
     }
 
     public static RestTemplate getRestTemplate() {
@@ -250,12 +260,21 @@ public class RestUtil {
         // 创建自定义RestTemplate（如果需要设置超时）
         RestTemplate restTemplate = RT;
         if (timeout > 0) {
-            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+            //update-begin---author:chenrui ---date:20251011  for：[issues/8859]online表单java增强失效------------
+            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+            //update-end---author:chenrui ---date:20251011  for：[issues/8859]online表单java增强失效------------
             requestFactory.setConnectTimeout(timeout);
             requestFactory.setReadTimeout(timeout);
             restTemplate = new RestTemplate(requestFactory);
-            // 解决乱码问题
-            restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+            //update-begin---author:chenrui ---date:20251011  for：[issues/8859]online表单java增强失效------------
+            // 解决乱码问题（替换 StringHttpMessageConverter 为 UTF-8）
+            for (int i = 0; i < restTemplate.getMessageConverters().size(); i++) {
+                if (restTemplate.getMessageConverters().get(i) instanceof StringHttpMessageConverter) {
+                    restTemplate.getMessageConverters().set(i, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+                    break;
+                }
+            }
+            //update-end---author:chenrui ---date:20251011  for：[issues/8859]online表单java增强失效------------
         }
 
         // 请求体

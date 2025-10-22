@@ -1,0 +1,67 @@
+# !!!数据源名称要和动态数据源中配置的名称一致
+databaseName: sharding-db
+
+# 具体参看官网文档说明
+dataSources:
+  ds0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    password: root
+    username: root
+  ds1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot2?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    password: root
+    username: root
+
+rules:
+  - !SHARDING
+    bindingTables:
+      - sys_log
+    tables:
+      sys_log:
+        actualDataNodes: ds$->{0..1}.sys_log$->{0..1}
+        databaseStrategy:
+          standard:
+            shardingColumn: operate_type
+            shardingAlgorithmName: database-inline
+        tableStrategy:
+          standard:
+            shardingColumn: log_type
+            shardingAlgorithmName: table-classbased
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+    
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worker-id: 123
+    
+    shardingAlgorithms:
+      database-inline:
+        type: INLINE
+        props:
+          algorithm-expression: ds$->{operate_type % 2}
+      table-classbased:
+        type: CLASS_BASED
+        props:
+          strategy: standard
+          algorithmClassName: org.jeecg.modules.test.sharding.algorithm.StandardModTableShardAlgorithm
+
+  - !READWRITE_SPLITTING
+    dataSources:
+      prds:
+        writeDataSourceName: ds0
+        readDataSourceNames:
+          - ds1
+        loadBalancerName: round-robin
+    loadBalancers:
+      round-robin:
+        type: ROUND_ROBIN
+
+props:
+  sql-show: true

@@ -5,13 +5,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import dev.langchain4j.agent.tool.JsonSchemaProperty;
 import dev.langchain4j.agent.tool.ToolSpecification;
+import dev.langchain4j.model.chat.request.json.JsonObjectSchema;
 import dev.langchain4j.service.tool.ToolExecutor;
 import org.apache.commons.lang3.StringUtils;
-import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
-import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.llm.handler.JeecgToolsProvider;
@@ -85,12 +83,17 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                         "\n\n - 提前使用用户名查询用户是否存在,如果存在则不能添加." +
                         "\n\n - 添加成功后返回成功消息,如果失败则返回失败原因." +
                         "\n\n - 用户名,工号,邮箱,手机号均要求唯一,提前通过查询用户工具确认唯一性." )
-                .addParameter("username", JsonSchemaProperty.STRING, JsonSchemaProperty.description("用户名,必填,只允许使用字母、数字、下划线，且必须以字母开头,唯一"))
-                .addParameter("password", JsonSchemaProperty.STRING, JsonSchemaProperty.description("用户密码,必填"))
-                .addParameter("realname", JsonSchemaProperty.STRING, JsonSchemaProperty.description("真实姓名,必填"))
-                .addParameter("workNo", JsonSchemaProperty.STRING, JsonSchemaProperty.description("工号,必填,唯一"))
-                .addParameter("email", JsonSchemaProperty.STRING, JsonSchemaProperty.description("邮箱,必填,唯一"))
-                .addParameter("phone", JsonSchemaProperty.STRING, JsonSchemaProperty.description("手机号,必填,唯一"))
+                .parameters(
+                        JsonObjectSchema.builder()
+                                .addStringProperty("username", "用户名,必填,只允许使用字母、数字、下划线，且必须以字母开头,唯一")
+                                .addStringProperty("password", "用户密码,必填")
+                                .addStringProperty("realname", "真实姓名,必填")
+                                .addStringProperty("workNo", "工号,必填,唯一")
+                                .addStringProperty("email", "邮箱,必填,唯一")
+                                .addStringProperty("phone", "手机号,必填,唯一")
+                                .required("username","password","realname","workNo","email","phone")
+                                .build()
+                )
                 .build();
         ToolExecutor toolExecutor = (toolExecutionRequest, memoryId) -> {
             JSONObject arguments = JSONObject.parseObject(toolExecutionRequest.arguments());
@@ -138,11 +141,15 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
         ToolSpecification toolSpecification = ToolSpecification.builder()
                 .name("query_user_by_name")
                 .description("查询用户详细信息，返回json数组。支持用户名、真实姓名、邮箱、手机号、工号多字段组合查询，用户名、真实姓名、邮箱、手机号均为模糊查询，工号为精确查询。无条件则返回全部用户。")
-                .addParameter("username", JsonSchemaProperty.STRING, JsonSchemaProperty.description("用户名"))
-                .addParameter("realname", JsonSchemaProperty.STRING, JsonSchemaProperty.description("真实姓名"))
-                .addParameter("email", JsonSchemaProperty.STRING, JsonSchemaProperty.description("电子邮件"))
-                .addParameter("phone", JsonSchemaProperty.STRING, JsonSchemaProperty.description("手机号"))
-                .addParameter("workNo", JsonSchemaProperty.STRING, JsonSchemaProperty.description("工号"))
+                .parameters(
+                        JsonObjectSchema.builder()
+                                .addStringProperty("username", "用户名")
+                                .addStringProperty("realname", "真实姓名")
+                                .addStringProperty("email", "电子邮件")
+                                .addStringProperty("phone", "手机号")
+                                .addStringProperty("workNo", "工号")
+                                .build()
+                )
                 .build();
         ToolExecutor toolExecutor = (toolExecutionRequest, memoryId) -> {
             SysUser args = JSONObject.parseObject(toolExecutionRequest.arguments(), SysUser.class);
@@ -180,8 +187,12 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
         ToolSpecification spec = ToolSpecification.builder()
                 .name("query_all_roles")
                 .description("查询所有角色，返回json数组。包含字段：id、roleName、roleCode；默认按创建时间/排序号规则由后端决定。")
-                .addParameter("roleName", JsonSchemaProperty.STRING, JsonSchemaProperty.description("角色姓名"))
-                .addParameter("roleCode", JsonSchemaProperty.STRING, JsonSchemaProperty.description("角色编码"))
+                .parameters(
+                        JsonObjectSchema.builder()
+                                .addStringProperty("roleName", "角色姓名")
+                                .addStringProperty("roleCode", "角色编码")
+                                .build()
+                )
                 .build();
         ToolExecutor exec = (toolExecutionRequest, memoryId) -> {
             // 做租户隔离查询（若开启）
@@ -194,10 +205,10 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                 qw.like("role_code", sysRole.getRoleCode());
             }
             // 未删除
-            List<org.jeecg.modules.system.entity.SysRole> roles = sysRoleService.list(qw);
+            List<SysRole> roles = sysRoleService.list(qw);
             // 仅返回核心字段
             JSONArray arr = new JSONArray();
-            for (org.jeecg.modules.system.entity.SysRole r : roles) {
+            for (SysRole r : roles) {
                 JSONObject o = new JSONObject();
                 o.put("id", r.getId());
                 o.put("roleName", r.getRoleName());
@@ -219,17 +230,22 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
         ToolSpecification spec = ToolSpecification.builder()
                 .name("grant_user_roles")
                 .description("给用户授予角色，支持一次授予多个角色；如果关系已存在则跳过。返回授予结果统计。")
-                .addParameter("userId", JsonSchemaProperty.STRING, JsonSchemaProperty.description("用户ID，必填"))
-                .addParameter("roleIds", JsonSchemaProperty.STRING, JsonSchemaProperty.description("角色ID列表，必填，使用英文逗号分隔"))
+                .parameters(
+                        JsonObjectSchema.builder()
+                                .addStringProperty("userId", "用户ID，必填")
+                                .addStringProperty("roleIds", "角色ID列表，必填，使用英文逗号分隔")
+                                .required("userId","roleIds")
+                                .build()
+                )
                 .build();
         ToolExecutor exec = (toolExecutionRequest, memoryId) -> {
             JSONObject args = JSONObject.parseObject(toolExecutionRequest.arguments());
             String userId = args.getString("userId");
             String roleIdsStr = args.getString("roleIds");
-            if (org.apache.commons.lang3.StringUtils.isAnyBlank(userId, roleIdsStr)) {
+            if (StringUtils.isAnyBlank(userId, roleIdsStr)) {
                 return "参数缺失：userId 或 roleIds";
             }
-            org.jeecg.modules.system.entity.SysUser user = sysUserService.getById(userId);
+            SysUser user = sysUserService.getById(userId);
             if (user == null) {
                 return "用户不存在：" + userId;
             }
@@ -238,9 +254,9 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
             for (String roleId : roleIds) {
                 roleId = roleId.trim();
                 if (roleId.isEmpty()) continue;
-                org.jeecg.modules.system.entity.SysRole role = sysRoleService.getById(roleId);
+                SysRole role = sysRoleService.getById(roleId);
                 if (role == null) { invalid++; continue; }
-                com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<org.jeecg.modules.system.entity.SysUserRole> q = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
+                QueryWrapper<org.jeecg.modules.system.entity.SysUserRole> q = new QueryWrapper<>();
                 q.eq("role_id", roleId).eq("user_id", userId);
                 org.jeecg.modules.system.entity.SysUserRole one = sysUserRoleService.getOne(q);
                 if (one == null) {

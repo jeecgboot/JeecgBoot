@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  * @date: 2022/04/21
  */
 @Service
-@DS("sharding")
+@DS("sharding-db")
 public class ShardingSysLogServiceImpl extends ServiceImpl<ShardingSysLogMapper, ShardingSysLog> implements IShardingSysLogService {
 
 }
