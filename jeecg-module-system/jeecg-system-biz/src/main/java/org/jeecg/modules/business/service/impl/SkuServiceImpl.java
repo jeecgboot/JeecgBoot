@@ -822,4 +822,9 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
             throw new RuntimeException("Excel parsing error: " + e.getMessage(), e);
         }
     }
+
+    @Override
+    public List<SkuOrderPage> getInventoryByClientCode(String clientCode) {
+        return skuMapper.getInventoryByClientCode(clientCode);
+    }
 }

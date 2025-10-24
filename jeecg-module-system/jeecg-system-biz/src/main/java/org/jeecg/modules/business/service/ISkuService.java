@@ -141,4 +141,6 @@ public interface ISkuService extends IService<Sku> {
     void setIsSynced(List<String> erpCodes, boolean isSynced);
 
     Result<?> parseExcelToSkuList(String clientId, MultipartFile file);
+
+    List<SkuOrderPage> getInventoryByClientCode(String clientCode);
 }
