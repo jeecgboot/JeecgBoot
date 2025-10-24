@@ -126,4 +126,19 @@
         SET receive_invoice_by_email = #{emailPreference}
         WHERE id = #{clientId};
     </update>
+    <select id="getActiveClientsToReceiveInventory" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        WHERE c.to_receive_inventory = 1
+        AND c.active = 1;
+    </select>
+    <select id="getClientsByCodes" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT c.*
+        FROM client c
+        WHERE c.internal_code IN
+        <foreach collection="clientCodes" item="code" index="index" separator="," open="(" close=")">
+            #{code}
+        </foreach>
+        AND c.active = 1;
+    </select>
 </mapper>

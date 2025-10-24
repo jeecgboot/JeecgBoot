@@ -191,4 +191,14 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public void updateClientEmailPreference(String clientId, Boolean receiveInvoiceByEmail) {
         clientMapper.updateClientEmailPreference(clientId, receiveInvoiceByEmail);
     }
+
+    @Override
+    public List<Client> getActiveClientsToReceiveInventory() {
+        return clientMapper.getActiveClientsToReceiveInventory();
+    }
+
+    @Override
+    public List<Client> getClientsByCodes(List<String> clientCodes) {
+        return clientMapper.getClientsByCodes(clientCodes);
+    }
 }
