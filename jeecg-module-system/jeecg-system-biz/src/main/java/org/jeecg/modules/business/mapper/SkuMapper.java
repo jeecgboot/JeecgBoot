@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.mapper;
 
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
@@ -94,4 +95,7 @@ public interface SkuMapper extends BaseMapper<Sku> {
     List<String> latestSkuCounter(@Param("userCode") String userCode, @Param("clientCode") String clientCode, @Param("date") String date);
 
     void setIsSynced(@Param("erpCodes")List<String> erpCodes, @Param("isSynced") boolean isSynced);
+
+    @InterceptorIgnore(tenantLine = "true")
+    List<SkuOrderPage> getInventoryByClientCode(@Param("clientCode") String clientCode);
 }

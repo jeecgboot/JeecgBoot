@@ -251,6 +251,7 @@ jeecg:
     shippingInvoicePdfDir: /wia/invoices/pdf/shipping
     shippingInvoiceDetailPdfDir: /wia/invoices/pdf/shippingDetail
     invoiceDetailExportDir: /wia/invoices/invoiceDetailExport
+    inventoryDir: /wia/inventory
 
     customFileDir: /wia/invoices/custom
     # sku csv file for image search

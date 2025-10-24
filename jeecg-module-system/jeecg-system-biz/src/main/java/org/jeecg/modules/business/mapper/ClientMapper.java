@@ -43,4 +43,8 @@ public interface ClientMapper extends BaseMapper<Client> {
     List<String> getClientsByCode(@Param("codes") List<String> clientCodes);
 
     void updateClientEmailPreference(@Param("clientId") String clientId, @Param("emailPreference") Boolean receiveInvoiceByEmail);
+
+    List<Client> getActiveClientsToReceiveInventory();
+
+    List<Client> getClientsByCodes(List<String> clientCodes);
 }

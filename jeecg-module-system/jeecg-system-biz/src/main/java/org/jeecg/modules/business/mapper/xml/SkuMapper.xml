@@ -944,4 +944,42 @@
             #{erpCode}
         </foreach>;
     </update>
+    <select id="getInventoryByClientCode" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
+        WITH skuFromClient AS (
+            SELECT cs.sku_id FROM client_sku cs
+                JOIN client c ON c.id = cs.client_id
+                WHERE c.internal_code = #{clientCode}),
+        qtyInOrdersNotShipped AS (
+            SELECT poc.sku_id as ID, SUM(quantity) AS quantity
+                FROM platform_order_content poc
+                JOIN platform_order po ON poc.platform_order_id = po.id
+                JOIN shop s ON po.shop_id = s.id
+                JOIN client c ON s.owner_id = c.id
+                AND poc.sku_id in (SELECT sku_id FROM skuFromClient)
+                WHERE c.internal_code = #{clientCode}
+                AND po.erp_status IN ('1','2')
+                AND poc.erp_status IN ('1','2')
+                GROUP BY poc.sku_id)
+        SELECT s.id,
+            s.erp_code,
+            s.en_name,
+            s.purchasing_amount as purchasing_amount,
+            s.available_amount as available_amount,
+            IFNULL(qtyInOrdersNotShipped.quantity, 0) as qtyInOrdersNotShipped,
+            IF(s.available_amount IS NULL, 0, s.available_amount)
+            + IF(s.purchasing_amount IS NULL, 0, s.purchasing_amount)
+            - IF(qtyInOrdersNotShipped.quantity IS NULL, 0, qtyInOrdersNotShipped.quantity)
+            as stock,
+            IFNULL(s7.quantity, 0) as sales_last_week,
+            IFNULL(s28.quantity, 0) as sales_four_weeks,
+            IFNULL(s42.quantity, 0) as sales_six_weeks
+        FROM sku s
+            LEFT JOIN sales_28 s28 ON s.id = s28.sku_id
+            LEFT JOIN sales_42 s42 ON s.id = s42.sku_id
+            LEFT JOIN sales_7 s7 ON s.id = s7.sku_id
+            LEFT JOIN qtyInOrdersNotShipped ON s.id = qtyInOrdersNotShipped.ID
+            RIGHT JOIN skuFromClient ON s.id = skuFromClient.sku_id
+        WHERE s.status = 3
+        GROUP BY s.id;
+    </select>
 </mapper>

@@ -69,4 +69,8 @@ public interface IClientService extends IService<Client> {
     List<String> getClientsByCode(List<String> clientCodes);
 
     void updateClientEmailPreference(String clientId, Boolean receiveInvoiceByEmail);
+
+    List<Client> getActiveClientsToReceiveInventory();
+
+    List<Client> getClientsByCodes(List<String> clientCodes);
 }

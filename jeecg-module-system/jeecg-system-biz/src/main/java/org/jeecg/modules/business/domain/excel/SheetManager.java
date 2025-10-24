@@ -26,6 +26,8 @@ public class SheetManager {
 
     private final Sheet extraFeeSheet;
 
+    private final Sheet inventorySheet;
+
     private Sheet currentSheet;
 
     private int currentRow;
@@ -39,6 +41,18 @@ public class SheetManager {
         this.detailSheet = detailSheet;
         this.savSheet = savSheet;
         this.extraFeeSheet = extraFeeSheet;
+        this.inventorySheet = null;
+        this.currentRow = 0;
+        this.currentCol = 0;
+        max_col = 10;
+    }
+
+    private SheetManager(Workbook workbook, Sheet inventorySheet) {
+        this.workbook = workbook;
+        this.detailSheet = null;
+        this.extraFeeSheet = null;
+        this.savSheet = null;
+        this.inventorySheet = inventorySheet;
         this.currentRow = 0;
         this.currentCol = 0;
         max_col = 10;
@@ -52,6 +66,10 @@ public class SheetManager {
      */
     public static SheetManager createXLSX() {
         return createXLSX("Détails", "SAV", "Frais supplémentaires");
+    }
+
+    public static SheetManager createInventoryXLSX() {
+        return createXLSX("Inventaire");
     }
 
     /**
@@ -69,6 +87,12 @@ public class SheetManager {
         return new SheetManager(workbook, detailSheet, savSheet, extraFeeSheet);
     }
 
+    public static SheetManager createXLSX(String inventorySheetName) {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet inventorySheet = workbook.createSheet(inventorySheetName);
+        return new SheetManager(workbook, inventorySheet);
+    }
+
     public void startDetailsSheet() {
         this.currentSheet = detailSheet;
     }
@@ -83,6 +107,10 @@ public class SheetManager {
         this.currentSheet = extraFeeSheet;
         this.currentRow = 0;
         this.currentCol = 0;
+    }
+
+    public void startInventorySheet() {
+        this.currentSheet = inventorySheet;
     }
 
     /**
@@ -212,9 +240,18 @@ public class SheetManager {
     public void export(Path target) throws IOException {
         /* adjust all cols' width before export */
         for (int i = 0; i < max_col; i++) {
-            detailSheet.autoSizeColumn(i);
-            savSheet.autoSizeColumn(i);
-            extraFeeSheet.autoSizeColumn(i);
+            if (inventorySheet != null) {
+                inventorySheet.autoSizeColumn(i);
+            }
+            if (detailSheet != null) {
+                detailSheet.autoSizeColumn(i);
+            }
+            if (savSheet != null) {
+                savSheet.autoSizeColumn(i);
+            }
+            if (extraFeeSheet != null) {
+                extraFeeSheet.autoSizeColumn(i);
+            }
         }
         FileOutputStream fos = new FileOutputStream(target.toFile());
         workbook.write(fos);
