@@ -34,6 +34,10 @@ interface ListPageOptions {
     //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
     // 导出成功后的回调
     success?: (fileInfo?: any) => void;
+    // update-begin--author:huoshicang---date:20250805
+    parameters?: { key: String; value: String };
+    // update-end--author:huoshicang---date:20250805
+
   };
 }
 
@@ -118,11 +122,13 @@ export function useListPage(options: ListPageOptions) {
 
   // 导入 excel
   function onImportXls(file) {
-    let { url, success } = options?.importConfig ?? {};
+    let { url, success,  parameters =  {} } = options?.importConfig ?? {};
     //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
     let realUrl = typeof url === 'function' ? url() : url;
     if (realUrl) {
-      return handleImportXls(file, realUrl, success || reload);
+      // update-begin--author:huoshicang---date:20250805
+      return handleImportXls(file, realUrl, success || reload, parameters);
+      // update-end--author:huoshicang---date:20250805
       //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
     } else {
       $message.createMessage.warn('没有传递 importConfig.url 参数');
