@@ -11,7 +11,7 @@
     </select>
     <select id="getClientMinInfoByUserId" parameterType="java.lang.String"
             resultType="org.jeecg.modules.business.entity.Client">
-        SELECT c.id, c.surname, c.first_name, c.internal_code, c.invoice_entity, c.currency
+        SELECT c.id, c.surname, c.first_name, c.internal_code, c.invoice_entity, c.currency,c.use_balance,c.display_balance
         FROM user_client
             JOIN client c
                 ON c.id = user_client.client_id
