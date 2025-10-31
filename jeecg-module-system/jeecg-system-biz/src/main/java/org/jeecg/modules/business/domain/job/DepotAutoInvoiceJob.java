@@ -48,7 +48,6 @@ public class DepotAutoInvoiceJob implements Job {
     @Autowired private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
     @Autowired private ISysMessageService sysMessageService;
     @Autowired private EmailService emailService;
-    @Autowired private ApplicationContext context;
     @Autowired private ISysUserService sysUserService;
     @Autowired private IShippingInvoiceService shippingInvoiceService;
     @Autowired private IPurchaseOrderService purchaseOrderService;
