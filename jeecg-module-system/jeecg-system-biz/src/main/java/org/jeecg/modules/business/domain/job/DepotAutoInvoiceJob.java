@@ -32,8 +32,9 @@ import java.util.stream.Collectors;
 import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.PRESHIPPING;
 
 /**
- * 自动为客户生成完整发票（采购 + 物流），直到余额不足为止。
- * 每个客户和店铺独立事务，避免单个失败影响全局。
+ *Automatically generates complete invoices (purchase + shipping) for clients
+ *until their balance becomes insufficient.
+ *Each shop is processed in a separate transaction to ensure isolation.
  */
 @Slf4j
 @Component
