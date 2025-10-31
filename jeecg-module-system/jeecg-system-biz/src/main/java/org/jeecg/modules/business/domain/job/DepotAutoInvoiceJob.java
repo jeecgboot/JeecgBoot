@@ -193,7 +193,7 @@ public class DepotAutoInvoiceJob implements Job {
     // Attempt to approve the invoice if balance allows
     private boolean approveInvoiceIfPossible(Client client, String invoiceCode, BigDecimal balance) {
         try {
-            PurchaseOrderController controller = context.getBean(PurchaseOrderController.class);
+            PurchaseOrderController controller = applicationContext.getBean(PurchaseOrderController.class);
             boolean approved = balance.compareTo(BigDecimal.ZERO) >= 0;
             Map<String, Object> payload = new HashMap<>();
             payload.put("invoiceNumber", invoiceCode);
