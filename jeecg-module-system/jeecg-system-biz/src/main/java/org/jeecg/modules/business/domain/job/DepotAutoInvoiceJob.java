@@ -1,0 +1,268 @@
+package org.jeecg.modules.business.domain.job;
+
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import lombok.extern.slf4j.Slf4j;
+import org.jeecg.modules.business.controller.admin.PurchaseOrderController;
+import org.jeecg.modules.business.entity.*;
+import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.vo.InvoiceMetaData;
+import org.jeecg.modules.business.vo.Period;
+import org.jeecg.modules.business.vo.Response;
+import org.jeecg.modules.business.vo.ShippingInvoiceParam;
+import org.jeecg.modules.message.service.ISysMessageService;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.ISysUserService;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.PersistJobDataAfterExecution;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.PRESHIPPING;
+
+/**
+ * 自动为客户生成完整发票（采购 + 物流），直到余额不足为止。
+ * 每个客户和店铺独立事务，避免单个失败影响全局。
+ */
+@Slf4j
+@Component
+@DisallowConcurrentExecution
+@PersistJobDataAfterExecution
+public class DepotAutoInvoiceJob implements Job {
+
+    @Autowired private IClientService clientService;
+    @Autowired private IShopService shopService;
+    @Autowired private IBalanceService balanceService;
+    @Autowired private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
+    @Autowired private ISysMessageService sysMessageService;
+    @Autowired private EmailService emailService;
+    @Autowired private ApplicationContext context;
+    @Autowired private ISysUserService sysUserService;
+    @Autowired private IShippingInvoiceService shippingInvoiceService;
+    @Autowired private IPurchaseOrderService purchaseOrderService;
+    @Autowired private IShopOptionsService shopOptionsService;
+    @Autowired private ApplicationContext applicationContext;
+
+    private static final String TEMPLATE_ACCOUNTANT = "components/autoInvoiceForAccountant.ftl";
+    private static final String TEMPLATE_CLIENT = "components/autoInvoiceForClient.ftl";
+    private static final List<Integer> PRESHIPPING_ERP_STATUSES = Arrays.asList(1, 2);
+    private static final List<String> DEFAULT_WAREHOUSES = Arrays.asList("0", "1");
+
+    @Override
+    public void execute(JobExecutionContext context) {
+        // Find all clients with shops that have auto-invoice enabled
+        List<String> clientIdsWithAutoInvoice = shopOptionsService.list(
+                        Wrappers.<ShopOptions>lambdaQuery()
+                                .eq(ShopOptions::getIsAutoInvoice, 1)
+                                .select(ShopOptions::getShopId)
+                ).stream()
+                .map(option -> shopService.getById(option.getShopId()))
+                .filter(Objects::nonNull)
+                .map(Shop::getOwnerId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (clientIdsWithAutoInvoice.isEmpty()) {
+            log.info("No clients with auto-invoice enabled. Exiting job.");
+            return;
+        }
+
+        List<Client> clients = clientService.list(
+                Wrappers.<Client>lambdaQuery()
+                        .eq(Client::getUseBalance, true)
+                        .eq(Client::getActive, "1")
+                        .in(Client::getId, clientIdsWithAutoInvoice)
+        );
+
+        log.info("Detected {} clients with auto-invoicing enabled.", clients.size());
+        for (Client client : clients) {
+            try {
+                processClient(client);
+            } catch (Exception e) {
+                log.error("Error while processing client {}: {}", client.getInternalCode(), e.getMessage(), e);
+            }
+        }
+    }
+   // Process a single client
+    public void processClient(Client client) {
+        BigDecimal balance = balanceService.getBalanceByClientIdAndCurrency(client.getId(), client.getCurrency());
+        if (balance == null) balance = BigDecimal.ZERO;
+        //check balance
+        if (balance.compareTo(BigDecimal.ZERO) <= 0) {
+            log.warn("Client {} has insufficient balance ({} {}). Skipping auto-invoice.",
+                    client.getInternalCode(), balance, client.getCurrency());
+            return;
+        }
+
+        List<Map<String, Object>> generatedInvoices = new ArrayList<>();
+        List<Shop> shops = shopService.listByClient(client.getId());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        // Process each shop independently
+        for (Shop shop : shops) {
+            try {
+                DepotAutoInvoiceJob self = applicationContext.getBean(DepotAutoInvoiceJob.class);
+                self.processShop(client, shop, sdf, generatedInvoices);
+            } catch (Exception e) {
+                log.warn("Client {} Shop {} processing error: {}", client.getInternalCode(), shop.getName(), e.getMessage(), e);
+            }
+        }
+        if (!generatedInvoices.isEmpty()) {
+            balance = balanceService.getBalanceByClientIdAndCurrency(client.getId(), client.getCurrency());
+            notifyAutoInvoiceGenerated(client, balance, generatedInvoices);
+        }
+    }
+ // Process a single shop within a transaction
+    @Transactional(rollbackFor = Exception.class)
+    public void processShop(Client client, Shop shop, SimpleDateFormat sdf, List<Map<String, Object>> generatedInvoices) throws Exception {
+        if (shop.getId() == null) return;
+        Period period = platformOrderShippingInvoiceService.getAutoInvoicePeriod(
+                Collections.singletonList(shop.getId()),
+                PRESHIPPING_ERP_STATUSES
+        );
+        ShippingInvoiceParam param = new ShippingInvoiceParam(
+                client.getId(),
+                null,
+                Collections.singletonList(shop.getId()),
+                sdf.format(period.getStart()),
+                sdf.format(period.getEnd()),
+                PRESHIPPING_ERP_STATUSES,
+                DEFAULT_WAREHOUSES
+        );
+        // Attempt to generate the invoice
+        try {
+            Response<InvoiceMetaData, List<Response<String, String>>> response =
+                    platformOrderShippingInvoiceService.makeCompleteInvoicePostShipping(param, PRESHIPPING.getMethod(), "system");
+            if (response == null || response.getData() == null) {
+                log.info("Client {} Shop {} has no eligible orders for invoicing in the period {} to {}.",
+                        client.getInternalCode(), shop.getName(),
+                        sdf.format(period.getStart()), sdf.format(period.getEnd()));
+                return;
+            }
+            InvoiceMetaData data = response.getData();
+
+            // Update balance and attempt to approve the invoice
+            balanceService.updateBalance(client.getId(), data.getInvoiceCode(), "COMPLETE");
+            BigDecimal balance = balanceService.getBalanceByClientIdAndCurrency(client.getId(), client.getCurrency());
+            boolean approved = approveInvoiceIfPossible(client, data.getInvoiceCode(), balance);
+            BigDecimal purchaseAmount = Optional.ofNullable(
+                    purchaseOrderService.getOne(Wrappers.<PurchaseOrder>lambdaQuery()
+                            .eq(PurchaseOrder::getInvoiceNumber, data.getInvoiceCode())
+                            .last("LIMIT 1"))
+            ).map(PurchaseOrder::getFinalAmount).orElse(BigDecimal.ZERO);
+            BigDecimal shippingAmount = Optional.ofNullable(
+                    shippingInvoiceService.getOne(Wrappers.<ShippingInvoice>lambdaQuery()
+                            .eq(ShippingInvoice::getInvoiceNumber, data.getInvoiceCode())
+                            .last("LIMIT 1"))
+            ).map(ShippingInvoice::getFinalAmount).orElse(BigDecimal.ZERO);
+            BigDecimal totalAmount = purchaseAmount.add(shippingAmount);
+            Map<String, Object> invoiceInfo = new HashMap<>();
+            invoiceInfo.put("invoiceCode", data.getInvoiceCode());
+            invoiceInfo.put("shopName", shop.getName());
+            invoiceInfo.put("amount", totalAmount);
+            invoiceInfo.put("currency", client.getCurrency());
+            invoiceInfo.put("approved", approved);
+            generatedInvoices.add(invoiceInfo);
+            log.info("Generated invoice {} for Client {} Shop {} purchase {} + shipping {} = total {}. New balance: {} {}. Approved: {}",
+                    data.getInvoiceCode(), client.getInternalCode(), shop.getName(),
+                    purchaseAmount, shippingAmount, totalAmount,
+                    balance, client.getCurrency(), approved);
+            if (balance.compareTo(BigDecimal.ZERO) <= 0) {
+               log.info("Client {} balance depleted after invoicing. Stopping further invoicing for this client.",
+                        client.getInternalCode());
+            }
+        } catch (Exception e) {
+            if (e.getMessage() != null && e.getMessage().contains("IN")) {
+                log.warn("Client {} Shop {} has no eligible orders for invoicing. {}",
+                        client.getInternalCode(), shop.getName(), e.getMessage());
+                return;
+            }
+            throw e;
+        }
+    }
+    // Attempt to approve the invoice if balance allows
+    private boolean approveInvoiceIfPossible(Client client, String invoiceCode, BigDecimal balance) {
+        try {
+            PurchaseOrderController controller = context.getBean(PurchaseOrderController.class);
+            boolean approved = balance.compareTo(BigDecimal.ZERO) >= 0;
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("invoiceNumber", invoiceCode);
+            payload.put("clientId", client.getId());
+            payload.put("approved", approved);
+            controller.setPaymentApproved(payload);
+            if (approved) {
+                purchaseOrderService.update(Wrappers.<PurchaseOrder>lambdaUpdate()
+                        .set(PurchaseOrder::isOrdered, false)
+                        .eq(PurchaseOrder::getInvoiceNumber, invoiceCode));
+            } else {
+                log.warn("Insufficient balance to approve invoice {} for client {}. Marked as pending.",
+                        invoiceCode, client.getInternalCode());
+            }
+            return approved;
+
+        } catch (Exception e) {
+            log.error("Failed to approve invoice {} for client {}: {}",
+                    invoiceCode, client.getInternalCode(), e.getMessage(), e);
+            return false;
+        }
+    }
+
+    // Notify accountant and client about generated invoices
+    private void notifyAutoInvoiceGenerated(Client client, BigDecimal balance, List<Map<String, Object>> invoicesGenerated) {
+        try {
+            if (invoicesGenerated.isEmpty()) {
+                log.info("Client {} has no generated invoices to notify.", client.getInternalCode());
+                return;
+            }
+            // ===== Notify Accountants =====
+            Map<String, Object> accountantModel = new HashMap<>();
+            accountantModel.put("clientCode", client.getInternalCode());
+            accountantModel.put("clientName", client.fullName());
+            accountantModel.put("currency", client.getCurrency());
+            accountantModel.put("invoices", invoicesGenerated);
+            accountantModel.put("currentBalance", balance);
+            accountantModel.put("reviewLink", "https://app.wia-sourcing.com/business/admin/purchasing/PaymentProofReview");
+            accountantModel.put("time", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            List<SysUser> accountants = sysUserService.getUsersByRoleCode("accountant");
+            for (SysUser accountant : accountants) {
+                if (StringUtils.isNotBlank(accountant.getEmail())) {
+                     emailService.newSendSimpleMessage(
+                            accountant.getEmail(),
+                            "自动开票任务汇总通知",
+                            TEMPLATE_ACCOUNTANT,
+                            accountantModel
+                    );
+                }
+            }
+            // ====== Notify Client =====
+            Map<String, Object> clientModel = new HashMap<>();
+            clientModel.put("clientName", client.fullName());
+            clientModel.put("currency", client.getCurrency());
+            clientModel.put("invoices", invoicesGenerated);
+            clientModel.put("currentBalance", balance);
+            clientModel.put("hasDebt", invoicesGenerated.stream().anyMatch(i -> !(Boolean) i.get("approved")));
+            clientModel.put("clientInvoiceLink", "https://app.wia-sourcing.com/business/client/overview/ExpensesOverview");
+            if (StringUtils.isNotBlank(client.getEmail())) {
+                 emailService.newSendSimpleMessage(
+                        client.getEmail(),
+                        "New Invoice Notification",
+                        TEMPLATE_CLIENT,
+                        clientModel
+                );
+            }
+        } catch (Exception e) {
+            log.error("Failed to send auto-invoice notification for client {}: {}",
+                    client.getInternalCode(), e.getMessage(), e);
+        }
+    }
+}

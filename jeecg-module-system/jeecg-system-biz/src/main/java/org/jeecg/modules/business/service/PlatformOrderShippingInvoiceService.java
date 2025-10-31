@@ -15,6 +15,7 @@ import org.jeecg.modules.business.domain.shippingInvoice.ShippingInvoiceFactory;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.vo.*;
+import org.jeecg.modules.business.vo.Period;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,8 +35,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -201,6 +202,18 @@ public class PlatformOrderShippingInvoiceService {
         Date end = platformOrderMapper.findLatestUninvoicedPlatformOrderTime(shopIDs, erpStatuses);
         log.info("Valid order time period: {} - {}", begin, end);
         return new Period(begin, end, "");
+    }
+    public Period getAutoInvoicePeriod(List<String> shopIDs, List<Integer> erpStatuses) {
+        ZoneId zone = ZoneId.of("Asia/Shanghai");
+        LocalDate today = LocalDate.now(zone);
+        ZonedDateTime startOfDay = today.minusMonths(6).atStartOfDay(zone);
+        ZonedDateTime endOfDay = today.plusDays(2).atStartOfDay(zone).minusSeconds(1);
+        Date startDate = Date.from(startOfDay.toInstant());
+        Date endDate = Date.from(endOfDay.toInstant());
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(zone);
+        log.info("Auto invoice fixed period (Asia/Shanghai): {} - {}",
+                fmt.format(startDate.toInstant()), fmt.format(endDate.toInstant()));
+        return new Period(startDate, endDate, "Asia/Shanghai");
     }
     public List<String> getShippingOrderIdBetweenDate(List<String> shops, String start, String end, List<String> wareHouses) {
         return platformOrderMapper.fetchUninvoicedShippedOrderIDInShops( start, end, shops, wareHouses);
