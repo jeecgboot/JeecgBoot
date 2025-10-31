@@ -8,10 +8,7 @@ import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.InvoiceMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.service.*;
-import org.jeecg.modules.business.vo.Period;
-import org.jeecg.modules.business.vo.ShippingFeesEstimation;
-import org.jeecg.modules.business.vo.ShippingInvoiceOrderParam;
-import org.jeecg.modules.business.vo.SkuDetail;
+import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.message.websocket.WebSocketSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -460,5 +457,9 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
     @Override
     public int findEarliestInvoiceYear(String clientId, String currency) {
         return invoiceMapper.findEarliestInvoiceYear(clientId, currency);
+    }
+    @Override
+    public InvoiceAmountDTO getInvoiceAmounts(String invoiceNumber) {
+        return invoiceMapper.getInvoiceAmounts(invoiceNumber);
     }
 }

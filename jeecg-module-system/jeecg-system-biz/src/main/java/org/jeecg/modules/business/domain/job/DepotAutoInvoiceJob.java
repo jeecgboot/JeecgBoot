@@ -6,11 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.controller.admin.PurchaseOrderController;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.service.*;
-import org.jeecg.modules.business.vo.InvoiceMetaData;
-import org.jeecg.modules.business.vo.Period;
-import org.jeecg.modules.business.vo.Response;
-import org.jeecg.modules.business.vo.ShippingInvoiceParam;
-import org.jeecg.modules.message.service.ISysMessageService;
+import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.quartz.DisallowConcurrentExecution;
@@ -27,7 +23,6 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.PRESHIPPING;
 
@@ -46,14 +41,11 @@ public class DepotAutoInvoiceJob implements Job {
     @Autowired private IShopService shopService;
     @Autowired private IBalanceService balanceService;
     @Autowired private PlatformOrderShippingInvoiceService platformOrderShippingInvoiceService;
-    @Autowired private ISysMessageService sysMessageService;
     @Autowired private EmailService emailService;
-    @Autowired private ApplicationContext context;
     @Autowired private ISysUserService sysUserService;
-    @Autowired private IShippingInvoiceService shippingInvoiceService;
     @Autowired private IPurchaseOrderService purchaseOrderService;
-    @Autowired private IShopOptionsService shopOptionsService;
     @Autowired private ApplicationContext applicationContext;
+    @Autowired private InvoiceService invoiceService;
 
     private static final String TEMPLATE_ACCOUNTANT = "components/autoInvoiceForAccountant.ftl";
     private static final String TEMPLATE_CLIENT = "components/autoInvoiceForClient.ftl";
@@ -63,29 +55,7 @@ public class DepotAutoInvoiceJob implements Job {
     @Override
     public void execute(JobExecutionContext context) {
         // Find all clients with shops that have auto-invoice enabled
-        List<String> clientIdsWithAutoInvoice = shopOptionsService.list(
-                        Wrappers.<ShopOptions>lambdaQuery()
-                                .eq(ShopOptions::getIsAutoInvoice, 1)
-                                .select(ShopOptions::getShopId)
-                ).stream()
-                .map(option -> shopService.getById(option.getShopId()))
-                .filter(Objects::nonNull)
-                .map(Shop::getOwnerId)
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (clientIdsWithAutoInvoice.isEmpty()) {
-            log.info("No clients with auto-invoice enabled. Exiting job.");
-            return;
-        }
-
-        List<Client> clients = clientService.list(
-                Wrappers.<Client>lambdaQuery()
-                        .eq(Client::getUseBalance, true)
-                        .eq(Client::getActive, "1")
-                        .in(Client::getId, clientIdsWithAutoInvoice)
-        );
-
+        List<Client> clients = clientService.getClientsWithAutoInvoice();
         log.info("Detected {} clients with auto-invoicing enabled.", clients.size());
         for (Client client : clients) {
             try {
@@ -105,7 +75,6 @@ public class DepotAutoInvoiceJob implements Job {
                     client.getInternalCode(), balance, client.getCurrency());
             return;
         }
-
         List<Map<String, Object>> generatedInvoices = new ArrayList<>();
         List<Shop> shops = shopService.listByClient(client.getId());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -151,22 +120,12 @@ public class DepotAutoInvoiceJob implements Job {
                 return;
             }
             InvoiceMetaData data = response.getData();
-
             // Update balance and attempt to approve the invoice
             balanceService.updateBalance(client.getId(), data.getInvoiceCode(), "COMPLETE");
             BigDecimal balance = balanceService.getBalanceByClientIdAndCurrency(client.getId(), client.getCurrency());
             boolean approved = approveInvoiceIfPossible(client, data.getInvoiceCode(), balance);
-            BigDecimal purchaseAmount = Optional.ofNullable(
-                    purchaseOrderService.getOne(Wrappers.<PurchaseOrder>lambdaQuery()
-                            .eq(PurchaseOrder::getInvoiceNumber, data.getInvoiceCode())
-                            .last("LIMIT 1"))
-            ).map(PurchaseOrder::getFinalAmount).orElse(BigDecimal.ZERO);
-            BigDecimal shippingAmount = Optional.ofNullable(
-                    shippingInvoiceService.getOne(Wrappers.<ShippingInvoice>lambdaQuery()
-                            .eq(ShippingInvoice::getInvoiceNumber, data.getInvoiceCode())
-                            .last("LIMIT 1"))
-            ).map(ShippingInvoice::getFinalAmount).orElse(BigDecimal.ZERO);
-            BigDecimal totalAmount = purchaseAmount.add(shippingAmount);
+            InvoiceAmountDTO invoiceAmounts = invoiceService.getInvoiceAmounts(data.getInvoiceCode());
+            BigDecimal totalAmount = invoiceAmounts.getPurchaseAmount().add(invoiceAmounts.getShippingAmount());
             Map<String, Object> invoiceInfo = new HashMap<>();
             invoiceInfo.put("invoiceCode", data.getInvoiceCode());
             invoiceInfo.put("shopName", shop.getName());
@@ -176,7 +135,7 @@ public class DepotAutoInvoiceJob implements Job {
             generatedInvoices.add(invoiceInfo);
             log.info("Generated invoice {} for Client {} Shop {} purchase {} + shipping {} = total {}. New balance: {} {}. Approved: {}",
                     data.getInvoiceCode(), client.getInternalCode(), shop.getName(),
-                    purchaseAmount, shippingAmount, totalAmount,
+                    invoiceAmounts, invoiceAmounts.getShippingAmount(), totalAmount,
                     balance, client.getCurrency(), approved);
             if (balance.compareTo(BigDecimal.ZERO) <= 0) {
                log.info("Client {} balance depleted after invoicing. Stopping further invoicing for this client.",
@@ -194,7 +153,7 @@ public class DepotAutoInvoiceJob implements Job {
     // Attempt to approve the invoice if balance allows
     private boolean approveInvoiceIfPossible(Client client, String invoiceCode, BigDecimal balance) {
         try {
-            PurchaseOrderController controller = context.getBean(PurchaseOrderController.class);
+            PurchaseOrderController controller = applicationContext.getBean(PurchaseOrderController.class);
             boolean approved = balance.compareTo(BigDecimal.ZERO) >= 0;
             Map<String, Object> payload = new HashMap<>();
             payload.put("invoiceNumber", invoiceCode);
@@ -217,7 +176,6 @@ public class DepotAutoInvoiceJob implements Job {
             return false;
         }
     }
-
     // Notify accountant and client about generated invoices
     private void notifyAutoInvoiceGenerated(Client client, BigDecimal balance, List<Map<String, Object>> invoicesGenerated) {
         try {
