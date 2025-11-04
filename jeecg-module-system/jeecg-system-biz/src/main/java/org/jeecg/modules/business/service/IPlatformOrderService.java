@@ -309,4 +309,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     List<SkuOrderPage> searchOrdersSkus(List<String> orderIds);
 
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataWithFees(List<String> orderIds);
+
+    List<PlatformOrder> fetchByPlatformWarehouse(List<String> shopCodes, List<String> platformWarehouses);
 }

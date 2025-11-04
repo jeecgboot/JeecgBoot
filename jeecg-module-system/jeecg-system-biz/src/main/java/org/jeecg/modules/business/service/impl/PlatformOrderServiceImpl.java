@@ -662,7 +662,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return platformOrderMap.countOrdersByShop(shopId);
     }
 
-
     @Override
     public List<ThirdPartyStockAttributionParam> fetchThirdPartyStockAttributionParams(LocalDateTime startDateTime, List<String> shopCodes, List<String> countries) {
         return platformOrderMap.fetchThirdPartyStockAttributionParams(startDateTime, shopCodes, countries);
@@ -672,4 +671,10 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     public List<SkuOrderPage> searchOrdersSkus(List<String> orderIds) {
         return platformOrderMap.searchOrdersSkus(orderIds);
     }
+
+    @Override
+    public List<PlatformOrder> fetchByPlatformWarehouse(List<String> shopCodes, List<String> platformWarehouses) {
+        return platformOrderMap.fetchByPlatformWarehouse(shopCodes, platformWarehouses);
+    }
+
 }
