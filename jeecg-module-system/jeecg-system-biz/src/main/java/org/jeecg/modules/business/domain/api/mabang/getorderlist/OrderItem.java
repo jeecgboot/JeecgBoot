@@ -57,6 +57,9 @@ public class OrderItem {
     @JSONField(name = "status")
     private String status;
 
+    @JSONField(name = "platform_item_warehouse_name")
+    private String platformWarehouseName;
+
     private String erpStatus;
 
     /**
