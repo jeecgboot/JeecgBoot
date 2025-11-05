@@ -276,4 +276,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<SkuOrderPage> searchOrdersSkus(@Param("orderIds") List<String> orderIds);
 
     List<PlatformOrder> fetchOrderByIdWithFees(@Param("orderIds") List<String> orderIds);
+
+    List<PlatformOrder> fetchByPlatformWarehouse(List<String> shopCodes, List<String> platformWarehouses);
 }
