@@ -22,15 +22,32 @@ export const columns: BasicColumn[] = [
     dataIndex: 'requestUrl'
    },
    {
-    title: 'IP 黑名单',
+    title: '访问模式',
     align:"center",
-    dataIndex: 'blackList'
+    dataIndex: 'listMode',
+    customRender: ({ text }) => {
+      return text === 'WHITELIST' ? '白名单' : '黑名单';
+    }
    },
-   // {
-   //  title: '状态',
-   //  align:"center",
-   //  dataIndex: 'status'
-   // },
+   {
+    title: '清单项数量',
+    align:"center",
+    dataIndex: 'allowedList',
+    customRender: ({ text }) => {
+      if (!text) return 0;
+      return text.split(/[,\n]/).filter(item => item.trim()).length;
+    }
+   },
+   {
+    title: '最后修改人',
+    align:"center",
+    dataIndex: 'updateBy'
+   },
+   {
+    title: '最后修改时间',
+    align:"center",
+    dataIndex: 'updateTime'
+   },
    {
     title: '创建人',
     align:"center",
@@ -48,6 +65,17 @@ export const searchFormSchema: FormSchema[] = [
     label: "接口名称",
     field: "name",
     component: 'JInput',
+  },
+  {
+    label: "访问模式",
+    field: "listMode",
+    component: 'Select',
+    componentProps: {
+      options: [
+        { label: '白名单', value: 'WHITELIST' },
+        { label: '黑名单', value: 'BLACKLIST' },
+      ],
+    },
   },
   {
     label: "创建人",
@@ -123,9 +151,89 @@ export const formSchema: FormSchema[] = [
     dynamicDisabled:true
   },
   {
-    label: 'IP 黑名单',
-    field: 'blackList',
-    component: 'Input',
+    label: '访问模式',
+    field: 'listMode',
+    component: 'RadioGroup',
+    defaultValue: 'WHITELIST',
+    componentProps: {
+      options: [
+        { label: '白名单', value: 'WHITELIST' },
+        { label: '黑名单', value: 'BLACKLIST' },
+      ],
+    },
+  },
+  {
+    label: '访问清单',
+    field: 'allowedList',
+    component: 'InputTextArea',
+    componentProps: {
+      rows: 6,
+      placeholder: '支持IP、CIDR、域名，每行一个或逗号分隔',
+    },
+    dynamicRules: ({ model, schema }) => {
+      return [
+        { 
+          validator: (rule, value) => {
+            if (!value) return Promise.resolve();
+            const items = value.split(/[,\n]/).filter(item => item.trim());
+            const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            const cidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[1-2][0-9]|3[0-2])$/;
+            const domainRegex = /^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
+            
+            for (const item of items) {
+              const trimmedItem = item.trim();
+              if (!ipRegex.test(trimmedItem) && !cidrRegex.test(trimmedItem) && !domainRegex.test(trimmedItem)) {
+                return Promise.reject(new Error(`"${trimmedItem}" 不是有效的IP、CIDR或域名`));
+              }
+            }
+            return Promise.resolve();
+          },
+          message: '请输入有效的IP、CIDR或域名，每行一个或逗号分隔',
+        },
+      ];
+    },
+  },
+  {
+    label: '备注',
+    field: 'comment',
+    component: 'InputTextArea',
+    componentProps: {
+      rows: 3,
+    },
+  },
+  {
+    label: '高级设置',
+    field: 'advancedSettings',
+    component: 'Divider',
+  },
+  {
+    label: '严格模式',
+    field: 'enableStrict',
+    component: 'Switch',
+    defaultValue: false,
+  },
+  {
+    label: 'DNS缓存TTL(秒)',
+    field: 'dnsCacheTtlSeconds',
+    component: 'InputNumber',
+    defaultValue: 300,
+    componentProps: {
+      min: 0,
+      max: 86400,
+    },
+  },
+  {
+    label: 'IP版本',
+    field: 'ipVersion',
+    component: 'Select',
+    defaultValue: 'Dual',
+    componentProps: {
+      options: [
+        { label: 'IPv4', value: 'IPv4' },
+        { label: 'IPv6', value: 'IPv6' },
+        { label: '双栈', value: 'Dual' },
+      ],
+    },
   },
   {
     label: '请求体内容',
