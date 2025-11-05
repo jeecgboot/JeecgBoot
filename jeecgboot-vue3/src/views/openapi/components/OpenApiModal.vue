@@ -138,7 +138,7 @@
   //表单提交事件
   async function requestAddOrEdit(values) {
     let headersJson = !!values.headersJson?JSON.stringify(values.headersJson):null;
-    let paramsJson = !!values.headersJson?JSON.stringify(values.paramsJson):null;
+    let paramsJson = !!values.paramsJson?JSON.stringify(values.paramsJson):null;
     try {
       if (!!values.body){
         try {
@@ -150,6 +150,13 @@
           $message.createMessage.error("JSON格式化错误,请检查输入数据");
           return;
         }
+      }
+      // 处理访问清单，将逗号分隔转换为换行分隔
+      if (values.allowedList) {
+        values.allowedList = values.allowedList
+          .split(/[,\s]+/)
+          .filter(item => item.trim())
+          .join('\n');
       }
       setModalProps({ confirmLoading: true });
       values.headersJson = headersJson
