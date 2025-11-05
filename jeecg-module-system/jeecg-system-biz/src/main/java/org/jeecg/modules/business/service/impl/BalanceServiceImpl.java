@@ -160,7 +160,15 @@ public class BalanceServiceImpl extends ServiceImpl<BalanceMapper, Balance> impl
         if(balanceEntryToCancel == null) {
             return;
         }
-        Balance balanceAdjustment = Balance.of("system", clientId, currencyId, operationType, invoiceId, balanceAmount.subtract(amount));
+        BigDecimal newBalance;
+        if ("Debit".equalsIgnoreCase(originalOperationType)) {
+            newBalance = balanceAmount.add(amount.abs());
+        } else if ("Credit".equalsIgnoreCase(originalOperationType)) {
+            newBalance = balanceAmount.subtract(amount.abs());
+        } else {
+            newBalance = balanceAmount;
+        }
+        Balance balanceAdjustment = Balance.of("system", clientId, currencyId, operationType, invoiceId, newBalance);
         balanceMapper.insert(balanceAdjustment);
     }
 }

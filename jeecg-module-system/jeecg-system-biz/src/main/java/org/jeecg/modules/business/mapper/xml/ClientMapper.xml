@@ -141,4 +141,13 @@
         </foreach>
         AND c.active = 1;
     </select>
+    <select id="getClientsWithAutoInvoice" resultType="org.jeecg.modules.business.entity.Client">
+        SELECT DISTINCT c.*
+        FROM client c
+                 JOIN shop s ON s.owner_id = c.id
+                 JOIN shop_options so ON so.shop_id = s.id
+        WHERE so.is_auto_invoice = 1
+          AND c.use_balance = TRUE
+          AND c.active = '1'
+    </select>
 </mapper>

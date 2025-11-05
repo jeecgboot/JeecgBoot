@@ -47,4 +47,5 @@ public interface ClientMapper extends BaseMapper<Client> {
     List<Client> getActiveClientsToReceiveInventory();
 
     List<Client> getClientsByCodes(List<String> clientCodes);
+    List<Client> getClientsWithAutoInvoice();
 }

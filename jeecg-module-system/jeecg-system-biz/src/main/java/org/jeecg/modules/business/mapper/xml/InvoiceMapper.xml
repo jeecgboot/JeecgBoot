@@ -12,4 +12,14 @@
         LIMIT 1
     ), YEAR(CURDATE()));
 </select>
+    <select id="getInvoiceAmounts" resultType="org.jeecg.modules.business.vo.InvoiceAmountDTO">
+        SELECT
+            COALESCE(p.final_amount, 0) AS purchaseAmount,
+            COALESCE(s.final_amount, 0) AS shippingAmount
+        FROM shipping_invoice s
+                 LEFT JOIN purchase_order p ON p.invoice_number = s.invoice_number
+        WHERE s.invoice_number = #{invoiceNumber}
+        LIMIT 1
+    </select>
+
 </mapper>

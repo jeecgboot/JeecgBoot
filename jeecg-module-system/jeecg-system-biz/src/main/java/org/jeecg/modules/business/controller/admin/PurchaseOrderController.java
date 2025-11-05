@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -109,6 +110,15 @@ public class PurchaseOrderController {
             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
         Page<PurchaseOrderPage> page = new Page<>(pageNo, pageSize,false);
         purchaseOrderService.pageForPaymentProofReview(page, clientId);
+        page.getRecords().forEach(record -> {
+            boolean isSystemGenerated = "system".equalsIgnoreCase(record.getCreateBy());
+            boolean hasNoProof =
+                    (record.getPaymentDocument() == null || record.getPaymentDocument().length == 0)
+                            && (StringUtils.isBlank(record.getPaymentDocumentString()));
+            if (isSystemGenerated && hasNoProof) {
+                record.setPaymentDocument("auto_proof_system_generated".getBytes(StandardCharsets.UTF_8));
+            }
+        });
         return Result.OK(page);
     }
     /**
