@@ -33,7 +33,7 @@
 
 <p>
     Your current balance:
-    <#if currentBalance?number < 0>
+    <#if currentBalance?replace(",", ".")?number < 0>
         <strong style="color:red;">${currentBalance?string["#,##0.00"]} ${currency}</strong>
     <#else>
         <strong>${currentBalance?string["#,##0.00"]} ${currency}</strong>

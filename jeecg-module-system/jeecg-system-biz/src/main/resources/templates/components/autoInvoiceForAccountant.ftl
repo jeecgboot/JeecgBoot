@@ -5,7 +5,7 @@
 <p>客户名称：${clientName}</p>
 <p>
     <strong>当前余额:</strong>
-    <#if currentBalance?number < 0>
+    <#if currentBalance?replace(",", ".")?number < 0>
         <span style="color:red; font-weight:bold;">
             ${currentBalance?string["#,##0.00"]} ${currency}
         </span>
