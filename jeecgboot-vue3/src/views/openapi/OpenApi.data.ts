@@ -168,27 +168,47 @@ export const formSchema: FormSchema[] = [
     component: 'InputTextArea',
     componentProps: {
       rows: 6,
-      placeholder: '支持IP、CIDR、域名，每行一个或逗号分隔',
+      placeholder: '支持IP、CIDR、域名；支持10.2.3.*与10.2.3.[1-234]，每行一个或逗号分隔',
     },
     dynamicRules: ({ model, schema }) => {
       return [
-        { 
+        {
           validator: (rule, value) => {
             if (!value) return Promise.resolve();
-            const items = value.split(/[,\n]/).filter(item => item.trim());
-            const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-            const cidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/(?:[0-9]|[1-2][0-9]|3[0-2])$/;
+            const items = value.split(/[,\n]/).filter((item) => item.trim());
+            const ipv4Seg = '(?:25[0-5]|2[0-4][0-9]|[01]?\\d\\d?)';
+            const ipRegex = new RegExp(`^(?:${ipv4Seg}\\.){3}${ipv4Seg}$`);
+            const cidrRegex = new RegExp(`^(?:${ipv4Seg}\\.){3}${ipv4Seg}\\/(?:[0-9]|[1-2][0-9]|3[0-2])$`);
             const domainRegex = /^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,}$/;
-            
-            for (const item of items) {
-              const trimmedItem = item.trim();
-              if (!ipRegex.test(trimmedItem) && !cidrRegex.test(trimmedItem) && !domainRegex.test(trimmedItem)) {
-                return Promise.reject(new Error(`"${trimmedItem}" 不是有效的IP、CIDR或域名`));
+            // 10.2.3.* 支持最后一段通配符
+            const wildcardLastOctetRegex = new RegExp(`^(?:${ipv4Seg}\\.){3}\\*$`);
+            // 10.2.3.[1-234] 支持最后一段范围
+            const rangeLastOctetRegex = new RegExp(`^(?:${ipv4Seg}\\.){3}\\[(\\d{1,3})-(\\d{1,3})\\]$`);
+
+            for (const raw of items) {
+              const item = raw.trim();
+              // 基础合法：IP / CIDR / 域名
+              if (ipRegex.test(item) || cidrRegex.test(item) || domainRegex.test(item)) {
+                continue;
               }
+              // 最后一段通配符：10.2.3.*
+              if (wildcardLastOctetRegex.test(item)) {
+                continue;
+              }
+              // 最后一段范围：10.2.3.[1-234]
+              const m = item.match(rangeLastOctetRegex);
+              if (m) {
+                const start = Number(m[1]);
+                const end = Number(m[2]);
+                if (Number.isInteger(start) && Number.isInteger(end) && start >= 0 && end >= start && end <= 255) {
+                  continue;
+                }
+              }
+              return Promise.reject(new Error(`"${item}" 不是有效的IP/CIDR/域名，或不支持的模式（仅支持10.2.3.*与10.2.3.[start-end]）`));
             }
             return Promise.resolve();
           },
-          message: '请输入有效的IP、CIDR或域名，每行一个或逗号分隔',
+          message: '请输入有效的IP、CIDR、域名或通配/范围模式',
         },
       ];
     },
