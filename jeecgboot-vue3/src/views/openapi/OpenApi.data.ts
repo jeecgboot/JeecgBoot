@@ -166,6 +166,7 @@ export const formSchema: FormSchema[] = [
     label: '访问清单',
     field: 'allowedList',
     component: 'InputTextArea',
+    slot: 'allowedListSlot',
     componentProps: {
       rows: 6,
       placeholder: '支持IP、CIDR、域名；支持10.2.3.*与10.2.3.[1-234]，每行一个或逗号分隔',

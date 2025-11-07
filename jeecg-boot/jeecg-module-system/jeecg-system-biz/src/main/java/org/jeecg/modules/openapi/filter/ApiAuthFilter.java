@@ -91,15 +91,19 @@ public class ApiAuthFilter implements Filter {
     protected void checkAccessList(OpenApi openApi, String ip) {
         // 获取访问模式，默认白名单
         String listMode = StringUtils.hasText(openApi.getListMode()) ? openApi.getListMode() : "WHITELIST";
+        // 检查列表模式是否有效，无效模式默认为白名单
+        if (!"WHITELIST".equals(listMode) && !"BLACKLIST".equals(listMode)) {
+            listMode = "WHITELIST";
+        }
         String allowedList = openApi.getAllowedList();
 
         // 如果清单为空，根据模式处理
         if (!StringUtils.hasText(allowedList)) {
             if ("WHITELIST".equals(listMode)) {
-                // 白名单模式下清单为空，仅允许内网/受信来源（这里简单放行，实际项目中可能需要更严格的内网判断）
-                return;
+                // 白名单模式下清单为空，拒绝访问
+                throw new JeecgBootException("目标接口白名单为空，拒绝访问");
             } else {
-                // 黑名单模式下清单为空，无黑名单项，放行
+                // 黑名单模式下清单为空，无屏蔽项，放行
                 return;
             }
         }
