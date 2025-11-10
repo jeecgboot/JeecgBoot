@@ -21,6 +21,13 @@ public class SysUserSysDepPostModel {
      * 用户ID
      */
     private String id;
+    
+    /**
+     * 登录账号
+     */
+    @Excel(name = "登录账号", width = 15)
+    private String username;
+    
     /* 真实姓名 */
     private String realname;
 

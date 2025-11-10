@@ -173,6 +173,11 @@ export const orgCategoryOptions = {
  */
 export const userColumns: BasicColumn[] = [
   {
+    title: '用户账号',
+    dataIndex: 'username',
+    width: 120,
+  },
+  {
     title: '姓名',
     dataIndex: 'realname',
     width: 150,
