@@ -59,6 +59,7 @@ JeecgBoot低代码平台兼容所有J2EE项目开发，支持信创国产化，�
 - `jeecg-boot` 是后端JAVA源码项目Springboot3+SpringCloudAlibaba（支持单体和微服务切换）.
 - `jeecgboot-vue3` 是前端VUE3源码项目（vue3+vite6+ts最新技术栈）.
 - `JeecgUniapp`  是[配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5、鸿蒙、鸿蒙Next.
+- `jeecg-boot-starter`  是[jeecg-boot对应的底层封装starter](https://github.com/jeecgboot/jeecg-boot-starter) ：微服务启动、xxljob、分布式锁starter、rabbitmq、分布式事务、分库分表shardingsphere等.
 - 参考 [文档](https://help.jeecg.com/ui/2dev/mini) 可以删除不需要的demo，制作一个精简版本
 
 
