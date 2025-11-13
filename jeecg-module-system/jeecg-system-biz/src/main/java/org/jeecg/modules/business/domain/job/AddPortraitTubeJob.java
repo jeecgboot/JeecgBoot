@@ -33,16 +33,23 @@ public class AddPortraitTubeJob implements Job {
 
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;
     private static final Double MAXIMUM_CANVAS_IN_TUBE = 3.0;
+    private static final Double MAXIMUM_UV_CANVAS_IN_45_TUBE = 4.0;
 
     private static final List<String> DEFAULT_SHOPS = Arrays.asList("JCH3", "JCH4", "JCH5");
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
     private static final String TUBE_30_SKU_SINGLE_DOUBLE = "PJ95310032-WIA";
 
+    // 30cm 1-2 40*32
     private static final String TUBE_NEW_40_SKU_SINGLE = "PJ349400032-JCH";
+    // 30cm 3-4 40*45
     private static final String TUBE_NEW_40_SKU_MULTIPLE = "PJ349400045-JCH";
+    // 40cm 1-2 50*32
     private static final String TUBE_NEW_50_SKU_SINGLE = "PJ349500032-JCH";
+    // 40cm 3-4 50*45
     private static final String TUBE_NEW_50_SKU_MULTIPLE = "PJ349500045-JCH";
+    // 50cm 1-2 60*32
     private static final String TUBE_NEW_60_SKU_SINGLE = "PJ349600032-JCH";
+    // 50cm 1-2 60*45
     private static final String TUBE_NEW_60_SKU_DOUBLE = "PJ349600045-JCH";
     private static final String TUBE_NEW_60_SKU_TREBLE = "PJ349600048-JCH";
 
@@ -55,9 +62,14 @@ public class AddPortraitTubeJob implements Job {
     private static final String PREFIX_40_CANVAS_CHROME = "JJ2000";
     private static final String PREFIX_30_CANVAS = "JJ2502";
     private static final String PREFIX_30_CANVAS_CHROME = "JJ2002";
-    private static final String REGEX_NEW_56_CANVAS = "JJ314V(F|A)02.*-JCH";
-    private static final String REGEX_NEW_46_CANVAS = "JJ314V(F|A)01.*-JCH";
-    private static final String REGEX_NEW_36_CANVAS = "JJ314V(F|A)00.*-JCH";
+    // 亚麻棉
+    private static final String REGEX_NEW_56_CANVAS = "JJ314.*02.*-JCH";
+    private static final String REGEX_NEW_46_CANVAS = "JJ314.*01.*-JCH";
+    private static final String REGEX_NEW_36_CANVAS = "JJ314.*00.*-JCH";
+    // UV
+    private static final String REGEX_UV_30_CANVAS = "JJ989.*00.*-JCH";
+    private static final String REGEX_UV_40_CANVAS = "JJ989.*01.*-JCH";
+    private static final String REGEX_UV_50_CANVAS = "JJ989.*02.*-JCH";
 
     @Autowired
     private IPlatformOrderService platformOrderService;
@@ -175,6 +187,9 @@ public class AddPortraitTubeJob implements Job {
         int canvasNew36Count = 0;
         int canvasNew46Count = 0;
         int canvasNew56Count = 0;
+        int canvasUV30Count = 0;
+        int canvasUV40Count = 0;
+        int canvasUV50Count = 0;
         HashSet<Pair<String, Integer>> currentTubes = new HashSet<>();
         HashSet<Pair<String, Integer>> adequateTubes = new HashSet<>();
         for (OrderItem orderItem : orderItems) {
@@ -194,6 +209,12 @@ public class AddPortraitTubeJob implements Job {
                 canvasNew46Count += quantity;
             } else if (sku.matches(REGEX_NEW_56_CANVAS)) {
                 canvasNew56Count += quantity;
+            } else if (sku.matches(REGEX_UV_30_CANVAS)) {
+                canvasUV30Count += quantity;
+            } else if (sku.matches(REGEX_UV_40_CANVAS)) {
+                canvasUV40Count += quantity;
+            } else if (sku.matches(REGEX_UV_50_CANVAS)) {
+                canvasUV50Count += quantity;
             }
         }
 
@@ -203,6 +224,9 @@ public class AddPortraitTubeJob implements Job {
         int canvasNew36RemainderCount = canvasNew36Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
         int canvasNew46RemainderCount = canvasNew46Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
         int canvasNew56RemainderCount = canvasNew56Count % MAXIMUM_CANVAS_IN_TUBE.intValue();
+        int canvasUV30RemainderCount = canvasUV30Count % MAXIMUM_UV_CANVAS_IN_45_TUBE.intValue();
+        int canvasUV40RemainderCount = canvasUV40Count % MAXIMUM_UV_CANVAS_IN_45_TUBE.intValue();
+        int canvasUV50RemainderCount = canvasUV50Count % MAXIMUM_UV_CANVAS_IN_45_TUBE.intValue();
         int totalRemainderCount = canvas30RemainderCount + canvas40RemainderCount + canvas50RemainderCount +
                 canvasNew36RemainderCount + canvasNew46RemainderCount + canvasNew56RemainderCount;
         int tubeNew50SingleCount = 0;
@@ -213,10 +237,12 @@ public class AddPortraitTubeJob implements Job {
         int tubeNew40MultipleCount = (int) Math.floor(canvas30Count / MAXIMUM_CANVAS_IN_TUBE);
 
         int tubeNew60SingleCount = 0;
-        int tubeNew60DoubleCount = 0;
+        int tubeNew60DoubleCount = (int) Math.floor(canvasUV50Count / MAXIMUM_UV_CANVAS_IN_45_TUBE);
         tubeNew60TrebleCount += (int) Math.floor(canvasNew56Count / MAXIMUM_CANVAS_IN_TUBE);
         tubeNew50MultipleCount += (int) Math.floor(canvasNew46Count / MAXIMUM_CANVAS_IN_TUBE);
         tubeNew40MultipleCount += (int) Math.floor(canvasNew36Count / MAXIMUM_CANVAS_IN_TUBE);
+        tubeNew40MultipleCount += (int) Math.floor(canvasUV30Count / MAXIMUM_UV_CANVAS_IN_45_TUBE);
+        tubeNew50MultipleCount += (int) Math.floor(canvasUV40Count / MAXIMUM_UV_CANVAS_IN_45_TUBE);
 
         // When remaining 1 to 3 canvases
         if (totalRemainderCount > 0 && totalRemainderCount < 4) {
@@ -312,6 +338,26 @@ public class AddPortraitTubeJob implements Job {
                     tube30SingleDoubleCount++;
                 }
             }
+        }
+
+        // Special case for UV canvases
+        if (canvasUV30RemainderCount == 1 || canvasUV30RemainderCount == 2) {
+            tube40SingleCount++;
+        }
+        if (canvasUV30RemainderCount == 3) {
+            tubeNew40MultipleCount++;
+        }
+        if (canvasUV40RemainderCount == 1 || canvasUV40RemainderCount == 2) {
+            tubeNew50SingleCount++;
+        }
+        if (canvasUV40RemainderCount == 3) {
+            tubeNew50MultipleCount++;
+        }
+        if (canvasUV50RemainderCount == 1 || canvasUV50RemainderCount == 2) {
+            tubeNew60SingleCount++;
+        }
+        if (canvasUV50RemainderCount == 3) {
+            tubeNew60DoubleCount++;
         }
 
         if (tube30SingleDoubleCount > 0) {
