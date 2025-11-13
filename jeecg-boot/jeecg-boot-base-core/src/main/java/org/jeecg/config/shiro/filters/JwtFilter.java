@@ -52,11 +52,17 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             if (InMemoryIgnoreAuth.contains(((HttpServletRequest) request).getServletPath())) {
                 return true;
             }
-            
+
             executeLogin(request, response);
             return true;
         } catch (Exception e) {
-            JwtUtil.responseError((HttpServletResponse)response,401,CommonConstant.TOKEN_IS_INVALID_MSG);
+//            JwtUtil.responseError((HttpServletResponse) response, 401, CommonConstant.TOKEN_IS _INVALID_MSG);
+
+            // 判断当前响应是否已被写入
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
+            if (!httpResponse.isCommitted()) {
+                JwtUtil.responseError(httpResponse, 401, CommonConstant.TOKEN_IS_INVALID_MSG);
+            }
             return false;
             //throw new AuthenticationException("Token失效，请重新登录", e);
         }
@@ -89,7 +95,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-        if(allowOrigin){
+        if (allowOrigin) {
             httpServletResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, httpServletRequest.getHeader(HttpHeaders.ORIGIN));
             // 允许客户端请求方法
             httpServletResponse.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,POST,OPTIONS,PUT,DELETE");
