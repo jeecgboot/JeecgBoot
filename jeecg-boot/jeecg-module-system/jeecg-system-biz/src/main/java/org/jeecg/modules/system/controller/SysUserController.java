@@ -1698,7 +1698,7 @@ public class SysUserController {
      * @param jsonObject
      * @return
      */
-    @RequiresPermissions("system:user:addTenantUser")
+    @PreAuthorize("jps.requiresPermissions('system:user:addTenantUser')")
     @RequestMapping(value = "/addTenantUser", method = RequestMethod.POST)
     public Result<SysUser> addTenantUser(@RequestBody JSONObject jsonObject) {
         Result<SysUser> result = new Result<SysUser>();
