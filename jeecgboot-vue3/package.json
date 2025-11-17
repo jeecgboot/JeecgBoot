@@ -161,6 +161,8 @@
     "vite-plugin-package-config": "^0.1.1",
     "vite-plugin-purge-icons": "^0.10.0",
     "vite-plugin-svg-icons": "^2.0.1",
+    "vite-plugin-pwa": "^1.1.0",
+    "workbox-window": "^7.3.0",
     "vite-plugin-qiankun": "^1.0.15",
     "@rys-fe/vite-plugin-theme": "^0.8.6",
     "vite-plugin-vue-setup-extend-plus": "^0.1.0",

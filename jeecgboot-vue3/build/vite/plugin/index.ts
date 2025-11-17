@@ -16,6 +16,7 @@ import { configVisualizerConfig } from './visualizer';
 import { configThemePlugin } from './theme';
 import { configSvgIconsPlugin } from './svgSprite';
 import { configQiankunMicroPlugin } from './qiankunMicro';
+import { configPwaPlugin } from './pwa';
 // // electron plugin
 // import { configElectronPlugin } from "./electron";
 // //预编译加载插件(不支持vite3作废)
@@ -81,7 +82,8 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, isQiankunM
     
     // rollup-plugin-gzip
     vitePlugins.push(configCompressPlugin(VITE_BUILD_COMPRESS, VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE));
-
+    // vite-plugin-pwa (PWA 插件注册)
+    vitePlugins.push(configPwaPlugin(isBuild));
   }
 
   // //vite-plugin-theme【预编译加载插件，解决vite首次打开界面加载慢问题】
