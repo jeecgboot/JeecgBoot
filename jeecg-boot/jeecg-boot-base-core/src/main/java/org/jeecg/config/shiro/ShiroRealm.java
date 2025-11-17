@@ -110,8 +110,8 @@ public class ShiroRealm extends AuthorizingRealm {
             loginUser = this.checkUserTokenIsEffect(token);
         } catch (AuthenticationException e) {
             log.error("—————校验 check token 失败——————————"+ e.getMessage(), e);
-            JwtUtil.responseError(SpringContextUtils.getHttpServletResponse(),401,e.getMessage());
-            return null;
+            // 重新抛出异常，让JwtFilter统一处理，避免返回两次错误响应
+            throw e;
         }
         return new SimpleAuthenticationInfo(loginUser, token, getName());
     }
