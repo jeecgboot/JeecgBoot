@@ -151,7 +151,7 @@ spring:
         master:
           url: jdbc:mysql://127.0.0.1:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: root
+          password: cxl1234!@#$
           driver-class-name: com.mysql.cj.jdbc.Driver
 #        # shardingjdbc数据源
 #        sharding-db:
@@ -163,7 +163,7 @@ spring:
       database: 0
       host: 127.0.0.1
       port: 6379
-      password:
+      password: cxl1234!@#$
 #mybatis plus 设置
 mybatis-plus:
   mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
@@ -188,7 +188,7 @@ jeecg:
   ai-chat:
     enabled: true
     model: deepseek-chat
-    apiKey: ??
+    apiKey: sk-dd3f4bd85f5748e8b6107d116d505e74
     apiHost: https://api.deepseek.com/v1
     timeout: 60
   # AIRag向量库
@@ -198,7 +198,7 @@ jeecg:
       port: 5432
       database: postgres
       user: postgres
-      password: postgres
+      password: cxl1234!@#$
       table: embeddings
   # 平台上线安全配置
   firewall:
