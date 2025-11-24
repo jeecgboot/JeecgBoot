@@ -39,12 +39,6 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.github.jsqlparser</groupId>
-					<artifactId>jsqlparser</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- mongo、redis和文件数据集支持包，按需引入 -->
 		<dependency>
@@ -60,12 +54,6 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimubi-spring-boot3-starter</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.github.jsqlparser</groupId>
-					<artifactId>jsqlparser</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- AI大模型管理 -->
 		<dependency>

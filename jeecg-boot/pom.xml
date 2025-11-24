@@ -59,17 +59,17 @@
 		<liteflow.version>2.15.0</liteflow.version>
 		
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>2.1.5</jimureport-spring-boot-starter.version>
-		<jimubi-spring-boot-starter.version>2.1.5</jimubi-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>2.2.0</jimureport-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.2.0</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.16</minidao.version>
-		<autopoi-web.version>1.4.18</autopoi-web.version>
+		<autopoi-web.version>2.0.2</autopoi-web.version>
 		
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.12</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.3.1</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.24</druid.version>
 
-		<commons-io.version>2.11.0</commons-io.version>
+		<commons-io.version>2.18.0</commons-io.version>
 		<commons-fileupload.version>1.5</commons-fileupload.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
@@ -438,6 +438,10 @@
 				<version>${jimureport-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
+						<groupId>commons-io</groupId>
+						<artifactId>commons-io</artifactId>
+					</exclusion>
+					<exclusion>
 						<groupId>com.alibaba</groupId>
 						<artifactId>fastjson</artifactId>
 					</exclusion>
@@ -450,16 +454,8 @@
 						<groupId>org.checkerframework</groupId>
 					</exclusion>
 					<exclusion>
-						<artifactId>autopoi-web</artifactId>
-						<groupId>org.jeecgframework</groupId>
-					</exclusion>
-					<exclusion>
 						<artifactId>druid</artifactId>
 						<groupId>com.alibaba</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>autopoi</artifactId>
-						<groupId>org.jeecgframework</groupId>
 					</exclusion>
 					<exclusion>
 						<artifactId>jsqlparser</artifactId>
@@ -469,8 +465,8 @@
 			</dependency>
 			<!-- AutoPoi Excel工具类-->
 			<dependency>
-				<groupId>org.jeecgframework.boot3</groupId>
-				<artifactId>autopoi-web</artifactId>
+				<groupId>org.jeecgframework</groupId>
+				<artifactId>autopoi-spring-boot-3-starter</artifactId>
 				<version>${autopoi-web.version}</version>
 				<exclusions>
 					<exclusion>
@@ -494,12 +490,8 @@
 						<artifactId>calcite-elasticsearch</artifactId>
 					</exclusion>
 					<exclusion>
-						<artifactId>autopoi-web</artifactId>
-						<groupId>org.jeecgframework</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>autopoi</artifactId>
-						<groupId>org.jeecgframework</groupId>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-text</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -516,12 +508,8 @@
                 <version>${jimubi-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
-						<artifactId>autopoi-web</artifactId>
-						<groupId>org.jeecgframework</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>autopoi</artifactId>
-						<groupId>org.jeecgframework</groupId>
+						<groupId>com.github.jsqlparser</groupId>
+						<artifactId>jsqlparser</artifactId>
 					</exclusion>
 				</exclusions>
             </dependency>
@@ -537,6 +525,11 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-core</artifactId>
 				<version>7.15.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.27.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -223,6 +223,12 @@
 			<artifactId>shiro-core</artifactId>
 			<classifier>jakarta</classifier>
 			<version>${shiro.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-beanutils</groupId>
+					<artifactId>commons-beanutils</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
@@ -291,8 +297,8 @@
 
 		<!-- AutoPoi Excel工具类-->
 		<dependency>
-			<groupId>org.jeecgframework.boot3</groupId>
-			<artifactId>autopoi-web</artifactId>
+			<groupId>org.jeecgframework</groupId>
+			<artifactId>autopoi-spring-boot-3-starter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>

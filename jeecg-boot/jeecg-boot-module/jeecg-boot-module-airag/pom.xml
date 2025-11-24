@@ -74,6 +74,16 @@
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-aiflow</artifactId>
             <version>3.8.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- beigin 这两个依赖太多每个包50M左右，如果你发布需要使用，请把<scope>provided</scope>删掉 -->
