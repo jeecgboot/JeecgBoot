@@ -25,12 +25,12 @@
             <version>${jeecgboot.version}</version>
         </dependency>
         
-        <!-- flyway 数据库自动升级 
+        <!-- flyway 数据库自动升级 -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>7.15.0</version>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
