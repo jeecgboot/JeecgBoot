@@ -110,7 +110,7 @@ public class PlatformOrder implements Serializable {
      * 订单交易时间
      */
     @Excel(name = "订单交易时间", width = 15, format = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Europe/Paris")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "订单交易时间")
     private Date orderTime;
@@ -118,7 +118,7 @@ public class PlatformOrder implements Serializable {
      * 订单发货时间
      */
     @Excel(name = "订单发货时间", width = 15, format = "yyyy-MM-dd HH:mm:ss")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Shanghai")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Europe/Paris")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "订单发货时间")
     private Date shippingTime;
