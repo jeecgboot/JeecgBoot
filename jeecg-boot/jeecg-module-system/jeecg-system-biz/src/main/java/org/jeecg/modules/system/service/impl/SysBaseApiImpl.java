@@ -69,6 +69,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.PathMatcher;
 
 import jakarta.annotation.Resource;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.sql.DataSource;
@@ -93,8 +94,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	/** 当前系统数据库类型 */
 	private static String DB_TYPE = "";
 
-	// 云函数的 URL 化地址
-	@Value("${jeecg.unicloud.pushUrl:''}")
+	// uniapp 推送调用api地址
+	@Value("${jeecg.unicloud.pushUrl:}")
 	private String jeecgPushUrl;
 
 	@Autowired
@@ -2117,47 +2118,52 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	 */
 	@Override
 	public void uniPushMsgToUser(PushMessageDTO pushMessageDTO) {
-		if(oConvertUtils.isEmpty(jeecgPushUrl) || "??".equals(jeecgPushUrl)) {
-			log.warn("yml配置项: jeecg.unicloud.pushUrl 未设置，APP消息UniPush推送功能未启用！");
-			return;
-		}
-		// 获取推送的用户信息
-		List<String> usernames = pushMessageDTO.getUsernames();
-		List<String> userIds = pushMessageDTO.getUserIds();
-
-        // 构建clientIds
-		List<String> clientIds = getClientIds(usernames, userIds);
-
-		// 构建请求参数
-		Map<String, Object> requestBody = new HashMap<>();
-		requestBody.put("title", pushMessageDTO.getTitle());
-		requestBody.put("content", pushMessageDTO.getContent());
-		requestBody.put("data", pushMessageDTO.getPayload());
-		requestBody.put("request_id", String.valueOf(System.currentTimeMillis()));
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-        // 全用户推送不需要clientIds，指定用户推送需要设置clientIds
-		boolean isAllUserPush = CommonConstant.MSG_TYPE_ALL.equals(pushMessageDTO.getPushType());
-		if (!isAllUserPush) {
-			if (CollectionUtils.isEmpty(clientIds)) {
-				log.warn("UniPush消息推送clientIds为空");
+		log.info("UniappPush推送URL:{}", jeecgPushUrl);
+		try {
+			if(oConvertUtils.isEmpty(jeecgPushUrl) || "''".equals(jeecgPushUrl) || "??".equals(jeecgPushUrl) ){
+				log.warn("yml配置项: jeecg.unicloud.pushUrl 未设置，APP消息UniPush推送功能未启用！");
 				return;
 			}
-			requestBody.put("cids", clientIds);
-		}
+			// 获取推送的用户信息
+			List<String> usernames = pushMessageDTO.getUsernames();
+			List<String> userIds = pushMessageDTO.getUserIds();
 
-        // 统一推送逻辑
-		HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
-		ResponseEntity<Map> response = restTemplate.postForEntity(jeecgPushUrl, request, Map.class);
+			// 构建clientIds
+			List<String> clientIds = getClientIds(usernames, userIds);
 
-       // 统一处理响应
-		String pushType = isAllUserPush ? "全用户" : "单用户";
-		if (response.getStatusCode().is2xxSuccessful()) {
-			log.info("{} UniPush消息推送成功 返回response:{}", pushType, response.getBody());
-		} else {
-			log.error("{} UniPush消息推送失败 返回response:{}", pushType, response.getBody());
+			// 构建请求参数
+			Map<String, Object> requestBody = new HashMap<>();
+			requestBody.put("title", pushMessageDTO.getTitle());
+			requestBody.put("content", pushMessageDTO.getContent());
+			requestBody.put("data", pushMessageDTO.getPayload());
+			requestBody.put("request_id", String.valueOf(System.currentTimeMillis()));
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+
+			// 全用户推送不需要clientIds，指定用户推送需要设置clientIds
+			boolean isAllUserPush = CommonConstant.MSG_TYPE_ALL.equals(pushMessageDTO.getPushType());
+			if (!isAllUserPush) {
+				if (CollectionUtils.isEmpty(clientIds)) {
+					log.warn("UniPush消息推送clientIds为空");
+					return;
+				}
+				requestBody.put("cids", clientIds);
+			}
+
+			// 统一推送逻辑
+			HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+			ResponseEntity<Map> response = restTemplate.postForEntity(jeecgPushUrl, request, Map.class);
+
+			// 统一处理响应
+			String pushType = isAllUserPush ? "全用户" : "单用户";
+			if (response.getStatusCode().is2xxSuccessful()) {
+				log.info("{} UniPush消息推送成功 返回response:{}", pushType, response.getBody());
+			} else {
+				log.error("{} UniPush消息推送失败 返回response:{}", pushType, response.getBody());
+			}
+		} catch (RestClientException e) {
+			log.warn("UniAPP 消息推送异常："+ e.getMessage(), e);
 		}
 	}
 	/**
