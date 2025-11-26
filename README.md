@@ -51,13 +51,13 @@ JeecgBoot低代码平台兼容所有J2EE项目开发，支持信创国产化，�
 版本说明
 -----------------------------------
 
-|下载 | SpringBoot3.5 + Shiro  |SpringBoot3.5+ SpringAuthorizationServer | SpringBoot3.5 + Sa-Token | SpringBoot2.7(JDK17/JDK8) |
-|------|----------------|----------------------------|-------------------|--------------------------------------------|
-| Github |  [`springboot3`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3) | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支  |  [`springboot3-satoken`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3-satoken) 分支|[`master`](https://github.com/jeecgboot/JeecgBoot) 分支|
-| Gitee |  [`springboot3`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3/)      | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支|  [`springboot3-satoken`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3-satoken) 分支|[`master`](https://gitee.com/jeecg/JeecgBoot)     分支 |
+|下载 | SpringBoot3.5 + Shiro                                   |SpringBoot3.5+ SpringAuthorizationServer | SpringBoot3.5 + Sa-Token | SpringBoot2.7(JDK17/JDK8) |
+|------|---------------------------------------------------------|----------------------------|-------------------|--------------------------------------------|
+| Github | [`main`](https://github.com/jeecgboot/JeecgBoot)        | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支  |  [`springboot3-satoken`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3-satoken) 分支|[`springboot2`](https://github.com/jeecgboot/JeecgBoot/tree/springboot2) 分支|
+| Gitee | [`main`](https://github.com/jeecgboot/JeecgBoot) | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支|  [`springboot3-satoken`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3-satoken) 分支|[`springboot2`](https://github.com/jeecgboot/JeecgBoot/tree/springboot2)     分支 |
 
 
-- `jeecg-boot` 是后端JAVA源码项目Springboot3+SpringCloudAlibaba（支持单体和微服务切换）.
+- `jeecg-boot` 是后端JAVA源码项目Springboot3+Shiro+Mybatis+SpringCloudAlibaba（支持单体和微服务切换）.
 - `jeecgboot-vue3` 是前端VUE3源码项目（vue3+vite6+ts最新技术栈）.
 - `JeecgUniapp`  是[配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5、鸿蒙、鸿蒙Next.
 - `jeecg-boot-starter`  是[jeecg-boot对应的底层封装starter](https://github.com/jeecgboot/jeecg-boot-starter) ：微服务启动、xxljob、分布式锁starter、rabbitmq、分布式事务、分库分表shardingsphere等.
