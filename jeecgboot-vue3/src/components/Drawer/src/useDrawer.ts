@@ -63,11 +63,10 @@ export function useDrawer(): UseDrawerReturnType {
     }),
 
     openDrawer: <T = any>(visible = true, data?: T, openOnSet = true): void => {
-      // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
+      // 代码逻辑说明: 【QQYUN-6366】升级到antd4.x
       getInstance()?.setDrawerProps({
         open: visible,
       });
-      // update-end--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
       if (!data) return;
 
       if (openOnSet) {
@@ -81,9 +80,8 @@ export function useDrawer(): UseDrawerReturnType {
       }
     },
     closeDrawer: () => {
-      // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
+      // 代码逻辑说明: 【QQYUN-6366】升级到antd4.x
       getInstance()?.setDrawerProps({ open: false });
-      // update-end--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
     },
   };
 

@@ -18,7 +18,7 @@
       const { innerValue, row, originColumn, cellProps, handleChangeCommon } = useJVxeComponent(props);
       const groupId = ref<string>('j-vxe-popup');
       const popupProps = computed(() => {
-        // update-begin--author:liaozhiyang---date:20231009---for：【issues/5371】一对多子表popup增加多选
+        // 代码逻辑说明: 【issues/5371】一对多子表popup增加多选
         return {
           ...cellProps.value,
           value: innerValue.value,
@@ -46,13 +46,11 @@
             }
           },
         };
-        // update-end--author:liaozhiyang---date:20231009---for：【issues/5371】一对多子表popup增加多选
       });
-      // update-begin--author:liaozhiyang---date:20230811---for：【issues/675】子表字段Popup弹框数据不更新
+      // 代码逻辑说明: 【issues/675】子表字段Popup弹框数据不更新
       const handleFocus = () => {
         groupId.value = '';
       };
-      // update-end--author:liaozhiyang---date:20230811---for：【issues/675】子表字段Popup弹框数据不更新
       return {
         handleFocus,
         popupProps,

@@ -31,7 +31,11 @@ export enum Api {
   //异步获取部门和岗位
   queryDepartAndPostTreeSync = '/sys/sysDepart/queryDepartAndPostTreeSync',
   //获取部门和岗位下的成员
-  queryByOrgCodeForAddressList = '/sys/user/queryByOrgCodeForAddressList',
+  queryDepartPostByOrgCode = '/sys/user/queryDepartPostByOrgCode',
+  //更新拖拽部门后的位置
+  updateChangeDepart = '/sys/sysDepart/updateChangeDepart',
+  //获取负责部门
+  getDepartmentHead = '/sys/sysDepart/getDepartmentHead',
 }
 
 /**
@@ -150,4 +154,18 @@ export const getRankRelation = (params) => defHttp.get({ url: Api.getRankRelatio
  * 
  * @param params
  */
-export const queryByOrgCodeForAddressList = (params) => defHttp.get({ url: Api.queryByOrgCodeForAddressList, params });
+export const queryDepartPostByOrgCode = (params) => defHttp.get({ url: Api.queryDepartPostByOrgCode, params });
+
+/**
+ * 更新拖拽部门后的位置
+ * 
+ * @param params
+ */
+export const updateChangeDepart = (params) => defHttp.put({ url: Api.updateChangeDepart, params },{ isTransformResponse: false });
+
+/**
+ * 获取负责部门
+ * 
+ * @param params
+ */
+export const getDepartmentHead = (params) => defHttp.get({ url: Api.getDepartmentHead, params });

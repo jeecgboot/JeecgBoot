@@ -25,13 +25,11 @@ export interface HandleArgs {
 
 export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: JVxeTableMethods, slots) {
   data.vxeColumns = computed(() => {
-    // update-begin--author:liaozhiyang---date:20250403---for：【issues/7812】linkageConfig改变了，vxetable没更新
     // linkageConfig变化时也需要执行
     const linkageConfig = toRaw(props.linkageConfig);
     if (linkageConfig) {
       // console.log(linkageConfig);
     }
-    // update-end--author:liaozhiyang---date:20250403---for：【issues/7812】linkageConfig改变了，vxetable没更新
     let columns: JVxeColumn[] = [];
     if (isArray(props.columns)) {
       // handle 方法参数
@@ -114,7 +112,6 @@ export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: 
       handleInnerColumn(args, dragSortColumn, handleDragSortColumn, true);
       // update-begin--author:liaozhiyang---date:2024-05-30---for【TV360X-371】不可编辑组件必填缺少*号
       customComponentAddStar(columns);
-      // update-end--author:liaozhiyang---date:2024-05-30---for：【TV360X-371】不可编辑组件必填缺少*号
     }
     return columns;
   });
@@ -186,11 +183,10 @@ function handleSeqColumn({ props, col, columns }: HandleArgs) {
       fixed: props.rowNumberFixed,
       align: 'center',
     };
-    // update-begin--author:liaozhiyang---date:20240306---for：【QQYUN-8405】vxetable支持序号是否固定（移动端需要）
+    // 代码逻辑说明: 【QQYUN-8405】vxetable支持序号是否固定（移动端需要）
     if (props.rowNumberFixed === 'none') {
       delete column.fixed;
     }
-    // update-end--author:liaozhiyang---date:20240306---for：QQYUN-8405】vxetable支持序号是否固定（移动端需要）
     if (col) {
       Object.assign(col, column);
     } else {
@@ -217,11 +213,10 @@ function handleSelectionColumn({ props, data, col, columns }: HandleArgs) {
       fixed: 'left',
       align: 'center',
     };
-    // update-begin--author:liaozhiyang---date:20240509---for：【issues/1162】JVxeTable列过长（出现横向滚动条）时无法拖拽排序
+    // 代码逻辑说明: 【issues/1162】JVxeTable列过长（出现横向滚动条）时无法拖拽排序
     if (props.rowSelectionFixed === 'none') {
       delete column.fixed;
     }
-    // update-end--author:liaozhiyang---date:20240509---for：【issues/1162】JVxeTable列过长（出现横向滚动条）时无法拖拽排序
     if (col) {
       Object.assign(col, column);
     } else {
@@ -269,19 +264,17 @@ function handleDragSortColumn({ props, data, col, columns, renderOptions }: Hand
       width: width,
       fixed: 'left',
       align: 'center',
-      // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
+      // 代码逻辑说明: 【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
       params: {
         insertRow: props.insertRow,
         notAllowDrag: props.notAllowDrag,
         ...col?.params,
       },
-      // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
     };
-    // update-begin--author:liaozhiyang---date:20240506---for：【issues/1162】JVxeTable列过长（出现横向滚动条）时无法拖拽排序
+    // 代码逻辑说明: 【issues/1162】JVxeTable列过长（出现横向滚动条）时无法拖拽排序
     if (props.dragSortFixed === 'none') {
       delete column.fixed;
     }
-    // update-end--author:liaozhiyang---date:20240506---for：【issues/1162】JVxeTable列过长（出现横向滚动条）时无法拖拽排序
     let cellRender = {
       name: JVxeTypePrefix + JVxeTypes.rowDragSort,
       sortKey: props.sortKey,
@@ -316,9 +309,8 @@ function handlerCol(args: HandleArgs) {
     // $renderOptions.type = (enhanced.switches.visible || props.alwaysEdit) ? 'visible' : 'default'
   }
   col[renderName] = $renderOptions;
-  // update-begin--author:liaozhiyang---date:20240321---for：【QQYUN-5806】js增强改变下拉搜索options（添加customOptions为true不读字典，走自己的options）
+  // 代码逻辑说明: 【QQYUN-5806】js增强改变下拉搜索options（添加customOptions为true不读字典，走自己的options）
   !col.params.customOptions && handleDict(args);
-  // update-end--author:liaozhiyang---date:20240321---for：【QQYUN-5806】js增强改变下拉搜索options（添加customOptions为true不读字典，走自己的options）
   handleRules(args);
   handleStatistics(args);
   handleSlots(args);
@@ -345,13 +337,12 @@ async function handleDict({ col, methods }: HandleArgs) {
       // 查询字典
       if (!isPromise(col.params.optionsPromise)) {
         col.params.optionsPromise = new Promise(async (resolve) => {
-          //update-begin-author:taoyan date:2022-6-1 for: VUEN-1180 【代码生成】子表不支持带条件？
+          // 代码逻辑说明: VUEN-1180 【代码生成】子表不支持带条件？
           let dictCodeString = col.params.dictCode;
           if (dictCodeString) {
             dictCodeString = encodeURI(dictCodeString);
           }
           const dictOptions: any = await initDictOptions(dictCodeString);
-          //update-end-author:taoyan date:2022-6-1 for: VUEN-1180 【代码生成】子表不支持带条件？
           let options = col.params.options ?? [];
           dictOptions.forEach((dict) => {
             // 过滤重复数据

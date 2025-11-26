@@ -23,9 +23,8 @@
   import { TabsThemeEnum } from '/@/enums/appEnum';
   import { MenuTypeEnum } from '/@/enums/menuEnum';
 
-  // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8774】网站header区域加高
+  // 代码逻辑说明: 【QQYUN-8774】网站header区域加高
   const HEADER_HEIGHT = 60;
-  // update-begin--author:liaozhiyang---date:20240407---for：【【QQYUN-8774】网站header区域加高
 
   // updateBy:sunjianlei---updateDate:2021-09-03---修改tab切换栏样式：更改高度
   const TABS_HEIGHT = 32;
@@ -99,11 +98,10 @@
 
       const getPlaceholderDomStyle = computed((): CSSProperties => {
         let height = 0;
-        // update-begin--author:liaozhiyang---date:20241216---for：【issues/7561】主题切换为顶部混合模式时，页面顶部内容显示不出来，被遮盖
+        // 代码逻辑说明: 【issues/7561】主题切换为顶部混合模式时，页面顶部内容显示不出来，被遮盖
         if ((unref(getShowFullHeaderRef) || !unref(getSplit)) && unref(getShowHeader) && !unref(getFullContent) || unref(getMenuType) == MenuTypeEnum.MIX) {
           height += HEADER_HEIGHT;
         }
-        // update-end--author:liaozhiyang---date:20241216---for：【issues/7561】主题切换为顶部混合模式时，页面顶部内容显示不出来，被遮盖
         if (unref(getShowTabs) && !unref(getFullContent)) {
           height += unref(getTabsThemeHeight);
         }
@@ -141,11 +139,10 @@
   .@{prefix-cls} {
     transition: width 0.2s;
     flex: 0 0 auto;
-    // update-begin--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
+    // 代码逻辑说明: 【issues/8709】LayoutContent样式多出1px
     // &--dark {
     //   margin-left: -1px;
     // }
-    // update-end--author:liaozhiyang---date:20250818---for：【issues/8709】LayoutContent样式多出1px
 
     &--fixed {
       position: fixed;

@@ -41,14 +41,13 @@
     () => props.value,
     (val) => {
       if (!props.query) {
-        // update-begin--author:liaozhiyang---date:20231226---for：【QQYUN-7473】options使用[0,1]，导致开关无法切换
+        // 代码逻辑说明: 【QQYUN-7473】options使用[0,1]，导致开关无法切换
         if (!val && !props.options.includes(val)) {
           checked.value = false;
           emitValue(props.options[1]);
         } else {
           checked.value = props.options[0] == val;
         }
-        // update-end--author:liaozhiyang---date:20231226---for：【QQYUN-7473】options使用[0,1]，导致开关无法切换
       }
     },
     { immediate: true }

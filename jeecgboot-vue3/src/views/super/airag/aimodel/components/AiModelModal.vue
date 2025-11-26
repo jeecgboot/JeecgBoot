@@ -98,8 +98,9 @@
     </div>
     <template v-if="dataIndex === 'add' || dataIndex === 'edit'" #footer>
       <a-button @click="cancel">关闭</a-button>
+      <a-button @click="test" v-if="modelActivate" :loading="testLoading" type="default">测试连接</a-button>
       <a-button @click="save" type="primary" ghost="true">保存</a-button>
-      <a-button @click="test" v-if="!modelActivate" :loading="testLoading" type="primary" >保存并激活</a-button>
+      <a-button @click="test(false)" v-if="!modelActivate" :loading="testLoading" type="primary" >保存并激活</a-button>
     </template>
     <template v-else #footer> </template>
   </BasicModal>
@@ -118,6 +119,7 @@
   import { formSchema, imageList } from '../model.data';
   import { editModel, queryById, saveModel, testConn } from '../model.api';
   import { useMessage } from '/@/hooks/web/useMessage';
+  const {createMessage: $message, createConfirm} = useMessage();
   import AiModelSeniorForm from './AiModelSeniorForm.vue';
   import { cloneDeep } from "lodash-es";
   export default {
@@ -234,6 +236,7 @@
           initModelProvider();
           dataIndex.value = 'list';
           modelNameAddOption.value = [];
+          modelActivate.value = false;
         }
       });
 
@@ -349,7 +352,7 @@
       /**
        * 测试连接
        */
-      async function test() {
+      async function test(onlyTest = false) {
         try {
           testLoading.value = true;
           let values = await validate();
@@ -368,9 +371,13 @@
             values.provider = modelData.value.value;
           }
           //测试
-          await testConn(values).then((result) => {
+          await testConn(values).then(async (result) => {
+            if(onlyTest){
+              $message.success('测试连接成功');
+              return true;
+            }
             modelActivate.value = true;
-            save();
+            await save();
           });
         } catch (e) {
           if (e.hasOwnProperty('errorFields')) {

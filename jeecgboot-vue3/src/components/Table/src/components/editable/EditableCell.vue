@@ -2,11 +2,7 @@
   <div :class="prefixCls">
     <div v-show="!isEdit" :class="{ [`${prefixCls}__normal`]: true, 'ellipsis-cell': column.ellipsis }" @click="handleEdit">
       <div class="cell-content" :title="column.ellipsis ? getValues ?? '' : ''">
-        <!-- update-begin--author:liaozhiyang---date:20240731---for：【issues/6957】editableCell组件值长度为0，无法编辑 -->
-        <!-- update-begin--author:liaozhiyang---date:20240709---for：【issues/6851】editableCell组件值为0时不展示 -->
         {{ typeof getValues === 'string' && getValues.length === 0 ? '&nbsp;' : getValues ?? '&nbsp;' }}
-        <!-- update-end--author:liaozhiyang---date:20240709---for：【issues/6851】editableCell组件值为0时不展示 -->
-        <!-- update-end--author:liaozhiyang---date:20240731---for：【issues/6957】editableCell组件值长度为0，无法编辑 -->
       </div>
       <FormOutlined :class="`${prefixCls}__normal-icon`" v-if="!column.editRow" />
     </div>
@@ -50,9 +46,22 @@
   import { propTypes } from '/@/utils/propTypes';
   import { isArray, isBoolean, isFunction, isNumber, isString } from '/@/utils/is';
   import { createPlaceholderMessage } from './helper';
-  import { omit, pick, set } from 'lodash-es';
+  import { omit, set } from 'lodash-es';
   import { treeToList } from '/@/utils/helper/treeHelper';
   import { Spin } from 'ant-design-vue';
+
+  // 这些字段是表格内部使用的，不应该传递给 beforeEditSubmit
+  const INTERNAL_RECORD_FIELDS = [
+    'editable',
+    'submitCbs',
+    'validCbs',
+    'cancelCbs',
+    'onEdit',
+    'onValid',
+    'onCancelEdit',
+    'onSubmitEdit',
+    'editValueRefs',
+  ];
 
   export default defineComponent({
     name: 'EditableCell',
@@ -101,13 +110,12 @@
 
       const getComponentProps = computed(() => {
         let compProps;
-        // update-begin--author:liaozhiyang---date:20250818---for：【issues/8680】editComponentProps可接受一个函数传入record
+        // 代码逻辑说明: 【issues/8680】editComponentProps可接受一个函数传入record
         if (isFunction(props.column?.editComponentProps)) {
           compProps = props.column?.editComponentProps(props.record);
         } else {
           compProps = props.column?.editComponentProps ?? {};
         }
-        // update-end--author:liaozhiyang---date:20250818---for：【issues/8680】editComponentProps可接受一个函数传入record
         const component = unref(getComponent);
         const apiSelectProps: Recordable = {};
         if (component === 'ApiSelect') {
@@ -120,17 +128,14 @@
         const val = unref(currentValueRef);
 
         const value = isCheckValue ? (isNumber(val) && isBoolean(val) ? val : !!val) : val;
-        //update-begin---author:wangshuai---date:2024-09-19---for:【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
+        // 代码逻辑说明: 【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
         let tooltipPosition:any = unref(table?.wrapRef.value)?.parentElement?.querySelector('.ant-table-body');
         if(tooltipPosition){
           tooltipPosition.style.position = 'relative';
         }
-        //update-end---author:wangshuai---date:2024-09-19---for:【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
         return {
           size: 'small',
-          //update-begin---author:wangshuai---date:2024-09-19---for:【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
           getPopupContainer: () => tooltipPosition ?? document.body,
-          //update-end---author:wangshuai---date:2024-09-19---for:【issues/7136】单元格上的tooltip提示，如果表格有滚动条，会不跟着单元格滚动---
           getCalendarContainer: () => unref(table?.wrapRef.value) ?? document.body,
           placeholder: createPlaceholderMessage(unref(getComponent)),
           ...apiSelectProps,
@@ -155,7 +160,7 @@
 
         const options: LabelValueOptions = editComponentProps?.options ?? (unref(optionsRef) || []);
         const option = options.find((item) => `${item.value}` === `${value}`);
-        // update-begin---author:liaozhiyang---date:2025-07-28---for:【QQYUN-13251】表格可编辑单元格apiSelect多选不翻译 ---
+        // 代码逻辑说明: 【QQYUN-13251】表格可编辑单元格apiSelect多选不翻译 ---
         if (['tags', 'multiple'].includes(editComponentProps?.mode)) {
           const result = options
             .filter((item) => {
@@ -175,7 +180,6 @@
           }
           return value;
         }
-        // update-end---author:liaozhiyang---date:2025-07-28---for:【QQYUN-13251】表格可编辑单元格apiSelect多选不翻译 ---
         return option?.label ?? value;
       });
 
@@ -287,15 +291,16 @@
         if (!record.editable) {
           const { getBindValues } = table;
 
-          const { beforeEditSubmit, columns } = unref(getBindValues);
+          const { beforeEditSubmit } = unref(getBindValues);
 
           if (beforeEditSubmit && isFunction(beforeEditSubmit)) {
             spinning.value = true;
-            const keys: string[] = columns.map((_column) => _column.dataIndex).filter((field) => !!field) as string[];
             let result: any = true;
             try {
+              // 过滤掉内部字段，只保留业务数据字段，确保 id 等关键字段不丢失
+              const cleanRecord = omit(record, INTERNAL_RECORD_FIELDS);
               result = await beforeEditSubmit({
-                record: pick(record, keys),
+                record: cleanRecord,
                 index,
                 key,
                 value,
@@ -374,7 +379,7 @@
       function initCbs(cbs: 'submitCbs' | 'validCbs' | 'cancelCbs', handle: Fn) {
         if (props.record) {
           /* eslint-disable  */
-          // update-begin--author:liaozhiyang---date:20240424---for：【issues/1165】解决canResize为true时第一行校验不过
+          // 代码逻辑说明: 【issues/1165】解决canResize为true时第一行校验不过
           const { dataIndex, key } = props.column;
           const field: any = dataIndex || key;
           if (isArray(props.record[cbs])) {
@@ -387,7 +392,6 @@
           } else {
             props.record[cbs] = [{ [field]: handle }];
           }
-          // update-end--author:liaozhiyang---date:20240424---for：【issues/1165】解决canResize为true时第一行校验不过
         }
       }
 
@@ -402,25 +406,23 @@
         }
         /* eslint-disable  */
         props.record.onCancelEdit = () => {
-          // update-begin--author:liaozhiyang---date:20240424---for：【issues/1165】解决canResize为true时第一行校验不过
+          // 代码逻辑说明: 【issues/1165】解决canResize为true时第一行校验不过
           isArray(props.record?.cancelCbs) &&
             props.record?.cancelCbs.forEach((item) => {
               const [fn] = Object.values(item);
               fn();
             });
-           // update-end--author:liaozhiyang---date:20240424---for：【issues/1165】解决canResize为true时第一行校验不过
         };
         /* eslint-disable */
         props.record.onSubmitEdit = async () => {
           if (isArray(props.record?.submitCbs)) {
             if (!props.record?.onValid?.()) return;
             const submitFns = props.record?.submitCbs || [];
-            // update-begin--author:liaozhiyang---date:20240424---for：【issues/1165】解决canResize为true时第一行校验不过
+            // 代码逻辑说明: 【issues/1165】解决canResize为true时第一行校验不过
             submitFns.forEach((item) => {
               const [fn] = Object.values(item);
               fn(false, false);
             });
-            // update-end--author:liaozhiyang---date:20240424---for：【issues/1165】解决canResize为true时第一行校验不过
             table.emit?.('edit-row-end');
             return true;
           }

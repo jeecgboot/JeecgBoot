@@ -288,7 +288,7 @@
         }
       }
 
-      // update-begin--author:liaozhiyang---date:20240417---for：【QQYUN-8927】侧边折叠导航模式区分彩色模式
+      // 代码逻辑说明: 【QQYUN-8927】侧边折叠导航模式区分彩色模式
       watch(
         () => appStore.getProjectConfig.menuSetting,
         (menuSetting) => {
@@ -296,7 +296,6 @@
         },
         { immediate: true, deep: true }
       );
-      // update-end--author:liaozhiyang---date:20240417---for：【QQYUN-8927】侧边折叠导航模式区分彩色模式
 
       return {
         t,

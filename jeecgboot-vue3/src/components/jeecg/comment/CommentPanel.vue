@@ -74,13 +74,11 @@
         datetime1.value = temp;
         datetime2.value = temp;
         datetime3.value = temp;
-        // update-begin--author:liaozhiyang---date:20240527---for：【TV360X-486】再次打开重置组件内的状态
         // 再次打开重置组件内的状态
         show.value = false;
         nextTick(() => {
           show.value = true;
         });
-        // update-end--author:liaozhiyang---date:20240527---for：【TV360X-486】再次打开重置组件内的状态
       }
 
       return {

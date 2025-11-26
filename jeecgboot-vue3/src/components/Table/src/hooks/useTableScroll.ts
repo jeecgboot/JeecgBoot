@@ -68,9 +68,8 @@ export function useTableScroll(
     if (!tableEl) return;
 
     if (!bodyEl) {
-      //update-begin-author:taoyan date:2023-2-11 for: issues/355 前端-jeecgboot-vue3 3.4.4版本,BasicTable高度自适应功能失效,设置BasicTable组件maxHeight失效; 原因已找到,请看详情
+      // 代码逻辑说明: issues/355 前端-jeecgboot-vue3 3.4.4版本,BasicTable高度自适应功能失效,设置BasicTable组件maxHeight失效; 原因已找到,请看详情
       bodyEl = tableEl.querySelector('.ant-table-tbody');
-      //update-end-author:taoyan date:2023-2-11 for: issues/355 前端-jeecgboot-vue3 3.4.4版本,BasicTable高度自适应功能失效,设置BasicTable组件maxHeight失效; 原因已找到,请看详情
       if (!bodyEl) return;
     }
 
@@ -121,13 +120,12 @@ export function useTableScroll(
     }
 
     let footerHeight = 0;
-    // update-begin--author:liaozhiyang---date:20240424---for：【issues/1137】BasicTable自适应高度计算没有减去尾部高度
+    // 代码逻辑说明: 【issues/1137】BasicTable自适应高度计算没有减去尾部高度
     footerEl = tableEl.querySelector('.ant-table-footer');
     if (footerEl) {
       const offsetHeight = footerEl.offsetHeight;
       footerHeight = offsetHeight || 0;
     }
-    // update-end--author:liaozhiyang---date:20240424---for：【issues/1137】BasicTable自适应高度计算没有减去尾部高度
 
     let headerHeight = 0;
     if (headEl) {
@@ -138,8 +136,15 @@ export function useTableScroll(
     // update-begin--author:liaozhiyang---date:20240603---for【TV360X-861】列表查询区域不可往上滚动
     // 10+6(外层边距padding:10 + 内层padding-bottom:6)
     height -= 16;
-    // update-end--author:liaozhiyang---date:20240603---for：【TV360X-861】列表查询区域不可往上滚动
-    
+    // 代码逻辑说明: 【issues/8880】BasicTable组件在modal中适应高度
+    try {
+      // 当BasicTable在BasicModal容器中时,扣减容器底部高度
+      const modalFooter = tableEl.closest('.ant-modal-root')?.querySelector('.ant-modal-footer');
+      if (modalFooter) {
+        const { bottomIncludeBody: modalFooterHeight } = getViewportOffset(modalFooter);
+        height = height - modalFooterHeight;
+      }
+    } catch (e) {}
     height = (height < minHeight! ? (minHeight as number) : height) ?? height;
     height = (height > maxHeight! ? (maxHeight as number) : height) ?? height;
     setHeight(height);
@@ -158,13 +163,11 @@ export function useTableScroll(
           const trHeight = lastrEl.offsetHeight;
           const dataHeight = trHeight * pageSize;
           if (tableBody && lastrEl) {
-            // update-begin--author:liaozhiyang---date:20250702---for：【issues/8532】online权限管理中的按钮权限第一页数据看不到
             // table是否隐藏（隐藏的table不能吸底）
             const isTableBodyHide = tableBody.offsetHeight == 0 && tableBody.offsetWidth == 0;
             if (isTableBodyHide) {
               return;
             }
-            // update-end--author:liaozhiyang---date:20250702---for：【issues/8532】online权限管理中的按钮权限第一页数据看不到
             if (current === 1 && pageSize > unref(getDataSourceRef).length && total <= pageSize) {
               tableBody.style.height = `${height}px`;
             } else {
@@ -186,16 +189,13 @@ export function useTableScroll(
 
   const getScrollX = computed(() => {
     let width = 0;
-    // update-begin--author:liaozhiyang---date:20230922---for：【QQYUN-6391】在线表单列表字段过多时,列头和数据对不齐
     // if (unref(rowSelectionRef)) {
     //   width += 60;
     // }
-    // update-end--author:liaozhiyang---date:20230922---for：【QQYUN-6391】在线表单列表字段过多时,列头和数据对不齐
-    // update-begin--author:liaozhiyang---date:20230925---for：【issues/5411】BasicTable 配置maxColumnWidth 未生效
+    // 代码逻辑说明: 【issues/5411】BasicTable 配置maxColumnWidth 未生效
     const { maxColumnWidth } = unref(propsRef);
     // TODO props ?? 0;
     const NORMAL_WIDTH = maxColumnWidth ?? 150;
-    // update-end--author:liaozhiyang---date:20230925---for：【issues/5411】BasicTable 配置maxColumnWidth 未生效
     // date-begin--author:liaozhiyang---date:20250716---for：【QQYUN-13122】有数十个字段时只展示2个字段，其余字段为ifShow:false会有滚动条
     const columns = unref(columnsRef).filter((item) => !(item.defaultHidden == true || item.ifShow == false))
     // date-end--author:liaozhiyang---date:20250716---for：【QQYUN-13122】有数十个字段时只展示2个字段，其余字段为ifShow:false会有滚动条
@@ -208,11 +208,10 @@ export function useTableScroll(
     if (len !== 0) {
       width += len * NORMAL_WIDTH;
     }
-    // update-begin--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
+    // 代码逻辑说明: 【TV360X-116】内嵌风格字段较多时表格错位
     if (slots.expandedRowRender) {
       width += propsRef.value.expandColumnWidth;
     }
-    // update-end--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
     const table = unref(tableElRef);
     const tableWidth = table?.$el?.offsetWidth ?? 0;
     return tableWidth > width ? '100%' : width;
@@ -225,9 +224,8 @@ export function useTableScroll(
     return {
       x: unref(getScrollX),
       y: canResize ? tableHeight : null,
-      // update-begin--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
+      // 代码逻辑说明: 【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
       scrollToFirstRowOnChange: table.scrollToFirstRowOnChange,
-      // update-end--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
       ...scroll,
     };
   });

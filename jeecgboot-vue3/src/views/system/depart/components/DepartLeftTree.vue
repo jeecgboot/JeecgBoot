@@ -56,6 +56,9 @@
           v-model:expandedKeys="expandedKeys"
           @check="onCheck"
           @select="onSelect"
+          draggable
+          @drop="onDrop"
+          @dragstart="onDragStart"
           style="overflow-y: auto;height: calc(100vh - 330px);"
         >
           <template #title="{ key: treeKey, title, dataRef, data }">
@@ -106,14 +109,14 @@
 </template>
 
 <script lang="ts" setup>
-  import { inject, nextTick, ref, unref, defineEmits } from 'vue';
+  import { inject, nextTick, ref, unref, defineEmits, h } from 'vue';
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useMethods } from '/@/hooks/system/useMethods';
-  import { Api, deleteBatchDepart, queryDepartAndPostTreeSync } from '../depart.api';
+  import { Api, deleteBatchDepart, queryDepartAndPostTreeSync, updateChangeDepart } from '../depart.api';
   import { searchByKeywords } from '/@/views/system/departUser/depart.user.api';
   import DepartFormModal from '/@/views/system/depart/components/DepartFormModal.vue';
-  import { Popconfirm } from 'ant-design-vue';
+  import { Modal, Popconfirm } from 'ant-design-vue';
   import TreeIcon from "@/components/Form/src/jeecg/components/TreeIcon/TreeIcon.vue";
 
   const prefixCls = inject('prefixCls');
@@ -354,15 +357,109 @@
   }
 
   function onExportXls() {
-    //update-begin---author:wangshuai---date:2024-07-05---for:【TV360X-1671】部门管理不支持选中的记录导出---
+    // 代码逻辑说明: 【TV360X-1671】部门管理不支持选中的记录导出---
     let params = {}
     if(checkedKeys.value && checkedKeys.value.length > 0) {
       params['selections'] = checkedKeys.value.join(',')
     }
     handleExportXls('部门信息', Api.exportXlsUrl,params);
-    //update-end---author:wangshuai---date:2024-07-05---for:【TV360X-1671】部门管理不支持选中的记录导出---
   }
 
+  /**
+   * 拖拽开始时，只关闭被拖拽的当前节点
+   * 
+   * @param info
+   */
+  function onDragStart(info: any) {
+    const dragKey = info.node?.key;
+    if (!dragKey){
+      return;
+    }
+    // 只关闭被拖拽的当前节点，不关闭其子节点
+    if (expandedKeys.value.includes(dragKey)) {
+      expandedKeys.value = expandedKeys.value.filter(key => key !== dragKey);
+    }
+  }
+  
+  /**
+   * 拖拽结束
+   * @param info
+   */
+  function onDrop (info){
+    const dropKey = info.node.key;
+    const dragKey = info.dragNode.key;
+    const dropPos = info.node.pos.split('-');
+    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+    const dropTitle = info.node.title;
+    const dragTitle = info.dragNode.title;
+    //禁止拖拽到子节点
+    if (isDescendant(info.dragNode, info.node.key)) {
+      createMessage.warning('不能拖拽到自身后代');
+      return;
+    }
+    if(dropKey === dragKey){
+      createMessage.warning('不能自身拖拽到自身');
+      return;
+    }
+    let pos = "中";
+    if(dropPosition === -1){
+      pos = "上方";
+    }else if (dropPosition === 1){
+      pos = "下方";
+    }
+    let text = "将【" + dragTitle + "】移动到【" + dropTitle + "】" + pos + "？";
+    Modal.confirm({
+      title: '确认移动',
+      content: h('div', {}, [
+        h('p', { style: { marginBottom: '12px', fontSize: '14px' } }, text),
+        h('p', { 
+          style: { 
+            color: '#ff4d4f', 
+            fontSize: '13px',
+            margin: '0'
+          } 
+        }, '移动后：机构编码会改变，历史业务数据保留原机构编码，此操作不可撤销！')
+      ]),
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        updateChangeDepart({ dragId: dragKey, dropId: dropKey, dropPosition: dropPosition, sort: info.dropPosition }).then(res=>{
+          if(res.success){
+            createMessage.success('部门顺序调整成功');
+            //重新加载树
+            treeData.value = [];
+            selectedKeys.value = [];
+            loadRootTreeData();
+          } else {
+            createMessage.error(res.message);
+          }
+        }).catch(e=>{
+          createMessage.error(e.message);
+        })
+      }
+    })
+  }
+
+  /**
+   * 判断目标节点是否在拖拽节点的子树中（避免循环引用）
+   * 
+   * @param dragNode
+   * @param targetKey
+   */
+  function isDescendant(dragNode, targetKey) {
+    const stack = [...(dragNode.children ?? [])];
+    while (stack.length) {
+      const node = stack.pop()!;
+      if (node.key === targetKey){
+        return true;
+      }
+      if (node.children){
+        stack.push(...node.children);
+      }
+    }
+    return false;
+  }
+  
   defineExpose({
     loadRootTreeData,
   });

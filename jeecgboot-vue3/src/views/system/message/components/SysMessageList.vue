@@ -18,10 +18,9 @@
     <template #renderItem="{ item }">
       <a-list-item :style="{ background: item?.izTop && item.izTop == 1 ? '#f7f7f7' : 'auto' }">
         <template #actions>
-          <a-rate :value="item.starFlag=='1'?1:0" :count="1" @click="clickStar(item)" style="cursor: pointer" disabled />
+          <a-rate class="antd-rate" :value="item.starFlag=='1'?1:0" :count="1" @click="clickStar(item)" style="cursor: pointer" disabled />
         </template>
 
-        <!-- update-begin-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接。 -->
         <a-list-item-meta>
           <template #description>
             <div v-if="isFormComment(item)" style="background: #f7f7f7;color: #555;padding: 2px 5px;white-space:nowrap;overflow: hidden">
@@ -31,7 +30,6 @@
               {{item.createTime}}
             </div>
           </template>
-          <!-- update-end-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接。 -->
 
           <template #title>
             <div style="position: relative">
@@ -75,6 +73,20 @@
               <a-avatar v-else style="background: #79919d"><alert-outlined style="font-size: 16px"/></a-avatar>
             </template>
 
+            <template v-else-if="['eoa_co_remind', 'eoa_co_notify'].includes(item.busType)">
+              <a-badge dot v-if="noRead(item)" class="msg-no-read">
+                <a-avatar style="background: #79919d"><GatewayOutlined style="font-size: 16px" title="未读消息"/></a-avatar>
+              </a-badge>
+              <a-avatar v-else style="background: #79919d"><GatewayOutlined style="font-size: 16px"/></a-avatar>
+            </template>
+
+            <template v-else-if="['eoa_sup_remind', 'eoa_sup_notify'].includes(item.busType)">
+              <a-badge dot v-if="noRead(item)" class="msg-no-read">
+                <a-avatar style="background: #79919d"><AlertOutlined style="font-size: 16px" title="未读消息"/></a-avatar>
+              </a-badge>
+              <a-avatar v-else style="background: #79919d"><AlertOutlined style="font-size: 16px"/></a-avatar>
+            </template>
+
             <template v-else>
               <a-badge dot v-if="noRead(item)" class="msg-no-read">
                 <a-avatar style="background: #79919d"><bell-filled style="font-size: 16px" title="未读消息"/></a-avatar>
@@ -87,16 +99,14 @@
     </template>
   </a-list>
 
-  <!-- update-begin-author:liusq date:2023-10-26 for: [QQYUN-6713]系统通知打开弹窗修改 -->
   <keep-alive>
     <component v-if="currentModal" v-bind="bindParams" :key="currentModal" :is="currentModal" @register="modalRegCache[currentModal].register" />
   </keep-alive>
-  <!-- update-end-author:liusq date:2023-10-26 for: [QQYUN-6713]系统通知打开弹窗修改 -->
 </template>
 
 <script>
 
-  import { FilterOutlined, CloseOutlined, BellFilled, ExclamationOutlined, MailOutlined,InteractionOutlined, AlertOutlined } from '@ant-design/icons-vue';
+  import { FilterOutlined, CloseOutlined, BellFilled, ExclamationOutlined, MailOutlined,InteractionOutlined, AlertOutlined, GatewayOutlined } from '@ant-design/icons-vue';
   import { useSysMessage, useMessageHref } from './useSysMessage';
   import {getGloablEmojiIndex, useEmojiHtml} from "/@/components/jeecg/comment/useComment";
   import { ref, h, watch } from "vue";
@@ -111,6 +121,7 @@
       MailOutlined,
       InteractionOutlined,
       AlertOutlined,
+      GatewayOutlined,
     },
     props:{
       star: {
@@ -157,7 +168,7 @@
       function clickStar(item){
         console.log(item)
         updateStarMessage(item);
-        // update-begin--author:liaozhiyang---date:20240717---for：【TV360X-349】通知-标星消息tab列表取消标星后，该条信息从标星列表移除
+        // 代码逻辑说明: 【TV360X-349】通知-标星消息tab列表取消标星后，该条信息从标星列表移除
         if (item.starFlag == '1' && props.cancelStarAfterDel) {
           const findIndex = messageList.value.findIndex((item) => item.id === item.id);
           if (findIndex !== -1) {
@@ -165,7 +176,6 @@
             return;
           }
         }
-        // update-end--author:liaozhiyang---date:20240717---for：【TV360X-349】通知-标星消息tab列表取消标星后，该条信息从标星列表移除
         if(item.starFlag=='1'){
           item.starFlag = '0'
         }else{
@@ -173,22 +183,37 @@
         }
       }
 
-      // update-begin-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
+      // 代码逻辑说明: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
       const { goPage, currentModal, modalRegCache, bindParams, isFormComment } = useMessageHref(emit, props);
       //const emojiIndex = inject('$globalEmojiIndex')
       const emojiIndex = getGloablEmojiIndex()
       const { getHtml } = useEmojiHtml(emojiIndex);
-      // update-end-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
 
       function showMessageDetail(record){
         record.readFlag = '1'
         goPage(record);
         emit('close', record.id)
-        //update-begin---author:wangshuai---date:2024-06-11---for:【TV360X-791】收到邮件通知，点击回复，应该把通知公告列表关闭---
+        // 代码逻辑说明: 【TV360X-791】收到邮件通知，点击回复，应该把通知公告列表关闭---
         if(record.busType==='email'){
           emit('close-modal')
+        // 代码逻辑说明: 【JHHB-224】【我的消息】点击去处理后应该关闭弹窗---
+        } else if(['bpm', 'bpm_task', 'tenant_invite'].includes(record.busType)){
+          //判断是否是查看详情
+          if (record.msgAbstract) {
+            try {
+              const json = JSON.parse(record.msgAbstract);
+              //查看详情，非去处理
+              if (json.taskDetail) {
+                return;
+              }
+            } catch (e) {
+              console.error('getHrefText:msgAbstract参数不是JSON格式', record.msgAbstract);
+            }
+          }
+          emit('close-modal');
+        } else if (['eoa_co_notify', 'eoa_co_remind', 'eoa_sup_notify', 'eoa_sup_remind'].includes(record.busType)) {
+          emit('close-modal');
         }
-        //update-end---author:wangshuai---date:2024-06-11---for:【TV360X-791】收到邮件通知，点击回复，应该把通知公告列表关闭---
       }
 
       //返回list列表为空数据时展示的内容
@@ -206,11 +231,10 @@
        *
        */
       function setLocaleText() {
-        //update-begin---author:wangshuai---date:2024-04-24---for:【QQYUN-9105】未读有问题---
+        // 代码逻辑说明: 【QQYUN-9105】未读有问题---
         let rangeDateKey = searchParams.rangeDateKey;
         let value = messageCount.value;
         if (value > 0 && !props.star && rangeDateKey && rangeDateKey === '7day') {
-        //update-end---author:wangshuai---date:2024-04-24---for:【QQYUN-9105】未读有问题---
           locale.value = {
             emptyText: h(
                 'span',
@@ -270,6 +294,15 @@
    :deep(.ant-rate-disabled){
      .ant-rate-star{
        cursor: pointer !important;
+     }
+   }
+   .antd-rate{
+     :deep(.ant-rate-star-first),
+     :deep(.ant-rate-star-second) {
+       color: #dddddd;
+     }
+     :deep(.ant-rate-star-full .ant-rate-star-second){
+       color: #fadb14 !important;
      }
    }
 </style>

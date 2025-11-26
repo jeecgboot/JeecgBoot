@@ -72,7 +72,7 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, isQiankunM
   }
 
   // // electron plugin
-  // const isElectron = viteEnv.VITE_GLOB_RUN_PLATFORM === 'electron';
+  const isElectron = viteEnv.VITE_GLOB_RUN_PLATFORM === 'electron';
   // if (isElectron) {
   //   vitePlugins.push(configElectronPlugin(viteEnv, isBuild))
   // }
@@ -82,8 +82,11 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean, isQiankunM
     
     // rollup-plugin-gzip
     vitePlugins.push(configCompressPlugin(VITE_BUILD_COMPRESS, VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE));
+
     // vite-plugin-pwa (PWA 插件注册)
-    vitePlugins.push(configPwaPlugin(isBuild));
+    if (!isElectron) {
+      vitePlugins.push(configPwaPlugin(isBuild));
+    }
   }
 
   // //vite-plugin-theme【预编译加载插件，解决vite首次打开界面加载慢问题】

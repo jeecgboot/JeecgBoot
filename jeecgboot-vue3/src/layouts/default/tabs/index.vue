@@ -164,7 +164,7 @@
   :deep(.anticon) {
     display: inline-block;
   }
-  // update-begin--author:liaozhiyang---date:20241016---for：【issues/7345】标签样式切换到极简模式样式错乱
+  // 代码逻辑说明: 【issues/7345】标签样式切换到极简模式样式错乱
   .rightExtra {
     display: flex;
     :deep(svg) {
@@ -183,6 +183,5 @@
       border-left: 1px solid @border-color-base;
     }
   }
-  // update-end--author:liaozhiyang---date:20241016---for：【issues/7345】标签样式切换到极简模式样式错乱
 }
 </style>

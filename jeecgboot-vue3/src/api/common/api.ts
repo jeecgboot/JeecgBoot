@@ -10,7 +10,7 @@ enum Api {
   queryDepartTreeSync = '/sys/sysDepart/queryDepartTreeSync',
   queryTreeList = '/sys/sysDepart/queryTreeList',
   loadTreeData = '/sys/category/loadTreeData',
-  loadDictItem = '/sys/category/loadDictItem/',
+  loadDictItem = '/sys/category/loadDictItem',
   getDictItems = '/sys/dict/getDictItems/',
   getTableList = '/sys/user/queryUserComponentData',
   getCategoryData = '/sys/category/loadAllData',

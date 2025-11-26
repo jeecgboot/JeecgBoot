@@ -47,7 +47,7 @@ export function useCustomSelection(
 
   // 扁平化数据，children数据也会放到一起
   const flattedData = computed(() => {
-    // update-begin--author:liaozhiyang---date:20231016---for：【QQYUN-6774】解决checkbox禁用后全选仍能勾选问题
+    // 代码逻辑说明: 【QQYUN-6774】解决checkbox禁用后全选仍能勾选问题
     const data = flattenData(tableData.value, childrenColumnName.value);
     const rowSelection = propsRef.value.rowSelection;
     if (rowSelection?.type === 'checkbox' && rowSelection.getCheckboxProps) {
@@ -62,7 +62,6 @@ export function useCustomSelection(
       }
     }
     return data;
-    // update-end--author:liaozhiyang---date:20231016---for：【QQYUN-6774】解决checkbox禁用后全选仍能勾选问题
   });
 
   const getRowSelectionRef = computed((): TableRowSelection | null => {
@@ -122,10 +121,8 @@ export function useCustomSelection(
       onSelectAll,
       isRadio: isRadio.value,
       selectedLength: flattedData.value.filter((data) => selectedKeys.value.includes(getRecordKey(data))).length,
-      // update-begin--author:liaozhiyang---date:20240511---for：【QQYUN-9289】解决表格条数不足pageSize数量时行数全部勾选但是全选框不勾选
       // 【TV360X-53】为空时会报错，加强判断
       pageSize: flattedData.value?.length ?? 0,
-      // update-end--author:liaozhiyang---date:20240511---for：【QQYUN-9289】解决表格条数不足pageSize数量时行数全部勾选但是全选框不勾选
       // 【QQYUN-6774】解决checkbox禁用后全选仍能勾选问题
       disabled: flattedData.value.length == 0,
       hideSelectAll: unref(propsRef)?.rowSelection?.hideSelectAll,
@@ -133,19 +130,17 @@ export function useCustomSelection(
   });
 
   // 监听传入的selectedRowKeys
-  // update-begin--author:liaozhiyang---date:20240306---for：【QQYUN-8390】部门人员组件点击重置未清空（selectedRowKeys.value=[]，watch没监听到加deep）
+  // 代码逻辑说明: 【QQYUN-8390】部门人员组件点击重置未清空（selectedRowKeys.value=[]，watch没监听到加deep）
   watch(
     () => unref(propsRef)?.rowSelection?.selectedRowKeys,
     (val: string[]) => {
       // 解决selectedRowKeys在页面调用处使用ref失效
       const value = unref(val);
       if (Array.isArray(value) && !sameArray(value, selectedKeys.value)) {
-        // update-begin--author:liaozhiyang---date:20250429---for：【issues/8163】关联记录夸页数据丢失
         // 延迟是为了等watch selectedRows
         setTimeout(() => {
           setSelectedRowKeys(value);
         }, 0);
-        // update-end--author:liaozhiyang---date:20250429---for：【issues/8163】关联记录夸页数据丢失
       }
     },
     {
@@ -153,8 +148,6 @@ export function useCustomSelection(
       deep: true
     }
   );
-  // update-end--author:liaozhiyang---date:20240306---for：【QQYUN-8390】部门人员组件点击重置未清空（selectedRowKeys.value=[]，watch没监听到加deep）
-  // update-begin--author:liaozhiyang---date:20250429---for：【issues/8163】关联记录夸页数据丢失
   // 编辑时selectedRows可能会回填
   watch(
     () => unref(propsRef)?.rowSelection?.selectedRows,
@@ -169,7 +162,6 @@ export function useCustomSelection(
       deep: true,
     }
   );
-  // update-end--author:liaozhiyang---date:20250429---for：【issues/8163】关联记录夸页数据丢失
   /**
   * 2024-03-06
   * liaozhiyang
@@ -183,11 +175,10 @@ export function useCustomSelection(
         return false;
       }
     } else {
-      // update-begin--author:liaozhiyang---date:20240425---for：【QQYUN-9123】popupdict打开弹窗打开程序运行
+      // 代码逻辑说明: 【QQYUN-9123】popupdict打开弹窗打开程序运行
       if (isEqual(a, b)) {
         return true;
       }
-      // update-end--author:liaozhiyang---date:20240425---for：【QQYUN-9123】popupdict打开弹窗打开程序运行
       return false;
     }
   }
@@ -205,10 +196,8 @@ export function useCustomSelection(
   let bodyResizeObserver: Nullable<ResizeObserver> = null;
   // 获取首行行高
   watchEffect(() => {
-    // update-begin--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
     // 这种写法是为了监听到 size 的变化
     propsRef.value.size && void 0;
-    // update-end--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
     if (bodyEl.value) {
       // 监听div高度变化
       bodyResizeObserver = new ResizeObserver((entries) => {
@@ -242,24 +231,21 @@ export function useCustomSelection(
   function updateRowHeight() {
     const el = bodyEl.value?.querySelector('tbody.ant-table-tbody tr.ant-table-row') as HTMLDivElement;
     if (el) {
-      // update-begin--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
+      // 代码逻辑说明: 【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
       nextTick(() => rowHeight.value = el.offsetHeight);
-      // update-end--author:liaozhiyang---date:20241111---for：【issues/7442】basicTable从默认切换到宽松紧凑时多选框显示异常
     }
   }
 
   // 选择全部
   function onSelectAll(checked: boolean, flag = 'currentPage') {
-    // update-begin--author:liaozhiyang---date:20231122---for：【issues/5577】BasicTable组件全选和取消全选时不触发onSelectAll事件
+    // 代码逻辑说明: 【issues/5577】BasicTable组件全选和取消全选时不触发onSelectAll事件
     if (unref(propsRef)?.rowSelection?.onSelectAll) {
       allSelected = checked;
       changeRows = getInvertRows(selectedRows.value, checked, flag);
     }
-    // update-end--author:liaozhiyang---date:20231122---for：【issues/5577】BasicTable组件全选和取消全选时不触发onSelectAll事件
     // 取消全选
     if (!checked) {
-      // update-begin--author:liaozhiyang---date:20240510---for：【issues/1173】取消全选只是当前页面取消
-      // update-begin--author:liaozhiyang---date:20240808---for：【issues/6958】取消没触发onSelectAll事件，跨页选中后 changeRows 为空
+      // 代码逻辑说明: 【issues/6958】取消没触发onSelectAll事件，跨页选中后 changeRows 为空
       if (flag === 'allPage') {
         selectedKeys.value = [];
         selectedRows.value = [];
@@ -269,8 +255,6 @@ export function useCustomSelection(
         });
       }
       emitChange('all');
-      // update-end--author:liaozhiyang---date:20240808---for：【issues/6958】取消没触发onSelectAll事件，跨页选中后 changeRows 为空
-      // update-end--author:liaozhiyang---date:20240510---for：【issues/1173】取消全选只是当前页面取消
       return;
     }
     let modal: Nullable<ReturnType<ModalFunc>> = null;
@@ -333,9 +317,8 @@ export function useCustomSelection(
           } else {
             setTimeout(() => {
               emitChange('all');
-              // update-begin--author:liaozhiyang---date:20230811---for：【QQYUN-5687】批量选择，提示成功后，又来一个提示
+              // 代码逻辑说明: 【QQYUN-5687】批量选择，提示成功后，又来一个提示
               setTimeout(() =>resolve(), 0);
-              // update-end--author:liaozhiyang---date:20230811---for：【QQYUN-5687】批量选择，提示成功后，又来一个提示
             }, 500);
           }
         }, 300);
@@ -348,9 +331,8 @@ export function useCustomSelection(
     onSelectChild(record, checked);
     updateSelected(record, checked);
     onSelectParent(record, checked);
-    // update-begin--author:liaozhiyang---date:20250813---for：【issues/8690】BasicTable的rowSelection新增onSelect方法
+    // 代码逻辑说明: 【issues/8690】BasicTable的rowSelection新增onSelect方法
     propsRef.value.rowSelection?.onSelect?.(toRaw(record), checked, toRaw(selectedRows.value));
-    // update-end--author:liaozhiyang---date:20250813---for：【issues/8690】BasicTable的rowSelection新增onSelect方法
     emitChange();
   }
 
@@ -373,12 +355,11 @@ export function useCustomSelection(
         selectedRows.value.splice(index, 1);
       }
     }
-    // update-begin--author:liaozhiyang---date:20240919---for：【issues/7200】basicTable选中后没有选中样式
+    // 代码逻辑说明: 【issues/7200】basicTable选中后没有选中样式
     clearTimeout(timer);
     timer = setTimeout(() => {
       selectedKeys.value = [...selectedKeys.value];
     }, 0);
-    // update-end--author:liaozhiyang---date:20240919---for：【issues/7200】basicTable选中后没有选中样式
   }
 
   // 调用用户自定义的onChange事件
@@ -396,16 +377,14 @@ export function useCustomSelection(
       keys: getSelectRowKeys(),
       rows: getSelectRows(),
     });
-    // update-begin--author:liaozhiyang---date:20231122---for：【issues/5577】BasicTable组件全选和取消全选时不触发onSelectAll事件
+    // 代码逻辑说明: 【issues/5577】BasicTable组件全选和取消全选时不触发onSelectAll事件
     if (mode == 'all') {
       const rowSelection = unref(propsRef)?.rowSelection;
       if (rowSelection?.onSelectAll) {
         rowSelection.onSelectAll(allSelected, toRaw(getSelectRows()), toRaw(changeRows));
       }
     }
-    // update-end--author:liaozhiyang---date:20231122---for：【issues/5577】BasicTable组件全选和取消全选时不触发
   }
-  // update-begin--author:liusq---date:20240819---for：树形表格设置层级关联不生效
   /**
    * 层级关联时，选中下级数据
    * @param record
@@ -423,7 +402,6 @@ export function useCustomSelection(
       }
     }
   }
-  // update-end--author:liusq---date:20240819---for：树形表格设置层级关联不生效
   /**
    * 2024-09-24
    * liaozhiyang
@@ -505,7 +483,7 @@ export function useCustomSelection(
   // 自定义渲染Body
   function bodyCustomRender(params) {
     const { index } = params;
-    // update-begin--author:liaozhiyang---date:20231009--for：【issues/776】显示100条/页，复选框只能显示3个的问题
+    // 代码逻辑说明: 【issues/776】显示100条/页，复选框只能显示3个的问题
     if (propsRef.value.canResize && !recordIsShow(index)) {
       return '';
     }
@@ -514,7 +492,6 @@ export function useCustomSelection(
     } else {
       return renderCheckboxComponent(params);
     }
-    // update-end--author:liaozhiyang---date:20231009---for：【issues/776】显示100条/页，复选框只能显示3个的问题
   }
 
   /**
@@ -539,9 +516,8 @@ export function useCustomSelection(
         key={'j-select__' + recordKey}
         checked={selectedKeys.value.includes(recordKey)}
         onUpdate:checked={(checked) => onSelect(record, checked)}
-        // update-begin--author:liaozhiyang---date:20230326---for：【QQYUN-8694】BasicTable在使用clickToRowSelect=true下，selection-change 事件在触发多次
+        // 代码逻辑说明: 【QQYUN-8694】BasicTable在使用clickToRowSelect=true下，selection-change 事件在触发多次
         onClick={(e) => e.stopPropagation()}
-        // update-end--author:liaozhiyang---date:20230326---for：【QQYUN-8694】BasicTable在使用clickToRowSelect=true下，selection-change 事件在触发多次
       />
     );
   }
@@ -551,7 +527,6 @@ export function useCustomSelection(
    */
   function renderRadioComponent({ record }) {
     const recordKey = getRecordKey(record);
-    // update-begin--author:liaozhiyang---date:20231016---for：【QQYUN-6794】table列表增加radio禁用功能
     // 获取用户自定义radioProps
     const checkboxProps = (() => {
       const rowSelection = propsRef.value.rowSelection;
@@ -560,29 +535,27 @@ export function useCustomSelection(
       }
       return {};
     })();
-    // update-end--author:liaozhiyang---date:20231016---for：【QQYUN-6794】table列表增加radio禁用功能
     return (
       <Radio
         {...checkboxProps}
         key={'j-select__' + recordKey}
         checked={selectedKeys.value.includes(recordKey)}
         onUpdate:checked={(checked) => onSelect(record, checked)}
-        // update-begin--author:liaozhiyang---date:20230326---for：【QQYUN-8694】BasicTable在使用clickToRowSelect=true下，selection-change 事件在触发多次
+        // 代码逻辑说明: 【QQYUN-8694】BasicTable在使用clickToRowSelect=true下，selection-change 事件在触发多次
         onClick={(e) => e.stopPropagation()}
-        // update-end--author:liaozhiyang---date:20230326---for：【QQYUN-8694】BasicTable在使用clickToRowSelect=true下，selection-change 事件在触发多次
       />
     );
   }
 
   // 创建选择列
   function handleCustomSelectColumn(columns: BasicColumn[]) {
-    // update-begin--author:liaozhiyang---date:20230919---for：【issues/757】JPopup表格的选择列固定配置不生效
+    // 代码逻辑说明: 【issues/757】JPopup表格的选择列固定配置不生效
     const rowSelection = propsRef.value.rowSelection;
     if (!rowSelection) {
       return;
     }
     const isFixedLeft = rowSelection.fixed || columns.some((item) => item.fixed === 'left');
-    // update-begin--author:liaozhiyang---date:20230919---for：【issues/757】JPopup表格的选择列固定配置不生效
+    // 代码逻辑说明: 【issues/757】JPopup表格的选择列固定配置不生效
     columns.unshift({
       title: '选择列',
       flag: 'CHECKBOX',
@@ -604,12 +577,10 @@ export function useCustomSelection(
   // 通过 selectedKeys 同步 selectedRows
   function syncSelectedRows() {
     if (selectedKeys.value.length !== selectedRows.value.length) {
-      // update-begin--author:liaozhiyang---date:20250429---for：【issues/8163】关联记录夸页数据丢失
       // 延迟是为了等watch selectedRows
       setTimeout(() => {
         setSelectedRowKeys(selectedKeys.value);
       }, 0);
-      // update-end--author:liaozhiyang---date:20250429---for：【issues/8163】关联记录夸页数据丢失
     }
   }
 
@@ -629,12 +600,11 @@ export function useCustomSelection(
       const found = allSelectedRows.find((item) => getRecordKey(item) === key);
       found && trueSelectedRows.push(found);
     });
-    // update-begin--author:liaozhiyang---date:20231103---for：【issues/828】解决卡死问题
+    // 代码逻辑说明: 【issues/828】解决卡死问题
     if (!(isSomeRowKeys && equal(selectedRows.value, trueSelectedRows))) {
       selectedRows.value = trueSelectedRows;
       emitChange();
     }
-    // update-end--author:liaozhiyang---date:20231103---for：【issues/828】解决卡死问题
   }
   /**
    *2023-11-03

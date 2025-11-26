@@ -1,6 +1,5 @@
 /**
- * PWA 插件配置
- * 适配按需加载：只预缓存关键资源，按需加载的 chunk 使用运行时缓存
+ * PWA 插件配置 - 适配按需加载
  */
 import { VitePWA } from 'vite-plugin-pwa';
 import type { VitePWAOptions } from 'vite-plugin-pwa';
@@ -34,27 +33,25 @@ export function configPwaPlugin(isBuild: boolean): PluginOption | PluginOption[]
       ],
     },
     workbox: {
-      // 增加文件大小限制到 10MB
-      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB
+      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB
       cleanupOutdatedCaches: true,
       
-      // 预缓存策略：只缓存关键资源，按需加载的 chunk 通过运行时缓存
-      // 预缓存入口文件、CSS 和静态资源，以及核心 JS（入口和 vendor）
+      // 预缓存：只缓存关键资源，不预缓存路由组件 CSS/JS（避免登录页加载全部资源）
       globPatterns: [
-        'index.html',
+        'index.html', // 必须预缓存（避免 non-precached-url 错误）
         'manifest.webmanifest',
-        '**/*.css',
-        '**/*.{ico,png,svg,woff2}',
-        // 预缓存入口 JS 和核心 vendor chunk
+        'assets/index-*.css', // 仅入口 CSS
+        'favicon.ico',
+        'logo.png',
         'js/index-*.js',
         'js/*-vendor-*.js',
       ],
-      // 注意：不预缓存按需加载的路由组件 chunk
-      // 这些 chunk 将通过运行时缓存策略按需加载和缓存
       
-      // 运行时缓存策略：处理按需加载的资源
+      // 不使用导航回退功能
+      navigateFallback: undefined,
+      
+      // 运行时缓存：按需加载的资源
       runtimeCaching: [
-        // 按需加载的 JS chunk：优先网络，失败后使用缓存
         {
           urlPattern: /\/js\/.*\.js$/i,
           handler: 'NetworkFirst',
@@ -70,9 +67,8 @@ export function configPwaPlugin(isBuild: boolean): PluginOption | PluginOption[]
             },
           },
         },
-        // CSS 文件：优先缓存
         {
-          urlPattern: /\/css\/.*\.css$/i,
+          urlPattern: /\/assets\/.*\.css$/i,
           handler: 'CacheFirst',
           options: {
             cacheName: 'css-cache',
@@ -129,8 +125,9 @@ export function configPwaPlugin(isBuild: boolean): PluginOption | PluginOption[]
           },
         },
       ],
-      skipWaiting: false,
-      clientsClaim: false,
+      // 启用立即更新：新 SW 立即激活并接管页面
+      skipWaiting: true,
+      clientsClaim: true,
     },
     devOptions: {
       enabled: false,

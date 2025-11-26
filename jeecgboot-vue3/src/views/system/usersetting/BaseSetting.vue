@@ -403,7 +403,7 @@ onMounted(async () => {
 </script>
 
 <style lang="less">
-    // update-begin-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
+    // 代码逻辑说明: [issues/563]暗色主题部分失效
   @prefix-cls: ~'@{namespace}-j-base-setting-container';
 
   .@{prefix-cls}{
@@ -547,5 +547,4 @@ onMounted(async () => {
       border-bottom: 1px solid @border-color-base;
     }
   }
-  // update-end-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
 </style>

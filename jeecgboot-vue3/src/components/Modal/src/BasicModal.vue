@@ -16,7 +16,6 @@
       </ModalFooter>
     </template>
 
-    <!-- update-begin-author:taoyan date:2022-7-18 for:  modal弹窗 支持评论 slot -->
     <a-row class="jeecg-modal-wrapper">
       <a-col :span="24-commentSpan" class="jeecg-modal-content">
         <ModalWrapper
@@ -44,7 +43,6 @@
       </a-col>
       
     </a-row>
-    <!-- update-end-author:taoyan date:2022-7-18 for:  modal弹窗 支持评论 slot -->
     
     <template #[item]="data" v-for="item in Object.keys(omit($slots, 'default'))">
       <slot :name="item" v-bind="data || {}"></slot>
@@ -106,21 +104,18 @@
           ...props,
           ...(unref(propsRef) as any),
         };
-        // update-begin--author:liaozhiyang---date:20240326---for：【QQYUN-8643】弹窗移动端弹窗统一全屏
+        // 代码逻辑说明: 【QQYUN-8643】弹窗移动端弹窗统一全屏
         if (getIsMobile.value) {
           result.canFullscreen = false;
           result.defaultFullscreen = true;
         }
-        // update-end--author:liaozhiyang---date:20240326---for：【QQYUN-8643】弹窗移动端弹窗统一全屏
         return result;
       });
-        //update-begin-author:liusq date:2023-05-25 for:【issues/4856】Modal控件设置 :title = null 无效
         //是否未设置标题
         const isNoTitle = computed(() => {
             //标题为空并且不含有标题插槽
             return !unref(getMergeProps).title && !slots.title;
         });
-        //update-end-author:liusq date:2023-05-25 for:【issues/4856】Modal控件设置 :title = null 无效
 
       const { handleFullScreen, getWrapClassName, fullScreenRef } = useFullScreen({
         modalWrapperRef,
@@ -144,7 +139,7 @@
       });
 
       const getBindValue = computed((): Recordable => {
-        // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
+        // 代码逻辑说明: 【QQYUN-6366】升级到antd4.x
         const attr = {
           ...attrs,
           ...unref(getMergeProps),
@@ -155,7 +150,6 @@
           return omit(attr, ['height', 'title', 'visible']);
         }
         return omit(attr, ['title', 'visible']);
-        // update-end--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
       });
 
       const getWrapperHeight = computed(() => {
@@ -165,11 +159,10 @@
 
       watchEffect(() => {
         fullScreenRef.value = !!props.defaultFullscreen;
-        // update-begin--author:liaozhiyang---date:20240326---for：【QQYUN-8643】弹窗移动端弹窗统一全屏
+        // 代码逻辑说明: 【QQYUN-8643】弹窗移动端弹窗统一全屏
         if (getIsMobile.value) {
           fullScreenRef.value = true
         }
-        // update-end--author:liaozhiyang---date:20240326---for：【QQYUN-8643】弹窗移动端弹窗统一全屏
       });
 
       watchEffect(() => {
@@ -228,11 +221,10 @@
         }
         if (Reflect.has(props, 'defaultFullscreen')) {
           fullScreenRef.value = !!props.defaultFullscreen;
-           // update-begin--author:liaozhiyang---date:20240326---for：【QQYUN-8643】弹窗移动端弹窗统一全屏
+           // 代码逻辑说明: 【QQYUN-8643】弹窗移动端弹窗统一全屏
           if (getIsMobile.value) {
             fullScreenRef.value = true
           }
-          // update-end--author:liaozhiyang---date:20240326---for：【QQYUN-8643】弹窗移动端弹窗统一全屏
         }
       }
 
@@ -254,7 +246,7 @@
         handleFullScreen(e);
       }
 
-      //update-begin-author:taoyan date:2022-7-18 for: modal支持评论 slot
+      // 代码逻辑说明: modal支持评论 slot
       const commentSpan = ref(0);
       watch(()=>props.enableComment, (flag)=>{
         handleComment(flag)
@@ -265,17 +257,14 @@
         }else{
           commentSpan.value = 0
         }
-        // update-begin--author:liaozhiyang---date:20240528---for：【TV360X-485】开启评论之后弹窗按钮居右隔一个评论的距离
+        // 代码逻辑说明: 【TV360X-485】开启评论之后弹窗按钮居右隔一个评论的距离
         emit('comment-open', commentSpan.value === 0, commentSpan.value);
-        // update-end--author:liaozhiyang---date:20240528---for：【TV360X-485】开启评论之后弹窗按钮居右隔一个评论的距离
       }
-      //update-end-author:taoyan date:2022-7-18 for: modal支持评论 slot
 
-      // update-begin--author:liaozhiyang---date:20230804---for：【QQYUN-5866】放大行数自适应
+      // 代码逻辑说明: 【QQYUN-5866】放大行数自适应
       watch(fullScreenRef,(val)=>{
         emit('fullScreen',val);
       });
-      // update-begin--author:liaozhiyang---date:20230804---for：【QQYUN-5866】放大行数自适应
 
       return {
         handleCancel,
@@ -309,9 +298,8 @@
   }
   .jeecg-modal-content{
     >.scroll-container{
-      //update-begin---author:wangshuai---date:2023-12-05---for:【QQYUN-7297】表单讨论弹窗放大按钮时只显示一部分---
+      // 代码逻辑说明: 【QQYUN-7297】表单讨论弹窗放大按钮时只显示一部分---
       padding: 6px;
-      //update-end---author:wangshuai---date:2023-12-05---for:【QQYUN-7297】表单讨论弹窗放大按钮时只显示一部分---
     }
   }
   /*update-end-author:taoyan date:2022-7-27 for:modal评论区域样式*/

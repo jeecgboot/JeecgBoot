@@ -59,9 +59,8 @@
      */
     lazyTime: { type: Number, default: 0 },
   });
-  // update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7402】CollapseContainer组件增加默认不展开属性
+  // 代码逻辑说明: 【issues/7402】CollapseContainer组件增加默认不展开属性
   const show = ref(props.defaultExpan);
-  // update-begin-author:liaozhiyang---date:2024-11-11--for:【issues/7402】CollapseContainer组件增加默认不展开属性
 
   const { prefixCls } = useDesign('collapse-container');
 

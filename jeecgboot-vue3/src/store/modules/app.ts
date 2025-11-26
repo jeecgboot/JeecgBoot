@@ -125,9 +125,8 @@ export const useAppStore = defineStore({
 
     setProjectConfig(config: DeepPartial<ProjectConfig>): void {
       this.projectConfig = deepMerge(this.projectConfig || {}, config);
-      // update-begin--author:liaozhiyang---date:20240408---for：【QQYUN-8922】设置导航栏模式没存本地，刷新就还原了
+      // 代码逻辑说明: 【QQYUN-8922】设置导航栏模式没存本地，刷新就还原了
       Persistent.setLocal(PROJ_CFG_KEY, this.projectConfig, true);
-      // update-end--author:liaozhiyang---date:20240408---for：【QQYUN-8922】设置导航栏模式没存本地，刷新就还原了
     },
 
     async resetAllState() {

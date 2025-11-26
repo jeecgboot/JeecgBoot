@@ -122,7 +122,7 @@
   const { t } = useI18n();
   const { prefixCls } = useDesign('icon-picker');
 
-  //update-begin---author:wangshuai---date:2024-05-08---for:【QQYUN-8924】图标库选择组件不如vue2的方便---
+  // 代码逻辑说明: 【QQYUN-8924】图标库选择组件不如vue2的方便---
   const iconOpen = ref<boolean>(false);
   //方向性图标
   const directionIcons = ['ant-design:step-backward-outlined', 'ant-design:step-forward-outlined', 'ant-design:fast-backward-outlined', 'ant-design:fast-forward-outlined', 'ant-design:shrink-outlined', 'ant-design:arrows-alt-outlined', 'ant-design:down-outlined', 'ant-design:up-outlined', 'ant-design:left-outlined', 'ant-design:right-outlined', 'ant-design:caret-up-outlined', 'ant-design:caret-down-outlined', 'ant-design:caret-left-outlined', 'ant-design:caret-right-outlined', 'ant-design:up-circle-outlined', 'ant-design:down-circle-outlined', 'ant-design:left-circle-outlined', 'ant-design:right-circle-outlined',  'ant-design:double-right-outlined', 'ant-design:double-left-outlined', 'ant-design:vertical-left-outlined', 'ant-design:vertical-right-outlined', 'ant-design:forward-outlined', 'ant-design:backward-outlined', 'ant-design:rollback-outlined', 'ant-design:enter-outlined', 'ant-design:retweet-outlined', 'ant-design:swap-outlined', 'ant-design:swap-left-outlined', 'ant-design:swap-right-outlined', 'ant-design:arrow-up-outlined', 'ant-design:arrow-down-outlined', 'ant-design:arrow-left-outlined', 'ant-design:arrow-right-outlined', 'ant-design:play-circle-outlined', 'ant-design:up-square-outlined', 'ant-design:down-square-outlined', 'ant-design:left-square-outlined', 'ant-design:right-square-outlined', 'ant-design:login-outlined', 'ant-design:logout-outlined', 'ant-design:menu-fold-outlined', 'ant-design:menu-unfold-outlined', 'ant-design:border-bottom-outlined', 'ant-design:border-horizontal-outlined', 'ant-design:border-inner-outlined', 'ant-design:border-left-outlined', 'ant-design:border-right-outlined', 'ant-design:border-top-outlined', 'ant-design:border-verticle-outlined', 'ant-design:pic-center-outlined', 'ant-design:pic-left-outlined', 'ant-design:pic-right-outlined', 'ant-design:radius-bottomleft-outlined', 'ant-design:radius-bottomright-outlined', 'ant-design:radius-upleft-outlined', 'ant-design:radius-upright-outlined', 'ant-design:fullscreen-outlined', 'ant-design:fullscreen-exit-outlined']
@@ -138,35 +138,30 @@
   const logoIcons = ['ant-design:android-outlined', 'ant-design:apple-outlined', 'ant-design:windows-outlined', 'ant-design:ie-outlined', 'ant-design:chrome-outlined', 'ant-design:github-outlined', 'ant-design:aliwangwang-outlined', 'ant-design:dingding-outlined', 'ant-design:weibo-square-outlined', 'ant-design:weibo-circle-outlined', 'ant-design:taobao-circle-outlined', 'ant-design:html5-outlined', 'ant-design:weibo-outlined', 'ant-design:twitter-outlined', 'ant-design:wechat-outlined', 'ant-design:youtube-outlined', 'ant-design:alipay-circle-outlined', 'ant-design:taobao-outlined', 'ant-design:skype-outlined', 'ant-design:qq-outlined', 'ant-design:medium-workmark-outlined', 'ant-design:gitlab-outlined', 'ant-design:medium-outlined', 'ant-design:linkedin-outlined', 'ant-design:google-plus-outlined', 'ant-design:dropbox-outlined', 'ant-design:facebook-outlined', 'ant-design:codepen-outlined', 'ant-design:amazon-outlined', 'ant-design:google-outlined', 'ant-design:codepen-circle-outlined', 'ant-design:alipay-outlined', 'ant-design:ant-design-outlined', 'ant-design:aliyun-outlined', 'ant-design:zhihu-outlined', 'ant-design:slack-outlined', 'ant-design:slack-square-outlined', 'ant-design:behance-outlined', 'ant-design:behance-square-outlined', 'ant-design:dribbble-outlined', 'ant-design:dribbble-square-outlined', 'ant-design:instagram-outlined', 'ant-design:yuque-outlined', 'ant-design:alibaba-outlined', 'ant-design:yahoo-outlined']
   //其他
   const otherIcons = ref<any>([]);
-  //update-end---author:wangshuai---date:2024-05-08---for:【QQYUN-8924】图标库选择组件不如vue2的方便---
 
   watchEffect(() => {
-    // update-begin--author:liaozhiyang---date:20240528---for：【TV360X-136】按钮图标改成图标组件选择
+    // 代码逻辑说明: 【TV360X-136】按钮图标改成图标组件选择
     let value = props.value;
     if (!props.iconPrefixSave && value) {
       value = `ant-design:${value}`;
     }
-    // update-end--author:liaozhiyang---date:20240528---for：【TV360X-136】按钮图标改成图标组件选择
     currentSelect.value = value;
   });
 
   watch(
     () => currentSelect.value,
     (v) => {
-      // update-begin--author:liaozhiyang---date:20240528---for：【TV360X-136】按钮图标改成图标组件选择
+      // 代码逻辑说明: 【TV360X-136】按钮图标改成图标组件选择
       let value = v;
       if (!props.iconPrefixSave && value) {
         value = value.split('ant-design:')[1];
       }
-      // update-end--author:liaozhiyang---date:20240528---for：【TV360X-136】按钮图标改成图标组件选择
       emit('update:value', value);
       return emit('change', value);
     }
   );
 
 
-  //update-begin---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效，输入框后面的图标点击之后清空数据------------
-  //update-begin---author:wangshuai---date:2024-05-08---for:【QQYUN-8924】图标库选择组件不如vue2的方便---
   /**
    * 图标点击重置页数
    */
@@ -179,7 +174,6 @@
       iconListRef.value.currentSelectClick();
     },100)
   }
-  //update-begin---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效，输入框后面的图标点击之后清空数据------------
 
   function initOtherIcon() {
     otherIcons.value = icons.filter(item => {
@@ -210,7 +204,6 @@
     //初始化加载图标
     initOtherIcon();
   })
-  //update-end---author:wangshuai---date:2024-05-08---for:【QQYUN-8924】图标库选择组件不如vue2的方便---
 </script>
 <style lang="less">
   @prefix-cls: ~'@{namespace}-icon-picker';

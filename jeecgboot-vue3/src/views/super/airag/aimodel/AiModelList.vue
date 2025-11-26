@@ -44,20 +44,20 @@
           </div>
           <div class="mt-6">
             <ul>
-              <li class="flex mr-14">
-                <span class="label">模型类型</span>
-                <span class="described">{{ item.modelType_dictText }}</span>
+              <li class="flex mr-14" style="align-items: center;">
+                <span class="label" style="flex-shrink: 0;">模型类型</span>
+                <span class="described" style="flex: 1; min-width: 0;">{{ item.modelType_dictText }}</span>
                 <a-tooltip v-if="!item.activateFlag" title="未激活模型暂无法被系统其他功能调用，激活后可正常使用。">
                   <span class="no-activate">未激活</span>
                 </a-tooltip>
               </li>
-              <li class="flex mr-14 mt-6">
-                <span class="label">基础模型</span>
-                <span class="described">{{ item.modelName }}</span>
+              <li class="flex mr-14 mt-6" style="align-items: center;">
+                <span class="label" style="flex-shrink: 0;">基础模型</span>
+                <span class="described" style="flex: 1; min-width: 0;">{{ item.modelName }}</span>
               </li>
-              <li class="flex mr-14 mt-6">
-                <span class="label">创建者</span>
-                <span class="described">{{ item.createBy_dictText || item.createBy }}</span>
+              <li class="flex mr-14 mt-6" style="align-items: center;">
+                <span class="label" style="flex-shrink: 0;">创建者</span>
+                <span class="described" style="flex: 1; min-width: 0;">{{ item.createBy_dictText || item.createBy }}</span>
               </li>
             </ul>
           </div>
@@ -336,6 +336,7 @@
     white-space: nowrap;
     overflow: hidden;
     font-size: 12px;
+    flex: 1;
   }
 
   .flex {

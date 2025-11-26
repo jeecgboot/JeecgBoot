@@ -25,7 +25,7 @@ export default {
     defaultPageSize: 10,
     // 默认排序方法
     defaultSortFn: (sortInfo: SorterResult) => {
-      //update-begin-author:taoyan date:2022-10-21 for: VUEN-2199【表单设计器】多字段排序
+      // 代码逻辑说明: VUEN-2199【表单设计器】多字段排序
       if(sortInfo instanceof Array){
         let sortInfoArray:any[] = []
         for(let item of sortInfo){
@@ -41,15 +41,13 @@ export default {
         let info = getSort(sortInfo)
         return info || {}
       }
-      //update-end-author:taoyan date:2022-10-21 for: VUEN-2199【表单设计器】多字段排序
     },
     // 自定义过滤方法
     defaultFilterFn: (data: Partial<Recordable<string[]>>) => {
       return data;
     },
-    // update-begin--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
+    // 代码逻辑说明: 【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
     scrollToFirstRowOnChange: false,
-    // update-end--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
   },
   // 滚动组件配置
   scrollbar: {

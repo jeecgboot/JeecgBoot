@@ -22,6 +22,8 @@
   const tenantId = ref<number>();
   //套餐包类型
   const packType = ref<number>();
+  //权限
+  const permissionIds = ref<string>();
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data) => {
     //重置表单
@@ -35,12 +37,12 @@
       //表单赋值
       console.log(data.record)
       await setFieldsValue({ ...data.record });
+      permissionIds.value = data.record.permissionIds;
     }
-    //update-begin---author:wangshuai ---date:20230705  for：【QQYUN-5685】2 套餐包增加一个查看：添加底部有没有按钮及表单禁用------------
+    // 代码逻辑说明: 【QQYUN-5685】2 套餐包增加一个查看：添加底部有没有按钮及表单禁用------------
     setModalProps({ confirmLoading: false, showCancelBtn:!!data?.showFooter, showOkBtn:!!data?.showFooter });
     // 隐藏底部时禁用整个表单
     setProps({ disabled: !data?.showFooter })
-    //update-end---author:wangshuai ---date:20230705  for：【QQYUN-5685】2 套餐包增加一个查看：添加底部有没有按钮及表单禁用------------
   });
   //设置标题
   const title = computed(() => (unref(isUpdate) ? '编辑 租户套餐' : '新增 租户套餐'));
@@ -55,6 +57,7 @@
     }else{
       values.tenantId = 0;
     }
+    values.permissionIds = permissionIds.value;
     if (!unref(isUpdate)) {
       await addPackPermission(values);
     } else {

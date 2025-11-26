@@ -88,10 +88,9 @@
       function handleSearchChange(e: ChangeEvent) {
         const value = e.target.value;
         console.log("value::::",value)
-        //update-begin---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
+        // 代码逻辑说明: 【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
         setCurrentPage(1);
         current.value = 1;
-        //update-end---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无述------------
         if (!value) {
           currentList.value = props.currentList;
           return;
@@ -99,7 +98,6 @@
         currentList.value = props.currentList.filter((item) => item.includes(value));
       }
 
-      //update-begin---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效，输入框后面的图标点击之后清空数据------------
       /**
        * 图标点击重置页数
        */
@@ -111,14 +109,12 @@
         currentList.value = props.currentList;
         searchIconValue.value = '';
       }
-      //update-end---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效，输入框后面的图标点击之后清空数据------------
 
       function handlePageChange(page: number, size: number) {
-        //update-begin---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
+        // 代码逻辑说明: 【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
         current.value = page;
         pageSize.value = size;
         setPageSize(size);
-        //update-end---author:wangshuai ---date:20230522  for：【issues/4947】菜单编辑页面菜单图标选择模板，每页显示数量切换无效------------
         setCurrentPage(page);
       }
 

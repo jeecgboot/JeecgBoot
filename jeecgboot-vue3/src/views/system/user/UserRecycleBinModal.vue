@@ -69,7 +69,7 @@
       fixed: undefined,
     },
   });
-  // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1657】系统用户回收站弹窗分页展示在可视区内
+  // 代码逻辑说明: 【TV360X-1657】系统用户回收站弹窗分页展示在可视区内
   const handleFullScreen = (maximize) => {
     setTableHeight(maximize);
   };
@@ -95,7 +95,6 @@
     },
     { deep: true }
   );
-  // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1657】系统用户回收站弹窗分页展示在可视区内
   /**
    * 选择列配置
    */

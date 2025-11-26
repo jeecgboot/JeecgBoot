@@ -65,9 +65,8 @@ export function useFormEvents({
       const hasKey = Reflect.has(values, key);
 
       value = handleInputNumberValue(schema?.component, value);
-      // update-begin--author:liaozhiyang---date:20231226---for：【QQYUN-7535】popup回填字段inputNumber组件验证错误
+      // 代码逻辑说明: 【QQYUN-7535】popup回填字段inputNumber组件验证错误
       value = handleInputStringValue(schema?.component, value);
-      // update-end--author:liaozhiyang---date:20231226---for：【QQYUN-7535】popup回填字段inputNumber组件验证错误
       // 0| '' is allow
       if (hasKey && fields.includes(key)) {
         // time type
@@ -257,8 +256,7 @@ export function useFormEvents({
     if (!formEl) return;
     try {
       const values = await validate();
-      //update-begin---author:zhangdaihao   Date:20140212  for：[bug号]树机构调整------------
-      //--updateBy-begin----author:zyf---date:20211206------for:对查询表单提交的数组处理成字符串------
+      //代码逻辑说明: 对查询表单提交的数组处理成字符串------
       for (let key in values) {
         if (values[key] instanceof Array) {
           let valueType = getValueType(getProps, key);
@@ -267,15 +265,13 @@ export function useFormEvents({
           }
         }
       }
-      //--updateBy-end----author:zyf---date:20211206------for:对查询表单提交的数组处理成字符串------
       const res = handleFormValues(values);
       emit('submit', res);
     } catch (error) {
-      //update-begin-author:taoyan date:2022-11-4 for: 列表查询表单会触发校验错误导致重置失败，原因不明
+      // 代码逻辑说明: 列表查询表单会触发校验错误导致重置失败，原因不明
       emit('submit', {});
       console.error('query form validate error, please ignore!', error)
       //throw new Error(error);
-      //update-end-author:taoyan date:2022-11-4 for: 列表查询表单会触发校验错误导致重置失败，原因不明
     }
   }
 

@@ -66,12 +66,11 @@
       collapsedShowTitle: propTypes.bool,
       collapse: propTypes.bool,
       theme: propTypes.oneOf(['dark', 'light']),
-      // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8927】侧边栏导航二级菜单彩色模式文字颜色调整
+      // 代码逻辑说明: 【QQYUN-8927】侧边栏导航二级菜单彩色模式文字颜色调整
       isThemeBright: {
         type: Boolean,
         default: false,
       },
-      // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8927】侧边栏导航二级菜单彩色模式文字颜色调整
     },
     setup(props) {
       const { t } = useI18n();

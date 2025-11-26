@@ -38,9 +38,8 @@ export function setupElectron(_: App) {
     return;
   }
   hookWindowOpen();
-  // update-begin--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
+  // 代码逻辑说明: 【JHHB-13】桌面应用消息通知
   hookNavigate();
-  // update-end--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
 }
 function hookNavigate() {
   // @ts-ignore

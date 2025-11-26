@@ -24,10 +24,14 @@
                 <Icon icon="ant-design:unlock-outlined"></Icon>
                 解冻
               </a-menu-item>
+              <a-menu-item v-if="hasPermission('system:user:resetPassword')" key="4" @click="batchResetPassword()">
+                <Icon icon="ant-design:reload-outlined"></Icon>
+                重置密码
+              </a-menu-item>
             </a-menu>
           </template>
           <a-button
-            >批量操作
+          >批量操作
             <Icon icon="mdi:chevron-down"></Icon>
           </a-button>
         </a-dropdown>
@@ -62,12 +66,13 @@
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { columns, searchFormSchema } from './user.data';
-  import { listNoCareTenant, deleteUser, batchDeleteUser, getImportUrl, getExportUrl, frozenBatch } from './user.api';
+  import { listNoCareTenant, deleteUser, batchDeleteUser, getImportUrl, getExportUrl, frozenBatch, resetPassword } from './user.api';
   import { usePermission } from '/@/hooks/web/usePermission';
   import ImportExcelProgress from './components/ImportExcelProgress.vue';
 
   const { createMessage, createConfirm } = useMessage();
-  const { isDisabledAuth } = usePermission();
+  const { isDisabledAuth, hasPermission } = usePermission();
+  
   //注册drawer
   const [registerDrawer, { openDrawer }] = useDrawer();
   //回收站model
@@ -99,6 +104,10 @@
       beforeFetch: (params) => {
         return Object.assign({ column: 'createTime', order: 'desc' }, params);
       },
+      defSort: {
+        column: "",
+        order: ""
+      },
     },
     exportConfig: {
       name: '用户列表',
@@ -110,7 +119,7 @@
   });
 
   //注册table数据
-  const [registerTable, { reload, updateTableDataRecord }, { rowSelection, selectedRows, selectedRowKeys }] = tableContext;
+  const [registerTable, { reload, updateTableDataRecord, clearSelectedRowKeys }, { rowSelection, selectedRows, selectedRowKeys }] = tableContext;
 
   /**
    * 新增事件
@@ -209,6 +218,28 @@
       },
     });
   }
+  /**
+   * 批量重置密码
+   */
+  function batchResetPassword() {
+    let hasAdmin = selectedRows.value.filter((item) => item.username == 'admin');
+    if (unref(hasAdmin).length > 0) {
+      createMessage.warning('所选用户中包含管理员，管理员账号不允许重置密码！！');
+      return;
+    }
+    if (selectedRows.value.length > 0) {
+      createConfirm({
+        iconType: 'warning',
+        title: '确认操作',
+        content: '是否重置选中的账号密码?',
+        onOk: async () => {
+          const usernames = selectedRows.value.map((item) => item.username).join(',');
+          await resetPassword({ usernames: usernames }, ()=>{reload();clearSelectedRowKeys();});
+        },
+      });
+    }
+  }
+
 
   /**
    *同步钉钉和微信回调

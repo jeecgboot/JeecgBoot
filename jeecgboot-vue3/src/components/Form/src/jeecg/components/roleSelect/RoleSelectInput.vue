@@ -39,12 +39,11 @@
         type: Boolean,
         default: false,
       },
-      // update-begin--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
+      // 代码逻辑说明: 【issues/8078】角色选择组件点击文字部分会一直选中
       maxSelectCount: {
         type: Number,
         default: 2,
       },
-      // update-end--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
       store: {
         type: String,
         default: 'id',

@@ -19,15 +19,24 @@ export function useMethods() {
    * 导出xls
    * @param name
    * @param url
+   * @param params
+   * @param isXlsx
+   * @param timeout 超时时间（毫秒），默认 60000
    */
-  async function exportXls(name, url, params, isXlsx = false) {
-    //update-begin---author:wangshuai---date:2024-01-25---for:【QQYUN-8118】导出超时时间设置长点---
+  async function exportXls(name, url, params, isXlsx = false, timeout = 60000) {
+    // 代码逻辑说明: 【JHHB-794】用户管理，跨页全选后，点击用户导出没反应---
+    if(params?.selections){
+      let split = params.selections.split(",");
+      if(split && split.length > 100){
+        createMessage.warning('最多可选择 100 项进行导出！');
+        return;
+      }
+    }
     // 修改为返回原生 response，便于获取 headers
     const response = await defHttp.get(
-      { url: url, params: params, responseType: 'blob', timeout: 60000 },
+      { url: url, params: params, responseType: 'blob', timeout: timeout },
       { isTransformResponse: false, isReturnNativeResponse: true }
     );
-    //update-end---author:wangshuai---date:2024-01-25---for:【QQYUN-8118】导出超时时间设置长点---
     if (!response || !response.data) {
       createMessage.warning('文件下载失败');
       return;
@@ -39,13 +48,13 @@ export function useMethods() {
       isXlsxByHeader = true;
     }
     const data = response.data;
-    //update-begin---author:wangshuai---date:2024-04-18---for: 导出excel失败提示，不进行导出---
+    // 代码逻辑说明: 导出excel失败提示，不进行导出---
     let reader = new FileReader()
     reader.readAsText(data, 'utf-8')
     reader.onload = async () => {
       if(reader.result){
         if(reader.result.toString().indexOf("success") !=-1){
-          // update-begin---author:liaozhiyang---date:2025-02-11---for:【issues/7738】文件中带"success"导出报错 ---
+          // 代码逻辑说明: 【issues/7738】文件中带"success"导出报错 ---
           try {
             const { success, message } = JSON.parse(reader.result.toString());
             if (!success) {
@@ -57,11 +66,9 @@ export function useMethods() {
           } catch (error) {
             exportExcel(name, isXlsxByHeader, data);
           }
-          // update-end---author:liaozhiyang---date:2025-02-11---for:【issues/7738】文件中带"success"导出报错 ---
         }
       }
       exportExcel(name, isXlsxByHeader, data);
-      //update-end---author:wangshuai---date:2024-04-18---for: 导出excel失败提示，不进行导出---
     }
   }
 
@@ -88,10 +95,9 @@ export function useMethods() {
                                 <span>具体详情请<a href = ${href} download = ${fileName}> 点击下载 </a> </span> 
                               </div>`,
           });
-          //update-begin---author:wangshuai ---date:20221121  for：[VUEN-2827]导入无权限，提示图标错误------------
+          // 代码逻辑说明: [VUEN-2827]导入无权限，提示图标错误------------
         } else if (fileInfo.code === 500 || fileInfo.code === 510) {
           createMessage.error(fileInfo.message || `${data.file.name} 导入失败`);
-          //update-end---author:wangshuai ---date:20221121  for：[VUEN-2827]导入无权限，提示图标错误------------
         } else {
           createMessage.success(fileInfo.message || `${data.file.name} 文件上传成功`);
         }
@@ -105,9 +111,9 @@ export function useMethods() {
   }
 
   return {
-    handleExportXls: (name: string, url: string, params?: object) => exportXls(name, url, params),
+    handleExportXls: (name: string, url: string, params?: object, timeout?: number) => exportXls(name, url, params, false, timeout),
     handleImportXls: (data, url, success) => importXls(data, url, success),
-    handleExportXlsx: (name: string, url: string, params?: object) => exportXls(name, url, params, true),
+    handleExportXlsx: (name: string, url: string, params?: object, timeout?: number) => exportXls(name, url, params, true, timeout),
   };
 
   /**

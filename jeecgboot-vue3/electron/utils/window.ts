@@ -5,9 +5,9 @@ import {_PATHS} from '../paths';
 import {$env, isDev} from '../env';
 import {createTray} from './tray';
 
-// 创建窗口
-export function createBrowserWindow(options?: BrowserWindowConstructorOptions) {
-  const win = new BrowserWindow({
+// 获取公共窗口选项
+export function getBrowserWindowOptions(options?: BrowserWindowConstructorOptions): BrowserWindowConstructorOptions {
+  return {
     width: 1200,
     height: 800,
     webPreferences: {
@@ -18,20 +18,26 @@ export function createBrowserWindow(options?: BrowserWindowConstructorOptions) {
     // 应用图标
     icon: isDev ? _PATHS.appIcon : void 0,
     ...options,
-  });
-  // update-begin--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
+  }
+}
+
+// 创建窗口
+export function createBrowserWindow(options?: BrowserWindowConstructorOptions) {
+  const win = new BrowserWindow(getBrowserWindowOptions(options));
+  // 代码逻辑说明: 【JHHB-13】桌面应用消息通知
   if (process.platform === 'darwin') { // 仅 macOS 生效
     if (app.dock) {
       app.dock.setIcon(path.join(_PATHS.electronRoot, './icons/mac/dock.png').replace(/[\\/]dist[\\/]/, '/'));
     }
   }
-  // update-end--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
+
   // 设置窗口打开处理器
-  win.webContents.setWindowOpenHandler(({url}) => {
-    const win = createBrowserWindow();
-    win.loadURL(url);
-    // 阻止创建新窗口，因为已经被接管
-    return {action: 'deny'};
+  win.webContents.setWindowOpenHandler(() => {
+    return {
+      action: 'allow',
+      // 覆写新窗口的选项，用于调整默认尺寸和加载preload脚本等
+      overrideBrowserWindowOptions: getBrowserWindowOptions(),
+    }
   });
 
   // 当 beforeunload 阻止窗口关闭时触发
@@ -80,7 +86,10 @@ export function createIndexWindow() {
 
   // 开发环境加载Vite服务，生产加载打包文件
   if (isDev) {
-    win.loadURL($env.VITE_DEV_SERVER_URL!)
+    let serverUrl = $env.VITE_DEV_SERVER_URL! as string;
+    // 【JHHB-936】由于wps预览不能使用localhost访问，所以把localhost替换为127.0.0.1
+    serverUrl = serverUrl.replace('localhost', '127.0.0.1');
+    win.loadURL(serverUrl)
     // 开发环境下，自动打开调试工具
     // win.webContents.openDevTools()
   } else {

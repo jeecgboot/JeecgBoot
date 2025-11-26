@@ -59,7 +59,7 @@
         if(info){
           let query = JSON.parse(info);
           
-          //update-begin-author:taoyan date:2023-4-27 for: QQYUN-4882【简流】节点消息通知 邮箱 点击办理跳到了应用首页
+          // 代码逻辑说明: QQYUN-4882【简流】节点消息通知 邮箱 点击办理跳到了应用首页
           let path = '';
           if(query.isLowApp === 1){
             path = '/myapps/personalOffice/myTodo'
@@ -67,7 +67,6 @@
             let taskId = query.taskId;
             path = '/task/handle/' + taskId
           }
-          //update-end-author:taoyan date:2023-4-27 for: QQYUN-4882【简流】节点消息通知 邮箱 点击办理跳到了应用首页
           
           router.replace({ path, query });
           notification.success({

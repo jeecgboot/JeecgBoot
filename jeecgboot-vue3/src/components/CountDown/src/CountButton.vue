@@ -52,13 +52,12 @@
         if (beforeStartFunc && isFunction(beforeStartFunc)) {
           loading.value = true;
           try {
-            //update-begin---author:wangshuai---date:2024-04-18---for:【QQYUN-9005】同一个IP，1分钟超过5次短信，则提示需要验证码---
+            // 代码逻辑说明: 【QQYUN-9005】同一个IP，1分钟超过5次短信，则提示需要验证码---
             const canStart = await beforeStartFunc().catch((res) =>{
               if(res.code === ExceptionEnum.PHONE_SMS_FAIL_CODE){
                 openCaptchaModal(true, {});
               }
             });
-            //update-end---author:wangshuai---date:2024-04-18---for:【QQYUN-9005】同一个IP，1分钟超过5次短信，则提示需要验证码---
             canStart && start();
           } finally {
             loading.value = false;

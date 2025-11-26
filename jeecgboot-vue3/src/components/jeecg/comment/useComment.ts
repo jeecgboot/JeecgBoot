@@ -378,10 +378,9 @@ export function useFileList() {
         await initViewDomain();
         //本地测试需要将文件地址的localhost/127.0.0.1替换成IP, 或是直接修改全局domain
         //url = url.replace('localhost', '192.168.1.100')
-        //update-begin---author:scott ---date:2024-06-03  for：【TV360X-952】升级到kkfileview4.1.0---
+        // 代码逻辑说明: 【TV360X-952】升级到kkfileview4.1.0---
         let previewUrl = encodeURIComponent(encryptByBase64(url));
         window.open(onlinePreviewDomain+'?url='+previewUrl);
-        //update-end---author:scott ---date::2024-06-03  for：【TV360X-952】升级到kkfileview4.1.0----
       }
     }
   }

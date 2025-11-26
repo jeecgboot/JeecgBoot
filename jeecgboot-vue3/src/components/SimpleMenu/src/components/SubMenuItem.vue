@@ -75,12 +75,11 @@
       },
       disabled: propTypes.bool,
       collapsedShowTitle: propTypes.bool,
-      // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8927】侧边栏导航二级菜单彩色模式文字颜色调整
+      // 代码逻辑说明: 【QQYUN-8927】侧边栏导航二级菜单彩色模式文字颜色调整
       isThemeBright: {
         type: Boolean,
         default: false,
       },
-      // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8927】侧边栏导航二级菜单彩色模式文字颜色调整
     },
     setup(props) {
       const instance = getCurrentInstance();
@@ -134,11 +133,10 @@
       const getTheme = computed(() => rootProps.theme);
 
       const getOverlayStyle = computed((): CSSProperties => {
-        // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8774】侧边混合导航菜单宽度调整
+        // 代码逻辑说明: 【QQYUN-8774】侧边混合导航菜单宽度调整
         return {
           minWidth: '150px',
         };
-        // update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8774】侧边混合导航菜单宽度调整
       });
 
       const getIsOpend = computed(() => {

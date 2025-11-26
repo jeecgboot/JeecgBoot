@@ -52,7 +52,7 @@
       function handleClick(color: string) {
         props.event && baseHandler(props.event, color);
       }
-      // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8927】暗黑主题下不允许切换顶栏主题和菜单主题
+      // 代码逻辑说明: 【QQYUN-8927】暗黑主题下不允许切换顶栏主题和菜单主题
       watch(
         () => getDarkMode.value,
         (newValue) => {
@@ -60,7 +60,6 @@
         },
         { immediate: true }
       );
-      // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8927】暗黑主题下不允许切换顶栏主题和菜单主题
       return {
         prefixCls,
         handleClick,
@@ -77,9 +76,8 @@
     flex-wrap: wrap;
     margin: 16px 0;
     justify-content: space-around;
-    // update-begin--author:liaozhiyang---date:20231220---for：【QQYUN-7677】antd4兼容改造，勾选垂直居中
+    // 代码逻辑说明: 【QQYUN-7677】antd4兼容改造，勾选垂直居中
     line-height: 1.3;
-    // update-end--author:liaozhiyang---date:20231220---for：【QQYUN-7677】antd4兼容改造，勾选垂直居中
     &__item {
       width: 20px;
       height: 20px;

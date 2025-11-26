@@ -310,11 +310,10 @@
     console.log('handleValueChange.event: ', event);
   }
 
-  // update-begin--author:liaozhiyang---date:20230817---for：【issues/636】JVxeTable加上blur事件
+  // 代码逻辑说明: 【issues/636】JVxeTable加上blur事件
   function handleBlur(event){
     console.log("blur",event);
   }
-  // update-end--author:liaozhiyang---date:20230817---for：【issues/636】JVxeTable加上blur事件
   /** 表单验证 */
   function handleTableCheck() {
     tableRef.value!.validateTable().then((errMap) => {

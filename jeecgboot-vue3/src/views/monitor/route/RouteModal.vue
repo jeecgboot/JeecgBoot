@@ -112,12 +112,10 @@
             <DeleteOutlined size="22" @click="removeFilter(router, index)" />
           </a-divider>
           <div v-for="(tag, index) in item.args" :key="tag.key">
-            <!-- update-begin---author:wangshuai ---date: 20230829 for：vue3.0后自定义表单重复组件要用a-form-item-rest,否则会警告提醒------------  -->
             <a-form-item-rest>
               <a-input v-model:value="tag.key" placeholder="参数键" style="width: 45%; margin-right: 8px" />
               <a-input v-model:value="tag.value" placeholder="参数值" style="width: 40%; margin-right: 8px; margin-top: 3px" />
             </a-form-item-rest>
-            <!-- update-end---author:wangshuai ---date: 20230829 for：vue3.0后自定义表单重复组件要用a-form-item-rest,否则会警告提醒------------  -->
             <CloseOutlined :size="22" @click="removeFilterParams(item, index)" />
           </div>
           <a-button type="dashed" style="margin-left: 28%; width: 37%; margin-top: 5px" size="small" @click="addFilterParams(item)">

@@ -36,7 +36,6 @@ export function useSplitMenu(splitType: Ref<MenuSplitTyeEnum>) {
       if (unref(splitNotLeft) || unref(getIsMobile)) return;
       const { meta } = unref(currentRoute);
       const currentActiveMenu = meta.currentActiveMenu as string;
-      // update-begin--author:liaozhiyang---date:20250908---for：【QQYUN-13718】一级菜单默认重定向到子菜单，但子菜单未授权，导致点击一级菜单加载不出子菜单
       // 顶部混合模式且顶部左侧组合菜单开始时
       if (unref(getMenuType) === MenuTypeEnum.MIX && unref(getSplit)) { 
         // 404页面时，跳转到重定向的路径
@@ -49,7 +48,6 @@ export function useSplitMenu(splitType: Ref<MenuSplitTyeEnum>) {
           }
         }
       }
-      // update-end--author:liaozhiyang---date:20250908---for：【QQYUN-13718】一级菜单默认重定向到子菜单，但子菜单未授权，导致点击一级菜单加载不出子菜单
       let parentPath = await getCurrentParentPath(path);
       if (!parentPath) {
         parentPath = await getCurrentParentPath(currentActiveMenu);
@@ -76,9 +74,7 @@ export function useSplitMenu(splitType: Ref<MenuSplitTyeEnum>) {
   watch(
     () => getSplit.value,
     () => {
-      // update-begin--author:liaozhiyang---date:20240919---for：【issues/7209】顶部左侧组合菜单关闭之后左侧导航没还原
       // if (unref(splitNotLeft)) return;
-      // update-end--author:liaozhiyang---date:20240919---for：【issues/7209】顶部左侧组合菜单关闭之后左侧导航没还原
       genMenus();
     }
   );

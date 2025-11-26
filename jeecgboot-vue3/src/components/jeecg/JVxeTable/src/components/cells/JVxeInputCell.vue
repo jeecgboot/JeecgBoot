@@ -31,7 +31,6 @@
               target.selectionEnd = selectionStart - 1;
             }
           } else {
-            // update-begin--author:liaozhiyang---date:20240227---for：【QQYUN-8347】小数点后大于两位且最后一位是0，输入框不可输入了
             // 例如：41.1 -> 41.10, 100.1 -> 100.10 不执行handleChangeCommon 函数。
             if (value.indexOf('.') != -1) {
               const result = value.split('.').pop();
@@ -40,7 +39,6 @@
                 innerValue.value = value;
               }
             }
-            // update-end--author:liaozhiyang---date:20240227---for：【QQYUN-8347】小数点后大于两位且最后一位是0，输入框不可输入了
           }
         }
         // 触发事件，存储输入的值

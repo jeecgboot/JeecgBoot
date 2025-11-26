@@ -60,7 +60,7 @@ export function useCustomRow(
 
           const isRadio = rowSelection.type === 'radio';
           if (isRadio) {
-            // update-begin--author:liaozhiyang---date:20231016---for：【QQYUN-6794】table列表增加radio禁用功能
+            // 代码逻辑说明: 【QQYUN-6794】table列表增加radio禁用功能
             const rowSelection = propsRef.value.rowSelection;
             if (rowSelection.getCheckboxProps) {
               const result = rowSelection.getCheckboxProps(record);
@@ -68,7 +68,6 @@ export function useCustomRow(
                 return;
               }
             }
-            // update-end--author:liaozhiyang---date:20231016---for：【QQYUN-6794】table列表增加radio禁用功能
             if (!keys.includes(key)) {
               if (keys.length) {
                 clearSelectedRowKeys();
@@ -76,10 +75,8 @@ export function useCustomRow(
               setSelectedRowKeys([key]);
               return;
             } else {
-              // update-begin--author:liaozhiyang---date:20240527---for：【TV360X-359】erp主表点击已选中的选到了最后一个
               // 点击已经选中的，直接return不在做操作
               return;
-              // update-end--author:liaozhiyang---date:20240527---for：【TV360X-359】erp主表点击已选中的选到了最后一个
             }
             clearSelectedRowKeys();
           }

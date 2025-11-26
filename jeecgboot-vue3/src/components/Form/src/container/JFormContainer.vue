@@ -39,7 +39,7 @@
 </script>
 
 <style scoped lang="less">
-  // update-begin--author:liaozhiyang---date:20240719---for：【TV360X-1090】表单label超长省略显示
+  // 代码逻辑说明: 【TV360X-1090】表单label超长省略显示
   .jeecg-and-modal-form {
     :deep(.ant-form-item-label) {
       overflow: hidden;
@@ -195,7 +195,7 @@
     }
   }
   // end antdv 禁用样式
-  // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-857】online代码生成详情样式调整
+  // 代码逻辑说明: 【TV360X-857】online代码生成详情样式调整
   .jeecg-form-container-disabled :deep(.ant-upload-select) {
     cursor: grabbing;
   }

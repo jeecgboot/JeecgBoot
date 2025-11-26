@@ -15,6 +15,9 @@
                 .join(',')
             }}
           </template>
+          <template #action="{ record }">
+            <TableAction :actions="getTableAction(record)" />
+          </template>
         </BasicTable>
       </div>
     </a-col>
@@ -47,15 +50,17 @@
     tableProps: {
       api: list,
       columns,
-      //update-begin---author:wangshuai ---date:20220629  for：[VUEN-1485]进入系统管理--通讯录页面后，网页命令行报错------------
+      // 代码逻辑说明: [VUEN-1485]进入系统管理--通讯录页面后，网页命令行报错------------
       rowKey: 'id',
-      //update-end---author:wangshuai ---date:20220629  for：[VUEN-1485]进入系统管理--通讯录页面后，网页命令行报错--------------
       showIndexColumn: true,
       formConfig: {
         schemas: searchFormSchema,
       },
       canResize: false,
       showTableSetting: false,
+      actionColumn:{
+        width: 80
+      },
       // 请求之前对参数做处理
       beforeFetch(params) {
         params.orgCode = orgCode.value;
@@ -71,6 +76,20 @@
     reload();
   }
 
+  /**
+   * 操作栏
+   * 
+   * @param record
+   */
+  function getTableAction(record) {
+    return [
+      {
+        label: '发消息',
+        onClick: handleSendChat.bind(null, record),
+      },
+    ];
+  }
+  
   // 查询职务信息
   async function queryPositionInfo() {
     const result = await positionList({ pageSize: 99999 });
@@ -83,6 +102,24 @@
     }
   }
   queryPositionInfo();
+  
+  /**
+   * 聊天
+   *
+   * @param record
+   */
+  function handleSendChat(record) {
+    //获取messageId
+    let cacheByDynKey = getCacheByDynKey(JEECG_CHAT_UID);
+    let iframes:any = document.getElementById("jChatOnline");
+    let id = record.id;
+    //发送打开聊天窗口的请求
+    iframes.contentWindow.postMessage({
+      type: "open-chat",
+      messageId: cacheByDynKey,
+      data: { id: id, type: "friend", groupName: "", avatar: record.avatar, username: record.realname }
+    }, "*");
+  }
 </script>
 
 <style lang="less">

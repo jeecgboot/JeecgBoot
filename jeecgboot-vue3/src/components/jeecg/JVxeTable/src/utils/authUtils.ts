@@ -26,14 +26,13 @@ export function getJVxeAuths(prefix) {
       getAuth.isAuth = true;
     }
   }
-  //update-begin-author:taoyan date:2022-6-1 for:  VUEN-1162 子表按钮没控制
+  // 代码逻辑说明: VUEN-1162 子表按钮没控制
   let onlineButtonAuths = permissionStore.getOnlineSubTableAuth(prefix);
   if (onlineButtonAuths && onlineButtonAuths.length > 0) {
     for (let auth of onlineButtonAuths) {
       authsMap.set(prefix + 'btn:' + auth, { action: auth, type: 1, status: 1, isAuth: false });
     }
   }
-  //update-end-author:taoyan date:2022-6-1 for:  VUEN-1162 子表按钮没控制
   return authsMap;
 }
 

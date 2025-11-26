@@ -56,23 +56,21 @@ function handleIndexColumn(propsRef: ComputedRef<BasicTableProps>, getPagination
       columns.splice(indIndex, 1);
     }
   });
-  // update-begin--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
+  // 代码逻辑说明: 【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
   if (columns.length === 0 && showIndexColumn) {
     const indIndex = columns.findIndex((column) => column.flag === INDEX_COLUMN_FLAG);
     if (indIndex === -1) {
       pushIndexColumns = true;
     }
   }
-  // update-end--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
   if (!pushIndexColumns) return;
 
   const isFixedLeft = columns.some((item) => item.fixed === 'left');
 
   columns.unshift({
     flag: INDEX_COLUMN_FLAG,
-    // update-begin--author:liaozhiyang---date:20240724---for：【TV360X-1634】密度是宽松模式时，序号列表头换行了
+    // 代码逻辑说明: 【TV360X-1634】密度是宽松模式时，序号列表头换行了
     width: propsRef.value.size === 'large' ? 65 : 50,
-    // update-end--author:liaozhiyang---date:20240724---for：【TV360X-1634】密度是宽松模式时，序号列表头换行了
     title: t('component.table.index'),
     align: 'center',
     customRender: ({ index }) => {
@@ -116,18 +114,16 @@ export function useColumns(
 
   const getColumnsRef = computed(() => {
     const columns = cloneDeep(unref(columnsRef));
-    // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+    // 代码逻辑说明: 【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
     if (isArray(columns)) {
       columns.forEach((item) => {
         item.title = isFunction(item.title) ? item.title() : item.title;
       });
     }
-    // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
     handleIndexColumn(propsRef, getPaginationRef, columns);
     handleActionColumn(propsRef, columns);
-    // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
+    // 代码逻辑说明: 【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
     handleCustomSelectColumn(columns);
-    // update-end--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
 
     if (!columns) {
       return [];
@@ -163,13 +159,12 @@ export function useColumns(
     const columns = cloneDeep(viewColumns);
     const formatEditColumn = (columns) => {
       return columns.map((column) => {
-        // update-begin--author:liaozhiyang---date:20230718---for: 【issues-179】antd3 一些警告以及报错(针对表格)
+        // 代码逻辑说明: 【issues-179】antd3 一些警告以及报错(针对表格)
         if(column.slots?.customRender) {
           // slots的备份，兼容老的写法，转成新写法避免控制台警告
           column.slotsBak = column.slots;
           delete column.slots;
         }
-        // update-end--author:liaozhiyang---date:20230718---for: 【issues-179】antd3 一些警告以及报错(针对表格)
 
         const { slots, customRender, format, edit, editRow, flag, title: metaTitle } = column;
 
@@ -178,11 +173,10 @@ export function useColumns(
           column.customTitle = column.title as string;
           Reflect.deleteProperty(column, 'title');
         }
-        //update-begin-author:taoyan date:20211203 for:【online报表】分组标题显示错误，都显示成了联系信息 LOWCOD-2343
+        // 代码逻辑说明: 【online报表】分组标题显示错误，都显示成了联系信息 LOWCOD-2343
         if (column.children) {
           column.title = metaTitle;
         }
-        //update-end-author:taoyan date:20211203 for:【online报表】分组标题显示错误，都显示成了联系信息 LOWCOD-2343
 
         const isDefaultAction = [INDEX_COLUMN_FLAG, ACTION_COLUMN_FLAG].includes(flag!);
         if (!customRender && format && !edit && !isDefaultAction) {
@@ -195,18 +189,16 @@ export function useColumns(
         if ((edit || editRow) && !isDefaultAction) {
           column.customRender = renderEditCell(column);
         }
-        // update-begin--author:liaozhiyang---date:20241021---for：【pull/7333】修复分组表头可编辑表格失效问题
+        // 代码逻辑说明: 【pull/7333】修复分组表头可编辑表格失效问题
         if (column.children?.length) {
           formatEditColumn(column.children.filter((item) => hasPermission(column.auth) && isIfShow(column)));
         }
-        // update-end--author:liaozhiyang---date:20241021---for：【pull/7333】修复分组表头可编辑表格失效问题
         return reactive(column);
       });
     };
-    // update-begin--author:liaozhiyang---date:20241021---for：【pull/7333】修复分组表头可编辑表格失效问题
+    // 代码逻辑说明: 【pull/7333】修复分组表头可编辑表格失效问题
     const result = formatEditColumn(columns.filter((item) => hasPermission(item.auth) && isIfShow(item)));
-    // update-end--author:liaozhiyang---date:20241021---for：【pull/7333】修复分组表头可编辑表格失效问题
-    // update-begin--author:liaozhiyang---date:20230919---for：【QQYUN-6387】展开写法（去掉报错）
+    // 代码逻辑说明: 【QQYUN-6387】展开写法（去掉报错）
     if (propsRef.value.expandedRowKeys && !propsRef.value.isTreeTable) {
       let index = 0;
       const findIndex = result.findIndex((item) => item.key === CUS_SEL_COLUMN_KEY);
@@ -221,7 +213,6 @@ export function useColumns(
       result.splice(index, 0, expand);
     }
     return result;
-    // update-end--author:liaozhiyang---date:20230919---for：【QQYUN-6387】展开写法（去掉报错）
   });
 
   watch(
@@ -244,7 +235,6 @@ export function useColumns(
     });
   }
 
-  // update-begin--author:sunjianlei---date:20220523---for: 【VUEN-1089】合并vben最新版代码，解决表格字段排序问题
   /**
    * set columns
    * @param columnList key｜column
@@ -282,7 +272,6 @@ export function useColumns(
       columnsRef.value = newColumns;
     }
   }
-  // update-end--author:sunjianlei---date:20220523---for: 【VUEN-1089】合并vben最新版代码，解决表格字段排序问题
 
   function getColumns(opt?: GetColumnsParams) {
     const { ignoreIndex, ignoreAction, ignoreAuth, ignoreIfShow, sort } = opt || {};
@@ -293,11 +282,9 @@ export function useColumns(
     if (ignoreAction) {
       columns = columns.filter((item) => item.flag !== ACTION_COLUMN_FLAG);
     }
-    // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
     // 过滤自定义选择列
     columns = columns.filter((item) => item.key !== CUS_SEL_COLUMN_KEY);
-    // update-enb--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
-    // update-begin--author:liaozhiyang---date:20250729---for：【issues/8502】解决权限列在列表中不显示，列配置中还显示
+    // 代码逻辑说明: 【issues/8502】解决权限列在列表中不显示，列配置中还显示
     if (ignoreAuth) {
       columns = columns.filter((item) => {
         if (item.auth) {
@@ -317,7 +304,6 @@ export function useColumns(
         return true;
       });
     }
-    // update-end--author:liaozhiyang---date:20250729---for：【issues/8502】解决权限列在列表中不显示，列配置中还显示
     if (sort) {
       columns = sortFixedColumn(columns);
     }

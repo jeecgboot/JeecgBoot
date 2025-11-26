@@ -1,6 +1,5 @@
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit" width="800px">
-    <!-- update-begin---author:wangshuai---date:2023-10-23---for:【QQYUN-6804】后台模式字典没有颜色配置---  -->
     <BasicForm @register="registerForm" >
       <template #itemColor="{ model, field }">
         <div class="item-tool">
@@ -16,7 +15,6 @@
         </div>
       </template>
     </BasicForm>
-    <!-- update-end---author:wangshuai---date:2023-10-23---for:【QQYUN-6804】后台模式字典没有颜色配置---  -->
   </BasicModal>
 </template>
 <script lang="ts" setup>

@@ -29,7 +29,7 @@ export function useTitle() {
       if (route.name === REDIRECT_NAME) {
         return;
       }
-      // update-begin--author:liaozhiyang---date:20231110---for：【QQYUN-6938】online菜单名字和页面title不一致
+      // 代码逻辑说明: 【QQYUN-6938】online菜单名字和页面title不一致
       if (route.params && Object.keys(route.params).length) {
         if (!menus.value) {
           menus.value = await getMenus();
@@ -46,7 +46,6 @@ export function useTitle() {
         const tTitle = t(route?.meta?.title as string);
         pageTitle.value = tTitle ? ` ${tTitle} - ${title} ` : `${title}`;
       }
-      // update-end--author:liaozhiyang---date:20231110---for：【QQYUN-6938】online菜单名字和页面title不一致
     },
     { immediate: true }
   );

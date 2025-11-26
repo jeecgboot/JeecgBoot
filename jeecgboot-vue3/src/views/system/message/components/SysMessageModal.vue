@@ -134,7 +134,7 @@
 
   <user-select-modal isRadioSelection :showButton="false" labelKey="realname" rowKey="username" @register="regModal" @getSelectResult="getSelectedUser"></user-select-modal>
 
-  <DetailModal @register="registerDetail" :zIndex="1001" @close="handleDetailColse"/>
+  <DetailModal @register="registerDetail" :zIndex="1001"/>
 </template>
 
 <script>
@@ -150,6 +150,8 @@
   import folder from '/@/assets/icons/folderNotice.png';
   import system from '/@/assets/icons/systemNotice.png';
   import flow from '/@/assets/icons/flowNotice.png';
+  import collaboration from '/@/assets/icons/collaborationNotice.png';
+  import superviseNotice from '/@/assets/icons/superviseNotice.png';
   export default {
     name: 'SysMessageModal',
     components: {
@@ -159,10 +161,9 @@
       BellFilled,
       ExclamationOutlined,
       JSelectUser,
-      // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-8241】emoji-mart-vue-fast库异步加载
+      // 代码逻辑说明: 【QQYUN-8241】emoji-mart-vue-fast库异步加载
       SysMessageList: createAsyncComponent(() => import('./SysMessageList.vue')),
       // SysMessageList,
-      // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-8241】emoji-mart-vue-fast库异步加载
       UserSelectModal,
       PlusOutlined,
       DetailModal
@@ -226,7 +227,7 @@
         showSearch.value = false
         if(data.noticeType){
           noticeType.value = data.noticeType;
-          //update-begin---author:wangshuai---date:2025-07-01---for:【QQYUN-12998】点击完聊天的系统图标，再点击系统上面的铃铛就不出数据了---
+          // 代码逻辑说明: 【QQYUN-12998】点击完聊天的系统图标，再点击系统上面的铃铛就不出数据了---
           for (const item of noticeTypeOption) {
             if(item.key === data.noticeType){
               item.active = true;
@@ -235,7 +236,6 @@
               item.active = false;
             }
           }
-          //update-end---author:wangshuai---date:2025-07-01---for:【QQYUN-12998】点击完聊天的系统图标，再点击系统上面的铃铛就不出数据了---
           delete data.noticeType;
         }
         //每次弹窗打开 加载最新的数据

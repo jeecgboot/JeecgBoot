@@ -2,11 +2,9 @@
 <template>
   <div class="JSelectDept">
     <JSelectBiz  @change="handleSelectChange" @handleOpen="handleOpen" :loading="loadingEcho" v-bind="attrs" :isCustomRenderTag="isCustomRenderTag" :rowKey="getBindValue?.rowKey"/>
-    <!-- update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
     <a-form-item>
       <DeptSelectModal @register="regModal" @getSelectResult="setValue" v-bind="getBindValue" :multiple="multiple" @close="handleClose"/>
     </a-form-item>
-    <!-- update-end--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
   </div>
 </template>
 <script lang="ts">
@@ -65,32 +63,26 @@
        * 监听组件值
        */
       watchEffect(() => {
-        // update-begin--author:liaozhiyang---date:20240611---for：【TV360X-576】已选中了数据，再次选择打开弹窗点击取消，数据清空了（同步JSelectDept改法）
-        //update-begin-author:liusq---date:2024-06-03--for: [TV360X-840]用户授权，没有选择，点取消，也会回显一个选过的用户
+        // 代码逻辑说明: [TV360X-840]用户授权，没有选择，点取消，也会回显一个选过的用户
         tempSave = [];
-        //update-end-author:liusq---date:2024-06-03--for:[TV360X-840]用户授权，没有选择，点取消，也会回显一个选过的用户
-        // update-end--author:liaozhiyang---date:20240611---for：【TV360X-576】已选中了数据，再次选择打开弹窗点击取消，数据清空了（同步JSelectDept改法）
         props.value && initValue();
       });
 
-      //update-begin-author:liusq---date:20220609--for: 为了解决弹窗form初始化赋值问题 ---
+      // 代码逻辑说明: 为了解决弹窗form初始化赋值问题 ---
       watch(
         () => props.value,
         () => {
           initValue();
         }
       );
-      //update-end-author:liusq---date:20220609--for: 为了解决弹窗form初始化赋值问题 ---
       /**
        * 监听selectValues变化
        */
-      // update-begin--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
       // watch(selectValues, () => {
       //   if (selectValues) {
       //     state.value = selectValues.value;
       //   }
       // });
-      // update-end--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
       /**
        * 监听selectOptions变化
        */
@@ -138,7 +130,7 @@
       }
       const getBindValue = Object.assign({}, unref(props), unref(attrs));
 
-       // update-begin--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
+       // 代码逻辑说明: 【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
       const handleClose = () => {
         if (tempSave.length) {
           selectValues.value = cloneDeep(tempSave);
@@ -154,13 +146,11 @@
         let result = typeof props.value == 'string' ? values.join(',') : values;
         emit('update:value', result);
         emit('change', result);
-        // update-begin--author:liaozhiyang---date:20240627---for：【TV360X-1648】用户编辑界面“所属部门”与“负责部门”联动出错（同步之前丢的代码）
+        // 代码逻辑说明: 【TV360X-1648】用户编辑界面“所属部门”与“负责部门”联动出错（同步之前丢的代码）
         if (!values || values.length == 0) {
           emit('select', null, null);
         }
-        // update-end--author:liaozhiyang---date:20240627---for：【TV360X-1648】用户编辑界面“所属部门”与“负责部门”联动出错（同步之前丢的代码）
       };
-      // update-end--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
       
       return {
         // state,
@@ -180,13 +170,12 @@
   });
 </script>
 <style lang="less" scoped>
-  // update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
+  // 代码逻辑说明: 【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
   .JSelectDept {
     > .ant-form-item {
       display: none;
     }
   }
-  // update-end--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
   .j-select-row {
     @width: 82px;
 

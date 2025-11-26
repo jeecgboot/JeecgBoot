@@ -13,3 +13,4 @@ export { default as MergeHeaderDemo } from './MergeHeaderDemo.vue';
 export { default as MergeTableDemo } from './MergeTableDemo.vue';
 export { default as SelectTableDemo } from './SelectTableDemo.vue';
 export { default as TreeTableDemo } from './TreeTableDemo.vue';
+export { default as MultipleTableDemo } from './MultipleTableDemo.vue';

@@ -27,8 +27,8 @@
           v-bind="attrs"
         >
           <template v-if="isCustomRenderTag" #tagRender="{ label, value, option}">
-            <a-tag class="ant-select-selection-item">
-              <span class="ant-select-selection-item-content" style="font-size: 14px;max-width: 300px" :title="tagRender(label, value, option)">{{ tagRender(label, value, option) }}</span>
+            <a-tag class="ant-select-selection-item" style="margin-right: 4px">
+              <span class="ant-select-selection-item-content" style="font-size: 14px;max-width: 300px" :title="tagRender(label, value, false)">{{ tagRender(label, value, true) }}</span>
               <span class="ant-select-selection-item-remove">
                 <Icon icon="ant-design:close-outlined" size="12" @click="handleRemoveClick(value)"></Icon>
               </span>
@@ -79,11 +79,9 @@
       buttonIcon: propTypes.string.def(''),
       // 【TV360X-1002】是否是详情模式
       isDetailsMode: propTypes.bool.def(false),
-      //update-begin---author:wangshuai---date:2025-09-06---for: 多选时是否自定义渲染tag文本，为空不渲染，不支持单选---
       //是否自定义渲染tag
       isCustomRenderTag: propTypes.bool.def(false),
       rowKey: propTypes.string.def('id'),
-      //update-end---author:wangshuai---date:2025-09-06---for:多选时是否自定义渲染tag文本，为空不渲染，不支持单选---
     },
     emits: ['handleOpen', 'change'],
     setup(props, { emit, refs }) {

@@ -97,9 +97,8 @@
       beforeFetch(params) {
         params.deptId = departId.value;
       },
-      // update-begin--author:liaozhiyang---date:20240517---for：【TV360X-53】未选择部门的情况下，部门角色全查出来了
+      // 代码逻辑说明: 【TV360X-53】未选择部门的情况下，部门角色全查出来了
       immediate: !!departId.value,
-      // update-end--author:liaozhiyang---date:20240517---for：【TV360X-53】未选择部门的情况下，部门角色全查出来了
     },
   });
 
@@ -117,9 +116,7 @@
     () => reload()
   );
   onMounted(() => {
-    // update-begin--author:liaozhiyang---date:20240517---for：【TV360X-53】未选择部门的情况下，部门角色全查出来了
     // reload();
-    // update-end--author:liaozhiyang---date:20240517---for：【TV360X-53】未选择部门的情况下，部门角色全查出来了
   });
 
   // 清空选择的行

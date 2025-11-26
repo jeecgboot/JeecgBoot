@@ -64,11 +64,9 @@
         table.setProps({
           size: key,
         });
-        // update-begin--author:liaozhiyang---date:20240604---for：【TV360X-100】缓存表格密度
+        // 代码逻辑说明: 【TV360X-100】缓存表格密度
         $ls.set(cacheKey.value, key);
-        // update-end--author:liaozhiyang---date:20240604---for：【TV360X-100】缓存表格密度
       }
-      // update-begin--author:liaozhiyang---date:20240604---for：【TV360X-100】缓存表格密度
       const cacheKey = computed(() => {
         const path = route.path;
         let key = path.replace(/[\/\\]/g, '_');
@@ -85,7 +83,6 @@
           size: local,
         });
       }
-      // update-end--author:liaozhiyang---date:20240604---for：【TV360X-100】缓存表格密度
 
       return {
         getBindProps,

@@ -33,6 +33,8 @@ enum Api {
   editUser = '/sys/user/editTenantUser',
   //根据租户id和用户获取用户的产品包列表和当前用户下的产品包id
   listPackByTenantUserId = '/sys/tenant/listPackByTenantUserId',
+  // 获取菜单权限
+  queryPremTreeList = '/sys/role/queryTreeList',
 }
 
 /**
@@ -262,4 +264,11 @@ export const saveOrUpdateTenantUser = (params, isUpdate) => {
  */
 export const listPackByTenantUserId = (params) => {
   return defHttp.get({ url: Api.listPackByTenantUserId, params });
+}
+
+/**
+ * 获取菜单树
+ */
+export const queryPremTreeList = () =>{
+  return defHttp.get({ url: Api.queryPremTreeList });
 }

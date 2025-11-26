@@ -120,9 +120,8 @@
     display: flex;
     height: 95%;
     align-items: center;
-    // update-begin--author:liaozhiyang---date:20241010---for：【issues/7260】原生a-modal关闭按钮位置偏移
+    // 代码逻辑说明: 【issues/7260】原生a-modal关闭按钮位置偏移
     margin-top: -2px;
-    // update-end--author:liaozhiyang---date:20241010---for：【issues/7260】原生a-modal关闭按钮位置偏移
     > span {
       margin-left: 48px;
       font-size: 16px;

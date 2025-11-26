@@ -11,9 +11,10 @@ import {
   TabsThemeEnum,
 } from '/@/enums/appEnum';
 import { SIDE_BAR_BG_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST } from './designSetting';
-import { primaryColor } from '../../build/config/themeConfig';
 import { darkMode } from '/@/settings/designSetting';
+import { getThemeColorByMenuType } from '/@/utils/getThemeColorByMenuType';
 
+const menuType = MenuTypeEnum.SIDEBAR;
 // ! 改动后需要清空浏览器缓存
 const setting: ProjectConfig = {
   // 是否显示SettingButton
@@ -41,13 +42,10 @@ const setting: ProjectConfig = {
   // SessionTimeoutProcessingEnum.ROUTE_JUMP: 路由跳转到登录页
   // SessionTimeoutProcessingEnum.PAGE_COVERAGE: 生成登录弹窗，覆盖当前页面
   sessionTimeoutProcessing: SessionTimeoutProcessingEnum.ROUTE_JUMP,
-
-  // 项目主题色
-  themeColor: primaryColor,
-  // update-begin--author:liaozhiyang---date:20250414--for：【QQYUN-11956】修复projectSetting中配置主题模式不生效
+  // 项目主题色 - 根据导航栏模式确定主题色动态设置
+  themeColor: getThemeColorByMenuType(menuType),
   // 项目主题模式
   themeMode: darkMode,
-  // update-end--author:liaozhiyang---date:20250414--for：【QQYUN-11956】修复projectSetting中配置主题模式不生效
 
   // 网站灰色模式，用于可能悼念的日期开启
   grayMode: false,
@@ -117,10 +115,8 @@ const setting: ProjectConfig = {
     type: MenuTypeEnum.SIDEBAR,
     // 菜单主题
     theme: ThemeEnum.DARK,
-    // update-begin--author:liaozhiyang---date:20241203---for：【issues/7522】解决menuSetting ts警告
     // 左侧导航栏文字颜色调整区分彩色和暗黑 (不对应配置)
     isThemeBright: false,
-    // update-end--author:liaozhiyang---date:20241203---for：【issues/7522】解决menuSetting ts警告
     // 分割菜单
     split: false,
     // 顶部菜单布局

@@ -109,11 +109,10 @@
       const toggleSearchStatus = ref(false);
       const attrs = useAttrs();
       const tableScroll = ref({ x: true });
-      // update-begin--author:liaozhiyang---date:20230811---for：【issues/675】子表字段Popup弹框数据不更新
+      // 代码逻辑说明: 【issues/675】子表字段Popup弹框数据不更新
       const getBindValue = computed(() => {
         return Object.assign({}, unref(props), unref(attrs));
       });
-      // update-end--author:liaozhiyang---date:20230811---for：【issues/675】子表字段Popup弹框数据不更新
       const [
         {
           visibleChange,
@@ -159,12 +158,11 @@
       watch(
         () => props.param,
         () => {
-          // update-begin--author:liaozhiyang---date:20231213---for：【issues/901】JPopup组件配置param参数后异常
+          // 代码逻辑说明: 【issues/901】JPopup组件配置param参数后异常
           if (visible.value) {
             dynamicParamHandler();
             loadData();
           }
-          // update-end--author:liaozhiyang---date:20231213---for：【issues/901】JPopup组件配置param参数后异常
         }
       );
       /**
@@ -189,7 +187,7 @@
         }
       });
 
-      //update-begin-author:taoyan date:2022-5-31 for: VUEN-1156 popup 多数据有分页时，选中其他页，关闭popup 再点开，分页仍然选中上一次点击的分页，但数据是第一页的数据 未刷新
+      // 代码逻辑说明: VUEN-1156 popup 多数据有分页时，选中其他页，关闭popup 再点开，分页仍然选中上一次点击的分页，但数据是第一页的数据 未刷新
       watch(
         () => pagination.current,
         (current) => {
@@ -200,7 +198,6 @@
           }
         }
       );
-      //update-end-author:taoyan date:2022-5-31 for: VUEN-1156 popup 多数据有分页时，选中其他页，关闭popup 再点开，分页仍然选中上一次点击的分页，但数据是第一页的数据 未刷新
 
       function handleToggleSearch() {
         toggleSearchStatus.value = !unref(toggleSearchStatus);
@@ -212,9 +209,8 @@
         closeModal();
         checkedKeys.value = [];
         selectRows.value = [];
-        // update-begin--author:liaozhiyang---date:20230908---for：【issues/742】选择后删除默认仍然存在
+        // 代码逻辑说明: 【issues/742】选择后删除默认仍然存在
         tableRef.value.clearSelectedRowKeys();
-        // update-end--author:liaozhiyang---date:20230908---for：【issues/742】选择后删除默认仍然存在
       }
 
       /**
@@ -230,10 +226,9 @@
           createMessage.warning('至少选择一条记录');
           return false;
         }
-        //update-begin-author:taoyan date:2022-5-31 for: VUEN-1155 popup 选择数据时，会选择多条重复数据
+        // 代码逻辑说明: VUEN-1155 popup 选择数据时，会选择多条重复数据
         let rows = getOkSelectRows!();
         emit('ok', rows);
-        //update-end-author:taoyan date:2022-5-31 for: VUEN-1155 popup 选择数据时，会选择多条重复数据
         handleCancel();
       }
 
@@ -284,7 +279,7 @@
           createImgPreview({ imageList: imgList });
         }
       }
-      // update-begin--author:liaozhiyang---date:20250415--for：【issues/3656】popupdict回显
+      // 代码逻辑说明: 【issues/3656】popupdict回显
       watchEffect(() => {
         if (props.selected && props.rowkey) {
           const selected = props.multi ? props.selected : [props.selected];
@@ -292,7 +287,6 @@
           selectRows!.value = selected;
         }
       });
-      // update-end--author:liaozhiyang---date:20250415--for：【issues/3656】popupdict回显
       return {
         attrs,
         register,

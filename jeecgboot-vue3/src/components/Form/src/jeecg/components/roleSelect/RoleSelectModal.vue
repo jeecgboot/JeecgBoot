@@ -156,11 +156,10 @@
         if(!list || list.length ==0 ){
           return;
         }
-        // update-begin--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
+        // 代码逻辑说明: 【issues/8078】角色选择组件点击文字部分会一直选中
         let findItem = list.find((item) => item.id == id);
         findItem.checked = false;
         selectedKeys.value = selectedKeys.value.filter((key) => key != id);
-        // update-end--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
       }
       
       async function loadDataList() {
@@ -195,7 +194,6 @@
 
       function onSelect(e, item) {
         prevent(e);
-        // update-begin--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
         // 单选模式下，先清除所有选中状态
         if (!props.multi) {
           dataList.value.forEach(dataItem => {
@@ -216,7 +214,6 @@
         } else {
           selectedKeys.value = selectedKeys.value.filter(key => key !== item.id);
         }
-        // update-end--author:liaozhiyang---date:20250414--for：【issues/8078】角色选择组件点击文字部分会一直选中
       }
 
       function prevent(e) {

@@ -72,11 +72,10 @@
         const userinfo = userStore.getUserInfo;
         userinfo.avatar = data;
         userStore.setUserInfo(userinfo);
-        //update-begin---author:wangshuai ---date:20220909  for：[VUEN-2161]用户设置上传头像成功之后直接保存------------
+        // 代码逻辑说明: [VUEN-2161]用户设置上传头像成功之后直接保存------------
         if(data){
           defHttp.post({ url: '/sys/user/appEdit', params:{avatar:data} });
         }
-        //update-end---author:wangshuai ---date:20220909  for：[VUEN-2161]用户设置上传头像成功之后直接保存--------------
       }
       /**
        *更新基本信息

@@ -19,12 +19,11 @@ import JVxeTextareaCell from './components/cells/JVxeTextareaCell.vue';
 // import JVxeUserSelectCell from './components/cells/JVxeUserSelectCell.vue'
 
 let componentMap = new Map<JVxeTypes | string, JVxeVueComponent>();
-// update-begin--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
+// 代码逻辑说明: 【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
 const JVxeComponents = 'JVxeComponents__';
 if (import.meta.env.DEV && componentMap.size === 0 && window[JVxeComponents] && window[JVxeComponents].size > 0) {
   componentMap = window[JVxeComponents];
 }
-// update-end--author:liaozhiyang---date:20231027---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
 /** span 组件结尾 */
 export const spanEnds: string = ':span';
 
@@ -55,17 +54,15 @@ export function addComponent(type: JVxeTypes, component: JVxeVueComponent, spanC
   if (spanComponent) {
     componentMap.set(type + spanEnds, spanComponent);
   }
-  // update-begin--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
+  // 代码逻辑说明: 【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
   import.meta.env.DEV && (window[JVxeComponents] = componentMap);
-  // update-end--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
 }
 
 export function deleteComponent(type: JVxeTypes) {
   componentMap.delete(type);
   componentMap.delete(type + spanEnds);
-  // update-begin--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
+  // 代码逻辑说明: 【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
   import.meta.env.DEV && (window[JVxeComponents] = componentMap);
-  // update-end--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
 }
 
 /** 定义内置自定义组件 */
@@ -100,9 +97,8 @@ export function definedComponent() {
 export function clearComponent() {
   componentMap.clear();
 
-  // update-begin--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
+  // 代码逻辑说明: 【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
   import.meta.env.DEV && (window[JVxeComponents] = componentMap);
-  // update-end--author:liaozhiyang---date:20231208---for：【issues/860】生成的一对多代码，热更新之后点击新增卡死[暂时先解决]
 }
 
 export { componentMap };

@@ -17,10 +17,9 @@ function handleError(e: Error) {
 
 // page switch
 export function useGo(_router?: Router) {
-  // update-begin--author:liaozhiyang---date:20230908---for：【issues/694】404返回首页问题
+  // 代码逻辑说明: 【issues/694】404返回首页问题
   const userStore = useUserStore();
   const homePath = userStore.getUserInfo.homePath || PageEnum.BASE_HOME;
-  // update-end--author:liaozhiyang---date:20230908---for：【issues/694】404返回首页问题
   let router;
   if (!_router) {
     router = useRouter();
@@ -52,7 +51,7 @@ export const useRedo = (_router?: Router, otherQuery?: Recordable) => {
         resolve(false);
         return;
       }
-      // update-begin--author:liaozhiyang---date:20231123---for：【QQYUN-7099】动态路由匹配右键重新加载404
+      // 代码逻辑说明: 【QQYUN-7099】动态路由匹配右键重新加载404
       const tabStore = useMultipleTabStore();
       if (otherQuery && Object.keys(otherQuery).length > 0) {
         Object.keys(otherQuery).forEach((key) => {
@@ -75,7 +74,6 @@ export const useRedo = (_router?: Router, otherQuery?: Recordable) => {
         });
         params['path'] = fullPath;
       }
-      // update-end--author:liaozhiyang---date:20231123---for：【QQYUN-7099】动态路由匹配右键重新加载404
       push({ name: REDIRECT_NAME, params, query }).then(() => resolve(true));
     });
   }

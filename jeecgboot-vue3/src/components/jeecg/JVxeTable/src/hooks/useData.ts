@@ -14,14 +14,12 @@ export function useData(props: JVxeTableProps): JVxeDataProps {
     scroll: reactive({ top: 0, left: 0 }),
     scrolling: ref(false),
     defaultVxeProps: reactive({
-      // update-begin--author:liaozhiyang---date:20240607---for：【TV360X-327】vxetable警告
       // rowId: props.rowKey,
       rowConfig: {
         keyField: props.rowKey,
         // 高亮hover的行
         isHover: true,
       },
-      // update-end--author:liaozhiyang---date:20240607---for：【TV360X-327】vxetable警告
 
       // --- 【issues/209】自带的tooltip会错位，所以替换成原生的title ---
       // 溢出隐藏并显示tooltip
@@ -35,10 +33,8 @@ export function useData(props: JVxeTableProps): JVxeDataProps {
       editConfig: {
         trigger: 'click',
         mode: 'cell',
-        // update-begin--author:liaozhiyang---date:20231013---for：【QQYUN-5133】JVxeTable 行编辑升级
         //activeMethod: () => !props.disabled,
         beforeEditMethod: () => !props.disabled,
-        // update-end--author:liaozhiyang---date:20231013---for：【QQYUN-5133】JVxeTable 行编辑升级
       },
       expandConfig: {
         iconClose: 'vxe-icon-arrow-right',

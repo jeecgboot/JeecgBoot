@@ -125,7 +125,6 @@
         //update-end-author:taoyan date: 如果没有提供dictCode 可以走options的配置--
       });
 
-      //update-begin-author:taoyan date:20220404 for: 使用useRuleFormItem定义的value，会有一个问题，如果不是操作设置的值而是代码设置的控件值而不能触发change事件
       // 此处添加空值的change事件,即当组件调用地代码设置value为''也能触发change事件
       watch(
         () => props.value,
@@ -136,7 +135,6 @@
           }
         }
       );
-      //update-end-author:taoyan date:20220404 for: 使用useRuleFormItem定义的value，会有一个问题，如果不是操作设置的值而是代码设置的控件值而不能触发change事件
 
       async function initDictData() {
         let { dictCode, stringToNumber } = props;
@@ -161,7 +159,6 @@
         let changeValue:any;
         // 兼容多选模式
         
-        //update-begin---author:wangshuai ---date:20230216  for：[QQYUN-4290]公文发文：选择机关代字报错,是因为值改变触发了change事件三次，导致数据发生改变------------
         //采用一个值，不然的话state值变换触发多个change
         if (mode === 'multiple') {
           changeValue = e?.target?.value ?? e;
@@ -177,10 +174,8 @@
         }
         state.value = changeValue;
 
-        //update-begin---author:wangshuai ---date:20230403  for：【issues/4507】JDictSelectTag组件使用时，浏览器给出警告提示：Expected Function, got Array------------
+        // 代码逻辑说明: 【issues/4507】JDictSelectTag组件使用时，浏览器给出警告提示：Expected Function, got Array------------
         emit('update:value',changeValue)
-        //update-end---author:wangshuai ---date:20230403  for：【issues/4507】JDictSelectTag组件使用时，浏览器给出警告提示：Expected Function, got Array述------------
-        //update-end---author:wangshuai ---date:20230216  for：[QQYUN-4290]公文发文：选择机关代字报错,是因为值改变触发了change事件三次，导致数据发生改变------------
         
         // nextTick(() => formItemContext.onFieldChange());
       }
@@ -188,14 +183,13 @@
       /** 单选radio的值变化事件 */
       function handleChangeRadio(e) {
         state.value = e?.target?.value ?? e;
-        //update-begin---author:wangshuai ---date:20230504  for：【issues/506】JDictSelectTag 组件 type="radio" 没有返回值------------
+        // 代码逻辑说明: 【issues/506】JDictSelectTag 组件 type="radio" 没有返回值------------
         emit('update:value',e?.target?.value ?? e)
-        //update-end---author:wangshuai ---date:20230504  for：【issues/506】JDictSelectTag 组件 type="radio" 没有返回值------------
       }
 
       /** 用于搜索下拉框中的内容 */
       function handleFilterOption(input, option) {
-        // update-begin--author:liaozhiyang---date:20230914---for：【QQYUN-6514】 配置的时候，Y轴不能输入多个字段了，控制台报错
+        // 代码逻辑说明: 【QQYUN-6514】 配置的时候，Y轴不能输入多个字段了，控制台报错
         if (typeof option.children === 'function') {
           // 在 label 中搜索
           let labelIf = option.children()[0]?.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -203,7 +197,6 @@
             return true;
           }
         }
-        // update-end--author:liaozhiyang---date:20230914---for：【QQYUN-6514】 配置的时候，Y轴不能输入多个字段了，控制台报错
         if (props.onlySearchByLabel) {
           // 如果开启了只在 label 中搜索，就不继续往下搜索value了
           return false;
@@ -228,7 +221,7 @@
   });
 </script>
 <style scoped lang="less">
-  // update-begin--author:liaozhiyang---date:20230110---for：【QQYUN-7799】字典组件（原生组件除外）加上颜色配置
+  // 代码逻辑说明: 【QQYUN-7799】字典组件（原生组件除外）加上颜色配置
   .colorText {
     display: inline-block;
     height: 20px;
@@ -239,5 +232,5 @@
     color: #fff;
     font-size: 12px;
   }
-  // update-begin--author:liaozhiyang---date:20230110---for：【QQYUN-7799】字典组件（原生组件除外）加上颜色配置
+  // 代码逻辑说明: 【QQYUN-7799】字典组件（原生组件除外）加上颜色配置
 </style>

@@ -1,9 +1,9 @@
 import { generate } from '@ant-design/colors';
+import setting from '/@/settings/projectSetting';
 
-export const primaryColor = '#1890FF';
-
-export const darkMode = 'light';
-
+// 代码逻辑说明: 【JHHB-579】去掉写死的主题色，根据导航栏模式确定主题色
+export const primaryColor = setting.themeColor;
+export const darkMode = setting.themeMode;
 type Fn = (...arg: any) => any;
 
 type GenerateTheme = 'default' | 'dark';

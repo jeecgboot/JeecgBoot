@@ -96,7 +96,7 @@
         },
         { flush: 'post' }
       );
-      // update-begin--author:liaozhiyang---date:20240408---for：【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
+      // 代码逻辑说明: 【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
       watch(
         () => appStore.getProjectConfig.menuSetting,
         (menuSetting) => {
@@ -104,7 +104,6 @@
         },
         { immediate: true, deep: true }
       );
-      // update-end--author:liaozhiyang---date:20240408---for：【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
       listenerRouteChange((route) => {
         if (route.name === REDIRECT_NAME) return;
 
@@ -131,20 +130,19 @@
 
       async function handleSelect(key: string) {
         if (isUrl(key)) {
-          // update-begin--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
+          // 代码逻辑说明: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
           let url = key.replace(URL_HASH_TAB, '#');
           window.open(url)
           //openWindow(url);
-          // update-begin--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
+          // 代码逻辑说明: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
           return;
         }
-        // update-begin--author:liaozhiyang---date:20240227---for：【QQYUN-6366】内部路由也可以支持采用新浏览器tab打开
+        // 代码逻辑说明: 【QQYUN-6366】内部路由也可以支持采用新浏览器tab打开
         const findItem = getMatchingMenu(props.items, key);
         if (findItem?.internalOrExternal == true) {
           window.open(location.origin + key);
           return;
         }
-        // update-end--author:liaozhiyang---date:20240227---for：【QQYUN-6366】内部路由也可以支持采用新浏览器tab打开
 
         const { beforeClickFn } = props;
         if (beforeClickFn && isFunction(beforeClickFn)) {

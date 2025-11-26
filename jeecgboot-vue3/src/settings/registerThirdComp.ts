@@ -16,7 +16,7 @@ export async function registerThirdComp(app: App) {
   await registerJVxeCustom();
   //---------------------------------------------------------------------
   // 注册全局聊天表情包
-  // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-8241】emoji-mart-vue-fast库异步加载
+  // 代码逻辑说明: 【QQYUN-8241】emoji-mart-vue-fast库异步加载
   app.component(
     'Picker',
     createAsyncComponent(() => {

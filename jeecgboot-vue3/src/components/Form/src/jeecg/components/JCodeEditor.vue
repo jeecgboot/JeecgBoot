@@ -90,9 +90,8 @@
         // 缩进格式
         tabSize: 2,
         // 主题，对应主题库 JS 需要提前引入
-        // update-begin--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
+        // 代码逻辑说明: 【QQYUN-8639】暗黑主题适配
         theme: getDarkMode.value == ThemeEnum.DARK ? 'monokai' : props.theme,
-        // update-end--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
         smartIndent: true, // 是否智能缩进
         // 显示行号
         lineNumbers: true,
@@ -104,12 +103,10 @@
         // 启用代码折叠相关功能:结束
         // 光标行高亮
         styleActiveLine: true,
-        // update-begin--author:liaozhiyang---date:20231201---for：【issues/869】JCodeEditor组件初始化时没有设置mode
+        // 代码逻辑说明: 【issues/869】JCodeEditor组件初始化时没有设置mode
         mode: props.language,
-        // update-begin--author:liaozhiyang---date:20231201---for：【issues/869】JCodeEditor组件初始化时没有设置mode
-        // update-begin--author:liaozhiyang---date:20240603---for：【TV360X-898】代码生成之后的预览改成只读
+        // 代码逻辑说明: 【TV360X-898】代码生成之后的预览改成只读
         readOnly: props.disabled,
-        // update-end--author:liaozhiyang---date:20240603---for：【TV360X-898】代码生成之后的预览改成只读
         // 匹配括号
         matchBrackets: true,
         extraKeys: {
@@ -145,10 +142,9 @@
         }
         return _props;
       });
-      // update-begin--author:liaozhiyang---date:20230904---for：【QQYUN-5955】online js增强，加入代码提示
+      // 代码逻辑说明: 【QQYUN-5955】online js增强，加入代码提示
       const { codeHintingMount, codeHintingRegistry } = useCodeHinting(CodeMirror, props.keywords, props.language);
       codeHintingRegistry();
-      // update-end--author:liaozhiyang---date:20230904---for：【QQYUN-5955】online js增强，加入代码提示
       /**
        * 监听组件值
        */
@@ -162,11 +158,10 @@
       );
       onMounted(() => {
         initialize();
-        // update-begin--author:liaozhiyang---date:20240318---for：【QQYUN-8473】代码编辑器首次加载会有遮挡
+        // 代码逻辑说明: 【QQYUN-8473】代码编辑器首次加载会有遮挡
         setTimeout(() => {
           refresh();
         }, 150);
-        // update-end--author:liaozhiyang---date:20240318---for：【QQYUN-8473】代码编辑器首次加载会有遮挡
       });
 
       /**
@@ -181,7 +176,7 @@
         coder?.setValue(value ?? '');
         innerValue = value;
         trigger && emitChange(innerValue);
-        // update-begin--author:liaozhiyang---date:20240510---for：【QQYUN-9231】代码编辑器有遮挡
+        // 代码逻辑说明: 【QQYUN-9231】代码编辑器有遮挡
         setTimeout(() => {
           refresh();
           // 再次刷下防止小概率下遮挡问题
@@ -189,7 +184,6 @@
             refresh();
           }, 600);
         }, 400);
-        // update-end--author:liaozhiyang---date:20240510---for：【QQYUN-9231】代码编辑器有遮挡
       }
 
       //编辑器值修改事件
@@ -213,9 +207,8 @@
         coder.on('change', onChange);
         // 初始化成功时赋值一次
         setValue(innerValue, false);
-        // update-begin--author:liaozhiyang---date:20230904---for：【QQYUN-5955】online js增强，加入代码提示
+        // 代码逻辑说明: 【QQYUN-5955】online js增强，加入代码提示
         codeHintingMount(coder);
-        // update-end--author:liaozhiyang---date:20230904---for：【QQYUN-5955】online js增强，加入代码提示
       }
 
       // 切换全屏状态
@@ -223,7 +216,7 @@
         isFullScreen.value = !isFullScreen.value;
       }
 
-      //update-begin-author:taoyan date:2022-5-9 for: codeEditor禁用功能
+      // 代码逻辑说明: codeEditor禁用功能
       watch(
         () => props.disabled,
         (val) => {
@@ -232,7 +225,6 @@
           }
         }
       );
-      //update-end-author:taoyan date:2022-5-9 for: codeEditor禁用功能
       
       // 支持动态设置语言
       watch(()=>props.language, (val)=>{
@@ -243,13 +235,12 @@
 
       const getBindValue = Object.assign({}, unref(props), unref(attrs));
 
-      //update-begin-author:taoyan date:2022-10-18 for: VUEN-2480【严重bug】online vue3测试的问题 8、online js增强样式问题
+      // 代码逻辑说明: VUEN-2480【严重bug】online vue3测试的问题 8、online js增强样式问题
       function refresh(){
         if(coder){
           coder.refresh();
         }
       }
-      //update-end-author:taoyan date:2022-10-18 for: VUEN-2480【严重bug】online vue3测试的问题 8、online js增强样式问题
 
       /**
        * 2024-04-01
@@ -370,7 +361,7 @@
     max-width: 600px;
     max-height: 300px;
   }
-  // update-begin--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
+  // 代码逻辑说明: 【QQYUN-8639】暗黑主题适配
   html[data-theme='dark'] {
     .@{prefix-cls} {
       .CodeMirror {
@@ -378,5 +369,4 @@
       }
     }
   }
-  // update-end--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
 </style>

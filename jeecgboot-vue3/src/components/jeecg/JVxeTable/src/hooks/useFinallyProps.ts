@@ -22,9 +22,8 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
       onRadioChange: methods.handleVxeRadioChange,
       onCheckboxAll: methods.handleVxeCheckboxAll,
       onCheckboxChange: methods.handleVxeCheckboxChange,
-      // update-begin--author:liaozhiyang---date:20240321---for：【QQYUN-8566】JVXETable无法记住列设置
+      // 代码逻辑说明: 【QQYUN-8566】JVXETable无法记住列设置
       onCustom: methods.handleCustom,
-      // update-begin--author:liaozhiyang---date:20240321---for：【QQYUN-8566】JVXETable无法记住列设置
     };
     // 用户传递的事件，进行合并操作
     Object.keys(listeners).forEach((key) => {
@@ -43,7 +42,7 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
 
   // vxe 最终 props
   const vxePropsMerge = computed(() => {
-    // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
+    // 代码逻辑说明: 【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
     let rowClass = {};
     if (props.dragSort) {
       rowClass = {
@@ -65,7 +64,6 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
         },
       };
     }
-    // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
     return merge(
       {},
       data.defaultVxeProps,
@@ -82,10 +80,9 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
         editRules: unref(vxeEditRules),
         height: props.height === 'auto' ? null : props.height,
         maxHeight: props.maxHeight,
-        // update-begin--author:liaozhiyang---date:20231013---for：【QQYUN-5133】JVxeTable 行编辑升级
+        // 代码逻辑说明: 【QQYUN-5133】JVxeTable 行编辑升级
         scrollY: props.scrollY,
         scrollX: props.scrollX,
-        // update-end--author:liaozhiyang---date:20231013---for：【QQYUN-5133】JVxeTable 行编辑升级
         border: props.bordered,
         footerMethod: methods.handleFooterMethod,
         // 展开行配置
@@ -94,10 +91,8 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
         },
         // 可编辑配置
         editConfig: {
-          // update-begin--author:liaozhiyang---date:20231013---for：【QQYUN-5133】JVxeTable 行编辑升级
           //activeMethod: methods.handleActiveMethod,
           beforeEditMethod: methods.handleActiveMethod,
-          // update-end--author:liaozhiyang---date:20231013---for：【QQYUN-5133】JVxeTable 行编辑升级
         },
         radioConfig: {
           checkMethod: methods.handleCheckMethod,
@@ -116,7 +111,7 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
     );
   });
 
-  // update-begin--author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
+  // 代码逻辑说明: 【issues/8593】修复列改变后内容不刷新
   const vxeColumnsRef = ref(data.vxeColumns!.value || [])
   const watchColumnsDebounce = debounce(async () => {
     vxeColumnsRef.value = []
@@ -124,7 +119,6 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
     vxeColumnsRef.value = data.vxeColumns!.value
   }, 50)
   watch(data.vxeColumns!, watchColumnsDebounce)
-  // update-end----author:sunjianlei---date:20250804---for:【issues/8593】修复列改变后内容不刷新
 
   const vxeProps = computed(() => {
     return {

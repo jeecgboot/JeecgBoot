@@ -104,13 +104,12 @@
       const handleCheck = (v: CheckKeys, e?) => {
         let currentValue = toRaw(state.checkedKeys) as KeyType[];
         if (isArray(currentValue) && searchState.startSearch && e) {
-          // update-begin-author:liusq---date:20230404--for: [issue/429]树搜索点击事件失效---
+          // 代码逻辑说明: [issue/429]树搜索点击事件失效---
           const value = e.node.eventKey;
           currentValue = difference(currentValue, getChildrenKeys(value));
           if (e.checked) {
             currentValue.push(value);
           }
-          // update-begin-author:liusq---date:20230404--for: [issue/429]树搜索点击事件失效---
           state.checkedKeys = currentValue;
         } else {
           state.checkedKeys = v;
@@ -311,9 +310,7 @@
       watch(
         () => props.value,
         () => {
-          // update-end--author:liaozhiyang---date:20231122---for：【issues/863】关闭选择部门弹窗，再打开之前勾选的消失了
           state.checkedKeys = toRaw(props.value || props.checkedKeys || []);
-          // update-end--author:liaozhiyang---date:20231122---for：【issues/863】关闭选择部门弹窗，再打开之前勾选的消失了
         },
         { immediate: true },
       );
@@ -326,7 +323,7 @@
           emit('change', v);
         },
       );
-      // update-begin--author:liaozhiyang---date:20240426---for：【issues/1151】层级独立时勾选了父级，然后点击层级关联子级视觉上勾选了，但是保存子级没存上
+      // 代码逻辑说明: 【issues/1151】层级独立时勾选了父级，然后点击层级关联子级视觉上勾选了，但是保存子级没存上
       watch(
         () => props.checkStrictly,
         () => {
@@ -337,7 +334,6 @@
           });
         }
       );
-      // update-end--author:liaozhiyang---date:20240426---for：【issues/1151】层级独立时勾选了父级，然后点击层级关联子级视觉上勾选了，但是保存子级没存上
 
       const instance: TreeActionType = {
         setExpandedKeys,
@@ -476,7 +472,7 @@
   });
 </script>
 <style lang="less" scoped>
-// update-begin--author:liaozhiyang---date:20250908---for：【JHHB-192】主职务选择，多选框改成单选
+// 代码逻辑说明: 【JHHB-192】主职务选择，多选框改成单选
 .custom-radio {
   :deep(.ant-tree) {
     .ant-tree-checkbox {
@@ -497,5 +493,4 @@
     }
   }
 }
-// update-end--author:liaozhiyang---date:20250908---for：【JHHB-192】主职务选择，多选框改成单选
 </style>

@@ -92,19 +92,17 @@ const transform: AxiosTransform = {
   beforeRequestHook: (config, options) => {
     const { apiUrl, joinPrefix, joinParamsToUrl, formatDate, joinTime = true, urlPrefix } = options;
 
-    //update-begin---author:scott ---date:2024-02-20  for：以http开头的请求url，不拼加前缀--
     // http开头的请求url，不加前缀
     let isStartWithHttp = false;
     const requestUrl = config.url;
     if(requestUrl!=null && (requestUrl.startsWith("http:") || requestUrl.startsWith("https:"))){
       isStartWithHttp = true;
     }
-    // update-begin--author:sunjianlei---date:20250411---for：【QQYUN-9685】构建 electron 桌面应用
+    // 代码逻辑说明: 【QQYUN-9685】构建 electron 桌面应用
     if (!isStartWithHttp && requestUrl != null) {
       // 由于electron的url是file://开头的，所以需要判断一下
       isStartWithHttp = requestUrl.startsWith('file://');
     }
-    // update-end----author:sunjianlei---date:20250411---for：【QQYUN-9685】构建 electron 桌面应用
     if (!isStartWithHttp && joinPrefix) {
       config.url = `${urlPrefix}${config.url}`;
     }
@@ -112,7 +110,6 @@ const transform: AxiosTransform = {
     if (!isStartWithHttp && apiUrl && isString(apiUrl)) {
       config.url = `${apiUrl}${config.url}`;
     }
-    //update-end---author:scott ---date::2024-02-20  for：以http开头的请求url，不拼加前缀--
     
     const params = config.params || {};
     const data = config.data || false;
@@ -147,13 +144,12 @@ const transform: AxiosTransform = {
       }
     }
 
-    // update-begin--author:sunjianlei---date:220241019---for：【JEECG作为乾坤子应用】作为乾坤子应用启动时，拼接请求路径
+    // 代码逻辑说明: 【JEECG作为乾坤子应用】作为乾坤子应用启动时，拼接请求路径
     if (globSetting.isQiankunMicro) {
       if (config.url && config.url.startsWith('/')) {
         config.url = globSetting.qiankunMicroAppEntry + config.url
       }
     }
-    // update-end--author:sunjianlei---date:220241019---for：【JEECG作为乾坤子应用】作为乾坤子应用启动时，拼接请求路径
 
     return config;
   },
@@ -166,18 +162,11 @@ const transform: AxiosTransform = {
     const token = getToken();
     let tenantId: string | number = getTenantId();
     
-    //update-begin---author:wangshuai---date:2024-04-16---for:【QQYUN-9005】发送短信加签。解决没有token无法加签---
     // 将签名和时间戳，添加在请求接口 Header
     config.headers[ConfigEnum.TIMESTAMP] = signMd5Utils.getTimestamp();
-    //update-begin---author:wangshuai---date:2024-04-25---for: 生成签名的时候复制一份，避免影响原来的参数---
     config.headers[ConfigEnum.Sign] = signMd5Utils.getSign(config.url, cloneDeep(config.params), cloneDeep(config.data));
-    //update-end---author:wangshuai---date:2024-04-25---for: 生成签名的时候复制一份，避免影响原来的参数---
-    //update-end---author:wangshuai---date:2024-04-16---for:【QQYUN-9005】发送短信加签。解决没有token无法加签---
-    // update-begin--author:liaozhiyang---date:20240509---for：【issues/1220】登录时，vue3版本不加载字典数据设置无效
-    //--update-begin--author:liusq---date:20220325---for: 增加vue3标记
+    
     config.headers[ConfigEnum.VERSION] = 'v3';
-    //--update-end--author:liusq---date:20220325---for:增加vue3标记
-    // update-end--author:liaozhiyang---date:20240509---for：【issues/1220】登录时，vue3版本不加载字典数据设置无效
     if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
       // jwt token
       config.headers.Authorization = options.authenticationScheme ? `${options.authenticationScheme} ${token}` : token;
@@ -190,20 +179,19 @@ const transform: AxiosTransform = {
         tenantId = 0;
       }
 
-      // update-begin--author:sunjianlei---date:220230428---for：【QQYUN-5279】修复分享的应用租户和当前登录租户不一致时，提示404的问题
+      // 代码逻辑说明: 【QQYUN-5279】修复分享的应用租户和当前登录租户不一致时，提示404的问题
       const userStore = useUserStoreWithOut();
       // 判断是否有临时租户id
       if (userStore.hasShareTenantId && userStore.shareTenantId !== 0) {
         // 临时租户id存在，使用临时租户id
         tenantId = userStore.shareTenantId!;
       }
-      // update-end--author:sunjianlei---date:220230428---for：【QQYUN-5279】修复分享的应用租户和当前登录租户不一致时，提示404的问题
 
       config.headers[ConfigEnum.TENANT_ID] = tenantId;
       //--update-end--author:liusq---date:20211105---for:将多租户id，添加在请求接口 Header
 
       // ========================================================================================
-      // update-begin--author:sunjianlei---date:20220624--for: 添加低代码应用ID
+      // 代码逻辑说明: 添加低代码应用ID
       let routeParams = router.currentRoute.value.params;
       if (routeParams.appId) {
         config.headers[ConfigEnum.X_LOW_APP_ID] = routeParams.appId;
@@ -213,7 +201,6 @@ const transform: AxiosTransform = {
           delete routeParams.lowAppFilter;
         }
       }
-      // update-end--author:sunjianlei---date:20220624--for: 添加低代码应用ID
       // ========================================================================================
 
     }

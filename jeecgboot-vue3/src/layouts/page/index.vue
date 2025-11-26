@@ -73,9 +73,8 @@
         }
         return tabStore.getCachedTabList;
       });
-      // update-begin--author:liaozhiyang---date:20250826---for:【QQYUN-13593】空白页美化
+      // 代码逻辑说明: 【QQYUN-13593】空白页美化
       const { pageTip, getPageTip, effectVars } = useEmpty();
-      // update-end--author:liaozhiyang---date:20250826---for:【QQYUN-13593】空白页美化
       return {
         getTransitionName,
         openCache,

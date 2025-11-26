@@ -87,9 +87,8 @@
   //注册table数据
   const [registerTable, { reload }, { rowSelection }] = tableContext;
   //新增类型
-  //update-begin---author:wangshuai ---date:20220720  for：[VUEN-1661]一对多示例，编辑的时候，有时候是一对一，有时候是一对多，默认一对多------------
+  // 代码逻辑说明: [VUEN-1661]一对多示例，编辑的时候，有时候是一对一，有时候是一对多，默认一对多------------
   const addType = ref(3);
-  //update-end---author:wangshuai ---date:20220720  for：[VUEN-1661]一对多示例，编辑的时候，有时候是一对一，有时候是一对多，默认一对多--------------
   //添加事件
   function handleCreate(e) {
     addType.value = e.key;

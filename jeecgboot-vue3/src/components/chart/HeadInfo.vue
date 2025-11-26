@@ -32,12 +32,11 @@
         type: String,
         default: false,
       },
-      // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8762】首页默认及echars颜色调整
+      // 代码逻辑说明: 【QQYUN-8762】首页默认及echars颜色调整
       iconColor: {
         type: String,
         default: '#2b99ff',
       },
-      // update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8762】首页默认及echars颜色调整
     },
   });
 </script>

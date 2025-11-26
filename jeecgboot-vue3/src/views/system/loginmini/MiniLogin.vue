@@ -31,7 +31,7 @@
                     >{{ t('sys.login.mobileSignInFormTitle') }}
                   </div>
                 </div>
-                <div class="aui-form-box" style="height: 180px">
+                <div class="aui-form-box" style="height: 240px">
                   <a-form ref="loginRef" :model="formData" v-if="activeIndex === 'accountLogin'" @keyup.enter.native="loginHandleClick">
                     <div class="aui-account">
                       <div class="aui-inputClear">
@@ -56,11 +56,23 @@
                           <img v-else style="margin-top: 2px; max-width: initial" :src="codeImg" @click="handleChangeCheckCode" />
                         </div>
                       </div>
+                      <div class="aui-inputClear" v-if="showDepart">
+                        <i class="icon icon-depart"></i>
+                        <div class="JLoginSelectDept">
+                          <a-select allow-clear style="width: 100%" :bordered="false" v-model:value="formData.loginOrgCode" :placeholder="t('sys.login.loginOrgCode')">
+                            <template #suffixIcon>
+                              <Icon icon="ant-design:gold-outline" />
+                            </template>
+                            <template v-for="depart in departList" :key="depart.orgCode">
+                              <a-select-option :value="depart.orgCode">{{ getShortDeptName(depart.label) }}</a-select-option>
+                            </template>
+                          </a-select>
+                        </div>
+                      </div>
                       <div class="aui-flex">
                         <div class="aui-flex-box">
                           <div class="aui-choice">
-                            <a-input class="fix-auto-fill" type="checkbox" v-model:value="rememberMe" />
-                            <span style="margin-left: 5px">{{ t('sys.login.rememberMe') }}</span>
+                            <a-checkbox v-model:checked="rememberMe">{{ t('sys.login.rememberMe') }}</a-checkbox>
                           </div>
                         </div>
                         <div class="aui-forget">
@@ -81,6 +93,18 @@
                         </div>
                         <div v-else class="aui-code">
                           <span class="aui-get-code code-shape">{{ t('component.countdown.sendText', [unref(timeRuning)]) }}</span>
+                        </div>
+                      </div>
+                      <div class="aui-inputClear" v-if="showDepart">
+                        <div class="JLoginSelectDept">
+                          <a-select allow-clear style="width: 100%" :bordered="false" v-model:value="phoneFormData.loginOrgCode" :placeholder="t('sys.login.loginOrgCode')">
+                            <template #suffixIcon>
+                              <Icon icon="ant-design:gold-outline" />
+                            </template>
+                            <template v-for="depart in departList" :key="depart.orgCode">
+                              <a-select-option :value="depart.orgCode">{{ getShortDeptName(depart.label) }}</a-select-option>
+                            </template>
+                          </a-select>
                         </div>
                       </div>
                     </div>
@@ -144,14 +168,14 @@
     </div>
     <!-- 第三方登录相关弹框 -->
     <ThirdModal ref="thirdModalRef"></ThirdModal>
-    
+
     <!-- 图片验证码弹窗 -->
     <CaptchaModal @register="captchaRegisterModal" @ok="getLoginCode" />
   </div>
 </template>
 <script lang="ts" setup name="login-mini">
   import { getCaptcha, getCodeInfo } from '/@/api/sys/user';
-  import { computed, onMounted, reactive, ref, toRaw, unref } from 'vue';
+  import { computed, onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
   import codeImg from '/@/assets/images/checkcode.png';
   import { Rule } from '/@/components/Form';
   import { useUserStore } from '/@/store/modules/user';
@@ -166,12 +190,15 @@
   import adTextImg from '/@/assets/loginmini/icon/jeecg_ad_text.png';
   import { AppLocalePicker, AppDarkModeToggle } from '/@/components/Application';
   import { useLocaleStore } from '/@/store/modules/locale';
+  import { createLocalStorage } from '/@/utils/cache';
   import { useDesign } from "/@/hooks/web/useDesign";
   import { useAppInject } from "/@/hooks/web/useAppInject";
   import { GithubFilled, WechatFilled, DingtalkCircleFilled, createFromIconfontCN } from '@ant-design/icons-vue';
   import CaptchaModal from '@/components/jeecg/captcha/CaptchaModal.vue';
   import { useModal } from "@/components/Modal";
   import { ExceptionEnum } from "@/enums/exceptionEnum";
+  import { encryptAESCBC } from '/@/utils/cipher';
+  import { defHttp } from "@/utils/http/axios";
 
   const IconFont = createFromIconfontCN({
     scriptUrl: '//at.alicdn.com/t/font_2316098_umqusozousr.js',
@@ -180,6 +207,7 @@
   const { notification, createMessage } = useMessage();
   const userStore = useUserStore();
   const { t } = useI18n();
+  const $ls = createLocalStorage();
   const localeStore = useLocaleStore();
   const showLocale = localeStore.getShowPicker;
   const randCodeData = reactive<any>({
@@ -187,7 +215,9 @@
     requestCodeSuccess: false,
     checkKey: null,
   });
-  const rememberMe = ref<string>('0');
+  // 记住用户名
+  const rememberMe = ref<boolean>(false);
+  const REMEMBER_USERNAME_KEY = 'LOGIN_REMEMBER_USERNAME';
   //手机号登录还是账号登录
   const activeIndex = ref<string>('accountLogin');
   const type = ref<string>('login');
@@ -196,11 +226,13 @@
     inputCode: '',
     username: 'admin',
     password: '123456',
+    loginOrgCode: '',
   });
   //手机登录表单字段
   const phoneFormData = reactive<any>({
     mobile: '',
     smscode: '',
+    loginOrgCode: '',
   });
   const loginRef = ref();
   //第三方登录弹窗
@@ -225,15 +257,104 @@
       type: Boolean,
     },
   });
+ //**********************查询部门逻辑begin**********************************************
+  //用户部门
+  const departList = ref([]);
+  //部门显示
+  const showDepart = computed(()=>{
+    return departList.value.length > 1
+  })
+  //获取部门缩写
+  const getShortDeptName = computed(()=>{
+    return (deptName) => {
+      if (!deptName) return '';
+      if (deptName.length > 18) {
+        return '...' + deptName.substring(deptName.length-18, deptName.length) ;
+      }
+      return deptName;
+    };
+  })
+  //监听验证码和输入框的修改
+  watch(
+      () => [formData.inputCode, phoneFormData.smscode],
+      () => {
+        if ((formData.inputCode && formData.inputCode.length == 4)
+            || (phoneFormData.smscode && phoneFormData.smscode.length == 6)) {
+            checkAccount()
+        }
+      },
+  );
+  /**
+   * 监听账号变化，清除部门信息
+   */
+  watch(
+      () => [formData.username,phoneFormData.mobile,activeIndex.value],
+      () => {
+        formData.loginOrgCode = null;
+        phoneFormData.loginOrgCode = null;
+        departList.value = [];
+        if ((formData.inputCode && formData.inputCode.length == 4)
+            || (phoneFormData.smscode && phoneFormData.smscode.length == 6)) {
+          checkAccount()
+        }
+      }
+  );
 
+  //初始化数据
+  let deptTimer;
+  function checkAccount() {
+    deptTimer && clearTimeout(deptTimer);
+    deptTimer = setTimeout(async () => {
+      let loginType = activeIndex.value === 'accountLogin' ? 'account' : 'phone';
+      // 验证条件提取
+      const isValidAccount = loginType === 'account' && formData.username && formData.password;
+      const isValidPhone = loginType == 'phone' && phoneFormData.mobile && phoneFormData.smscode;
+      let finalFormData = loginType == 'phone' ? {...phoneFormData} : {...formData};
+      if (!isValidAccount && !isValidPhone) {
+        return;
+      }
+      //查询部门信息前，优先进行账户校验
+      if (departList.value && departList.value.length == 0) {
+        let params = {...finalFormData, loginType: activeIndex.value === 'accountLogin' ? 'account' : 'phone'};
+        if (loginType == 'account') {
+          params['password'] = encryptAESCBC(formData.password);
+          params['checkKey'] = randCodeData.checkKey;
+        }
+        const res = await defHttp.post({
+          url: '/sys/loginGetUserDeparts',
+          params: {...params}
+        }, {isTransformResponse: false});
+        if (res.success && res.result) {
+          let {departs,currentOrgCode} = res.result;
+          // 判断当前部门是否在所属的部门列表中
+          if (departs && departs.length > 0) {
+            // 代码逻辑说明: JHHB-790 用户部门变更，会出现这个情况（因为之前设置的这里只切换部门，过滤了公司和岗位信息）
+            const hasCurrentDepart = departs.some(item => item.orgCode == currentOrgCode);
+            formData.loginOrgCode = hasCurrentDepart?currentOrgCode:null;
+            phoneFormData.loginOrgCode = hasCurrentDepart?currentOrgCode:null;
+            departList.value = departs.map((item) => {
+              return {
+                label: item.departName,
+                value: item.orgCode,
+                orgCode: item.orgCode,
+                departName: item.departName,
+              };
+            });
+          }
+        } else {
+          //createMessage.warn(res.message);
+        }
+      }
+    },500)
+  }
+ //**********************查询部门逻辑end*************************************************
   /**
    * 获取验证码
    */
   function handleChangeCheckCode() {
     formData.inputCode = '';
-    //update-begin---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
+    // 代码逻辑说明: [QQYUN-10775]验证码可以复用 #7674------------
     randCodeData.checkKey = new Date().getTime() + Math.random().toString(36).slice(-4); // 1629428467008;
-    //update-end---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
     getCodeInfo(randCodeData.checkKey).then((res) => {
       randCodeData.randCodeImage = res;
       randCodeData.requestCodeSuccess = true;
@@ -270,10 +391,14 @@
     }
     try {
       loginLoading.value = true;
+
+      // 密码使用AES加密传输
+      const encryptedPassword = encryptAESCBC(formData.password);
       const { userInfo } = await userStore.login(
         toRaw({
-          password: formData.password,
+          password: encryptedPassword,
           username: formData.username,
+          loginOrgCode: formData.loginOrgCode,
           captcha: formData.inputCode,
           checkKey: randCodeData.checkKey,
           mode: 'none', //不要默认的错误提示
@@ -285,6 +410,12 @@
           description: `${t('sys.login.loginSuccessDesc')}: ${userInfo.realname}`,
           duration: 3,
         });
+        // 登录成功后处理记住用户名
+        if (rememberMe.value && formData.username) {
+          $ls.set(REMEMBER_USERNAME_KEY, formData.username)
+        } else {
+          $ls.remove(REMEMBER_USERNAME_KEY)
+        }
       }
     } catch (error) {
       notification.error({
@@ -315,6 +446,7 @@
       const { userInfo }: any = await userStore.phoneLogin({
         mobile: phoneFormData.mobile,
         captcha: phoneFormData.smscode,
+        loginOrgCode: phoneFormData.loginOrgCode,
         mode: 'none', //不要默认的错误提示
       });
       if (userInfo) {
@@ -343,15 +475,12 @@
       createMessage.warn(t('sys.login.mobilePlaceholder'));
       return;
     }
-    //update-begin---author:wangshuai---date:2024-04-18---for:【QQYUN-9005】同一个IP，1分钟超过5次短信，则提示需要验证码---
-    //update-begin---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题：登录应该用登录模板不应该用忘记密码的模板---
+    // 代码逻辑说明: 【issues/8567】严重：修改密码存在水平越权问题：登录应该用登录模板不应该用忘记密码的模板---
     const result = await getCaptcha({ mobile: phoneFormData.mobile, smsmode: SmsEnum.LOGIN }).catch((res) =>{
-    //update-end---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题：登录应该用登录模板不应该用忘记密码的模板---
       if(res.code === ExceptionEnum.PHONE_SMS_FAIL_CODE){
         openCaptchaModal(true, {});
       }
     });
-    //update-end---author:wangshuai---date:2024-04-18---for:【QQYUN-9005】同一个IP，1分钟超过5次短信，则提示需要验证码---
     if (result) {
       const TIME_COUNT = 60;
       if (!unref(timer)) {
@@ -431,6 +560,12 @@
   onMounted(() => {
     //加载验证码
     handleChangeCheckCode();
+    // 恢复已记住的用户名
+    const saved = $ls.get(REMEMBER_USERNAME_KEY);
+    if (saved) {
+      formData.username = saved;
+      rememberMe.value = true;
+    }
   });
 </script>
 
@@ -486,6 +621,13 @@
   }
   .top-3{
     top: 0.45rem;
+  }
+  .JLoginSelectDept {
+    margin:5px auto;
+    :deep(.ant-select-selection-placeholder) {
+      font-size: 14px;
+      color: #9a9a9a;
+    }
   }
 </style>
 
@@ -544,7 +686,7 @@ html[data-theme='dark'] {
     .ant-checkbox-inner,.aui-success h3{
       border-color: #c9d1d9;
     }
-    //update-begin---author:wangshuai ---date:20230828  for：【QQYUN-6363】这个样式代码有问题，不在里面，导致表达式有问题------------
+    // 代码逻辑说明: 【QQYUN-6363】这个样式代码有问题，不在里面，导致表达式有问题------------
     &-sign-in-way {
       .anticon {
         font-size: 22px !important;
@@ -556,7 +698,6 @@ html[data-theme='dark'] {
         }
       }
     }
-    //update-end---author:wangshuai ---date:20230828  for：【QQYUN-6363】这个样式代码有问题，不在里面，导致表达式有问题------------
   }
 
   input.fix-auto-fill,
@@ -564,7 +705,7 @@ html[data-theme='dark'] {
     -webkit-text-fill-color: #c9d1d9 !important;
     box-shadow: inherit !important;
   }
-  
+
   .ant-divider-inner-text {
     font-size: 12px !important;
     color: @text-color-secondary !important;

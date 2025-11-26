@@ -11,12 +11,13 @@
             <div class="common-info-row">
               <div class="common-info-row-label">组织LOGO</div>
               <div class="common-info-row-content">
-                <img :src="getImageSrc()" style="width: 100px;cursor: pointer" @click="previewImage">
+                <JImageUpload v-model:value="formState.companyLogo" @change="handleCompanyLogoChange"></JImageUpload>
               </div>
             </div>
             <div class="common-info-row m-top24">
               <div class="common-info-row-label">组织名称</div>
               <span class="m-right16">{{ formState.name }}</span>
+              <span class="edit-name" @click="goUpdate('name')">修改</span>
             </div>
             <div class="common-info-row m-top24">
               <div class="common-info-row-label">组织门牌号</div>
@@ -38,14 +39,17 @@
             <div class="common-info-row">
               <div class="common-info-row-label">所在地</div>
               <span class="m-right16">{{ formState.companyAddress_dictText }}</span>
+              <span class="edit-name" @click="goUpdate('companyAddress')">修改</span>
             </div>
             <div class="common-info-row m-top24">
               <div class="common-info-row-label">所在行业</div>
               <span class="m-right16">{{ formState.trade_dictText }}</span>
+              <span class="edit-name" @click="goUpdate('trade')">修改</span>
             </div>
             <div class="common-info-row m-top24">
               <div class="common-info-row-label">工作地点</div>
               <span class="m-right16">{{ formState.workPlace }}</span>
+              <span class="edit-name" @click="goUpdate('workPlace')">修改</span>
             </div>
             <div class="cancel-split-line"></div>
           </div>
@@ -53,16 +57,68 @@
       </a-form>
     </div>
   </div>
+  <!-- 组织名称修改弹窗 -->
+  <a-modal v-model:open="modalVisible.name" title="修改组织名称" width="500" destroy-on-close @ok="doUpdate('name')">
+    <a-form ref="manageNameRef" :model="updateInfo" :rules="getManageNameRules">
+      <a-form-item name="name" class="form-item-padding">
+        <div class="form-group">
+              <span class="form-label">
+                组织名称
+                <span class="txt-middle red">*</span>
+              </span>
+          <a-input v-model:value="updateInfo.name" />
+        </div>
+      </a-form-item>
+    </a-form>
+  </a-modal>
+  
+  <!-- 组织所在地弹窗 -->
+  <a-modal v-model:open="modalVisible.companyAddress" title="所在地" width="500" destroy-on-close @ok="doUpdate('companyAddress')">
+    <a-form :model="updateInfo">
+      <a-form-item name="companyAddress" class="form-item-padding">
+        <div style="margin-top: 20px">
+          <j-area-select v-model:value="updateInfo.companyAddress" />
+        </div>
+      </a-form-item>
+    </a-form>
+  </a-modal>
+
+  <!-- 组织所在行业弹窗 -->
+  <a-modal v-model:open="modalVisible.trade" title="设置所在行业" width="500" destroy-on-close @ok="doUpdate('trade')">
+    <a-form :model="updateInfo">
+      <a-form-item name="trade" class="form-item-padding">
+        <div style="margin-top: 20px">
+          <j-dict-select-tag v-model:value="updateInfo.trade" dictCode="trade" />
+        </div>
+      </a-form-item>
+    </a-form>
+  </a-modal>
+
+  <!-- 工作地点弹窗 -->
+  <a-modal v-model:open="modalVisible.workPlace" title="设置工作地点" width="500" destroy-on-close @ok="doUpdate('workPlace')">
+    <a-form ref="workPlaceRef" :model="updateInfo">
+      <a-form-item name="name" class="form-item-padding">
+        <div style="margin-top: 20px">
+          <a-textarea placeholder="请填写工作地点" v-model:value="updateInfo.workPlace" />
+        </div>
+      </a-form-item>
+    </a-form>
+  </a-modal>
 </template>
 <script lang="ts" name="tenant-my-tenant-list" setup>
-  import { onMounted, reactive } from 'vue';
+  import { onMounted, reactive, ref } from 'vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import {getFileAccessHttpUrl, tenantSaasMessage} from '@/utils/common/compUtils';
-  import { getTenantById } from '@/views/system/tenant/tenant.api';
+  import { getTenantById, saveOrUpdateTenant } from '@/views/system/tenant/tenant.api';
   import { getTenantId } from '@/utils/auth';
   import { getDataByCode, getRealCode, provinceOptions } from '@/components/Form/src/utils/areaDataUtil';
   import { initDictOptions } from '@/utils/dict';
   import {createImgPreview} from "@/components/Preview";
+  import { JImageUpload } from "@/components/Form";
+  // import {updateTenantInfo} from "@/views/super/myapps/organization/organization.api";
+  import { defHttp } from "/@/utils/http/axios";
+  import JAreaSelect from "/@/components/Form/src/jeecg/components/JAreaSelect.vue";
+  import JDictSelectTag from "/@/components/Form/src/jeecg/components/JDictSelectTag.vue";
 
   const { createMessage } = useMessage();
   const formState = reactive({
@@ -76,7 +132,28 @@
     companyLogo: '',
   });
   let tradeOptions: any[] = [];
+  //组织名称ref
+  const manageNameRef= ref();
+  // modal显示
+  const modalVisible = reactive<any>({
+    name: false,
+    trade: false,
+    companyAddress: false
+  });
 
+  // 组织名称检验规则
+  const getManageNameRules =  {
+    name: [{ required: true, message: '组织名称不能为空', trigger: 'blur' }],
+  };
+
+  //修改对象
+  const updateInfo = reactive<any>({
+    name: '',
+    trade:'',
+    companyAddress: '',
+    workPlace: '',
+  });
+  
   /**
    * 初始化租户信息
    */
@@ -140,18 +217,55 @@
   }
 
   /**
-   * 获取图片路径
+   * 公司logo上传成功事件
+   * 
+   * @param val
    */
-  function getImageSrc() {
-    return getFileAccessHttpUrl(formState.companyLogo) || "";
+  function handleCompanyLogoChange(val) {
+    if(val){
+      saveOrUpdateTenant({ id: formState.id, companyLogo: val }, true)
+    }
   }
 
   /**
-   * 预览图片
+   * 更新打开弹窗
+   * 
+   * @param key
    */
-  function previewImage() {
-    let fileAccessHttpUrl = getFileAccessHttpUrl(formState.companyLogo);
-    createImgPreview({ imageList: [fileAccessHttpUrl], defaultWidth: 700, rememberState: true });
+  function goUpdate(key){
+    modalVisible[key] = true;
+    updateInfo[key] = formState[key];
+  }
+
+  /**
+   * 编辑租户信息
+   * @param params
+   */
+  async function updateTenantInfo(params){
+    return defHttp.put({ url: '/sys/tenant/editOwnTenant', params });
+  }
+
+  /**
+   * 更新数据
+   * @param key
+   */
+  async function doUpdate(key) {
+    if(key=='name'){
+      await manageNameRef.value.validateFields();
+    }
+    //所在地为空报错
+    if(key == 'companyAddress'){
+      if(updateInfo[key] instanceof Array){
+        updateInfo[key] = '';
+      }
+    }
+    let params = {
+      id: formState.id,
+      [key]: updateInfo[key]
+    };
+    await updateTenantInfo(params);
+    initTenant();
+    modalVisible[key] = false
   }
 
   onMounted(() => {
@@ -292,5 +406,27 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  :deep(.ant-upload.ant-upload-select){
+    width: 80px !important;
+    height: 80px !important;
+    border: unset !important;
+  }
+  :deep(.ant-upload-list-item-container){
+    width: 80px !important;
+    height: 80px !important;
+    border: unset !important;
+  }
+  .edit-name {
+    border: none;
+    border-radius: 3px;
+    box-sizing: border-box;
+    color: #1e88e5;
+    cursor: pointer;
+    display: inline-block;
+    outline: none;
+    text-shadow: none;
+    user-select: none;
+    vertical-align: middle;
   }
 </style>

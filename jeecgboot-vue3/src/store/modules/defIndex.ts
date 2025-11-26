@@ -67,9 +67,8 @@ export const defIndexApi = {
   async update(url: string, component: string, isRoute: boolean) {
     let apiUrl = '/sys/sysRoleIndex/updateDefIndex'
     apiUrl += '?url=' + url
-    //update-begin-author:liusq---date:2025-07-04--for: 设置默认首页接口传参修改,增加encodeURIComponent，防止{{ window._CONFIG['domianURL'] }}/**保存不上
+    // 代码逻辑说明: 设置默认首页接口传参修改,增加encodeURIComponent，防止{{ window._CONFIG['domianURL'] }}/**保存不上
     apiUrl += '&component=' + encodeURIComponent(component)
-    //update-end-author:liusq---date:2025-07-04--for: 设置默认首页接口传参修改,增加encodeURIComponent，防止{{ window._CONFIG['domianURL'] }}/**保存不上
     apiUrl += '&isRoute=' + isRoute
     return await defHttp.put({url: apiUrl});
   },

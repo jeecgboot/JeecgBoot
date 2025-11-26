@@ -10,6 +10,9 @@ export default {
     dropdownItemSwitchAccount: '账户设置',
     dropdownItemSwitchDefaultHomePage: '切换首页',
 
+    dropdownItemSwitchDefaultWeb: '桌面应用',
+    dropdownItemSwitchDefaultAndroid: '移动App',
+
     // tooltip
     tooltipErrorLog: '错误日志',
     tooltipLock: '锁定屏幕',

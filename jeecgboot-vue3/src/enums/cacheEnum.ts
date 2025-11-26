@@ -54,6 +54,9 @@ export const DEPART_ROLE_AUTH_CONFIG_KEY = 'DEPART__ROLE__AUTH__CONFIG__KEY__';
 // 部门管理权限
 export const DEPART_MANGE_AUTH_CONFIG_KEY = 'DEPART__MANGE__AUTH__CONFIG__KEY__';
 
+//产品包管理权限
+export const PACK_AUTH_CONFIG_KEY = 'PACK__AUTH__CONFIG__KEY__';
+
 export enum CacheTypeEnum {
   SESSION,
   LOCAL,

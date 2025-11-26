@@ -80,7 +80,7 @@
                           <span>提示词</span>
                           <a-button v-if="!isRelease" size="middle" @click="generatedPrompt" ghost>
                             <span style="align-items: center;display:flex">
-                              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.9839 1.85931C19.1612 1.38023 19.8388 1.38023 20.0161 1.85931L20.5021 3.17278C20.5578 3.3234 20.6766 3.44216 20.8272 3.49789L22.1407 3.98392C22.6198 4.1612 22.6198 4.8388 22.1407 5.01608L20.8272 5.50211C20.6766 5.55784 20.5578 5.6766 20.5021 5.82722L20.0161 7.14069C19.8388 7.61977 19.1612 7.61977 18.9839 7.14069L18.4979 5.82722C18.4422 5.6766 18.3234 5.55784 18.1728 5.50211L16.8593 5.01608C16.3802 4.8388 16.3802 4.1612 16.8593 3.98392L18.1728 3.49789C18.3234 3.44216 18.4422 3.3234 18.4979 3.17278L18.9839 1.85931zM13.5482 4.07793C13.0164 2.64069 10.9836 2.64069 10.4518 4.07793L8.99368 8.01834C8.82648 8.47021 8.47021 8.82648 8.01834 8.99368L4.07793 10.4518C2.64069 10.9836 2.64069 13.0164 4.07793 13.5482L8.01834 15.0063C8.47021 15.1735 8.82648 15.5298 8.99368 15.9817L10.4518 19.9221C10.9836 21.3593 13.0164 21.3593 13.5482 19.9221L15.0063 15.9817C15.1735 15.5298 15.5298 15.1735 15.9817 15.0063L19.9221 13.5482C21.3593 13.0164 21.3593 10.9836 19.9221 10.4518L15.9817 8.99368C15.5298 8.82648 15.1735 8.47021 15.0063 8.01834L13.5482 4.07793zM5.01608 16.8593C4.8388 16.3802 4.1612 16.3802 3.98392 16.8593L3.49789 18.1728C3.44216 18.3234 3.3234 18.4422 3.17278 18.4979L1.85931 18.9839C1.38023 19.1612 1.38023 19.8388 1.85931 20.0161L3.17278 20.5021C3.3234 20.5578 3.44216 20.6766 3.49789 20.8272L3.98392 22.1407C4.1612 22.6198 4.8388 22.6198 5.01608 22.1407L5.50211 20.8272C5.55784 20.6766 5.6766 20.5578 5.82722 20.5021L7.14069 20.0161C7.61977 19.8388 7.61977 19.1612 7.14069 18.9839L5.82722 18.4979C5.6766 18.4422 5.55784 18.3234 5.50211 18.1728L5.01608 16.8593z"></path></svg>
+                              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.9839 1.85931C19.1612 1.38023 19.8388 1.38023 20.0161 1.85931L20.5021 3.17278C20.5578 3.3234 20.6766 3.44216 20.8272 3.49789L22.1407 3.98392C22.6198 4.1612 22.6198 4.8388 22.1407 5.01608L20.8272 5.50211C20.6766 5.55784 20.5578 5.6766 20.5021 5.82722L20.0161 7.14069C19.8388 7.61977 19.1612 7.61977 18.9839 7.14069L18.4979 5.82722C18.4422 5.6766 18.3234 5.55784 18.1728 5.50211L16.8593 5.01608C16.3802 4.8388 16.3802 4.1612 16.8593 3.98392L18.1728 3.49789C18.3234 3.44216 18.4422 3.3234 18.4979 3.17278L18.9839 1.85931zM13.5482 4.07793C13.0164 2.64069 10.9836 2.64069 10.4518 4.07793L8.99368 8.01834C8.82648 8.47021 8.47021 8.82648 8.01834 8.99368L4.07793 10.4518C2.64069 10.9836 2.64069 13.0164 4.07793 13.5482L8.01834 15.0063C8.47021 15.1735 8.82648 15.5298 8.99368 15.9817L10.4518 19.9221C10.9836 21.3593 13.0164 21.3593 13.5482 19.9221L15.0063 15.9817C15.1735 15.5298 15.5298 15.1735 15.9817 15.0063L19.9221 13.5482C21.3593 13.0164 21.3593 10.9836 19.9221 10.4518L15.9817 8.99368C15.5298 8.82648 15.1735 8.47021 15.0063 8.01834L13.5482 4.07793zM5.01608 16.8593C4.8388 16.3802 4.1612 16.3802 3.98392 16.8593L3.49789 18.1728C3.44216 18.3234 3.3234 18.4422 3.17278 18.4979L1.85931 18.9839C1.38023 19.1612 1.38023 19.8388 1.85931 20.0161L3.17278 20.5021C3.3234 20.5578 3.44216 20.6766 3.49789 20.8272L3.98392 22.1407C4.1612 22.6198 4.8388 22.6198 5.01608 22.1407L5.50211 20.8272C5.55784 20.6766 5.6766 20.5578 5.82722 20.5021L7.14069 20.0161C7.61977 19.8388 7.61977 19.1612 7.14069 18.9839L5.82722 18.4979C5.6766 18.4422 5.55784 18.3234 5.50211 18.1728L5.01608 16.8593z"/></svg>
                               <span style="margin-left: 4px">生成</span>
                             </span>
                           </a-button>
@@ -147,7 +147,7 @@
                             <div class="quick-command">
                               <div style="display: flex;align-items: center">
                                 <Icon v-if="item.icon" :icon="item.icon" size="20"></Icon>
-                                <svg v-else width="14px" height="14px" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.9839 1.85931C19.1612 1.38023 19.8388 1.38023 20.0161 1.85931L20.5021 3.17278C20.5578 3.3234 20.6766 3.44216 20.8272 3.49789L22.1407 3.98392C22.6198 4.1612 22.6198 4.8388 22.1407 5.01608L20.8272 5.50211C20.6766 5.55784 20.5578 5.6766 20.5021 5.82722L20.0161 7.14069C19.8388 7.61977 19.1612 7.61977 18.9839 7.14069L18.4979 5.82722C18.4422 5.6766 18.3234 5.55784 18.1728 5.50211L16.8593 5.01608C16.3802 4.8388 16.3802 4.1612 16.8593 3.98392L18.1728 3.49789C18.3234 3.44216 18.4422 3.3234 18.4979 3.17278L18.9839 1.85931zM13.5482 4.07793C13.0164 2.64069 10.9836 2.64069 10.4518 4.07793L8.99368 8.01834C8.82648 8.47021 8.47021 8.82648 8.01834 8.99368L4.07793 10.4518C2.64069 10.9836 2.64069 13.0164 4.07793 13.5482L8.01834 15.0063C8.47021 15.1735 8.82648 15.5298 8.99368 15.9817L10.4518 19.9221C10.9836 21.3593 13.0164 21.3593 13.5482 19.9221L15.0063 15.9817C15.1735 15.5298 15.5298 15.1735 15.9817 15.0063L19.9221 13.5482C21.3593 13.0164 21.3593 10.9836 19.9221 10.4518L15.9817 8.99368C15.5298 8.82648 15.1735 8.47021 15.0063 8.01834L13.5482 4.07793zM5.01608 16.8593C4.8388 16.3802 4.1612 16.3802 3.98392 16.8593L3.49789 18.1728C3.44216 18.3234 3.3234 18.4422 3.17278 18.4979L1.85931 18.9839C1.38023 19.1612 1.38023 19.8388 1.85931 20.0161L3.17278 20.5021C3.3234 20.5578 3.44216 20.6766 3.49789 20.8272L3.98392 22.1407C4.1612 22.6198 4.8388 22.6198 5.01608 22.1407L5.50211 20.8272C5.55784 20.6766 5.6766 20.5578 5.82722 20.5021L7.14069 20.0161C7.61977 19.8388 7.61977 19.1612 7.14069 18.9839L5.82722 18.4979C5.6766 18.4422 5.55784 18.3234 5.50211 18.1728L5.01608 16.8593z"></path></svg>
+                                <svg v-else width="14px" height="14px" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M18.9839 1.85931C19.1612 1.38023 19.8388 1.38023 20.0161 1.85931L20.5021 3.17278C20.5578 3.3234 20.6766 3.44216 20.8272 3.49789L22.1407 3.98392C22.6198 4.1612 22.6198 4.8388 22.1407 5.01608L20.8272 5.50211C20.6766 5.55784 20.5578 5.6766 20.5021 5.82722L20.0161 7.14069C19.8388 7.61977 19.1612 7.61977 18.9839 7.14069L18.4979 5.82722C18.4422 5.6766 18.3234 5.55784 18.1728 5.50211L16.8593 5.01608C16.3802 4.8388 16.3802 4.1612 16.8593 3.98392L18.1728 3.49789C18.3234 3.44216 18.4422 3.3234 18.4979 3.17278L18.9839 1.85931zM13.5482 4.07793C13.0164 2.64069 10.9836 2.64069 10.4518 4.07793L8.99368 8.01834C8.82648 8.47021 8.47021 8.82648 8.01834 8.99368L4.07793 10.4518C2.64069 10.9836 2.64069 13.0164 4.07793 13.5482L8.01834 15.0063C8.47021 15.1735 8.82648 15.5298 8.99368 15.9817L10.4518 19.9221C10.9836 21.3593 13.0164 21.3593 13.5482 19.9221L15.0063 15.9817C15.1735 15.5298 15.5298 15.1735 15.9817 15.0063L19.9221 13.5482C21.3593 13.0164 21.3593 10.9836 19.9221 10.4518L15.9817 8.99368C15.5298 8.82648 15.1735 8.47021 15.0063 8.01834L13.5482 4.07793zM5.01608 16.8593C4.8388 16.3802 4.1612 16.3802 3.98392 16.8593L3.49789 18.1728C3.44216 18.3234 3.3234 18.4422 3.17278 18.4979L1.85931 18.9839C1.38023 19.1612 1.38023 19.8388 1.85931 20.0161L3.17278 20.5021C3.3234 20.5578 3.44216 20.6766 3.49789 20.8272L3.98392 22.1407C4.1612 22.6198 4.8388 22.6198 5.01608 22.1407L5.50211 20.8272C5.55784 20.6766 5.6766 20.5578 5.82722 20.5021L7.14069 20.0161C7.61977 19.8388 7.61977 19.1612 7.14069 18.9839L5.82722 18.4979C5.6766 18.4422 5.55784 18.3234 5.50211 18.1728L5.01608 16.8593z"/></svg>
                                 <div style="max-width: 400px;margin-left: 4px" class="ellipsis">{{item.name}}</div>
                               </div>
                               <div v-if="!isRelease" style="align-items: center" class="quick-command-icon">
@@ -185,6 +185,7 @@
                           placeholder="请选择AI模型"
                           dict-code="airag_model where model_type = 'LLM' and activate_flag = 1,name,id"
                           style="width: 100%;"
+                          @change="handleModelIdChange"
                       ></JDictSelectTag>
                     </a-form-item>
                   </div>
@@ -231,6 +232,43 @@
                     </a-form-item>
                   </div>
                 </a-col>
+                <!-- 插件关联区块 -->
+                <a-col :span="24" v-if="formState.type==='chatSimple'" class="mt-10">
+                  <div class="prologue-chunk">
+                    <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol">
+                      <template #label>
+                        <div style="display: flex; justify-content: space-between; width: 100%;margin-left: 2px;">
+                          <div class="item-title">关联MCP&插件</div>
+                          <div v-if="!isRelease">
+                            <span @click="handleAddMcpClick" class="knowledge-txt">
+                              <Icon icon="ant-design:plus-outlined" size="13" style="margin-right: 2px"></Icon>添加
+                            </span>
+                          </div>
+                        </div>
+                      </template>
+                      <a-row :span="24">
+                        <a-col :span="12" v-for="item in pluginDataList" :key="item.id" v-if="pluginDataList && pluginDataList.length>0">
+                          <a-card hoverable class="knowledge-card" :body-style="{ width: '100%' }">
+                            <div style="display: flex; width: 100%; justify-content: space-between">
+                              <div>
+                                <img class="knowledge-img" src="/@/views/super/airag/aimcp/imgs/mcpLogo.png" />
+                                <span class="knowledge-name">{{ item.name }}</span>
+                              </div>
+                              <Icon v-if="!isRelease" @click="handleDeleteMcp(item.id)" icon="ant-design:close-outlined" size="20" class="knowledge-icon"></Icon>
+                            </div>
+                          </a-card>
+                        </a-col>
+                        <div v-else class="data-empty-text">
+                          <div style="margin-bottom: 8px;">添加插件后，智能体可调用外部工具能力丰富对话。</div>
+                          <div class="mcp-warning-tip">
+                            <Icon icon="ant-design:exclamation-circle-outlined" style="margin-right: 4px;" />
+                            <span>注意：部分大模型暂不支持工具调用功能，请确认所选模型兼容性</span>
+                          </div>
+                        </div>
+                      </a-row>
+                    </a-form-item>
+                  </div>
+                </a-col>
                 <a-col :span="24" class="mt-10">
                   <div class="prologue-chunk">
                     <a-form-item :labelCol="labelCol" :wrapperCol="wrapperCol" v-bind="validateInfos.msgNum">
@@ -258,7 +296,18 @@
             </a-form>
           </a-col>
           <a-col :span="14" class="setting-right">
-            <chat :uuid="uuid" :prologue="prologue" :appId="appId" :formState="formState" url="/airag/app/debug" :presetQuestion="presetQuestion" :quickCommandData="quickCommandList"></chat>
+            <chat 
+              :uuid="uuid" 
+              :prologue="prologue" 
+              :appId="appId" 
+              :formState="formState" 
+              url="/airag/app/debug" 
+              :presetQuestion="presetQuestion" 
+              :quickCommandData="quickCommandList"
+              :hasExtraFlowInputs="hasExtraFlowInputs"
+              :conversationSettings="conversationSettings"
+              @edit-settings="handleEditSettings"
+            ></chat>
           </a-col>
         </a-row>
       </div>
@@ -266,6 +315,8 @@
 
     <!--  Ai知识库选择弹窗   -->
     <AiAppAddKnowledgeModal @register="registerKnowledgeModal" @success="handleSuccess"></AiAppAddKnowledgeModal>
+    <!--  插件选择弹窗   -->
+    <AiAppAddMcpModal @register="registerMcpModal" @success="handleMcpSuccess"></AiAppAddMcpModal>
     <!--  Ai添加流程弹窗  -->
     <AiAppAddFlowModal @register="registerFlowModal" @success="handleAddFlowSuccess"></AiAppAddFlowModal>
     <!-- Ai配置弹窗   -->
@@ -276,24 +327,35 @@
     <AiAppGeneratedPromptModal @register="registerAiAppPromptModal" @ok="handleAiAppPromptOk"></AiAppGeneratedPromptModal>
     <!--  Ai快捷指令  -->
     <AiAppQuickCommandModal @register="registerAiAppCommandModal" @ok="handleAiAppCommandOk" @update-ok="handleAiAppCommandUpdateOk"></AiAppQuickCommandModal>
+    <!-- 对话设置弹窗 -->
+    <ConversationSettingsModal
+      ref="settingsModalRef"
+      :flowInputs="flowInputs"
+      conversationId="debug"
+      :existingSettings="conversationSettings"
+      @ok="handleSettingsOk"
+    />
   </div>
 </template>
 
 <script lang="ts">
-  import { ref, reactive, nextTick, computed } from 'vue';
+  import { ref, reactive, nextTick, computed, watch } from 'vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { useModal, useModalInner } from '@/components/Modal';
   import { Form, TimePicker } from 'ant-design-vue';
   import { initDictOptions } from '@/utils/dict';
   import {queryKnowledgeBathById, saveApp, queryById, queryFlowById} from '../AiApp.api';
+  import { defHttp } from '@/utils/http/axios';
   import JDictSelectTag from '@/components/Form/src/jeecg/components/JDictSelectTag.vue';
   import AiAppAddKnowledgeModal from './AiAppAddKnowledgeModal.vue';
+  import AiAppAddMcpModal from './AiAppAddMcpModal.vue';
   import AiAppParamsSettingModal from './AiAppParamsSettingModal.vue';
   import AiAppGeneratedPromptModal from './AiAppGeneratedPromptModal.vue';
   import AiAppQuickCommandModal from './AiAppQuickCommandModal.vue';
   import AiAppAddFlowModal from './AiAppAddFlowModal.vue';
   import AiAppModal from './AiAppModal.vue';
   import chat from '../chat/chat.vue';
+  import ConversationSettingsModal from '../chat/components/ConversationSettingsModal.vue';
   import knowledge from '/@/views/super/airag/aiknowledge/icon/knowledge.png';
   import { cloneDeep } from 'lodash-es';
   import dayjs from 'dayjs';
@@ -316,10 +378,12 @@
       JDictSelectTag,
       BasicModal,
       AiAppAddKnowledgeModal,
+      AiAppAddMcpModal,
       AiAppParamsSettingModal,
       AiAppAddFlowModal,
       AiAppModal,
       chat,
+      ConversationSettingsModal,
       AiAppGeneratedPromptModal,
       AiAppQuickCommandModal,
     },
@@ -356,15 +420,20 @@
         flowId:[{ required: true, message: '请选择AI流程!' }]
       });
       //注册form
-      const formRef = ref();
       const useForm = Form.useForm;
-      const { resetFields, validate, validateInfos, validateField } = useForm(formState, validatorRules, { immediate: false });
+      const { resetFields, validate, validateInfos } = useForm(formState, validatorRules, { immediate: false });
       const labelCol = ref<any>({ span: 24 });
       const wrapperCol = ref<any>({ span: 24 });
       //关联知识库的id
       const knowledgeIds = ref<any>('');
       //知识库集合
       const knowledgeDataList = ref<any>([]);
+      // 插件id集合（只存id）
+      const pluginIds = ref<any>([]);
+      // 插件对象集合（包含name等）
+      const pluginDataList = ref<any>([]);
+      // 插件结构（保存时写入 formState.plugins）
+      const plugins = ref<any>([]);
       //开场白的数据
       const prologue = ref<any>('');
       //应用id
@@ -383,6 +452,12 @@
       const multiSessionChecked = ref<boolean>(true);
       // 是否已发布
       const isRelease = ref<boolean>(false);
+      //对话设置弹窗ref
+      const settingsModalRef = ref();
+      //工作流入参列表
+      const flowInputs = ref<any[]>([]);
+      //对话设置（用于调试模式）
+      const conversationSettings = ref<Record<string, any>>({});
       //注册modal
       const [registerModal, { closeModal, setModalProps }] = useModalInner(async (data) => {
         appId.value = data.id;
@@ -416,6 +491,7 @@
 
       //注册modal
       const [registerKnowledgeModal, { openModal }] = useModal();
+      const [registerMcpModal, { openModal: openMcpModal }] = useModal();
       const [registerFlowModal, { openModal: registerFlowOpen }] = useModal();
       const [registerParamsSettingModal, { openModal: paramsSettingOpen }] = useModal();
       const [registerAiAppModal, { openModal: aiAppModalOpen }] = useModal();
@@ -480,6 +556,16 @@
       }
 
       /**
+       * 添加关联MCP
+       */
+      function handleAddMcpClick(){
+        openMcpModal(true,{
+          pluginIds: pluginIds.value,
+          pluginDataList: pluginDataList.value
+        })
+      }
+
+      /**
        * 选中回调事件
        * @param knowledgeId
        * @param knowledgeData
@@ -493,6 +579,19 @@
       }
 
       /**
+       * MCP选中成功回调
+       * @param ids
+       * @param dataList
+       * @param pluginStruct
+       */
+      function handleMcpSuccess(ids, dataList, pluginStruct){
+        pluginIds.value = cloneDeep(ids);
+        pluginDataList.value = cloneDeep(dataList);
+        plugins.value = cloneDeep(pluginStruct);
+        formState.plugins = JSON.stringify(plugins.value);
+      }
+
+      /**
        * 删除知识库
        */
       function handleDeleteKnowledge(id) {
@@ -503,6 +602,19 @@
           knowledgeIds.value = array ? array.join(',') : '';
           knowledgeDataList.value.splice(findIndex, 1);
           formState.knowledgeIds = knowledgeIds.value;
+        }
+      }
+
+      /**
+       * 删除MCP
+       */
+      function handleDeleteMcp(id){
+        const findIndex = pluginIds.value.findIndex((item:any)=> item === id);
+        if(findIndex>-1){
+          pluginIds.value.splice(findIndex,1);
+          pluginDataList.value.splice(findIndex,1);
+          plugins.value = pluginDataList.value.map((it:any)=> ({ pluginId: it.id, pluginName: it.name, category: 'mcp'}));
+          formState.plugins = JSON.stringify(plugins.value);
         }
       }
 
@@ -764,6 +876,9 @@
       function clearParam() {
         knowledgeIds.value = '';
         knowledgeDataList.value = [];
+        pluginIds.value = [];
+        pluginDataList.value = [];
+        plugins.value = [];
         prologue.value = '';
         flowId.value = '';
         flowData.value = null;
@@ -790,7 +905,7 @@
           if(metadata.value?.multiSession){
             multiSessionChecked.value = metadata.value.multiSession === '1';
           }else{
-            multiSessionChecked.value = "1";
+            multiSessionChecked.value = true;
           }
         }
         if(data.presetQuestion){
@@ -806,6 +921,18 @@
           quickCommandList.value = parse;
           //update-end---author:wangshuai---date:2025-04-08---for:【QQYUN-11939】ai应用 快捷指令 修改保存以后，再次打开还是原来的---
         }
+        if(data.plugins){
+          try {
+            const parsePlugins = JSON.parse(data.plugins);
+            pluginIds.value = parsePlugins.map((p:any)=> p.pluginId);
+            pluginDataList.value = parsePlugins.map((p:any)=> ({ id: p.pluginId, name: p.pluginName }));
+            plugins.value = parsePlugins;
+          } catch (e) {
+            pluginIds.value = [];
+            pluginDataList.value = [];
+            plugins.value = [];
+          }
+        }
         //赋值
         Object.assign(formState, data);
         //根据知识库id查询知识库内容
@@ -815,6 +942,10 @@
         //根据知识库id查询流程信息
         if (data.type === 'chatFLow' && data.flowId) {
           getFlowDataById(data.flowId);
+        }
+        // 如果已有modelId，查询模型信息并更新到metadata中
+        if (data.type === 'chatSimple' && data.modelId) {
+          handleModelIdChange(data.modelId);
         }
       }
 
@@ -916,6 +1047,97 @@
         formState.metadata = JSON.stringify(metadata.value);
       }
 
+      // 检查是否有额外的工作流入参
+      const hasExtraFlowInputs = computed(() => {
+        if (!flowData.value || !flowData.value.metadata) {
+          return false;
+        }
+        try {
+          const flowInputsList = flowData.value.metadata || [];
+          
+          // 过滤掉固定参数
+          const fixedParams = ['history', 'content', 'images'];
+          const extraInputs = flowInputsList.filter((input: any) => !fixedParams.includes(input.field));
+          
+          return extraInputs.length > 0;
+        } catch (e) {
+          console.error('解析flowData.metadata失败', e);
+          return false;
+        }
+      });
+
+      // 监听flowData变化，更新flowInputs
+      watch(
+        () => flowData.value,
+        (val) => {
+          if (!val || !val.metadata) {
+            flowInputs.value = [];
+            return;
+          }
+          try {
+            const flowInputsList = val.metadata || [];
+            flowInputs.value = flowInputsList;
+          } catch (e) {
+            console.error('解析flowData.metadata失败', e);
+            flowInputs.value = [];
+          }
+        },
+        { immediate: true, deep: true }
+      );
+
+      /**
+       * 打开对话设置弹窗
+       */
+      function handleEditSettings() {
+        if (settingsModalRef.value) {
+          settingsModalRef.value.open();
+        }
+      }
+
+      /**
+       * 对话设置确定回调
+       */
+      function handleSettingsOk(settings: Record<string, any>) {
+        conversationSettings.value = settings;
+        console.log('调试模式对话设置已更新:', settings);
+      }
+
+      /**
+       * 模型ID变化处理
+       * 查询模型信息并更新到metadata中，供chat组件使用
+       */
+      async function handleModelIdChange(modelId: string) {
+        if (!modelId) {
+          // 如果清空模型，清除模型信息
+          if (metadata.value.modelInfo) {
+            delete metadata.value.modelInfo;
+            formState.metadata = JSON.stringify(metadata.value);
+          }
+          return;
+        }
+        try {
+          const res = await defHttp.get({
+            url: '/airag/airagModel/queryById',
+            params: { id: modelId }
+          }, { isTransformResponse: false });
+          if (res.success && res.result) {
+            const model = res.result;
+            // 将模型信息添加到metadata中
+            if (!metadata.value) {
+              metadata.value = {};
+            }
+            metadata.value.modelInfo = {
+              provider: model.provider || '',
+              modelType: model.modelType || '',
+              modelName: model.modelName || ''
+            };
+            formState.metadata = JSON.stringify(metadata.value);
+          }
+        } catch (e) {
+          console.error('获取模型信息失败', e);
+        }
+      }
+
       return {
         registerModal,
         title,
@@ -931,11 +1153,17 @@
         wrapperCol,
         validateInfos,
         handleAddKnowledgeIdClick,
+        handleAddMcpClick,
         registerKnowledgeModal,
+        registerMcpModal,
         knowledgeDataList,
+        pluginDataList,
+        plugins,
         knowledge,
         handleSuccess,
+        handleMcpSuccess,
         handleDeleteKnowledge,
+        handleDeleteMcp,
         uuid,
         prologueTextAreaBlur,
         prologue,
@@ -978,6 +1206,14 @@
         metadata,
         multiSessionChecked,
         handleMultiSessionChange,
+        pluginIds,
+        settingsModalRef,
+        flowInputs,
+        conversationSettings,
+        hasExtraFlowInputs,
+        handleEditSettings,
+        handleSettingsOk,
+        handleModelIdChange,
       };
     },
   };
@@ -1185,6 +1421,14 @@
   .data-empty-text{
     color: #757c8f;
     margin-left: 10px;
+  }
+  .mcp-warning-tip {
+    display: flex;
+    align-items: center;
+    color: #fa8c16;
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 500;
   }
   .flow-icon{
     width: 34px;

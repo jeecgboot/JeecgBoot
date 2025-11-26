@@ -61,17 +61,16 @@ export function updateSidebarBgColor(color?: string) {
       color = appStore.getMenuSetting.bgColor;
     }
   }
-  // update-begin--author:liaozhiyang---date:20230811---for：【QQYUN-5922】logo背景色渐变
+  // 代码逻辑说明: 【QQYUN-5922】logo背景色渐变
   let findIndex = SIDE_BAR_BG_COLOR_LIST.findIndex((item) => item === color);
   setCssVar(SIDER_LOGO_BG_COLOR, findIndex == -1 ? 'linear-gradient(180deg, #000000, #282828)' : SIDER_LOGO_BG_COLOR_LIST[findIndex]);
-  // update-end--author:liaozhiyang---date:20230811---for：【QQYUN-5922】llogo背景色渐变
   setCssVar(SIDER_DARK_BG_COLOR, color);
   setCssVar(SIDER_DARK_DARKEN_BG_COLOR, darken(color!, 6));
   setCssVar(SIDER_LIGHTEN_BG_COLOR, lighten(color!, 5));
 
   // only #ffffff is light
   // Only when the background color is #fff, the theme of the menu will be changed to light
-  // update-begin--author:liaozhiyang---date:20240408---for：【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
+  // 代码逻辑说明: 【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
   let theme;
   let isThemeBright = false;
   if (['#fff', '#ffffff'].includes(color!.toLowerCase()) && !darkMode) {
@@ -88,5 +87,4 @@ export function updateSidebarBgColor(color?: string) {
       isThemeBright,
     },
   });
-  // update-end--author:liaozhiyang---date:20240408---for：【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
 }

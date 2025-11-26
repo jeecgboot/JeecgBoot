@@ -99,7 +99,7 @@
   import { LoginStateEnum, useLoginState, useFormRules, useFormValid } from './useLogin';
   import { useDesign } from '/@/hooks/web/useDesign';
   import { getCodeInfo } from '/@/api/sys/user';
-  //import { onKeyStroke } from '@vueuse/core';
+  import {  encryptAESCBC } from '/@/utils/cipher';
 
   const ACol = Col;
   const ARow = Row;
@@ -143,9 +143,12 @@
     if (!data) return;
     try {
       loading.value = true;
+
+      // 密码使用AES加密传输
+      const encryptedPassword = encryptAESCBC(data.password);
       const { userInfo } = await userStore.login(
         toRaw({
-          password: data.password,
+          password: encryptedPassword,
           username: data.account,
           captcha: data.inputCode,
           checkKey: randCodeData.checkKey,
@@ -166,18 +169,13 @@
         duration: 3,
       });
       loading.value = false;
-
-      //update-begin-author:taoyan date:2022-5-3 for: issues/41 登录页面，当输入验证码错误时，验证码图片要刷新一下，而不是保持旧的验证码图片不变
       handleChangeCheckCode();
-      //update-end-author:taoyan date:2022-5-3 for: issues/41 登录页面，当输入验证码错误时，验证码图片要刷新一下，而不是保持旧的验证码图片不变
     }
   }
   function handleChangeCheckCode() {
     formData.inputCode = '';
-    //TODO 兼容mock和接口，暂时这样处理
-    //update-begin---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
+    // 代码逻辑说明: [QQYUN-10775]验证码可以复用 #7674------------
     randCodeData.checkKey = new Date().getTime() + Math.random().toString(36).slice(-4); // 1629428467008;
-    //update-end---author:chenrui ---date:2025/1/7  for：[QQYUN-10775]验证码可以复用 #7674------------
     getCodeInfo(randCodeData.checkKey).then((res) => {
       randCodeData.randCodeImage = res;
       randCodeData.requestCodeSuccess = true;

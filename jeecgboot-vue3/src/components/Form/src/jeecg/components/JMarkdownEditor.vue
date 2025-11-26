@@ -42,11 +42,10 @@
       function onChange(value) {
         emit('change', value);
         emit('update:value', value);
-        // update-begin--author:liaozhiyang---date:20240429---for：【QQYUN-9110】组件有值校验没消失
+        // 代码逻辑说明: 【QQYUN-9110】组件有值校验没消失
         nextTick(() => {
           formItemContext?.onFieldChange();
         });
-        // update-end--author:liaozhiyang---date:20240429---for：【QQYUN-9110】组件有值校验没消失
       }
 
       return {

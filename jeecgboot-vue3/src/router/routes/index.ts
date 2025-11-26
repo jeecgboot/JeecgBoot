@@ -40,7 +40,7 @@ export const LoginRoute: AppRouteRecordRaw = {
   },
 };
 
-//update-begin---author:wangshuai ---date:20220629  for：auth2登录页面路由------------
+// 代码逻辑说明: auth2登录页面路由------------
 export const Oauth2LoginRoute: AppRouteRecordRaw = {
   path: '/oauth2-app/login',
   name: 'oauth2-app-login',
@@ -51,7 +51,6 @@ export const Oauth2LoginRoute: AppRouteRecordRaw = {
     title: t('routes.oauth2.login'),
   },
 };
-//update-end---author:wangshuai ---date:20220629  for：auth2登录页面路由------------
 
 /**
  * 【通过token直接静默登录】流程办理登录页面 中转跳转

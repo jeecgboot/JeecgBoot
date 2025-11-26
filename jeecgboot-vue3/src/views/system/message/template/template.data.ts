@@ -76,6 +76,7 @@ export const formSchemas: FormSchema[] = [
     label: '模板编码',
     field: 'templateCode',
     component: 'Input',
+    required: true,
     dynamicRules: ({ model, schema }) => {
       return [ ...rules.duplicateCheckRule('sys_sms_template', 'template_code', model, schema, true)];
     },

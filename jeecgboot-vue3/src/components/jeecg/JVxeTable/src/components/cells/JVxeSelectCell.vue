@@ -89,9 +89,8 @@
         let props = originColumn.value.props || {};
         props['mode'] = 'multiple';
         props['maxTagCount'] = 1;
-        //update-begin-author:taoyan date:2022-12-5 for: issues/271 Online表单主子表单下拉多选无法搜索
+        // 代码逻辑说明: issues/271 Online表单主子表单下拉多选无法搜索
         originColumn.value.allowSearch = true;
-        //update-end-author:taoyan date:2022-12-5 for: issues/271 Online表单主子表单下拉多选无法搜索
         originColumn.value.props = props;
       } else if (searchTypes.includes(props.type)) {
         // 处理搜索
@@ -136,12 +135,10 @@
       
         let { allowSearch, allowInput } = originColumn.value;
         if (allowSearch === true || allowInput === true) {
-          // update-begin--author:liaozhiyang---date:20240321---for：【QQYUN-5806】js增强改变下拉搜索options (防止option.title为null报错)
+          // 代码逻辑说明: 【QQYUN-5806】js增强改变下拉搜索options (防止option.title为null报错)
           if (option.title == null) return false;
-          // update-begin--author:liaozhiyang---date:20240321---for：【QQYUN-5806】js增强改变下拉搜索options (防止option.title为null报错)
-          // update-begin--author:liaozhiyang---date:20230904---for：【issues/5305】JVxeTypes.select 无法按照预期进行搜索
+          // 代码逻辑说明: 【issues/5305】JVxeTypes.select 无法按照预期进行搜索
           return option.title.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-          // update-begin--author:liaozhiyang---date:20230904---for：【issues/5305】JVxeTypes.select 无法按照预期进行搜索
         }
         return true;
       }

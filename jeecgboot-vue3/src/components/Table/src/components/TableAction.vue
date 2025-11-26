@@ -112,21 +112,19 @@
           })
           .map((action) => {
             const { popConfirm } = action;
-            // update-begin--author:liaozhiyang---date:20240105---for：【issues/951】table删除记录时按钮显示错位
+            // 代码逻辑说明: 【issues/951】table删除记录时按钮显示错位
             if (popConfirm) {
               const overlayClassName = popConfirm.overlayClassName;
               popConfirm.overlayClassName = `${overlayClassName ? overlayClassName : ''} ${prefixCls}-popconfirm`;
             }
-            // update-end--author:liaozhiyang---date:20240105---for：【issues/951】table删除记录时按钮显示错位
             return {
               getPopupContainer: () => unref((table as any)?.wrapRef.value) ?? document.body,
               type: 'link',
               size: 'small',
               ...action,
               ...(popConfirm || {}),
-              // update-begin--author:liaozhiyang---date:20240108---for：【issues/936】表格操作栏删除当接口失败时，气泡确认框不会消失
+              // 代码逻辑说明: 【issues/936】表格操作栏删除当接口失败时，气泡确认框不会消失
               onConfirm: handelConfirm(popConfirm?.confirm),
-              // update-end--author:liaozhiyang---date:20240108---for：【issues/936】表格操作栏删除当接口失败时，气泡确认框不会消失
               onCancel: popConfirm?.cancel,
               enable: !!popConfirm,
             };
@@ -150,24 +148,21 @@
         });
         return list.map((action, index) => {
           const { label, popConfirm } = action;
-          // update-begin--author:liaozhiyang---date:20240105---for：【issues/951】table删除记录时按钮显示错位
+          // 代码逻辑说明: 【issues/951】table删除记录时按钮显示错位
           if (popConfirm) {
             const overlayClassName = popConfirm.overlayClassName;
             popConfirm.overlayClassName = `${overlayClassName ? overlayClassName : ''} ${prefixCls}-popconfirm`;
-            // update-begin--author:liaozhiyang---date:20240814---for：【issues/7028】表格全屏后操作列中的下拉菜单和气泡确认框不显示
+            // 代码逻辑说明: 【issues/7028】表格全屏后操作列中的下拉菜单和气泡确认框不显示
             if (!popConfirm.getPopupContainer) {
               popConfirm.getPopupContainer = () => {
                 return (table as any)?.wrapRef?.value ?? document.body;
               };
             }
-            // update-end--author:liaozhiyang---date:20240814---for：【issues/7028】表格全屏后操作列中的下拉菜单和气泡确认框不显示
           }
-          // update-end--author:liaozhiyang---date:20240105---for：【issues/951】table删除记录时按钮显示错位
-          // update-begin--author:liaozhiyang---date:20240108---for：【issues/936】表格操作栏删除当接口失败时，气泡确认框不会消失
+          // 代码逻辑说明: 【issues/936】表格操作栏删除当接口失败时，气泡确认框不会消失
           if (popConfirm) {
             popConfirm.confirm = handelConfirm(popConfirm?.confirm);
           }
-          // update-end--author:liaozhiyang---date:20240108---for：【issues/936】表格操作栏删除当接口失败时，气泡确认框不会消失
           return {
             ...action,
             ...popConfirm,
@@ -228,11 +223,10 @@
         });
         isInButton && e.stopPropagation();
       }
-      // update-begin--author:liaozhiyang---date:20240814---for：【issues/7028】表格全屏后操作列中的下拉菜单和气泡确认框不显示
+      // 代码逻辑说明: 【issues/7028】表格全屏后操作列中的下拉菜单和气泡确认框不显示
       const dropdownGetPopupContainer = () => {
         return (table as any)?.wrapRef?.value ?? document.body;
       };
-      // update-end--author:liaozhiyang---date:20240814---for：【issues/7028】表格全屏后操作列中的下拉菜单和气泡确认框不显示
       return { prefixCls, getActions, getDropdownList, getDropdownSlotList, getAlign, onCellClick, getTooltip, dropdownCls, dropdownGetPopupContainer };
     },
   });
@@ -294,14 +288,13 @@
     &-popconfirm {
       .ant-popconfirm-buttons {
         min-width: 120px;
-        // update-begin--author:liaozhiyang---date:20240124---for：【issues/1019】popConfirm确认框待端后端返回过程中（处理中）样式错乱
+        // 代码逻辑说明: 【issues/1019】popConfirm确认框待端后端返回过程中（处理中）样式错乱
         display: flex;
         align-items: center;
         justify-content: center;
-        // update-end--author:liaozhiyang---date:20240124---for：【issues/1019】popConfirm确认框待端后端返回过程中（处理中）样式错乱
       }
     }
-    // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8762】调整table操作栏ant-dropdown样式
+    // 代码逻辑说明: 【QQYUN-8762】调整table操作栏ant-dropdown样式
     &-dropdown {
       .ant-dropdown-menu .ant-dropdown-menu-item-divider {
         margin: 2px 0;
@@ -314,6 +307,5 @@
         padding: 0 !important;
       }
     }
-    // update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8762】调整table操作栏ant-dropdown样式
   }
 </style>

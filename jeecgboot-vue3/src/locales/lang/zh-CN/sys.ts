@@ -95,6 +95,7 @@ export default {
 
     userName: '账号',
     password: '密码',
+    loginOrgCode: '部门',
     inputCode: '验证码',
     confirmPassword: '确认密码',
     email: '邮箱',

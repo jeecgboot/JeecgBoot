@@ -16,7 +16,7 @@ export async function validateFormModelAndTables(validate, formData, cases, prop
     // 验证主表表单
     validate()
       .then(() => {
-        //update-begin---author:wangshuai ---date:20220507  for：[VUEN-912]一对多用户组件（所有风格，单表和树没问题）保存报错------------
+        // 代码逻辑说明: [VUEN-912]一对多用户组件（所有风格，单表和树没问题）保存报错------------
         for (let data in formData) {
           //如果该数据是数组
           if (formData[data] instanceof Array) {
@@ -27,13 +27,11 @@ export async function validateFormModelAndTables(validate, formData, cases, prop
             }
           }
         }
-        //update-end---author:wangshuai ---date:20220507  for：[VUEN-912]一对多用户组件（所有风格，单表和树没问题）保存报错--------------
         resolve(formData);
       })
-      //update-begin---author:wangshuai---date:2024-06-17---for:【TV360X-1064】非原生提交表单滚动校验没通过的项---
+      // 代码逻辑说明: 【TV360X-1064】非原生提交表单滚动校验没通过的项---
       .catch(({ errorFields }) => {
         reject({ error: VALIDATE_FAILED, index: 0, errorFields: errorFields });
-      //update-end---author:wangshuai---date:2024-06-17---for:【TV360X-1064】非原生提交表单滚动校验没通过的项---
       });
   });
   Object.assign(dataMap, { formValue: values });
@@ -81,9 +79,8 @@ export function validateTables(cases, autoJumpTab = true) {
             }
           }
           // 出现未验证通过的表单，不再进行下一步校验，直接返回失败
-          //update-begin-author:liusq date:2024-06-12 for: TV360X-478 一对多tab，校验未通过时，tab没有跳转
+          // 代码逻辑说明: TV360X-478 一对多tab，校验未通过时，tab没有跳转
           reject({ error: VALIDATE_FAILED, index, paneKey, errMap, subIndex: index });
-          //update-end-author:liusq date:2024-06-12 for: TV360X-478 一对多tab，校验未通过时，tab没有跳转
         }
       });
     })();
