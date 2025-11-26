@@ -21,8 +21,8 @@ public class TestMain {
         // 请求方式是 GET 代表获取数据
         HttpMethod method = HttpMethod.GET;
 
-        System.out.println("请求地址：" + url);
-        System.out.println("请求方式：" + method);
+        //System.out.println("请求地址：" + url);
+        //System.out.println("请求方式：" + method);
 
         // 利用 RestUtil 请求该url
         ResponseEntity<JSONObject> result = RestUtil.request(url, method, headers, null, null, JSONObject.class);

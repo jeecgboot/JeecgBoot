@@ -24,6 +24,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.query.QueryRuleEnum;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 <#list subTables as sub>
 import ${bussiPackage}.${entityPackage}.entity.${sub.entityName};
 </#list>
@@ -310,7 +311,7 @@ public class ${entityName}Controller {
       ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
       mv.addObject(NormalExcelConstants.FILE_NAME, "${tableVo.ftlDescription}列表");
       mv.addObject(NormalExcelConstants.CLASS, ${entityName}Page.class);
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("${tableVo.ftlDescription}数据", "导出人:"+sysUser.getRealname(), "${tableVo.ftlDescription}"));
+      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("${tableVo.ftlDescription}数据", "导出人:"+sysUser.getRealname(), "${tableVo.ftlDescription}", ExcelType.XSSF));
       mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
       return mv;
     }

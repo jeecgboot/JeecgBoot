@@ -147,6 +147,9 @@
 						   <when test="key == 'tenant_id'">
 							   and tenant_id = #{value}
 						   </when>
+			               <when test="key == '_tableFilterSql'">
+                               and ${value}
+                           </when>
 						   <otherwise>
 							   and ${key} LIKE #{value}
 						   </otherwise>

@@ -205,7 +205,7 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
             }
             Object predicates = obj.get("predicates");
             if (predicates != null) {
-                //update-begin-author:liusq---date:2023-10-15--for: [issues/5331]网关路由配置问题
+                // 代码逻辑说明: [issues/5331]网关路由配置问题
                 List<PredicatesVo> list = JSON.parseArray(predicates.toString(), PredicatesVo.class);
                 //获取合并后的Predicates，防止配置多个path导致路径失效的问题
                 Map<String, List<String>> groupedPredicates = new HashMap<>();
@@ -221,12 +221,11 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
                     List<String> args = entry.getValue();
                     list.add(new PredicatesVo(name, args));
                 }
-                //update-end-author:liusq---date:2023-10-15--for:[issues/5331]网关路由配置问题
                 List<PredicateDefinition> predicateDefinitionList = new ArrayList<>();
                 for (Object map : list) {
                     JSONObject json = JSON.parseObject(JSON.toJSONString(map));
                     PredicateDefinition predicateDefinition = new PredicateDefinition();
-                    //update-begin-author:zyf date:20220419 for:【VUEN-762】路由条件添加异常问题,原因是部分路由条件参数需要设置固定key
+                    // 代码逻辑说明: 【VUEN-762】路由条件添加异常问题,原因是部分路由条件参数需要设置固定key
                     String name=json.getString("name");
                     predicateDefinition.setName(name);
                     //路由条件是否拼接Key
@@ -246,7 +245,6 @@ public class DynamicRouteLoader implements ApplicationEventPublisherAware {
                             }
                         }
                     }
-                    //update-end-author:zyf date:20220419 for:【VUEN-762】路由条件添加异常问题,原因是部分路由条件参数需要设置固定key
                     predicateDefinitionList.add(predicateDefinition);
                 }
                 route.setPredicates(predicateDefinitionList);

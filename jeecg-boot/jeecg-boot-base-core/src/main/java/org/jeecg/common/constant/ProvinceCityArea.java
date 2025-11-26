@@ -39,20 +39,18 @@ public class ProvinceCityArea {
             this.initAreaList();
             if(areaList!=null && areaList.size()>0){
                 for(int i=areaList.size()-1;i>=0;i--){
-                    //update-begin-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
+                    // 代码逻辑说明: VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
                     String areaText = areaList.get(i).getText();
                     String cityText = areaList.get(i).getAheadText();
                     if(text.indexOf(areaText)>=0 && (cityText!=null && text.indexOf(cityText)>=0)){
                         return areaList.get(i).getId();
                     }
-                    //update-end-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
                 }
             }
         }
         return null;
     }
 
-    // update-begin-author:sunjianlei date:20220121 for:【JTC-704】数据导入错误 省市区组件，文件中为北京市，导入后，导为了山西省
     /**
      * 获取省市区code，精准匹配
      * @param texts 文本数组，省，市，区
@@ -117,7 +115,6 @@ public class ProvinceCityArea {
         }
         return null;
     }
-    // update-end-author:sunjianlei date:20220121 for:【JTC-704】数据导入错误 省市区组件，文件中为北京市，导入后，导为了山西省
 
     public void getAreaByCode(String code,List<String> ls){
         for(Area area: areaList){
@@ -154,9 +151,8 @@ public class ProvinceCityArea {
                             for(String areaKey:areaJson.keySet()){
                                 //System.out.println("········"+areaKey);
                                 Area area = new Area(areaKey,areaJson.getString(areaKey),cityKey);
-                                //update-begin-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
+                                // 代码逻辑说明: VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
                                 area.setAheadText(cityJson.getString(cityKey));
-                                //update-end-author:taoyan date:2022-5-24 for:VUEN-1088 online 导入 省市区导入后 导入数据错乱 北京市/市辖区/西城区-->山西省/晋城市/城区
                                 this.areaList.add(area);
                             }
                         }

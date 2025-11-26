@@ -63,6 +63,7 @@ services:
     build:
       context: ./jeecg-module-system/jeecg-system-start
     restart: on-failure
+    mac_address: 02:42:ac:11:00:02
     depends_on:
       - jeecg-boot-mysql
       - jeecg-boot-redis

@@ -205,10 +205,10 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                 qw.like("role_code", sysRole.getRoleCode());
             }
             // 未删除
-            List<SysRole> roles = sysRoleService.list(qw);
+            List<org.jeecg.modules.system.entity.SysRole> roles = sysRoleService.list(qw);
             // 仅返回核心字段
             JSONArray arr = new JSONArray();
-            for (SysRole r : roles) {
+            for (org.jeecg.modules.system.entity.SysRole r : roles) {
                 JSONObject o = new JSONObject();
                 o.put("id", r.getId());
                 o.put("roleName", r.getRoleName());
@@ -242,10 +242,10 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
             JSONObject args = JSONObject.parseObject(toolExecutionRequest.arguments());
             String userId = args.getString("userId");
             String roleIdsStr = args.getString("roleIds");
-            if (StringUtils.isAnyBlank(userId, roleIdsStr)) {
+            if (org.apache.commons.lang3.StringUtils.isAnyBlank(userId, roleIdsStr)) {
                 return "参数缺失：userId 或 roleIds";
             }
-            SysUser user = sysUserService.getById(userId);
+            org.jeecg.modules.system.entity.SysUser user = sysUserService.getById(userId);
             if (user == null) {
                 return "用户不存在：" + userId;
             }
@@ -254,9 +254,9 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
             for (String roleId : roleIds) {
                 roleId = roleId.trim();
                 if (roleId.isEmpty()) continue;
-                SysRole role = sysRoleService.getById(roleId);
+                org.jeecg.modules.system.entity.SysRole role = sysRoleService.getById(roleId);
                 if (role == null) { invalid++; continue; }
-                QueryWrapper<org.jeecg.modules.system.entity.SysUserRole> q = new QueryWrapper<>();
+                com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<org.jeecg.modules.system.entity.SysUserRole> q = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
                 q.eq("role_id", roleId).eq("user_id", userId);
                 org.jeecg.modules.system.entity.SysUserRole one = sysUserRoleService.getOne(q);
                 if (one == null) {

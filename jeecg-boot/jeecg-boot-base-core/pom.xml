@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot3</groupId>
 		<artifactId>jeecg-boot-parent</artifactId>
-		<version>3.8.3</version>
+		<version>3.9.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>jeecg-boot-base-core</artifactId>
@@ -44,6 +44,12 @@
 		<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>jeecg-boot-common</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!--集成springmvc框架并实现自动配置 -->
 		<dependency>
@@ -173,7 +179,6 @@
 			<artifactId>DmDialect-for-hibernate5.0</artifactId>
 			<version>${dm8.version}</version>
 		</dependency>
-
 		<!-- Quartz定时任务 -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -259,13 +264,6 @@
 			</exclusions>
 		</dependency>
 
-
-		<!--	<dependency>
-			<groupId>com.github.xiaoymin</groupId>
-			<artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-			<version>${knife4j-spring-boot-starter.version}</version>
-		</dependency>-->
-		<!-- knife4j 升级springboot3.4.5报错 -->
 		<dependency>
 			<groupId>com.github.xiaoymin</groupId>
 			<artifactId>knife4j-openapi3-ui</artifactId>
@@ -315,6 +313,14 @@
 				<exclusion>
 					<artifactId>checker-qual</artifactId>
 					<groupId>org.checkerframework</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.errorprone</groupId>
+					<artifactId>error_prone_annotations</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-compress</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -373,5 +379,21 @@
 			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>jeecg-boot-starter-chatgpt</artifactId>
 		</dependency>
+        <!-- 腾讯云 -->
+        <dependency>
+            <groupId>com.tencentcloudapi</groupId>
+            <artifactId>tencentcloud-sdk-java-sms</artifactId>
+            <version>${tencentcloud-sdk-java-sms.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.xml.bind</groupId>
+					<artifactId>jaxb-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.squareup.okio</groupId>
+					<artifactId>okio</artifactId>
+				</exclusion>
+			</exclusions>
+        </dependency>
 	</dependencies>
 </project>

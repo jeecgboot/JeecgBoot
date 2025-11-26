@@ -97,7 +97,6 @@ public class QueryGenerator {
 		return queryWrapper;
 	}
 	
-	//update-begin---author:chenrui ---date:20240527  for：[TV360X-378]增加自定义字段查询规则功能------------
 	/**
 	 * 获取查询条件构造器QueryWrapper实例 通用查询条件已被封装完成
 	 * @param searchObj 查询实体
@@ -112,7 +111,6 @@ public class QueryGenerator {
 		log.debug("---查询条件构造器初始化完成,耗时:"+(System.currentTimeMillis()-start)+"毫秒----");
 		return queryWrapper;
 	}
-	//update-end---author:chenrui ---date:20240527  for：[TV360X-378]增加自定义字段查询规则功能------------
 
 	/**
 	 * 组装Mybatis Plus 查询条件
@@ -142,7 +140,6 @@ public class QueryGenerator {
 		}
 		
 		String name, type, column;
-		// update-begin--Author:taoyan  Date:20200923 for：issues/1671 如果字段加注解了@TableField(exist = false),不走DB查询-------
 		//定义实体字段和数据库字段名称的映射 高级查询中 只能获取实体字段 如果设置TableField注解 那么查询条件会出问题
 		Map<String,String> fieldColumnMap = new HashMap<>(5);
 		for (int i = 0; i < origDescriptors.length; i++) {
@@ -188,7 +185,7 @@ public class QueryGenerator {
 						queryWrapper.and(j -> j.like(field,vals[0]));
 					}
 				}else {
-					//update-begin---author:chenrui ---date:20240527  for：[TV360X-378]增加自定义字段查询规则功能------------
+					// 代码逻辑说明: [TV360X-378]增加自定义字段查询规则功能------------
 					QueryRuleEnum rule;
 					if(null != customRuleMap && customRuleMap.containsKey(name)) {
 						// 有自定义规则,使用自定义规则.
@@ -197,7 +194,6 @@ public class QueryGenerator {
 						//根据参数值带什么关键字符串判断走什么类型的查询
 						 rule = convert2Rule(value);
 					}
-					//update-end---author:chenrui ---date:20240527  for：[TV360X-378]增加自定义字段查询规则功能------------
 					value = replaceValue(rule,value);
 					// add -begin 添加判断为字符串时设为全模糊查询
 					//if( (rule==null || QueryRuleEnum.EQ.equals(rule)) && "class java.lang.String".equals(type)) {
@@ -217,7 +213,6 @@ public class QueryGenerator {
 				
 		//高级查询
 		doSuperQuery(queryWrapper, parameterMap, fieldColumnMap);
-		// update-end--Author:taoyan  Date:20200923 for：issues/1671 如果字段加注解了@TableField(exist = false),不走DB查询-------
 		
 	}
 
@@ -260,16 +255,16 @@ public class QueryGenerator {
 		}
 		
 		if(oConvertUtils.isNotEmpty(column)){
-			log.info("单字段排序规则>> column:" + column + ",排序方式:" + order);
+			log.debug("单字段排序规则>> column:" + column + ",排序方式:" + order);
 		}
 
 		// 1. 列表多字段排序优先
 		if(parameterMap!=null&& parameterMap.containsKey("sortInfoString")) {
 			// 多字段排序
 			String sortInfoString = parameterMap.get("sortInfoString")[0];
-			log.info("多字段排序规则>> sortInfoString:" + sortInfoString);
+			log.debug("多字段排序规则>> sortInfoString:" + sortInfoString);
 			List<OrderItem> orderItemList = SqlConcatUtil.getQueryConditionOrders(column, order, sortInfoString);
-			log.info(orderItemList.toString());
+			log.debug(orderItemList.toString());
 			if (orderItemList != null && !orderItemList.isEmpty()) {
 				for (OrderItem item : orderItemList) {
 					// 一、获取排序数据库字段
@@ -321,13 +316,11 @@ public class QueryGenerator {
 			return;
 		}
 		
-		//update-begin-author:scott date:2022-11-07 for:避免用户自定义表无默认字段{创建时间}，导致排序报错
 		//TODO 避免用户自定义表无默认字段创建时间，导致排序报错
 		if(DataBaseConstant.CREATE_TIME.equals(column) && !fieldColumnMap.containsKey(DataBaseConstant.CREATE_TIME)){
 			column = "id";
 			log.warn("检测到实体里没有字段createTime，改成采用ID排序！");
 		}
-		//update-end-author:scott date:2022-11-07 for:避免用户自定义表无默认字段{创建时间}，导致排序报错
 		
 		if (oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
 			//字典字段，去掉字典翻译文本后缀
@@ -335,15 +328,12 @@ public class QueryGenerator {
 				column = column.substring(0, column.lastIndexOf(CommonConstant.DICT_TEXT_SUFFIX));
 			}
 
-			//update-begin-author:taoyan date:2022-5-16 for: issues/3676 获取系统用户列表时，使用SQL注入生效
 			//判断column是不是当前实体的
 			log.debug("当前字段有："+ allFields);
 			if (!allColumnExist(column, allFields)) {
 				throw new JeecgBootException("请注意，将要排序的列字段不存在：" + column);
 			}
-			//update-end-author:taoyan date:2022-5-16 for: issues/3676 获取系统用户列表时，使用SQL注入生效
 
-			//update-begin-author:scott date:2022-10-10 for:【jeecg-boot/issues/I5FJU6】doMultiFieldsOrder() 多字段排序方法存在问题
 			//多字段排序方法没有读取 MybatisPlus 注解 @TableField 里 value 的值
 			if (column.contains(",")) {
 				List<String> columnList = Arrays.asList(column.split(","));
@@ -354,12 +344,10 @@ public class QueryGenerator {
 			}else{
 				column = fieldColumnMap.get(column);
 			}
-			//update-end-author:scott date:2022-10-10 for:【jeecg-boot/issues/I5FJU6】doMultiFieldsOrder() 多字段排序方法存在问题
 
 			//SQL注入check
 			SqlInjectionUtil.filterContentMulti(column);
 
-			//update-begin--Author:scott  Date:20210531 for：36 多条件排序无效问题修正-------
 			// 排序规则修改
 			// 将现有排序 _ 前端传递排序条件{....,column: 'column1,column2',order: 'desc'} 翻译成sql "column1,column2 desc"
 			// 修改为 _ 前端传递排序条件{....,column: 'column1,column2',order: 'desc'} 翻译成sql "column1 desc,column2 desc"
@@ -368,11 +356,9 @@ public class QueryGenerator {
 			} else {
 				queryWrapper.orderByDesc(SqlInjectionUtil.getSqlInjectSortFields(column.split(",")));
 			}
-			//update-end--Author:scott  Date:20210531 for：36 多条件排序无效问题修正-------
 		}
 	}
 
-	//update-begin-author:taoyan date:2022-5-23 for: issues/3676 获取系统用户列表时，使用SQL注入生效
 	/**
 	 * 多字段排序 判断所传字段是否存在
 	 * @return
@@ -392,7 +378,6 @@ public class QueryGenerator {
 		}
 		return exist;
 	}
-	//update-end-author:taoyan date:2022-5-23 for: issues/3676 获取系统用户列表时，使用SQL注入生效
 	
 	/**
 	 * 高级查询
@@ -405,14 +390,14 @@ public class QueryGenerator {
 			String superQueryParams = parameterMap.get(SUPER_QUERY_PARAMS)[0];
 			String superQueryMatchType = parameterMap.get(SUPER_QUERY_MATCH_TYPE) != null ? parameterMap.get(SUPER_QUERY_MATCH_TYPE)[0] : MatchTypeEnum.AND.getValue();
             MatchTypeEnum matchType = MatchTypeEnum.getByValue(superQueryMatchType);
-            // update-begin--Author:sunjianlei  Date:20200325 for：高级查询的条件要用括号括起来，防止和用户的其他条件冲突 -------
+            // 代码逻辑说明: 高级查询的条件要用括号括起来，防止和用户的其他条件冲突 -------
             try {
                 superQueryParams = URLDecoder.decode(superQueryParams, "UTF-8");
                 List<QueryCondition> conditions = JSON.parseArray(superQueryParams, QueryCondition.class);
                 if (conditions == null || conditions.size() == 0) {
                     return;
                 }
-				// update-begin-author:sunjianlei date:20220119 for: 【JTC-573】 过滤空条件查询，防止 sql 拼接多余的 and
+				// 代码逻辑说明: 【JTC-573】 过滤空条件查询，防止 sql 拼接多余的 and
 				List<QueryCondition> filterConditions = conditions.stream().filter(
 						rule -> (oConvertUtils.isNotEmpty(rule.getField())
 													&& oConvertUtils.isNotEmpty(rule.getRule())
@@ -423,7 +408,6 @@ public class QueryGenerator {
 				if (filterConditions.size() == 0) {
 					return;
 				}
-				// update-end-author:sunjianlei date:20220119 for: 【JTC-573】 过滤空条件查询，防止 sql 拼接多余的 and
                 log.debug("---高级查询参数-->" + filterConditions);
 
                 queryWrapper.and(andWrapper -> {
@@ -438,14 +422,14 @@ public class QueryGenerator {
 
                             log.debug("SuperQuery ==> " + rule.toString());
 
-                            //update-begin-author:taoyan date:20201228 for: 【高级查询】 oracle 日期等于查询报错
+                            // 代码逻辑说明: 【高级查询】 oracle 日期等于查询报错
 							Object queryValue = rule.getVal();
                             if("date".equals(rule.getType())){
 								queryValue = DateUtils.str2Date(rule.getVal(),DateUtils.date_sdf.get());
 							}else if("datetime".equals(rule.getType())){
 								queryValue = DateUtils.str2Date(rule.getVal(), DateUtils.datetimeFormat.get());
 							}
-							// update-begin--author:sunjianlei date:20210702 for：【/issues/I3VR8E】高级查询没有类型转换，查询参数都是字符串类型 ----
+							// 代码逻辑说明: 【/issues/I3VR8E】高级查询没有类型转换，查询参数都是字符串类型 ----
 							String dbType = rule.getDbType();
 							if (oConvertUtils.isNotEmpty(dbType)) {
 								try {
@@ -478,9 +462,8 @@ public class QueryGenerator {
 									log.error("高级查询值转换失败：", e);
 								}
 							}
-							// update-begin--author:sunjianlei date:20210702 for：【/issues/I3VR8E】高级查询没有类型转换，查询参数都是字符串类型 ----
+							// 代码逻辑说明: 【/issues/I3VR8E】高级查询没有类型转换，查询参数都是字符串类型 ----
                             addEasyQuery(andWrapper, fieldColumnMap.get(rule.getField()), QueryRuleEnum.getByValue(rule.getRule()), queryValue);
-							//update-end-author:taoyan date:20201228 for: 【高级查询】 oracle 日期等于查询报错
 
                             // 如果拼接方式是OR，就拼接OR
                             if (MatchTypeEnum.OR == matchType && i < (filterConditions.size() - 1)) {
@@ -496,7 +479,6 @@ public class QueryGenerator {
                 log.error("--高级查询拼接失败：" + e.getMessage());
                 e.printStackTrace();
             }
-            // update-end--Author:sunjianlei  Date:20200325 for：高级查询的条件要用括号括起来，防止和用户的其他条件冲突 -------
 		}
 		//log.info(" superQuery getCustomSqlSegment: "+ queryWrapper.getCustomSqlSegment());
 	}
@@ -508,7 +490,7 @@ public class QueryGenerator {
 	 */
 	public static QueryRuleEnum convert2Rule(Object value) {
 		// 避免空数据
-		// update-begin-author:taoyan date:20210629 for: 查询条件输入空格导致return null后续判断导致抛出null异常
+		// 代码逻辑说明: 查询条件输入空格导致return null后续判断导致抛出null异常
 		if (value == null) {
 			return QueryRuleEnum.EQ;
 		}
@@ -516,10 +498,8 @@ public class QueryGenerator {
 		if (val.length() == 0) {
 			return QueryRuleEnum.EQ;
 		}
-		// update-end-author:taoyan date:20210629 for: 查询条件输入空格导致return null后续判断导致抛出null异常
 		QueryRuleEnum rule =null;
 
-		//update-begin--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
 		//TODO 此处规则，只适用于 le lt ge gt
 		// step 2 .>= =<
         int length2 = 2;
@@ -535,14 +515,12 @@ public class QueryGenerator {
 				rule = QueryRuleEnum.getByValue(val.substring(0, 1));
 			}
 		}
-		//update-end--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284---------------------
 
 		// step 3 like
-		//update-begin-author:taoyan for: /issues/3382 默认带*就走模糊，但是如果只有一个*，那么走等于查询
+		// 代码逻辑说明: /issues/3382 默认带*就走模糊，但是如果只有一个*，那么走等于查询
 		if(rule == null && val.equals(STAR)){
 			rule = QueryRuleEnum.EQ;
 		}
-		//update-end-author:taoyan for: /issues/3382  默认带*就走模糊，但是如果只有一个*，那么走等于查询
 		if (rule == null && val.contains(STAR)) {
 			if (val.startsWith(STAR) && val.endsWith(STAR)) {
 				rule = QueryRuleEnum.LIKE;
@@ -567,12 +545,10 @@ public class QueryGenerator {
 			rule = QueryRuleEnum.EQ_WITH_ADD;
 		}
 
-		//update-begin--Author:taoyan  Date:20201229 for：initQueryWrapper组装sql查询条件错误 #284---------------------
 		//特殊处理：Oracle的表达式to_date('xxx','yyyy-MM-dd')含有逗号，会被识别为in查询，转为等于查询
 		if(rule == QueryRuleEnum.IN && val.indexOf(YYYY_MM_DD)>=0 && val.indexOf(TO_DATE)>=0){
 			rule = QueryRuleEnum.EQ;
 		}
-		//update-end--Author:taoyan  Date:20201229 for：initQueryWrapper组装sql查询条件错误 #284---------------------
 
 		return rule != null ? rule : QueryRuleEnum.EQ;
 	}
@@ -592,11 +568,10 @@ public class QueryGenerator {
 			return value;
 		}
 		String val = (value + "").toString().trim();
-		//update-begin-author:taoyan date:20220302 for: 查询条件的值为等号（=）bug #3443
+		// 代码逻辑说明: 查询条件的值为等号（=）bug #3443
 		if(QueryRuleEnum.EQ.getValue().equals(val)){
 			return val;
 		}
-		//update-end-author:taoyan date:20220302 for: 查询条件的值为等号（=）bug #3443
 		if (rule == QueryRuleEnum.LIKE) {
 			value = val.substring(1, val.length() - 1);
 			//mysql 模糊查询之特殊字符下划线 （_、\）
@@ -614,21 +589,19 @@ public class QueryGenerator {
 		} else if (rule == QueryRuleEnum.EQ_WITH_ADD) {
 			value = val.replaceAll("\\+\\+", COMMA);
 		}else {
-			//update-begin--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
+			// 代码逻辑说明: initQueryWrapper组装sql查询条件错误 #284-------------------
 			if(val.startsWith(rule.getValue())){
 				//TODO 此处逻辑应该注释掉-> 如果查询内容中带有查询匹配规则符号，就会被截取的（比如：>=您好）
 				value = val.replaceFirst(rule.getValue(),"");
 			}else if(val.startsWith(rule.getCondition()+QUERY_SEPARATE_KEYWORD)){
 				value = val.replaceFirst(rule.getCondition()+QUERY_SEPARATE_KEYWORD,"").trim();
 			}
-			//update-end--Author:scott  Date:20190724 for：initQueryWrapper组装sql查询条件错误 #284-------------------
 		}
 		return value;
 	}
 	
 	private static void addQueryByRule(QueryWrapper<?> queryWrapper,String name,String type,String value,QueryRuleEnum rule) throws ParseException {
 		if(oConvertUtils.isNotEmpty(value)) {
-			//update-begin--Author:sunjianlei  Date:20220104 for：【JTC-409】修复逗号分割情况下没有转换类型，导致类型严格的数据库查询报错 -------------------
 			// 针对数字类型字段，多值查询
 			if(value.contains(COMMA)){
 				Object[] temp = Arrays.stream(value.split(COMMA)).map(v -> {
@@ -644,7 +617,6 @@ public class QueryGenerator {
 			}
 			Object temp = QueryGenerator.parseByType(value, type, rule);
 			addEasyQuery(queryWrapper, name, rule, temp);
-			//update-end--Author:sunjianlei  Date:20220104 for：【JTC-409】修复逗号分割情况下没有转换类型，导致类型严格的数据库查询报错 -------------------
 		}
 	}
 
@@ -759,13 +731,12 @@ public class QueryGenerator {
 			}else if(value instanceof String[]) {
 				queryWrapper.in(name, (Object[]) value);
 			}
-			//update-begin-author:taoyan date:20200909 for:【bug】in 类型多值查询 不适配postgresql #1671
+			// 代码逻辑说明: 【bug】in 类型多值查询 不适配postgresql #1671
 			else if(value.getClass().isArray()) {
 				queryWrapper.in(name, (Object[])value);
 			}else {
 				queryWrapper.in(name, value);
 			}
-			//update-end-author:taoyan date:20200909 for:【bug】in 类型多值查询 不适配postgresql #1671
 			break;
 		case LIKE:
 			queryWrapper.like(name, value);
@@ -782,7 +753,7 @@ public class QueryGenerator {
 		case NOT_RIGHT_LIKE:
 			queryWrapper.notLikeRight(name, value);
 			break;
-		//update-begin---author:chenrui ---date:20240527  for：[TV360X-378]下拉多框根据条件查询不出来:增加自定义字段查询规则功能------------
+		// 代码逻辑说明: [TV360X-378]下拉多框根据条件查询不出来:增加自定义字段查询规则功能------------
 		case LIKE_WITH_OR:
 			final String nameFinal = name;
 			Object[] vals;
@@ -791,7 +762,7 @@ public class QueryGenerator {
 			} else if (value instanceof String[]) {
 				vals = (Object[]) value;
 			}
-			//update-begin-author:taoyan date:20200909 for:【bug】in 类型多值查询 不适配postgresql #1671
+			// 代码逻辑说明: 【bug】in 类型多值查询 不适配postgresql #1671
 			else if (value.getClass().isArray()) {
 				vals = (Object[]) value;
 			} else {
@@ -806,7 +777,6 @@ public class QueryGenerator {
 				}
 			});
 			break;
-		//update-end---author:chenrui ---date:20240527  for：[TV360X-378]下拉多框根据条件查询不出来:增加自定义字段查询规则功能------------
 		default:
 			log.info("--查询规则未匹配到---");
 			break;
@@ -820,10 +790,8 @@ public class QueryGenerator {
 	private static boolean judgedIsUselessField(String name) {
 		return "class".equals(name) || "ids".equals(name)
 				|| "page".equals(name) || "rows".equals(name)
-//// update-begin--author:sunjianlei date:20240808 for：【TV360X-2009】取消过滤 sort、order 字段，防止前端排序报错 ------
 //// https://github.com/jeecgboot/JeecgBoot/issues/6937
 //				|| "sort".equals(name) || "order".equals(name)
-//// update-end----author:sunjianlei date:20240808 for：【TV360X-2009】取消过滤 sort、order 字段，防止前端排序报错 ------
 				;
 	}
 
@@ -836,13 +804,12 @@ public class QueryGenerator {
 	public static Map<String, SysPermissionDataRuleModel> getRuleMap() {
 		Map<String, SysPermissionDataRuleModel> ruleMap = new HashMap<>(5);
 		List<SysPermissionDataRuleModel> list = null;
-		//update-begin-author:taoyan date:2023-6-1 for:QQYUN-5441 【简流】获取多个用户/部门/角色 设置部门查询 报错
+		// 代码逻辑说明: QQYUN-5441 【简流】获取多个用户/部门/角色 设置部门查询 报错
 		try {
 			list = JeecgDataAutorUtils.loadDataSearchConditon();
 		}catch (Exception e){
 			log.error("根据request对象获取权限数据失败，可能是定时任务中执行的。", e);
 		}
-		//update-end-author:taoyan date:2023-6-1 for:QQYUN-5441 【简流】获取多个用户/部门/角色 设置部门查询 报错
 		if(list != null&&list.size()>0){
 			if(list.get(0)==null){
 				return ruleMap;
@@ -879,9 +846,8 @@ public class QueryGenerator {
 					addEasyQuery(queryWrapper, name, rule, DateUtils.str2Date(dateStr,DateUtils.datetimeFormat.get()));
 				}
 			}else {
-				//update-begin---author:chenrui ---date:20241125  for：[issues/7481]多租户模式下 数据权限使用变量：#{tenant_id} 报错------------
+				// 代码逻辑说明: [issues/7481]多租户模式下 数据权限使用变量：#{tenant_id} 报错------------
 				addEasyQuery(queryWrapper, name, rule, NumberUtils.parseNumber(converRuleValue(dataRule.getRuleValue()), propertyType));
-				//update-end---author:chenrui ---date:20241125  for：[issues/7481]多租户模式下 数据权限使用变量：#{tenant_id} 报错------------
 			}
 		}
 	}
@@ -935,9 +901,8 @@ public class QueryGenerator {
 			return null;
 		}
 		Set<String> varParams = new HashSet<String>();
-		//update-begin---author:chenrui ---date:20250108  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
+		// 代码逻辑说明: [QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 		String regex = "#\\{\\[*\\w+]*}";
-		//update-end---author:chenrui ---date:20250108  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 		
 		Pattern p = Pattern.compile(regex);
 		Matcher m = p.matcher(sql);
@@ -993,9 +958,8 @@ public class QueryGenerator {
 				Class propType = origDescriptors[i].getPropertyType();
 				boolean isString = propType.equals(String.class);
 				Object value;
-				//update-begin---author:chenrui ---date:20240527  for：[TV360X-539]数据权限，配置日期等于条件时后端报转换错误------------
+				// 代码逻辑说明: [TV360X-539]数据权限，配置日期等于条件时后端报转换错误------------
 				if(isString || Date.class.equals(propType)) {
-				//update-end---author:chenrui ---date:20240527  for：[TV360X-539]数据权限，配置日期等于条件时后端报转换错误------------
 					value = converRuleValue(dataRule.getRuleValue());
 				}else {
 					value = NumberUtils.parseNumber(dataRule.getRuleValue(),propType);

@@ -242,14 +242,13 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 				permissionList = new ArrayList<>();
 			}
 			List<SysPermission> testRoleList = sysPermissionMapper.queryPermissionByTestRoleId();
-			//update-begin-author:liusq date:20230427 for: [QQYUN-5168]【vue3】为什么出现两个菜单 菜单根据id去重
+			// 代码逻辑说明: [QQYUN-5168]【vue3】为什么出现两个菜单 菜单根据id去重
 			for (SysPermission permission: testRoleList) {
 				boolean hasPerm = permissionList.stream().anyMatch(a->a.getId().equals(permission.getId()));
 				if(!hasPerm){
 					permissionList.add(permission);
 				}
 			}
-			//update-end-author:liusq date:20230427 for: [QQYUN-5168]【vue3】为什么出现两个菜单 菜单根据id去重
 		}
 		//================= end 开启租户的时候 如果没有test角色，默认加入test角色================
 		return permissionList;

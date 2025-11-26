@@ -105,29 +105,24 @@ public class DictAspect {
                 Map<String, List<String>> dataListMap = new HashMap<>(5);
                 //取出结果集
                 List<Object> records=((IPage) ((Result) result).getResult()).getRecords();
-                //update-begin--Author:zyf -- Date:20220606 ----for：【VUEN-1230】 判断是否含有字典注解,没有注解返回-----
+                // 代码逻辑说明: 【VUEN-1230】 判断是否含有字典注解,没有注解返回-----
                 Boolean hasDict= checkHasDict(records);
                 if(!hasDict){
                     return result;
                 }
 
                 log.debug(" __ 进入字典翻译切面 DictAspect —— " );
-                //update-end--Author:zyf -- Date:20220606 ----for：【VUEN-1230】 判断是否含有字典注解,没有注解返回-----
                 for (Object record : records) {
                     String json="{}";
                     try {
-                        //update-begin--Author:zyf -- Date:20220531 ----for：【issues/#3629】 DictAspect Jackson序列化报错-----
                         //解决@JsonFormat注解解析不了的问题详见SysAnnouncement类的@JsonFormat
                          json = objectMapper.writeValueAsString(record);
-                        //update-end--Author:zyf -- Date:20220531 ----for：【issues/#3629】 DictAspect Jackson序列化报错-----
                     } catch (JsonProcessingException e) {
                         log.error("json解析失败"+e.getMessage(),e);
                     }
-                    //update-begin--Author:scott -- Date:20211223 ----for：【issues/3303】restcontroller返回json数据后key顺序错乱 -----
+                    // 代码逻辑说明: 【issues/3303】restcontroller返回json数据后key顺序错乱 -----
                     JSONObject item = JSONObject.parseObject(json, Feature.OrderedField);
-                    //update-end--Author:scott -- Date:20211223 ----for：【issues/3303】restcontroller返回json数据后key顺序错乱 -----
 
-                    //update-begin--Author:scott -- Date:20190603 ----for：解决继承实体字段无法翻译问题------
                     //for (Field field : record.getClass().getDeclaredFields()) {
                     // 遍历所有字段，把字典Code取出来，放到 map 里
                     for (Field field : oConvertUtils.getAllFields(record)) {
@@ -135,7 +130,6 @@ public class DictAspect {
                         if (oConvertUtils.isEmpty(value)) {
                             continue;
                         }
-                    //update-end--Author:scott  -- Date:20190603 ----for：解决继承实体字段无法翻译问题------
                         if (field.getAnnotation(Dict.class) != null) {
                             if (!dictFieldList.contains(field)) {
                                 dictFieldList.add(field);
@@ -143,26 +137,22 @@ public class DictAspect {
                             String code = field.getAnnotation(Dict.class).dicCode();
                             String text = field.getAnnotation(Dict.class).dicText();
                             String table = field.getAnnotation(Dict.class).dictTable();
-                            //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                            // 代码逻辑说明: [issues/#5643]解决分布式下表字典跨库无法查询问题------------
                             String dataSource = field.getAnnotation(Dict.class).ds();
-                            //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                             List<String> dataList;
                             String dictCode = code;
                             if (!StringUtils.isEmpty(table)) {
-                                //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                                // 代码逻辑说明: [issues/#5643]解决分布式下表字典跨库无法查询问题------------
                                 dictCode = String.format("%s,%s,%s,%s", table, text, code, dataSource);
-                                //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                             }
                             dataList = dataListMap.computeIfAbsent(dictCode, k -> new ArrayList<>());
                             this.listAddAllDeduplicate(dataList, Arrays.asList(value.split(",")));
                         }
                         //date类型默认转换string格式化日期
-                        //update-begin--Author:zyf -- Date:20220531 ----for：【issues/#3629】 DictAspect Jackson序列化报错-----
                         //if (JAVA_UTIL_DATE.equals(field.getType().getName())&&field.getAnnotation(JsonFormat.class)==null&&item.get(field.getName())!=null){
                             //SimpleDateFormat aDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                             // item.put(field.getName(), aDate.format(new Date((Long) item.get(field.getName()))));
                         //}
-                        //update-end--Author:zyf -- Date:20220531 ----for：【issues/#3629】 DictAspect Jackson序列化报错-----
                     }
                     items.add(item);
                 }
@@ -176,15 +166,12 @@ public class DictAspect {
                         String code = field.getAnnotation(Dict.class).dicCode();
                         String text = field.getAnnotation(Dict.class).dicText();
                         String table = field.getAnnotation(Dict.class).dictTable();
-                        //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                         // 自定义的字典表数据源
                         String dataSource = field.getAnnotation(Dict.class).ds();
-                        //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                         String fieldDictCode = code;
                         if (!StringUtils.isEmpty(table)) {
-                            //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+                            // 代码逻辑说明: [issues/#5643]解决分布式下表字典跨库无法查询问题------------
                             fieldDictCode = String.format("%s,%s,%s,%s", table, text, code, dataSource);
-                            //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                         }
 
                         String value = record.getString(field.getName());
@@ -286,25 +273,20 @@ public class DictAspect {
                 String[] arr = dictCode.split(",");
                 String table = arr[0], text = arr[1], code = arr[2];
                 String values = String.join(",", needTranslDataTable);
-                //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                 // 自定义的数据源
                 String dataSource = null;
                 if (arr.length > 3) {
                     dataSource = arr[3];
                 }
-                //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                 log.debug("translateDictFromTableByKeys.dictCode:" + dictCode);
                 log.debug("translateDictFromTableByKeys.values:" + values);
-                //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                 
-                //update-begin---author:wangshuai---date:2024-01-09---for:微服务下为空报错没有参数需要传递空字符串---
+                // 代码逻辑说明: 微服务下为空报错没有参数需要传递空字符串---
                 if(null == dataSource){
                     dataSource = "";
                 }
-                //update-end---author:wangshuai---date:2024-01-09---for:微服务下为空报错没有参数需要传递空字符串---
                 
                 List<DictModel> texts = commonApi.translateDictFromTableByKeys(table, text, code, values, dataSource);
-                //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
                 log.debug("translateDictFromTableByKeys.result:" + texts);
                 List<DictModel> list = translText.computeIfAbsent(dictCode, k -> new ArrayList<>());
                 list.addAll(texts);
@@ -313,10 +295,8 @@ public class DictAspect {
                 for (DictModel dict : texts) {
                     String redisKey = String.format("sys:cache:dictTable::SimpleKey [%s,%s]", dictCode, dict.getValue());
                     try {
-                        // update-begin-author:taoyan date:20211012 for: 字典表翻译注解缓存未更新 issues/3061
                         // 保留5分钟
                         redisTemplate.opsForValue().set(redisKey, dict.getText(), 300, TimeUnit.SECONDS);
-                        // update-end-author:taoyan date:20211012 for: 字典表翻译注解缓存未更新 issues/3061
                     } catch (Exception e) {
                         log.warn(e.getMessage(), e);
                     }
@@ -400,7 +380,7 @@ public class DictAspect {
             if (k.trim().length() == 0) {
                 continue; //跳过循环
             }
-            //update-begin--Author:scott -- Date:20210531 ----for： !56 优化微服务应用下存在表字段需要字典翻译时加载缓慢问题-----
+            // 代码逻辑说明: !56 优化微服务应用下存在表字段需要字典翻译时加载缓慢问题-----
             if (!StringUtils.isEmpty(table)){
                 log.debug("--DictAspect------dicTable="+ table+" ,dicText= "+text+" ,dicCode="+code);
                 String keyString = String.format("sys:cache:dictTable::SimpleKey [%s,%s,%s,%s]",table,text,code,k.trim());
@@ -425,7 +405,6 @@ public class DictAspect {
                     tmpValue = commonApi.translateDict(code, k.trim());
                 }
             }
-            //update-end--Author:scott -- Date:20210531 ----for： !56 优化微服务应用下存在表字段需要字典翻译时加载缓慢问题-----
 
             if (tmpValue != null) {
                 if (!"".equals(textValue.toString())) {

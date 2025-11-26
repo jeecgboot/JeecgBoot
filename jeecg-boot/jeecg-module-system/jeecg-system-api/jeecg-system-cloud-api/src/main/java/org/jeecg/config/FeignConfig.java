@@ -137,7 +137,6 @@
 //        return new SpringFormEncoder(new SpringEncoder(messageConverters));
 //    }
 //
-//    // update-begin--Author:sunjianlei Date:20210604 for： 给 Feign 添加 FastJson 的解析支持 ----------
 //    /**
 //     * 给 Feign 添加 FastJson 的解析支持
 //     */
@@ -175,6 +174,6 @@
 //
 //        return converter;
 //    }
-//    // update-end--Author:sunjianlei Date:20210604 for： 给 Feign 添加 FastJson 的解析支持 ----------
+//    
 //
 //}

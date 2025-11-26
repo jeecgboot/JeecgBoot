@@ -3,6 +3,7 @@ package org.jeecg.modules.system.mapper;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysAnnouncementSend;
 import org.jeecg.modules.system.model.AnnouncementSendModel;
 
@@ -43,4 +44,22 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
 	 * @param userId
 	 */
 	void clearAllUnReadMessage(@Param("userId") String userId);
+
+    /**
+     * 根据用户id和通告阅读表的id获取当前用户已阅读的数量
+     * 
+     * @param id
+     * @param userId
+     */
+    @Select("select count(1) from sys_announcement_send where id=#{id} and user_id = #{userId} and read_flag = 1")
+    long getReadCountByUserId(@Param("id") String id, @Param("userId") String userId);
+
+    /**
+     * 根据用户id和阅读表的id获取所有阅读的数据
+     * 
+     * @param ids
+     * @param userId
+     * @return
+     */
+    List<String> getReadAnnSendByUserId(@Param("ids") List<String> ids, @Param("userId") String userId);
 }

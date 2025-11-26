@@ -1,9 +1,12 @@
 package org.jeecg.modules.airag.llm.handler;
 
 import com.alibaba.fastjson.JSONObject;
+import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.data.message.*;
+import dev.langchain4j.mcp.McpToolProvider;
 import dev.langchain4j.rag.query.router.QueryRouter;
 import dev.langchain4j.service.TokenStream;
+import dev.langchain4j.service.tool.ToolExecutor;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.ai.handler.LLMHandler;
 import org.jeecg.common.exception.JeecgBootException;
@@ -12,7 +15,9 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.common.handler.AIChatParams;
 import org.jeecg.modules.airag.common.handler.IAIChatHandler;
 import org.jeecg.modules.airag.llm.consts.LLMConsts;
+import org.jeecg.modules.airag.llm.entity.AiragMcp;
 import org.jeecg.modules.airag.llm.entity.AiragModel;
+import org.jeecg.modules.airag.llm.mapper.AiragMcpMapper;
 import org.jeecg.modules.airag.llm.mapper.AiragModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 /**
  * 大模型聊天工具类
@@ -38,6 +44,9 @@ public class AIChatHandler implements IAIChatHandler {
 
     @Autowired
     AiragModelMapper airagModelMapper;
+
+    @Autowired
+    AiragMcpMapper airagMcpMapper;
 
     @Autowired
     EmbeddingHandler embeddingHandler;
@@ -105,12 +114,22 @@ public class AIChatHandler implements IAIChatHandler {
             // langchain4j 异常友好提示
             String errMsg = "调用大模型接口失败，详情请查看后台日志。";
             if (oConvertUtils.isNotEmpty(e.getMessage())) {
+                String exceptionMsg = e.getMessage();
+                
+                // 检查是否是工具调用消息序列不完整的异常
+                if (exceptionMsg.contains("messages with role 'tool' must be a response to a preceeding message with 'tool_calls'")) {
+                    errMsg = "消息序列不完整，可能是因为历史消息数量设置过小导致工具调用上下文丢失。建议增加历史消息数量后重试。";
+                    log.error("AI模型调用异常: 工具调用消息序列不完整，建议增加历史消息数量。异常详情: {}", exceptionMsg, e);
+                    throw new JeecgBootException(errMsg);
+                }
+                
                 // 根据常见异常关键字做细致翻译
                 for (Map.Entry<String, String> entry : MODEL_ERROR_MAP.entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
                     if (errMsg.contains(key)) {
                         errMsg = value;
+                        break;
                     }
                 }
             }
@@ -247,6 +266,9 @@ public class AIChatHandler implements IAIChatHandler {
             if (oConvertUtils.isObjectEmpty(params.getTimeout())) {
                 params.setTimeout(modelParams.getInteger("timeout"));
             }
+            if (oConvertUtils.isObjectEmpty(params.getEnableSearch())) {
+                params.setEnableSearch(modelParams.getBoolean("enableSearch"));
+            }
         }
 
         // RAG
@@ -266,7 +288,75 @@ public class AIChatHandler implements IAIChatHandler {
             params.setTimeout(60);
         }
 
+        //deepseek-reasoner 推理模型不支持插件tool
+        String modelName = airagModel.getModelName();
+        if(!LLMConsts.DEEPSEEK_REASONER.equals(modelName)){
+            // 插件/MCP处理
+            buildPlugins(params);
+        }
+
         return params;
+    }
+
+    /**
+     * 构造插件和MCP工具
+     * for [QQYUN-12453]【AI】支持插件
+     * @param params
+     * @author chenrui
+     * @date 2025/10/31 14:04
+     */
+    private void buildPlugins(AIChatParams params) {
+        List<String> pluginIds = params.getPluginIds();
+
+        if(oConvertUtils.isObjectNotEmpty(pluginIds)){
+            List<McpToolProvider> mcpToolProviders = new ArrayList<>();
+            Map<ToolSpecification, ToolExecutor> pluginTools = new HashMap<>();
+
+            for (String pluginId : pluginIds.stream().distinct().collect(Collectors.toList())) {
+                AiragMcp airagMcp = airagMcpMapper.selectById(pluginId);
+                if (airagMcp == null) {
+                    continue;
+                }
+
+                String category = airagMcp.getCategory();
+                if (oConvertUtils.isEmpty(category)) {
+                    // 兼容旧数据：如果没有category字段，默认为mcp
+                    category = "mcp";
+                }
+
+                if ("mcp".equalsIgnoreCase(category)) {
+                    // MCP类型：构建McpToolProvider
+                    McpToolProvider mcpToolProvider = buildMcpToolProvider(
+                            airagMcp.getName(),
+                            airagMcp.getType(),
+                            airagMcp.getEndpoint(),
+                            airagMcp.getHeaders()
+                    );
+                    if (mcpToolProvider != null) {
+                        mcpToolProviders.add(mcpToolProvider);
+                    }
+                } else if ("plugin".equalsIgnoreCase(category)) {
+                    // 插件类型：构建ToolSpecification和ToolExecutor
+                    Map<ToolSpecification, ToolExecutor> tools = PluginToolBuilder.buildTools(airagMcp, params.getCurrentHttpRequest());
+                    if (tools != null && !tools.isEmpty()) {
+                        pluginTools.putAll(tools);
+                    }
+                }
+            }
+
+            // 设置MCP工具提供者
+            if (!mcpToolProviders.isEmpty()) {
+                params.setMcpToolProviders(mcpToolProviders);
+            }
+
+            // 设置插件工具
+            if (!pluginTools.isEmpty()) {
+                if (params.getTools() == null) {
+                    params.setTools(new HashMap<>());
+                }
+                params.getTools().putAll(pluginTools);
+            }
+        }
     }
 
     @Override

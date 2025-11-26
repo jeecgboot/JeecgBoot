@@ -32,6 +32,24 @@
         )
     </select>
 
+    <!-- 根据username和分类查询所拥有的部门/岗位/公司 -->
+    <select id="queryDeptByUserAndCategory" parameterType="String" resultType="org.jeecg.modules.system.entity.SysDepart">
+        SELECT *
+        FROM sys_depart
+        WHERE id IN (
+            SELECT dep_id
+            FROM sys_user_depart
+            WHERE user_id = (
+                SELECT id
+                FROM sys_user
+                WHERE username = #{username}
+            )
+        )
+        <if test="category != null and category != ''">
+            AND org_category = #{category}
+        </if>
+    </select>
+
     <!-- 根据部门Id查询,当前和下级所有部门IDS -->
     <select id="getSubDepIdsByDepId" resultType="java.lang.String">
 		select id from sys_depart where del_flag = '0' and org_code like concat((select org_code from sys_depart where id=#{departId}),'%')
@@ -175,16 +193,13 @@
         1=1
         <if test="null != tenantId and 0 != tenantId">
             AND tenant_id = #{tenantId}
-        </if>  
-        AND
-        <choose>
-            <when test="parentId != null and parentId != ''">
-                parent_id = #{parentId}
-            </when>
-            <otherwise>
-                (parent_id IS NULL OR parent_id='')
-            </otherwise>
-        </choose>
+        </if>
+        <if test="parentId != null and parentId != '' and parentId != '-1'">
+            AND parent_id = #{parentId}
+        </if>
+        <if test="parentId == '-1'">
+            AND (parent_id IS NULL OR parent_id='')
+        </if>
         <if test="idList != null and !idList.isEmpty()">
             and id in
             <foreach item="id" index="index" collection="idList" open="(" separator="," close=")">
@@ -267,5 +282,36 @@
 	<select id="getPostNameByPostId" resultType="java.lang.String">
         select sp.name from sys_depart sd join sys_position sp on sd.position_id = sp.id
         where sd.id = #{depId}
+    </select>
+    
+    <!-- 根据部门父id获取部门岗位数据 -->
+	<select id="getDepartPositionByParentIds" resultType="org.jeecg.modules.system.entity.SysDepart">
+        select sd.depart_name, sd.id, sd.iz_leaf, sd.org_category, sd.parent_id, sd.org_code from sys_depart sd left join sys_position sp on sd.position_id = sp.id
+        where sd.parent_id in
+        <foreach collection="parentIds" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and sd.org_category = '3'
+        order by sd.depart_order,sd.create_time desc
+    </select>
+    
+    <!-- 根据用户id集合获取用户的兼职岗位信息 -->
+	<select id="getDepartOtherPostByUserIds" resultType="org.jeecg.modules.system.model.SysUserSysDepPostModel">
+        select sudp.user_id as id, sudp.dep_id as otherDepPostId, sd.org_code
+        from sys_user_dep_post sudp
+        join sys_depart sd on sudp.dep_id = sd.id
+        where sudp.user_id in
+        <foreach collection="userIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    
+    <!-- 获取负责部门 -->
+    <select id="getDepartmentHead" resultType="org.jeecg.modules.system.entity.SysUser">
+        select id, realname, avatar, sex, telephone, phone, main_dep_post_id, iz_hide_contact, sort, create_time from sys_user
+        where status = 1 and del_flag = 0
+        <bind name="bindDepartId" value="departId+'%'"/>
+        and depart_ids like #{bindDepartId}
+        order by sort,create_time desc
     </select>
 </mapper>

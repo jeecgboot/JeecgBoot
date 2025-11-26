@@ -24,6 +24,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
+import org.jeecg.common.api.dto.PushMessageDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.UrlMatchEnum;
@@ -41,7 +42,6 @@ import org.jeecg.common.util.dynamic.db.FreemarkerParseFactory;
 import org.jeecg.config.firewall.SqlInjection.IDictTableWhiteListHandler;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.airag.flow.service.IAiragFlowService;
-import org.jeecg.modules.airag.flow.vo.api.FlowRunParams;
 import org.jeecg.modules.message.entity.SysMessageTemplate;
 import org.jeecg.modules.message.handle.impl.DdSendMsgHandle;
 import org.jeecg.modules.message.handle.impl.EmailSendMsgHandle;
@@ -56,7 +56,12 @@ import org.jeecg.modules.system.util.SecurityUtil;
 import org.jeecg.modules.system.vo.lowapp.SysDictVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.util.AntPathMatcher;
@@ -64,6 +69,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.PathMatcher;
 
 import jakarta.annotation.Resource;
+import org.springframework.web.client.RestTemplate;
+
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -85,6 +92,13 @@ import java.util.stream.Collectors;
 public class SysBaseApiImpl implements ISysBaseAPI {
 	/** 当前系统数据库类型 */
 	private static String DB_TYPE = "";
+
+	// 云函数的 URL 化地址
+	@Value("${jeecg.unicloud.pushUrl:''}")
+	private String jeecgPushUrl;
+
+	@Autowired
+	private RestTemplate restTemplate;
 
 	@Autowired
 	private ISysMessageTemplateService sysMessageTemplateService;
@@ -112,6 +126,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	private ISysDataSourceService dataSourceService;
 	@Autowired
 	private ISysUserDepartService sysUserDepartService;
+	@Autowired
+	private ISysUserDepPostService sysUserDepPostService;
 	@Resource
 	private SysPermissionMapper sysPermissionMapper;
 	@Autowired
@@ -149,11 +165,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	@Override
 	//@SensitiveDecode
 	public LoginUser getUserByName(String username) {
-		//update-begin-author:taoyan date:2022-6-6 for: VUEN-1276 【v3流程图】测试bug 1、通过我发起的流程或者流程实例，查看历史，流程图预览问题
+		// 代码逻辑说明: VUEN-1276 【v3流程图】测试bug 1、通过我发起的流程或者流程实例，查看历史，流程图预览问题
 		if (oConvertUtils.isEmpty(username)) {
 			return null;
 		}
-		//update-end-author:taoyan date:2022-6-6 for: VUEN-1276 【v3流程图】测试bug 1、通过我发起的流程或者流程实例，查看历史，流程图预览问题
 		LoginUser user = sysUserService.getEncodeUserInfo(username);
 
 		//相同类中方法间调用时脱敏解密 Aop会失效，获取用户信息太重要，此处采用原生解密方法，不采用@SensitiveDecodeAble注解方式
@@ -203,15 +218,14 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			query.eq(SysPermission::getMenuType,2);
 			query.eq(SysPermission::getDelFlag,0);
 			
-			//update-begin-author:taoyan date:2023-2-21 for: 解决参数顺序问题
+			// 代码逻辑说明: 解决参数顺序问题
 			List<String> allPossiblePaths = this.getOnlinePossiblePaths(requestPath);
-			log.info("获取的菜单地址= {}", allPossiblePaths.toString());
+			log.debug("获取的菜单地址= {}", allPossiblePaths.toString());
 			if(allPossiblePaths.size()==1){
 				query.eq(SysPermission::getUrl, requestPath);
 			}else{
 				query.in(SysPermission::getUrl, allPossiblePaths);	
 			}
-			//update-end-author:taoyan date:2023-2-21 for: 解决参数顺序问题
 			
 			currentSyspermission = sysPermissionMapper.selectList(query);
 			//2.未找到 再通过自定义匹配URL 获取菜单
@@ -219,9 +233,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				//通过自定义URL匹配规则 获取菜单（实现通过菜单配置数据权限规则，实际上针对获取数据接口进行数据规则控制）
 				String userMatchUrl = UrlMatchEnum.getMatchResultByUrl(requestPath);
 				LambdaQueryWrapper<SysPermission> queryQserMatch = new LambdaQueryWrapper<SysPermission>();
-				// update-begin-author:taoyan date:20211027 for: online菜单如果配置成一级菜单 权限查询不到 取消menuType = 1
+				// 代码逻辑说明:  online菜单如果配置成一级菜单 权限查询不到 取消menuType = 1
 				//queryQserMatch.eq(SysPermission::getMenuType, 1);
-				// update-end-author:taoyan date:20211027 for: online菜单如果配置成一级菜单 权限查询不到 取消menuType = 1
 				queryQserMatch.eq(SysPermission::getDelFlag, 0);
 				queryQserMatch.eq(SysPermission::getUrl, userMatchUrl);
 				if(oConvertUtils.isNotEmpty(userMatchUrl)){
@@ -240,13 +253,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		if(currentSyspermission!=null && currentSyspermission.size()>0){
 			List<SysPermissionDataRuleModel> dataRules = new ArrayList<SysPermissionDataRuleModel>();
 			for (SysPermission sysPermission : currentSyspermission) {
-				// update-begin--Author:scott Date:20191119 for：数据权限规则编码不规范，项目存在相同包名和类名 #722
+				// 代码逻辑说明: 数据权限规则编码不规范，项目存在相同包名和类名 #722
 				List<SysPermissionDataRule> temp = sysPermissionDataRuleService.queryPermissionDataRules(username, sysPermission.getId());
 				if(temp!=null && temp.size()>0) {
 					//dataRules.addAll(temp);
 					dataRules = oConvertUtils.entityListToModelList(temp,SysPermissionDataRuleModel.class);
 				}
-				// update-end--Author:scott Date:20191119 for：数据权限规则编码不规范，项目存在相同包名和类名 #722
 			}
 			return dataRules;
 		}
@@ -499,9 +511,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setSendTime(new Date());
 		announcement.setMsgCategory(CommonConstant.MSG_CATEGORY_2);
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
-       //update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+       // 代码逻辑说明: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		announcement.setIzTop(CommonConstant.IZ_TOP_0);
-		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
   		sysAnnouncementMapper.insert(announcement);
 		// 2.插入用户通告阅读标记表记录
 		String userId = toUser;
@@ -572,9 +583,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setMsgType(CommonConstant.MSG_TYPE_UESR);
 		announcement.setSendStatus(CommonConstant.HAS_SEND);
 		announcement.setSendTime(new Date());
-		//update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+		// 代码逻辑说明: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		announcement.setIzTop(CommonConstant.IZ_TOP_0);
-		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		if(tmplateParam!=null && oConvertUtils.isNotEmpty(tmplateParam.get(CommonSendStatus.MSG_ABSTRACT_JSON))){
 			announcement.setMsgAbstract(tmplateParam.get(CommonSendStatus.MSG_ABSTRACT_JSON));
 		}
@@ -860,26 +870,45 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Override
 	public List<String> getDeptHeadByDepId(String deptId) {
-		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status", 1).eq("del_flag", 0);
-		//支持逗号分割传递多个部门id
-		if (oConvertUtils.isNotEmpty(deptId) && deptId.contains(SymbolConstant.COMMA)) {
-			String[] vals = deptId.split(SymbolConstant.COMMA);
-			queryWrapper.and(andWrapper -> {
-				for (int i = 0; i < vals.length; i++) {
-					andWrapper.like("depart_ids", vals[i]);
-					andWrapper.or();
-				}
-			});
-		} else {
-			queryWrapper.like("depart_ids", deptId);
+		log.debug(" getDeptHeadByDepId 根据部门ID获取负责人，deptId：{}", deptId);
+		if(oConvertUtils.isEmpty(deptId)){
+			return null;
 		}
 		
-		List<SysUser> userList = userMapper.selectList(queryWrapper);
-		List<String> list = new ArrayList<>();
-		for(SysUser user : userList){
-			list.add(user.getUsername());
+		QueryWrapper<SysUser> queryWrapper = new QueryWrapper<SysUser>().eq("status", 1).eq("del_flag", 0);
+
+		// 支持逗号分割传递多个部门id
+		if (oConvertUtils.isNotEmpty(deptId) && deptId.contains(SymbolConstant.COMMA)) {
+			String[] vals = deptId.split(SymbolConstant.COMMA);
+
+			// 先trim去除空格，再过滤空字符串，最后去重
+			List<String> validDeptIds = Arrays.stream(vals)
+					.map(String::trim)
+					.filter(oConvertUtils::isNotEmpty)
+					.distinct()  // 去重处理
+					.collect(Collectors.toList());
+
+			if (!validDeptIds.isEmpty()) {
+				queryWrapper.and(andWrapper -> {
+					for (int i = 0; i < validDeptIds.size(); i++) {
+						andWrapper.like("depart_ids", validDeptIds.get(i));
+						if (i < validDeptIds.size() - 1) {
+							andWrapper.or();
+						}
+					}
+				});
+			}
+		} else if (oConvertUtils.isNotEmpty(deptId)) {
+			queryWrapper.like("depart_ids", deptId.trim());  // 单个值也要trim
 		}
-		return list;
+
+		List<SysUser> userList = userMapper.selectList(queryWrapper);
+
+		// 对结果也进行去重处理
+		return userList.stream()
+				.map(SysUser::getUsername)
+				.distinct()
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -941,7 +970,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		List<SysUser> list= sysUserService.list(queryWrapper);
 		if(ObjectUtils.isNotEmpty(list)){
 		
-			//update-begin-author:taoyan date:2023-5-19 for: QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
+			// 代码逻辑说明: QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
 			String departKey = "depart";
 			QueryCondition departCondition = null;
 			try {
@@ -971,7 +1000,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				if(flag){
 					result.add(userJson);
 				}
-				//update-end-author:taoyan date:2023-5-19 for: QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
 				
 			}
 		}
@@ -1139,7 +1167,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public Set<String> getUserRoleSet(String username) {
 		// 查询用户拥有的角色集合
 		List<String> roles = sysUserRoleMapper.getRoleByUserName(username);
-		log.info("-------通过数据库读取用户拥有的角色Rules------username： " + username + ",Roles size: " + (roles == null ? 0 : roles.size()));
+		log.debug("-------通过数据库读取用户拥有的角色Rules------username： " + username + ",Roles size: " + (roles == null ? 0 : roles.size()));
 		return new HashSet<>(roles);
 	}
 	
@@ -1153,7 +1181,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public Set<String> getUserRoleSetById(String useId) {
 		// 查询用户拥有的角色集合
 		List<String> roles = sysUserRoleMapper.getRoleCodeByUserId(useId);
-		log.info("-------通过数据库读取用户拥有的角色Rules------useId： " + useId + ",Roles size: " + (roles == null ? 0 : roles.size()));
+		log.debug("-------通过数据库读取用户拥有的角色Rules------useId： " + useId + ",Roles size: " + (roles == null ? 0 : roles.size()));
 		return new HashSet<>(roles);
 	}
 
@@ -1184,7 +1212,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				permissionSet.add(po.getPerms());
 			}
 		}
-		log.info("-------通过数据库读取用户拥有的权限Perms------userId： "+ userId+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
+		log.debug("-------通过数据库读取用户拥有的权限Perms------userId： "+ userId+",Perms size: "+ (permissionSet==null?0:permissionSet.size()) );
 		return permissionSet;
 	}
 
@@ -1209,13 +1237,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			sysPermission.setUrl(onlineFormUrl);
 			int count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
 			if(count<=0){
-				//update-begin---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
+				// 代码逻辑说明: [QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
 				sysPermission.setUrl(onlineAuthDTO.getOnlineWorkOrderUrl());
 				count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
 				if(count<=0) {
 					return false;
 				}
-				//update-end---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
 			}
 		} else {
 			//找到菜单了
@@ -1230,13 +1257,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				sysPermission.setUrl(onlineFormUrl);
 				int count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
 				if (count <= 0) {
-					//update-begin---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
+					// 代码逻辑说明: [QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
 					sysPermission.setUrl(onlineAuthDTO.getOnlineWorkOrderUrl());
 					count = sysPermissionMapper.queryCountByUsername(username, sysPermission);
 					if (count > 0) {
 						has = true;
 					}
-					//update-end---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
 				} else {
 					has = true;
 				}
@@ -1330,9 +1356,8 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setSendTime(new Date());
 		announcement.setMsgCategory(setMsgCategory);
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
-		//update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+		// 代码逻辑说明: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		announcement.setIzTop(CommonConstant.IZ_TOP_0);
-		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		if(oConvertUtils.isEmpty(noticeType)){
             noticeType = NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue();
         }
@@ -1389,17 +1414,20 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
 		announcement.setBusId(busId);
 		announcement.setBusType(busType);
-		announcement.setOpenType(SysAnnmentTypeEnum.getByType(busType).getOpenType());
-		announcement.setOpenPage(SysAnnmentTypeEnum.getByType(busType).getOpenPage());
-		//update-begin---author:chenrui ---date:20250807  for：[JHHB-136]【vue3】协同工作系统消息需要添加一个类型------------
+
+		// 代码逻辑说明: busType为空时，报错
+		if(oConvertUtils.isNotEmpty(busType)){
+			announcement.setOpenType(SysAnnmentTypeEnum.getByType(busType).getOpenType());
+			announcement.setOpenPage(SysAnnmentTypeEnum.getByType(busType).getOpenPage());
+		}
+
+		// 代码逻辑说明: [JHHB-136]【vue3】协同工作系统消息需要添加一个类型------------
 		if(oConvertUtils.isEmpty(noticeType)){
 			noticeType = NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue();
 		}
 		announcement.setNoticeType(noticeType);
-		//update-end---author:chenrui ---date:20250807  for：[JHHB-136]【vue3】协同工作系统消息需要添加一个类型------------
-		//update-begin-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
+		// 代码逻辑说明: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		announcement.setIzTop(CommonConstant.IZ_TOP_0);
-		//update-end-author:liusq---date:2025-07-01--for: [QQYUN-12999]系统通知，系统通知时间更新，但是排到下面了
 		sysAnnouncementMapper.insert(announcement);
 		// 2.插入用户通告阅读标记表记录
 		String userId = toUser;
@@ -1618,17 +1646,15 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public Map<String, List<DictModel>> translateManyDict(String dictCodes, String keys) {
 		List<String> dictCodeList = Arrays.asList(dictCodes.split(","));
 		List<String> values = Arrays.asList(keys.split(","));
-		//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+		// 代码逻辑说明: [issues/#5643]解决分布式下表字典跨库无法查询问题------------
 		return sysDictService.queryManyDictByKeys(dictCodeList, values);
-		//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 	}
 
-	//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
+	// 代码逻辑说明: [issues/#5643]解决分布式下表字典跨库无法查询问题------------
 	@Override
 	public List<DictModel> translateDictFromTableByKeys(String table, String text, String code, String keys, String dataSource) {
 		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")), dataSource);
 	}
-	//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
 	//-------------------------------------流程节点发送模板消息-----------------------------------------------
 	@Autowired
@@ -1647,7 +1673,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	public void sendTemplateMessage(MessageDTO message) {
 		String messageType = message.getType();
 		log.debug(" 【万能通用】推送消息 messageType = {}", messageType);
-		//update-begin-author:taoyan date:2022-7-9 for: 将模板解析代码移至消息发送, 而不是调用的地方
+		// 代码逻辑说明: 将模板解析代码移至消息发送, 而不是调用的地方
 		String templateCode = message.getTemplateCode();
 		if(oConvertUtils.isNotEmpty(templateCode)){
 			SysMessageTemplate templateEntity = getTemplateEntity(templateCode);
@@ -1664,7 +1690,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			throw new JeecgBootException("发送消息失败,消息内容为空！");
 		}
 
-		//update-end-author:taoyan date:2022-7-9 for: 将模板解析代码移至消息发送, 而不是调用的地方
 		if(MessageTypeEnum.XT.getType().equals(messageType)){
 			if (message.isMarkdown()) {
 				// 系统消息要解析Markdown
@@ -1676,13 +1701,12 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				// 邮件消息要解析Markdown
 				message.setContent(HTMLUtils.parseMarkdown(message.getContent()));
 			}
-			//update-begin---author:wangshuai---date:2024-11-20---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
+			// 代码逻辑说明: 【QQYUN-8523】敲敲云发邮件通知，不稳定---
 			if(message.getIsTimeJob() != null && message.getIsTimeJob()){
 				emailSendMsgHandle.sendEmailMessage(message);
 			}else{
 				emailSendMsgHandle.sendMessage(message);
 			}
-			//update-end---author:wangshuai---date:2024-11-20---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
 		}else if(MessageTypeEnum.DD.getType().equals(messageType)){
 			ddSendMsgHandle.sendMessage(message);
 		}else if(MessageTypeEnum.QYWX.getType().equals(messageType)){
@@ -1788,6 +1812,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return sysUserDepartService.listObjs(queryWrapper,e->e.toString());
 	}
 
+	@Override
+	public List<String> queryUsernameByIds(List<String> userIds) {
+		return userMapper.getUsernameByIds(userIds);
+	}
+
     @Override
     public List<String> queryUserIdsByCascadeDeptIds(List<String> deptIds) {
         Set<String> userIds = new HashSet<>();
@@ -1823,13 +1852,60 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	}
 
 	@Override
+	public List<String> queryUserIdsByDeptPostIds(List<String> deptPostIds) {
+		// 1.查询兼职岗位对应的用户
+		QueryWrapper<SysUserDepPost> queryWrapper = new QueryWrapper<>();
+		queryWrapper.lambda().select(SysUserDepPost::getUserId).in(true,SysUserDepPost::getDepId,deptPostIds);
+		List<String> otherDepartPostUserIds = sysUserDepPostService.listObjs(queryWrapper,e->e.toString());
+		log.info("兼职岗位对应的用户 otherDepartPostUserIds = "+ JSON.toJSONString(otherDepartPostUserIds));
+
+		// 2.查询主岗位对应的用户
+		QueryWrapper<SysUser> mainQueryWrapper = new QueryWrapper<>();
+		mainQueryWrapper.lambda().select(SysUser::getId).eq(SysUser::getStatus,Integer.parseInt(CommonConstant.STATUS_1)).eq(SysUser::getDelFlag,CommonConstant.DEL_FLAG_0)
+				.and(wrapper -> wrapper.in(SysUser::getMainDepPostId, deptPostIds));
+		List<String> mainDepartPostUserIds =  sysUserService.listObjs(mainQueryWrapper,e->e.toString());
+		log.info("主岗位对应的用户 mainDepartPostUserIds = "+ JSON.toJSONString(mainDepartPostUserIds));
+		
+		// 3.合并主岗位和兼职岗位对应的用户
+		Set<String> userIdSet = new HashSet<>();
+		if (otherDepartPostUserIds != null && !otherDepartPostUserIds.isEmpty()) {
+			userIdSet.addAll(otherDepartPostUserIds);
+		}
+		if (mainDepartPostUserIds != null && !mainDepartPostUserIds.isEmpty()) {
+			userIdSet.addAll(mainDepartPostUserIds);
+		}
+		log.info("主岗位和兼职岗位，对应的用户 userIdSet = "+ JSON.toJSONString(userIdSet));
+		return new ArrayList<>(userIdSet);
+	}
+
+	@Override
+	public List<String> queryUsernameByDepartPositIds(List<String> deptPostIds) {
+		// 1.查询兼职岗位对应的用户
+		QueryWrapper<SysUserDepPost> otherQueryWrapper = new QueryWrapper<>();
+		otherQueryWrapper.lambda().select(SysUserDepPost::getUserId).in(true, SysUserDepPost::getDepId, deptPostIds);
+		List<String> otherUserIds = sysUserDepPostService.listObjs(otherQueryWrapper, e -> e.toString());
+		log.info("兼职岗位对应的用户 otherUserIds = {}，size = {}" + JSON.toJSONString(otherUserIds), oConvertUtils.getCollectionSize(otherUserIds));
+
+		// 2.查询主岗位和兼职岗位，对应的用户
+		QueryWrapper<SysUser> mainQueryWrapper = new QueryWrapper<>();
+		mainQueryWrapper.lambda().select(SysUser::getUsername).eq(SysUser::getStatus, Integer.parseInt(CommonConstant.STATUS_1)).eq(SysUser::getDelFlag, CommonConstant.DEL_FLAG_0)
+				.and(wrapper -> wrapper
+						.in(SysUser::getMainDepPostId, deptPostIds)
+						.or()
+						.in(otherUserIds != null && !otherUserIds.isEmpty(), SysUser::getId, otherUserIds)
+				);
+		List<String> allUsernames = sysUserService.listObjs(mainQueryWrapper, e -> e.toString());
+		log.info("主岗位和兼职岗位，对应的用户账号 allUsernames = {}，size = {}" ,JSON.toJSONString(allUsernames), oConvertUtils.getCollectionSize(allUsernames));
+		return allUsernames;
+	}
+
+	@Override
 	public List<String> queryUserIdsByPositionIds(List<String> positionIds) {
 		QueryWrapper<SysUserPosition> queryWrapper = new QueryWrapper<>();
 		queryWrapper.lambda().select(SysUserPosition::getUserId).in(true,SysUserPosition::getPositionId,positionIds);
 		return sysUserPositionService.listObjs(queryWrapper,e->e.toString());
 	}
-
-	//update-begin-author:taoyan date:2023-2-21 for: 解决参数顺序问题
+	
 	/**
 	 * 获取带参数的报表地址，因为多个参数可能顺序会变，所以要将参数顺序重排，获取所有可能的地址集合
 	 * 如下：参数顺序调整使用in查询，就能查询出菜单数据
@@ -1840,7 +1916,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	 */
 	private List<String> getOnlinePossiblePaths(String path){
 		List<String> result = new ArrayList<>();
-		log.info(" path = "+ path);
+		log.debug(" path = "+ path);
 		if (path.indexOf("?") >= 0 && (path.contains("/online/cgreport/") || path.contains("/online/cgformList/") || path.contains("/online/graphreport/"))) {
 			//包含?说明有多个参数
 			String[] pathArray = path.split("\\?");
@@ -1898,7 +1974,6 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		}
 		return result;
 	}
-	//update-end-author:taoyan date:2023-2-21 for: 解决参数顺序问题
 
 	@Override
 	public List<String> getUserAccountsByDepCode(String orgCode) {
@@ -2032,15 +2107,82 @@ public class SysBaseApiImpl implements ISysBaseAPI {
         if(oConvertUtils.isEmpty(airagFlowDTO.getFlowId())) {
             throw new JeecgBootException("流程ID不能为空");
         }
-        FlowRunParams params = new FlowRunParams();
-        params.setFlowId(airagFlowDTO.getFlowId());
-        params.setInputParams(airagFlowDTO.getInputParams());
-        params.setResponseMode("blocking");
-        Result<Object> o = (Result<Object>)airagFlowService.runFlow(params);
+        Result<Object> o = (Result<Object>)airagFlowService.runFlow(airagFlowDTO);
         return o.getResult();
     }
 
-    /**
+	/**
+	 * uniPush推送消息给APP用户
+	 * @param pushMessageDTO
+	 */
+	@Override
+	public void uniPushMsgToUser(PushMessageDTO pushMessageDTO) {
+		if(oConvertUtils.isEmpty(jeecgPushUrl)){
+			log.warn("yml配置项: jeecg.unicloud.pushUrl 未设置，APP消息UniPush推送功能未启用！");
+			return;
+		}
+		// 获取推送的用户信息
+		List<String> usernames = pushMessageDTO.getUsernames();
+		List<String> userIds = pushMessageDTO.getUserIds();
+
+        // 构建clientIds
+		List<String> clientIds = getClientIds(usernames, userIds);
+
+		// 构建请求参数
+		Map<String, Object> requestBody = new HashMap<>();
+		requestBody.put("title", pushMessageDTO.getTitle());
+		requestBody.put("content", pushMessageDTO.getContent());
+		requestBody.put("data", pushMessageDTO.getPayload());
+		requestBody.put("request_id", String.valueOf(System.currentTimeMillis()));
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // 全用户推送不需要clientIds，指定用户推送需要设置clientIds
+		boolean isAllUserPush = CommonConstant.MSG_TYPE_ALL.equals(pushMessageDTO.getPushType());
+		if (!isAllUserPush) {
+			if (CollectionUtils.isEmpty(clientIds)) {
+				log.warn("UniPush消息推送clientIds为空");
+				return;
+			}
+			requestBody.put("cids", clientIds);
+		}
+
+        // 统一推送逻辑
+		HttpEntity<Map<String, Object>> request = new HttpEntity<>(requestBody, headers);
+		ResponseEntity<Map> response = restTemplate.postForEntity(jeecgPushUrl, request, Map.class);
+
+       // 统一处理响应
+		String pushType = isAllUserPush ? "全用户" : "单用户";
+		if (response.getStatusCode().is2xxSuccessful()) {
+			log.info("{} UniPush消息推送成功 返回response:{}", pushType, response.getBody());
+		} else {
+			log.error("{} UniPush消息推送失败 返回response:{}", pushType, response.getBody());
+		}
+	}
+	/**
+	 * 根据用户名或用户ID获取clientIds
+	 */
+	private List<String> getClientIds(List<String> usernames, List<String> userIds) {
+		if (!CollectionUtils.isEmpty(usernames)) {
+			return extractClientIds(this.queryUsersByUsernames(String.join(",", usernames)));
+		} else if (!CollectionUtils.isEmpty(userIds)) {
+			return extractClientIds(this.queryUsersByIds(String.join(",", userIds)));
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * 从用户信息中提取clientIds
+	 */
+	private List<String> extractClientIds(List<JSONObject> users) {
+		return users.stream()
+				.map(user -> user.getString("clientId"))
+				.filter(clientId -> oConvertUtils.isNotEmpty(clientId) && !clientId.trim().isEmpty())
+				.collect(Collectors.toList());
+	}
+
+	/**
      * 根据orgCode找上级
      * 
      * @param orgCode

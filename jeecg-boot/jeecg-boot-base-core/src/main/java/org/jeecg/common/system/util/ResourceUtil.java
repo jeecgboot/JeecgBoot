@@ -67,13 +67,13 @@ public class ResourceUtil {
             synchronized (ResourceUtil.class) {
                 if (!initialized) {
                     long startTime = System.currentTimeMillis();
-                    log.info("【枚举字典加载】开始初始化枚举字典数据...");
+                    log.debug("【枚举字典加载】开始初始化枚举字典数据...");
 
                     initEnumDictData();
                     initialized = true;
 
                     long endTime = System.currentTimeMillis();
-                    log.info("【枚举字典加载】枚举字典数据初始化完成，共加载 {} 个字典，总耗时: {}ms", enumDictData.size(), endTime - startTime);
+                    log.debug("【枚举字典加载】枚举字典数据初始化完成，共加载 {} 个字典，总耗时: {}ms", enumDictData.size(), endTime - startTime);
                 }
             }
         }
@@ -103,7 +103,7 @@ public class ResourceUtil {
         }
 
         long scanEndTime = System.currentTimeMillis();
-        log.info("【枚举字典加载】文件扫描完成，总共找到 {} 个枚举类文件，扫描耗时: {}ms", allResources.size(), scanEndTime - scanStartTime);
+        log.debug("【枚举字典加载】文件扫描完成，总共找到 {} 个枚举类文件，扫描耗时: {}ms", allResources.size(), scanEndTime - scanStartTime);
 
         MetadataReaderFactory readerFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
 
@@ -126,7 +126,7 @@ public class ResourceUtil {
         }
 
         long processEndTime = System.currentTimeMillis();
-        log.info("【枚举字典加载】处理完成，实际处理 {} 个带注解的枚举类，处理耗时: {}ms", processedCount, processEndTime - processStartTime);
+        log.debug("【枚举字典加载】处理完成，实际处理 {} 个带注解的枚举类，处理耗时: {}ms", processedCount, processEndTime - processStartTime);
     }
 
     /**

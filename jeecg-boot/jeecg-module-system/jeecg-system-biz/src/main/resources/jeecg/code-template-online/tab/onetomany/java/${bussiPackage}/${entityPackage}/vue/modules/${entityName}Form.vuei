@@ -64,7 +64,7 @@
                 <#if po.dictText?default("")?trim?length gt 1>
                 <#assign form_cat_back = "${po.dictText}">
                 </#if>
-            <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+            <#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
                       <a-input-number v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
             <#elseif po.classType=='file'>
                       <j-upload v-model="model.${po.fieldName}"  <#if po.readonly=='Y'>disabled</#if> <#if po.uploadnum??>:number=${po.uploadnum}</#if>></j-upload>
@@ -302,7 +302,7 @@ export default {
            <#if col.readonly=='Y'>
            disabled:true,
            </#if>
-   <#elseif col.fieldDbType=='int' || col.fieldDbType=='double' || col.fieldDbType=='BigDecimal'>
+   <#elseif col.fieldDbType=='int' || col.fieldDbType=='long' || col.fieldDbType=='double' || col.fieldDbType=='BigDecimal'>
            type: FormTypes.inputNumber,
            <#if col.readonly=='Y'>
            disabled:true,

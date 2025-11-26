@@ -56,9 +56,13 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             executeLogin(request, response);
             return true;
         } catch (Exception e) {
-            JwtUtil.responseError((HttpServletResponse)response,401,CommonConstant.TOKEN_IS_INVALID_MSG);
+            // 使用异常中的具体错误信息，保留"不允许同一账号多地同时登录"等具体提示
+            String errorMsg = e.getMessage();
+            if (oConvertUtils.isEmpty(errorMsg)) {
+                errorMsg = CommonConstant.TOKEN_IS_INVALID_MSG;
+            }
+            JwtUtil.responseError((HttpServletResponse)response, 401, errorMsg);
             return false;
-            //throw new AuthenticationException("Token失效，请重新登录", e);
         }
     }
 
@@ -69,11 +73,10 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String token = httpServletRequest.getHeader(CommonConstant.X_ACCESS_TOKEN);
-        // update-begin--Author:lvdandan Date:20210105 for：JT-355 OA聊天添加token验证，获取token参数
+        // 代码逻辑说明: JT-355 OA聊天添加token验证，获取token参数
         if (oConvertUtils.isEmpty(token)) {
             token = httpServletRequest.getParameter("token");
         }
-        // update-end--Author:lvdandan Date:20210105 for：JT-355 OA聊天添加token验证，获取token参数
 
         JwtToken jwtToken = new JwtToken(token);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
@@ -106,10 +109,9 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
             httpServletResponse.setStatus(HttpStatus.OK.value());
             return false;
         }
-        //update-begin-author:taoyan date:20200708 for:多租户用到
+        // 代码逻辑说明: 多租户用到
         String tenantId = httpServletRequest.getHeader(CommonConstant.TENANT_ID);
         TenantContext.setTenant(tenantId);
-        //update-end-author:taoyan date:20200708 for:多租户用到
 
         return super.preHandle(request, response);
     }

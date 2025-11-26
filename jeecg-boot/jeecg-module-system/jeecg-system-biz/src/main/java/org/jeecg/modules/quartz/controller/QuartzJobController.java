@@ -220,10 +220,8 @@ public class QuartzJobController {
 		mv.addObject(NormalExcelConstants.FILE_NAME, "定时任务列表");
 		mv.addObject(NormalExcelConstants.CLASS, QuartzJob.class);
         //获取当前登录用户
-        //update-begin---author:wangshuai ---date:20211227  for：[JTC-116]导出人写死了------------
         LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("定时任务列表数据", "导出人:"+user.getRealname(), "导出信息"));
-        //update-end---author:wangshuai ---date:20211227  for：[JTC-116]导出人写死了------------
         mv.addObject(NormalExcelConstants.DATA_LIST, pageList);
 		return mv;
 	}

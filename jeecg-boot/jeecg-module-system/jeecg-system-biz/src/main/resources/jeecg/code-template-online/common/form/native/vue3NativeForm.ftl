@@ -81,7 +81,7 @@
 						<#elseif po.classType=='cat_tree'>
 							<#assign need_category = true>
 								<j-category-select v-model:value="formData.${po.fieldName}" pcode="${po.dictField?default("")}" placeholder="请选择${po.filedComment}" <#if po.dictText?default("")?trim?length gt 1>back="${dashedToCamel(po.dictText)}"</#if> <#if po.readonly=='Y'>disabled</#if> @change="(value) => handleFormChange('${po.fieldName}', value)" allow-clear />
-					<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+					<#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
 								<a-input-number v-model:value="formData.${po.fieldName}" placeholder="请输入${po.filedComment}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
 					<#elseif po.classType=='file'>
 								<#assign need_upload = true>

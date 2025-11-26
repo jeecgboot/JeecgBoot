@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.CommonConstant;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springdoc.core.filters.GlobalOpenApiMethodFilter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -22,18 +23,24 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author eightmonth
  */
 @Slf4j
 @Configuration
+@ConditionalOnProperty(prefix = "knife4j", name = "production", havingValue = "false", matchIfMissing = true)
 @PropertySource("classpath:config/default-spring-doc.properties")
 public class Swagger3Config implements WebMvcConfigurer {
+
+    // 路径匹配结果缓存，避免重复计算
+    private static final Map<String, Boolean> EXCLUDED_PATHS_CACHE = new ConcurrentHashMap<>();
     // 定义不需要注入安全要求的路径集合
-    Set<String> excludedPaths = new HashSet<>(Arrays.asList(
-            "/sys/randomImage/{key}",
+    private static final Set<String> excludedPaths = new HashSet<>(Arrays.asList(
+            "/sys/randomImage/**",
             "/sys/login",
             "/sys/phoneLogin",
             "/sys/mLogin",
@@ -43,7 +50,20 @@ public class Swagger3Config implements WebMvcConfigurer {
             "/sys/thirdLogin/**",
             "/sys/user/register"
     ));
-
+    // 预处理通配符模式，提高匹配效率
+    private static final Set<String> wildcardPatterns = new HashSet<>();
+    private static final Set<String> exactPatterns = new HashSet<>();
+    static {
+        // 初始化时分离精确匹配和通配符匹配
+        for (String pattern : excludedPaths) {
+            if (pattern.endsWith("/**")) {
+                wildcardPatterns.add(pattern.substring(0, pattern.length() - 3));
+            } else {
+                exactPatterns.add(pattern);
+            }
+        }
+    }
+    
     /**
      *
      * 显示swagger-ui.html文档展示页，还必须注入swagger资源：
@@ -97,19 +117,18 @@ public class Swagger3Config implements WebMvcConfigurer {
 
         return fullPath.toString();
     }
-    
-    
+
+
     private boolean isExcludedPath(String path) {
-        return excludedPaths.stream()
-                .anyMatch(pattern -> {
-                    if (pattern.endsWith("/**")) {
-                        // 处理通配符匹配
-                        String basePath = pattern.substring(0, pattern.length() - 3);
-                        return path.startsWith(basePath);
-                    }
-                    // 精确匹配
-                    return pattern.equals(path);
-                });
+        // 使用缓存避免重复计算
+        return EXCLUDED_PATHS_CACHE.computeIfAbsent(path, p -> {
+            // 精确匹配
+            if (exactPatterns.contains(p)) {
+                return true;
+            }
+            // 通配符匹配
+            return wildcardPatterns.stream().anyMatch(p::startsWith);
+        });
     }
     
     @Bean
@@ -117,7 +136,7 @@ public class Swagger3Config implements WebMvcConfigurer {
         return new OpenAPI()
                 .info(new Info()
                         .title("JeecgBoot 后台服务API接口文档")
-                        .version("3.8.3")
+                        .version("3.9.0")
                         .contact(new Contact().name("北京国炬信息技术有限公司").url("www.jeccg.com").email("jeecgos@163.com"))
                         .description("后台API接口")
                         .termsOfService("NO terms of service")

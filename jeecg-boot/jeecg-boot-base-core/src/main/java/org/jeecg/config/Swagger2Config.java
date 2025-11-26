@@ -95,13 +95,11 @@
 //        List<Parameter> pars = new ArrayList<>();
 //        tokenPar.name(CommonConstant.X_ACCESS_TOKEN).description("token").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
 //        pars.add(tokenPar.build());
-//        //update-begin-author:liusq---date:2024-08-15--for:  开启多租户时，全局参数增加租户id
 //        if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 //            ParameterBuilder tenantPar = new ParameterBuilder();
 //            tenantPar.name(CommonConstant.TENANT_ID).description("租户ID").modelRef(new ModelRef("string")).parameterType("header").required(false).build();
 //            pars.add(tenantPar.build());
 //        }
-//        //update-end-author:liusq---date:2024-08-15--for: 开启多租户时，全局参数增加租户id
 //
 //        return pars;
 //    }

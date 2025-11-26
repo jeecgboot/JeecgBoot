@@ -61,7 +61,6 @@ public class SysUserOnlineController {
                 //TODO 改成一次性查询
                 LoginUser loginUser = sysBaseApi.getUserByName(JwtUtil.getUsername(token));
                 if (loginUser != null && !"_reserve_user_external".equals(loginUser.getUsername())) {
-                    //update-begin---author:wangshuai ---date:20220104  for：[JTC-382]在线用户查询无效------------
                     //验证用户名是否与传过来的用户名相同
                     boolean isMatchUsername=true;
                     //判断用户名是否为空，并且当前循环的用户不包含传过来的用户名，那么就设成false
@@ -72,7 +71,6 @@ public class SysUserOnlineController {
                         BeanUtils.copyProperties(loginUser, online);
                         onlineList.add(online);
                     }
-                    //update-end---author:wangshuai ---date:20220104  for：[JTC-382]在线用户查询无效------------
                 }
             }
         }

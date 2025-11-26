@@ -207,7 +207,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
      * @return
      */
     private String getToken(String USERNAME, String PASSWORD) {
-        String token = JwtUtil.sign(USERNAME, PASSWORD);
+        String token = JwtUtil.sign(USERNAME, PASSWORD, CommonConstant.CLIENT_TYPE_PC);
         redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
         redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, 60);
         return token;
@@ -382,7 +382,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         SwaggerInfo info = new SwaggerInfo();
 
         info.setDescription("OpenAPI 接口列表");
-        info.setVersion("3.8.3");
+        info.setVersion("3.9.0");
         info.setTitle("OpenAPI 接口列表");
         info.setTermsOfService("https://jeecg.com");
 

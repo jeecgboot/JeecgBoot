@@ -34,12 +34,11 @@ public class GlobalAccessTokenFilter implements GlobalFilter, Ordered {
         String scheme = exchange.getRequest().getURI().getScheme();
         String host = exchange.getRequest().getURI().getHost();
         int port = exchange.getRequest().getURI().getPort();
-        //update-begin---author:chenrui ---date:20240603  for：地址中没有带端口(http/https默认)时port是-1------------
+        // 代码逻辑说明: 地址中没有带端口(http/https默认)时port是-1------------
         String basePath = scheme + "://" + host;
         if (port != -1) {
             basePath += ":" + port;
         }
-        //update-end---author:chenrui ---date:20240603  for：地址中没有带端口(http/https默认)时port是-1------------
         // 1. 重写StripPrefix(获取真实的URL)
         addOriginalRequestUrl(exchange, exchange.getRequest().getURI());
         String rawPath = exchange.getRequest().getURI().getRawPath();

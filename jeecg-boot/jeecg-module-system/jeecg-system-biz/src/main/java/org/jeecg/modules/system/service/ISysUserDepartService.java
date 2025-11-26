@@ -77,7 +77,7 @@ public interface ISysUserDepartService extends IService<SysUserDepart> {
 	 * @param pageNo
 	 * @return
 	 */
-	IPage<SysUser> getUserInformation(Integer tenantId,String departId,String roleId, String keyword, Integer pageSize, Integer pageNo, String excludeUserIdList);
+	IPage<SysUser> getUserInformation(Integer tenantId,String departId,String roleId, String keyword, Integer pageSize, Integer pageNo, String excludeUserIdList, String includeUsernameList);
 
 	/**
 	 * 通过部门id和租户id获取多个用户

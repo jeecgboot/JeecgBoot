@@ -107,7 +107,6 @@ public interface ISysDictService extends IService<SysDict> {
     @Deprecated
 	String queryTableDictTextByKey(String table, String text, String code, String key);
 
-	//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 	/**
 	 * 通过查询指定table的 text code key 获取字典值，可批量查询
 	 *
@@ -119,7 +118,6 @@ public interface ISysDictService extends IService<SysDict> {
 	 * @return
 	 */
 	List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> keys, String dataSource);
-	//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 通过查询指定table的 text code key 获取字典值，包含value

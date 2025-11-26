@@ -248,10 +248,9 @@ public class SysTenantController {
                 
                 idList.add(Integer.parseInt(id));
             }
-            //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户删除直接删除，不删除中间表------------
+            // 代码逻辑说明: 【QQYUN-5723】3、租户删除直接删除，不删除中间表------------
             sysTenantService.removeByIds(idList);
             result.success("删除成功！");
-            //update-end---author:wangshuai ---date:20220523  for：【QQYUN-5723】3、租户删除直接删除，不删除中间表------------
         }
         return result;
     }
@@ -386,11 +385,10 @@ public class SysTenantController {
         Result<Map<String,Object>> result = new Result<Map<String,Object>>();
         try {
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+            // 代码逻辑说明: [QQYUN-3371]租户逻辑改造，改成关系表------------
             List<Integer> tenantIdList = relationService.getTenantIdsByUserId(sysUser.getId());
             Map<String,Object> map = new HashMap(5);
             if (null!=tenantIdList && tenantIdList.size()>0) {
-            //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
                 // 该方法仅查询有效的租户，如果返回0个就说明所有的租户均无效。
                 List<SysTenant> tenantList = sysTenantService.queryEffectiveTenant(tenantIdList);
                 map.put("list", tenantList);
@@ -530,7 +528,6 @@ public class SysTenantController {
         }
     }
     
-    //update-begin---author:wangshuai ---date:20230107  for：[QQYUN-3725]申请加入租户，审核中状态增加接口------------
     /**
      * 分页获取租户用户数据(vue3用户租户页面)【低代码应用专用接口】
      *
@@ -615,7 +612,6 @@ public class SysTenantController {
         sysTenantService.removeById(sysTenant.getId());
         return Result.ok("注销成功");
     }
-    //update-end---author:wangshuai ---date:20230107  for：[QQYUN-3725]申请加入租户，审核中状态增加接口------------
 
     /**
      * 获取租户用户不同状态下的数量【低代码应用专用接口】
@@ -877,13 +873,12 @@ public class SysTenantController {
     @GetMapping("/getTenantCount")
     public Result<Map<String,Long>> getTenantCount(HttpServletRequest request){
         Map<String,Long> map = new HashMap<>();
-        //update-begin---author:wangshuai---date:2023-11-24---for:【QQYUN-7177】用户数量显示不正确---
+        // 代码逻辑说明: 【QQYUN-7177】用户数量显示不正确---
         if(oConvertUtils.isEmpty(TokenUtils.getTenantIdByRequest(request))){
             return Result.error("当前租户为空，禁止访问！");
         }
         Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request));
         Long userCount = relationService.getUserCount(tenantId,CommonConstant.USER_TENANT_NORMAL);
-        //update-end---author:wangshuai---date:2023-11-24---for:【QQYUN-7177】用户数量显示不正确---
         map.put("userCount",userCount);
         LambdaQueryWrapper<SysDepart> departQuery = new LambdaQueryWrapper<>();
         departQuery.eq(SysDepart::getDelFlag,String.valueOf(CommonConstant.DEL_FLAG_0));

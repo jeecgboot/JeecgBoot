@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 <#list subTables as sub>
 import ${bussiPackage}.${entityPackage}.entity.${sub.entityName};
 </#list>
@@ -348,7 +349,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 		 //此处设置的filename无效,前端会重更新设置一下
 		 mv.addObject(NormalExcelConstants.FILE_NAME, "${sub.ftlDescription}");
 		 mv.addObject(NormalExcelConstants.CLASS, ${sub.entityName}.class);
-		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("${sub.ftlDescription}报表", "导出人:" + sysUser.getRealname(), "${sub.ftlDescription}"));
+		 mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("${sub.ftlDescription}报表", "导出人:" + sysUser.getRealname(), "${sub.ftlDescription}", ExcelType.XSSF));
 		 mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
 		 return mv;
     }

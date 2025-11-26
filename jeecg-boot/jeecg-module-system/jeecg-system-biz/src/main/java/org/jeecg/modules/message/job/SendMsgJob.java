@@ -42,7 +42,7 @@ public class SendMsgJob implements Job {
 		System.out.println(sysMessages);
 		// 2.根据不同的类型走不通的发送实现类
 		for (SysMessage sysMessage : sysMessages) {
-			//update-begin-author:taoyan date:2022-7-8 for: 模板消息发送测试调用方法修改
+			// 代码逻辑说明: 模板消息发送测试调用方法修改
 			Integer sendNum = sysMessage.getEsSendNum();
 			try {
 				MessageDTO md = new MessageDTO();
@@ -51,13 +51,11 @@ public class SendMsgJob implements Job {
 				md.setToUser(sysMessage.getEsReceiver());
 				md.setType(sysMessage.getEsType());
 				md.setToAll(false);
-				//update-begin---author:wangshuai---date:2024-11-12---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
+				// 代码逻辑说明: 【QQYUN-8523】敲敲云发邮件通知，不稳定---
 				md.setIsTimeJob(true);
-				//update-end---author:wangshuai---date:2024-11-12---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
 				sysBaseAPI.sendTemplateMessage(md);
 				//发送消息成功
 				sysMessage.setEsSendStatus(SendMsgStatusEnum.SUCCESS.getCode());
-				//update-end-author:taoyan date:2022-7-8 for: 模板消息发送测试调用方法修改
 			} catch (Exception e) {
 				e.printStackTrace();
 				// 发送消息出现异常

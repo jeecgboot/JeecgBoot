@@ -79,6 +79,9 @@ public class SysAppVersion implements Serializable {
     /**热更新路径*/
     @Schema(description = "热更新路径")
     private String wgtUrl;
+    /**热更新路径*/
+    @Schema(description = "桌面端下载路径")
+    private String webDownloadUrl;
     /**更新内容*/
     @Schema(description = "更新内容")
     private String updateNote;

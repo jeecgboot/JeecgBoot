@@ -150,7 +150,7 @@ public class SqlConcatUtil {
     }
 
     private static String getInConditionValue(Object value,boolean isString) {
-        //update-begin-author:taoyan date:20210628 for: 查询条件如果输入,导致sql报错
+        // 代码逻辑说明: 查询条件如果输入,导致sql报错
         String[] temp = value.toString().split(",");
         if(temp.length==0){
             return "('')";
@@ -168,7 +168,6 @@ public class SqlConcatUtil {
         }else {
             return "("+value.toString()+")";
         }
-        //update-end-author:taoyan date:20210628 for: 查询条件如果输入,导致sql报错
     }
 
     /**
@@ -215,7 +214,6 @@ public class SqlConcatUtil {
                 }
             }else {
 
-                //update-begin-author:taoyan date:2022-6-30 for: issues/3810 数据权限规则问题
                 // 走到这里说明 value不带有任何模糊查询的标识(*或者%)
                 if (ruleEnum == QueryRuleEnum.LEFT_LIKE) {
                     if (DataBaseConstant.DB_TYPE_SQLSERVER.equals(getDbType())) {
@@ -236,7 +234,6 @@ public class SqlConcatUtil {
                         return "'%" + str + "%'";
                     }
                 }
-                //update-end-author:taoyan date:2022-6-30 for: issues/3810 数据权限规则问题
 
             }
         }

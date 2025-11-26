@@ -197,7 +197,6 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
                 sysFormFileMapper.insert(sysFormFile);
 //            }
         }
-        //update-end-author:taoyan date:2023-6-12 for: QQYUN-4310【文件】从文件库选择文件功能未做
     }
 
     /**
@@ -271,7 +270,7 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
                 md.setFromUser("system");
                 md.setType(MessageTypeEnum.XT.getType());
 
-                // update-begin-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
+                // 代码逻辑说明: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
                 String tableName = sysComment.getTableName();
                 String prefix = "desform:";
                 if (tableName != null) {
@@ -299,7 +298,6 @@ public class SysCommentServiceImpl extends ServiceImpl<SysCommentMapper, SysComm
                         md.setData(data);
                     }
                 }
-                // update-end-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
                 
                 sysBaseApi.sendTemplateMessage(md);
             }

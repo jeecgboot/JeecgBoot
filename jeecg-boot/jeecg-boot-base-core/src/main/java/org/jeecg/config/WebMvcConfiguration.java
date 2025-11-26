@@ -142,7 +142,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         return objectMapper;
     }
 
-    //update-begin---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
 //    /**
 //     * SpringBootAdmin的Httptrace不见了
 //     * https://blog.csdn.net/u013810234/article/details/110097201
@@ -151,7 +150,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 //    public InMemoryHttpTraceRepository getInMemoryHttpTrace(){
 //        return new InMemoryHttpTraceRepository();
 //    }
-    //update-end---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
 
 
     /**
@@ -165,7 +163,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         // 确保在应用启动早期就配置MeterFilter，避免警告
         if (null != meterRegistryPostProcessor && null != prometheusMeterRegistry) {
             meterRegistryPostProcessor.postProcessAfterInitialization(prometheusMeterRegistry, "prometheusMeterRegistry");
-            log.info("PrometheusMeterRegistry配置完成");
+            log.info("PrometheusMeterRegistry 配置完成");
         }
     }
 

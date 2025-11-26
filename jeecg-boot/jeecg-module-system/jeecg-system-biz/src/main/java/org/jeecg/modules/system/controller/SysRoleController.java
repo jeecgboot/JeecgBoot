@@ -33,6 +33,7 @@ import org.jeecg.modules.system.vo.SysUserRoleCountVo;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,11 +104,10 @@ public class SysRoleController {
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
 									  @RequestParam(name="isMultiTranslate", required = false) Boolean isMultiTranslate,
 									  HttpServletRequest req) {
-        //update-begin---author:wangshuai---date:2025-03-26---for:【issues/7948】角色解决根据id查询回显不对---
+        // 代码逻辑说明: 【issues/7948】角色解决根据id查询回显不对---
         if(null != isMultiTranslate && isMultiTranslate){
             pageSize = 100;
         }
-        //update-end---author:wangshuai---date:2025-03-26---for:【issues/7948】角色解决根据id查询回显不对---
 		Result<IPage<SysRole>> result = new Result<IPage<SysRole>>();
 		//QueryWrapper<SysRole> queryWrapper = QueryGenerator.initQueryWrapper(role, req.getParameterMap());
 		//IPage<SysRole> pageList = sysRoleService.page(page, queryWrapper);
@@ -157,9 +157,8 @@ public class SysRoleController {
 		Result<SysRole> result = new Result<SysRole>();
 		try {
 			//开启多租户隔离,角色id自动生成10位
-			//update-begin---author:wangshuai---date:2024-05-23---for:【TV360X-42】角色新增时设置的编码，保存后不一致---
+			// 代码逻辑说明: 【TV360X-42】角色新增时设置的编码，保存后不一致---
 			if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && oConvertUtils.isEmpty(role.getRoleCode())){
-			//update-end---author:wangshuai---date:2024-05-23---for:【TV360X-42】角色新增时设置的编码，保存后不一致---
 				role.setRoleCode(RandomUtil.randomString(10));
 			}
 			role.setCreateTime(new Date());
@@ -230,10 +229,8 @@ public class SysRoleController {
 			}
 		}
     	
-		//update-begin---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】禁止删除 admin 角色---
 		//是否存在admin角色
 		sysRoleService.checkAdminRoleRejectDel(id);
-		//update-end---author:wangshuai---date:2024-01-16---for:【QQYUN-7974】禁止删除 admin 角色---
     	
 		sysRoleService.deleteRole(id);
 
@@ -401,8 +398,14 @@ public class SysRoleController {
 		mv.addObject(NormalExcelConstants.FILE_NAME,"角色列表");
 		mv.addObject(NormalExcelConstants.CLASS,SysRole.class);
 		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("角色列表数据","导出人:"+user.getRealname(),"导出信息"));
+        //导出支持xlsx
+		mv.addObject(NormalExcelConstants.PARAMS,new ExportParams("角色列表数据","导出人:"+user.getRealname(),"导出信息", ExcelType.XSSF));
 		mv.addObject(NormalExcelConstants.DATA_LIST,pageList);
+        //角色支持指定字段导出
+        String exportFields = request.getParameter(NormalExcelConstants.EXPORT_FIELDS);
+        if(oConvertUtils.isNotEmpty(exportFields)){
+            mv.addObject(NormalExcelConstants.EXPORT_FIELDS, exportFields);
+        }
 		return mv;
 	}
 

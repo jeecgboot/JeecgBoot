@@ -2,10 +2,13 @@ package org.jeecg.modules.system.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
@@ -24,6 +27,7 @@ import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.vo.SysChangeDepartVo;
 import org.jeecg.modules.system.vo.SysDepartExportVo;
 import org.jeecg.modules.system.vo.SysPositionSelectTreeVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
@@ -31,6 +35,7 @@ import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -78,13 +83,12 @@ public class SysDepartController {
 		LoginUser user = (LoginUser) SecurityUtils.getSubject().getPrincipal();
 		try {
 			if(oConvertUtils.isNotEmpty(user.getUserIdentity()) && user.getUserIdentity().equals( CommonConstant.USER_IDENTITY_2 )){
-				//update-begin--Author:liusq  Date:20210624  for:部门查询ids为空后的前端显示问题 issues/I3UD06
+				// 代码逻辑说明: 部门查询ids为空后的前端显示问题 issues/I3UD06
 				String departIds = user.getDepartIds();
 				if(StringUtils.isNotBlank(departIds)){
 					List<SysDepartTreeModel> list = sysDepartService.queryMyDeptTreeList(departIds);
 					result.setResult(list);
 				}
-				//update-end--Author:liusq  Date:20210624  for:部门查询ids为空后的前端显示问题 issues/I3UD06
 				result.setMessage(CommonConstant.USER_IDENTITY_2.toString());
 				result.setSuccess(true);
 			}else{
@@ -382,7 +386,6 @@ public class SysDepartController {
 		}
 		//------------------------------------------------------------------------------------------------
 		
-		//update-begin---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
 		//// Step.1 组装查询条件
 		//QueryWrapper<SysDepart> queryWrapper = QueryGenerator.initQueryWrapper(sysDepart, request.getParameterMap());
 		//Step.1 AutoPoi 导出Excel
@@ -403,9 +406,8 @@ public class SysDepartController {
 		}
 		//step.2 组装导出数据
 		Integer tenantId = sysDepart == null ? null : sysDepart.getTenantId();
-		//update-begin---author:wangshuai---date:2024-07-05---for:【TV360X-1671】部门管理不支持选中的记录导出---
+		// 代码逻辑说明: 【TV360X-1671】部门管理不支持选中的记录导出---
 		List<SysDepartExportVo> sysDepartExportVos = sysDepartService.getExportDepart(tenantId,idList);
-		//update-end---author:wangshuai---date:2024-07-05---for:【TV360X-1671】部门管理不支持选中的记录导出---
         //导出文件名称
         mv.addObject(NormalExcelConstants.FILE_NAME, "部门列表");
         mv.addObject(NormalExcelConstants.CLASS, SysDepartExportVo.class);
@@ -414,12 +416,11 @@ public class SysDepartController {
                 "1、标题为第三行，部门路径和部门名称的标题不允许修改，否则会匹配失败；第四行为数据填写范围;\n" +
                 "2、部门路径用英文字符/分割，部门名称为部门路径的最后一位;\n" +
                 "3、部门从一级名称开始创建，如果有同级就需要多添加一行，如研发部/研发一部;研发部/研发二部;\n" +
-                "4、自定义的部门编码需要满足规则才能导入。如一级部门编码为A01,那么子部门为A01A01,同级子部门为A01A02,编码固定为三位，首字母为A-Z,后两位为数字0-99，依次递增;", "导出人:" + user.getRealname(), "导出信息");
+                "4、自定义的部门编码需要满足规则才能导入。如一级部门编码为A01,那么子部门为A01A01,同级子部门为A01A02,编码固定为三位，首字母为A-Z,后两位为数字0-99，依次递增;", "导出人:" + user.getRealname(), "导出信息", ExcelType.XSSF);
         exportParams.setTitleHeight((short)70);
         exportParams.setStyle(ExcelExportSysUserStyle.class);
         mv.addObject(NormalExcelConstants.PARAMS, exportParams);
         mv.addObject(NormalExcelConstants.DATA_LIST, sysDepartExportVos);
-		//update-end---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
         
 		return mv;
     }
@@ -450,7 +451,6 @@ public class SysDepartController {
             params.setHeadRows(1);
             params.setNeedSave(true);
             try {
-				//update-begin---author:wangshuai---date:2023-10-20---for: 注释掉原来的导入部门的逻辑---
 //            	// orgCode编码长度
 //            	int codeLength = YouBianCodeUtil.ZHANWEI_LENGTH;
 //                listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepart.class, params);
@@ -484,24 +484,18 @@ public class SysDepartController {
 //                	}else{
 //                		sysDepart.setParentId("");
 //					}
-//                    //update-begin---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
 //					sysDepart.setOrgType(sysDepart.getOrgCode().length()/codeLength+"");
-//                    //update-end---author:liusq   Date:20210223  for：批量导入部门以后，不能追加下一级部门 #2245------------
 //					sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
-//                    //update-begin---author:wangshuai ---date:20220105  for：[JTC-363]部门导入 机构类别没有时导入失败，赋默认值------------
 //					if(oConvertUtils.isEmpty(sysDepart.getOrgCategory())){
 //					    sysDepart.setOrgCategory("1");
 //                    }
-//                    //update-end---author:wangshuai ---date:20220105  for：[JTC-363]部门导入 机构类别没有时导入失败，赋默认值------------
 //					ImportExcelUtil.importDateSaveOne(sysDepart, ISysDepartService.class, errorMessageList, num, CommonConstant.SQL_INDEX_UNIQ_DEPART_ORG_CODE);
 //					num++;
 //                }
-				//update-end---author:wangshuai---date:2023-10-20---for: 注释掉原来的导入部门的逻辑---
 				
-				//update-begin---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
+				// 代码逻辑说明: 【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
 				listSysDeparts = ExcelImportUtil.importExcel(file.getInputStream(), SysDepartExportVo.class, params);
 				sysDepartService.importSysDepart(listSysDeparts,errorMessageList);
-				//update-end---author:wangshuai---date:2023-10-19---for:【QQYUN-5482】系统的部门导入导出也可以改成敲敲云模式的部门路径---
 				
 				//清空部门缓存
 				List<String> keys3 = redisUtil.scan(CacheConstant.SYS_DEPARTS_CACHE + "*");
@@ -756,5 +750,46 @@ public class SysDepartController {
                                                  @RequestParam(name = "depId", required = false) String depId) {
         String departName = sysDepartService.getDepartPathNameByOrgCode(orgCode, depId);
         return Result.OK(departName);
+    }
+
+    /**
+     * 根据部门id获取部门下的岗位id
+     *
+     * @param depIds 当前选择的公司、子公司、部门id
+     * @return
+     */
+    @GetMapping("/getDepPostIdByDepId")
+    public Result<Map<String, String>> getDepPostIdByDepId(@RequestParam(name = "depIds") String depIds) {
+        String departIds = sysDepartService.getDepPostIdByDepId(depIds);
+        return Result.OK(departIds);
+    }
+
+    /**
+     * 更新改变后的部门数据
+     * 
+     * @param changeDepartVo
+     * @return
+     */
+    @PutMapping("/updateChangeDepart")
+    @RequiresPermissions("system:depart:updateChange")
+    @RequiresRoles({"admin"})
+    public Result<String> updateChangeDepart(@RequestBody SysChangeDepartVo changeDepartVo) {
+        sysDepartService.updateChangeDepart(changeDepartVo);
+    	return Result.ok("调整部门位置成功！");
+    }
+
+    /**
+     * 获取部门负责人
+     * 
+     * @param departId
+     * @return
+     */
+    @GetMapping("/getDepartmentHead")
+    public Result<IPage<SysUser>> getDepartmentHead(@RequestParam(name = "departId") String departId,
+                                                    @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+                                                    @RequestParam(name="pageSize", defaultValue="10") Integer pageSize){
+        Page<SysUser> page = new Page<>(pageNo, pageSize);
+        IPage<SysUser> pageList = sysDepartService.getDepartmentHead(departId,page);
+        return Result.OK(pageList);
     }
 }

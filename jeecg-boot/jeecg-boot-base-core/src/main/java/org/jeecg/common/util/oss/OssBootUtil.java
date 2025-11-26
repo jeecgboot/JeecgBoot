@@ -124,9 +124,8 @@ public class OssBootUtil {
             if (!fileDir.endsWith(SymbolConstant.SINGLE_SLASH)) {
                 fileDir = fileDir.concat(SymbolConstant.SINGLE_SLASH);
             }
-            //update-begin-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
+            // 代码逻辑说明: 过滤上传文件夹名特殊字符，防止攻击
             fileDir=StrAttackFilter.filter(fileDir);
-            //update-end-author:wangshuai date:20201012 for: 过滤上传文件夹名特殊字符，防止攻击
             fileUrl = fileUrl.append(fileDir + fileName);
 
             if (oConvertUtils.isNotEmpty(staticDomain) && staticDomain.toLowerCase().startsWith(CommonConstant.STR_HTTP)) {
@@ -263,9 +262,8 @@ public class OssBootUtil {
                 newBucket = bucket;
             }
             initOss(endPoint, accessKeyId, accessKeySecret);
-            //update-begin---author:liusq  Date:20220120  for：替换objectName前缀，防止key不一致导致获取不到文件----
+            // 代码逻辑说明: 替换objectName前缀，防止key不一致导致获取不到文件----
             objectName = OssBootUtil.replacePrefix(objectName,bucket);
-            //update-end---author:liusq  Date:20220120  for：替换objectName前缀，防止key不一致导致获取不到文件----
             OSSObject ossObject = ossClient.getObject(newBucket,objectName);
             inputStream = new BufferedInputStream(ossObject.getObjectContent());
         }catch (Exception e){
@@ -293,9 +291,8 @@ public class OssBootUtil {
     public static String getObjectUrl(String bucketName, String objectName, Date expires) {
         initOss(endPoint, accessKeyId, accessKeySecret);
         try{
-            //update-begin---author:liusq  Date:20220120  for：替换objectName前缀，防止key不一致导致获取不到文件----
+            // 代码逻辑说明: 替换objectName前缀，防止key不一致导致获取不到文件----
             objectName = OssBootUtil.replacePrefix(objectName,bucketName);
-            //update-end---author:liusq  Date:20220120  for：替换objectName前缀，防止key不一致导致获取不到文件----
             if(ossClient.doesObjectExist(bucketName,objectName)){
                 URL url = ossClient.generatePresignedUrl(bucketName,objectName,expires);
                 //log.info("原始url : {}", url.toString());

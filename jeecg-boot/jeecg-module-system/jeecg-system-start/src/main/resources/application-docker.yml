@@ -116,9 +116,8 @@ spring:
       web-stat-filter:
         enabled: true
     dynamic:
-      druid: # 全局druid参数，绝大部分值和默认保持一致。(现已支持的参数如下,不清楚含义不要乱设置)
+      druid:
         # 连接池的配置信息
-        # 初始化大小，最小，最大
         initial-size: 5
         min-idle: 5
         maxActive: 1000

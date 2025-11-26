@@ -1,9 +1,11 @@
 package org.jeecg.config;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.jeecg.config.tencent.JeecgTencent;
 import org.jeecg.config.vo.*;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +76,35 @@ public class JeecgBaseConfig {
     /**
      * 百度开放API配置
      */
-    private BaiduApi baiduApi;    
+    private BaiduApi baiduApi;
+
+    /**
+     * minio配置
+     */
+    @Getter
+    @Setter
+    private JeecgMinio minio;
+
+    /**
+     * oss配置
+     */
+    @Getter
+    @Setter
+    private JeecgOSS oss;
+
+    /**
+     * 短信发送方式 aliyun阿里云短信 tencent腾讯云短信
+     */
+    @Getter
+    @Setter
+    private String smsSendType = "aliyun";
+    
+    /**
+     * 腾讯配置
+     */
+    @Getter
+    @Setter
+    private JeecgTencent tencent;
 
     public String getCustomResourcePrefixPath() {
         return customResourcePrefixPath;

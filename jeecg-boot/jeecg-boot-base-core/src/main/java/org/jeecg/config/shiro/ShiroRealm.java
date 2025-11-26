@@ -83,7 +83,7 @@ public class ShiroRealm extends AuthorizingRealm {
         Set<String> permissionSet = commonApi.queryUserAuths(userId);
         info.addStringPermissions(permissionSet);
         //System.out.println(permissionSet);
-        log.info("===============Shiro权限认证成功==============");
+        log.debug("===============Shiro权限认证成功==============");
         return info;
     }
 
@@ -141,9 +141,11 @@ public class ShiroRealm extends AuthorizingRealm {
         }
         // 校验token是否超时失效 & 或者账号密码是否错误
         if (!jwtTokenRefresh(token, username, loginUser.getPassword())) {
-            throw new AuthenticationException(CommonConstant.TOKEN_IS_INVALID_MSG);
+            // 用户登录Token过期提示信息
+            String userLoginTokenErrorMsg = oConvertUtils.getString(redisUtil.get(CommonConstant.PREFIX_USER_TOKEN_ERROR_MSG + token));
+            throw new AuthenticationException(oConvertUtils.isEmpty(userLoginTokenErrorMsg)? CommonConstant.TOKEN_IS_INVALID_MSG: userLoginTokenErrorMsg);
         }
-        //update-begin-author:taoyan date:20210609 for:校验用户的tenant_id和前端传过来的是否一致
+        // 代码逻辑说明: 校验用户的tenant_id和前端传过来的是否一致
         String userTenantIds = loginUser.getRelTenantIds();
         if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && oConvertUtils.isNotEmpty(userTenantIds)){
             String contextTenantId = TenantContext.getTenant();
@@ -152,7 +154,7 @@ public class ShiroRealm extends AuthorizingRealm {
              //登录用户无租户，前端header中租户ID值为 0
             String str ="0";
             if(oConvertUtils.isNotEmpty(contextTenantId) && !str.equals(contextTenantId)){
-                //update-begin-author:taoyan date:20211227 for: /issues/I4O14W 用户租户信息变更判断漏洞
+                // 代码逻辑说明: /issues/I4O14W 用户租户信息变更判断漏洞
                 String[] arr = userTenantIds.split(",");
                 if(!oConvertUtils.isIn(contextTenantId, arr)){
                     boolean isAuthorization = false;
@@ -177,10 +179,8 @@ public class ShiroRealm extends AuthorizingRealm {
                     }
                     //*********************************************
                 }
-                //update-end-author:taoyan date:20211227 for: /issues/I4O14W 用户租户信息变更判断漏洞
             }
         }
-        //update-end-author:taoyan date:20210609 for:校验用户的tenant_id和前端传过来的是否一致
         return loginUser;
     }
 
@@ -202,19 +202,22 @@ public class ShiroRealm extends AuthorizingRealm {
         if (oConvertUtils.isNotEmpty(cacheToken)) {
             // 校验token有效性
             if (!JwtUtil.verify(cacheToken, userName, passWord)) {
-                String newAuthorization = JwtUtil.sign(userName, passWord);
-                // 设置超时时间
+                // 从token中解析客户端类型，保持续期时使用相同的客户端类型
+                String clientType = JwtUtil.getClientType(token);
+                String newAuthorization = JwtUtil.sign(userName, passWord, clientType);
+                // 根据客户端类型设置对应的缓存有效时间
+                long expireTime = CommonConstant.CLIENT_TYPE_APP.equalsIgnoreCase(clientType) 
+                    ? JwtUtil.APP_EXPIRE_TIME * 2 / 1000 
+                    : JwtUtil.EXPIRE_TIME * 2 / 1000;
                 redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
-                redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME *2 / 1000);
+                redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, expireTime);
                 log.debug("——————————用户在线操作，更新token保证不掉线—————————jwtTokenRefresh——————— "+ token);
             }
-            //update-begin--Author:scott  Date:20191005  for：解决每次请求，都重写redis中 token缓存问题
 //			else {
 //				// 设置超时时间
 //				redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, cacheToken);
 //				redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME / 1000);
 //			}
-            //update-end--Author:scott  Date:20191005   for：解决每次请求，都重写redis中 token缓存问题
             return true;
         }
 
@@ -230,8 +233,7 @@ public class ShiroRealm extends AuthorizingRealm {
     @Override
     public void clearCache(PrincipalCollection principals) {
         super.clearCache(principals);
-        //update-begin---author:scott ---date::2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
+        // 代码逻辑说明: 【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
         super.clearCachedAuthorizationInfo(principals);
-        //update-end---author:scott ---date::2024-06-18  for：【TV360X-1320】分配权限必须退出重新登录才生效，造成很多用户困扰---
     }
 }

@@ -241,7 +241,7 @@ navigationBarTitleText: '${tableVo.ftlDescription}',
                 </#if>
                 :pidValue="`${po.dictField}`"
               ></TreeSelect>
-            <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+            <#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
                <wd-input
                    label-width="100px"
                    v-model="myFormData[${autoStringSuffix(po)}]"

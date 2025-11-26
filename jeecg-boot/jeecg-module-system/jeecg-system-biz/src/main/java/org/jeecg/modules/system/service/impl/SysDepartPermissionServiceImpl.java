@@ -67,9 +67,8 @@ public class SysDepartPermissionServiceImpl extends ServiceImpl<SysDepartPermiss
                 if(roleIds != null && roleIds.size()>0){
                     departRolePermissionMapper.delete(new LambdaQueryWrapper<SysDepartRolePermission>()
                             .eq(SysDepartRolePermission::getPermissionId,permissionId)
-                        //update-begin-author:liusq---date:2023-10-08--for: [issue/#5339]部门管理下部门赋权代码逻辑缺少判断条件
+                        // 代码逻辑说明: [issue/#5339]部门管理下部门赋权代码逻辑缺少判断条件
                             .in(SysDepartRolePermission::getRoleId,roleIds)
-                        //update-end-author:liusq---date:2023-10-08--for: [issue/#5339]部门管理下部门赋权代码逻辑缺少判断条件
                     );
                 }
             }

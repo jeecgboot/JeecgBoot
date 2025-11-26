@@ -33,7 +33,7 @@ public class SignAuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        log.info("Sign Interceptor request URI = " + request.getRequestURI());
+        log.debug("Sign Interceptor request URI = " + request.getRequestURI());
         HttpServletRequest requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
         //获取全部参数(包括URL和body上的)
         SortedMap<String, String> allParams = HttpUtils.getAllParams(requestWrapper);
@@ -79,7 +79,7 @@ public class SignAuthInterceptor implements HandlerInterceptor {
             log.debug("Sign 签名通过！Header Sign : {}",headerSign);
             return true;
         } else {
-            log.info("sign allParams: {}", allParams);
+            log.debug("sign allParams: {}", allParams);
             log.error("request URI = " + request.getRequestURI());
             log.error("Sign 签名校验失败！Header Sign : {}",headerSign);
             //校验失败返回前端
