@@ -2117,7 +2117,7 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 	 */
 	@Override
 	public void uniPushMsgToUser(PushMessageDTO pushMessageDTO) {
-		if(oConvertUtils.isEmpty(jeecgPushUrl)){
+		if(oConvertUtils.isEmpty(jeecgPushUrl) || "??".equals(jeecgPushUrl)) {
 			log.warn("yml配置项: jeecg.unicloud.pushUrl 未设置，APP消息UniPush推送功能未启用！");
 			return;
 		}

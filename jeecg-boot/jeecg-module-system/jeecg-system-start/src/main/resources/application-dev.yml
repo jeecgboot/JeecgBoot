@@ -204,7 +204,7 @@ jeecg:
       table: embeddings
   #  Unipush配置 云函数调用 URL 化地址
   unicloud:
-    pushUrl: ??
+    pushUrl:
   # 平台上线安全配置
   firewall:
     # 数据源安全 (开启后，Online报表和图表的数据源为必填)
