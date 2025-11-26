@@ -652,9 +652,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return platformOrderMap.selectForUpdateSkipLock(orderId);
     }
 
-    @Override
-    public List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote) {
-        return platformOrderMap.fetchPlatformOrderIdsByShopifyNote(shopifyNote);
+    public List<PlatformOrder> fetchPlatformOrdersByShopifyNotes(List<String> shopifyNotes) {
+        return platformOrderMap.fetchPlatformOrdersByShopifyNotes(shopifyNotes);
     }
 
     @Override

@@ -1442,10 +1442,19 @@
         FOR UPDATE;
     </select>
 
-    <select id="fetchPlatformOrderIdsByShopifyNote" resultType="java.lang.String">
-        SELECT platform_order_id
+    <select id="fetchPlatformOrdersByShopifyNotes" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
         FROM platform_order
-        WHERE shopify_note LIKE #{shopifyNote}
+        WHERE shopify_note IN
+        <foreach
+                collection="shopifyNotes"
+                index="index"
+                item="shopifyNote"
+                open="("
+                close=")"
+                separator=",">
+            #{shopifyNote}
+        </foreach>
         AND erp_status in (1,2);
     </select>
     <select id="countOrdersByShop" resultType="java.lang.Integer">

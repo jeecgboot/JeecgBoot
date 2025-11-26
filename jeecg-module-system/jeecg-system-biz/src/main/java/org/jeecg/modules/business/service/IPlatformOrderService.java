@@ -300,7 +300,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     PlatformOrder selectForUpdateSkipLock(String orderId);
 
-    List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote);
+    List<PlatformOrder> fetchPlatformOrdersByShopifyNotes(List<String> shopifyNotes);
 
     Integer countOrdersByShop(String shopId);
 
