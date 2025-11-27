@@ -23,8 +23,8 @@
     "husky:install": "husky install"
   },
   "dependencies": {
-    "@jeecg/online": "3.9.0-beta",
-    "@jeecg/aiflow": "3.9.0-beta",
+    "@jeecg/online": "3.9.0-beta2",
+    "@jeecg/aiflow":"3.9.0-beta2",
     "@logicflow/core": "^2.0.10",
     "@logicflow/extension": "^2.0.14",
     "@logicflow/vue-node-registry": "^1.0.12",
