@@ -74,17 +74,17 @@
 	<update id="updateUserDepart">
 		UPDATE sys_user SET
 		<if test="orgCode!=null and loginTenantId!=null">
-			 org_code = #{orgCode}
-			,login_tenant_id = #{loginTenantId}
+			 org_code = #{orgCode, jdbcType=VARCHAR}
+			,login_tenant_id = #{loginTenantId, jdbcType=VARCHAR}
 		</if>
 		<if test="orgCode==null and loginTenantId!=null">
-			login_tenant_id = #{loginTenantId}
+			login_tenant_id = #{loginTenantId, jdbcType=VARCHAR}
 		</if>
 		<if test="orgCode!=null and loginTenantId==null">
-			org_code = #{orgCode}
+			org_code = #{orgCode, jdbcType=VARCHAR}
 		</if>
 		<if test="orgCode==null and loginTenantId==null">
-			org_code = #{orgCode}
+			org_code = #{orgCode, jdbcType=VARCHAR}
 		</if>
 		where username = #{username}
 	</update>
