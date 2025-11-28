@@ -4,6 +4,7 @@ JeecgBoot AI低代码平台
 
 当前最新版本： 3.8.3（发布日期：2025-10-09） 
 
+> 重要提醒: v3.8.3 是 SpringBoot2 的最终版本，后续将不再维护。建议大家尽快升级至基于 SpringBoot3版本，以获得更好的性能和支持。
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](https://jeecg.com)
