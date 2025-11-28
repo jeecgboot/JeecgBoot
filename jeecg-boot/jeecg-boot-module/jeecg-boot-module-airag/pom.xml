@@ -85,10 +85,14 @@
                     <groupId>commons-beanutils</groupId>
                     <artifactId>commons-beanutils</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>com.yomahub</groupId>
+                    <artifactId>liteflow-script-python</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
 
-        <!-- beigin 这两个依赖太多每个包50M左右，如果你发布需要使用，请把<scope>provided</scope>删掉 -->
+        <!-- begin 注意：这几个依赖体积较大，每个约50MB。若发布时需要使用，请将 <scope>provided</scope> 删除 -->
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-scripting-jsr223</artifactId>
@@ -101,18 +105,18 @@
             <version>${liteflow.version}</version>
             <scope>provided</scope>
         </dependency>
-        <!-- end 这两个依赖太多每个包50M左右，如果你发布需要使用，请把<scope>provided</scope>删掉 -->
+        <dependency>
+            <groupId>com.yomahub</groupId>
+            <artifactId>liteflow-script-python</artifactId>
+            <version>${liteflow.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- end 注意：这几个依赖体积较大，每个约50MB。若发布时需要使用，请将 <scope>provided</scope> 删除 -->
 
         <!-- aiflow 脚本依赖 -->
         <dependency>
             <groupId>com.yomahub</groupId>
             <artifactId>liteflow-script-groovy</artifactId>
-            <version>${liteflow.version}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.yomahub</groupId>
-            <artifactId>liteflow-script-python</artifactId>
             <version>${liteflow.version}</version>
             <scope>runtime</scope>
         </dependency>
