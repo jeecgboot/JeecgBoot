@@ -40,11 +40,11 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter</artifactId>
 		</dependency>
-		<!-- 积木报表 csv excel ES JSON mongodbSQL redis支持包-->
+		<!-- 积木报表 csv excel ES JSON mongodbSQL redis支持包
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>
-		</dependency>
+		</dependency>-->
 		<!-- 后台导出接口Echart图表支持包，按需引入 
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
