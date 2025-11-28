@@ -122,6 +122,12 @@
         if (item) {
           localeStore.setPathTitle(path, item.title || '');
         }
+        // 检查是否有保存的query参数，如果有则携带跳转
+        if (item?.meta?.queryParams) {
+          go({ path, query: item.meta.queryParams } as any);
+        } else {
+          go(path);
+        }
         go(path);
       }
       //update-end-author:taoyan date:2022-6-1 for: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
