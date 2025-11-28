@@ -1,17 +1,17 @@
-import type { AxiosRequestConfig, AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-import type { RequestOptions, Result, UploadFileParams, UploadFileCallBack } from '/#/axios';
-import type { CreateAxiosOptions } from './axiosTransform';
+import type {AxiosRequestConfig, AxiosInstance, AxiosResponse, AxiosError} from 'axios';
+import type {RequestOptions, Result, UploadFileParams, UploadFileCallBack} from '/#/axios';
+import type {CreateAxiosOptions} from './axiosTransform';
 import axios from 'axios';
 import qs from 'qs';
-import { AxiosCanceler } from './axiosCancel';
-import { isFunction } from '/@/utils/is';
-import { cloneDeep } from 'lodash-es';
-import { ContentTypeEnum } from '/@/enums/httpEnum';
-import { RequestEnum } from '/@/enums/httpEnum';
-import { useGlobSetting } from '/@/hooks/setting';
-import { useMessage } from '/@/hooks/web/useMessage';
+import {AxiosCanceler} from './axiosCancel';
+import {isFunction} from '/@/utils/is';
+import {cloneDeep} from 'lodash-es';
+import {ContentTypeEnum} from '/@/enums/httpEnum';
+import {RequestEnum} from '/@/enums/httpEnum';
+import {useGlobSetting} from '/@/hooks/setting';
+import {useMessage} from '/@/hooks/web/useMessage';
 
-const { createMessage } = useMessage();
+const {createMessage} = useMessage();
 export * from './axiosTransform';
 
 /**
@@ -35,7 +35,7 @@ export class VAxios {
   }
 
   private getTransform() {
-    const { transform } = this.options;
+    const {transform} = this.options;
     return transform;
   }
 
@@ -71,7 +71,12 @@ export class VAxios {
     if (!transform) {
       return;
     }
-    const { requestInterceptors, requestInterceptorsCatch, responseInterceptors, responseInterceptorsCatch } = transform;
+    const {
+      requestInterceptors,
+      requestInterceptorsCatch,
+      responseInterceptors,
+      responseInterceptorsCatch
+    } = transform;
 
     const axiosCanceler = new AxiosCanceler();
 
@@ -79,7 +84,7 @@ export class VAxios {
     this.axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => {
       // If cancel repeat request is turned on, then cancel repeat request is prohibited
       // @ts-ignore
-      const { ignoreCancelToken } = config.requestOptions;
+      const {ignoreCancelToken} = config.requestOptions;
 
       const ignoreCancel = ignoreCancelToken !== undefined ? ignoreCancelToken : this.options.requestOptions?.ignoreCancelToken;
 
@@ -92,8 +97,8 @@ export class VAxios {
 
     // 请求拦截器错误捕获
     requestInterceptorsCatch &&
-      isFunction(requestInterceptorsCatch) &&
-      this.axiosInstance.interceptors.request.use(undefined, requestInterceptorsCatch);
+    isFunction(requestInterceptorsCatch) &&
+    this.axiosInstance.interceptors.request.use(undefined, requestInterceptorsCatch);
 
     // 响应结果拦截器处理
     this.axiosInstance.interceptors.response.use((res: AxiosResponse<any>) => {
@@ -106,15 +111,19 @@ export class VAxios {
 
     // 响应结果拦截器错误捕获
     responseInterceptorsCatch &&
-      isFunction(responseInterceptorsCatch) &&
-      this.axiosInstance.interceptors.response.use(undefined, responseInterceptorsCatch);
+    isFunction(responseInterceptorsCatch) &&
+    this.axiosInstance.interceptors.response.use(undefined, responseInterceptorsCatch);
   }
 
   /**
    * 文件上传
    */
   //--@updateBy-begin----author:liusq---date:20211117------for:增加上传回调参数callback------
-  uploadFile<T = any>(config: AxiosRequestConfig, params: UploadFileParams, callback?: UploadFileCallBack) {
+  // update-begin--author:huoshicang---date:20250805
+  uploadFile<T = any>(config: AxiosRequestConfig, params: UploadFileParams, callback?: UploadFileCallBack, parameters?: {
+    key: String;
+    value: String
+  }) {
     //--@updateBy-end----author:liusq---date:20211117------for:增加上传回调参数callback------
     const formData = new window.FormData();
     const customFilename = params.name || 'file';
@@ -139,6 +148,11 @@ export class VAxios {
         formData.append(key, params.data[key]);
       });
     }
+    // update-begin--author:huoshicang---date:20250805
+    if (Object.keys(parameters).length != 0) {
+      for (const key in parameters) formData.append(key, parameters[key]);
+    }
+    // update-end--author:huoshicang---date:20250805
 
     return this.axiosInstance
       .request<T>({
@@ -180,35 +194,35 @@ export class VAxios {
 
     return {
       ...config,
-      data: qs.stringify(config.data, { arrayFormat: 'brackets' }),
+      data: qs.stringify(config.data, {arrayFormat: 'brackets'}),
     };
   }
 
   get<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
-    return this.request({ ...config, method: 'GET' }, options);
+    return this.request({...config, method: 'GET'}, options);
   }
 
   post<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
-    return this.request({ ...config, method: 'POST' }, options);
+    return this.request({...config, method: 'POST'}, options);
   }
 
   put<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
-    return this.request({ ...config, method: 'PUT' }, options);
+    return this.request({...config, method: 'PUT'}, options);
   }
 
   delete<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
-    return this.request({ ...config, method: 'DELETE' }, options);
+    return this.request({...config, method: 'DELETE'}, options);
   }
 
   request<T = any>(config: AxiosRequestConfig, options?: RequestOptions): Promise<T> {
     let conf: CreateAxiosOptions = cloneDeep(config);
     const transform = this.getTransform();
 
-    const { requestOptions } = this.options;
+    const {requestOptions} = this.options;
 
     const opt: RequestOptions = Object.assign({}, requestOptions, options);
 
-    const { beforeRequestHook, requestCatchHook, transformRequestHook } = transform || {};
+    const {beforeRequestHook, requestCatchHook, transformRequestHook} = transform || {};
     if (beforeRequestHook && isFunction(beforeRequestHook)) {
       conf = beforeRequestHook(conf, opt);
     }
