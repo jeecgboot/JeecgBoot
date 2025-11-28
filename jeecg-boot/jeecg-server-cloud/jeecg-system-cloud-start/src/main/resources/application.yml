@@ -20,6 +20,7 @@ spring:
         password: @config.password@
   config:
     import:
+      - optional:classpath:config/application-liteflow.yml
       - optional:nacos:jeecg.yaml
       - optional:nacos:jeecg-@profile.name@.yaml
 #  #shardingjdbc数据源
