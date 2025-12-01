@@ -29,4 +29,19 @@ public enum InvoiceType {
         }
         return null;
     }
+
+    public static InvoiceType fromInvoiceNumber(String invoiceNumber) {
+        if (invoiceNumber == null || !invoiceNumber.contains("-")) {
+            return null;
+        }
+        String[] parts = invoiceNumber.split("-");
+        String lastPart = parts[parts.length - 1];
+        char prefix = lastPart.charAt(0);
+        switch (prefix) {
+            case '1': return PURCHASE_INVOICE;
+            case '2': return SHIPPING_INVOICE;
+            case '7': return COMPLETE_INVOICE;
+            default: return null;
+        }
+    }
 }

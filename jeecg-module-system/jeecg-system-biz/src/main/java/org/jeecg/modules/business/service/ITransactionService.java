@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service;
 
+import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.business.entity.Currency;
 import org.jeecg.modules.business.entity.Transaction;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -15,4 +16,5 @@ import java.util.List;
 public interface ITransactionService extends IService<Transaction> {
     List<Transaction> list();
     List<Currency> getAllCurrenciesByClient(String clientId);
+    Result<?> checkPaymentApproved(String invoiceNumber);
 }
