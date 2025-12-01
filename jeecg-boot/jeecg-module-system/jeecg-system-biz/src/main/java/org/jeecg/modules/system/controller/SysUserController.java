@@ -225,6 +225,42 @@ public class SysUserController {
 		return result;
 	}
 
+    /**
+     * 添加用户【后台租户模式专用，敲敲云不要用这个】
+     *
+     * @param jsonObject
+     * @return
+     */
+    @RequiresPermissions("system:user:addTenantUser")
+    @RequestMapping(value = "/addTenantUser", method = RequestMethod.POST)
+    public Result<SysUser> addTenantUser(@RequestBody JSONObject jsonObject) {
+        Result<SysUser> result = new Result<SysUser>();
+        String selectedRoles = jsonObject.getString("selectedroles");
+        String selectedDeparts = jsonObject.getString("selecteddeparts");
+        try {
+            SysUser user = JSON.parseObject(jsonObject.toJSONString(), SysUser.class);
+            user.setCreateTime(new Date());//设置创建时间
+            String salt = oConvertUtils.randomGen(8);
+            user.setSalt(salt);
+            String passwordEncode = PasswordUtil.encrypt(user.getUsername(), user.getPassword(), salt);
+            user.setPassword(passwordEncode);
+            user.setStatus(1);
+            user.setDelFlag(CommonConstant.DEL_FLAG_0);
+            //用户表字段org_code不能在这里设置他的值
+            user.setOrgCode(null);
+            // 保存用户走一个service 保证事务
+            //获取租户ids
+            String relTenantIds = jsonObject.getString("relTenantIds");
+            sysUserService.saveUser(user, selectedRoles, selectedDeparts, relTenantIds, true);
+            baseCommonService.addLog("添加用户，username： " + user.getUsername(), CommonConstant.LOG_TYPE_2, 2);
+            result.success("添加成功！");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+
 	/**
 	 * 删除用户
 	 */
