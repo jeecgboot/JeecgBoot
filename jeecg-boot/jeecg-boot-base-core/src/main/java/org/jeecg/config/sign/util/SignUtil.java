@@ -34,7 +34,7 @@ public class SignUtil {
         }
         // 把参数加密
         String paramsSign = getParamsSign(params);
-        log.info("Param Sign : {}", paramsSign);
+        log.debug("Param Sign : {}", paramsSign);
         return !StringUtils.isEmpty(paramsSign) && headerSign.equals(paramsSign);
     }
 
@@ -47,7 +47,7 @@ public class SignUtil {
         //去掉 Url 里的时间戳
         params.remove("_t");
         String paramsJsonStr = JSONObject.toJSONString(params);
-        log.info("Param paramsJsonStr : {}", paramsJsonStr);
+        log.debug("Param paramsJsonStr : {}", paramsJsonStr);
         //设置签名秘钥
         JeecgBaseConfig jeecgBaseConfig = SpringContextUtils.getBean(JeecgBaseConfig.class);
         String signatureSecret = jeecgBaseConfig.getSignatureSecret();

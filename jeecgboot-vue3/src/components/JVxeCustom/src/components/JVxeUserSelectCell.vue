@@ -49,9 +49,8 @@
           // 不允许搜索
           showSearch: false,
           // 设置最大的显示个数
-          // update-begin--author:liaozhiyang---date:20250106---for：【issues/7661】vxetable用户组件maxTagCount通过业务传递
+          // 代码逻辑说明: 【issues/7661】vxetable用户组件maxTagCount通过业务传递
           maxTagCount: originColumn.value.maxTagCount ?? 1,
-          // update-end--author:liaozhiyang---date:20250106---for：【issues/7661】vxetable用户组件maxTagCount通过业务传递
           // 显示提示重写，去掉省略号
           maxTagPlaceholder: ({ length }) => '+' + length,
           // -update-begin--author:liaozhiyang---date:20240617---for：【TV360X-1002】详情页面行编辑用户组件和部门组件显示方式优化

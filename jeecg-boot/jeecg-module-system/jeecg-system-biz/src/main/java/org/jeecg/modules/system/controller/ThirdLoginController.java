@@ -103,12 +103,11 @@ public class ThirdLoginController {
         	//构造第三方登录信息存储对象
 			ThirdLoginModel tlm = new ThirdLoginModel(source, uuid, username, avatar);
         	//判断有没有这个人
-			//update-begin-author:wangshuai date:20201118 for:修改成查询第三方账户表
+			// 代码逻辑说明: 修改成查询第三方账户表
         	LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<SysThirdAccount>();
         	query.eq(SysThirdAccount::getThirdType, source);
-			//update-begin---author:wangshuai---date:2023-10-07---for:【QQYUN-6667】敲敲云，线上解绑重新绑定一直提示这个---
+			// 代码逻辑说明: 【QQYUN-6667】敲敲云，线上解绑重新绑定一直提示这个---
         	query.eq(SysThirdAccount::getTenantId, CommonConstant.TENANT_ID_DEFAULT_VALUE);
-			//update-end---author:wangshuai---date:2023-10-07---for:【QQYUN-6667】敲敲云，线上解绑重新绑定一直提示这个---
 			query.and(q -> q.eq(SysThirdAccount::getThirdUserUuid, uuid).or().eq(SysThirdAccount::getThirdUserId, uuid));
         	List<SysThirdAccount> thridList = sysThirdAccountService.list(query);
 			SysThirdAccount user = null;
@@ -120,7 +119,7 @@ public class ThirdLoginController {
         		user = thridList.get(0);
         	}
         	// 生成token
-			//update-begin-author:wangshuai date:20201118 for:从第三方登录查询是否存在用户id，不存在绑定手机号
+			// 代码逻辑说明: 从第三方登录查询是否存在用户id，不存在绑定手机号
 			if(oConvertUtils.isNotEmpty(user.getSysUserId())) {
 				String sysUserId = user.getSysUserId();
 				SysUser sysUser = sysUserService.getById(sysUserId);
@@ -129,12 +128,9 @@ public class ThirdLoginController {
 			}else{
 				modelMap.addAttribute("token", "绑定手机号,"+""+uuid);
 			}
-			//update-end-author:wangshuai date:20201118 for:从第三方登录查询是否存在用户id，不存在绑定手机号
-		//update-begin--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 issues#1441--------------------
         }else{
 			modelMap.addAttribute("token", "登录失败");
 		}
-		//update-end--Author:wangshuai  Date:20200729 for：接口在签名校验失败时返回失败的标识码 issues#1441--------------------
         result.setSuccess(false);
         result.setMessage("第三方登录异常,请联系管理员");
         return "thirdLogin";
@@ -157,14 +153,13 @@ public class ThirdLoginController {
 			return res;
 		}
 		//创建新账号
-		//update-begin-author:wangshuai date:20201118 for:修改成从第三方登录查出来的user_id，在查询用户表尽行token
+		// 代码逻辑说明: 修改成从第三方登录查出来的user_id，在查询用户表尽行token
 		SysThirdAccount user = sysThirdAccountService.saveThirdUser(model,CommonConstant.TENANT_ID_DEFAULT_VALUE);
 		if(oConvertUtils.isNotEmpty(user.getSysUserId())){
 			String sysUserId = user.getSysUserId();
 			SysUser sysUser = sysUserService.getById(sysUserId);
 			// 生成token
 			String token = saveToken(sysUser);
-			//update-end-author:wangshuai date:20201118 for:修改成从第三方登录查出来的user_id，在查询用户表尽行token
 			res.setResult(token);
 			res.setSuccess(true);
 		}
@@ -212,7 +207,7 @@ public class ThirdLoginController {
 
 	private String saveToken(SysUser user) {
 		// 生成token
-		String token = JwtUtil.sign(user.getUsername(), user.getPassword());
+		String token = JwtUtil.sign(user.getUsername(), user.getPassword(), CommonConstant.CLIENT_TYPE_PC);
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
 		// 设置超时时间
 		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
@@ -232,36 +227,33 @@ public class ThirdLoginController {
 	public Result<JSONObject> getThirdLoginUser(@PathVariable("token") String token,@PathVariable("thirdType") String thirdType,@PathVariable("tenantId") String tenantId) throws Exception {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = JwtUtil.getUsername(token);
-		//update-begin---author:chenrui ---date:20250210  for：[QQYUN-11021]三方登录接口通过token获取用户信息漏洞修复------------
+		// 代码逻辑说明: [QQYUN-11021]三方登录接口通过token获取用户信息漏洞修复------------
 		if (!TokenUtils.verifyToken(token, sysBaseAPI, redisUtil)) {
 			return Result.noauth("token验证失败");
 		}
-		//update-end---author:chenrui ---date:20250210  for：[QQYUN-11021]三方登录接口通过token获取用户信息漏洞修复------------
 		//1. 校验用户是否有效
 		SysUser sysUser = sysUserService.getUserByName(username);
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
 		}
-		//update-begin-author:wangshuai date:20201118 for:如果真实姓名和头像不存在就取第三方登录的
+		// 代码逻辑说明: 如果真实姓名和头像不存在就取第三方登录的
 		LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
 		query.eq(SysThirdAccount::getSysUserId,sysUser.getId());
 		query.eq(SysThirdAccount::getThirdType,thirdType);
 		query.eq(SysThirdAccount::getTenantId,oConvertUtils.getInt(tenantId,CommonConstant.TENANT_ID_DEFAULT_VALUE));
-		//update-begin---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
+		// 代码逻辑说明: [QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
 		List<SysThirdAccount> accountList = sysThirdAccountService.list(query);
 		SysThirdAccount account = new SysThirdAccount();
 		if(CollectionUtil.isNotEmpty(accountList)){
 			account = accountList.get(0);
 		}
-		//update-end---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
 		if(oConvertUtils.isEmpty(sysUser.getRealname())){
 			sysUser.setRealname(account.getRealname());
 		}
 		if(oConvertUtils.isEmpty(sysUser.getAvatar())){
 			sysUser.setAvatar(account.getAvatar());
 		}
-		//update-end-author:wangshuai date:20201118 for:如果真实姓名和头像不存在就取第三方登录的
 		JSONObject obj = new JSONObject();
 		//第三方登确定登录租户和部门逻辑
 		this.setUserTenantAndDepart(sysUser,obj,result);		
@@ -292,10 +284,9 @@ public class ThirdLoginController {
 		String thirdUserUuid = jsonObject.getString("thirdUserUuid");
 		// 校验验证码
 		String captcha = jsonObject.getString("captcha");
-		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		// 代码逻辑说明: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
 		Object captchaCache = redisUtil.get(redisKey);
-		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		if (oConvertUtils.isEmpty(captcha) || !captcha.equals(captchaCache)) {
 			result.setMessage("验证码错误");
 			result.setSuccess(false);
@@ -357,13 +348,11 @@ public class ThirdLoginController {
 			builder.append("#wechat_redirect");
 			url = builder.toString();
 		} else if (CommonConstant.DINGTALK.equalsIgnoreCase(source)) {
-			//update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
 			//换成第三方app配置表
 			SysThirdAppConfig appConfig = appConfigService.getThirdConfigByThirdType(Integer.valueOf(tenantId), MessageTypeEnum.DD.getType());
 			if(null == appConfig){
 				return "还未配置钉钉应用，请配置钉钉应用";
 			}
-			//update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
 			StringBuilder builder = new StringBuilder();
 			// 构造钉钉OAuth2登录授权地址
 			builder.append("https://login.dingtalk.com/oauth2/auth");
@@ -382,9 +371,8 @@ public class ThirdLoginController {
 			builder.append("&scope=openid");
 			// 跟随authCode原样返回。
 			builder.append("&state=").append(state);
-            //update-begin---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
+            // 代码逻辑说明: [issues/I5BOUF]oauth2 钉钉无法登录------------
             builder.append("&prompt=").append("consent");
-            //update-end---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录--------------
             url = builder.toString();
 		} else {
 			return "不支持的source";
@@ -430,8 +418,7 @@ public class ThirdLoginController {
             return "不支持的source";
         }
         try {
-
-			//update-begin-author:taoyan date:2022-6-30 for: 工作流发送消息 点击消息链接跳转办理页面
+			// 代码逻辑说明: 工作流发送消息 点击消息链接跳转办理页面
 			String redirect = "";
 			if (state.indexOf("?") > 0) {
 				String[] arr = state.split("\\?");
@@ -443,15 +430,13 @@ public class ThirdLoginController {
 
 			String token = saveToken(loginUser);
 			state += "/oauth2-app/login?oauth2LoginToken=" + URLEncoder.encode(token, "UTF-8") + "&tenantId=" + URLEncoder.encode(tenantId, "UTF-8");
-			//update-begin---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
+			// 代码逻辑说明: [issues/I5BOUF]oauth2 钉钉无法登录------------
 			state += "&thirdType=" + source;
 			//state += "&thirdType=" + "wechat_enterprise";
 			if (redirect != null && redirect.length() > 0) {
 				state += "&" + redirect;
 			}
-			//update-end-author:taoyan date:2022-6-30 for: 工作流发送消息 点击消息链接跳转办理页面
 
-            //update-end---author:wangshuai ---date:20220613  for：[issues/I5BOUF]oauth2 钉钉无法登录------------
 			log.info("OAuth2登录重定向地址: " + state);
             try {
                 response.sendRedirect(state);

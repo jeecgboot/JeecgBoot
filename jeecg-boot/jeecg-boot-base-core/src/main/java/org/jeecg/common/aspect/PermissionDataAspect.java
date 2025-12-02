@@ -57,7 +57,6 @@ public class PermissionDataAspect {
         String requestMethod = request.getMethod();
         String requestPath = request.getRequestURI().substring(request.getContextPath().length());
         requestPath = filterUrl(requestPath);
-        //update-begin-author:taoyan date:20211027 for:JTC-132【online报表权限】online报表带参数的菜单配置数据权限无效
         //先判断是否online报表请求
         if(requestPath.indexOf(UrlMatchEnum.CGREPORT_DATA.getMatchUrl())>=0 || requestPath.indexOf(UrlMatchEnum.CGREPORT_ONLY_DATA.getMatchUrl())>=0){
             // 获取地址栏参数
@@ -66,7 +65,6 @@ public class PermissionDataAspect {
                 requestPath+="?"+urlParamString;
             }
         }
-        //update-end-author:taoyan date:20211027 for:JTC-132【online报表权限】online报表带参数的菜单配置数据权限无效
         log.debug("拦截请求 >> {} ; 请求类型 >> {} . ", requestPath, requestMethod);
         String username = JwtUtil.getUserNameByToken(request);
         //查询数据权限信息

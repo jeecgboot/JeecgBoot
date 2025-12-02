@@ -128,7 +128,6 @@ public class RedisServiceImpl implements RedisService {
 		return mapJson;
 	}
 
-	//update-begin---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
 	/**
 	 * 获取历史性能指标
 	 * @return
@@ -170,5 +169,4 @@ public class RedisServiceImpl implements RedisService {
 		}
 		list.add(getMemoryInfo());
 	}
-	//update-end---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
 }

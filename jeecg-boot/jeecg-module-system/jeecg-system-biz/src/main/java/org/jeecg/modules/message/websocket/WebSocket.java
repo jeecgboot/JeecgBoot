@@ -73,12 +73,11 @@ public class WebSocket {
             if (item.getKey().contains(userId)) {
                 Session session = item.getValue();
                 try {
-                    //update-begin-author:taoyan date:20211012 for: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
+                    // 代码逻辑说明: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
                     synchronized (session){
                         log.debug("【系统 WebSocket】推送单人消息:" + message);
                         session.getBasicRemote().sendText(message);
                     }
-                    //update-end-author:taoyan date:20211012 for: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
                 } catch (Exception e) {
                     log.error(e.getMessage(),e);
                 }
@@ -114,9 +113,8 @@ public class WebSocket {
             log.debug("【系统 WebSocket】收到客户端消息:" + message);
         }else{
             log.debug("【系统 WebSocket】收到客户端消息:" + message);
-            //update-begin---author:wangshuai---date:2024-05-07---for:【issues/1161】前端websocket因心跳导致监听不起作用---
+            // 代码逻辑说明: 【issues/1161】前端websocket因心跳导致监听不起作用---
             this.sendMessage(userId, "ping");
-            //update-end---author:wangshuai---date:2024-05-07---for:【issues/1161】前端websocket因心跳导致监听不起作用---
         }
         
 //        //------------------------------------------------------------------------------

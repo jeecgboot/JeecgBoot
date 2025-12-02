@@ -60,17 +60,15 @@ public class AutoPoiDictConfig implements AutoPoiDictServiceI {
 
 
 		for (DictModel t : dictList) {
-			//update-begin---author:liusq   Date:20230517  for：[issues/4917]excel 导出异常---
+			// 代码逻辑说明: [issues/4917]excel 导出异常---
 			if(t!=null && t.getText()!=null && t.getValue()!=null){
-			//update-end---author:liusq     Date:20230517  for：[issues/4917]excel 导出异常---
-				//update-begin---author:scott   Date:20211220  for：[issues/I4MBB3]@Excel dicText字段的值有下划线时，导入功能不能正确解析---
+				// 代码逻辑说明: [issues/I4MBB3]@Excel dicText字段的值有下划线时，导入功能不能正确解析---
 				if(t.getValue().contains(EXCEL_SPLIT_TAG)){
 					String val = t.getValue().replace(EXCEL_SPLIT_TAG,TEMP_EXCEL_SPLIT_TAG);
 					dictReplaces.add(t.getText() + EXCEL_SPLIT_TAG + val);
 				}else{
 					dictReplaces.add(t.getText() + EXCEL_SPLIT_TAG + t.getValue());
 				}
-				//update-end---author:20211220     Date:20211220  for：[issues/I4MBB3]@Excel dicText字段的值有下划线时，导入功能不能正确解析---
 			}
 		}
 		if (dictReplaces != null && dictReplaces.size() != 0) {

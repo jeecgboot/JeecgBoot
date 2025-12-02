@@ -60,20 +60,18 @@
       instance && emit('register', drawerInstance, instance.uid);
 
       const getMergeProps = computed((): DrawerProps => {
-        // update-begin--author:liaozhiyang---date:20240320---for：【QQYUN-8389】vue3.4以上版本导致角色抽屉隐藏footer逻辑错误（toRaw改成cloneDeep，否则props的变化不会触发computed）
+        // 代码逻辑说明: 【QQYUN-8389】vue3.4以上版本导致角色抽屉隐藏footer逻辑错误（toRaw改成cloneDeep，否则props的变化不会触发computed）
         return { ...deepMerge(cloneDeep(props), unref(propsRef)) };
-        // update-end--author:liaozhiyang---date:20240320---for：【QQYUN-8389】vue3.4以上版本导致角色抽屉隐藏footer逻辑错误（toRaw改成cloneDeep，否则props的变化不会触发computed）
       });
 
       const getProps = computed((): DrawerProps => {
-        // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
+        // 代码逻辑说明: 【QQYUN-6366】升级到antd4.x
         const opt = {
           placement: 'right',
           ...unref(attrs),
           ...unref(getMergeProps),
           open: unref(visibleRef),
         };
-        // update-end--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
         opt.title = undefined;
         let { isDetail, width, wrapClassName, getContainer } = opt;
         if (isDetail) {

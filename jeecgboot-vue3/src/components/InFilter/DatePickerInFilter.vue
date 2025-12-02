@@ -100,9 +100,8 @@ watch(innerValue, (val) => {
   }
   emit('change', val)
   emit('update:value', val)
-  // update-begin--author:liaozhiyang---date:20240509---for：【QQYUN-9227】日期校验没清空
+  // 代码逻辑说明: 【QQYUN-9227】日期校验没清空
   formItemContext?.onFieldChange();
-  // update-end--author:liaozhiyang---date:20240509---for：【QQYUN-9227】日期校验没清空
 })
 
 watch(() => props.allowSelectRange, (allow) => {

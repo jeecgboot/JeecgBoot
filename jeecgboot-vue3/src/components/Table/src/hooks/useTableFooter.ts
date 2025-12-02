@@ -44,7 +44,7 @@ export function useTableFooter(
       const tableEl = unref(tableElRef);
       if (!tableEl) return;
       let bodyDom;
-      // update-begin--author:liaozhiyang---date:20241111---for：【issues/7422】BasicTable列表canResize属性为true时合计行不能横向滚动
+      // 代码逻辑说明: 【issues/7422】BasicTable列表canResize属性为true时合计行不能横向滚动
       if (canResize) {
         setTimeout(() => {
           bodyDom = tableEl.$el.querySelector('.ant-table-body');
@@ -65,7 +65,6 @@ export function useTableFooter(
           options: true,
         });
       }, 0);
-      // update-end--author:liaozhiyang---date:20241111---for：【issues/7422】BasicTable列表canResize属性为true时合计行不能横向滚动
     });
   }
   return { getFooterProps };

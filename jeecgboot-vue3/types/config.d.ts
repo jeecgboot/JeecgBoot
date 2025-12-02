@@ -24,9 +24,8 @@ export interface MenuSetting {
   mode: MenuModeEnum;
   type: MenuTypeEnum;
   theme: ThemeEnum;
-  // update-begin--author:liaozhiyang---date:20240408---for：【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
+  // 代码逻辑说明: 【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
   isThemeBright: boolean;
-  // update-end--author:liaozhiyang---date:20240408---for：【QQYUN-8922】左侧导航栏文字颜色调整区分彩色和暗黑
   topMenuAlign: 'start' | 'center' | 'end';
   trigger: TriggerEnum;
   accordion: boolean;
@@ -163,6 +162,8 @@ export interface GlobConfig {
   shortName: string;
   // 短标题
   shortTitle: string;
+  // 使用新任务弹窗
+  useNewTaskModal: boolean;
   // 当前是否运行在 electron 平台
   isElectronPlatform: boolean;
 

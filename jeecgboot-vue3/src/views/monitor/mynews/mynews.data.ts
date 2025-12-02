@@ -89,6 +89,12 @@ export const searchFormSchema: FormSchema[] = [
       options: [
         { label: '通知公告', value: '1' },
         { label: '系统消息', value: '2' },
+        { label: '日程计划', value: 'plan' },
+        { label: '流程消息', value: 'flow' },
+        { label: '会议', value: 'meeting' },
+        { label: '知识库', value: 'file' },
+        { label: '协同通知', value: 'collab' },
+        { label: '督办通知', value: 'supe' },
       ],
     },
     colProps: { span: 6 },

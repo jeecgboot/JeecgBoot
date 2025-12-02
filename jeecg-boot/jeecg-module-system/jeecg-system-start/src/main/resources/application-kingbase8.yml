@@ -23,6 +23,8 @@ spring:
   flyway:
     # 是否启用flyway
     enabled: false
+    # 迁移sql脚本存放路径
+    locations: classpath:flyway/sql/mysql
     # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
     clean-disabled: true
   servlet:
@@ -45,7 +47,7 @@ spring:
   quartz:
     job-store-type: jdbc
     jdbc:
-      initialize-schema: embedded
+      initialize-schema: never
     #定时任务启动开关，true-开  false-关
     auto-startup: true
     #延迟1秒启动定时任务
@@ -181,7 +183,7 @@ jeecg:
     enabled: true
     model: deepseek-chat
     apiKey: ??
-    apiHost: https://api.deepseek.com/v1
+    apiHost: https://api.deepseek.com
     timeout: 60
   # AIRag向量库
   ai-rag:
@@ -192,6 +194,9 @@ jeecg:
       user: postgres
       password: postgres
       table: embeddings
+  #  Unipush配置 云函数调用 URL 化地址
+  unicloud:
+    pushUrl:
   # 平台上线安全配置
   firewall:
     # 数据源安全 (开启后，Online报表和图表的数据源为必填)

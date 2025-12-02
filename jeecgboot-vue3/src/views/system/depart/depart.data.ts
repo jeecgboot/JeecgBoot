@@ -2,7 +2,12 @@ import { FormSchema } from '/@/components/Form';
 import { getPositionByDepartId } from "./depart.api";
 import { useMessage } from "@/hooks/web/useMessage";
 import { BasicColumn } from "@/components/Table";
-import { getDepartPathNameByOrgCode } from '@/utils/common/compUtils';
+import {
+  getDepartName,
+  getDepartPathName,
+  getDepartPathNameByOrgCode,
+  getMultiDepartPathName
+} from '@/utils/common/compUtils';
 import { h, ref } from 'vue';
 
 const { createMessage: $message } = useMessage();
@@ -20,6 +25,14 @@ export function useBasicFormSchema(treeData) {
         placeholder: '请输入机构/部门名称',
       },
       rules: [{ required: true, message: '机构名称不能为空' }],
+    },
+    {
+      field: 'departNameAbbr',
+      label: '机构简称',
+      component: 'Input',
+      componentProps: {
+        placeholder: '请输入机构/部门简称',
+      }
     },
     {
       field: 'parentId',
@@ -173,11 +186,6 @@ export const orgCategoryOptions = {
  */
 export const userColumns: BasicColumn[] = [
   {
-    title: '用户账号',
-    dataIndex: 'username',
-    width: 120,
-  },
-  {
     title: '姓名',
     dataIndex: 'realname',
     width: 150,
@@ -186,10 +194,33 @@ export const userColumns: BasicColumn[] = [
     title: '手机',
     width: 150,
     dataIndex: 'phone',
+    customRender:( { record, text })=>{
+      if(record.izHideContact && record.izHideContact === '1'){
+        return '/';
+      }
+      return text;
+    }
   },
   {
     title: '主岗位',
-    dataIndex: 'mainDepPostId_dictText',
+    dataIndex: 'mainDepPostId',
+    customRender: ({ record, text })=>{
+      if(!text){
+        return '';
+      }
+      return getDepartName(getDepartPathName(record.mainDepPostId_dictText,text,false));
+    },
+    width: 200,
+  },
+  {
+    title: '兼职岗位',
+    dataIndex: 'otherDepPostId',
+    customRender: ({ record, text })=>{
+      if(!text){
+        return '';
+      }
+      return getDepartName(getMultiDepartPathName(record.otherDepPostId_dictText,text));
+    },
     width: 200,
   },
 ];

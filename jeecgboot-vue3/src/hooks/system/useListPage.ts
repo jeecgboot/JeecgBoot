@@ -29,9 +29,8 @@ interface ListPageOptions {
   };
   // 导入配置
   importConfig?: {
-    //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
+    // 代码逻辑说明: erp代码生成 子表 导入地址是动态的
     url: string | (() => string);
-    //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
     // 导出成功后的回调
     success?: (fileInfo?: any) => void;
   };
@@ -60,42 +59,37 @@ export function useListPage(options: ListPageOptions) {
 
   const tableContext = useListTable(options.tableProps);
 
-  const [, { getForm, reload, setLoading }, { selectedRowKeys }] = tableContext;
+  const [, { getForm, reload, setLoading, getColumns }, { selectedRowKeys }] = tableContext;
 
   // 导出 excel
   async function onExportXls() {
-    //update-begin---author:wangshuai ---date:20220411  for：导出新增自定义参数------------
+    // 代码逻辑说明: 导出新增自定义参数------------
     let { url, name, params } = options?.exportConfig ?? {};
     let realUrl = typeof url === 'function' ? url() : url;
     if (realUrl) {
       let title = typeof name === 'function' ? name() : name;
-      //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
+      // 代码逻辑说明: erp代码生成 子表 导出报错，原因未知-
       let paramsForm:any = {};
       try {
-        //update-begin-author:liusq---date:2025-03-20--for: [QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
         //当useSearchFor不等于false的时候，才去触发validate
         if (options?.tableProps?.useSearchForm !== false) {
           paramsForm = await getForm().validate();
           console.log('paramsForm', paramsForm);
         }
-        //update-end-author:liusq---date:2025-03-20--for:[QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
       } catch (e) {
         console.warn(e);
       }
-      //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导出报错，原因未知-
 
-      //update-begin-author:liusq date:20230410 for:[/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
+      // 代码逻辑说明: [/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
       if(!paramsForm?.column){
          Object.assign(paramsForm,{column:'createTime',order:'desc'});
       }
-      //update-begin-author:liusq date:20230410 for: [/issues/409]导出功能没有按排序结果导出,设置导出默认排序，创建时间倒序
 
       //如果参数不为空，则整合到一起
-      //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导出动态设置mainId
+      // 代码逻辑说明: erp代码生成 子表 导出动态设置mainId
       if (params) {
-        //update-begin-author:liusq---date:2025-03-20--for: [QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
+        // 代码逻辑说明: [QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
         const realParams = isFunction(params) ? await params() : { ...(params || {}) };
-        //update-end-author:liusq---date:2025-03-20--for:[QQYUN-11627]代码生成原生表单，数据导出，前端报错，并且范围参数没有转换 #7962
         Object.keys(realParams).map((k) => {
           let temp = (realParams as object)[k];
           if (temp) {
@@ -103,27 +97,62 @@ export function useListPage(options: ListPageOptions) {
           }
         });
       }
-      //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导出动态设置mainId
       if (selectedRowKeys.value && selectedRowKeys.value.length > 0) {
         paramsForm['selections'] = selectedRowKeys.value.join(',');
       }
-      console.log()
+
+      //是否显示表格设置
+      if(options?.tableProps?.showTableSetting !== false){
+        //是否显示配置字段
+        if(options?.tableProps?.tableSetting?.setting !== false){
+          await exportColumns(paramsForm)
+        }
+      }
+    
       return handleExportXls(title as string, realUrl, filterObj(paramsForm));
-      //update-end---author:wangshuai ---date:20220411  for：导出新增自定义参数--------------
     } else {
       $message.createMessage.warn('没有传递 exportConfig.url 参数');
       return Promise.reject();
     }
   }
 
+  /**
+   * 设置导出的列
+   * 
+   * @param paramsForm
+   */
+  async function exportColumns(paramsForm: any) {
+    //获取表格的列
+    let columns = getColumns();
+    if(columns && columns.length >0){
+      //需要导出的字段
+      let exportFields:any = [];
+      //是否有隐藏列
+      let hiddenColumns = false;
+      for (const column of columns) {
+        if(!column.defaultHidden){
+          let dataIndex = column?.dataIndex;
+          if(column?.dataIndex!.toString().indexOf('_dictText')){
+            dataIndex = column?.dataIndex!.toString().replace('_dictText','')
+          }
+          exportFields.push(dataIndex);
+        } else {
+          hiddenColumns = true;
+        }
+      }
+      if(hiddenColumns){
+        paramsForm['exportFields'] = exportFields.join(",");
+      }
+    }
+  }
+
   // 导入 excel
   function onImportXls(file) {
     let { url, success } = options?.importConfig ?? {};
-    //update-begin-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
+    // 代码逻辑说明: erp代码生成 子表 导入地址是动态的
     let realUrl = typeof url === 'function' ? url() : url;
     if (realUrl) {
       return handleImportXls(file, realUrl, success || reload);
-      //update-end-author:taoyan date:20220507 for: erp代码生成 子表 导入地址是动态的
     } else {
       $message.createMessage.warn('没有传递 importConfig.url 参数');
       return Promise.reject();
@@ -286,11 +315,10 @@ export function useListTable(tableProps: TableProps): [
   };
   // 合并用户个性化配置
   if (tableProps) {
-    //update-begin---author:wangshuai---date:2024-04-28---for:【issues/6180】前端代码配置表变查询条件显示列不生效---
+    // 代码逻辑说明: 【issues/6180】前端代码配置表变查询条件显示列不生效---
     if(tableProps.formConfig){
       setTableProps(tableProps.formConfig);
     }
-    //update-end---author:wangshuai---date:2024-04-28---for:【issues/6180】前端代码配置表变查询条件显示列不生效---
     // merge 方法可深度合并对象
     merge(defaultTableProps, tableProps);
   }

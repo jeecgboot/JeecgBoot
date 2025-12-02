@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot3</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.8.3</version>
+  <version>3.9.0</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,8 +28,8 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.8.3</jeecgboot.version>
-		<!-- JDK版本支持17、21和1.8 -->
+		<jeecgboot.version>3.9.0</jeecgboot.version>
+		<!-- JDK版本支持17、21、24 -->
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -54,28 +54,25 @@
 		<kingbase8.version>9.0.0</kingbase8.version>
 		<dm8.version>8.1.3.140</dm8.version>
 
-		<!-- Ai流程编排-->
-		<kotlin.version>2.2.0</kotlin.version>
-		<liteflow.version>2.15.0</liteflow.version>
-		
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>2.1.5</jimureport-spring-boot-starter.version>
-		<jimubi-spring-boot-starter.version>2.1.5</jimubi-spring-boot-starter.version>
-		<minidao.version>1.10.14</minidao.version>
-		<autopoi-web.version>1.4.18</autopoi-web.version>
+		<jimureport-spring-boot-starter.version>2.2.0</jimureport-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.2.0</jimubi-spring-boot-starter.version>
+		<minidao.version>1.10.16</minidao.version>
+		<autopoi-web.version>2.0.2</autopoi-web.version>
 		
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.12</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.3.1</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.24</druid.version>
 
-		<commons-io.version>2.11.0</commons-io.version>
+		<commons-io.version>2.18.0</commons-io.version>
 		<commons-fileupload.version>1.5</commons-fileupload.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
 		<aliyun.oss.version>3.17.3</aliyun.oss.version>
+        <tencentcloud-sdk-java-sms.version>3.1.407</tencentcloud-sdk-java-sms.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
-		<codegenerate.version>1.5.4</codegenerate.version>
+		<codegenerate.version>1.5.5</codegenerate.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<justauth.version>1.16.6</justauth.version>
@@ -219,7 +216,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-job</artifactId>
-                <version>${jeecgboot.version}</version>
+				<version>3.9.0</version>
 			</dependency>
 			<!--redis分布式锁-->
 			<dependency>
@@ -232,6 +229,12 @@
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-rabbitmq</artifactId>
 				<version>${jeecgboot.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>joda-time</groupId>
+						<artifactId>joda-time</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<!--rocketmq-->
 			<dependency>
@@ -243,12 +246,12 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
-				<version>3.8.3.1</version>
+				<version>3.9.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere-nacos</artifactId>
-				<version>3.8.3.1</version>
+				<version>3.9.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -264,15 +267,8 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>hibernate-re</artifactId>
-				<version>3.8.2.2</version>
+				<version>3.9.0</version>
 			</dependency>
-			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
-			<dependency>
-				<groupId>org.glassfish.jaxb</groupId>
-				<artifactId>jaxb-runtime</artifactId>
-				<version>2.3.3</version>
-			</dependency>
-			<!-- update-end-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
 
 			<!--mongon db-->
 			<dependency>
@@ -328,6 +324,14 @@
 				<artifactId>dom4j</artifactId>
 				<version>${dom4j.version}</version>
 			</dependency>
+			<!-- update-begin-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>2.3.3</version>
+			</dependency>
+			<!-- update-end-author:chenrui -date:20240104  for：[issue/5723]指定jaxb-runtime版本 -->
+			
 			<!-- fileupload -->
 			<dependency>
 				<groupId>commons-fileupload</groupId>
@@ -395,7 +399,7 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
-			<!-- 企业微信和钉钉 api -->
+			<!-- 企业微信和钉钉 SDK -->
 			<dependency>
 				<groupId>org.jeecgframework</groupId>
 				<artifactId>weixin4j</artifactId>
@@ -442,6 +446,10 @@
 				<version>${jimureport-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
+						<groupId>commons-io</groupId>
+						<artifactId>commons-io</artifactId>
+					</exclusion>
+					<exclusion>
 						<groupId>com.alibaba</groupId>
 						<artifactId>fastjson</artifactId>
 					</exclusion>
@@ -454,27 +462,38 @@
 						<groupId>org.checkerframework</groupId>
 					</exclusion>
 					<exclusion>
-						<artifactId>autopoi-web</artifactId>
-						<groupId>org.jeecgframework</groupId>
-					</exclusion>
-					<exclusion>
 						<artifactId>druid</artifactId>
 						<groupId>com.alibaba</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>autopoi</artifactId>
-						<groupId>org.jeecgframework</groupId>
 					</exclusion>
 					<exclusion>
 						<artifactId>jsqlparser</artifactId>
 						<groupId>com.github.jsqlparser</groupId>
 					</exclusion>
+					<exclusion>
+						<groupId>io.minio</groupId>
+						<artifactId>minio</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.apache.poi</groupId>
+						<artifactId>ooxml-schemas</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>5.6.7.Final</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-collections</groupId>
+						<artifactId>commons-collections</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- AutoPoi Excel工具类-->
 			<dependency>
-				<groupId>org.jeecgframework.boot3</groupId>
-				<artifactId>autopoi-web</artifactId>
+				<groupId>org.jeecgframework</groupId>
+				<artifactId>autopoi-spring-boot-3-starter</artifactId>
 				<version>${autopoi-web.version}</version>
 				<exclusions>
 					<exclusion>
@@ -485,6 +504,14 @@
 						<artifactId>xercesImpl</artifactId>
 						<groupId>xerces</groupId>
 					</exclusion>
+					<exclusion>
+						<artifactId>guava</artifactId>
+						<groupId>com.google.guava</groupId>
+					</exclusion>
+					<exclusion>
+						<groupId>commons-io</groupId>
+						<artifactId>commons-io</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<!-- mongo、redis和文件数据集支持包，按需引入 -->
@@ -493,17 +520,17 @@
 				<artifactId>jimureport-nosql-starter</artifactId>
 				<version>2.1.0</version>
 				<exclusions>
+                    <exclusion>
+                        <groupId>org.apache.calcite</groupId>
+                        <artifactId>calcite-elasticsearch</artifactId>
+                    </exclusion>
 					<exclusion>
-						<groupId>org.apache.calcite</groupId>
-						<artifactId>calcite-elasticsearch</artifactId>
+						<groupId>org.apache.commons</groupId>
+						<artifactId>commons-text</artifactId>
 					</exclusion>
 					<exclusion>
-						<artifactId>autopoi-web</artifactId>
-						<groupId>org.jeecgframework</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>autopoi</artifactId>
-						<groupId>org.jeecgframework</groupId>
+						<groupId>org.apache.httpcomponents</groupId>
+						<artifactId>httpclient</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
@@ -520,12 +547,8 @@
                 <version>${jimubi-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
-						<artifactId>autopoi-web</artifactId>
-						<groupId>org.jeecgframework</groupId>
-					</exclusion>
-					<exclusion>
-						<artifactId>autopoi</artifactId>
-						<groupId>org.jeecgframework</groupId>
+						<groupId>com.github.jsqlparser</groupId>
+						<artifactId>jsqlparser</artifactId>
 					</exclusion>
 				</exclusions>
             </dependency>
@@ -533,7 +556,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-chatgpt</artifactId>
-				<version>3.8.3.2</version>
+                <version>3.9.0</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
 			<!--mysql5.6，需要把版本号改成5.2.1-->
@@ -541,6 +564,11 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-core</artifactId>
 				<version>7.15.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.27.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -569,9 +597,11 @@
 	         <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-				<version>3.1.0</version>
+				<version>3.3.1</version>
                 <configuration>
+					<encoding>UTF-8</encoding>
                     <nonFilteredFileExtensions>
+						<!-- 常见的二进制文件类型 -->
                         <nonFilteredFileExtension>woff</nonFilteredFileExtension>
                         <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
                         <nonFilteredFileExtension>eot</nonFilteredFileExtension>
@@ -580,6 +610,17 @@
                         <nonFilteredFileExtension>glb</nonFilteredFileExtension>
                         <nonFilteredFileExtension>wasm</nonFilteredFileExtension>
                         <nonFilteredFileExtension>ico</nonFilteredFileExtension>
+						<nonFilteredFileExtension>swf</nonFilteredFileExtension>
+						<nonFilteredFileExtension>mp3</nonFilteredFileExtension>
+						<nonFilteredFileExtension>mp4</nonFilteredFileExtension>
+						<nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+						<nonFilteredFileExtension>png</nonFilteredFileExtension>
+						<nonFilteredFileExtension>gif</nonFilteredFileExtension>
+						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+						<nonFilteredFileExtension>bcmap</nonFilteredFileExtension>
+						<nonFilteredFileExtension>cmap</nonFilteredFileExtension>
+						<nonFilteredFileExtension>cur</nonFilteredFileExtension>
+						<nonFilteredFileExtension>zip</nonFilteredFileExtension>
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>

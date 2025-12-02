@@ -82,14 +82,13 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                         "\n\n - 你应该提前判断用户的输入是否合法,比如用户名是否符合规范,手机号和邮箱是否正确等." +
                         "\n\n - 提前使用用户名查询用户是否存在,如果存在则不能添加." +
                         "\n\n - 添加成功后返回成功消息,如果失败则返回失败原因." +
-                        "\n\n - 用户名,工号,邮箱,手机号均要求唯一,提前通过查询用户工具确认唯一性." )
+                        "\n\n - 用户名,邮箱,手机号均要求唯一,提前通过查询用户工具确认唯一性." )
                 .parameters(
                         JsonObjectSchema.builder()
                                 .addStringProperty("username", "用户名,必填,只允许使用字母、数字、下划线，且必须以字母开头,唯一")
                                 .addStringProperty("password", "用户密码,必填")
                                 .addStringProperty("realname", "真实姓名,必填")
-                                .addStringProperty("workNo", "工号,必填,唯一")
-                                .addStringProperty("email", "邮箱,必填,唯一")
+                                //.addStringProperty("email", "邮箱,必填,唯一")
                                 .addStringProperty("phone", "手机号,必填,唯一")
                                 .required("username","password","realname","workNo","email","phone")
                                 .build()
@@ -140,14 +139,13 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
     private JeecgLlmTools queryUserTool() {
         ToolSpecification toolSpecification = ToolSpecification.builder()
                 .name("query_user_by_name")
-                .description("查询用户详细信息，返回json数组。支持用户名、真实姓名、邮箱、手机号、工号多字段组合查询，用户名、真实姓名、邮箱、手机号均为模糊查询，工号为精确查询。无条件则返回全部用户。")
+                .description("查询用户详细信息，返回json数组。支持用户名、真实姓名、邮箱、手机号 多字段组合查询，用户名、真实姓名、邮箱、手机号均为模糊查询。无条件则返回全部用户。")
                 .parameters(
                         JsonObjectSchema.builder()
                                 .addStringProperty("username", "用户名")
                                 .addStringProperty("realname", "真实姓名")
                                 .addStringProperty("email", "电子邮件")
                                 .addStringProperty("phone", "手机号")
-                                .addStringProperty("workNo", "工号")
                                 .build()
                 )
                 .build();
@@ -205,10 +203,10 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                 qw.like("role_code", sysRole.getRoleCode());
             }
             // 未删除
-            List<SysRole> roles = sysRoleService.list(qw);
+            List<org.jeecg.modules.system.entity.SysRole> roles = sysRoleService.list(qw);
             // 仅返回核心字段
             JSONArray arr = new JSONArray();
-            for (SysRole r : roles) {
+            for (org.jeecg.modules.system.entity.SysRole r : roles) {
                 JSONObject o = new JSONObject();
                 o.put("id", r.getId());
                 o.put("roleName", r.getRoleName());
@@ -242,10 +240,10 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
             JSONObject args = JSONObject.parseObject(toolExecutionRequest.arguments());
             String userId = args.getString("userId");
             String roleIdsStr = args.getString("roleIds");
-            if (StringUtils.isAnyBlank(userId, roleIdsStr)) {
+            if (org.apache.commons.lang3.StringUtils.isAnyBlank(userId, roleIdsStr)) {
                 return "参数缺失：userId 或 roleIds";
             }
-            SysUser user = sysUserService.getById(userId);
+            org.jeecg.modules.system.entity.SysUser user = sysUserService.getById(userId);
             if (user == null) {
                 return "用户不存在：" + userId;
             }
@@ -254,9 +252,9 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
             for (String roleId : roleIds) {
                 roleId = roleId.trim();
                 if (roleId.isEmpty()) continue;
-                SysRole role = sysRoleService.getById(roleId);
+                org.jeecg.modules.system.entity.SysRole role = sysRoleService.getById(roleId);
                 if (role == null) { invalid++; continue; }
-                QueryWrapper<org.jeecg.modules.system.entity.SysUserRole> q = new QueryWrapper<>();
+                com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<org.jeecg.modules.system.entity.SysUserRole> q = new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<>();
                 q.eq("role_id", roleId).eq("user_id", userId);
                 org.jeecg.modules.system.entity.SysUserRole one = sysUserRoleService.getOne(q);
                 if (one == null) {

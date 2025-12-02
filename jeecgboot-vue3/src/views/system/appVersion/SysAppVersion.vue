@@ -29,6 +29,15 @@
               </a-form-item>
             </a-col>
             <a-col :span="24">
+              <a-form-item label="桌面应用" name="webDownloadUrl">
+                <a-input placeholder="桌面应用安装路径" v-model:value="model.webDownloadUrl">
+                  <template #addonAfter>
+                    <Icon icon="ant-design:upload-outlined" style="cursor: pointer" @click="showUploadModal('web')" />
+                  </template>
+                </a-input>
+              </a-form-item>
+            </a-col>
+            <a-col :span="24">
               <a-form-item label="更新内容">
                 <a-textarea :rows="4" v-model:value="model.updateNote" placeholder="请输入更新内容" />
               </a-form-item>
@@ -84,6 +93,7 @@
     updateNote: '',
     downloadUrl: '',
     wgtUrl: '',
+    webDownloadUrl: '',
   });
 
   /**
@@ -113,6 +123,8 @@
       createMessage.success('保存成功');
       confirmLoading.value = false;
       active.value = false;
+    }).finally(() => {
+      confirmLoading.value = false;
     });
   }
 
@@ -122,7 +134,7 @@
    */
   function showUploadModal(type) {
     uploadType.value = type;
-    modalValue.value = type == 'apk' ? model.downloadUrl : model.wgtUrl;
+    modalValue.value = type == 'web'? model.webDownloadUrl :type == 'apk' ? model.downloadUrl : model.wgtUrl;
     openModal(true, {
       maxCount: 1,
       bizPath: filePath,
@@ -135,15 +147,17 @@
   function uploadBack(value) {
     if (unref(uploadType) == 'apk') {
       model.downloadUrl = value;
-    } else {
+    } else if (unref(uploadType) == 'wgt') {
       model.wgtUrl = value;
+    }else{
+      model.webDownloadUrl = value;
     }
   }
   //表单校验规则
   const validatorRules = {
     appVersion: [{ required: true, message: '版本不能为空', trigger: 'blur' }],
     downloadUrl: [{ required: true, message: 'APP安装apk不能为空', trigger: 'change' }],
-    wgtUrl: [{ required: true, message: 'APP热更新文件不能为空', trigger: 'change' }],
+    wgtUrl: [{ required: false, message: 'APP热更新文件不能为空', trigger: 'change' }],
   };
   // 显示字段
   const schema: DescItem[] = [
@@ -158,6 +172,10 @@
     {
       field: 'wgtUrl',
       label: 'APP热更新文件',
+    },
+    {
+      field: 'webDownloadUrl',
+      label: '桌面应用下载地址',
     },
     {
       field: 'updateNote',

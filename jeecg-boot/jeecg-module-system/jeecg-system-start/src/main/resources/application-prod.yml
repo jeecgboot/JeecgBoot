@@ -25,6 +25,8 @@ spring:
     enabled: false
     # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
     clean-disabled: true
+    # 迁移sql脚本存放路径
+    locations: classpath:flyway/sql/mysql
   servlet:
     multipart:
       max-file-size: 10MB
@@ -195,12 +197,17 @@ jeecg:
       user: postgres
       password: postgres
       table: embeddings
+  #  Unipush配置 云函数调用 URL 化地址
+  unicloud:
+    pushUrl:
   # 平台上线安全配置
   firewall:
     # 数据源安全 (开启后，Online报表和图表的数据源为必填)
     dataSourceSafe: true
     # 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
     lowCodeMode: prod
+    # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+    is-concurrent: true
   # 签名密钥串(前后端要一致，正式发布请自行修改)
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   #签名拦截接口
@@ -216,6 +223,8 @@ jeecg:
     upload: /opt/jeecg-boot/upload
     #webapp文件路径
     webapp: /opt/jeecg-boot/webapp
+  # 短信发送方式 aliyun阿里云短信 tencent腾讯云短信
+  smsSendType: aliyun
   #阿里云oss存储和大鱼短信秘钥配置
   oss:
     accessKey: ??
@@ -236,6 +245,16 @@ jeecg:
         # 注册账号短信模板编码
         SMS_175430166:
         SMS_461885023:
+  #腾讯短信秘钥配置
+  tencent:
+    # 接入域名
+    endpoint: sms.tencentcloudapi.com
+    secretId: ??
+    secretKey: ??
+    # 应用ID
+    sdkAppId: ??
+    # 地域信息
+    region: ap-beijing
   # 在线预览文件服务器地址配置
   file-view-domain: http://fileview.jeecg.com
   # minio文件上传
@@ -335,3 +354,6 @@ security:
         - /test/jeecgDemo/redisDemo/**
         - /jmreport/bigscreen2/**
         - /api/getUserInfo
+        - /bigscreen/category/**
+        - /bigscreen/visual/**
+        - /bigscreen/map/**

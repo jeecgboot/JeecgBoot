@@ -87,13 +87,12 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
 
     @Override
     public String getAccessToken() {
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        // 代码逻辑说明: [QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         SysThirdAppConfig config = getDingThirdAppConfig();
         if(null != config){
             return getTenantAccessToken(config);
         }
         log.warn("租户下未配置钉钉");
-        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         return null;
     }
 
@@ -229,9 +228,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             for (JdtDepartmentTreeVo departmentTree : departmentTreeList) {
                 LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
                 // 根据 source_identifier 字段查询
-                //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
+                // 代码逻辑说明: 【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
                 queryWrapper.and(item -> item.eq(SysDepart::getId, departmentTree.getSource_identifier()).or().eq(SysDepart::getDingIdentifier,departmentTree.getDept_id()));
-                //update-end---author:wangshuai---date:2024-04-10---for:【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
                 SysDepart sysDepart = sysDepartService.getOne(queryWrapper);
                 if (sysDepart != null) {
                     //  执行更新操作
@@ -580,14 +578,12 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         user.setTelephone(sysUser.getTelephone());
         user.setJob_number(sysUser.getWorkNo());
         // 职务翻译
-        //update-begin---author:wangshuai ---date:20230220  for：[QQYUN-3980]组织管理中 职位功能 职位表加租户id 加职位-用户关联表------------
         //获取用户职位名称
         List<SysPosition> positionList = sysPositionService.getPositionList(sysUser.getId());
         if(null != positionList && positionList.size()>0){
             String positionName = positionList.stream().map(SysPosition::getName).collect(Collectors.joining(SymbolConstant.COMMA));
             user.setTitle(positionName);
         }
-        //update-end---author:wangshuai ---date:20230220  for：[QQYUN-3980]组织管理中 职位功能 职位表加租户id 加职位-用户关联表------------
         user.setEmail(sysUser.getEmail());
         // 查询并同步用户部门关系
         List<SysDepart> departList = this.getUserDepart(sysUser);
@@ -636,9 +632,9 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         String passwordEncode = PasswordUtil.encrypt(sysUser.getUsername(), password, salt);
         sysUser.setSalt(salt);
         sysUser.setPassword(passwordEncode);
-        // update-begin--Author:liusq Date:20210713 for：钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
+        // 代码逻辑说明: 钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
         sysUser.setStatus(1);
-        // update-end--Author:liusq Date:20210713 for：钉钉同步到本地的人员没有状态，导致同步之后无法登录 #I3ZC2L
+        sysUser.setLastPwdUpdateTime(new Date());
         return this.dtUserToSysUser(dtUser, sysUser);
     }
 
@@ -754,9 +750,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         }
         int count = 0;
         if (userIdList != null && userIdList.size() > 0) {
-            //update-begin---author:wangshuai ---date:20230209  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+            // 代码逻辑说明: [QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
             String accessToken = this.getTenantAccessToken(appConfig);
-            //update-end---author:wangshuai ---date:20230209  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
             if (accessToken == null) {
                 return count;
             }
@@ -881,7 +876,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      * @return
      */
     public Response<JSONObject> recallMessageResponse(String msgTaskId) {
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        // 代码逻辑说明: [QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         SysThirdAppConfig config = this.getDingThirdAppConfig();
         String accessToken = this.getTenantAccessToken(config);
         if (accessToken == null) {
@@ -889,7 +884,6 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         }
         String agentId = config.getAgentId();
         return JdtMessageAPI.recallMessage(agentId, msgTaskId, accessToken);
-        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
     }
 
     /**
@@ -901,7 +895,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      * @return
      */
     public Response<String> sendActionCardMessage(SysAnnouncement announcement, String ddMobileUrl, boolean verifyConfig) {
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        // 代码逻辑说明: [QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         SysThirdAppConfig config = this.getDingThirdAppConfig();
         if (verifyConfig && null == config) {
             return null;
@@ -911,7 +905,6 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             return null;
         }
         String agentId = config.getAgentId();
-        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         String emptySuffix = null;
         if (oConvertUtils.isNotEmpty(announcement.getMsgAbstract())) {
             String msgAbstract = announcement.getMsgAbstract().trim();
@@ -991,9 +984,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
      */
     public SysUser oauth2Login(String authCode,Integer tenantId) {
         this.tenantIzExist(tenantId);
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
+        // 代码逻辑说明: [QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         SysThirdAppConfig dtConfig = configMapper.getThirdConfigByThirdType(tenantId, MessageTypeEnum.DD.getType());
-        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]新建企业微信和钉钉配置表，通过租户模式隔离------------
         // 1. 根据免登授权码获取用户 AccessToken
         String userAccessToken = JdtOauth2API.getUserAccessToken(dtConfig.getClientId(), dtConfig.getClientSecret(), authCode);
         if (userAccessToken == null) {
@@ -1025,19 +1017,17 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
             LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
             queryWrapper.eq(SysThirdAccount::getTenantId, tenantId);
-            //update-begin---author:wangshuai---date:2023-12-04---for: auth登录需要联查一下---
+            // 代码逻辑说明: auth登录需要联查一下---
             queryWrapper.and((wrapper)->wrapper.eq(SysThirdAccount::getThirdUserUuid,appUserId).or().eq(SysThirdAccount::getThirdUserId,appUserId));
-            //update-end---author:wangshuai---date:2023-12-04---for: auth登录需要联查一下---
             SysThirdAccount thirdAccount = sysThirdAccountService.getOne(queryWrapper);
             if (thirdAccount != null) {
                 return this.getSysUserByThird(thirdAccount, null, appUserId, accessToken,tenantId);
             } else {
                 // 直接创建新账号
                 User appUser = JdtUserAPI.getUserById(appUserId, accessToken).getResult();
-                //update-begin---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
+                //代码逻辑说明: [QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
                 //应该存uuid
                 ThirdLoginModel tlm = new ThirdLoginModel(THIRD_TYPE, appUser.getUnionid(), appUser.getName(), appUser.getAvatar());
-                //update-end---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
                 thirdAccount = sysThirdAccountService.saveThirdUser(tlm,tenantId);
                 return this.getSysUserByThird(thirdAccount, appUser, null, null,tenantId);
             }
@@ -1070,9 +1060,8 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                 thirdAccount.setAvatar(appUser.getAvatar());
                 thirdAccount.setRealname(appUser.getName());
                 thirdAccount.setThirdUserId(appUser.getUserid());
-                //update-begin---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
+                // 代码逻辑说明: [QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
                 thirdAccount.setThirdUserUuid(appUser.getUnionid());
-                //update-end---author:wangshuai ---date:20230328  for：[QQYUN-4883]钉钉auth登录同一个租户下有同一个用户id------------
                 thirdAccount.setSysUserId(sysUser.getId());
                 sysThirdAccountService.updateById(thirdAccount);
                 return sysUser;
@@ -1147,11 +1136,10 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
         }
         // 获取【钉钉】所有的部门
         List<Department> departments = JdtDepartmentAPI.listAll(accessToken);
-        //update-begin---author:wangshuai---date:2024-06-25---for:【TV360X-1316】钉钉同步提示消息不正确---
+        // 代码逻辑说明: 【TV360X-1316】钉钉同步提示消息不正确---
         if(departments.isEmpty()){
             throw new JeecgBootBizTipException("请查看配置参数和白名单是否配置！");
         }
-        //update-end---author:wangshuai---date:2024-06-25---for:【TV360X-1316】钉钉同步提示消息不正确---
         String username = JwtUtil.getUserNameByToken(SpringContextUtils.getHttpServletRequest());
         List<JdtDepartmentTreeVo> departmentTreeList = JdtDepartmentTreeVo.listToTree(departments);
         int tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
@@ -1187,11 +1175,10 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                 try {
                     userMapper.updateById(updateSysUser);
                     String str = String.format("用户 %s(%s) 更新成功！", updateSysUser.getRealname(), updateSysUser.getUsername());
-                    //update-begin---author:wangshuai---date:2024-06-24---for:【TV360X-1317】钉钉同步 同步成功之后 重复提示---
+                    // 代码逻辑说明: 【TV360X-1317】钉钉同步 同步成功之后 重复提示---
                     if(!syncInfo.getSuccessInfo().contains(str)){
                         syncInfo.addSuccessInfo(str);
                     }
-                    //update-end---author:wangshuai---date:2024-06-24---for:【TV360X-1317】钉钉同步 同步成功之后 重复提示---
                 } catch (Exception e) {
                     this.syncUserCollectErrInfo(e, user, syncInfo);
                 }

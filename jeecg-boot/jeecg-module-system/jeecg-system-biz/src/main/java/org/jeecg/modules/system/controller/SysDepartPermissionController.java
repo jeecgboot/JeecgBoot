@@ -265,10 +265,9 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 			 String lastPermissionIds = json.getString("lastpermissionIds");
 			 this.sysDepartRolePermissionService.saveDeptRolePermission(roleId, permissionIds, lastPermissionIds);
 			 result.success("保存成功！");
-             //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色授权添加敏感日志------------
+             // 代码逻辑说明: [VUEN-234]部门角色授权添加敏感日志------------
              LoginUser loginUser = SecureUtil.currentUser();
              baseCommonService.addLog("修改部门角色ID:"+roleId+"的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
-             //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色授权添加敏感日志------------
              log.info("======部门角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 		 } catch (Exception e) {
 			 result.error500("授权失败！");

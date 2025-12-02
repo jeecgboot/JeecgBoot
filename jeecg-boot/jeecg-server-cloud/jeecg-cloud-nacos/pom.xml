@@ -5,7 +5,7 @@
     <artifactId>jeecg-cloud-nacos</artifactId>
     <name>jeecg-cloud-nacos</name>
     <description>nacos启动模块</description>
-    <version>3.8.3</version>
+    <version>3.9.0</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -40,6 +40,10 @@
     </properties>
     
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>

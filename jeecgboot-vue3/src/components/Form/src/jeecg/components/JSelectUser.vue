@@ -2,7 +2,6 @@
 <template>
   <div class="JselectUser">
     <JSelectBiz @change="handleSelectChange" @handleOpen="handleOpen" :loading="loadingEcho" v-bind="attrs"></JSelectBiz>
-    <!-- update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
     <a-form-item>
       <UserSelectModal
         :rowKey="rowKey"
@@ -13,7 +12,6 @@
         @close="handleClose"
       />
     </a-form-item>
-    <!-- update-end--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
   </div>
 </template>
 <script lang="ts">
@@ -48,13 +46,11 @@
         type: Object,
         default: () => {},
       },
-      //update-begin---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
       //排除用户id的集合
       excludeUserIdList:{
         type: Array,
         default: () => [],
       }
-      //update-end---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
     },
     emits: ['options-change', 'change', 'update:value'],
     setup(props, { emit }) {
@@ -87,11 +83,8 @@
        * 监听组件值
        */
       watchEffect(() => {
-        // update-begin--author:liaozhiyang---date:20240611---for：【TV360X-576】已选中了数据，再次选择打开弹窗点击取消，数据清空了
-        //update-begin-author:liusq---date:2024-06-03--for: [TV360X-840]用户授权，没有选择，点取消，也会回显一个选过的用户
+        // 代码逻辑说明: [TV360X-840]用户授权，没有选择，点取消，也会回显一个选过的用户
         tempSave = [];
-        //update-end-author:liusq---date:2024-06-03--for:[TV360X-840]用户授权，没有选择，点取消，也会回显一个选过的用户
-        // update-end--author:liaozhiyang---date:20240611---for：【TV360X-576】已选中了数据，再次选择打开弹窗点击取消，数据清空了
         props.value && initValue();
         // 查询条件重置的时候 界面显示未清空
         if (!props.value) {
@@ -108,7 +101,7 @@
       //   }
       // });
 
-      //update-begin---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
+      // 代码逻辑说明: 【QQYUN-5685】5、离职人员可以选自己------------
       const excludeUserIdList = ref<any>([]);
       
       /**
@@ -117,7 +110,6 @@
       watch(()=>props.excludeUserIdList,(data)=>{
         excludeUserIdList.value = data;
       },{ immediate: true })
-      //update-end---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
       
       /**
        * 打卡弹出框
@@ -156,7 +148,7 @@
         send(values);
       }
       const getBindValue = Object.assign({}, unref(props), unref(attrs));
-      // update-begin--author:liaozhiyang---date:20240517---for：【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
+      // 代码逻辑说明: 【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
       const handleClose = () => {
         if (tempSave.length) {
           selectValues.value = cloneDeep(tempSave);
@@ -173,7 +165,6 @@
         emit('update:value', result);
         emit('change', result);
       };
-      // update-end--author:liaozhiyang---date:20240517---for：【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
       return {
         // state,
         attrs,
@@ -193,13 +184,12 @@
   });
 </script>
 <style lang="less" scoped>
-  // update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
+  // 代码逻辑说明: 【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
   .JselectUser {
     > .ant-form-item {
       display: none;
     }
   }
-  // update-end--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
   .j-select-row {
     @width: 82px;
 

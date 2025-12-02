@@ -45,11 +45,10 @@ export function useTableStyle(propsRef: ComputedRef<BasicTableProps>, prefixCls:
     if (rowClassName && isFunction(rowClassName)) {
       classNames.push(rowClassName(record, index));
     }
-    // update-begin--author:liaozhiyang---date:20240919---for：【issues/7200】basicTable选中后没有选中样式
+    // 代码逻辑说明: 【issues/7200】basicTable选中后没有选中样式
     if (isChecked(propsRef, record)) {
       classNames.push('ant-table-row-selected');
     }
-    // update-end--author:liaozhiyang---date:20240919---for：【issues/7200】basicTable选中后没有选中样式
     return classNames.filter((cls) => !!cls).join(' ');
   }
 

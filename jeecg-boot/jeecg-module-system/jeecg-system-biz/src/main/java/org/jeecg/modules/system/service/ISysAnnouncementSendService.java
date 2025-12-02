@@ -31,4 +31,25 @@ public interface ISysAnnouncementSendService extends IService<SysAnnouncementSen
 	AnnouncementSendModel getOne(String sendId);
 	
 
+    /**
+     * 获取当前用户已阅读的内容
+     * 
+     * @param id
+     * @return
+     */
+    long getReadCountByUserId(String id);
+
+    /**
+     * 根据多个id批量删除已阅读的数量
+     * 
+     * @param ids
+     */
+    void deleteBatchByIds(String ids);
+
+	/**
+	 * 根据id更新阅读状态
+	 * @param busId
+	 * @param busType
+	 */
+    void updateReadFlagByBusId(String busId, String busType);
 }

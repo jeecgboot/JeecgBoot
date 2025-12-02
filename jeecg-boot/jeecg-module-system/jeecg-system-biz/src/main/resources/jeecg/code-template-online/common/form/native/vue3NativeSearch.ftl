@@ -74,7 +74,7 @@
               <#else>
               <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model:value="queryParam.${po.fieldName}" allow-clear ></a-input>
              </#if>
-            <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+            <#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
               <#if query_field_no gt 1>  </#if><a-input-number placeholder="请输入${po.filedComment}" v-model:value="queryParam.${po.fieldName}"></a-input-number>           
             <#else>
               <#if query_field_no gt 1>  </#if><a-input placeholder="请输入${po.filedComment}" v-model:value="queryParam.${autoStringSuffixForModel(po)}" allow-clear ></a-input>

@@ -41,9 +41,8 @@ export const formSchema: FormSchema[] = [
     field: 'pid',
     component: 'TreeSelect',
     componentProps: {
-      //update-begin---author:wangshuai ---date:20230829  for：replaceFields已过期，使用fieldNames代替------------
+      // 代码逻辑说明: replaceFields已过期，使用fieldNames代替------------
       fieldNames: {
-      //update-end---author:wangshuai ---date:20230829  for：replaceFields已过期，使用fieldNames代替------------
         value: 'key',
       },
       dropdownStyle: {

@@ -158,9 +158,7 @@ public interface ISysUserService extends IService<SysUser> {
      * @param queryWrapper
      * @return
      */
-    //update-begin-author:taoyan date:2022-9-13 for: VUEN-2245【漏洞】发现新漏洞待处理20220906 ----sql注入 方法没有使用，注掉
     // public IPage<SysUser> getUserByDepartIdAndQueryWrapper(Page<SysUser> page, String departId, QueryWrapper<SysUser> queryWrapper);
-	//update-end-author:taoyan date:2022-9-13 for: VUEN-2245【漏洞】发现新漏洞待处理20220906 ----sql注入 方法没有使用，注掉
 
 	/**
 	 * 根据 orgCode 查询用户，包括子部门下的用户
@@ -503,4 +501,41 @@ public interface ISysUserService extends IService<SysUser> {
      */
     IPage<SysUserSysDepPostModel> queryDepartPostUserByOrgCode(String orgCode, SysUser userParams, IPage page);
 
+    /**
+     * 根据 orgCode 查询用户信息（部门全路径，主岗位和兼职岗位的信息），包括公司、子公司、部门
+     *
+     * @param orgCode
+     * @param userParams
+     * @param page
+     * @return
+     */
+    IPage<SysUserSysDepPostModel> queryDepartUserByOrgCode(String orgCode, SysUser userParams, IPage page);
+
+    /**
+     * 通讯录点击用户获取用户详情（包含用户基本信息、部门全路径、主岗位兼职岗位全路径）
+     *
+     * @param userId
+     * @return
+     */
+    SysUserSysDepPostModel getUserDetailByUserId(String userId);
+
+	/**
+	 * 登录获取用户部门信息
+	 * @param jsonObject
+	 * @return
+	 */
+    Result loginGetUserDeparts(JSONObject jsonObject);
+
+	/**
+	 * 根据用户名查询重置成系统密码
+	 * @param usernames
+	 */
+	void resetToSysPassword(String usernames);
+
+	/**
+	 * 更新用户设备ID
+	 * @param clientId
+	 * @param userId
+	 */
+    void updateClientId(String clientId,String userId);
 }

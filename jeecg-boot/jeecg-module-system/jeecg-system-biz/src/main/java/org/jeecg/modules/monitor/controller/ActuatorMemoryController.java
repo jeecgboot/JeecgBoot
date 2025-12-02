@@ -36,7 +36,7 @@ public class ActuatorMemoryController {
 		result.put("memory.runtime.max", runtime.totalMemory() - runtime.freeMemory());
 		result.put("memory.runtime.free", runtime.maxMemory() - runtime.totalMemory() + runtime.freeMemory());
 		result.put("memory.runtime.usage", NumberUtil.div(runtime.totalMemory() - runtime.freeMemory(), runtime.totalMemory()));
-		//update-begin---author:chenrui ---date:20240705  for：[TV360X-1695]内存信息-立即更新 功能报错 #6635------------
+		// 代码逻辑说明: [TV360X-1695]内存信息-立即更新 功能报错 #6635------------
 		OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 		if (operatingSystemMXBean instanceof com.sun.management.OperatingSystemMXBean) {
 			com.sun.management.OperatingSystemMXBean opBean = (com.sun.management.OperatingSystemMXBean) operatingSystemMXBean;
@@ -49,7 +49,6 @@ public class ActuatorMemoryController {
 			result.put("memory.physical.free", usedPhysicalMemory);
 			result.put("memory.physical.usage", NumberUtil.div(usedPhysicalMemory, totalPhysicalMemory));
 		}
-		//update-end---author:chenrui ---date:20240705  for：[TV360X-1695]内存信息-立即更新 功能报错 #6635------------
 		return Result.ok(result);
     }
 

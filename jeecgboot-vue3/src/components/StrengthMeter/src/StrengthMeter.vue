@@ -42,23 +42,19 @@
 
       function handleChange(e: ChangeEvent) {
         innerValueRef.value = e.target.value;
-        // update-end--author:liaozhiyang---date:20231122---for：【issues/5579】密码组件第一次输入值规则校验没触发
         emit('change', e.target.value);
-        // update-end--author:liaozhiyang---date:20231122---for：【issues/5579】密码组件第一次输入值规则校验没触发
       }
 
       watchEffect(() => {
         innerValueRef.value = props.value || '';
       });
 
-      // update-end--author:liaozhiyang---date:20231122---for：【issues/5579】密码组件第一次输入值规则校验没触发
       // watch(
       //   () => unref(innerValueRef),
       //   (val) => {
       //     emit('change', val);
       //   }
       // );
-      // update-end--author:liaozhiyang---date:20231122---for：【issues/5579】密码组件第一次输入值规则校验没触发
       return {
         getPasswordStrength,
         handleChange,

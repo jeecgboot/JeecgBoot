@@ -391,7 +391,7 @@ export const packMenuFormSchema: FormSchema[] = [
     label: '套餐包名称',
     component: 'Input',
   },
-  {
+/*  {
     field: 'permissionIds',
     label: '授权菜单',
     component: 'JTreeSelect',
@@ -405,7 +405,7 @@ export const packMenuFormSchema: FormSchema[] = [
       converIsLeafVal: 0,
       getPopupContainer: () => document.body,
     },
-  },
+  },*/
   {
     field: 'remarks',
     label: '备注说明',

@@ -31,10 +31,8 @@
     name: 'JAddInput',
     props: {
       value: propTypes.string.def(''),
-      //update-begin---author:wangshuai ---date:20220516  for：[VUEN-1043]系统编码规则，最后一个输入框不能删除------------
       //自定义删除按钮多少才会显示
       min: propTypes.integer.def(1),
-      //update-end---author:wangshuai ---date:20220516  for：[VUEN-1043]系统编码规则，最后一个输入框不能删除--------------
     },
     emits: ['change', 'update:value'],
     setup(props, { emit }) {

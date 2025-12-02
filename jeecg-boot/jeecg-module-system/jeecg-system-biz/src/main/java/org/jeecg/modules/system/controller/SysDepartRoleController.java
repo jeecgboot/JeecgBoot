@@ -96,7 +96,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 //		queryWrapper.in("depart_id",deptIds);
 
 		//我的部门，选中部门只能看当前部门下的角色
-		//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
+		// 代码逻辑说明: [QQYUN-10775]验证码可以复用 #7674------------
 		if(oConvertUtils.isNotEmpty(deptId)){
 			queryWrapper.eq("depart_id",deptId);
 			IPage<SysDepartRole> pageList = sysDepartRoleService.page(page, queryWrapper);
@@ -104,7 +104,6 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 		}else{
 			return Result.ok(null);
 		}
-		//update-end---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
 	}
 	
 	/**
@@ -206,10 +205,9 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 		 String oldRoleId = json.getString("oldRoleId");
 		 String userId = json.getString("userId");
 		 departRoleUserService.deptRoleUserAdd(userId,newRoleId,oldRoleId);
-         //update-begin---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色分配添加敏感日志------------
+         // 代码逻辑说明: [VUEN-234]部门角色分配添加敏感日志------------
          LoginUser loginUser = SecureUtil.currentUser();
          baseCommonService.addLog("给部门用户ID："+userId+"分配角色，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
-         //update-end---author:wangshuai ---date:20220316  for：[VUEN-234]部门角色分配添加敏感日志------------
          return Result.ok("添加成功！");
 	 }
 

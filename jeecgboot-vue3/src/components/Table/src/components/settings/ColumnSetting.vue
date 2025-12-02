@@ -143,17 +143,13 @@
     setup(props, { emit, attrs }) {
       const { t } = useI18n();
       const table = useTableContext();
-      // update-begin--author:liaozhiyang---date:20250526---for：【issues/8301】树形表格序号列禁用
+      // 代码逻辑说明: 【issues/8301】树形表格序号列禁用
       const isTreeTable = computed(() => table.getBindValues.value.isTreeTable);
-      // update-end--author:liaozhiyang---date:20250526---for：【issues/8301】树形表格序号列禁用
       const popoverVisible = ref(false);
-      // update-begin--author:sunjianlei---date:20221101---for: 修复第一次进入时列表配置不能拖拽
       // nextTick(() => popoverVisible.value = false);
-      // update-end--author:sunjianlei---date:20221101---for: 修复第一次进入时列表配置不能拖拽
       const defaultRowSelection = omit(table.getRowSelection(), 'selectedRowKeys');
-      // update-begin--author:liaozhiyang---date:20250722---for：【issues/8529】setColumns后列配置没联动更新
+      // 代码逻辑说明: 【issues/8529】setColumns后列配置没联动更新
       const getColumnsRef = table.getColumnsRef();
-      // update-end--author:liaozhiyang---date:20250722---for：【issues/8529】setColumns后列配置没联动更新
       let inited = false;
 
       const cachePlainOptions = ref<Options[]>([]);
@@ -221,27 +217,24 @@
         checkIndex.value = !!values.showIndexColumn;
         checkSelect.value = !!values.rowSelection;
       });
-      // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+      // 代码逻辑说明: 【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
       watch([localeStore], () => {
         const columns = getColumns();
         plainOptions.value = columns;
         plainSortOptions.value = columns;
         cachePlainOptions.value = columns;
       });
-      // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
-      // update-begin--author:liaozhiyang---date:20250813---for：【issues/8529】setColumns将原本隐藏的列展示后，列配置里却没有勾选该列
+      // 代码逻辑说明: 【issues/8529】setColumns将原本隐藏的列展示后，列配置里却没有勾选该列
       watch([getColumnsRef], () => {
         init();
       });
-      // update-end--author:liaozhiyang---date:20250813---for：【issues/8529】setColumns将原本隐藏的列展示后，列配置里却没有勾选该列
       function getColumns() {
         const ret: Options[] = [];
-        // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+        // 代码逻辑说明: 【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
         let t = table.getColumns({ ignoreIndex: true, ignoreAction: true, ignoreAuth: true, ignoreIfShow: true });
         if (!t.length) {
           t = table.getCacheColumns();
         }
-        // update-end--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
         t.forEach((item) => {
           ret.push({
             label: (item.title as string) || (item.customTitle as string),
@@ -264,19 +257,16 @@
             return item.dataIndex || item.title;
           })
           .filter(Boolean) as string[];
-        // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+        // 代码逻辑说明: 【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
         const { sortedList = [] } = getCache() || {};
         await nextTick();
-        // update-end--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
         if (!plainOptions.value.length) {
-          // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
           let tmp = columns;
           if (sortedList?.length) {
             tmp = columns.sort((prev, next) => {
               return sortedList.indexOf(prev.value) - sortedList.indexOf(next.value);
             });
           }
-          // update-end--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
           plainOptions.value = tmp;
           plainSortOptions.value = tmp;
           cachePlainOptions.value = tmp;
@@ -292,19 +282,17 @@
               item.fixed = findItem.fixed;
             }
           });
-          // update-begin--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
+          // 代码逻辑说明: 【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
           if (sortedList?.length) {
             plainOptions.value.sort((prev, next) => {
               return sortedList.indexOf(prev.value) - sortedList.indexOf(next.value);
             });
           }
-          // update-end--author:liaozhiyang---date:20250403---for：【issues/7996】表格列组件取消所有或者只勾选中间，显示非预期
         }
         state.isInit = true;
         state.checkedList = checkList;
-        // update-begin--author:liaozhiyang---date:20240612---for：【TV360X-105】列展示设置问题[列展示如果存在未勾选的列，保存并刷新后，列展示复选框样式会错乱]
+        // 代码逻辑说明: 【TV360X-105】列展示设置问题[列展示如果存在未勾选的列，保存并刷新后，列展示复选框样式会错乱]
         state.checkAll = columns.length === checkList.length;
-        // update-end--author:liaozhiyang---date:20240612---for：【TV360X-105】列展示设置问题[列展示如果存在未勾选的列，保存并刷新后，列展示复选框样式会错乱]
       }
 
       // checkAll change
@@ -322,9 +310,7 @@
       const indeterminate = computed(() => {
         const len = plainOptions.value.length;
         let checkedLen = state.checkedList.length;
-        // update-begin--author:liaozhiyang---date:20240612---for：【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
         // unref(checkIndex) && checkedLen--;
-        // update-end--author:liaozhiyang---date:20240612---for：【TV360X-105】列展示设置问题[列展示复选框不应该判断序号列复选框的状态]
         return checkedLen > 0 && checkedLen < len;
       });
 
@@ -341,19 +327,18 @@
 
       // reset columns
       function reset() {
-        // update-begin--author:liaozhiyang---date:20240612---for：【TV360X-105】列展示设置问题[需要重置两次才回到初始状态]
+        // 代码逻辑说明: 【TV360X-105】列展示设置问题[需要重置两次才回到初始状态]
         setColumns(table.getCacheColumns());
         setTimeout(() => {
           const columns = getColumns();
           // state.checkedList = [...state.defaultCheckList];
-          // update-begin--author:liaozhiyang---date:20231103---for：【issues/825】tabel的列设置隐藏列保存后切换路由问题[重置没勾选]
+          // 代码逻辑说明: 【issues/825】tabel的列设置隐藏列保存后切换路由问题[重置没勾选]
           state.checkedList = table
             .getColumns({ ignoreAction: true, ignoreAuth: true, ignoreIfShow: true })
             .map((item) => {
               return item.dataIndex || item.title;
             })
             .filter(Boolean) as string[];
-          // update-end--author:liaozhiyang---date:20231103---for：【issues/825】tabel的列设置隐藏列保存后切换路由问题[重置没勾选]
           state.checkAll = true;
           plainOptions.value = unref(cachePlainOptions);
           plainSortOptions.value = unref(cachePlainOptions);
@@ -363,15 +348,13 @@
           }
           resetSetting();
         }, 100);
-        // update-end--author:liaozhiyang---date:20240612---for：【TV360X-105】列展示设置问题[需要重置两次才回到初始状态]
       }
 
       // Open the pop-up window for drag and drop initialization
       function handleVisibleChange() {
         if (inited) return;
-        // update-begin--author:liaozhiyang---date:20240529---for：【TV360X-254】列设置闪现及苹果浏览器弹窗过长
+        // 代码逻辑说明: 【TV360X-254】列设置闪现及苹果浏览器弹窗过长
         setTimeout(() => {
-          // update-begin--author:liaozhiyang---date:20240529---for：【TV360X-254】列设置闪现及苹果浏览器弹窗过长
           const columnListEl = unref(columnListRef);
           if (!columnListEl) return;
           const el = columnListEl.$el as any;
@@ -399,18 +382,14 @@
               }
 
               plainSortOptions.value = columns;
-              // update-begin--author:liaozhiyang---date:20230904---for：【QQYUN-6424】table字段列表设置不显示后，再拖拽字段顺序，原本不显示的，又显示了
-              // update-begin--author:liaozhiyang---date:20240522---for：【TV360X-108】刷新后勾选之前未勾选的字段拖拽之后该字段对应的表格列消失了
+              // 代码逻辑说明: 【TV360X-108】刷新后勾选之前未勾选的字段拖拽之后该字段对应的表格列消失了
               const cols = columns.map((item) => item.value);
               const arr = cols.filter((cItem) => state.checkedList.find((lItem) => lItem === cItem));
               setColumns(arr);
               // 最开始的代码
               // setColumns(columns);
-              // update-end--author:liaozhiyang---date:20240522---for：【TV360X-108】刷新后勾选之前未勾选的字段拖拽之后该字段对应的表格列消失了
-              // update-end--author:liaozhiyang---date:20230904---for：【QQYUN-6424】table字段列表设置不显示后，再拖拽字段顺序，原本不显示的，又显示了
-              // update-begin--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[重置之后保存的顺序还是上次的]
+              // 代码逻辑说明: 【TV360X-105】列展示设置问题[重置之后保存的顺序还是上次的]
               restAfterOptions.value = null;
-              // update-end--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[重置之后保存的顺序还是上次的]
             },
           });
           // 记录原始 order 序列
@@ -572,15 +551,13 @@
       }
 
       .ant-checkbox-group {
-        // update-begin--author:liaozhiyang---date:20240118---for：【QQYUN-7887】表格列设置宽度过长
         // width: 100%;
         min-width: 260px;
         max-width: min-content;
-        // update-end--author:liaozhiyang---date:20240118---for：【QQYUN-7887】表格列设置宽度过长
         // flex-wrap: wrap;
       }
 
-      // update-begin--author:liaozhiyang---date:20240529---for：【TV360X-254】列设置闪现及苹果浏览器弹窗过长
+      // 代码逻辑说明: 【TV360X-254】列设置闪现及苹果浏览器弹窗过长
       &.ant-popover,
       .ant-popover-content,
       .ant-popover-inner,
@@ -589,7 +566,6 @@
       .scrollbar__wrap {
         max-width: min-content;
       }
-      // update-end--author:liaozhiyang---date:20240529---for：【TV360X-254】列设置闪现及苹果浏览器弹窗过长
       .scrollbar {
         height: 220px;
       }

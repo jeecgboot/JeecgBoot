@@ -124,9 +124,8 @@ public class AutoLogAspect {
         if (operateType > 0) {
             return operateType;
         }
-        //update-begin---author:wangshuai ---date:20220331  for：阿里云代码扫描规范(不允许任何魔法值出现在代码中)------------
+        // 代码逻辑说明: 阿里云代码扫描规范(不允许任何魔法值出现在代码中)------------
         return OperateTypeEnum.getTypeByMethodName(methodName);
-        //update-end---author:wangshuai ---date:20220331  for：阿里云代码扫描规范(不允许任何魔法值出现在代码中)------------
     }
 
     /**
@@ -146,14 +145,15 @@ public class AutoLogAspect {
             //  https://my.oschina.net/mengzhang6/blog/2395893
             Object[] arguments  = new Object[paramsArray.length];
             for (int i = 0; i < paramsArray.length; i++) {
-                if (paramsArray[i] instanceof BindingResult || paramsArray[i] instanceof ServletRequest || paramsArray[i] instanceof ServletResponse || paramsArray[i] instanceof MultipartFile) {
+                if (paramsArray[i] instanceof BindingResult || paramsArray[i] instanceof ServletRequest || paramsArray[i] instanceof ServletResponse || paramsArray[i] instanceof MultipartFile || paramsArray[i] instanceof MultipartFile[]) {
                     //ServletRequest不能序列化，从入参里排除，否则报异常：java.lang.IllegalStateException: It is illegal to call this method if the current request is not in asynchronous mode (i.e. isAsyncStarted() returns false)
                     //ServletResponse不能序列化 从入参里排除，否则报异常：java.lang.IllegalStateException: getOutputStream() has already been called for this response
+                    //MultipartFile和MultipartFile[]不能序列化，从入参里排除
                     continue;
                 }
                 arguments[i] = paramsArray[i];
             }
-            //update-begin-author:taoyan date:20200724 for:日志数据太长的直接过滤掉
+            // 代码逻辑说明: 日志数据太长的直接过滤掉
             PropertyFilter profilter = new PropertyFilter() {
                 @Override
                 public boolean apply(Object o, String name, Object value) {
@@ -168,14 +168,13 @@ public class AutoLogAspect {
                 }
             };
             params = JSONObject.toJSONString(arguments, profilter);
-            //update-end-author:taoyan date:20200724 for:日志数据太长的直接过滤掉
         } else {
             MethodSignature signature = (MethodSignature) joinPoint.getSignature();
             Method method = signature.getMethod();
             // 请求的方法参数值
             Object[] args = joinPoint.getArgs();
             // 请求的方法参数名称
-            StandardReflectionParameterNameDiscoverer u=new StandardReflectionParameterNameDiscoverer();
+            StandardReflectionParameterNameDiscoverer u= new StandardReflectionParameterNameDiscoverer();
             String[] paramNames = u.getParameterNames(method);
             if (args != null && paramNames != null) {
                 for (int i = 0; i < args.length; i++) {

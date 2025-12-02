@@ -7,6 +7,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Description: 用户通告阅读标记表
@@ -95,4 +96,12 @@ public class AnnouncementSendModel implements Serializable {
 	 * 是否置顶（0否 1是）
 	 */
 	private java.lang.Integer izTop;
+	/**
+	 * 通知类型(plan:日程计划 | flow:流程消息 | meeting:会议 | file:知识库 | collab:协同通知 | supe:督办通知 | attendance:考勤)
+	 */
+	private java.lang.String noticeType;
+	/**
+	 * 通告类型数组
+	 */
+	private List<String> noticeTypeList;
 }

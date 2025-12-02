@@ -95,6 +95,7 @@ export default {
 
     userName: 'Username',
     password: 'Password',
+    loginOrgCode: 'Department',
     inputCode: 'Verification code',
     confirmPassword: 'Confirm Password',
     email: 'Email',

@@ -36,6 +36,13 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @return
 	 */
 	public String getUserIdByName(@Param("username") String username);
+	
+	/**
+	  * 通过用户账号查询用户Id
+	 * @param userIds
+	 * @return
+	 */
+	public List<String> getUsernameByIds(@Param("userIds") List<String> userIds);
 
 	/**
 	 *  根据部门Id查询用户信息
@@ -254,4 +261,14 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return
      */
     IPage<SysUser> getDepartPostListByIdUserRealName(@Param("page") Page<SysUser> page, @Param("username") String username, @Param("realname") String realname, @Param("orgCode") String orgCode);
+
+    /**
+     * 查询部门下的用户包括子部门下的用户
+     * 
+     * @param page
+     * @param orgCode
+     * @param userParams
+     * @return
+     */
+    List<SysUserSysDepPostModel> queryDepartUserByOrgCode(@Param("page") IPage page, @Param("orgCode") String orgCode, @Param("userParams") SysUser userParams);
 }

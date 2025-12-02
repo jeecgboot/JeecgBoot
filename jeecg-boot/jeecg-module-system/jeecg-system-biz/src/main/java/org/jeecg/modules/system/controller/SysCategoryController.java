@@ -25,6 +25,7 @@ import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -239,7 +240,13 @@ public class SysCategoryController {
       mv.addObject(NormalExcelConstants.FILE_NAME, "分类字典列表");
       mv.addObject(NormalExcelConstants.CLASS, SysCategory.class);
       LoginUser user = SecureUtil.currentUser();
-      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("分类字典列表数据", "导出人:"+user.getRealname(), "导出信息"));
+      //导出支持xlsx
+      mv.addObject(NormalExcelConstants.PARAMS, new ExportParams("分类字典列表数据", "导出人:"+user.getRealname(), "导出信息", ExcelType.XSSF));
+      //分类字典导出支持导出字段
+      String exportFields = request.getParameter(NormalExcelConstants.EXPORT_FIELDS);
+      if(oConvertUtils.isNotEmpty(exportFields)){
+          mv.addObject(NormalExcelConstants.EXPORT_FIELDS, exportFields);
+      }
       return mv;
   }
 
@@ -266,9 +273,8 @@ public class SysCategoryController {
           params.setNeedSave(true);
           try {
               List<SysCategory> listSysCategorys = ExcelImportUtil.importExcel(file.getInputStream(), SysCategory.class, params);
-			  //update-begin---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
+			  // 代码逻辑说明: [issues/8612]分类字典导入bug #8612 ------------
 			  Set<String> parentCategoryIds = new HashSet<>();
-			  //update-end---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
 			 //按照编码长度排序
               Collections.sort(listSysCategorys);
 			  log.info("排序后的list====>",listSysCategorys);
@@ -282,9 +288,7 @@ public class SysCategoryController {
 					  log.info("pId====>",pId);
 					  if(StringUtils.isNotBlank(pId)){
 						  sysCategoryExcel.setPid(pId);
-						  //update-begin---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
 						  parentCategoryIds.add(pId);
-						  //update-end---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
 					  }
 				  }else{
 					  sysCategoryExcel.setPid("0");
@@ -305,7 +309,7 @@ public class SysCategoryController {
 					  }
 				  }
               }
-			  //update-begin---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
+			  // 代码逻辑说明: [issues/8612]分类字典导入bug #8612 ------------
 			  if(oConvertUtils.isObjectNotEmpty(parentCategoryIds)){
 				  for (String parentCategoryId : parentCategoryIds) {
 					  SysCategory parentCategory = sysCategoryService.getById(parentCategoryId);
@@ -315,7 +319,6 @@ public class SysCategoryController {
 					  }
 				  }
 			  }
-			  //update-end---author:chenrui ---date:20250721  for：[issues/8612]分类字典导入bug #8612 ------------
           } catch (Exception e) {
 			  errorMessage.add("发生异常：" + e.getMessage());
 			  log.error(e.getMessage(), e);
@@ -339,12 +342,11 @@ public class SysCategoryController {
  	public Result<SysCategory> loadOne(@RequestParam(name="field") String field,@RequestParam(name="val") String val) {
  		Result<SysCategory> result = new Result<SysCategory>();
  		try {
-			//update-begin-author:taoyan date:2022-5-6 for: issues/3663 sql注入问题
+			// 代码逻辑说明: issues/3663 sql注入问题
 			boolean isClassField = ReflectHelper.isClassField(field, SysCategory.class);
 			if (!isClassField) {
 				return Result.error("字段无效，请检查!");
 			}
-			//update-end-author:taoyan date:2022-5-6 for: issues/3663 sql注入问题
  			QueryWrapper<SysCategory> query = new QueryWrapper<SysCategory>();
  			query.eq(field, val);
  			List<SysCategory> ls = this.sysCategoryService.list(query);

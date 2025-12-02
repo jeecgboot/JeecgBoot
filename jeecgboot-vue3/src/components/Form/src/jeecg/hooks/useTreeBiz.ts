@@ -21,8 +21,10 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
   const selectRows = ref<Array<object>>([]);
   //是否是打开弹框模式
   const openModal = ref(false);
+  //是否层级关联
+  const checkStrictly = ref<boolean>(realProps.multiple ? props.checkStrictly : true);
   // 是否开启父子关联，如果不可以多选，就始终取消父子关联
-  const getCheckStrictly = computed(() => (realProps.multiple ? props.checkStrictly : true));
+  const getCheckStrictly = computed(() => checkStrictly.value);
   // 是否是首次加载回显，只有首次加载，才会显示 loading
   let isFirstLoadEcho = true;
   let prevSelectValues = [];
@@ -39,7 +41,7 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
       if(!values){
         return;
       }
-      // update-begin--author:liaozhiyang---date:20250604---for：【issues/8232】代码设置JSelectDept组件值没翻译
+      // 代码逻辑说明: 【issues/8232】代码设置JSelectDept组件值没翻译
       if (values.length > 0) {
         // 防止多次请求
         if (isEqual(values, prevSelectValues)) return;
@@ -49,7 +51,6 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
         onLoadData(null, values.join(',')).finally(() => {
           loadingEcho.value = false;
         });
-        // update-end--author:liaozhiyang---date:20250604---for：【issues/8232】代码设置JSelectDept组件值没翻译
       }
     },
     { immediate: true }
@@ -148,23 +149,26 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
    * 树节点选择
    */
   function onCheck(keys, info) {
+    if(!info){
+      return;
+    }
     if (props.checkable == true) {
       // 如果不能多选，就只保留最后一个选中的
       if (!realProps.multiple) {
         if (info.checked) {
-          //update-begin-author:taoyan date:20220408 for: 单选模式下，设定rowKey，无法选中数据-
+          // 代码逻辑说明: 单选模式下，设定rowKey，无法选中数据-
           checkedKeys.value = [info.node.eventKey];
           let rowKey = props.rowKey;
           let temp = info.checkedNodes.find((n) => n[rowKey] === info.node.eventKey);
           selectRows.value = [temp];
-          //update-end-author:taoyan date:20220408 for: 单选模式下，设定rowKey，无法选中数据-
         } else {
           checkedKeys.value = [];
           selectRows.value = [];
         }
         return;
       }
-      checkedKeys.value = props.checkStrictly ? keys.checked : keys;
+      // 代码逻辑说明: 【JHHB-250】选择部门加一个层级关联/独立的配置，现在是点击就全勾选了---
+      checkedKeys.value = checkStrictly.value ? keys.checked : keys;
       const { checkedNodes } = info;
       let rows = <any[]>[];
       checkedNodes.forEach((item) => {
@@ -179,7 +183,7 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
    */
   async function checkALL(checkAll) {
     getTree().checkAll(checkAll);
-    //update-begin---author:wangshuai ---date:20230403  for：【issues/394】所属部门树操作全部勾选不生效/【issues/4646】部门全部勾选后，点击确认按钮，部门信息丢失------------
+    // 代码逻辑说明: 【issues/394】所属部门树操作全部勾选不生效/【issues/4646】部门全部勾选后，点击确认按钮，部门信息丢失------------
     await nextTick();
     checkedKeys.value = getTree().getCheckedKeys();
     if(checkAll){
@@ -187,7 +191,6 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
     }else{
       selectRows.value = [];
     }
-    //update-end---author:wangshuai ---date:20230403  for：【issues/394】所属部门树操作全部勾选不生效/【issues/4646】部门全部勾选后，点击确认按钮，部门信息丢失------------
   }
 
   /**
@@ -219,9 +222,8 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
     let startPid = '';
     if (treeNode) {
       startPid = treeNode.eventKey;
-      //update-begin---author:wangshuai ---date:20220407  for：rowkey不设置成id，sync开启异步的时候，点击上级下级不显示------------
+      // 代码逻辑说明: rowkey不设置成id，sync开启异步的时候，点击上级下级不显示------------
       params['pid'] = treeNode.value;
-      //update-end---author:wangshuai ---date:20220407  for：rowkey不设置成id，sync开启异步的时候，点击上级下级不显示------------
     }
     if (ids) {
       startPid = '';
@@ -272,9 +274,8 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
     } else {
       const options = <any[]>[];
       optionData.forEach((item) => {
-        //update-begin-author:taoyan date:2022-7-4 for: issues/I5F3P4 online配置部门选择后编辑，查看数据应该显示部门名称，不是部门代码
+        // 代码逻辑说明: issues/I5F3P4 online配置部门选择后编辑，查看数据应该显示部门名称，不是部门代码
         options.push({ label: item[props.labelKey], value: item[props.rowKey] });
-        //update-end-author:taoyan date:2022-7-4 for: issues/I5F3P4 online配置部门选择后编辑，查看数据应该显示部门名称，不是部门代码
       });
       selectOptions.value = options;
     }
@@ -385,9 +386,7 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
       }
     } else {
       openModal.value = false;
-      // update-begin--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
       emit?.('close');
-      // update-end--author:liaozhiyang---date:20240527---for：【TV360X-414】部门设置了默认值，查询重置变成空了(同步JSelectUser组件改法)
     }
   }
 
@@ -448,6 +447,7 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
       getSelectTreeData,
       onSearch,
       expandedKeys,
+      checkStrictly,
     },
   ];
 }

@@ -36,10 +36,9 @@ export function handleRangeTimeValue(props, values) {
       timeValue = timeValue.split(',');
     }
     const [startTime, endTime]: string[] = timeValue;
-    //update-begin---author:wangshuai---date:2024-10-08---for:【issues/7216】当RangePicker组件值允许开始/结束为空时,表单的fieldMapToTime处理异常---
+    // 代码逻辑说明: 【issues/7216】当RangePicker组件值允许开始/结束为空时,表单的fieldMapToTime处理异常---
     startTime && (values[startTimeKey] = dateUtil(startTime).format(format));
     endTime && (values[endTimeKey] = dateUtil(endTime).format(format));
-    //update-end---author:wangshuai---date:2024-10-08---for:【issues/7216】当RangePicker组件值允许开始/结束为空时,表单的fieldMapToTime处理异常---
     Reflect.deleteProperty(values, field);
   }
   return values;
@@ -60,13 +59,12 @@ export function handleRangeNumberValue(props, values) {
     if (!field || !startNumberKey || !endNumberKey || !values[field]) {
       continue;
     }
-    //update-begin-author:taoyan date:2022-5-10 for: 用于数值的范围查询 数组格式的中间转换不知道哪里出了问题，这里会变成字符串，需要再强制转成数组
+    // 代码逻辑说明: 用于数值的范围查询 数组格式的中间转换不知道哪里出了问题，这里会变成字符串，需要再强制转成数组
     let temp = values[field];
     if (typeof temp === 'string') {
       temp = temp.split(',');
     }
     const [startNumber, endNumber]: number[] = temp;
-    //update-end-author:taoyan date:2022-5-10 for: 用于数值的范围查询 数组格式的中间转换不知道哪里出了问题，这里会变成字符串，需要再强制转成数组
     values[startNumberKey] = startNumber;
     values[endNumberKey] = endNumber;
     Reflect.deleteProperty(values, field);

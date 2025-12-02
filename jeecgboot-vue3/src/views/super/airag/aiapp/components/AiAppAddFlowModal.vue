@@ -59,10 +59,10 @@
   import { useModal, useModalInner } from '@/components/Modal';
   import { Pagination } from 'ant-design-vue';
   import { list } from '@/views/super/airag/aiknowledge/AiKnowledgeBase.api';
-  // import {pageApi} from "@/views/super/airag/aiflow/pages/api";
-  import { defHttp } from "@/utils/http/axios";
   import knowledge from '/@/views/super/airag/aiknowledge/icon/knowledge.png';
   import { cloneDeep } from 'lodash-es';
+  // import {pageApi} from "@/views/super/airag/aiflow/pages/api";
+  import { defHttp } from "@/utils/http/axios";
   import { getFileAccessHttpUrl } from "@/utils/common/compUtils";
   import defaultFlowImg from "@/assets/images/ai/aiflow.png";
 
@@ -154,7 +154,7 @@
       async function getAiFlowList(params?: any) {
         return defHttp.get({url: '/airag/flow/list', params});
       }
-
+      
       /**
        * 分页改变事件
        * @param page

@@ -1,21 +1,38 @@
 <template>
   <div>
-    <BasicTable @register="registerTable" :searchInfo="searchInfo">
+    <BasicTable @register="registerTable" :searchInfo="searchInfo" :rowSelection="rowSelection">
       <template #tableTitle>
         <a-button type="primary" @click="handlerReadAllMsg">全部标注已读</a-button>
+        <a-dropdown v-if="selectedRowKeys.length > 0">
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="1" @click="batchHandleDelete">
+                <Icon icon="ant-design:delete-outlined"></Icon>
+                删除
+              </a-menu-item>
+            </a-menu>
+          </template>
+          <a-button>
+            批量操作
+            <Icon icon="mdi:chevron-down"></Icon>
+          </a-button>
+        </a-dropdown>
       </template>
       <template #action="{ record }">
         <TableAction :actions="getActions(record)" />
       </template>
     </BasicTable>
     <DetailModal @register="register" />
+    <keep-alive>
+      <component v-if="currentModal" v-bind="bindParams" :key="currentModal" :is="currentModal" @register="modalRegCache[currentModal].register" />
+    </keep-alive>
   </div>
 </template>
 <script lang="ts" name="monitor-mynews" setup>
-  import { ref, onMounted } from 'vue';
+import {ref, onMounted, unref} from 'vue';
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import DetailModal from './DetailModal.vue';
-  import { getMyNewsList, editCementSend, syncNotic, readAllMsg, getOne } from './mynews.api';
+  import { getMyNewsList, editCementSend, syncNotic, readAllMsg, getOne, deleteAnnSend, deleteBatchAnnSend } from './mynews.api';
   import { columns, searchFormSchema } from './mynews.data';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { getToken } from '/@/utils/auth';
@@ -35,18 +52,19 @@
   const appStore = useAppStore();
   const router = useRouter();
   const { currentRoute } = useRouter();
-  const { goPage } = useMessageHref();
-  // update-begin--author:liaozhiyang---date:20250709---for：【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
+  const { goPage, currentModal, modalRegCache, bindParams } = useMessageHref();
+  // 代码逻辑说明: 【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
   const querystring = currentRoute.value.query;
   const findItem: any = searchFormSchema.find((item: any) => item.field === 'msgCategory');
   if (findItem) {
     if (querystring?.msgCategory) {
       findItem.componentProps.defaultValue = querystring.msgCategory
+    } else if (querystring.noticeType) {
+      findItem.componentProps.defaultValue = querystring.noticeType;
     } else {
       findItem.componentProps.defaultValue = null
     }
   }
-  // update-end--author:liaozhiyang---date:20250709---for：【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
   const { prefixCls, tableContext } = useListPage({
     designScope: 'mynews-list',
     tableProps: {
@@ -55,21 +73,30 @@
       columns: columns,
       formConfig: {
         schemas: searchFormSchema,
-        //update-begin---author:wangshuai---date:2024-06-11---for:【TV360X-545】我的消息列表不能通过时间范围查询---
+        // 代码逻辑说明: 【TV360X-545】我的消息列表不能通过时间范围查询---
         fieldMapToTime: [['sendTime', ['sendTimeBegin', 'sendTimeEnd'], 'YYYY-MM-DD']],
-        //update-end---author:wangshuai---date:2024-06-11---for:【TV360X-545】我的消息列表不能通过时间范围查询---
       },
       beforeFetch: (params) => {
-        // update-begin--author:liaozhiyang---date:20250709---for：【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
-        if (querystring?.msgCategory) {
-          params.msgCategory = querystring.msgCategory;
+        // 代码逻辑说明: 【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
+        if (params.msgCategory) {
+          if (['1', '2'].includes(params.msgCategory)) {
+            params.msgCategory = params.msgCategory;
+          } else {
+            params.noticeType = params.msgCategory;
+            delete params.msgCategory;
+          }
+        } else {
+          if (querystring?.msgCategory) {
+            params.msgCategory = querystring.msgCategory;
+          } else if (querystring.noticeType) {
+            params.noticeType = querystring.noticeType;
+          }
         }
         return params;
-        // update-end--author:liaozhiyang---date:20250709---for：【QQYUN-13058】我的消息区分类型且支持根据url参数查询类型
       },
     },
   });
-  const [registerTable, { reload }] = tableContext;
+  const [registerTable, { reload }, { rowSelection, selectedRows, selectedRowKeys }] = tableContext;
   /**
    * 操作列定义
    * @param record
@@ -80,6 +107,14 @@
         label: '查看',
         onClick: handleDetail.bind(null, record),
       },
+      {
+        label: '删除',
+        popConfirm: {
+          title: '是否确认删除',
+          confirm: handleDelete.bind(null, record.id),
+        },
+        ifShow: record.readFlag === 1
+      }
     ];
   }
 
@@ -99,7 +134,7 @@
       });
     }
     goPage(record, openModalFun);
-   
+
   }
   // 日志类型
   function callback(key) {
@@ -118,8 +153,8 @@
   function onSelectChange(selectedRowKeys: (string | number)[]) {
     checkedKeys.value = selectedRowKeys;
   }
-  
-  //update-begin-author:taoyan date:2022-8-23 for: 消息跳转，打开详情表单
+
+  // 代码逻辑说明: 消息跳转，打开详情表单
   onMounted(()=>{
     initHrefModal();
   });
@@ -146,7 +181,30 @@
       }
     }
   }
-  //update-end-author:taoyan date:2022-8-23 for: 消息跳转，打开详情表单
 
+  function handleSuccess() {
+    selectedRowKeys.value = [];
+    reload();
+  }
   
+  /**
+   * 删除我的消息
+   * 
+   * @param id
+   */
+  async function handleDelete(id) {
+    await deleteAnnSend({ id: id }, handleSuccess);
+  }
+
+  /**
+   * 批量删除我的消息
+   */
+  async function batchHandleDelete() {
+    let unRead = unref(selectedRows).filter((item) => item.readFlag == 0);
+    if (unref(unRead).length > 0) {
+      createMessage.warning('未阅读的消息禁止删除！');
+      return;
+    }
+    await deleteBatchAnnSend({ ids: selectedRowKeys.value }, handleSuccess);
+  }
 </script>

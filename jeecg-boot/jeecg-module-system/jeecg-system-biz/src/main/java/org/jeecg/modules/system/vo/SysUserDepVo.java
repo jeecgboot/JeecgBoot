@@ -31,4 +31,9 @@ public class SysUserDepVo {
      * 职级
      */
     private String positionId;
+
+    /**
+     * 部门编码
+     */
+    private String orgCode;
 }

@@ -10,7 +10,9 @@ JeecgBoot低代码平台(商业版介绍)
 <h3 align="center">企业级AI低代码平台</h3>
 
 
-JeecgBoot是一款集成AI应用的，基于BPM流程的低代码平台，旨在帮助企业快速实现低代码开发和构建个性化AI应用！前后端分离架构Ant Design&Vue3，SpringBoot，SpringCloud Alibaba，Mybatis-plus，Shiro。强大的代码生成器让前后端代码一键生成，无需写任何代码！ 引领AI低代码开发模式: AI生成->OnlineCoding-> 代码生成-> 手工MERGE， 帮助Java项目解决80%的重复工作，让开发更多关注业务，提高效率、节省成本，同时又不失灵活性！低代码能力：Online表单、表单设计、流程设计、Online报表、大屏/仪表盘设计、报表设计; AI应用平台功能：AI知识库问答、AI模型管理、AI流程编排、AI聊天等，支持含ChatGPT、DeepSeek、Ollama等多种AI大模型
+JeecgBoot是一款集成AI应用的，基于BPM流程的低代码平台，旨在帮助企业快速实现低代码开发和构建个性化AI应用，支持MCP和插件，实现聊天式业务操作（如 “一句话创建用户”）！
+
+前后端分离架构Ant Design&Vue3，SpringBoot，SpringCloud Alibaba，Mybatis-plus，Shiro。强大的代码生成器让前后端代码一键生成，无需写任何代码！ 引领AI低代码开发模式: AI生成->OnlineCoding-> 代码生成-> 手工MERGE， 帮助Java项目解决80%的重复工作，让开发更多关注业务，提高效率、节省成本，同时又不失灵活性！低代码能力：Online表单、表单设计、流程设计、Online报表、大屏/仪表盘设计、报表设计; AI应用平台功能：AI知识库问答、AI模型管理、AI流程编排、AI聊天等，支持含ChatGPT、DeepSeek、Ollama等多种AI大模型
 
 JeecgBoot 提供了一系列 `低代码能力`，实现`真正的零代码`在线开发：Online表单开发、Online报表、复杂报表设计、打印设计、在线图表设计、仪表盘设计、大屏设计、移动图表能力、表单设计器、在线设计流程、流程自动化配置、插件能力（可插拔）
 

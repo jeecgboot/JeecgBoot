@@ -6,9 +6,8 @@ import { unref } from 'vue';
 import { isObject, isFunction, isString } from '/@/utils/is';
 import Big from 'big.js';
 import dayjs from "dayjs";
-// update-begin--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
+// 代码逻辑说明: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
 export const URL_HASH_TAB = `__AGWE4H__HASH__TAG__PWHRG__`;
-// update-end--author:sunjianlei---date:20220408---for: 【VUEN-656】配置外部网址打不开，原因是带了#号，需要替换一下
 
 export const noop = () => {};
 
@@ -41,11 +40,11 @@ export function setObjToUrlParams(baseUrl: string, obj: any): string {
 export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
   let key: string;
   for (key in target) {
-    // update-begin--author:liaozhiyang---date:20240329---for：【QQYUN-7872】online表单label较长优化
+    // 代码逻辑说明: 【QQYUN-7872】online表单label较长优化
     if (isObject(src[key]) && isObject(target[key])) {
       src[key] = deepMerge(src[key], target[key]);
     } else {
-      // update-begin--author:liaozhiyang---date:20250318---for：【issues/7940】componentProps写成函数形式时，updateSchema写成对象时，参数没合并
+      // 代码逻辑说明: 【issues/7940】componentProps写成函数形式时，updateSchema写成对象时，参数没合并
       try {
         if (isFunction(src[key]) && isObject(src[key]()) && isObject(target[key])) {
           // src[key]是函数且返回对象，且target[key]是对象
@@ -62,9 +61,7 @@ export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
       } catch (error) {
         src[key] = target[key];
       }
-      // update-end--author:liaozhiyang---date:20250318---for：【issues/7940】componentProps写成函数形式时，updateSchema写成对象时，参数没合并
     }
-    // update-end--author:liaozhiyang---date:20240329---for：【QQYUN-7872】online表单label较长优化
   }
   return src;
 }
@@ -98,11 +95,21 @@ export function getDynamicProps<T, U>(props: T): Partial<U> {
  * @updateBy:zyf
  */
 export function getValueType(props, field) {
-  let formSchema = unref(unref(props)?.schemas);
+  let formSchema = unref(unref(props)?.schemas)
   let valueType = 'string';
   if (formSchema) {
     let schema = formSchema.filter((item) => item.field === field)[0];
-    valueType = schema && schema.componentProps && schema.componentProps.valueType ? schema.componentProps.valueType : valueType;
+    // 代码逻辑说明: 【issues/8976】useListPage 查询中componentProps是函数时获取不到valueType
+    if (schema && schema.componentProps) {
+      if (isFunction(schema.componentProps)) {
+        try {
+          const result = schema.componentProps({ schema, tableAction: {}, formModel: {}, formActionType: {} });
+          valueType = result?.valueType ?? valueType;
+        } catch (err) {}
+      } else {
+        valueType = schema.componentProps.valueType ? schema.componentProps.valueType : valueType;
+      }
+    }
   }
   return valueType;
 }
@@ -116,14 +123,15 @@ export function getValueTypeBySchema(schema: FormSchema, formAction: FormActionT
   let valueType = 'string';
   if (schema) {
     const componentProps = formAction.getSchemaComponentProps(schema);
-    // update-begin--author:liaozhiyang---date:20250825---for：【issues/8738】componentProps是函数时获取不到valueType
+    // 代码逻辑说明: 【issues/8738】componentProps是函数时获取不到valueType
     if (isFunction(componentProps)) {
-      const result = componentProps(schema);
-      valueType = result?.valueType ?? valueType;
+      try {
+        const result = componentProps({ schema, tableAction: {}, formModel: {}, formActionType: {} });
+        valueType = result?.valueType ?? valueType;
+      } catch (err) {}
     } else {
       valueType = componentProps?.valueType ? componentProps?.valueType : valueType;
     }
-    // update-end--author:liaozhiyang---date:20250825---for：【issues/8738】componentProps是函数时获取不到valueType
   }
   return valueType;
 }
@@ -308,9 +316,8 @@ export function numToUpper(value) {
       }
     };
     let lth = value.toString().length;
-    // update-begin--author:liaozhiyang---date:20241202---for：【issues/7493】numToUpper方法返回解决错误
+    // 代码逻辑说明: 【issues/7493】numToUpper方法返回解决错误
     value = new Big(value).times(100);
-    // update-end--author:liaozhiyang---date:20241202---for：【issues/7493】numToUpper方法返回解决错误
     value += '';
     let length = value.length;
     if (lth <= 8) {
@@ -340,7 +347,7 @@ export function numToUpper(value) {
   return null;
 }
 
-//update-begin-author:taoyan date:2022-6-8 for:解决老的vue2动态导入文件语法 vite不支持的问题
+// 代码逻辑说明: 解决老的vue2动态导入文件语法 vite不支持的问题
 const allModules = import.meta.glob('../views/**/*.vue');
 export function importViewsFile(path): Promise<any> {
   if (path.startsWith('/')) {
@@ -368,7 +375,6 @@ export function importViewsFile(path): Promise<any> {
     }
   });
 }
-//update-end-author:taoyan date:2022-6-8 for:解决老的vue2动态导入文件语法 vite不支持的问题
 
 
 /**
@@ -378,10 +384,8 @@ export function importViewsFile(path): Promise<any> {
  * @param token
  */
 export function goJmReportViewPage(url, id, token) {
-  // update-begin--author:liaozhiyang---date:20230904---for：【QQYUN-6390】eval替换成new Function，解决build警告
   // URL支持{{ window.xxx }}占位符变量
   url = url.replace(/{{([^}]+)?}}/g, (_s1, s2) => _eval(s2))
-  // update-end--author:liaozhiyang---date:20230904---for：【QQYUN-6390】eval替换成new Function，解决build警告
   if (url.includes('?')) {
     url += '&'
   } else {

@@ -117,11 +117,10 @@ export function usePermission() {
       if (hasBpmPermission(code, '2') === true) {
         return true;
       }
-      //update-begin-author:taoyan date:2022-6-17 for: VUEN-1342【流程】编码方式 节点权限配置好后，未生效
+      // 代码逻辑说明: VUEN-1342【流程】编码方式 节点权限配置好后，未生效
       if (isCodingButNoConfig(code) == true) {
         return false;
       }
-      //update-end-author:taoyan date:2022-6-17 for: VUEN-1342【流程】编码方式 节点权限配置好后，未生效
     }
     //=============================工作流权限判断-禁用-end==============================================
     return !hasPermission(value);
@@ -150,7 +149,6 @@ export function usePermission() {
     resume();
   }
 
-  //update-begin-author:taoyan date:2022-6-17 for: VUEN-1342【流程】编码方式 节点权限配置好后，未生效
   /**
    * 判断是不是 代码里写了逻辑但是没有配置权限这种情况
    */
@@ -163,14 +161,12 @@ export function usePermission() {
           return true;
         }
       } else {
-        // update-begin--author:liaozhiyang---date:20240705---for：【TV360X-1604】按钮禁用权限在接口中查不到也禁用
+        // 代码逻辑说明: 【TV360X-1604】按钮禁用权限在接口中查不到也禁用
         return false;
-        // update-end--author:liaozhiyang---date:20240705---for：【TV360X-1604】按钮禁用权限在接口中查不到也禁用
       }
     }
     return false;
   }
-  //update-end-author:taoyan date:2022-6-17 for: VUEN-1342【流程】编码方式 节点权限配置好后，未生效
 
   return { changeRole, hasPermission, togglePermissionMode, refreshMenu, isDisabledAuth, initBpmFormData };
 }

@@ -1,11 +1,11 @@
 <template>
   <div class="chat" :class="[inversion === 'user' ? 'self' : 'chatgpt']" v-if="getText || (props.presetQuestion && props.presetQuestion.length>0)">
-    <div class="avatar">
+    <div class="avatar" v-if="showAvatar !== 'no'">
       <img v-if="inversion === 'user'" :src="avatar()" />
       <img v-else :src="getAiImg()" />
     </div>
     <div class="content">
-      <p class="date">
+      <p class="date" v-if="showAvatar !== 'no'">
         <span v-if="inversion === 'ai'" style="margin-right: 10px">{{appData.name || 'AI助手'}}</span>
         <span>{{ dateTime }}</span>
       </p>
@@ -30,7 +30,14 @@
           </a-col>
         </a-row>
       </div>
-      <div class="msgArea" v-if="!isCard">
+      <div class="thinkArea" style="margin-bottom: 10px" v-if="!isCard && (eventType === 'thinking' || eventType === 'thinking_end')">
+        <a-collapse v-model:activeKey="activeKey" ghost>
+          <a-collapse-panel :key="uuid" :header="loading?'正在思考中':'思考结束'">
+            <ThinkText :text="text" :inversion="inversion" :error="error" :loading="loading"></ThinkText>
+          </a-collapse-panel>
+        </a-collapse>
+      </div>
+      <div class="msgArea" v-else-if="!isCard" :class="showAvatar == 'no' ? 'hidden-avatar' : ''">
         <chatText :text="text" :inversion="inversion" :error="error" :loading="loading" :referenceKnowledge="referenceKnowledge"></chatText>
       </div>
       <div v-if="presetQuestion" v-for="item in presetQuestion" class="question" @click="presetQuestionClick(item.descr)">
@@ -42,15 +49,20 @@
 
 <script setup lang="ts">
   import chatText from './chatText.vue';
+  import ThinkText from './ThinkText.vue';
   import defaultAvatar from "@/assets/images/ai/avatar.jpg";
   import { useUserStore } from '/@/store/modules/user';
   import defaultImg from '../img/ailogo.png';
-
-  const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'loading','appData','presetQuestion','images','retrievalText', 'referenceKnowledge']);
+  import { ref } from 'vue';
+  import { buildUUID } from '/@/utils/uuid';
   import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
   import { createImgPreview } from "@/components/Preview";
   import { computed } from "vue";
 
+  const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'loading','appData','presetQuestion','images','retrievalText', 'referenceKnowledge', 'eventType', 'showAvatar']);
+  
+  const uuid = ref<any>(buildUUID());
+  const activeKey = ref<any>(uuid.value);
   const getText = computed(()=>{
     let text = props.text || props.retrievalText;
     if(text){
@@ -147,11 +159,25 @@
       }
       .msgArea {
         flex-direction: row-reverse;
+        margin-bottom: 6px;
+      }
+      .thinkArea{
+        margin: 0;
+        padding: 5px 0 5px 22px;
+        position: relative;
       }
       .date {
         text-align: right;
       }
     }
+  }
+  :deep(.ant-collapse-header){
+    padding: 0 !important;
+  }
+  .hidden-avatar{
+    left: 44px;
+    position: relative;
+    top: -18px;
   }
   .avatar {
     flex: none;

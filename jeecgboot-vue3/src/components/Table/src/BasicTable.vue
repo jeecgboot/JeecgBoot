@@ -24,40 +24,32 @@
         <Table ref="tableElRef" v-bind="getBindValues" :rowClassName="getRowClassName" v-show="getEmptyDataIsShowTable" @resizeColumn="handleResizeColumn" @change="handleTableChange">
           <!-- antd的原生插槽直接传递 -->
           <template #[item]="data" v-for="item in slotNamesGroup.native" :key="item">
-            <!-- update-begin--author:liaozhiyang---date:20240424---for：【issues/1146】BasicTable使用headerCell全选框出不来 -->
+            <!-- 代码逻辑说明: 【issues/1146】BasicTable使用headerCell全选框出不来 -->
             <template v-if="item === 'headerCell'">
               <CustomSelectHeader v-if="isCustomSelection(data.column)" v-bind="selectHeaderProps" />
               <slot v-else :name="item" v-bind="data || {}"></slot>
             </template>
             <slot v-else :name="item" v-bind="data || {}"></slot>
-            <!-- update-begin--author:liaozhiyang---date:20240424---for：【issues/1146】BasicTable使用headerCell全选框出不来 -->
           </template>
           <template #headerCell="{ column }">
-            <!-- update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题 -->
+            <!-- 代码逻辑说明: 【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题 -->
             <CustomSelectHeader v-if="isCustomSelection(column)" v-bind="selectHeaderProps"/>
             <HeaderCell v-else :column="column" />
-            <!-- update-end--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题 -->
           </template>
           <!-- 增加对antdv3.x兼容 -->
           <template #bodyCell="data">
-            <!-- update-begin--author:liaozhiyang---date:220230717---for：【issues-179】antd3 一些警告以及报错(针对表格) -->
-            <!-- update-begin--author:liusq---date:20230921---for：【issues/770】slotsBak异常报错的问题,增加判断column是否存在 -->
             <template v-if="data.column?.slotsBak?.customRender">
-            <!-- update-end--author:liusq---date:20230921---for：【issues/770】slotsBak异常报错的问题,增加判断column是否存在 -->
               <slot :name="data.column.slotsBak.customRender" v-bind="data || {}"></slot>
             </template>
             <template v-else>
               <slot name="bodyCell" v-bind="data || {}"></slot>
             </template>
-            <!-- update-begin--author:liaozhiyang---date:22030717---for：【issues-179】antd3 一些警告以及报错(针对表格) -->
           </template>
-          <!-- update-begin--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计） -->
           <template v-if="showSummaryRef && !getBindValues.showSummary" #summary="data">
             <slot name="summary" v-bind="data || {}">
               <TableSummary :data="data || {}" v-bind="getSummaryProps" />
             </slot>
           </template>
-          <!-- update-end--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计） -->
         </Table>
       </a-form-item>
     </a-form-item-rest>
@@ -148,7 +140,6 @@
       const { getLoading, setLoading } = useLoading(getProps);
       const { getPaginationInfo, getPagination, setPagination, setShowPagination, getShowPagination } = usePagination(getProps);
 
-      // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
 
       // const { getRowSelection, getRowSelectionRef, getSelectRows, clearSelectedRowKeys, getSelectRowKeys, deleteSelectRowByKey, setSelectedRowKeys } =
       //   useRowSelection(getProps, tableData, emit);
@@ -177,7 +168,6 @@
         tableData,
         childrenColumnName
       )
-      // update-end--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
 
       const {
         handleTableChange: onTableChange,
@@ -218,9 +208,8 @@
       const { getViewColumns, getColumns, getRefColumns, setCacheColumnsByField, setColumns, getColumnsRef, getCacheColumns } = useColumns(
         getProps,
         getPaginationInfo,
-        // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
+        // 代码逻辑说明: 【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
         handleCustomSelectColumn,
-        // update-end--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
       );
 
       const { getScrollRef, redoHeight } = useTableScroll(getProps, tableElRef, getColumnsRef, getRowSelectionRef, getDataSourceRef, slots, getPaginationInfo);
@@ -246,12 +235,11 @@
       };
 
       const { getHeaderProps } = useTableHeader(getProps, slots, handlers);
-      // update-begin--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
+      // 代码逻辑说明: 【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
       const getSummaryProps = computed(() => {
-        // update-begin--author:liaozhiyang---date:20250318---for：【issues/7956】修复showSummary: false时且有内嵌子表时合计栏错位
+        // 代码逻辑说明: 【issues/7956】修复showSummary: false时且有内嵌子表时合计栏错位
         const result = pick(unref(getProps), ['summaryFunc', 'summaryData', 'hasExpandedRow', 'rowKey']);
         result['hasExpandedRow'] = Object.keys(slots).includes('expandedRowRender');
-        // update-end--author:liaozhiyang---date:20250318---for：【issues/7956】修复showSummary: false时且有内嵌子表时合计栏错位
         return result;
       });
       const getIsEmptyData = computed(() => {
@@ -261,7 +249,6 @@
         const summaryProps = unref(getSummaryProps);
         return (summaryProps.summaryFunc || summaryProps.summaryData) && !unref(getIsEmptyData);
       });
-      // update-end--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
 
       const { getFooterProps } = useTableFooter(getProps, slots, getScrollRef, tableElRef, getDataSourceRef);
 
@@ -293,22 +280,17 @@
           expandIconColumnIndex: getExpandIconColumnIndex.value,
         };
 
-        //update-begin---author:wangshuai ---date:20230214  for：[QQYUN-4237]代码生成 内嵌子表模式 没有滚动条------------
         //额外的展开行存在插槽时会将滚动移除掉,注释掉
         /*if (slots.expandedRowRender) {
           propsData = omit(propsData, 'scroll');
         }*/
-        //update-end---author:wangshuai ---date:20230214  for：[QQYUN-4237]代码生成 内嵌子表模式 没有滚动条------------ 
 
-        // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
         // 自定义选择列，需要去掉原生的
         delete propsData.rowSelection
-        // update-end--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
 
-        // update-begin--author:liaozhiyang---date:20230919---for：【QQYUN-6387】展开写法（去掉报错）
+        // 代码逻辑说明: 【QQYUN-6387】展开写法（去掉报错）
         !propsData.isTreeTable && delete propsData.expandIconColumnIndex;
         propsData.expandedRowKeys === null && delete propsData.expandedRowKeys;
-        // update-end--author:liaozhiyang---date:20230919---for：【QQYUN-6387】展开写法（去掉报错）
         propsData = omit(propsData, ['class', 'onChange']);
         return propsData;
       });
@@ -368,9 +350,8 @@
         getRowSelection,
         getPaginationRef: getPagination,
         getColumns,
-        // update-begin--author:liaozhiyang---date:20250722---for：【issues/8529】setColumns后列配置没联动更新
+        // 代码逻辑说明: 【issues/8529】setColumns后列配置没联动更新
         getColumnsRef: () => getColumnsRef,
-        // update-end--author:liaozhiyang---date:20250722---for：【issues/8529】setColumns后列配置没联动更新
         getCacheColumns,
         emit,
         updateTableData,
@@ -382,13 +363,11 @@
         getSize: () => {
           return unref(getBindValues).size as SizeType;
         },
-        // update-begin--author:liaozhiyang---date:20250904---for：【QQYUN-13558】erp风格主表在5条数据时也有滚动条
+        // 代码逻辑说明: 【QQYUN-13558】erp风格主表在5条数据时也有滚动条
         getBindValuesRef: () => getBindValues,
-        // update-end--author:liaozhiyang---date:20250904---for：【QQYUN-13558】erp风格主表在5条数据时也有滚动条
       };
       createTableContext({ ...tableAction, wrapRef, getBindValues });
 
-      // update-begin--author:sunjianlei---date:220230718---for：【issues/179】兼容新老slots写法，移除控制台警告
       // 获取分组之后的slot名称
       const slotNamesGroup = computed<{
         // AntTable原生插槽
@@ -413,15 +392,12 @@
         }
         return { native, custom };
       });
-      // update-end--author:sunjianlei---date:220230718---for：【issues/179】兼容新老slots写法，移除控制台警告
-      // update-begin--author:liaozhiyang---date:20231226---for：【issues/945】BasicTable组件设置默认展开不生效
+      // 代码逻辑说明: 【issues/945】BasicTable组件设置默认展开不生效
       nextTick(() => {
         getProps.value.defaultExpandAllRows && expandAll();
       })
-      // update-end--author:sunjianlei---date:20231226---for：【issues/945】BasicTable组件设置默认展开不生效
-      // update-begin--author:liaozhiyang---date:20241225---for：【issues/7588】选择后自动刷新表格
+      // 代码逻辑说明: 【issues/7588】选择后自动刷新表格
       expose({ ...tableAction, handleSearchInfoChange });
-      // update-end--author:liaozhiyang---date:20241225---for：【issues/7588】选择后自动刷新表格
 
       emit('register', tableAction, formActions);
 
@@ -439,7 +415,7 @@
         tableAction,
         redoHeight,
         handleResizeColumn: (w, col) => {
-          // update-begin--author:liaozhiyang---date:20240903---for：【issues/7101】列配置resizable: true时，表尾合计的列宽没有同步改变
+          // 代码逻辑说明: 【issues/7101】列配置resizable: true时，表尾合计的列宽没有同步改变
           const columns = getColumns();
           const findItem = columns.find((item) => {
             if (item['dataIndex'] != null) {
@@ -453,7 +429,6 @@
             findItem.width = w;
             setColumns(columns);
           }
-          // update-end--author:liaozhiyang---date:20240903---for：【issues/7101】列配置resizable: true时，表尾合计的列宽没有同步改变
           console.log('col',col);
           col.width = w;
         },
@@ -464,15 +439,11 @@
         getMaxColumnWidth,
         columns: getViewColumns,
 
-        // update-begin--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
         selectHeaderProps,
         isCustomSelection,
-        // update-end--author:sunjianlei---date:220230630---for：【QQYUN-5571】自封装选择列，解决数据行选择卡顿问题
         slotNamesGroup,
-        // update-begin--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
         getSummaryProps,
         showSummaryRef,
-        // update-end--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
       };
     },
   });
@@ -505,11 +476,10 @@
         background-color: @app-content-background;
       }
     }
-    // update-begin--author:liaozhiyang---date:20240613---for：【TV360X-1232】查询区域隐藏后点击刷新不走请求了(采用css隐藏)
+    // 代码逻辑说明: 【TV360X-1232】查询区域隐藏后点击刷新不走请求了(采用css隐藏)
     > .table-search-area-hidden {
       display: none;
     }
-    // update-end--author:liaozhiyang---date:20240613---for：【TV360X-1232】查询区域隐藏后点击刷新不走请求了(采用css隐藏)
     &-form-container {
       padding: 10px;
 
@@ -525,13 +495,12 @@
       margin-right: 0;
     }
 
-    //update-begin-author:liusq---date:20230517--for: [issues/526]RangePicker 设置预设范围按钮样式问题---
+    // 代码逻辑说明: [issues/526]RangePicker 设置预设范围按钮样式问题---
     .ant-picker-preset {
       .ant-tag {
         margin-right: 8px !important;
       }
     }
-    //update-end-author:liusq---date:20230517--for: [issues/526]RangePicker 设置预设范围按钮样式问题---
 
     .ant-table-wrapper {
       padding: 6px;
@@ -615,26 +584,23 @@
     }
     // ------ 统一设置表格列最大宽度 ------
 
-    // update-begin--author:sunjianlei---date:220230718---for：【issues/622】修复表尾合计错位的问题
+    // 代码逻辑说明: 【issues/622】修复表尾合计错位的问题
     &--show-summary {
       .ant-table > .ant-table-footer {
         padding: 12px 0 0;
       }
       .ant-table > .ant-table-footer {
-        // update-begin--author:liaozhiyang---date:20241111---for：【issues/7413】合计行有点对不齐
+        // 代码逻辑说明: 【issues/7413】合计行有点对不齐
         padding-left: 0 !important;
         padding-right: 0 !important;
-        // update-end--author:liaozhiyang---date:20241111---for：【issues/7413】合计行有点对不齐
       }
       .ant-table.ant-table-bordered > .ant-table-footer {
         border: 0;
       }
     }
-    // update-end--author:sunjianlei---date:220230718---for：【issues/622】修复表尾合计错位的问题
-    // update-begin--author:liaozhiyang---date:20240604---for：【TV360X-377】关联记录必填影响到了table的输入框和页码样式
+    // 代码逻辑说明: 【TV360X-377】关联记录必填影响到了table的输入框和页码样式
     > .ant-form-item {
       margin-bottom: 0;
     }
-    // update-end--author:liaozhiyang---date:20240604---for：【TV360X-377】关联记录必填影响到了table的输入框和页码样式
   }
 </style>

@@ -20,13 +20,14 @@ import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
+import org.jeecg.common.util.encryption.AesEncryptUtil;
 import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.security.utils.SecureUtil;
+import org.jeecg.config.shiro.IgnoreAuth;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysRoleIndex;
-import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.*;
@@ -103,36 +104,24 @@ public class LoginController {
 	@Operation(summary="登录接口")
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public Result<JSONObject> login(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request){
-		Result<JSONObject> result = new Result<JSONObject>();
+		Result<JSONObject> result = new Result<>();
 		String username = sysLoginModel.getUsername();
-		String password = sysLoginModel.getPassword();
+		// 密码加密传输(尝试 AES解密，失败视为明文)
+		String password  = AesEncryptUtil.resolvePassword(sysLoginModel.getPassword());
+		log.debug("登录密码，原始密码:{}，解密密码:{}" , sysLoginModel.getPassword(), password);
+
+		//step.1 登录失败超出次数5次锁定用户10分钟
 		if(isLoginFailOvertimes(username)){
 			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
 		}
 
-		// step.1 验证码check
-        String captcha = sysLoginModel.getCaptcha();
-        if(captcha==null){
-            result.error500("验证码无效");
+		// step.2 验证码check
+        String realKey = validateCaptcha(sysLoginModel, result);
+        if (realKey == null) {
             return result;
         }
-        String lowerCaseCaptcha = captcha.toLowerCase();
-		// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
-		//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
-		String keyPrefix = Md5Util.md5Encode(sysLoginModel.getCheckKey()+jeecgBaseConfig.getSignatureSecret(), "utf-8");
-		String realKey = keyPrefix + lowerCaseCaptcha;
-		//update-end---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
-		Object checkCode = redisUtil.get(realKey);
-		//当进入登录页时，有一定几率出现验证码错误 #1714
-		if(checkCode==null || !checkCode.toString().equals(lowerCaseCaptcha)) {
-            log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", sysLoginModel.getCheckKey(), lowerCaseCaptcha, checkCode);
-			result.error500("验证码错误");
-			// 改成特殊的code 便于前端判断
-			result.setCode(HttpStatus.PRECONDITION_FAILED.value());
-			return result;
-		}
 		
-		// step.2 校验用户是否存在且有效
+		// step.3 校验用户是否存在且有效
 		LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(SysUser::getUsername,username);
 		SysUser sysUser = sysUserService.getOne(queryWrapper);
@@ -141,7 +130,7 @@ public class LoginController {
 			return result;
 		}
 
-		// step.3 校验用户名或密码是否正确
+		// step.4 校验用户名或密码是否正确
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();
 		if (!syspassword.equals(userpassword)) {
@@ -150,14 +139,16 @@ public class LoginController {
 			return result;
 		}
 
-		// step.4  登录成功获取用户信息
-		userInfo(sysUser, result, request);
+		// step.5 登录成功获取用户信息
+		String loginOrgCode = sysLoginModel.getLoginOrgCode();
+		sysUser.setLoginOrgCode(loginOrgCode);
+		userInfo(sysUser, result, request, CommonConstant.CLIENT_TYPE_PC);
 
-		// step.5  登录成功删除验证码
+		// step.6  登录成功删除验证码
 		redisUtil.del(realKey);
 		redisUtil.del(CommonConstant.LOGIN_FAIL + username);
 
-		// step.6  记录用户登录日志
+		// step.7 记录用户登录日志
 		LoginUser loginUser = new LoginUser();
 		BeanUtils.copyProperties(sysUser, loginUser);
 		baseCommonService.addLog("用户名: " + username + ",登录成功！", CommonConstant.LOG_TYPE_1, null,loginUser);
@@ -177,11 +168,10 @@ public class LoginController {
 			// 根据用户名查询用户信息
 			SysUser sysUser = sysUserService.getUserByName(username);
 			JSONObject obj=new JSONObject();
-			log.info("1 获取用户信息耗时（用户基础信息）" + (System.currentTimeMillis() - start) + "毫秒");
+			log.debug("1 获取用户信息耗时（用户基础信息）" + (System.currentTimeMillis() - start) + "毫秒");
 
-			//update-begin---author:scott ---date:2022-06-20  for：vue3前端，支持自定义首页-----------
+			// 代码逻辑说明: vue3前端，支持自定义首页-----------
 			String vue3Version = request.getHeader(CommonConstant.VERSION);
-			//update-begin---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
 			SysRoleIndex roleIndex = sysUserService.getDynamicIndexByUserRole(username, vue3Version);
 			if (oConvertUtils.isNotEmpty(vue3Version) && roleIndex != null && oConvertUtils.isNotEmpty(roleIndex.getUrl())) {
 				String homePath = roleIndex.getUrl();
@@ -190,16 +180,16 @@ public class LoginController {
 				}
 				sysUser.setHomePath(homePath);
 			}
-			//update-begin---author:liusq ---date:2022-06-29  for：接口返回值修改，同步修改这里的判断逻辑-----------
-			//update-end---author:scott ---date::2022-06-20  for：vue3前端，支持自定义首页--------------
-			log.info("2 获取用户信息耗时 (首页面配置)" + (System.currentTimeMillis() - start) + "毫秒");
+			log.debug("2 获取用户信息耗时 (首页面配置)" + (System.currentTimeMillis() - start) + "毫秒");
 			
 			obj.put("userInfo",sysUser);
 			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
+			log.debug("3 获取用户信息耗时 (字典数据)" + (System.currentTimeMillis() - start) + "毫秒");
+			
 			result.setResult(obj);
 			result.success("");
 		}
-		log.info("end 获取用户信息耗时 " + (System.currentTimeMillis() - start) + "毫秒");
+		log.debug("end 获取用户信息耗时 " + (System.currentTimeMillis() - start) + "毫秒");
 		return result;
 
 	}
@@ -234,7 +224,7 @@ public class LoginController {
 
 	/**
 	 * 清理用户缓存
-	 *
+	 * 
 	 * @param token
 	 * @param sysUser
 	 */
@@ -246,11 +236,14 @@ public class LoginController {
 			redisUtil.del(CommonConstant.PREFIX_USER_SHIRO_CACHE + sysUser.getId());
 			//清空用户的缓存信息（包括部门信息），例如sys:cache:user::<username>
 			redisUtil.del(String.format("%s::%s", CacheConstant.SYS_USERS_CACHE, sysUser.getUsername()));
+			//清空是否允许同一账号多地同时登录缓存（PC端和APP端）
+			redisUtil.del(CommonConstant.PREFIX_USER_TOKEN_PC + sysUser.getUsername());
+			redisUtil.del(CommonConstant.PREFIX_USER_TOKEN_APP + sysUser.getUsername());
+			redisUtil.del(CommonConstant.PREFIX_USER_TOKEN_PHONE + sysUser.getUsername());
 			baseCommonService.addLog("用户名: "+sysUser.getRealname()+",退出成功！", CommonConstant.LOG_TYPE_1, null, sysUser);
-			log.info("【退出成功操作】异步处理，退出后，清理用户缓存： "+sysUser.getRealname());
+			log.debug("【退出成功操作】异步处理，退出后，清理用户缓存： "+sysUser.getRealname());
 		});
 	}
-	
 	
 	/**
 	 * 获取访问量
@@ -260,7 +253,6 @@ public class LoginController {
 	public Result<JSONObject> loginfo() {
 		Result<JSONObject> result = new Result<JSONObject>();
 		JSONObject obj = new JSONObject();
-		//update-begin--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 		// 获取一天的开始和结束时间
 		Calendar calendar = new GregorianCalendar();
 		calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -276,7 +268,6 @@ public class LoginController {
 		Long todayVisitCount = logService.findTodayVisitCount(dayStart,dayEnd);
 		obj.put("todayVisitCount", todayVisitCount);
 		Long todayIp = logService.findTodayIp(dayStart,dayEnd);
-		//update-end--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 		obj.put("todayIp", todayIp);
 		result.setResult(obj);
 		result.success("登录成功");
@@ -356,7 +347,6 @@ public class LoginController {
 		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+mobile;
 		Object object = redisUtil.get(redisKey);
-		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		
 		if (object != null) {
 			result.setMessage("验证码10分钟内，仍然有效！");
@@ -412,7 +402,7 @@ public class LoginController {
 				} else if(CommonConstant.SMS_TPL_TYPE_2.equals(smsmode)) {
 					//忘记密码模板
 					b = DySmsHelper.sendSms(mobile, obj, DySmsEnum.FORGET_PASSWORD_TEMPLATE_CODE);
-                    //update-begin---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
+                    // 代码逻辑说明: 【issues/8567】严重：修改密码存在水平越权问题。---
                     if(b){
                         String username = sysUser.getUsername();
                         obj.put("username",username);
@@ -420,7 +410,6 @@ public class LoginController {
                         result.setSuccess(true);
                         return result;
                     }
-                    //update-end---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
                 }
 			}
 
@@ -430,14 +419,8 @@ public class LoginController {
 				return result;
 			}
 			
-			//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 			//验证码10分钟内有效
 			redisUtil.set(redisKey, captcha, 600);
-			//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-			
-			//update-begin--Author:scott  Date:20190812 for：issues#391
-			//result.setResult(captcha);
-			//update-end--Author:scott  Date:20190812 for：issues#391
 			result.setSuccess(true);
 
 		} catch (ClientException e) {
@@ -460,11 +443,11 @@ public class LoginController {
 	public Result<JSONObject> phoneLogin(@RequestBody JSONObject jsonObject, HttpServletRequest request) {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String phone = jsonObject.getString("mobile");
-		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+		// 平台用户登录失败锁定用户
 		if(isLoginFailOvertimes(phone)){
 			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
 		}
-		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+		
 		//校验用户有效性
 		SysUser sysUser = sysUserService.getUserByPhone(phone);
 		result = sysUserService.checkUserIsEffective(sysUser);
@@ -474,19 +457,18 @@ public class LoginController {
 		
 		String smscode = jsonObject.getString("captcha");
 
-		//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
+		// 代码逻辑说明: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 		String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
 		Object code = redisUtil.get(redisKey);
-		//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 
 		if (!smscode.equals(code)) {
-			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			addLoginFailOvertimes(phone);
-			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			return Result.error("手机验证码错误");
 		}
 		//用户信息
-		userInfo(sysUser, result, request);
+		String loginOrgCode = jsonObject.getString("loginOrgCode");
+		sysUser.setLoginOrgCode(loginOrgCode);
+		userInfo(sysUser, result, request, CommonConstant.CLIENT_TYPE_PHONE);
 		//添加日志
 		baseCommonService.addLog("用户名: " + sysUser.getUsername() + ",登录成功！", CommonConstant.LOG_TYPE_1, null);
         redisUtil.removeAll(redisKey);
@@ -501,18 +483,23 @@ public class LoginController {
 	 * @param result
 	 * @return
 	 */
-	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result, HttpServletRequest request) {
+	private Result<JSONObject> userInfo(SysUser sysUser, Result<JSONObject> result, HttpServletRequest request, String clientType) {
 		String username = sysUser.getUsername();
 		String syspassword = sysUser.getPassword();
-		// 获取用户部门信息
 		JSONObject obj = new JSONObject(new LinkedHashMap<>());
 
-		//1.生成token
-		String token = JwtUtil.sign(username, syspassword);
-		// 设置token缓存有效时间
+		//1.生成token，并设置超时时间
+		String token = JwtUtil.sign(username, syspassword, clientType);
 		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
+		// 根据客户端类型设置对应的过期时间
+		long expireTime = CommonConstant.CLIENT_TYPE_APP.equalsIgnoreCase(clientType) 
+			? JwtUtil.APP_EXPIRE_TIME * 2 / 1000 
+			: JwtUtil.EXPIRE_TIME * 2 / 1000;
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, expireTime);
 		obj.put("token", token);
+
+		// 是否允许同一账号多地同时登录，踢掉之前的登录
+		handleSingleSignOn(username, token, clientType);
 
 		//2.设置登录租户
 		Result<JSONObject> loginTenantError = sysUserService.setLoginTenant(sysUser, obj, username,result);
@@ -528,31 +515,93 @@ public class LoginController {
 		obj.put("departs", departs);
 		if (departs == null || departs.size() == 0) {
 			obj.put("multi_depart", 0);
+			sysUserService.updateUserDepart(username, null, null);
 		} else if (departs.size() == 1) {
 			sysUserService.updateUserDepart(username, departs.get(0).getOrgCode(),null);
 			obj.put("multi_depart", 1);
 		} else {
 			//查询当前是否有登录部门
-			// update-begin--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
 			SysUser sysUserById = sysUserService.getById(sysUser.getId());
-			if(oConvertUtils.isEmpty(sysUserById.getOrgCode())){
-				sysUserService.updateUserDepart(username, departs.get(0).getOrgCode(),null);
+			//【部门切换】支持登录页面选择部门
+			String loginOrgCode = sysUser.getLoginOrgCode();
+
+			// 判断上次登录部门orgCode是否在departs中
+			boolean orgCodeInDeparts = departs.stream().anyMatch(d -> sysUserById.getOrgCode() != null && sysUserById.getOrgCode().equalsIgnoreCase(d.getOrgCode()));
+			if (!orgCodeInDeparts) {
+				sysUserById.setOrgCode(null);
 			}
-			// update-end--Author:wangshuai Date:20200805 for：如果用戶为选择部门，数据库为存在上一次登录部门，则取一条存进去
+
+			// 如果未设置登录部门，则将登录部门设置为用户选择的 loginOrgCode（优先），否则设置为默认的第一个部门
+			if(oConvertUtils.isEmpty(sysUserById.getOrgCode())){
+				String orgCode = oConvertUtils.isNotEmpty(loginOrgCode) ? loginOrgCode : departs.get(0).getOrgCode();
+				sysUserService.updateUserDepart(username, orgCode, null);
+			} else {
+				// 已设置登录部门，若用户本次登录选择了不同的部门，则优先使用用户选择的 loginOrgCode 更新登录部门
+				String orgCode = sysUserById.getOrgCode();
+				if(oConvertUtils.isNotEmpty(loginOrgCode) && !orgCode.equalsIgnoreCase(loginOrgCode)){
+					sysUserService.updateUserDepart(username, loginOrgCode, null);
+				}
+			}
 			obj.put("multi_depart", 2);
 		}
 
-		//update-begin---author:scott ---date:2024-01-05  for：【QQYUN-7802】前端在登录时加载了两次数据字典，建议优化下，避免数据字典太多时可能产生的性能问题 #956---
-		// login接口，在vue3前端下不加载字典数据，vue2下加载字典
+		// 5.vue3版本不加载字典数据，vue2下加载字典
 		String vue3Version = request.getHeader(CommonConstant.VERSION);
 		if(oConvertUtils.isEmpty(vue3Version)){
 			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 		}
-		//end-begin---author:scott ---date:2024-01-05  for：【QQYUN-7802】前端在登录时加载了两次数据字典，建议优化下，避免数据字典太多时可能产生的性能问题 #956---
 		
 		result.setResult(obj);
 		result.success("登录成功");
 		return result;
+	}
+
+	/**
+	 * 同一账号在同一客户端类型只能登录一次
+	 * 
+	 * @author scott
+	 * @date 2025-10-31
+	 * PC端、APP端、手机号登录分别独立，互不影响
+	 * 
+	 * @param username 用户名
+	 * @param newToken 新生成的token
+	 * @param clientType 客户端类型（PC、APP、PHONE）
+	 */
+	private void handleSingleSignOn(String username, String newToken, String clientType) {
+		// 检查是否允许并发登录
+		if (jeecgBaseConfig.getFirewall() == null || jeecgBaseConfig.getFirewall().getIsConcurrent()==null || Boolean.TRUE.equals(jeecgBaseConfig.getFirewall().getIsConcurrent())) {
+			// 允许并发登录，只设置当前用户的token缓存，不踢掉之前的登录
+			log.debug("并发登录已启用：用户[{}]在{}端允许多地同时登录", username, clientType);
+			return;
+		}
+		
+		log.info("【并发登录限制已开启】 用户[{}]在{}端不允许多地同时登录", username, clientType);
+		// 根据客户端类型选择对应的Redis key前缀
+		String redisKeyPrefix;
+		if (CommonConstant.CLIENT_TYPE_APP.equalsIgnoreCase(clientType)) {
+			redisKeyPrefix = CommonConstant.PREFIX_USER_TOKEN_APP;
+		} else if (CommonConstant.CLIENT_TYPE_PHONE.equalsIgnoreCase(clientType)) {
+			redisKeyPrefix = CommonConstant.PREFIX_USER_TOKEN_PHONE;
+		} else {
+			redisKeyPrefix = CommonConstant.PREFIX_USER_TOKEN_PC;
+		}
+		
+		String userTokenKey = redisKeyPrefix + username;
+		
+		// 获取该用户在当前客户端类型下之前的token
+		Object oldTokenObj = redisUtil.get(userTokenKey);
+		if (oldTokenObj != null && !oldTokenObj.equals(newToken)) {
+			String oldToken = oldTokenObj.toString();
+			// 清除旧登录token的缓存（设置 1 小时过期时间）
+			redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + oldToken);
+			redisUtil.set(CommonConstant.PREFIX_USER_TOKEN_ERROR_MSG + oldToken, "不允许同一账号多地同时登录，当前登录被踢掉！", 60 * 1 * 60);
+			log.info("【并发登录限制已开启】用户[{}]在{}端的旧登录已被踢下线！", username, clientType);
+			log.info("【并发登录限制已开启】用户被踢下线，新token: {}，旧token：{}", newToken, oldToken);
+		}
+		
+		// 保存新的token到单点登录缓存
+		redisUtil.set(userTokenKey, newToken);
+		redisUtil.expire(userTokenKey, JwtUtil.EXPIRE_TIME * 2 / 1000);
 	}
 
 	/**
@@ -579,22 +628,14 @@ public class LoginController {
 	public Result<String> randomImage(HttpServletResponse response,@PathVariable("key") String key){
 		Result<String> res = new Result<String>();
 		try {
-			//生成验证码
+			//生成验证码，存到redis中
 			String code = RandomUtil.randomString(BASE_CHECK_CODES,4);
-			//存到redis中
 			String lowerCaseCode = code.toLowerCase();
-			
-			//update-begin-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
-			// 加入密钥作为混淆，避免简单的拼接，被外部利用，用户自定义该密钥即可
-			//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
-			String keyPrefix = Md5Util.md5Encode(key+jeecgBaseConfig.getSignatureSecret(), "utf-8");
+			String keyPrefix = Md5Util.md5Encode(key + jeecgBaseConfig.getSignatureSecret(), "utf-8");
 			String realKey = keyPrefix + lowerCaseCode;
-			//update-end-author:taoyan date:2022-9-13 for: VUEN-2245 【漏洞】发现新漏洞待处理20220906
 			redisUtil.removeAll(keyPrefix);
-			//update-end---author:chenrui ---date:20250107  for：[QQYUN-10775]验证码可以复用 #7674------------
 			redisUtil.set(realKey, lowerCaseCode, 60);
-			log.info("获取验证码，Redis key = {}，checkCode = {}", realKey, code);
-			//返回前端
+			log.debug("获取验证码，Redis key = {}，checkCode = {}", realKey, code);
 			String base64 = RandImageUtil.generate(code);
 			res.setSuccess(true);
 			res.setResult(base64);
@@ -606,16 +647,16 @@ public class LoginController {
 		return res;
 	}
 
-	/**
-	 * 切换菜单表为vue3的表
-	 */
-	@PreAuthorize("@jps.requiresRoles('admin')")
-	@GetMapping(value = "/switchVue3Menu")
-	public Result<String> switchVue3Menu(HttpServletResponse response) {
-		Result<String> res = new Result<String>();	
-		sysPermissionService.switchVue3Menu();
-		return res;
-	}
+//	/**
+//	 * 切换菜单表为vue3的表
+//	 */
+//	@RequiresRoles({"admin"})
+//	@GetMapping(value = "/switchVue3Menu")
+//	public Result<String> switchVue3Menu(HttpServletResponse response) {
+//		Result<String> res = new Result<String>();	
+//		sysPermissionService.switchVue3Menu();
+//		return res;
+//	}
 	
 	/**
 	 * app登录
@@ -624,74 +665,80 @@ public class LoginController {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/mLogin", method = RequestMethod.POST)
-	public Result<JSONObject> mLogin(@RequestBody SysLoginModel sysLoginModel) throws Exception {
+	public Result<JSONObject> mLogin(@RequestBody SysLoginModel sysLoginModel, HttpServletRequest request) throws Exception {
 		Result<JSONObject> result = new Result<JSONObject>();
 		String username = sysLoginModel.getUsername();
-		String password = sysLoginModel.getPassword();
+		// 密码加密传输(尝试 AES解密，失败视为明文)
+		String password  = AesEncryptUtil.resolvePassword(sysLoginModel.getPassword());
+		log.debug("登录密码，原始密码:{}，解密密码:{}" , sysLoginModel.getPassword(), password);
+
 		JSONObject obj = new JSONObject();
 		
-		//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
+		// 1.平台用户登录失败锁定用户
 		if(isLoginFailOvertimes(username)){
 			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
 		}
-		//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
-		//1. 校验用户是否有效
+		// 2.校验用户是否有效
 		SysUser sysUser = sysUserService.getUserByName(username);
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
 		}
 		
-		//2. 校验用户名或密码是否正确
+		// 3.校验用户名或密码是否正确
 		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
 		String syspassword = sysUser.getPassword();
 		if (!syspassword.equals(userpassword)) {
-			//update-begin-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			addLoginFailOvertimes(username);
-			//update-end-author:taoyan date:2022-11-7 for: issues/4109 平台用户登录失败锁定用户
 			result.error500("用户名或密码错误");
 			return result;
 		}
 		
-		//3.设置登录部门
+		//4.设置登录部门
 		String orgCode = sysUser.getOrgCode();
+		//登录设置的组织
+		String loginOrgCode = sysLoginModel.getLoginOrgCode();
 		if(oConvertUtils.isEmpty(orgCode)) {
 			//如果当前用户无选择部门 查看部门关联信息
-			
-			List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
-			//update-begin-author:taoyan date:20220117 for: JTC-1068【app】新建用户，没有设置部门及角色，点击登录提示暂未归属部，一直在登录页面 使用手机号登录 可正常
-			if (departs == null || departs.size() == 0) {
-				/*result.error500("用户暂未归属部门,不可登录!");
-				
-				return result;*/
+			if(oConvertUtils.isNotEmpty(loginOrgCode)){
+				sysUser.setOrgCode(loginOrgCode);
+				this.sysUserService.updateUserDepart(username, loginOrgCode,null);
 			}else{
-				orgCode = departs.get(0).getOrgCode();
-				sysUser.setOrgCode(orgCode);
-				this.sysUserService.updateUserDepart(username, orgCode,null);
+				List<SysDepart> departs = sysDepartService.queryUserDeparts(sysUser.getId());
+				if (departs != null && !departs.isEmpty()) {
+					orgCode = departs.get(0).getOrgCode();
+					sysUser.setOrgCode(orgCode);
+					this.sysUserService.updateUserDepart(username, orgCode,null);
+				}
 			}
-			//update-end-author:taoyan date:20220117 for: JTC-1068【app】新建用户，没有设置部门及角色，点击登录提示暂未归属部，一直在登录页面 使用手机号登录 可正常
+		}else{
+			if(oConvertUtils.isNotEmpty(loginOrgCode) && !orgCode.equalsIgnoreCase(loginOrgCode)){
+				sysUser.setOrgCode(loginOrgCode);
+				sysUserService.updateUserDepart(username, loginOrgCode,null);
+			}
 		}
 
-		//4. 设置登录租户
+		//5. 设置登录租户
 		Result<JSONObject> loginTenantError = sysUserService.setLoginTenant(sysUser, obj, username, result);
 		if (loginTenantError != null) {
 			return loginTenantError;
 		}
-
-		//5. 设置登录用户信息
+		// 设置登录用户信息
 		obj.put("userInfo", sysUser);
-		
-		//6. 生成token
-		String token = JwtUtil.sign(username, syspassword);
-		// 设置超时时间
-		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
-		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME*2 / 1000);
 
-		//token 信息
+		//6. 生成token，并设置超时时间
+		String token = JwtUtil.sign(username, syspassword, CommonConstant.CLIENT_TYPE_APP);
+		redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, token);
+		redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.APP_EXPIRE_TIME*2 / 1000);
 		obj.put("token", token);
 		result.setResult(obj);
 		result.setSuccess(true);
 		result.setCode(200);
+
+		// 7.是否允许同一账号多地同时登录(APP端登录，踢掉之前的APP端登录)
+		handleSingleSignOn(username, token, CommonConstant.CLIENT_TYPE_APP);
+		
+		// 8.登录成功记录日志
 		baseCommonService.addLog("用户名: " + username + ",登录成功[移动端]！", CommonConstant.LOG_TYPE_1, null);
 		return result;
 	}
@@ -817,7 +864,7 @@ public class LoginController {
 			result.setSuccess(false);
 			return result;
 		}
-		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		LoginUser sysUser = SecureUtil.currentUser();
 		String username = sysUser.getUsername();
 		LambdaQueryWrapper<SysUser> query = new LambdaQueryWrapper<>();
 		query.eq(SysUser::getUsername, username).eq(SysUser::getPhone, mobile);
@@ -843,11 +890,9 @@ public class LoginController {
 				result.setSuccess(false);
 				return result;
 			}
-			//验证码5分钟内有效
-            //update-begin---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
+            //【issues/8567】严重：修改密码存在水平越权问题
             obj.put("username",username);
             redisUtil.set(redisKey, obj.toJSONString(), 300);
-            //update-end---author:wangshuai---date:2025-07-15---for:【issues/8567】严重：修改密码存在水平越权问题。---
 			result.setSuccess(true);
 		} catch (ClientException e) {
 			e.printStackTrace();
@@ -882,5 +927,43 @@ public class LoginController {
 		redisUtil.removeAll(realKey);
 		return Result.ok();
 	}
+	/**
+	 * 登录获取用户部门信息
+	 *
+	 * @param jsonObject
+	 * @return
+	 */
+	@IgnoreAuth
+	@RequestMapping(value = "/loginGetUserDeparts", method = RequestMethod.POST)
+	public Result<JSONObject> loginGetUserDeparts(@RequestBody JSONObject jsonObject, HttpServletRequest request){
+		return sysUserService.loginGetUserDeparts(jsonObject);
+	}
 	
+	/**
+     * 校验验证码工具方法，校验失败直接返回Result，校验通过返回realKey
+     */
+    private String validateCaptcha(SysLoginModel sysLoginModel, Result<JSONObject> result) {
+		// 判断是否启用登录验证码校验
+		if (jeecgBaseConfig.getFirewall() != null && Boolean.FALSE.equals(jeecgBaseConfig.getFirewall().getEnableLoginCaptcha())) {
+			log.warn("关闭了登录验证码校验，跳过验证码校验！");
+			return "LoginWithoutVerifyCode";
+		}
+		
+        String captcha = sysLoginModel.getCaptcha();
+        if (captcha == null) {
+            result.error500("验证码无效");
+            return null;
+        }
+        String lowerCaseCaptcha = captcha.toLowerCase();
+        String keyPrefix = Md5Util.md5Encode(sysLoginModel.getCheckKey() + jeecgBaseConfig.getSignatureSecret(), "utf-8");
+        String realKey = keyPrefix + lowerCaseCaptcha;
+        Object checkCode = redisUtil.get(realKey);
+        if (checkCode == null || !checkCode.toString().equals(lowerCaseCaptcha)) {
+            log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", sysLoginModel.getCheckKey(), lowerCaseCaptcha, checkCode);
+            result.error500("验证码错误");
+            result.setCode(HttpStatus.PRECONDITION_FAILED.value());
+            return null;
+        }
+        return realKey;
+    }
 }

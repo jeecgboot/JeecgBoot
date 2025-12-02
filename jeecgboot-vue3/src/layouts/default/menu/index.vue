@@ -83,9 +83,8 @@
 
       const getWrapperStyle = computed((): CSSProperties => {
         return {
-          // update-begin--author:liaozhiyang---date:20241216---for：【issues/7548】侧边栏导航模式时会导致下面菜单滚动显示不全
+          // 代码逻辑说明: 【issues/7548】侧边栏导航模式时会导致下面菜单滚动显示不全
           height: `calc(100% - ${unref(getIsShowLogo) ? '60px' : '0px'})`,
-          // update-end--author:liaozhiyang---date:20241216---for：【issues/7548】侧边栏导航模式时会导致下面菜单滚动显示不全
         };
       });
 
@@ -116,7 +115,7 @@
        * click menu
        * @param menu
        */
-      //update-begin-author:taoyan date:2022-6-1 for: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
+      // 代码逻辑说明: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
       const localeStore = useLocaleStore();
       function handleMenuClick(path: string, item) {
         if (item) {
@@ -124,7 +123,6 @@
         }
         go(path);
       }
-      //update-end-author:taoyan date:2022-6-1 for: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
 
       /**
        * before click menu
@@ -174,11 +172,10 @@
   });
 </script>
 <style lang="less" scoped>
-  // update-begin--author:liaozhiyang---date:20230803---for：【QQYUN-5872】菜单优化，上下滚动条去掉
+  // 代码逻辑说明: 【QQYUN-5872】菜单优化，上下滚动条去掉
   .scroll-container :deep(.scrollbar__bar) {
     display: none;
   }
-  // update-end--author:liaozhiyang---date:20230803---for：【QQYUN-5872】菜单优化，上下滚动条去掉
 </style>
 <style lang="less">
   @prefix-cls: ~'@{namespace}-layout-menu';

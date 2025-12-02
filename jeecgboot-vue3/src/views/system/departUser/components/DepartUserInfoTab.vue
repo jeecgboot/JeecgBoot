@@ -96,9 +96,8 @@
       beforeFetch(params) {
         params.depId = departId.value;
       },
-      // update-begin--author:liaozhiyang---date:20240717---for：【TV360X-1861】没部门时不加载用户信息
+      // 代码逻辑说明: 【TV360X-1861】没部门时不加载用户信息
       immediate: !!departId.value,
-      // update-end--author:liaozhiyang---date:20240717---for：【TV360X-1861】没部门时不加载用户信息
     },
   });
 
@@ -161,9 +160,8 @@
 
   // 选择添加已有用户
   function selectAddUser() {
-    // update-begin--author:liaozhiyang---date:20240308---for：【TV360X-1613】再次打开还是上次的选中用户，没置空
+    // 代码逻辑说明: 【TV360X-1613】再次打开还是上次的选中用户，没置空
     userSelectModalRef.value.rowSelection.selectedRowKeys = [];
-    // update-end--author:liaozhiyang---date:20240308---for：【TV360X-1613】再次打开还是上次的选中用户，没置空
     selUserModal.openModal();
   }
 

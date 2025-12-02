@@ -5,6 +5,7 @@ import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
+import org.jeecg.common.api.dto.PushMessageDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.constant.ServiceNameConstants;
 import org.jeecg.common.constant.enums.DySmsEnum;
@@ -629,7 +630,6 @@ public interface ISysBaseAPI extends CommonAPI {
     @GetMapping("/sys/api/translateManyDict")
     Map<String, List<DictModel>> translateManyDict(@RequestParam("dictCodes") String dictCodes, @RequestParam("keys") String keys);
 
-    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 49 字典表的 翻译，可批量
      * @param table
@@ -642,7 +642,6 @@ public interface ISysBaseAPI extends CommonAPI {
     @Override
     @GetMapping("/sys/api/translateDictFromTableByKeys")
     List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys, @RequestParam("ds") String ds);
-    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 发送模板消息
@@ -747,7 +746,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryUserIdsByDeptIds")
-    List<String> queryUserIdsByDeptIds(List<String> deptIds);
+    List<String> queryUserIdsByDeptIds(@RequestParam("deptIds") List<String> deptIds);
 
     /**
      * 根据部门ID查询用户账号
@@ -755,7 +754,7 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryUserAccountsByDeptIds")
-    List<String> queryUserAccountsByDeptIds(List<String> deptIds);
+    List<String> queryUserAccountsByDeptIds(@RequestParam("deptIds") List<String> deptIds);
     
     /**
      * 根据角色编码 查询用户ID
@@ -763,10 +762,34 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return
      */
     @GetMapping("/sys/api/queryUserIdsByRoleds")
-    List<String> queryUserIdsByRoleds(List<String> roleCodes);
+    List<String> queryUserIdsByRoleds(@RequestParam("roleCodes") List<String> roleCodes);
 
     /**
-     * 根据职务ID查询用户ID
+     * 根据用户ID查询用户名称
+     * @param userIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUsernameByIds")
+    List<String> queryUsernameByIds(@RequestParam("userIds") List<String> userIds);
+
+    /**
+     * 根据部门岗位ID查询用户ID
+     * @param deptPostIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUserIdsByDeptPostIds")
+    public List<String> queryUserIdsByDeptPostIds(@RequestParam("deptPostIds") List<String> deptPostIds);
+
+    /**
+     * 根据部门主岗位和兼职岗位，查询用户账号
+     * @param positionIds
+     * @return
+     */
+    @GetMapping("/sys/api/queryUsernameByDepartPositIds")
+    List<String> queryUsernameByDepartPositIds(@RequestParam("departPositIds") List<String> positionIds);
+    
+    /**
+     * 根据职务ID查询用户账号
      * @param positionIds
      * @return
      */
@@ -868,7 +891,14 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @GetMapping("/sys/api/queryUserIdsByCascadeDeptIds")
     List<String> queryUserIdsByCascadeDeptIds(@RequestParam("deptIds") List<String> deptIds);
-
+    /**
+     * 根据用户信息推送移动端Push消息
+     * @param pushMessageDTO
+     * @return
+     */
+    @PostMapping("/sys/api/uniPushMsgToUser")
+    void uniPushMsgToUser(@RequestBody PushMessageDTO pushMessageDTO);
+   
     @GetMapping("/sys/api/getUserByPhone")
     public LoginUser getUserByPhone(@RequestParam("phone") String phone);
 
@@ -883,4 +913,5 @@ public interface ISysBaseAPI extends CommonAPI {
 
     @GetMapping("/sys/api/setLoginTenant")
     JSONObject setLoginTenant(@RequestParam("username") String username);
+
 }

@@ -5,13 +5,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysDepart;
+import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.DepartIdModel;
 import org.jeecg.modules.system.model.SysDepartTreeModel;
+import org.jeecg.modules.system.vo.SysChangeDepartVo;
 import org.jeecg.modules.system.vo.SysDepartExportVo;
 import org.jeecg.modules.system.vo.SysPositionSelectTreeVo;
 import org.jeecg.modules.system.vo.lowapp.ExportDepartVo;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -279,4 +280,29 @@ public interface ISysDepartService extends IService<SysDepart>{
      * @return
      */
     String getDepartPathNameByOrgCode(String orgCode, String depId);
+
+    /**
+     * 根据部门id获取部门下的岗位id
+     *
+     * @param depIds 当前选择的公司、子公司、部门id
+     * @return
+     */
+    String getDepPostIdByDepId(String depIds);
+
+    /**
+     * 调整部门位置
+     * 
+     * @param changeDepartVo
+     * @return
+     */
+    void updateChangeDepart(SysChangeDepartVo changeDepartVo);
+
+    /**
+     * 获取部门负责人
+     * 
+     * @param departId
+     * @param page
+     * @return
+     */
+    IPage<SysUser> getDepartmentHead(String departId, Page<SysUser> page);
 }

@@ -54,11 +54,10 @@ public class FreemarkerParseFactory {
         //classic_compatible设置，解决报空指针错误
         SQL_CONFIG.setClassicCompatible(true);
 
-        //update-begin-author:taoyan date:2022-8-10 for: freemarker模板注入问题 禁止解析ObjectConstructor，Execute和freemarker.template.utility.JythonRuntime。
+        // 解决freemarker模板注入问题 禁止解析ObjectConstructor，Execute和freemarker.template.utility.JythonRuntime。
         //https://ackcent.com/in-depth-freemarker-template-injection/
         TPL_CONFIG.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
         SQL_CONFIG.setNewBuiltinClassResolver(TemplateClassResolver.SAFER_RESOLVER);
-        //update-end-author:taoyan date:2022-8-10 for: freemarker模板注入问题 禁止解析ObjectConstructor，Execute和freemarker.template.utility.JythonRuntime。
     }
 
     /**
@@ -73,13 +72,12 @@ public class FreemarkerParseFactory {
                 return false;
             }
         } catch (Exception e) {
-            //update-begin--Author:scott  Date:20180320 for：解决问题 - 错误提示sql文件不存在，实际问题是sql freemarker用法错误-----
+            // 代码逻辑说明: 解决问题 - 错误提示sql文件不存在，实际问题是sql freemarker用法错误-----
             if (e instanceof ParseException) {
                 log.error(e.getMessage(), e.fillInStackTrace());
                 throw new Exception(e);
             }
             log.debug("----isExistTemplate----" + e.toString());
-            //update-end--Author:scott  Date:20180320 for：解决问题 - 错误提示sql文件不存在，实际问题是sql freemarker用法错误------
             return false;
         }
         return true;

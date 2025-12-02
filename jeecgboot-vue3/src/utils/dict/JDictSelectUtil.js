@@ -52,10 +52,9 @@ export function filterDictText(dictOptions, text) {
     for (let txt of splitText) {
       let dictText = txt;
       for (let dictItem of dictOptions) {
-        // update-begin--author:liaozhiyang---date:20240524---for：【TV360X-469】兼容数据null值防止报错
+        // 代码逻辑说明: 【TV360X-469】兼容数据null值防止报错
         if (dictItem == null) continue;
         if (dictItem.value == null) continue;
-        // update-end--author:liaozhiyang---date:20240524---for：【TV360X-469】兼容数据null值防止报错
         if (txt.toString() === dictItem.value.toString()) {
           dictText = dictItem.text || dictItem.title || dictItem.label;
           break;
@@ -132,7 +131,6 @@ export function filterDictTextByCache(dictCode, key) {
 
 /** 通过code获取字典数组 */
 export async function getDictItems(dictCode, params) {
-  // update-begin--author:liaozhiyang---date:20230809---for：【issues/668】JDictSelectUtil数据字典工具类中的getDictItems方法出错
   //优先从缓存中读取字典配置
   if (getDictItemsByCode(dictCode)) {
     let desformDictItems = getDictItemsByCode(dictCode).map((item) => ({
@@ -158,5 +156,4 @@ export async function getDictItems(dictCode, params) {
       console.error('getDictItems error: ', res);
       return Promise.resolve([]);
     });
-  // update-end--author:liaozhiyang---date:20230809---for：【issues/668】JDictSelectUtil数据字典工具类中的getDictItems方法出错
 }

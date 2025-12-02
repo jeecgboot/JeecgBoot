@@ -38,4 +38,10 @@ public class AiAppConsts {
      */
     public static final String APP_TYPE_CHAT_FLOW = "chatFLow";
 
+    /**
+     * 应用元数据:流程输入参数
+     * for [issues/8545]新建AI应用的时候只能选择没有自定义参数的AI流程
+     */
+    public static final String APP_METADATA_FLOW_INPUTS = "flowInputs";
+
 }

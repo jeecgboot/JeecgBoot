@@ -82,7 +82,7 @@ export const saveOrUpdateRole = (params, isUpdate) => {
  * 编码校验
  * @param params
  */
-// update-begin--author:liaozhiyang---date:20231215---for：【QQYUN-7415】表单调用接口进行校验的添加防抖
+// 代码逻辑说明: 【QQYUN-7415】表单调用接口进行校验的添加防抖
 let timer;
 export const isRoleExist = (params) => {
   return new Promise((resolve, rejected) => {
@@ -99,7 +99,6 @@ export const isRoleExist = (params) => {
     }, 500);
   });
 };
-// update-end--author:liaozhiyang---date:20231215---for：【QQYUN-7415】表单调用接口进行校验的添加防抖
 /**
  * 根据角色查询树信息
  */

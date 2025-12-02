@@ -44,7 +44,6 @@ export function useRowSelection(propsRef: ComputedRef<BasicTableProps>, tableDat
           const { onChange } = rowSelection;
           if (onChange && isFunction(onChange)) onChange(getSelectRowKeys(), getSelectRows());
         }
-        //update-begin---author:scott ---date:2023-06-19  for：【issues/503】table行选择时卡顿明显 #503---
         //table行选择时卡顿明显 #503
         if (unref(tableData).length > 0) {
           emit('selection-change', {
@@ -52,7 +51,6 @@ export function useRowSelection(propsRef: ComputedRef<BasicTableProps>, tableDat
             rows: getSelectRows(),
           });
         }
-        //update-end---author:scott ---date::2023-06-19  for：【issues/503】table行选择时卡顿明显 #503---
       });
     },
     { deep: true }

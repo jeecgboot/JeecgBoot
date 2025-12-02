@@ -47,7 +47,7 @@
           &&checkChildrenHidden(menuTreeItem)
         );
       }
-      // update-begin--author:liaozhiyang---date:20230326---for：【QQYUN-8691】顶部菜单模式online不显示菜单名显示默认的auto在线表单
+      // 代码逻辑说明: 【QQYUN-8691】顶部菜单模式online不显示菜单名显示默认的auto在线表单
       const getMatchingRouterName = (menus, path) => {
         for (let i = 0, len = menus.length; i < len; i++) {
           const item = menus[i];
@@ -74,7 +74,6 @@
         },
         { immediate: true }
       );
-      // update-end--author:liaozhiyang---date:20230326---for：【QQYUN-8691】顶部菜单模式online不显示菜单名显示默认的auto在线表单
       return {
         prefixCls,
         menuHasChildren,
@@ -85,7 +84,7 @@
   });
 </script>
 <style lang="less">
-  // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8762】顶部模式下拉菜单颜色统一
+  // 代码逻辑说明: 【QQYUN-8762】顶部模式下拉菜单颜色统一
   @prefix-cls: ~'@{namespace}-basic-subMenu';
   html[data-theme='light'] {
     .@{prefix-cls}.ant-menu-dark {
@@ -109,8 +108,7 @@
       }
     }
   }
-  // update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8762】顶部模式下拉菜单颜色统一
-  // update-begin--author:liaozhiyang---date:20240429---for：【QQYUN-9128】暗黑主题顶部模式下拉菜单颜色统一
+  // 代码逻辑说明: 【QQYUN-9128】暗黑主题顶部模式下拉菜单颜色统一
   html[data-theme='dark'] {
     @bgcolor:#212121;
     .@{prefix-cls}.ant-menu-dark {
@@ -130,5 +128,4 @@
       }
     }
   }
-  // update-end--author:liaozhiyang---date:20240429---for：【QQYUN-9128】暗黑主题顶部模式下拉菜单颜色统一
 </style>

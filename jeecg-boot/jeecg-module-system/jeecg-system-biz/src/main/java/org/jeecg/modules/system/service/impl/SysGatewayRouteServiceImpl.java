@@ -65,14 +65,13 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
         try {
             json = json.getJSONObject("router");
             String id = json.getString("id");
-            //update-begin-author:taoyan date:20211025 for: oracle路由网关新增小bug /issues/I4EV2J
+            // 代码逻辑说明: oracle路由网关新增小bug /issues/I4EV2J
             SysGatewayRoute route;
             if(oConvertUtils.isEmpty(id)){
                 route = new SysGatewayRoute();
             }else{
                 route = getById(id);
             }
-            //update-end-author:taoyan date:20211025 for: oracle路由网关新增小bug /issues/I4EV2J
             if (ObjectUtil.isEmpty(route)) {
                 route = new SysGatewayRoute();
             }

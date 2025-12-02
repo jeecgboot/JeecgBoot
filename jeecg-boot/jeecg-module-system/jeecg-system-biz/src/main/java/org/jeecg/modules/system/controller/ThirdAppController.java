@@ -91,7 +91,6 @@ public class ThirdAppController {
         }
         enabledMap.put("wechatEnterprise", qywxConfig);
         enabledMap.put("dingtalk", dingConfig);
-        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]通过租户模式隔离------------
         return Result.OK(enabledMap);
     }
 
@@ -103,12 +102,11 @@ public class ThirdAppController {
      */
     @GetMapping("/sync/wechatEnterprise/user/toApp")
     public Result syncWechatEnterpriseUserToApp(@RequestParam(value = "ids", required = false) String ids) {
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]通过租户模式隔离 ------------
         //获取企业微信配置
         Integer tenantId = oConvertUtils.getInt(TenantContext.getTenant(),0);
         SysThirdAppConfig config = appConfigService.getThirdConfigByThirdType(tenantId, MessageTypeEnum.QYWX.getType());
         if (null != config) {
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]通过租户模式隔离 ------------
+        // 代码逻辑说明: [QQYUN-3440]通过租户模式隔离 ------------
             SyncInfoVo syncInfo = wechatEnterpriseService.syncLocalUserToThirdApp(ids);
             if (syncInfo.getFailInfo().size() == 0) {
                 return Result.OK("同步成功", syncInfo);
@@ -297,22 +295,19 @@ public class ThirdAppController {
         String title = "第三方APP消息测试";
         MessageDTO message = new MessageDTO(fromUser, receiver, title, content);
         message.setToAll(sendAll);
-        //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]钉钉、企业微信通过租户模式隔离 ------------
+        // 代码逻辑说明: [QQYUN-3440]钉钉、企业微信通过租户模式隔离 ------------
         String weChatType = MessageTypeEnum.QYWX.getType();
         String dingType = MessageTypeEnum.DD.getType();
         if (weChatType.toUpperCase().equals(app)) {
             SysThirdAppConfig config = appConfigService.getThirdConfigByThirdType(tenantId, weChatType);
             if (null != config) {
-        //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]钉钉、企业微信通过租户模式隔离 ------------
                 JSONObject response = wechatEnterpriseService.sendMessageResponse(message, false);
                 return Result.OK(response);
             }
             return Result.error("企业微信尚未配置,请配置企业微信");
-            //update-begin---author:wangshuai ---date:20230224  for：[QQYUN-3440]钉钉、企业微信通过租户模式隔离 ------------
         } else if (dingType.toUpperCase().equals(app)) {
             SysThirdAppConfig config = appConfigService.getThirdConfigByThirdType(tenantId, dingType);
             if (null != config) {
-            //update-end---author:wangshuai ---date:20230224  for：[QQYUN-3440]钉钉、企业微信通过租户模式隔离 ------------
                 Response<String> response = dingtalkService.sendMessageResponse(message, false);
                 return Result.OK(response);
             }

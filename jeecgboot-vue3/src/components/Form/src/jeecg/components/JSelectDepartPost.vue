@@ -3,7 +3,7 @@
   <div class="JSelectDepartPost">
     <JSelectBiz @change="handleSelectChange" @handleOpen="handleOpen" :loading="loadingEcho" v-bind="attrs" :isCustomRenderTag="isCustomRenderTag" :rowKey="getBindValue?.rowKey"/>
     <a-form-item>
-      <DeptSelectModal @register="regModal" @getSelectResult="setValue" modalTitle="部门岗位选择" v-bind="getBindValue" :multiple="multiple" @close="handleClose" />
+      <DeptSelectModal @register="regModal" @getSelectResult="setValue" modalTitle="部门岗位选择" v-bind="getBindValue" :multiple="multiple" @close="handleClose" :izShowDepPath="izShowDepPath"/>
     </a-form-item>
   </div>
 </template>
@@ -32,6 +32,8 @@
       izOnlySelectDepartPost: propTypes.bool.def(true),
       // 自定义渲染tag
       isCustomRenderTag: propTypes.bool.def(true),
+      //是否显示部门路径（用户部门选择主岗位和兼职岗位需要显示全路径）
+      izShowDepPath: propTypes.bool.def(false),
     },
     emits: ['options-change', 'change', 'select', 'update:value'],
     setup(props, { emit, refs }) {

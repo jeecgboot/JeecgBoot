@@ -34,11 +34,10 @@ const [registerModal, { setModalProps, closeModal }] = useModalInner(async (data
     data.record.relTenantIds = data.record.relTenantIds.split(",")
   }
   userDetail.value = data.record;
-  //update-begin---author:wangshuai ---date:20230130  for：[QQYUN-3976]个人信息 编辑时，刚注册没有设置生日 生日显示有问题------------
+  // 代码逻辑说明: [QQYUN-3976]个人信息 编辑时，刚注册没有设置生日 生日显示有问题------------
   if(data.record.birthday === '未填写'){
     data.record.birthday = undefined;
   }
-  //update-end---author:wangshuai ---date:20230130  for：[QQYUN-3976]个人信息 编辑时，刚注册没有设置生日 生日显示有问题------------
   await setFieldsValue({ ...data.record });
 });
 

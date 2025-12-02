@@ -227,8 +227,7 @@ const userDetail = ref({
  */
   async function initDataSource() {
   //获取用户数据
-    //update-begin---author:wangshuai ---date:20230109  for: [QQYUN-3645]个人设置我的租户查询审核中和正常的------------
-    //update-begin---author:wangshuai ---date:202307049  for：[QQYUN-5608]用户导入后，邀请后,被导入人同意即可,新增被邀信息-----------
+    // 代码逻辑说明: [QQYUN-5608]用户导入后，邀请后,被导入人同意即可,新增被邀信息-----------
     getTenantListByUserId({ userTenantStatus: '1,3,5' }).then((res) => {
       if (res.success) {
         if(res.result && res.result.length>0){
@@ -253,10 +252,8 @@ const userDetail = ref({
         }
       } else {
         setInitedValue();
-    //update-end---author:wangshuai ---date:202307049  for：[QQYUN-5608]用户导入后，邀请后,被导入人同意即可,新增被邀信息------------
       }
     });
-    //update-end---author:wangshuai ---date:20230109  for：[QQYUN-3645]个人设置我的租户查询审核中和正常的------------
   }
   function setInitedValue() {
     dataSource.value = [];
@@ -391,13 +388,14 @@ const userDetail = ref({
         createMessage.success(res.message);
         cancelVisible.value = false;
         initDataSource();
+        // 代码逻辑说明: 【QQYUN-6822】7、登录拥有多个租户身份的用户，退出租户，只剩下一个租户后显示为空---
         userExitChangeLoginTenantId(unref(myTenantInfo).tenantUserId);
       } else {
         if (res.message === 'assignedOwen') {
           //需要指定变更者
           owenVisible.value = true;
           cancelVisible.value = false;
-        //update-begin---author:wangshuai ---date:20230426  for：【QQYUN-5270】名下租户全部退出后，再次登录，提示租户全部冻结。拥有者提示前往注销------------
+        // 代码逻辑说明: 【QQYUN-5270】名下租户全部退出后，再次登录，提示租户全部冻结。拥有者提示前往注销------------
         }else if(res.message === 'cancelTenant'){
           cancelVisible.value = false;
           let fullPath = router.currentRoute.value.fullPath;
@@ -414,7 +412,6 @@ const userDetail = ref({
               router.push('/myapps/settings/organization/organMessage/'+unref(myTenantInfo).tenantUserId)
             }
           })
-        //update-end---author:wangshuai ---date:20230426  for：【QQYUN-5270】名下租户全部退出后，再次登录，提示租户全部冻结。拥有者提示前往注销------------
         } else {
           createMessage.warning(res.message);
         }
@@ -444,9 +441,8 @@ const userDetail = ref({
       if(res.success){
         createMessage.success(res.message);
         initDataSource();
-        //update-begin---author:wangshuai---date:2023-10-23---for:【QQYUN-6822】7、登录拥有多个租户身份的用户，退出租户，只剩下一个租户后显示为空---
+        // 代码逻辑说明: 【QQYUN-6822】7、登录拥有多个租户身份的用户，退出租户，只剩下一个租户后显示为空---
         userExitChangeLoginTenantId(unref(myTenantInfo).tenantUserId);
-        //update-end---author:wangshuai---date:2023-10-23---for:【QQYUN-6822】7、登录拥有多个租户身份的用户，退出租户，只剩下一个租户后显示为空---
       } else {
         createMessage.warning(res.message);
       }
@@ -689,7 +685,7 @@ const userDetail = ref({
   font-size: 14px;
   font-weight: 700;
 }
-//update-begin---author:wangshuai ---date:20230704  for：被邀弹窗样式------------
+// 代码逻辑说明: 被邀弹窗样式------------
 .approved-count{
   background: #ffd2d2;
   border-radius: 19px;
@@ -721,11 +717,10 @@ const userDetail = ref({
 .pointer{
   cursor: pointer;
 }
-//update-end---author:wangshuai ---date:20230704  for：被邀弹窗样式------------
 </style>
 
 <style lang="less">
-  // update-begin-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
+  // 代码逻辑说明: [issues/563]暗色主题部分失效
 @prefix-cls: ~'@{namespace}-j-user-tenant-setting-container';
 /*begin 兼容暗夜模式*/
 .@{prefix-cls} {
@@ -774,5 +769,4 @@ const userDetail = ref({
   }
 }
 /*end 兼容暗夜模式*/
-  // update-end-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
 </style>

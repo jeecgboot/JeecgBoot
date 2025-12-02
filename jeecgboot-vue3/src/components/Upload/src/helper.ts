@@ -1,5 +1,5 @@
 export function checkFileType(file: File, accepts: string[]) {
-  // update-begin--author:liaozhiyang---date:20250318---for：【issues/7954】BasicUpload组件上传文件，限制上传格式校验出错
+  // 代码逻辑说明: 【issues/7954】BasicUpload组件上传文件，限制上传格式校验出错
   const mimePatterns: string[] = [];
   const suffixList: string[] = [];
   // 分类处理 accepts
@@ -37,7 +37,6 @@ export function checkFileType(file: File, accepts: string[]) {
   } else if (suffixList.length) {
     return suffixMatch;
   }
-  // update-end--author:liaozhiyang---date:20250318---for：【issues/7954】BasicUpload组件上传文件，限制上传格式校验出错
 }
 
 export function checkImgType(file: File) {

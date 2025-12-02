@@ -240,7 +240,36 @@ public class SysUser implements Serializable {
     /**
      * 职务(字典)
      */
-    @Excel(name = "职务", width = 15, dicCode = "position_type")
-    @Dict(dicCode = "position_type")
+    @Excel(name = "职务", width = 15, dicCode = "user_position")
+    @Dict(dicCode = "user_position")
     private String positionType;
+
+    /**
+     * 上一次修改密码的时间
+     */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date lastPwdUpdateTime;
+
+    /**
+     * 登录时，选择的部门，临时用，不持久化数据库(数据库字段不存在)
+     */
+    @TableField(exist = false)
+    private String loginOrgCode;
+
+    /**
+     * 排序
+     */
+    private Integer sort;
+    
+    /**
+     * 是否隐藏联系方式 0否1是
+     */
+    private String izHideContact;
+
+    /**
+     * 所属部门的id
+     */
+    @TableField(exist = false)
+    private String belongDepIds;
 }

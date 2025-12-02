@@ -59,8 +59,10 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 @Slf4j
 public class JwtUtil {
 
-	/**Token有效期为7天（Token在reids中缓存时间为两倍）*/
-	public static final long EXPIRE_TIME = (7 * 12) * 60 * 60 * 1000;
+	/**PC端，Token有效期为7天（Token在reids中缓存时间为两倍）*/
+	public static final long EXPIRE_TIME = (7 * 12) * 60 * 60 * 1000L;
+	/**APP端，Token有效期为30天（Token在reids中缓存时间为两倍）*/
+	public static final long APP_EXPIRE_TIME = (30 * 12) * 60 * 60 * 1000L;
 	static final String WELL_NUMBER = SymbolConstant.WELL_NUMBER + SymbolConstant.LEFT_CURLY_BRACKET;
 
 	public static final String DEFAULT_CLIENT = "jeecg-client";
@@ -106,7 +108,7 @@ public class JwtUtil {
 			jwtDecoder.decode(token);
 			return true;
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			log.warn("Token验证失败：" + e.getMessage(),e);
 			return false;
 		}
 	}
@@ -132,7 +134,9 @@ public class JwtUtil {
 	 * @param username 用户名
 	 * @param secret   用户的密码
 	 * @return 加密的token
+	 * @deprecated 请使用sign(String username, String secret, String clientType)方法代替
 	 */
+	@Deprecated
 	public static String sign(String username, String secret) {
 		Map<String, Object> additionalParameter = new HashMap<>();
 		additionalParameter.put("username", username);
@@ -147,6 +151,65 @@ public class JwtUtil {
 		OAuth2AccessTokenAuthenticationToken accessToken = (OAuth2AccessTokenAuthenticationToken) selfAuthenticationProvider.authenticate(selfAuthenticationToken);
 		return accessToken.getAccessToken().getTokenValue();
 
+	}
+
+	/**
+	 * 生成签名，根据客户端类型自动选择过期时间
+	 * for [JHHB-1030]【鉴权】移动端用户token到期后续期时间变成pc端时长
+	 *
+	 * @param username 用户名
+	 * @param secret   用户的密码
+	 * @param clientType 客户端类型（PC或APP）
+	 * @return 加密的token
+	 */
+	public static String sign(String username, String secret, String clientType) {
+		Map<String, Object> additionalParameter = new HashMap<>();
+		additionalParameter.put("username", username);
+		additionalParameter.put("clientType", clientType);
+
+		// 根据客户端类型选择对应的过期时间
+		long expireTime = CommonConstant.CLIENT_TYPE_APP.equalsIgnoreCase(clientType)
+				? APP_EXPIRE_TIME
+				: EXPIRE_TIME;
+		additionalParameter.put("expireTime", expireTime);
+
+		RegisteredClientRepository registeredClientRepository = SpringContextUtils.getBean(RegisteredClientRepository.class);
+		SelfAuthenticationProvider selfAuthenticationProvider = SpringContextUtils.getBean(SelfAuthenticationProvider.class);
+
+		OAuth2ClientAuthenticationToken client = new OAuth2ClientAuthenticationToken(
+				Objects.requireNonNull(registeredClientRepository.findByClientId(DEFAULT_CLIENT)),
+				ClientAuthenticationMethod.CLIENT_SECRET_BASIC,
+				null
+		);
+		client.setAuthenticated(true);
+
+		SelfAuthenticationToken selfAuthenticationToken = new SelfAuthenticationToken(client, additionalParameter);
+		selfAuthenticationToken.setAuthenticated(true);
+
+		OAuth2AccessTokenAuthenticationToken accessToken =
+				(OAuth2AccessTokenAuthenticationToken) selfAuthenticationProvider.authenticate(selfAuthenticationToken);
+
+		return accessToken.getAccessToken().getTokenValue();
+	}
+
+
+	/**
+	 * 从token中获取客户端类型
+	 * for [JHHB-1030]【鉴权】移动端用户token到期后续期时间变成pc端时长
+	 *
+	 * @param token JWT token
+	 * @return 客户端类型，如果不存在则返回PC（兼容旧token）
+	 */
+	public static String getClientType(String token) {
+		try {
+			DecodedJWT jwt = JWT.decode(token);
+			String clientType = jwt.getClaim("clientType").asString();
+			// 如果clientType为空，返回默认值PC（兼容旧token）
+			return oConvertUtils.isNotEmpty(clientType) ? clientType : CommonConstant.CLIENT_TYPE_PC;
+		} catch (JWTDecodeException e) {
+			log.warn("解析token中的clientType失败，使用默认值PC：" + e.getMessage());
+			return CommonConstant.CLIENT_TYPE_PC;
+		}
 	}
 
 	/**
@@ -228,7 +291,6 @@ public class JwtUtil {
 		} else {
 			key = key;
 		}
-		//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 		// 是否存在字符串标志
 		boolean multiStr;
 		if(oConvertUtils.isNotEmpty(key) && key.trim().matches("^\\[\\w+]$")){
@@ -237,7 +299,6 @@ public class JwtUtil {
 		} else {
             multiStr = false;
         }
-		//update-end---author:chenrui ---date:20250107  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 		//替换为当前系统时间(年月日)
 		if (key.equals(DataBaseConstant.SYS_DATE)|| key.toLowerCase().equals(DataBaseConstant.SYS_DATE_TABLE)) {
 			returnValue = DateUtils.formatDate();
@@ -306,20 +367,17 @@ public class JwtUtil {
 			if(user==null){
 				//TODO 暂时使用用户登录部门，存在逻辑缺陷，不是用户所拥有的部门
 				returnValue = sysUser.getOrgCode();
-				//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
+				// 代码逻辑说明: [QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 				returnValue = multiStr ? "'" + returnValue + "'" : returnValue;
-				//update-end---author:chenrui ---date:20250107  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 			}else{
 				if(user.isOneDepart()) {
 					returnValue = user.getSysMultiOrgCode().get(0);
-					//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
+					// 代码逻辑说明: [QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 					returnValue = multiStr ? "'" + returnValue + "'" : returnValue;
-					//update-end---author:chenrui ---date:20250107  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 				}else {
-					//update-begin---author:chenrui ---date:20250107  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
+					// 代码逻辑说明: [QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 					returnValue = user.getSysMultiOrgCode().stream()
 							.filter(Objects::nonNull)
-							//update-begin---author:chenrui ---date:20250224  for：[issues/7288]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 							.map(orgCode -> {
 								if (multiStr) {
 									return "'" + orgCode + "'";
@@ -327,9 +385,7 @@ public class JwtUtil {
 									return orgCode;
 								}
 							})
-							//update-end---author:chenrui ---date:20250224  for：[issues/7288]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 							.collect(Collectors.joining(", "));
-					//update-end---author:chenrui ---date:20250107  for：[QQYUN-10785]数据权限，查看自己拥有部门的权限中存在问题 #7288------------
 				}
 			}
 		}
@@ -343,7 +399,7 @@ public class JwtUtil {
 			}
 		}
 
-		//update-begin-author:taoyan date:20210330 for:多租户ID作为系统变量
+		// 代码逻辑说明: 多租户ID作为系统变量
 		else if (key.equals(TenantConstant.TENANT_ID) || key.toLowerCase().equals(TenantConstant.TENANT_ID_TABLE)){
 			try {
 				returnValue = SpringContextUtils.getHttpServletRequest().getHeader(CommonConstant.TENANT_ID);
@@ -351,7 +407,6 @@ public class JwtUtil {
 				log.warn("获取系统租户异常：" + e.getMessage());
 			}
 		}
-		//update-end-author:taoyan date:20210330 for:多租户ID作为系统变量
 		if(returnValue!=null){returnValue = returnValue + moshi;}
 		return returnValue;
 	}

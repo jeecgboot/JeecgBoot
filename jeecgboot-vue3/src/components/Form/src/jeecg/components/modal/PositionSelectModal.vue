@@ -100,7 +100,7 @@
           xl: 10,
           xxl: 10,
         },
-        //update-begin-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
+        // 代码逻辑说明: [issues/5514]组件页面显示错位
         actionColOptions: {
             xs: 24,
             sm: 8,
@@ -109,7 +109,6 @@
             xl: 8,
             xxl: 8,
         },
-        //update-end-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
         schemas: [
           {
             label: '职务名称',

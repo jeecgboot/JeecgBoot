@@ -146,9 +146,8 @@
       }
       
       function onSelectFileOk(temp) {
-        // update-begin--author:liaozhiyang---date:20240603---for：【TV360X-935】从知识库选择文件判断下是否没选
+        // 代码逻辑说明: 【TV360X-935】从知识库选择文件判断下是否没选
         if (temp.length === 0) return;
-        // update-end--author:liaozhiyang---date:20240603---for：【TV360X-935】从知识库选择文件判断下是否没选
         let arr = selectFileList.value;
         // -update-begin--author:liaozhiyang---date:20240614---for：【TV360X-938】知识库文件选择支持多选
         temp.forEach((item) => {

@@ -32,7 +32,7 @@
     props: useJVxeCompProps(),
     setup(props: JVxeComponent.Props) {
       const { rowIndex, originColumn, fullDataLength, trigger } = useJVxeComponent(props);
-      // update-begin--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
+      // 代码逻辑说明: 【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
       const isAllowDrag = computed(() => {
         const notAllowDrag = originColumn.value.notAllowDrag;
         if (notAllowDrag.length) {
@@ -46,7 +46,6 @@
           return true;
         }
       });
-      // update-end--author:liaozhiyang---date:20240417---for:【QQYUN-8785】online表单列位置的id未做限制，拖动其他列到id列上面，同步数据库时报错
       const disabledMoveUp = computed(() => rowIndex.value === 0);
       const disabledMoveDown = computed(() => rowIndex.value === fullDataLength.value - 1);
 

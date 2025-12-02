@@ -63,7 +63,7 @@ public abstract class AbstractQueryBlackListHandler {
         if(list==null){
             return true;
         }
-        log.info("  获取sql信息 ：{} ", list.toString());
+        log.debug("  获取sql信息 ：{} ", list.toString());
         boolean flag = checkTableAndFieldsName(list);
         if(flag == false){
             return false;

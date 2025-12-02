@@ -103,6 +103,12 @@
           {
             title: '手机号码',
             dataIndex: 'phone',
+            customRender:( { record, text })=>{
+              if(record.izHideContact && record.izHideContact === '1'){
+                return '/';
+              }
+              return text;
+            }
           },
         ],
         useSearchForm: true,
@@ -121,7 +127,7 @@
             xl: 6,
             xxl: 10,
           },
-          //update-begin-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
+          // 代码逻辑说明: [issues/5514]组件页面显示错位
           actionColOptions: {
             xs: 24,
             sm: 12,
@@ -130,7 +136,6 @@
             xl: 8,
             xxl: 8,
           },
-          //update-end-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
           schemas: [
             {
               label: '账号',

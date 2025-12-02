@@ -1,8 +1,8 @@
 package org.jeecg.config.security.utils;
 
 import com.alibaba.fastjson2.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.common.util.SpringContextUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * @author EightMonth
  * @date 2024/1/10 17:03
  */
+@Slf4j
 public class SecureUtil {
 
     /**
@@ -17,7 +18,9 @@ public class SecureUtil {
      * @return
      */
     public static LoginUser currentUser() {
-        String name = SecurityContextHolder.getContext().getAuthentication().getName();
-        return JSONObject.parseObject(name, LoginUser.class);
+        String userInfoJson = SecurityContextHolder.getContext().getAuthentication().getName();
+        //log.info("SecureUtil.currentUser: {}", userInfoJson);
+        return JSONObject.parseObject(userInfoJson, LoginUser.class);
     }
+
 }

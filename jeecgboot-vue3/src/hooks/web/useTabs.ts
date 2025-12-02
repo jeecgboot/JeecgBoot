@@ -76,21 +76,16 @@ export function useTabs(_router?: Router) {
         break;
 
       case TableActionEnum.CLOSE_LEFT:
-        // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
+        // 代码逻辑说明: 【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         await tabStore.closeLeftTabs(tab || currentTab, router);
-        // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         break;
 
       case TableActionEnum.CLOSE_RIGHT:
-        // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         await tabStore.closeRightTabs(tab || currentTab, router);
-        // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         break;
 
       case TableActionEnum.CLOSE_OTHER:
-        // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         await tabStore.closeOtherTabs(tab || currentTab, router);
-        // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
         break;
 
       case TableActionEnum.CLOSE_CURRENT:
@@ -117,12 +112,11 @@ export function useTabs(_router?: Router) {
   return {
     refreshPage: () => handleTabAction(TableActionEnum.REFRESH),
     changeDesign: () => handleTabAction(TableActionEnum.HOME_DESIGN),
-    // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
+    // 代码逻辑说明: 【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
     closeAll: (tab) => handleTabAction(TableActionEnum.CLOSE_ALL, tab),
     closeLeft: (tab) => handleTabAction(TableActionEnum.CLOSE_LEFT, tab),
     closeRight: (tab) => handleTabAction(TableActionEnum.CLOSE_RIGHT, tab),
     closeOther: (tab) => handleTabAction(TableActionEnum.CLOSE_OTHER, tab),
-    // update-end--author:liaozhiyang---date:20240605---for：【TV360X-732】非当前页右键关闭左侧、关闭右侧、关闭其它功能正常使用
     closeCurrent: () => handleTabAction(TableActionEnum.CLOSE_CURRENT),
     close: (tab?: RouteLocationNormalized) => handleTabAction(TableActionEnum.CLOSE, tab),
     setTitle: (title: string, tab?: RouteLocationNormalized) => updateTabTitle(title, tab),

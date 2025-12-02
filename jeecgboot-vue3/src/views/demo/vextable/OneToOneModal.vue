@@ -117,13 +117,10 @@
           Object.assign(orderMainModel, data.record);
           let params = { id: orderMainModel.id };
           const customerList = await orderCustomerList(params);
-          //update-begin---author:wangshuai ---date:20220629  for：[VUEN-1484]在一对多示例页面，编辑一行（青岛订单A0001），客户信息无法填入------------
+          // 代码逻辑说明: [VUEN-1484]在一对多示例页面，编辑一行（青岛订单A0001），客户信息无法填入------------
           orderMainModel.jeecgOrderCustomerList = customerList[0]?customerList[0]:{};
-          //update-end---author:wangshuai ---date:20220629  for：[VUEN-1484]在一对多示例页面，编辑一行（青岛订单A0001），客户信息无法填入--------------
           const ticketList = await orderTicketList(params);
-          //update-begin---author:wangshuai ---date:20220629  for：[VUEN-1484]在一对多示例页面，编辑一行（青岛订单A0001），客户信息无法填入------------
           orderMainModel.jeecgOrderTicketList = ticketList[0]?ticketList[0]:{};
-          //update-end---author:wangshuai ---date:20220629  for：[VUEN-1484]在一对多示例页面，编辑一行（青岛订单A0001），客户信息无法填入--------------
         }
       });
       const getTitle = computed(() => (!unref(isUpdate) ? '新增' : '编辑'));

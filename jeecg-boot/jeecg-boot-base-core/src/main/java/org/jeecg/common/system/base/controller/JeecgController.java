@@ -71,12 +71,16 @@ public class JeecgController<T, S extends IService<T>> {
         //此处设置的filename无效 ,前端会重更新设置一下
         mv.addObject(NormalExcelConstants.FILE_NAME, title);
         mv.addObject(NormalExcelConstants.CLASS, clazz);
-        //update-begin--Author:liusq  Date:20210126 for：图片导出报错，ImageBasePath未设置--------------------
-        ExportParams exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title);
+        // 代码逻辑说明: 【QQYUN-13930】统一改成导出xlsx格式---
+        ExportParams exportParams=new ExportParams(title + "报表", "导出人:" + sysUser.getRealname(), title, ExcelType.XSSF);
         exportParams.setImageBasePath(jeecgBaseConfig.getPath().getUpload());
-        //update-end--Author:liusq  Date:20210126 for：图片导出报错，ImageBasePath未设置----------------------
         mv.addObject(NormalExcelConstants.PARAMS,exportParams);
         mv.addObject(NormalExcelConstants.DATA_LIST, exportList);
+        // 代码逻辑说明: 【issues/9052】BasicTable列表页导出excel可以指定列---
+        String exportFields = request.getParameter(NormalExcelConstants.EXPORT_FIELDS);
+        if(oConvertUtils.isNotEmpty(exportFields)){
+            mv.addObject(NormalExcelConstants.EXPORT_FIELDS, exportFields);
+        }
         return mv;
     }
     /**
@@ -97,14 +101,12 @@ public class JeecgController<T, S extends IService<T>> {
         // Step.2 计算分页sheet数据
         double total = service.count();
         int count = (int)Math.ceil(total/pageNum);
-        //update-begin-author:liusq---date:20220629--for: 多sheet导出根据选择导出写法调整 ---
         // Step.3  过滤选中数据
         String selections = request.getParameter("selections");
         if (oConvertUtils.isNotEmpty(selections)) {
             List<String> selectionList = Arrays.asList(selections.split(","));
             queryWrapper.in("id",selectionList);
         }
-        //update-end-author:liusq---date:20220629--for: 多sheet导出根据选择导出写法调整 ---
         // Step.4 多sheet处理
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         for (int i = 1; i <=count ; i++) {
@@ -223,16 +225,15 @@ public class JeecgController<T, S extends IService<T>> {
             params.setNeedSave(true);
             try {
                 List<T> list = ExcelImportUtil.importExcel(file.getInputStream(), clazz, params);
-                //update-begin-author:taoyan date:20190528 for:批量插入数据
+                // 代码逻辑说明: 批量插入数据
                 long start = System.currentTimeMillis();
                 service.saveBatch(list);
                 //400条 saveBatch消耗时间1592毫秒  循环插入消耗时间1947毫秒
                 //1200条  saveBatch消耗时间3687毫秒 循环插入消耗时间5212毫秒
                 log.info("消耗时间" + (System.currentTimeMillis() - start) + "毫秒");
-                //update-end-author:taoyan date:20190528 for:批量插入数据
                 return Result.ok("文件导入成功！数据行数：" + list.size());
             } catch (Exception e) {
-                //update-begin-author:taoyan date:20211124 for: 导入数据重复增加提示
+                // 代码逻辑说明: 导入数据重复增加提示
                 String msg = e.getMessage();
                 log.error(msg, e);
                 if(msg!=null && msg.indexOf("Duplicate entry")>=0){
@@ -240,7 +241,6 @@ public class JeecgController<T, S extends IService<T>> {
                 }else{
                     return Result.error("文件导入失败:" + e.getMessage());
                 }
-                //update-end-author:taoyan date:20211124 for: 导入数据重复增加提示
             } finally {
                 try {
                     file.getInputStream().close();

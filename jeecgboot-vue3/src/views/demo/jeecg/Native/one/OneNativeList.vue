@@ -56,9 +56,7 @@
             <a @click="handleEdit(record)">编辑</a>
             <a-divider type="vertical" />
             <a-dropdown>
-              <!-- update-begin--author:liaozhiyang---date:20230803---for：【QQYUN-5838】图标改小保持一致 -->
               <a class="ant-dropdown-link">更多 <Icon icon="mdi-light:chevron-down"></Icon></a>
-              <!-- update-end--author:liaozhiyang---date:20230803---for：【QQYUN-5838】图标改小保持一致 -->
               <template #overlay>
                 <a-menu class="antd-more">
                   <a-menu-item>

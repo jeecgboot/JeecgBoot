@@ -71,11 +71,9 @@
       }
       //负责部门/赋值
       data.record.departIds && !Array.isArray(data.record.departIds) && (data.record.departIds = data.record.departIds.split(','));
-      //update-begin---author:zyf   Date:20211210  for：避免空值显示异常------------
-      //update-begin---author:liusq   Date:20231008  for：[issues/772]避免空值显示异常------------
+      // 代码逻辑说明: [issues/772]避免空值显示异常------------
       data.record.departIds =  (!data.record.departIds || data.record.departIds == '') ? [] : data.record.departIds;
-      //update-end-----author:liusq   Date:20231008  for：[issues/772]避免空值显示异常------------
-      //update-begin---author:zyf   Date:20211210  for：避免空值显示异常------------
+      data.record.sort = data.record.sort ? data.record.sort: 1000; 
     }
     //处理角色用户列表情况(和角色列表有关系)
     data.selectedroles && (await setFieldsValue({ selectedroles: data.selectedroles }));
@@ -108,27 +106,23 @@
       {
         field: 'selectedroles',
         show: !data?.departDisabled,
-        //update-begin---author:wangshuai ---date:20230424  for：【issues/4844】多租户模式下，新增或编辑用户，选择角色一栏，角色选项没有做租户隔离------------
         //判断是否为多租户模式
         componentProps:{
           api: data.tenantSaas?getAllRolesList:getAllRolesListNoByTenant
         }
-        //update-end---author:wangshuai ---date:20230424  for：【issues/4844】多租户模式下，新增或编辑用户，选择角色一栏，角色选项没有做租户隔离------------
       },
-      //update-begin---author:wangshuai ---date:20230522  for：【issues/4935】租户用户编辑界面中租户下拉框未过滤，显示当前系统所有的租户------------
+      // 代码逻辑说明: 【issues/4935】租户用户编辑界面中租户下拉框未过滤，显示当前系统所有的租户------------
       {
         field: 'relTenantIds',
         componentProps:{
           disabled: !!data.tenantSaas,
         },
       },
-      //update-end---author:wangshuai ---date:20230522  for：【issues/4935】租户用户编辑界面中租户下拉框未过滤，显示当前系统所有的租户------------
     ]);
-    //update-begin---author:wangshuai ---date:20230522  for：【issues/4935】租户用户编辑界面中租户下拉框未过滤，显示当前系统所有的租户------------
+    // 代码逻辑说明: 【issues/4935】租户用户编辑界面中租户下拉框未过滤，显示当前系统所有的租户------------
     if(!unref(isUpdate) && data.tenantSaas){
       await setFieldsValue({ relTenantIds: getTenantId().toString() })
     }
-    //update-end---author:wangshuai ---date:20230522  for：【issues/4935】租户用户编辑界面中租户下拉框未过滤，显示当前系统所有的租户------------
     // 无论新增还是编辑，都可以设置表单值
     if (typeof data.record === 'object') {
       setFieldsValue({
@@ -136,9 +130,8 @@
       });
     }
     // 隐藏底部时禁用整个表单
-    //update-begin-author:taoyan date:2022-5-24 for: VUEN-1117【issue】0523周开源问题
+    // 代码逻辑说明: VUEN-1117【issue】0523周开源问题
     setProps({ disabled: !showFooter.value });
-    //update-end-author:taoyan date:2022-5-24 for: VUEN-1117【issue】0523周开源问题
     if(unref(isUpdate)){
       updateSchema([
         //修改主岗位和兼职岗位的参数
@@ -162,13 +155,12 @@
   });
   //获取标题
   const getTitle = computed(() => {
-    // update-begin--author:liaozhiyang---date:20240306---for：【QQYUN-8389】系统用户详情抽屉title更改
+    // 代码逻辑说明: 【QQYUN-8389】系统用户详情抽屉title更改
     if (!unref(isUpdate)) {
       return '新增用户';
     } else {
       return unref(showFooter) ? '编辑用户' : '用户详情';
     }
-    // update-end--author:liaozhiyang---date:20240306---for：【QQYUN-8389】系统用户详情抽屉title更改
   });
   const { adaptiveWidth } = useDrawerAdaptiveWidth();
 
@@ -196,3 +188,8 @@
     }
   }
 </script>
+<style scoped lang="less">
+  :deep(.ant-input-number){
+    width: 100%;
+  }
+</style>

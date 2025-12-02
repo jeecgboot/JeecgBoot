@@ -65,7 +65,37 @@ export const searchFormSchema: FormSchema[] = [
     field: 'titile',
     label: '标题',
     component: 'JInput',
-    colProps: { span: 8 },
+    colProps: { span: 6 },
+  },
+  {
+    field: 'msgCategory',
+    label: '消息类型',
+    component: 'JDictSelectTag',
+    defaultValue: '1',
+    componentProps: {
+      dictCode: 'msg_category',
+      placeholder: '请选择类型',
+    },
+    colProps: { span: 6 },
+  },
+  {
+    field: 'msgClassify',
+    label: '公告分类',
+    component: 'JDictSelectTag',
+    componentProps: {
+      dictCode: 'notice_type',
+      placeholder: '请选择公告分类',
+    },
+    colProps: { span: 6 },
+  },
+  {
+    field: 'sendTime',
+    label: '发布时间',
+    component: 'RangePicker',
+    componentProps: {
+      valueType: 'Date',
+    },
+    colProps: { span: 6 },
   },
 ];
 
@@ -111,7 +141,7 @@ export const formSchema: FormSchema[] = [
     componentProps: {
       placeholder: '请输入标题',
     },
-    // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1632】标题过长保存报错，长度校验
+    // 代码逻辑说明: 【TV360X-1632】标题过长保存报错，长度校验
     dynamicRules() {
       return [
         {
@@ -126,7 +156,6 @@ export const formSchema: FormSchema[] = [
         },
       ];
     },
-    // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1632】标题过长保存报错，长度校验
   },
   {
     field: 'msgAbstract',
@@ -171,9 +200,8 @@ export const formSchema: FormSchema[] = [
     required: true,
     componentProps: {
       rowKey: 'id',
-      // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1627】通知公告用户选择组件没翻译
+      // 代码逻辑说明: 【TV360X-1627】通知公告用户选择组件没翻译
       labelKey: 'realname',
-      // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1627】通知公告用户选择组件没翻译
     },
     ifShow: ({ values }) => values.msgType == 'USER',
   },
@@ -291,7 +319,7 @@ export function getBpmFormSchema(_formData): FormSchema[] {
       componentProps: {
         placeholder: '请输入标题',
       },
-      // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1632】标题过长保存报错，长度校验
+      // 代码逻辑说明: 【TV360X-1632】标题过长保存报错，长度校验
       dynamicRules() {
         return [
           {
@@ -306,7 +334,6 @@ export function getBpmFormSchema(_formData): FormSchema[] {
           },
         ];
       },
-      // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1632】标题过长保存报错，长度校验
     },
     {
       field: 'msgAbstract',
@@ -333,9 +360,8 @@ export function getBpmFormSchema(_formData): FormSchema[] {
       required: true,
       componentProps: {
         rowKey: 'id',
-        // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1627】通知公告用户选择组件没翻译
+        // 代码逻辑说明: 【TV360X-1627】通知公告用户选择组件没翻译
         labelKey: 'realname',
-        // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1627】通知公告用户选择组件没翻译
       },
       ifShow: ({ values }) => values.msgType == 'USER',
     },

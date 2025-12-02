@@ -11,6 +11,7 @@ import com.jeecg.dingtalk.api.core.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.api.dto.PushMessageDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
@@ -101,8 +102,8 @@ public class SysAnnouncementController {
 	/**
 	 * QQYUN-5072【性能优化】线上通知消息打开有点慢
 	 */
-	public static ExecutorService cachedThreadPool = new ThreadPoolExecutor(0, 1024,60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
-	public static ExecutorService completeNoteThreadPool = new ThreadPoolExecutor(0, 1024,60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+	public static ExecutorService cachedThreadPool = new ShiroThreadPoolExecutor(0, 1024,60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+	public static ExecutorService completeNoteThreadPool = new ShiroThreadPoolExecutor(0, 1024,60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 
 	/**
 	  * 分页列表查询
@@ -142,10 +143,9 @@ public class SysAnnouncementController {
 	public Result<SysAnnouncement> add(@RequestBody SysAnnouncement sysAnnouncement) {
 		Result<SysAnnouncement> result = new Result<SysAnnouncement>();
 		try {
-			// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
+			// 代码逻辑说明: 标题处理xss攻击的问题
 			String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
 			sysAnnouncement.setTitile(title);
-			// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
 			sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
             //未发布
 			sysAnnouncement.setSendStatus(CommonSendStatus.UNPUBLISHED_STATUS_0);
@@ -174,10 +174,9 @@ public class SysAnnouncementController {
 			if(sysAnnouncementEntity==null) {
 				result.error500("未找到对应实体");
 			}else {
-				// update-begin-author:liusq date:20210804 for:标题处理xss攻击的问题
+				// 代码逻辑说明: 标题处理xss攻击的问题
 				String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
 				sysAnnouncement.setTitile(title);
-				// update-end-author:liusq date:20210804 for:标题处理xss攻击的问题
 				sysAnnouncement.setNoticeType(NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue());
 				boolean ok = sysAnnouncementService.upDateAnnouncement(sysAnnouncement);
 				//TODO 返回false说明什么？
@@ -307,6 +306,13 @@ public class SysAnnouncementController {
 					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
 					obj.put(CommonConstant.NOTICE_TYPE, sysAnnouncement.getNoticeType());
 			    	webSocket.sendMessage(obj.toJSONString());
+					//update-begin-author:liusq---date:2025-11-13--for: JHHB-827 【审批消息】移动端需要有推送 -全推送
+					PushMessageDTO pushMessageDTO = new PushMessageDTO();
+					pushMessageDTO.setTitle(sysAnnouncement.getTitile());
+					pushMessageDTO.setPushType(CommonConstant.MSG_TYPE_ALL);
+					pushMessageDTO.setContent(sysAnnouncement.getMsgAbstract());
+					sysBaseApi.uniPushMsgToUser(pushMessageDTO);
+					//update-begin-author:liusq---date:2025-11-13--for: JHHB-827 【审批消息】移动端需要有推送 -全推送
 				}else {
 					// 2.插入用户通告阅读标记表记录
 					String userId = sysAnnouncement.getUserIds();
@@ -319,6 +325,13 @@ public class SysAnnouncementController {
 					obj.put(WebsocketConst.MSG_TXT, sysAnnouncement.getTitile());
                     obj.put(CommonConstant.NOTICE_TYPE, sysAnnouncement.getNoticeType());
 			    	webSocket.sendMessage(userIds, obj.toJSONString());
+					//update-begin-author:liusq---date:2025-11-13--for: JHHB-827 【审批消息】移动端需要有推送
+					PushMessageDTO pushMessageDTO = new PushMessageDTO();
+					pushMessageDTO.setTitle(sysAnnouncement.getTitile());
+					pushMessageDTO.setUserIds(Arrays.asList(userIds));
+					pushMessageDTO.setContent(sysAnnouncement.getMsgAbstract());
+					sysBaseApi.uniPushMsgToUser(pushMessageDTO);
+					//update-begin-author:liusq---date:2025-11-13--for: JHHB-827 【审批消息】移动端需要有推送
 				}
 				try {
 					// 同步企业微信、钉钉的消息通知
@@ -383,11 +396,9 @@ public class SysAnnouncementController {
 		String userId = sysUser.getId();
 
 
-		//update-begin---author:scott ---date:2024-05-11  for：【性能优化】优化系统通知，只查近2个月的通知---
 		// 获取上个月的第一天（只查近两个月的通知）
 		Date lastMonthStartDay = DateRangeUtils.getLastMonthStartDay();
 		log.info("-----查询近两个月收到的未读通知-----，近2月的第一天：{}", lastMonthStartDay);
-		//update-end---author:scott ---date::2024-05-11  for：【性能优化】优化系统通知，只查近2个月的通知---
 		
 //		//补推送数据（用户和通知的关系表）
 //		completeNoteThreadPool.execute(()->{
@@ -429,8 +440,8 @@ public class SysAnnouncementController {
 
 		// 获取上个月的第一天（只查近两个月的通知）
 		Date lastMonthStartDay = DateRangeUtils.getLastMonthStartDay();
-		log.info(" ------查询近两个月收到的未读通知消息数量------，近2月的第一天：{}", lastMonthStartDay);
-        //update-begin---author:wangshuai---date:2025-06-26---for:【QQYUN-12162】OA项目改造，系统重消息拆分，目前消息都在一起 需按分类进行拆分---
+		log.debug(" ------查询近两个月收到的未读通知消息数量------，近2月的第一天：{}", lastMonthStartDay);
+        // 代码逻辑说明: 【QQYUN-12162】OA项目改造，系统重消息拆分，目前消息都在一起 需按分类进行拆分---
         Map<String,Integer> unreadMessageCount = new HashMap<>();
         //系统消息数量
         Integer systemCount = sysAnnouncementService.getUnreadMessageCountByUserId(userId, lastMonthStartDay, NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue());
@@ -446,7 +457,6 @@ public class SysAnnouncementController {
         unreadMessageCount.put("planCount",planCount);
         Integer count = systemCount + flowCount + fileCount + planCount;
         unreadMessageCount.put("count",count);
-        //update-end---author:wangshuai---date:2025-06-26---for:【QQYUN-12162】OA项目改造，系统重消息拆分，目前消息都在一起 需按分类进行拆分---
         return Result.ok(unreadMessageCount);
 	}
 
@@ -650,7 +660,7 @@ public class SysAnnouncementController {
 		// 4、性能统计耗时
 		long calEndTime = System.currentTimeMillis(); // 记录结束时间
 		long duration = calEndTime - calStartTime; // 计算耗时
-		log.info("耗时：" + duration + " 毫秒");
+		//System.out.println("耗时：" + duration + " 毫秒");
 		
 		return Result.ok(ls);
 	}
@@ -668,7 +678,7 @@ public class SysAnnouncementController {
 		// step.1 此接口过慢，可以采用缓存一小时方案
 		String keyString = String.format(CommonConstant.CACHE_KEY_USER_LAST_ANNOUNT_TIME_1HOUR + "_" + noticeType, userId);
 		if (redisTemplate.hasKey(keyString)) {
-			log.info("[SysAnnouncementSend Redis] 通过Redis缓存查询用户最后一次收到系统通知时间，userId={}", userId);
+			log.debug("[SysAnnouncementSend Redis] 通过Redis缓存查询用户最后一次收到系统通知时间，userId={}", userId);
 			Page<SysAnnouncementSend> pageList = (Page<SysAnnouncementSend>) redisTemplate.opsForValue().get(keyString);
 			result.setSuccess(true);
 			result.setResult(pageList);

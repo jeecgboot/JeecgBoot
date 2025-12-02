@@ -84,6 +84,12 @@ public class SysUserImportVo {
     private String mainDepPostId;
 
     /**
+     * 兼职岗位
+     */
+    @Excel(name="兼职岗位",width = 15)
+    private String otherDepPostId;
+
+    /**
      * 职级
      */
     @Excel(name="职级", width = 15)

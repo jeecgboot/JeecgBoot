@@ -26,7 +26,7 @@
     setup() {
       const { t } = useI18n();
       const [register, { openModal }] = useModal();
-      // update-begin--author:liaozhiyang---date:20230901---for：【QQYUN-6333】空路由问题—首次访问资源太大
+      // 代码逻辑说明: 【QQYUN-6333】空路由问题—首次访问资源太大
       const lockModalVisible = ref(false);
       const modalRef = ref(null);
       async function handleLock() {
@@ -34,7 +34,6 @@
         await getRefPromise(modalRef);
         openModal(true);
       }
-      // update-end--author:liaozhiyang---date:20230901---for：【QQYUN-6333】空路由问题—首次访问资源太大
       return {
         t,
         register,

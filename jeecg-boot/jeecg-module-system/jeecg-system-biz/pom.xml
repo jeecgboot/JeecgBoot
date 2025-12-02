@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.jeecgframework.boot3</groupId>
 		<artifactId>jeecg-module-system</artifactId>
-		<version>3.8.3</version>
+		<version>3.9.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
@@ -24,12 +24,12 @@
 			<artifactId>hibernate-re</artifactId>
 		</dependency>
 
-		<!-- AI大模型管理 -->
+		<!-- AI大模型管理-->
 		<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>
 			<artifactId>jeecg-boot-module-airag</artifactId>
 			<version>${jeecgboot.version}</version>
-		</dependency>
+		</dependency> 
 		<!-- 企业微信/钉钉 api -->
 		<dependency>
 			<groupId>org.jeecgframework</groupId>
@@ -39,34 +39,22 @@
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot3-starter</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.github.jsqlparser</groupId>
-					<artifactId>jsqlparser</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
-		<!-- mongo、redis和文件数据集支持包，按需引入 -->
+		<!-- 积木报表 csv excel ES JSON mongodbSQL redis支持包
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-nosql-starter</artifactId>
-		</dependency>
-		<!-- 后台导出接口Echart图表支持包，按需引入
+		</dependency>-->
+		<!-- 后台导出接口Echart图表支持包，按需引入 
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-echarts-starter</artifactId>
-		</dependency> -->
-		<!-- 积木BI -->
-		<dependency>
-			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimubi-spring-boot3-starter</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>com.github.jsqlparser</groupId>
-					<artifactId>jsqlparser</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		</dependency>-->
+        <!-- 积木BI -->
+        <dependency>
+            <groupId>org.jeecgframework.jimureport</groupId>
+            <artifactId>jimubi-spring-boot3-starter</artifactId>
+        </dependency>
 		<!-- AI大模型管理 -->
 		<dependency>
 			<groupId>org.jeecgframework.boot3</groupId>

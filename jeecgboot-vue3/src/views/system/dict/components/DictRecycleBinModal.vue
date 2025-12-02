@@ -63,7 +63,6 @@
       fixed: undefined,
     },
   });
-  // update-begin--author:liaozhiyang---date:20240709---for：【TV360X-1663】数据字典回收增加批量功能
   /**
    * 选择列配置
    */
@@ -79,7 +78,6 @@
   function onSelectChange(selectedRowKeys: (string | number)[]) {
     checkedKeys.value = selectedRowKeys;
   }
-  // update-end--author:liaozhiyang---date:20240709---for：【TV360X-1663】数据字典回收增加批量功能
   /**
    * 还原事件
    */
@@ -98,11 +96,10 @@
    */
   function batchHandleRevert() {
     batchPutRecycleBin({ ids: toRaw(checkedKeys.value).join(',') }, () => {
-      // update-begin--author:liaozhiyang---date:20240709---for：【TV360X-1663】数据字典回收增加批量功能
+      // 代码逻辑说明: 【TV360X-1663】数据字典回收增加批量功能
       reload();
       checkedKeys.value = [];
       emit('success');
-      // update-end--author:liaozhiyang---date:20240709---for：【TV360X-1663】数据字典回收增加批量功能
     });
   }
   /**
@@ -110,10 +107,9 @@
    */
   function batchHandleDelete() {
     batchDeleteRecycleBin({ ids: toRaw(checkedKeys.value).join(',') }, () => {
-      // update-begin--author:liaozhiyang---date:20240709---for：【TV360X-1663】数据字典回收增加批量功能
+      // 代码逻辑说明: 【TV360X-1663】数据字典回收增加批量功能
       checkedKeys.value = [];
       reload();
-      // update-end--author:liaozhiyang---date:20240709---for：【TV360X-1663】数据字典回收增加批量功能
     });
   }
   //获取操作栏事件

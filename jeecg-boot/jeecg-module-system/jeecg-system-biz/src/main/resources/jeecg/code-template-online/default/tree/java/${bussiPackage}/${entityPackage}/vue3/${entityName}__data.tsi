@@ -216,7 +216,7 @@ export const searchFormSchema: FormSchema[] = [
           dictCode:"${po.dictField}"
         </#if>
       },
-<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
       component: 'InputNumber',
 <#else>
       component: 'Input',
@@ -252,7 +252,7 @@ export const searchFormSchema: FormSchema[] = [
       componentProps:{
         valueFormat: 'HH:mm:ss',
       },
-<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
       component: 'JRangeNumber',
 <#-- update-begin---author:chenrui ---date:20240527  for：[TV360X-388]时间范围查询控件---------- -->
 <#elseif po.classType=='time'>
@@ -415,7 +415,7 @@ export const formSchema: FormSchema[] = [
     <#if po.dictText?default("")?trim?length gt 1>
     <#assign form_cat_back = "${po.dictText}">
     </#if>
-    <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+    <#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
     component: 'InputNumber',
     <#elseif po.classType=='file'>
     component: 'JUpload',

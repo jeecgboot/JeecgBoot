@@ -25,7 +25,7 @@
       <a-col :md="17" :sm="24">
         <a-card :style="{ minHeight: '613px', overflow: 'auto' }">
           <!--用户列表-->
-          <BasicTable ref="tableRef" v-bind="getBindValue" :searchInfo="searchInfo" :api="getTableList" :rowSelection="rowSelection"></BasicTable>
+          <BasicTable ref="tableRef" v-bind="getBindValue" :searchInfo="searchInfo" :api="getTableList" :rowSelection="rowSelection" :defSort="{ column: '', order: '' }"></BasicTable>
         </a-card>
       </a-col>
     </a-row>
@@ -97,6 +97,12 @@
           {
             title: '手机号码',
             dataIndex: 'phone',
+            customRender:( { record, text })=>{
+              if(record.izHideContact && record.izHideContact === '1'){
+                return '/';
+              }
+              return text;
+            }
             // width: 50,
           },
         ],
@@ -116,7 +122,7 @@
             xl: 6,
             xxl: 8,
           },
-          //update-begin-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
+          // 代码逻辑说明: [issues/5514]组件页面显示错位
           actionColOptions: {
               xs: 24,
               sm: 12,
@@ -125,7 +131,6 @@
               xl: 8,
               xxl: 8,
           },
-          //update-end-author:liusq date:2023-10-30 for: [issues/5514]组件页面显示错位
           schemas: [
             {
               label: '账号',

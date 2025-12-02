@@ -107,10 +107,13 @@
 
       function onSelectFileOk(temp) {
         let arr = selectFileList.value;
-        arr.push({
-          ...temp,
-          exist: true
-        })
+        // 代码逻辑说明: 【JHHB-524】我的日程留言功能，从文件库中无法选附件
+        temp.forEach((item) => {
+          arr.push({
+            ...item,
+            exist: true
+          })
+        });
         selectFileList.value = arr;
       }
 

@@ -292,12 +292,12 @@ public final class XmlUtils {
 				"</cas:serviceResponse>";
 		
 		String error = XmlUtils.getTextForElement(errorRes, "authenticationFailure");
-		System.out.println("------"+error);
+		//System.out.println("------"+error);
 		
 		String error2 = XmlUtils.getTextForElement(result, "authenticationFailure");
-		System.out.println("------"+error2);
+		//System.out.println("------"+error2);
 		String principal = XmlUtils.getTextForElement(result, "user");
-		System.out.println("---principal---"+principal);
+		//System.out.println("---principal---"+principal);
 		Map<String, Object> attributes = XmlUtils.extractCustomAttributes(result);
 		System.out.println("---attributes---"+attributes);
 	}

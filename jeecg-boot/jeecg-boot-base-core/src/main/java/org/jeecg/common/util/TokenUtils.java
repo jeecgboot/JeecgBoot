@@ -120,7 +120,9 @@ public class TokenUtils {
         }
         // 校验token是否超时失效 & 或者账号密码是否错误
         if (!jwtTokenRefresh(token, username, user.getPassword(), redisUtil)) {
-            throw new JeecgBoot401Exception(CommonConstant.TOKEN_IS_INVALID_MSG);
+            // 用户登录Token过期提示信息
+            String userLoginTokenErrorMsg = oConvertUtils.getString(redisUtil.get(CommonConstant.PREFIX_USER_TOKEN_ERROR_MSG + token));
+            throw new JeecgBoot401Exception(oConvertUtils.isEmpty(userLoginTokenErrorMsg)? CommonConstant.TOKEN_IS_INVALID_MSG: userLoginTokenErrorMsg);
         }
         return true;
     }
@@ -138,10 +140,15 @@ public class TokenUtils {
         if (oConvertUtils.isNotEmpty(cacheToken)) {
             // 校验token有效性
             if (!JwtUtil.verify(cacheToken, userName, passWord)) {
-                String newAuthorization = JwtUtil.sign(userName, passWord);
-                // 设置Toekn缓存有效时间
+                // 从token中解析客户端类型，保持续期时使用相同的客户端类型
+                String clientType = JwtUtil.getClientType(token);
+                String newAuthorization = JwtUtil.sign(userName, passWord, clientType);
+                // 根据客户端类型设置对应的缓存有效时间
+                long expireTime = CommonConstant.CLIENT_TYPE_APP.equalsIgnoreCase(clientType) 
+                    ? JwtUtil.APP_EXPIRE_TIME * 2 / 1000 
+                    : JwtUtil.EXPIRE_TIME * 2 / 1000;
                 redisUtil.set(CommonConstant.PREFIX_USER_TOKEN + token, newAuthorization);
-                redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, JwtUtil.EXPIRE_TIME * 2 / 1000);
+                redisUtil.expire(CommonConstant.PREFIX_USER_TOKEN + token, expireTime);
             }
             return true;
         }

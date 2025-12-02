@@ -56,13 +56,12 @@ public class JwDepartmentTreeVo extends Department {
             department = departmentOptional.get();
         }
         getChildrenRecursion(treeList, allDepartment);
-        //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】企业微信同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
+        // 代码逻辑说明: 【issues/6017】企业微信同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
         JwDepartmentTreeVo treeVo = new JwDepartmentTreeVo(department);
         treeVo.setChildren(treeList);
         List<JwDepartmentTreeVo> list = new ArrayList<>();
         list.add(treeVo);
         return list;
-        //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】企业微信部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
     }
 
     private static List<JwDepartmentTreeVo> getByParentId(String parentId, List<Department> allDepartment) {

@@ -80,7 +80,7 @@
 <#if po.classType=='time'>
 <#assign need_time = true>
 </#if>
-<#if po.queryMode=='group' && (po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal')>
+<#if po.queryMode=='group' && (po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal')>
 <#assign need_range_number = true>
 </#if>
 <#if po.queryMode=='group'>

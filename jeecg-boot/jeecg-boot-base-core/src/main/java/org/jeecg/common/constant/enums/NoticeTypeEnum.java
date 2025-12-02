@@ -23,7 +23,11 @@ public enum NoticeTypeEnum {
     /**
      * 督办
      */
-    NOTICE_TYPE_SUPERVISE("督办管理", "supe");
+    NOTICE_TYPE_SUPERVISE("督办管理", "supe"),
+    /**
+     * 考勤
+     */
+    NOTICE_TYPE_ATTENDANCE("考勤消息", "attendance");
 
     /**
      * 文件类型名称

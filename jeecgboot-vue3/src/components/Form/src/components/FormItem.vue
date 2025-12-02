@@ -54,18 +54,16 @@
       formActionType: {
         type: Object as PropType<FormActionType>,
       },
-      // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-857】解决禁用状态下触发校验
+      // 代码逻辑说明: 【TV360X-857】解决禁用状态下触发校验
       clearValidate: {
         type: Function,
         default: null,
       },
-      // update-end-author:liaozhiyang---date:20240605---for：【TV360X-857】解决禁用状态下触发校验
-      // update-begin--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
+      // 代码逻辑说明: 【TV360X-1511】blur不生效
       formName: {
         type: String,
         default: '',
       },
-      // update-end--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
       source: {
         type: String,
         default: '',
@@ -103,20 +101,18 @@
           componentProps = componentProps({ schema, tableAction, formModel, formActionType }) ?? {};
         }
         if (schema.component === 'Divider') {
-          //update-begin---author:wangshuai---date:2023-09-22---for:【QQYUN-6603】分割线标题位置显示不正确---
+          // 代码逻辑说明: 【QQYUN-6603】分割线标题位置显示不正确---
           componentProps = Object.assign({ type: 'horizontal',orientation:'left', plain: true, }, componentProps);
-          //update-end---author:wangshuai---date:2023-09-22---for:【QQYUN-6603】分割线标题位置显示不正确---
         }
         return componentProps as Recordable;
       });
 
       const getDisable = computed(() => {
         const { disabled: globDisabled } = props.formProps;
-        // update-begin--author:liaozhiyang---date:20240530---for：【TV360X-594】表单全局禁用则dynamicDisabled不生效
+        // 代码逻辑说明: 【TV360X-594】表单全局禁用则dynamicDisabled不生效
         if (!!globDisabled) {
           return globDisabled;
         }
-        // update-end--author:liaozhiyang---date:20240530---for：【TV360X-594】表单全局禁用则dynamicDisabled不生效
         const { dynamicDisabled } = props.schema;
         const { disabled: itemDisabled = false } = unref(getComponentsProps);
         let disabled = !!globDisabled || itemDisabled;
@@ -129,7 +125,7 @@
         return disabled;
       });
 
-      // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
+      // 代码逻辑说明: 【QQYUN-8377】formSchema props支持动态修改
       const getDynamicPropsValue = computed(() => {
         const { dynamicPropsVal, dynamicPropskey } = props.schema;
         if (dynamicPropskey == null) {
@@ -143,7 +139,6 @@
           }
         }
       });
-      // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
 
       function getShow(): { isShow: boolean; isIfShow: boolean } {
         const { show, ifShow } = props.schema;
@@ -168,7 +163,7 @@
         isShow = isShow && itemIsAdvanced;
         return { isShow, isIfShow };
       }
-      // update-begin--author:liaozhiyang---date:20240530---for：【TV360X-434】validator校验执行两次
+      // 代码逻辑说明: 【TV360X-434】validator校验执行两次
       let vSwitchArr: any = [],
         prevValidatorArr: any = [];
       const hijackValidator = (rules) => {
@@ -195,35 +190,30 @@
           }
         });
       };
-      // update-end--author:liaozhiyang---date:20240530---for：【TV360X-434】validator校验执行两次
       function handleRules(): ValidationRule[] {
         const { rules: defRules = [], component, rulesMessageJoinLabel, label, dynamicRules, required, auth, field } = props.schema;
-        // update-begin--author:liaozhiyang---date:20240605---for：【TV360X-857】解决禁用状态下触发校验
+        // 代码逻辑说明: 【TV360X-857】解决禁用状态下触发校验
         const { disabled: globDisabled } = props.formProps;
         const { disabled: itemDisabled = false } = unref(getComponentsProps);
         if (!!globDisabled || !!itemDisabled) {
           props.clearValidate(field);
           return [];
         }
-        // update-end--author:liaozhiyang---date:20240605---for：【TV360X-857】解决禁用状态下触发校验
-        // update-begin--author:liaozhiyang---date:20240531---for：【TV360X-842】必填项v-auth、show隐藏的情况下表单无法提交
+        // 代码逻辑说明: 【TV360X-842】必填项v-auth、show隐藏的情况下表单无法提交
         const { hasPermission } = usePermission();
         const { isShow } = getShow();
         if ((auth && !hasPermission(auth)) || !isShow) {
           return [];
         }
-        // update-end--author:liaozhiyang---date:20240531---for：【TV360X-842】必填项v-auth、show隐藏的情况下表单无法提交
         if (isFunction(dynamicRules)) {
-          // update-begin--author:liaozhiyang---date:20240514---for：【issues/1244】标识了必填，但是必填标识没显示
+          // 代码逻辑说明: 【issues/1244】标识了必填，但是必填标识没显示
           const ruleArr = dynamicRules(unref(getValues)) as ValidationRule[];
           if (required) {
             ruleArr.unshift({ required: true });
           }
-          // update-begin--author:liaozhiyang---date:20240530---for：【TV360X-434】validator校验执行两次
+          // 代码逻辑说明: 【TV360X-434】validator校验执行两次
           hijackValidator(ruleArr);
-          // update-end--author:liaozhiyang---date:20240530---for：【TV360X-434】validator校验执行两次
           return ruleArr;
-          // update-end--author:liaozhiyang---date:20240514---for：【issues/1244】标识了必填，但是必填标识没显示
         }
 
         let rules: ValidationRule[] = cloneDeep(defRules) as ValidationRule[];
@@ -273,12 +263,10 @@
             rule.required = false;
           }
           if (component) {
-            //update-begin---author:wangshuai---date:2024-02-01---for:【QQYUN-8176】编辑表单中,校验必填时,如果组件是ApiSelect,打开编辑页面时,即使该字段有值,也会提示请选择---
             //https://github.com/vbenjs/vue-vben-admin/pull/3082 github修复原文
             /*if (!Reflect.has(rule, 'type')) {
               rule.type = component === 'InputNumber' ? 'number' : 'string';
             }*/
-            //update-end---author:wangshuai---date:2024-02-01---for:【QQYUN-8176】编辑表单中,校验必填时,如果组件是ApiSelect,打开编辑页面时,即使该字段有值,也会提示请选择---
 
             rule.message = rule.message || defaultMsg;
 
@@ -295,7 +283,7 @@
         if (characterInx !== -1 && !rules[characterInx].validator) {
           rules[characterInx].message = rules[characterInx].message || t('component.form.maxTip', [rules[characterInx].max] as Recordable);
         }
-        // update-begin--author:liaozhiyang---date:20241226---for：【QQYUN-7495】pattern由字符串改成正则传递给antd（因使用InputNumber时发现正则无效）
+        // 代码逻辑说明: 【QQYUN-7495】pattern由字符串改成正则传递给antd（因使用InputNumber时发现正则无效）
         rules.forEach((item) => {
           if (typeof item.pattern === 'string') {
             try {
@@ -310,10 +298,8 @@
             }
           }
         });
-        // update-end--author:liaozhiyang---date:20231226---for：【QQYUN-7495】pattern由字符串改成正则传递给antd（因使用InputNumber时发现正则无效）
-        // update-begin--author:liaozhiyang---date:20240530---for：【TV360X-434】validator校验执行两次
+        // 代码逻辑说明: 【TV360X-434】validator校验执行两次
         hijackValidator(rules);
-        // update-end--author:liaozhiyang---date:20240530---for：【TV360X-434】validator校验执行两次
         return rules;
       }
 
@@ -321,26 +307,29 @@
         const { renderComponentContent, component, field, changeEvent = 'change', valueField, componentProps, dynamicRules, rules:defRules = [] } = props.schema;
 
         const isCheck = component && ['Switch', 'Checkbox'].includes(component);
-        // update-begin--author:liaozhiyang---date:20231013---for：【QQYUN-6679】input去空格
+        // 代码逻辑说明: 【QQYUN-6679】input去空格
         let isTrim = false;
         if (component === 'Input' && componentProps && componentProps.trim) {
           isTrim = true;
         }
-        // update-end--author:liaozhiyang---date:20231013---for：【QQYUN-6679】input去空格
         const eventKey = `on${upperFirst(changeEvent)}`;
         const getRules = (): ValidationRule[] => {
           const dyRules = isFunction(dynamicRules) ? dynamicRules(unref(getValues)) : [];
           return [...dyRules, ...defRules];
         };
-        // update-begin--author:liaozhiyang---date:20230922---for：【issues/752】表单校验dynamicRules 无法 使用失去焦点后校验 trigger: 'blur'
+        // 代码逻辑说明: 【issues/752】表单校验dynamicRules 无法 使用失去焦点后校验 trigger: 'blur'
         const on = {
           [eventKey]: (...args: Nullable<Recordable>[]) => {
             const [e] = args;
             if (propsData[eventKey]) {
               propsData[eventKey](...args);
+              // 代码逻辑说明: 【issues/8791】js增强popup弹框的onlChange()没生效
+              if (eventKey == 'onPopUpChange') {
+                return;
+              }
             }
             const target = e ? e.target : null;
-            // update-begin--author:liaozhiyang---date:20231013---for：【QQYUN-6679】input去空格
+            // 代码逻辑说明: 【QQYUN-6679】input去空格
             let value;
             if (target) {
               if (isCheck) {
@@ -351,22 +340,18 @@
             } else {
               value = e;
             }
-            // update-end--author:liaozhiyang---date:20231013---for：【QQYUN-6679】input去空格
             props.setFormModel(field, value);
-            // update-begin--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
+            // 代码逻辑说明: 【TV360X-1511】blur不生效
             const findItem = getRules().find((item) => item?.trigger === 'blur');
             if (!findItem) {
-              // update-begin--author:liaozhiyang---date:20240522---for：【TV360X-341】有值之后必填校验不消失
+              // 代码逻辑说明: 【TV360X-341】有值之后必填校验不消失
               props.validateFields([field]).catch((_) => {});
-              // update-end--author:liaozhiyang---date:20240625---for：【TV360X-341】有值之后必填校验不消失
             }
-            // update-end--author:liaozhiyang---date:20240625---for：【TV360X-1511】blur不生效
           },
           // onBlur: () => {
           //   props.validateFields([field], { triggerName: 'blur' }).catch((_) => {});
           // },
         };
-        // update-end--author:liaozhiyang---date:20230922---for：【issues/752】表单校验dynamicRules 无法 使用失去焦点后校验 trigger: 'blur'
         const Comp = componentMap.get(component) as ReturnType<typeof defineComponent>;
 
         const { autoSetPlaceHolder, size } = props.formProps;
@@ -380,27 +365,23 @@
           ...unref(getComponentsProps),
           disabled: unref(getDisable),
         };
-        // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
+        // 代码逻辑说明: 【QQYUN-8377】formSchema props支持动态修改
         const dynamicPropskey = props.schema.dynamicPropskey;
         if (dynamicPropskey) {
           propsData[dynamicPropskey] = unref(getDynamicPropsValue);
         }
-        // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
 
-        // update-begin--author:sunjianlei---date:20240725---for：【TV360X-972】控件禁用时统一占位内容
         // const isCreatePlaceholder = !propsData.disabled && autoSetPlaceHolder;
         const isCreatePlaceholder = !!autoSetPlaceHolder;
-        // update-end----author:sunjianlei---date:20240725---for：【TV360X-972】控件禁用时统一占位内容
 
         // RangePicker place是一个数组
         if (isCreatePlaceholder && component !== 'RangePicker' && component) {
           //自动设置placeholder
-          // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+          // 代码逻辑说明: 【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
           let label = isFunction(props.schema.label) ? props.schema.label() : props.schema.label;
           if (localeStore.getLocale === 'en' && !(/^\s/.test(label))) {
             label = ' ' + label;
           }
-          // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
           propsData.placeholder = unref(getComponentsProps)?.placeholder || createPlaceholderMessage(component) + label;
         }
         propsData.codeField = field;
@@ -432,18 +413,15 @@
        * @updateBy:zyf
        */
       function renderLabelHelpMessage() {
-        //update-begin-author:taoyan date:2022-9-7 for: VUEN-2061【样式】online表单超出4个 .. 省略显示
         //label宽度支持自定义
         const { label: itemLabel, helpMessage, helpComponentProps, subLabel, labelLength } = props.schema;
-        // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+        // 代码逻辑说明: 【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
         const label = isFunction(itemLabel) ? itemLabel() : itemLabel;
-        // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
         let showLabel: string = label + '';
-        // update-begin--author:liaozhiyang---date:20240517---for：【TV360X-98】label展示的文字必须和labelLength配置一致
+        // 代码逻辑说明: 【TV360X-98】label展示的文字必须和labelLength配置一致
         if (labelLength) {
           showLabel = showLabel.substr(0, labelLength);
         }
-        // update-end--author:liaozhiyang---date:20240517---for：【TV360X-98】label展示的文字必须和labelLength配置一致
         const titleObj = { title: label };
         const renderLabel = subLabel ? (
           <span>
@@ -454,7 +432,6 @@
         ) : (
           label
         );
-        //update-end-author:taoyan date:2022-9-7 for: VUEN-2061【样式】online表单超出4个 .. 省略显示
         const getHelpMessage = isFunction(helpMessage) ? helpMessage(unref(getValues)) : helpMessage;
         if (!getHelpMessage || (Array.isArray(getHelpMessage) && getHelpMessage.length === 0)) {
           return renderLabel;
@@ -472,12 +449,11 @@
         const { labelCol, wrapperCol } = unref(itemLabelWidthProp);
         const { colon } = props.formProps;
 
-        // update-begin--author:sunjianlei---date:20250613---for：itemProps 属性支持函数形式
+        // 代码逻辑说明: itemProps 属性支持函数形式
         let getItemProps = itemProps;
         if (typeof getItemProps === 'function') {
           getItemProps = getItemProps(unref(getValues));
         }
-        // update-end--author:sunjianlei---date:20250613---for：itemProps 属性支持函数形式
 
         if (component === 'Divider') {
           return (
@@ -500,9 +476,8 @@
               {...(getItemProps as Recordable)}
               label={renderLabelHelpMessage()}
               rules={handleRules()}
-              // update-begin--author:liaozhiyang---date:20240514---for：【issues/1244】标识了必填，但是必填标识没显示
+              // 代码逻辑说明: 【issues/1244】标识了必填，但是必填标识没显示
               validateFirst = { true }
-              // update-end--author:liaozhiyang---date:20240514---for：【issues/1244】标识了必填，但是必填标识没显示
               labelCol={labelCol}
               wrapperCol={wrapperCol}
             >
@@ -525,14 +500,13 @@
         }
 
         const { baseColProps = {} } = props.formProps;
-        // update-begin--author:liaozhiyang---date:20230803---for：【issues-641】调整表格搜索表单的span配置无效
+        // 代码逻辑说明: 【issues-641】调整表格搜索表单的span配置无效
         const { getIsMobile } = useAppInject();
         let realColProps;
         realColProps = { ...baseColProps, ...colProps };
         if (colProps['span'] && !unref(getIsMobile)) {
           ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'].forEach((name) => delete realColProps[name]);
         }
-        // update-end--author:liaozhiyang---date:20230803---for：【issues-641】调整表格搜索表单的span配置无效
         const { isIfShow, isShow } = getShow();
         const values = unref(getValues);
 

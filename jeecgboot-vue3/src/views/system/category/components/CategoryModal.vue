@@ -35,9 +35,8 @@
     expandedRowKeys.value = [];
     setModalProps({ confirmLoading: false, minHeight: 80 });
     isUpdate.value = !!data?.isUpdate;
-    //update-begin---author:wangshuai ---date: 20230829 for：分类字典data.record为空报错------------
+    // 代码逻辑说明: 分类字典data.record为空报错------------
     isSubAdd.value = !data?.isUpdate && data.record && data.record.id;
-    //update-end---author:wangshuai ---date: 20230829 for：分类字典data.record为空报错------------
     if (data?.record) {
       //表单赋值
       await setFieldsValue({

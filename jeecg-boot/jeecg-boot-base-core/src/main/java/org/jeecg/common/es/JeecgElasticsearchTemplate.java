@@ -387,7 +387,7 @@ public class JeecgElasticsearchTemplate {
             data.remove("id");
             bodySb.append(data.toJSONString()).append("\n");
         }
-        System.out.println("+-+-+-: bodySb.toString(): " + bodySb.toString());
+        //System.out.println("+-+-+-: bodySb.toString(): " + bodySb.toString());
         HttpHeaders headers = RestUtil.getHeaderApplicationJson();
         RestUtil.request(url, HttpMethod.PUT, headers, null, bodySb, JSONObject.class);
         return true;

@@ -5,6 +5,7 @@ import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
+import org.jeecg.common.api.dto.PushMessageDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.constant.enums.EmailTemplateEnum;
@@ -507,6 +508,12 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     List<String> queryUserIdsByDeptIds(List<String> deptIds);
 
+    /**
+     * 根据用户ID查询用户名称
+     * @param userIds
+     * @return
+     */
+    List<String> queryUsernameByIds(List<String> userIds);
 
     /**
      * 根据部门ID查询部门及其子部门下用户ID <br/>
@@ -530,11 +537,25 @@ public interface ISysBaseAPI extends CommonAPI {
     List<String> queryUserIdsByRoleds(List<String> roleCodes);
 
     /**
-     * 根据职务ID查询用户ID
+     * 根据部门岗位ID查询用户
+     * @param deptPostIds
+     * @return
+     */
+    public List<String> queryUserIdsByDeptPostIds(List<String> deptPostIds);
+    
+    /**
+     * 根据主岗位和兼职岗位ID查询用户ID
+     * @param departPositIds
+     * @return
+     */
+    List<String> queryUsernameByDepartPositIds(List<String> departPositIds);
+
+    /**
+     * 根据职位ID查询用户信息（老方法）
      * @param positionIds
      * @return
      */
-    List<String> queryUserIdsByPositionIds(List<String> positionIds);
+    public List<String> queryUserIdsByPositionIds(List<String> positionIds);
 
     /**
      * 根据部门和子部门下的所有用户账号
@@ -605,4 +626,10 @@ public interface ISysBaseAPI extends CommonAPI {
      * @return String 部门名称
      */
     String getDepartPathNameByOrgCode(String orgCode, String depId);
+    /**
+     * 根据用户信息推送PUSH消息
+     *
+     * @param pushMessageDTO   推送消息
+     */
+    void uniPushMsgToUser(PushMessageDTO pushMessageDTO);
 }

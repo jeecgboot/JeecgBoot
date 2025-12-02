@@ -4,13 +4,16 @@
       <div class="markdown-body" :class="{ 'markdown-body-generate': loading }" :style="{color:error?'#FF4444 !important':''}" v-html="text" />
       <template v-if="showRefKnow">
         <a-divider orientation="left">引用</a-divider>
-        <template v-for="(item, idx) of referenceKnowledge" :key="idx">
-          <a-tooltip :title="item.substring(0, 800)">
-            <a-tag >
-              <a-space>
-                <img :src="knowledgePng" width="16" height="16"/>
+        <template v-for="(item, idx) in referenceKnowledge" :key="idx">
+          <a-tooltip :title="item.content?.substring(0, 800)">
+            <a-tag style="min-width: 80px;background: #F7F8FA;padding-inline: 0 7px">
+              <a-space style="min-height: 30px;padding-left: 4px;padding-right: 4px;background-color: #F0F1F6;color: #788194">
+                <div>{{ 'chunk-' + item.chunk}}</div>
+              </a-space>
+              <a-space style="min-height: 30px;padding-left: 4px;">
+                <img :src="knowledgePng" width="14" height="14" style="position: relative; top: -2px"/>
                 <div style="max-width: 240px; overflow: hidden;white-space: nowrap;text-overflow: ellipsis;">
-                  {{ item }}
+                  {{ item.docName }}
                 </div>
               </a-space>
             </a-tag>

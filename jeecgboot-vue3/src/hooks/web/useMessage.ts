@@ -88,14 +88,13 @@ const getBaseOptions = () => {
 };
 
 function createModalOptions(options: ModalOptionsPartial, icon: string): ModalOptionsPartial {
-  //update-begin-author:taoyan date:2023-1-10 for: 可以自定义图标 
+  // 代码逻辑说明: 可以自定义图标
   let titleIcon:any = ''
   if(options.icon){
     titleIcon = options.icon;
   }else{
     titleIcon = getIcon(icon)
   }
-  //update-end-author:taoyan date:2023-1-10 for: 可以自定义图标 
   return {
     ...getBaseOptions(),
     ...options,

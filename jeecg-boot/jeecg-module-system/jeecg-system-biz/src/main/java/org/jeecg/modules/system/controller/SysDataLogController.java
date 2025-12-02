@@ -87,14 +87,13 @@ public class SysDataLogController {
 		QueryWrapper<SysDataLog> queryWrapper = new QueryWrapper<SysDataLog>();
 		queryWrapper.eq("data_table", dataTable);
 		queryWrapper.eq("data_id", dataId);
-		//update-begin-author:taoyan date:2022-7-26 for: 新增查询条件-type
+		// 代码逻辑说明: 新增查询条件-type
 		String type = req.getParameter("type");
 		if (oConvertUtils.isNotEmpty(type)) {
 			queryWrapper.eq("type", type);
 		}
 		// 按时间倒序排
 		queryWrapper.orderByDesc("create_time");
-		//update-end-author:taoyan date:2022-7-26 for:新增查询条件-type
 
 		List<SysDataLog> list = service.list(queryWrapper);
 		if(list==null||list.size()<=0) {

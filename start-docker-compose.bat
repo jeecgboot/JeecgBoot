@@ -53,7 +53,6 @@ if errorlevel 1 (
 if %errorlevel% neq 0 (
     echo [错误] 设置 hosts 文件失败，请检查权限！
     pause
-    exit /b 1
 )
 
 echo [3/5] 编译后端项目...

@@ -45,7 +45,6 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 		return sysLogMapper.findTotalVisitCount();
 	}
 
-	//update-begin--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 	@Override
 	public Long findTodayVisitCount(Date dayStart, Date dayEnd) {
 		return sysLogMapper.findTodayVisitCount(dayStart,dayEnd);
@@ -55,7 +54,6 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLog> impleme
 	public Long findTodayIp(Date dayStart, Date dayEnd) {
 		return sysLogMapper.findTodayIp(dayStart,dayEnd);
 	}
-	//update-end--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 
 	@Override
 	public List<Map<String,Object>> findVisitCount(Date dayStart, Date dayEnd) {

@@ -195,7 +195,7 @@ export const searchFormSchema: FormSchema[] = [
           </#if>
           pidValue:"${po.dictField}",
       },
-<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
       component: 'InputNumber',
 <#else>
       component: 'Input',
@@ -226,7 +226,7 @@ export const searchFormSchema: FormSchema[] = [
           valueType: 'Date',
           showTime:true
       },
-<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+<#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
       component: 'JRangeNumber',
 <#-- update-begin---author:chenrui ---date:20240527  for：[TV360X-388]时间范围查询控件---------- -->
 <#elseif po.classType=='time'>
@@ -384,7 +384,7 @@ export const formSchema: FormSchema[] = [
     <#if po.dictText?default("")?trim?length gt 1>
     <#assign form_cat_back = "${po.dictText}">
     </#if>
-    <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+    <#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
     component: 'InputNumber',
     <#elseif po.classType=='file'>
     component: 'JUpload',
@@ -714,7 +714,7 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     <#if po.dictText?default("")?trim?length gt 1>
     <#assign form_cat_back = "${po.dictText}">
     </#if>
-    <#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+    <#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
     component: 'InputNumber',
     <#elseif po.classType=='file'>
     component: 'JUpload',

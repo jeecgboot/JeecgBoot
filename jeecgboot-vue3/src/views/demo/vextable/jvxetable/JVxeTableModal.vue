@@ -1,7 +1,6 @@
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" :title="getTitle" @ok="handleSubmit" width="70%" @fullScreen="handleFullScreen">
     <a-form ref="formRef" :model="orderMainModel" :label-col="labelCol" :wrapper-col="wrapperCol" :rules="validatorRules">
-      <!-- update-begin--author:liaozhiyang---date:20230803---for：【QQYUN-5866】鼠标放上去有左右滚动条 -->
       <div style="overflow-x: hidden">
         <a-row class="form-row" :gutter="16">
           <a-col :lg="8">
@@ -36,7 +35,6 @@
           </a-col>
         </a-row>
       </div>
-      <!-- update-end--author:liaozhiyang---date:20230803---for：【QQYUN-5866】鼠标放上去有左右滚动条 -->
       <!-- 子表单区域 -->
       <a-tabs v-model:activeKey="activeKey" @change="handleChangeTabs">
         <a-tab-pane tab="客户信息" key="tableRef1">
@@ -176,11 +174,10 @@
         //刷新列表
         emit('success');
       }
-      // update-begin--author:liaozhiyang---date:20230804---for：【QQYUN-5866】放大行数自适应
+      // 代码逻辑说明: 【QQYUN-5866】放大行数自适应
       const handleFullScreen = (val) => {
         tableH.value=val ? document.documentElement.clientHeight - 387 :  300;
       };
-      // update-end--author:liaozhiyang---date:20230804---for：【QQYUN-5866】放大行数自适应
       return {
         formRef,
         activeKey,

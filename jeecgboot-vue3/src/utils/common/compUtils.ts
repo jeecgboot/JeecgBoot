@@ -2,8 +2,8 @@ import { useGlobSetting } from '/@/hooks/setting';
 import { merge, random } from 'lodash-es';
 import { isArray } from '/@/utils/is';
 import { FormSchema } from '/@/components/Form';
-import { reactive } from "vue";
-import { getTenantId, getToken, getAuthCache, setAuthCache } from "/@/utils/auth";
+import { h, reactive, ref } from "vue";
+import { getTenantId, getToken } from "/@/utils/auth";
 import { useUserStoreWithOut } from "/@/store/modules/user";
 import dayjs from 'dayjs';
 import Big from 'big.js';
@@ -11,6 +11,8 @@ import Big from 'big.js';
 import { Modal } from "ant-design-vue";
 import { defHttp } from "@/utils/http/axios";
 import { useI18n } from "@/hooks/web/useI18n";
+//存放部门路径的数组
+const departNamePath = ref<Record<string, string>>({});
 
 const globSetting = useGlobSetting();
 const baseApiUrl = globSetting.domainUrl;
@@ -146,19 +148,16 @@ export function mapTableTotalSummary(tableData: Recordable[], fieldKeys: string[
   let totals: any = { _row: '合计', _index: '合计' };
   fieldKeys.forEach((key) => {
     totals[key] = tableData.reduce((prev, next) => {
-      // update-begin--author:liaozhiyang---date:20240118---for：【QQYUN-7891】PR 合计工具方法，转换为Nuber类型再计算
+      // 代码逻辑说明: 【QQYUN-7891】PR 合计工具方法，转换为Nuber类型再计算
       const value = Number(next[key]);
       if (!Number.isNaN(value)) {
-        // update-begin--author:liaozhiyang---date:20250224---for：【issues/7830】合计小数计算精度
+        // 代码逻辑说明: 【issues/7830】合计小数计算精度
         prev = Big(prev).plus(value).toString();
-        // update-end--author:liaozhiyang---date:20250224---for：【issues/7830】合计小数计算精度
       }
-      // update-end--author:liaozhiyang---date:20240118---for：【issues/7830】PR 合计工具方法，转换为Nuber类型再计算
       return prev;
     }, 0);
-    // update-begin--author:liaozhiyang---date:20250224---for：【issues/7830】合计小数计算精度
+    // 代码逻辑说明: 【issues/7830】合计小数计算精度
     totals[key] = +totals[key];
-    // update-end--author:liaozhiyang---date:20250224---for：【issues/7830】合计小数计算精度
   });
   return totals;
 }
@@ -512,12 +511,10 @@ export async function userExitChangeLoginTenantId(tenantId){
   let loginTenantId = getTenantId();
   userStore.setTenant(currentTenantId);
 
-  //update-begin---author:wangshuai---date:2023-11-07---for:【QQYUN-7005】退租户，判断退出的租户ID与当前租户ID一致，再刷新---
   //租户为空，说明没有租户了，需要刷新页面。或者当前租户和退出的租户一致则需要刷新浏览器
   if(!currentTenantId || tenantId == loginTenantId){
     window.location.reload();
   }
-  //update-end---author:wangshuai---date:2023-11-07---for:【QQYUN-7005】退租户，判断退出的租户ID与当前租户ID一致，再刷新---
 }
 
 /**
@@ -619,18 +616,91 @@ export function freezeDeep(obj: Recordable | Recordable[]) {
  * @return 部门名称
  */
 export async function getDepartPathNameByOrgCode(orgCode, label, depId){
-  let key:any = "DEPARTNAME" + depId + orgCode;
-  let authCache = getAuthCache(key);
-  if (authCache) {
-    return authCache;
-  }
   if (orgCode) {
     depId = "";
   }
   let result = await defHttp.get({ url: "/sys/sysDepart/getDepartPathNameByOrgCode", params:{ orgCode: orgCode, depId: depId } }, { isTransformResponse: false });
   if (result.success) {
-    setAuthCache(key,result.result);
     return result.result;
   }
   return label;
+}
+
+/**
+ * 获取部门路径名称
+ * @param title
+ * @param key 部门code或者部门id
+ * @param izOrgCode 是否是机构编码
+ */
+export function getDepartPathName(title,key,izOrgCode) {
+  if (departNamePath.value[key]) {
+    return departNamePath.value[key];
+  }
+  if(izOrgCode){
+    getDepartPathNameByOrgCode(key, title, "").then(result => {
+      departNamePath.value[key] = result;
+    });
+  }else{
+    getDepartPathNameByOrgCode("", title, key).then(result => {
+      departNamePath.value[key] = result;
+    });
+  }
+
+}
+
+/**
+ * 获取多个部门路径名称
+ * @param title
+ * @param id
+ */
+export function getMultiDepartPathName(title,id) {
+  if(!id || id.length === 0){
+    return '';
+  }
+  let postIds:any = "";
+  if(id instanceof Array){
+    postIds = id;
+  } else {
+    postIds = id.split(",")
+  }
+  let postNames = "";
+  postIds.forEach((postId)=>{
+    postNames += getDepartPathName(title,postId,false) + ",";
+  });
+  if(postNames.endsWith(",")){
+    postNames = postNames.substring(0,postNames.length - 1);
+  }
+  return postNames;
+}
+
+/**
+ * 获取部门名称 返回h
+ * @param departNamePath 部门路径
+ */
+export function getDepartName(departNamePath) {
+  if(departNamePath){
+    let names = departNamePath.split(",");
+    let textElements:any = [];
+    for (let i = 0; i < names.length; i++) {
+      textElements.push(h("p", { style: { marginBottom: '2px'} }, names[i]));
+    }
+    // 组合完整内容字符串用于title属性
+    const fullContent = names.join('\n');
+    return h("div",{
+      style: {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: '-webkit-box',
+        WebkitLineClamp: 3,
+        WebkitBoxOrient: 'vertical',
+        lineHeight: '1.5em',
+        maxHeight: '4.5em',
+        width: '100%',
+        whiteSpace: 'normal'
+      },
+      // 鼠标悬停显示全部内容
+      title: fullContent
+    },textElements)
+  }
+  return departNamePath;
 }

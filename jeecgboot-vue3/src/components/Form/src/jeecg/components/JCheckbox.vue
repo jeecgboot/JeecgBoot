@@ -34,7 +34,7 @@
        * 监听value
        */
       watchEffect(() => {
-        //update-begin-author:taoyan date:2022-7-4 for:issues/I5E7YX AUTO在线表单进入功能测试之后一直卡在功能测试界面
+        // 代码逻辑说明: issues/I5E7YX AUTO在线表单进入功能测试之后一直卡在功能测试界面
         let temp = props.value;
         if(!temp && temp!==0){
           checkboxArray.value = []
@@ -42,12 +42,10 @@
           temp = temp + '';
           checkboxArray.value = temp.split(',')
         }
-        //update-end-author:taoyan date:2022-7-4 for:issues/I5E7YX AUTO在线表单进入功能测试之后一直卡在功能测试界面
-        //update-begin-author:taoyan date:20220401 for: 调用表单的 resetFields不会清空当前信息，界面显示上一次的数据
+        // 代码逻辑说明: 调用表单的 resetFields不会清空当前信息，界面显示上一次的数据
         if (props.value === '' || props.value === undefined) {
           checkboxArray.value = [];
         }
-        //update-end-author:taoyan date:20220401 for: 调用表单的 resetFields不会清空当前信息，界面显示上一次的数据
       });
       /**
        * 监听字典code
@@ -73,13 +71,12 @@
 
       // 根据字典code查询字典项
       function loadDictOptions() {
-        //update-begin-author:taoyan date:2022-6-21 for: 字典数据请求前将参数编码处理，但是不能直接编码，因为可能之前已经编码过了
+        // 代码逻辑说明: 字典数据请求前将参数编码处理，但是不能直接编码，因为可能之前已经编码过了
         let temp = props.dictCode || '';
         if (temp.indexOf(',') > 0 && temp.indexOf(' ') > 0) {
           // 编码后 是不包含空格的
           temp = encodeURI(temp);
         }
-        //update-end-author:taoyan date:2022-6-21 for: 字典数据请求前将参数编码处理，但是不能直接编码，因为可能之前已经编码过了
         getDictItems(temp).then((res) => {
           if (res) {
             checkOptions.value = res.map((item) => ({value: item.value, label: item.text, color: item.color}));
@@ -113,7 +110,7 @@
   });
 </script>
 <style lang="less" scoped>
-  // update-begin--author:liaozhiyang---date:20230110---for：【QQYUN-7799】字典组件（原生组件除外）加上颜色配置
+  // 代码逻辑说明: 【QQYUN-7799】字典组件（原生组件除外）加上颜色配置
   .colorText {
     display: inline-block;
     height: 20px;
@@ -124,5 +121,4 @@
     color: #fff;
     font-size: 12px;
   }
-  // update-begin--author:liaozhiyang---date:20230110---for：【QQYUN-7799】字典组件（原生组件除外）加上颜色配置
 </style>

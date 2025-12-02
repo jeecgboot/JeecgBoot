@@ -13,11 +13,9 @@
     </template>
 
     <BasicTable ref="tableRef" @register="registerTable" :rowSelection="rowSelection">
-      <!-- update-begin-author:taoyan date:2023-7-11 for: issues/4992 online表单开发 字段控件类型是关联记录 新增的时候选择列表可以添加查询么 -->
       <template #tableTitle>
         <a-input-search v-model:value="searchText" @search="onSearch" placeholder="请输入关键词，按回车搜索" style="width: 240px" />
       </template>
-      <!-- update-end-author:taoyan date:2023-7-11 for: issues/4992 online表单开发 字段控件类型是关联记录 新增的时候选择列表可以添加查询么 -->
 
       <!--操作栏-->
       <template #action="{ record }">
@@ -275,9 +273,8 @@
       // modal数据新增完成 直接关闭list，将新增的数据带回表单
       function handleDataSave(data) {
         console.log('handleDateSave', data);
-        // update-begin--author:liaozhiyang---date:20250429---for：【issues/8163】关联记录新增丢失
+        // 代码逻辑说明: 【issues/8163】关联记录新增丢失
         let arr = [data, ...selectedRows.value];
-        // update-end--author:liaozhiyang---date:20250429---for：【issues/8163】关联记录新增丢失
         emit('success', arr);
         closeModal();
         //reload();

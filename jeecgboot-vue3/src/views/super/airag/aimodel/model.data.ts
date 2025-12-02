@@ -1,11 +1,12 @@
 import { FormSchema } from '@/components/Form';
 
-import deepspeek from '/@/views/super/airag/aimodel/icon/deepspeek.png';
-import ollama from '/@/views/super/airag/aimodel/icon/ollama.png';
-import OpenAi from '/@/views/super/airag/aimodel/icon/OpenAi.png';
-import qianfan from '/@/views/super/airag/aimodel/icon/qianfan.png';
-import qianwen from '/@/views/super/airag/aimodel/icon/qianwen.png';
-import zhipuai from '/@/views/super/airag/aimodel/icon/zhipuai.png';
+import anthropic from './icon/anthropic.png';
+import deepspeek from './icon/deepspeek.png';
+import ollama from './icon/ollama.png';
+import OpenAi from './icon/OpenAi.png';
+import qianfan from './icon/qianfan.png';
+import qianwen from './icon/qianwen.png';
+import zhipuai from './icon/zhipuai.png';
 import { ref } from 'vue';
 
 /**
@@ -63,7 +64,7 @@ export const formSchema: FormSchema[] = [
     component: 'InputPassword',
     ifShow: ({ values }) => {
       if(values.provider==='DEEPSEEK' || values.provider==="OLLAMA" || values.provider==="OPENAI"
-        || values.provider==="ZHIPU" || values.provider==="QWEN"){
+        || values.provider==="ZHIPU" || values.provider==="QWEN" || values.provider==="ANTHROPIC"){
         return false;
       }
       return true;
@@ -83,6 +84,7 @@ export const formSchema: FormSchema[] = [
  * @param name
  */
 export const imageList = ref<any>({
+  ANTHROPIC: anthropic,
   DEEPSEEK: deepspeek,
   OLLAMA: ollama,
   OPENAI: OpenAi,

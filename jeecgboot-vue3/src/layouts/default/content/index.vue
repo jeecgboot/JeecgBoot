@@ -1,9 +1,7 @@
 <template>
   <div :class="[prefixCls, getLayoutContentMode]" v-loading="getOpenPageLoading && getPageLoading">
     <PageLayout />
-    <!-- update-begin-author:zyf date:20211129 for:qiankun 挂载子应用盒子 -->
     <div id="content" class="app-view-box" v-if="openQianKun == 'true'"></div>
-    <!-- update-end-author:zyf date:20211129 for: qiankun 挂载子应用盒子-->
   </div>
 </template>
 <script lang="ts">

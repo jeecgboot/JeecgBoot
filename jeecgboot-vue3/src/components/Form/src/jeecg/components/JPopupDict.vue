@@ -5,7 +5,6 @@
     <a-select v-model:value="showText" v-bind="attrs" :mode="multi ? 'multiple' : ''" @click="handleOpen" readOnly :loading="loading">
       <a-select-option v-for="item in options" :value="item.value">{{ item.text }}</a-select-option>
     </a-select>
-    <!-- update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
     <a-form-item>
       <!--popup弹窗-->
       <JPopupOnlReportModal
@@ -23,7 +22,6 @@
         @ok="callBack"
       />
     </a-form-item>
-    <!-- update-end--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式 -->
   </div>
 </template>
 <script lang="ts">
@@ -85,9 +83,8 @@
        * 打开pop弹出框
        */
       function handleOpen() {
-        // update-begin--author:liaozhiyang---date:20240528---for：【TV360X-317】禁用后JPopup和JPopupdic还可以点击出弹窗
+        // 代码逻辑说明: 【TV360X-317】禁用后JPopup和JPopupdic还可以点击出弹窗
         !attrs.value.disabled && openModal(true);
-        // update-end--author:liaozhiyang---date:20240528---for：【TV360X-317】禁用后JPopup和JPopupdic还可以点击出弹窗
       }
       /**
        * 监听value数值
@@ -211,13 +208,12 @@
   });
 </script>
 <style lang="less" scoped>
-  // update-begin--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
+  // 代码逻辑说明: 【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
   .JPopupDict {
     > .ant-form-item {
       display: none;
     }
   }
-  // update-end--author:liaozhiyang---date:20240515---for：【QQYUN-9260】必填模式下会影响到弹窗内antd组件的样式
   .components-input-demo-presuffix {
     :deep(.ant-select-dropdown) {
       display: none !important;

@@ -84,11 +84,9 @@
     roleId.value = data.roleId;
     //初始化数据
     const roleResult = await queryTreeListForRole();
-    // update-begin--author:liaozhiyang---date:20240228---for：【QQYUN-8355】角色权限配置的菜单翻译
+    // 代码逻辑说明: 【QQYUN-8355】角色权限配置的菜单翻译
     treeData.value = translateTitle(roleResult.treeList);
-    // update-end--author:liaozhiyang---date:20240228---for：【QQYUN-8355】角色权限配置的菜单翻译
     allTreeKeys.value = roleResult.ids;
-    // update-begin--author:liaozhiyang---date:20240531---for：【TV360X-590】角色授权弹窗操作缓存
     const localData = localStorage.getItem(ROLE_AUTH_CONFIG_KEY);
     if (localData) {
       const obj = JSON.parse(localData);
@@ -97,7 +95,6 @@
     } else {
       expandedKeys.value = roleResult.ids;
     }
-    // update-end--author:liaozhiyang---date:20240531---for：【TV360X-590】角色授权弹窗操作缓存
     //初始化角色菜单数据
     const permResult = await queryRolePermission({ roleId: unref(roleId) });
     checkedKeys.value = permResult;
@@ -218,7 +215,7 @@
       permissionIds: unref(getTree().getCheckedKeys()).join(','),
       lastpermissionIds: unref(defaultCheckedKeys).join(','),
     };
-    //update-begin-author:taoyan date:2023-2-11 for: issues/352 VUE角色授权重复保存
+    // 代码逻辑说明: issues/352 VUE角色授权重复保存
     if(loading.value===false){
       await doSave(params)
     }else{
@@ -246,7 +243,6 @@
       loading.value = false;
     }, 500)
   }
-  //update-end-author:taoyan date:2023-2-11 for: issues/352 VUE角色授权重复保存
 
   /**
    * 树菜单选择
@@ -290,7 +286,7 @@
     position: absolute;
     width: 618px;
   }
-  //update-begin---author:wangshuai ---date:20230202  for：抽屉弹窗标题图标下拉样式------------
+  // 代码逻辑说明: 抽屉弹窗标题图标下拉样式------------
   .line {
     height: 1px;
     width: 100%;
@@ -307,5 +303,4 @@
   :deep(.jeecg-tree-header) {
     border-bottom: none;
   }
-  //update-end---author:wangshuai ---date:20230202  for：抽屉弹窗标题图标下拉样式------------
 </style>

@@ -56,13 +56,12 @@ public class JdtDepartmentTreeVo extends Department {
             department = departmentOptional.get();
         }
         getChildrenRecursion(treeList, allDepartment);
-        //update-begin---author:wangshuai---date:2024-04-10---for:【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
+        // 代码逻辑说明: 【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
         JdtDepartmentTreeVo treeVo = new JdtDepartmentTreeVo(department);
         treeVo.setChildren(treeList);
         List<JdtDepartmentTreeVo> list = new ArrayList<>();
         list.add(treeVo);
         return list;
-        //update-end---author:wangshuai---date:2024-04-10---for:【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
     }
 
     private static List<JdtDepartmentTreeVo> getByParentId(Integer parentId, List<Department> allDepartment) {

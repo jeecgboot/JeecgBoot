@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.dto.AiragFlowDTO;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.dto.OnlineAuthDTO;
+import org.jeecg.common.api.dto.PushMessageDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.enums.DySmsEnum;
@@ -764,7 +765,6 @@ public class SystemApiController {
     }
 
 
-    //update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
     /**
      * 【接口签名验证】
      * 49 字典表的 翻译，可批量
@@ -780,7 +780,6 @@ public class SystemApiController {
     public List<DictModel> translateDictFromTableByKeys(@RequestParam("table") String table, @RequestParam("text") String text, @RequestParam("code") String code, @RequestParam("keys") String keys, @RequestParam("ds")  String ds) {
         return this.sysBaseApi.translateDictFromTableByKeys(table, text, code, keys, ds);
     }
-    //update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
     /**
      * 发送模板信息
@@ -934,6 +933,16 @@ public class SystemApiController {
     }
     
     /**
+     * 根据部门岗位ID查询用户ID
+     * @param deptPostIds
+     * @return
+     */
+    @GetMapping("/queryUserIdsByDeptPostIds")
+    public List<String> queryUserIdsByDeptPostIds(@RequestParam("deptPostIds") List<String> deptPostIds){
+        return sysBaseApi.queryUserIdsByDeptPostIds(deptPostIds);
+    }
+    
+    /**
      * 根据部门ID查询用户ID
      * @param deptIds
      * @return
@@ -953,6 +962,26 @@ public class SystemApiController {
         return sysBaseApi.queryUserIdsByRoleds(roleCodes);
     }
 
+    /**
+     * 根据用户ID查询用户名
+     * @param userIds
+     * @return
+     */
+    @GetMapping("/queryUsernameByIds")
+    public List<String> queryUsernameByIds(@RequestParam("userIds")  List<String> userIds){
+        return sysBaseApi.queryUsernameByIds(userIds);
+    }
+
+    /**
+     * 根据岗位的职级ID查询用户ID
+     * @param departPositIds
+     * @return
+     */
+    @GetMapping("/queryUsernameByDepartPositIds")
+    public List<String> queryUsernameByDepartPositIds(@RequestParam("departPositIds") List<String> departPositIds){
+        return sysBaseApi.queryUsernameByDepartPositIds(departPositIds);
+    }
+    
     /**
      * 根据职务ID查询用户ID
      * @param positionIds
@@ -1098,4 +1127,13 @@ public class SystemApiController {
         return sysBaseApi.queryUserIdsByCascadeDeptIds(deptIds);
     }
 
+    /**
+     * 推送uniapp 消息
+     * @param pushMessageDTO
+     * @return
+     */
+    @PostMapping("/uniPushMsgToUser")
+    public void uniPushMsgToUser(@RequestBody PushMessageDTO pushMessageDTO){
+       sysBaseApi.uniPushMsgToUser(pushMessageDTO);
+    }
 }

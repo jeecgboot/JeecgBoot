@@ -42,9 +42,8 @@
     updateSchema([
       {
         field: 'parentId',
-        // update-begin--author:liaozhiyang---date:20240306---for：【QQYUN-8379】菜单管理页菜单国际化
+        // 代码逻辑说明: 【QQYUN-8379】菜单管理页菜单国际化
         componentProps: { treeData: translateMenu(treeData, 'name') },
-        // update-end--author:liaozhiyang---date:20240306---for：【QQYUN-8379】菜单管理页菜单国际化
       },
       {
         field: 'name',
@@ -108,13 +107,12 @@
       placeholder = '请输入组件名称';
     }
     updateSchema([{ field: 'componentName', componentProps: { placeholder } }]);
-    //update-begin---author:wangshuai ---date:20230204  for：[QQYUN-4058]菜单添加智能化处理------------
+    // 代码逻辑说明: [QQYUN-4058]菜单添加智能化处理------------
     if (httpUrl != null && httpUrl != '') {
       if (httpUrl.startsWith('http://') || httpUrl.startsWith('https://')) {
         setFieldsValue({ component: httpUrl });
       }
     }
-    //update-end---author:wangshuai ---date:20230204  for：[QQYUN-4058]菜单添加智能化处理------------
   }
 
   /**

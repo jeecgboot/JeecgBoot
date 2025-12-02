@@ -60,11 +60,10 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 	@Override
 	public List<SysPermissionDataRule> queryPermissionDataRules(String username,String permissionId) {
 		List<String> idsList = this.baseMapper.queryDataRuleIds(username, permissionId);
-		//update-begin--Author:scott  Date:20191119  for：数据权限失效问题处理--------------------
+		// 代码逻辑说明: 数据权限失效问题处理--------------------
 		if(idsList==null || idsList.size()==0) {
 			return null;
 		}
-		//update-end--Author:scott  Date:20191119  for：数据权限失效问题处理--------------------
 		Set<String> set = new HashSet<String>();
 		for (String ids : idsList) {
 			if(oConvertUtils.isEmpty(ids)) {

@@ -90,11 +90,10 @@ export const usePermissionStore = defineStore({
       return this.isDynamicAddedRoute;
     },
 
-    //update-begin-author:taoyan date:2022-6-1 for: VUEN-1162 子表按钮没控制
+    // 代码逻辑说明: VUEN-1162 子表按钮没控制
     getOnlineSubTableAuth: (state) => {
       return (code) => state.onlineSubTableAuthMap[code];
     },
-    //update-end-author:taoyan date:2022-6-1 for: VUEN-1162 子表按钮没控制
   },
   actions: {
     setPermCodeList(codeList: string[]) {
@@ -224,8 +223,6 @@ export const usePermissionStore = defineStore({
           try {
             routeList = await this.changePermissionCode();
             //routeList = (await getMenuList()) as AppRouteRecordRaw[];
-            // update-begin--author:liaozhiyang---date:20240313---for：【QQYUN-8487】注释掉判断菜单是否vue2版本逻辑代码
-            // update-begin----author:sunjianlei---date:20220315------for: 判断是否是 vue3 版本的菜单 ---
             // let hasIndex: boolean = false;
             // let hasIcon: boolean = false;
             // for (let menuItem of routeList) {
@@ -259,8 +256,6 @@ export const usePermissionStore = defineStore({
             //     100
             //   );
             // }
-            // update-end----author:sunjianlei---date:20220315------for: 判断是否是 vue3 版本的菜单 ---
-            // update-end--author:liaozhiyang---date:20240313---for：【QQYUN-8487】注释掉判断菜单是否vue2版本逻辑代码
           } catch (error) {
             console.error(error);
           }
@@ -278,9 +273,8 @@ export const usePermissionStore = defineStore({
           routeList = routeList.filter(routeRemoveIgnoreFilter);
 
           routeList = flatMultiLevelRoutes(routeList);
-          // update-begin--author:liaozhiyang---date:20240529---for：【TV360X-522】ai助手路由写死在前端
+          // 代码逻辑说明: 【TV360X-522】ai助手路由写死在前端
           routes = [PAGE_NOT_FOUND_ROUTE, ...routeList, ...staticRoutesList];
-          // update-end--author:liaozhiyang---date:20240529---for：【TV360X-522】ai助手路由写死在前端
           break;
       }
 
@@ -300,11 +294,10 @@ export const usePermissionStore = defineStore({
       this.allAuthList = authList;
     },
 
-    //update-begin-author:taoyan date:2022-6-1 for: VUEN-1162 子表按钮没控制
+    // 代码逻辑说明: VUEN-1162 子表按钮没控制
     setOnlineSubTableAuth(code, hideBtnList) {
       this.onlineSubTableAuthMap[code] = hideBtnList;
     },
-    //update-end-author:taoyan date:2022-6-1 for: VUEN-1162 子表按钮没控制
   },
 });
 

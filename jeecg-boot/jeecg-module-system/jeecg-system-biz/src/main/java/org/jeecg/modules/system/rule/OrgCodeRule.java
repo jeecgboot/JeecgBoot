@@ -56,12 +56,11 @@ public class OrgCodeRule implements IFillRuleHandler {
         if (StringUtil.isNullOrEmpty(parentId)) {
             // 线判断数据库中的表是否为空,空则直接返回初始编码
             //获取最大值code的部门信息
-            //update-begin---author:wangshuai ---date:20230211  for：[QQYUN-4209]租户隔离下部门新建不了------------
+            // 代码逻辑说明: [QQYUN-4209]租户隔离下部门新建不了------------
             Page<SysDepart> page = new Page<>(1,1);
             IPage<SysDepart> pageList = sysDepartService.getMaxCodeDepart(page,"");
             List<SysDepart> records = pageList.getRecords();
             if (null==records || records.size()==0) {
-            //update-end---author:wangshuai ---date:20230211  for：[QQYUN-4209]租户隔离下部门新建不了------------
                 strArray[0] = YouBianCodeUtil.getNextYouBianCode(null);
                 strArray[1] = "1";
                 return strArray;
@@ -73,13 +72,12 @@ public class OrgCodeRule implements IFillRuleHandler {
             }
         } else {//反之则查询出所有同级的部门,获取结果后有两种情况,有同级和没有同级
             //获取自己部门最大值orgCode部门信息
-            //update-begin---author:wangshuai ---date:20230211  for：[QQYUN-4209]租户隔离下部门新建不了------------
+            // 代码逻辑说明: [QQYUN-4209]租户隔离下部门新建不了------------
             Page<SysDepart> page = new Page<>(1,1);
             IPage<SysDepart> pageList = sysDepartService.getMaxCodeDepart(page,parentId);
             List<SysDepart> records = pageList.getRecords();
             // 查询出父级部门
             SysDepart depart = sysDepartService.getDepartById(parentId);
-            //update-end---author:wangshuai ---date:20230211  for：[QQYUN-4209]租户隔离下部门新建不了------------
             // 获取父级部门的Code
             String parentCode = depart.getOrgCode();
             // 根据父级部门类型算出当前部门的类型

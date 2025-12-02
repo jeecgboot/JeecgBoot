@@ -77,13 +77,12 @@
         let seriesData = [];
         typeArr.forEach((type) => {
           let obj: any = { name: type, type: props.type };
-          // update-begin--author:liaozhiyang---date:20240407---for：【QQYUN-8762】首页默认及echars颜色调整
+          // 代码逻辑说明: 【QQYUN-8762】首页默认及echars颜色调整
           const findItem: any = props.chartData.find((item: any) => item.type == type);
           if (findItem && findItem.color) {
             obj.color = findItem.color;
           }
-          // update-end--author:liaozhiyang---date:20240407---for：【QQYUN-8762】首页默认及echars颜色调整
-          // update-begin-author:liusq date:2023-7-12 for: [issues/613] LineMulti 在数据不对齐时，横坐标计算错误
+          // 代码逻辑说明: [issues/613] LineMulti 在数据不对齐时，横坐标计算错误
           let data = [];
           xAxisData.forEach((x) => {
             let dataArr = props.chartData.filter((item) => type === item.type && item.name == x);
@@ -93,7 +92,6 @@
               data.push(null);
             }
           });
-          // update-end-author:liusq date:2023-7-12 for: [issues/613] LineMulti 在数据不对齐时，横坐标计算错误
           //data数据
           obj['data'] = data;
           seriesData.push(obj);

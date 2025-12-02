@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.model.SysUserSysDepPostModel;
 import org.jeecg.modules.system.vo.SysDepartExportVo;
 import org.jeecg.modules.system.vo.SysDepartPositionVo;
 import org.jeecg.modules.system.vo.SysUserDepVo;
@@ -209,7 +210,7 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      * @param parentId
      * @return
      */
-    @Select("select id, depart_name, parent_id, iz_leaf, org_category, org_code from sys_depart where parent_id = #{parentId} order by depart_order,create_time desc")
+    @Select("select id, depart_name, parent_id, iz_leaf, org_category, org_code, depart_order from sys_depart where parent_id = #{parentId} order by depart_order,create_time desc")
     List<SysDepart> getDepartByParentId(@Param("parentId") String parentId);
 
     /**
@@ -251,4 +252,63 @@ public interface SysDepartMapper extends BaseMapper<SysDepart> {
      * @return
      */
     String getPostNameByPostId(@Param("depId") String depId);
+
+    /**
+     * 根据部门code获取部门数据
+     * 
+     * @param orgCode
+     * @return
+     */
+    @Select("select depart_name, id, iz_leaf, org_category, parent_id, org_code from sys_depart where org_code = #{orgCode} order by depart_order,create_time desc")
+    SysDepart queryDepartByOrgCode(@Param("orgCode") String orgCode);
+
+    /**
+     * 根据部门父id获取部门岗位数据
+     * 
+     * @param parentIds
+     * @return
+     */
+    List<SysDepart> getDepartPositionByParentIds(@Param("parentIds") List<String> parentIds);
+
+    /**
+     * 根据用户id集合获取用户的兼职岗位信息
+     * 
+     * @param userIdList
+     * @return
+     */
+    List<SysUserSysDepPostModel> getDepartOtherPostByUserIds(@Param("userIdList") List<String> userIdList);
+
+    /**
+     * 获取没有父级id的部门数据
+     * 
+     * @return
+     */
+    @Select("select id, org_code, depart_order from sys_depart where parent_id is null or parent_id = '' order by depart_order,create_time desc")
+    List<SysDepart> getDepartNoParent();
+
+    /**
+     * 根据父级id统计子节点数量
+     * 
+     * @param parentId
+     * @return
+     */
+    @Select("select count(1) from sys_depart where parent_id = #{parentId}")
+    long countByParentId(@Param("parentId") String parentId);
+
+	/**
+	 * 根据用户名和分类查询
+	 * @param username
+	 * @param category
+	 * @return
+	 */
+	List<SysDepart> queryDeptByUserAndCategory(@Param("username")String username, @Param("category")String category);
+
+    /**
+     * 获取负责部门
+     * 
+     * @param page
+     * @param departId
+     * @return
+     */
+    List<SysUser> getDepartmentHead(@Param("page") Page<SysUser> page, @Param("departId") String departId);
 }
