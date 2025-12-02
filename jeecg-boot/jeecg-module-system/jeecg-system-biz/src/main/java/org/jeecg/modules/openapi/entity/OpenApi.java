@@ -96,6 +96,36 @@ public class OpenApi  implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
+    /**
+     * 访问模式：WHITELIST/BLACKLIST
+     */
+    private String listMode;
+
+    /**
+     * 允许/拒绝清单，支持IP、CIDR、域名
+     */
+    private String allowedList;
+
+    /**
+     * 清单备注
+     */
+    private String comment;
+
+    /**
+     * 严格模式开关
+     */
+    private Boolean enableStrict;
+
+    /**
+     * DNS缓存TTL（秒）
+     */
+    private Integer dnsCacheTtlSeconds;
+
+    /**
+     * IP版本：IPv4/IPv6/Dual
+     */
+    private String ipVersion;
     /**
      * 历史已选接口
      */
