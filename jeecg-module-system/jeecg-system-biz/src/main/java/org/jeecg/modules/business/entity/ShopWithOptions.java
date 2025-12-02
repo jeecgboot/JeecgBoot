@@ -56,6 +56,10 @@ public class ShopWithOptions {
     @Excel(name = "星期五自动开票是否开P+L, default: 0 = no only L,1 = P+L", width = 15)
     @ApiModelProperty(value = "星期五自动开票是否开P+L, default: 0 = no only L,1 = P+L")
     private java.lang.Boolean isCompleteInvoice;
+    /**是否显示未交运订单， default: 0 = no, 1 = yes*/
+    @Excel(name = "是否显示未交运订单， default: 0 = no, 1 = yes", width = 15)
+    @ApiModelProperty(value = "是否显示未交运订单， default: 0 = no, 1 = yes")
+    private java.lang.Boolean showUnassignedLogisticsOrders;
     /**是否客户可以自己开票*/
     @Excel(name = "是否客户可以自己开票", width = 15)
     @ApiModelProperty(value = "是否客户可以自己开票")
