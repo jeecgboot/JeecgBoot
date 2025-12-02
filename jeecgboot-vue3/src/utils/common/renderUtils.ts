@@ -45,15 +45,17 @@ const render = {
    */
   renderDict: (v, code, renderTag = false) => {
     let text = '';
+    let color = '';
     let array = getDictItemsByCode(code) || [];
     let obj = array.filter((item) => {
       return item.value == v;
     });
     if (obj.length > 0) {
       text = obj[0].text;
+      color = obj[0].color;
     }
     //【jeecgboot-vue3/issues/903】render.renderDict使用tag渲染报警告问题 #903
-    return isEmpty(text) || !renderTag ? h('span', text) : h(Tag, () => text);
+    return isEmpty(text) || !renderTag ? h('span', text) : h(Tag,{ color }, () => text);
   },
   /**
    * 渲染图片
