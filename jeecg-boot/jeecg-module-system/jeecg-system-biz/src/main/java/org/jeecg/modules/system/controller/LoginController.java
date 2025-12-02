@@ -594,6 +594,11 @@ public class LoginController {
 			String oldToken = oldTokenObj.toString();
 			// 清除旧登录token的缓存（设置 1 小时过期时间）
 			redisUtil.del(CommonConstant.PREFIX_USER_TOKEN + oldToken);
+			
+			// 清空sas用户信息
+			OAuth2Authorization authorization = authorizationService.findByToken(oldToken, OAuth2TokenType.ACCESS_TOKEN);
+			cacheManager.getCache("user_details").evict(authorization.getPrincipalName());
+			authorizationService.remove(authorization);
 			redisUtil.set(CommonConstant.PREFIX_USER_TOKEN_ERROR_MSG + oldToken, "不允许同一账号多地同时登录，当前登录被踢掉！", 60 * 1 * 60);
 			log.info("【并发登录限制已开启】用户[{}]在{}端的旧登录已被踢下线！", username, clientType);
 			log.info("【并发登录限制已开启】用户被踢下线，新token: {}，旧token：{}", newToken, oldToken);
