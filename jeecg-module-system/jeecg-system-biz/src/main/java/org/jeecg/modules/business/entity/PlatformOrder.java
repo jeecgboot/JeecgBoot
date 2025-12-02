@@ -17,8 +17,8 @@ import java.util.Date;
 /**
  * @Description: 平台订单表
  * @Author: jeecg-boot
- * @Date: 2024-06-25
- * @Version: V1.10
+ * @Date: 2025-12-02
+ * @Version: V1.11
  */
 @ApiModel(value = "platform_order对象", description = "平台订单表")
 @Data
@@ -283,4 +283,11 @@ public class PlatformOrder implements Serializable {
     @Excel(name = "买家自选物流", width = 15)
     @ApiModelProperty(value = "买家自选物流")
     private String shippingService;
+    /**
+     * 已设置待审核
+     */
+    @Excel(name = "已设置待审核", width = 15, dicCode = "yn")
+    @Dict(dicCode = "yn")
+    @ApiModelProperty(value = "已设置待审核")
+    private java.lang.String alreadySetAbnormal;
 }
