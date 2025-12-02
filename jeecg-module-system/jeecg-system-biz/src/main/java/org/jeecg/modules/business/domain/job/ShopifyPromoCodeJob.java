@@ -143,11 +143,16 @@ public class ShopifyPromoCodeJob implements Job {
                             DEFAULT_ABNORMAL_LABEL_NAME, platformOrder.getShopifyNote());
                     OrderSuspendRequest request = new OrderSuspendRequest(body);
                     OrderSuspendResponse response = request.send();
-                    return response.success();
+                    boolean success = response.success();
+                    if (success) {
+                        platformOrder.setAlreadySetAbnormal("1");
+                    }
+                    return success;
                 }, executor))
                 .collect(toList());
         List<Boolean> abnormalResults = abnormalFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
         log.info("Successfully set {}/{} orders to abnormal.", abnormalResults.size(), ordersByShopifyNote.size());
+        platformOrderService.updateBatchById(ordersByShopifyNote);
         executor.shutdown();
     }
 }

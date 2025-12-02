@@ -1455,7 +1455,8 @@
                 separator=",">
             #{shopifyNote}
         </foreach>
-        AND erp_status in (1,2);
+        AND erp_status in (1,2)
+        AND already_set_abnormal = 0;
     </select>
     <select id="countOrdersByShop" resultType="java.lang.Integer">
         SELECT COUNT(*)
