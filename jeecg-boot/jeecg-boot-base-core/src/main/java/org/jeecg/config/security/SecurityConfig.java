@@ -110,7 +110,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint((request, response, authException) -> {
                     // 记录详细的异常信息 - 未认证
                     log.error("接口访问失败(未认证)，请求路径：{}，错误信息：{}", request.getRequestURI(), authException.getMessage(), authException);
-                    JwtUtil.responseError(response, 401, "Token格式错误或已过期");
+                    JwtUtil.responseError(response, 401, "Token无效或已过期");
                 })
                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                     // 记录详细的异常信息 - token无效或权限不足
@@ -224,7 +224,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             // 处理JWT解析失败的情况
                             log.error("JWT验证失败，请求路径：{}，错误信息：{}", request.getRequestURI(), authException.getMessage(), authException);
-                            JwtUtil.responseError(response, 401, "Token格式错误或已过期");
+                            JwtUtil.responseError(response, 401, "Token无效或已过期");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             // 处理权限不足的情况
@@ -237,7 +237,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) -> {
                             // 记录详细的异常信息 - 未认证
                             log.error("接口访问失败(未认证)，请求路径：{}，错误信息：{}", request.getRequestURI(), authException.getMessage(), authException);
-                            JwtUtil.responseError(response, 401, "Token格式错误或已过期");
+                            JwtUtil.responseError(response, 401, "Token无效或已过期");
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             // 记录详细的异常信息 - token无效或权限不足
