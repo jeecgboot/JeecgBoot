@@ -50,7 +50,9 @@ export function useTabDropdown(tabContentProps: TabContentProps, getIsTabs: Comp
       } else {
         // 【TV360X-1039】当只有首页和另一个tab页时关闭左侧禁用
         const validTabList = tabStore.getTabList.filter((item) => !item?.meta?.affix);
-        return validTabList[0].path === state.current?.path;
+        // update-begin--author:liaozhiyang---date:20251128---for：【issues/9098】tabs标签页关闭异常
+        return validTabList[0]?.path === state.current?.path;
+        // update-end--author:liaozhiyang---date:20251128---for：【issues/9098】tabs标签页关闭异常
       }
     };
     // Close other
