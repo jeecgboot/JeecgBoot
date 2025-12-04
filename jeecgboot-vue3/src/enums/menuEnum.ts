@@ -1,5 +1,5 @@
 /**
- * @description: menu type
+ * @description: 默认四种菜单主题
  */
 export enum MenuTypeEnum {
   // 左侧边菜单导航风格
