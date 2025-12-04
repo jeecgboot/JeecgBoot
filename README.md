@@ -1,159 +1,139 @@
-
-JeecgBoot AI低代码平台
+Jeecg AI应用平台
 ===============
 
-当前最新版本： 3.9.0（发布日期：2025-12-01） 
+当前最新版本： 1.0.0（发布日期：2025-12-05） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-北京国炬软件-orange.svg)](https://jeecg.com)
 [![](https://img.shields.io/badge/blog-技术博客-orange.svg)](https://jeecg.blog.csdn.net)
-[![](https://img.shields.io/badge/version-3.9.0-brightgreen.svg)](https://github.com/jeecgboot/JeecgBoot)
-[![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/jeecgboot/JeecgBoot)
-[![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/jeecgboot/JeecgBoot)
+[![](https://img.shields.io/badge/version-1.0.0-brightgreen.svg)](https://github.com/jeecgboot/jeecg-ai)
+[![GitHub stars](https://img.shields.io/github/stars/jeecgboot/jeecg-ai.svg?style=social&label=Stars)](https://github.com/jeecgboot/jeecg-ai)
+[![GitHub forks](https://img.shields.io/github/forks/jeecgboot/jeecg-ai.svg?style=social&label=Fork)](https://github.com/jeecgboot/jeecg-ai)
 
 
-
-项目介绍
------------------------------------
-
-<h3 align="center">企业级AI低代码平台</h3>
-
-JeecgBoot 是一款融合代码生成与AI应用的低代码开发平台，助力企业快速实现低代码开发和构建AI应用。平台支持MCP和插件扩展，提供聊天式业务操作(如“一句话创建用户”)，大幅提升开发效率与用户便捷性。
-
-采用前后端分离架构（Ant Design&Vue3，SpringBoot3，SpringCloud Alibaba，Mybatis-plus），强大代码生成器实现前后端一键生成，无需手写代码。 
-平台引领AI低代码开发模式：AI生成→在线编码→代码生成→手工合并，解决Java项目80%重复工作，提升效率，节省成本，兼顾灵活性。 
-具备强大且颗粒化的权限控制，支持按钮权限和数据权限设置，满足大型业务系统需求。功能涵盖在线表单、表单设计、流程设计、门户设计、报表与大屏设计、OA办公、AI应用、AI知识库、大模型管理、AI流程编排、AI聊天，支持ChatGPT、DeepSeek、Ollama等多种AI大模型。
-
-`傻瓜式报表:` JimuReport是一款自主研发的强大开源企业级Web报表工具。它通过零编码的拖拽式操作，赋能用户如同搭积木般轻松构建各类复杂报表，全面满足企业数据可视化与分析需求，助力企业级数据产品的高效打造与应用。
-
-`傻瓜式大屏:` JimuBI一款自主研发的强大的大屏和仪表盘设计工具。专注数字孪生与数据可视化，支持交互式大屏、仪表盘、门户和移动端，实现“一次开发，多端适配”。 大屏设计类Word风格，支持多屏切换，自由拖拽，轻松打造炫酷动态界面。
-
-`成熟AI应用功能:` 提供一套完善AI应用平台: 涵盖AI应用管理、AI模型管理、智能对话助手、知识库问答、流程编排与设计器、AI建表、MCP插件配置等功能。平台兼容主流大模型，包括ChatGPT、DeepSeek、Ollama、智普、千问等，助力企业高效构建智能化应用，推动低代码开发与AI深度融合。
-
-`JEECG宗旨是:` JEECG旨在通过OnlineCoding平台实现简单功能的零代码快速搭建，同时针对复杂功能采用代码生成器生成代码并手工合并，打造智能且灵活的低代码开发模式，有效解决了当前低代码产品普遍缺乏灵活性的问题，提升开发效率的同时兼顾系统的扩展性和定制化能力。
-
-`JEECG业务流程:` JEECG业务流程采用BPM工作流引擎实现业务审批，扩展任务接口供开发人员编写业务逻辑，表单提供表单设计器、在线配置表单和编码表单等多种解决方案。通过流程与表单的分离设计（松耦合）及任务节点的灵活配置，既保障了企业流程的安全性与保密性，又大幅降低了开发人员的工作量。
-
-
-
-
-
-适用项目
------------------------------------
-JeecgBoot低代码平台兼容所有J2EE项目开发，支持信创国产化，特别适用于SAAS、企业信息管理系统（MIS）、内部办公系统（OA）、企业资源计划系统（ERP）、客户关系管理系统（CRM）及AI知识库等场景。其半智能手工Merge开发模式，可显著提升70%以上的开发效率，极大降低开发成本。同时，JeecgBoot还是一款全栈式AI开发平台，助力企业快速构建和部署个性化AI应用。。
-
-
-**信创兼容说明**
-- 操作系统：国产麒麟、银河麒麟等国产系统几乎都是基于 Linux 内核，因此它们具有良好的兼容性。
-- 数据库：达梦、人大金仓、TiDB
-- 中间件：东方通 TongWeb、TongRDS，宝兰德 AppServer、CacheDB, [信创配置文档](https://help.jeecg.com/java/tongweb-deploy/)
-
-
-版本说明
------------------------------------
-
-|下载 | SpringBoot3.5 + Shiro                                   |SpringBoot3.5+ SpringAuthorizationServer | SpringBoot3.5 + Sa-Token | SpringBoot2.7(JDK17/JDK8) |
-|------|---------------------------------------------------------|----------------------------|-------------------|--------------------------------------------|
-| Github | [`main`](https://github.com/jeecgboot/JeecgBoot)        | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支  |  [`springboot3-satoken`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3-satoken) 分支|[`springboot2`](https://github.com/jeecgboot/JeecgBoot/tree/springboot2) 分支|
-| Gitee | [`main`](https://github.com/jeecgboot/JeecgBoot) | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支|  [`springboot3-satoken`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3-satoken) 分支|[`springboot2`](https://github.com/jeecgboot/JeecgBoot/tree/springboot2)     分支 |
-
-
-- `jeecg-boot` 是后端JAVA源码项目Springboot3+Shiro+Mybatis+SpringCloudAlibaba（支持单体和微服务切换）.
-- `jeecgboot-vue3` 是前端VUE3源码项目（vue3+vite6+ts最新技术栈）.
-- `JeecgUniapp`  是[配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5、鸿蒙、鸿蒙Next.
-- `jeecg-boot-starter`  是[jeecg-boot对应的底层封装starter](https://github.com/jeecgboot/jeecg-boot-starter) ：微服务启动、xxljob、分布式锁starter、rabbitmq、分布式事务、分库分表shardingsphere等.
-- 参考 [文档](https://help.jeecg.com/ui/2dev/mini) 可以删除不需要的demo，制作一个精简版本
-
-
-
-
-
-启动项目
------------------------------------
-
-> 默认账号密码： admin/123456
-
-- [开发环境搭建](https://help.jeecg.com/java/setup/tools)
-- [IDEA启动前后端(单体模式)](https://help.jeecg.com/java/setup/idea/startup)
-- [Docker一键启动(单体模式)](https://help.jeecg.com/java/docker/quick)
-- [IDEA启动前后端(微服务方式)](https://help.jeecg.com/java/springcloud/switchcloud/monomer)
-- [Docker一键启动(微服务方式)](https://help.jeecg.com/java/docker/quickcloud)
-
-
-技术文档
------------------------------------
-
-- 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
-- 在线演示：  [平台演示](https://boot3.jeecg.com) | [APP演示](https://jeecg.com/appIndex)
-- 入门指南：  [快速入门](http://www.jeecg.com/doc/quickstart)  | [代码生成使用](https://help.jeecg.com/java/codegen/online) | [开发文档](https://help.jeecg.com)  | [AI应用手册](https://help.jeecg.com/aigc) | [视频教程](http://jeecg.com/doc/video)
-- AI编程实战视频：  [JEECG低代码与Cursor+GitHub Copilot实现AI高效编程实战](https://www.bilibili.com/video/BV11XyaBVEoH)
-- 技术支持：  [反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)    | [低代码体验一分钟](https://jeecg.blog.csdn.net/article/details/106079007) 
-- QQ交流群 ： 964611995、⑩716488839(满)、⑨808791225(满)、其他(满)
-
-
-AI 应用平台介绍
------------------------------------
 
 一个全栈式 AI 开发平台，旨在帮助开发者快速构建和部署个性化的 AI 应用。
 
-JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
-其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。 
+JeecgBoot平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。
+其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力。
 
-- [详细专题介绍，请点击查看](README-AI.md)
 
-- AI视频介绍
+
+### AI视频介绍
 
 [![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecg_aivideo.png)](https://www.bilibili.com/video/BV1zmd7YFE4w)
 
 
-为什么选择JeecgBoot?
------------------------------------
-- 1.采用最新主流前后分离框架（Spring Boot3 + MyBatis + Shiro/SpringAuthorizationServer + Ant Design4 + Vue3），容易上手；代码生成器依赖性低，灵活的扩展能力，可快速实现二次开发。
-- 2.前端大版本换代，最新版采用 Vue3.0 + TypeScript + Vite6 + Ant Design Vue4 等新技术方案。
-- 3.支持微服务Spring Cloud Alibaba（Nacos、Gateway、Sentinel、Skywalking），提供简易机制，支持单体和微服务自由切换（这样可以满足各类项目需求）。
-- 4.开发效率高，支持在线建表和AI建表，提供强大代码生成器，单表、树列表、一对多、一对一等数据模型，增删改查功能一键生成，菜单配置直接使用。
-- 5.代码生成器提供强大模板机制，支持自定义模板，目前提供四套风格模板（单表两套、树模型一套、一对多三套）。
-- 6.提供强大的报表和大屏可视化工具，支持丰富的数据源连接，能够通过拖拉拽方式快速制作报表、大屏和门户设计；支持多种图表类型：柱形图、折线图、散点图、饼图、环形图、面积图、漏斗图、进度图、仪表盘、雷达图、地图等。
-- 7.低代码能力：在线表单（无需编码，通过在线配置表单，实现表单的增删改查，支持单表、树、一对多、一对一等模型，实现人人皆可编码），在线配置零代码开发、所见即所得支持23种类控件。
-- 8.低代码能力：在线报表、在线图表（无需编码，通过在线配置方式，实现数据报表和图形报表，可以快速抽取数据，减轻开发压力，实现人人皆可编码）。
-- 9.Online支持在线增强开发，提供在线代码编辑器，支持代码高亮、代码提示等功能，支持多种语言（Java、SQL、JavaScript等）。
-- 10.封装完善的用户、角色、菜单、组织机构、数据字典、在线定时任务等基础功能，支持访问授权、按钮权限、数据权限等功能。
-- 11.前端UI提供丰富的组件库，支持各种常用组件，如表格、树形控件、下拉框、日期选择器等，满足各种复杂的业务需求 [UI组件库文档](https://help.jeecg.com/category/ui%E7%BB%84%E4%BB%B6%E5%BA%93)。
-- 12.提供APP配套框架，一份多代码多终端适配，一份代码多终端适配，小程序、H5、安卓、iOS、鸿蒙Next。
-- 13.新版APP框架采用Uniapp、Vue3.0、Vite、Wot-design-uni、TypeScript等最新技术栈，包括二次封装组件、路由拦截、请求拦截等功能。实现了与JeecgBoot完美对接：目前已经实现登录、用户信息、通讯录、公告、移动首页、九宫格、聊天、Online表单、仪表盘等功能，提供了丰富的组件。
-- 14.提供了一套成熟的AI应用平台功能，从AI模型、知识库到AI应用搭建，助力企业快速落地AI服务，加速智能化升级。
-- 15.AI能力：目前JeecgBoot支持AI大模型chatgpt和deepseek，现在最新版默认使用deepseek，速度更快质量更高。目前提供了AI对话助手、AI知识库、AI应用、AI建表、AI报表等功能。
-- 16.提供新行编辑表格JVXETable，轻松满足各种复杂ERP布局，拥有更高的性能、更灵活的扩展、更强大的功能。
-- 17.平台首页风格，提供多种组合模式，支持自定义风格；支持门户设计，支持自定义首页。
-- 18.常用共通封装，各种工具类（定时任务、短信接口、邮件发送、Excel导入导出等），基本满足80%项目需求。
-- 19.简易Excel导入导出，支持单表导出和一对多表模式导出，生成的代码自带导入导出功能。
-- 20.集成智能报表工具，报表打印、图像报表和数据导出非常方便，可极其方便地生成PDF、Excel、Word等报表。
-- 21.采用前后分离技术，页面UI风格精美，针对常用组件做了封装：时间、行表格控件、截取显示控件、报表组件、编辑器等。
-- 22.查询过滤器：查询功能自动生成，后台动态拼SQL追加查询条件；支持多种匹配方式（全匹配/模糊查询/包含查询/不匹配查询）。
-- 23.数据权限（精细化数据权限控制，控制到行级、列表级、表单字段级，实现不同人看不同数据，不同人对同一个页面操作不同字段）。
-- 24.接口安全机制，可细化控制接口授权，非常简便实现不同客户端只看自己数据等控制；也提供了基于AK和SK认证鉴权的OpenAPI功能。
-- 25.活跃的社区支持；近年来，随着网络威胁的日益增加，团队在安全和漏洞管理方面积累了丰富的经验，能够为企业提供全面的安全解决方案。
-- 26.权限控制采用RBAC（Role-Based Access Control，基于角色的访问控制）。
-- 27.页面校验自动生成（必须输入、数字校验、金额校验、时间空间等）。
-- 28.支持SaaS服务模式，提供SaaS多租户架构方案。
-- 29.分布式文件服务，集成MinIO、阿里OSS等优秀的第三方，提供便捷的文件上传与管理，同时也支持本地存储。
-- 30.主流数据库兼容，一套代码完全兼容MySQL、PostgreSQL、Oracle、SQL Server、MariaDB、达梦、人大金仓等主流数据库。
-- 31.集成工作流Flowable，并实现了只需在页面配置流程转向，可极大简化BPM工作流的开发；用BPM的流程设计器画出了流程走向，一个工作流基本就完成了，只需写很少量的Java代码。
-- 32.低代码能力：在线流程设计，采用开源Flowable流程引擎，实现在线画流程、自定义表单、表单挂靠、业务流转。
-- 33.多数据源：极其简易的使用方式，在线配置数据源配置，便捷地从其他数据抓取数据。
-- 34.提供单点登录CAS集成方案，项目中已经提供完善的对接代码。
-- 35.低代码能力：表单设计器，支持用户自定义表单布局，支持单表、一对多表单，支持select、radio、checkbox、textarea、date、popup、列表、宏等控件。
-- 36.专业接口对接机制，统一采用RESTful接口方式，集成Swagger-UI在线接口文档，JWT token安全验证，方便客户端对接。
-- 37.高级组合查询功能，在线配置支持主子表关联查询，可保存查询历史。
-- 38.提供各种系统监控，实时跟踪系统运行情况（监控Redis、Tomcat、JVM、服务器信息、请求追踪、SQL监控）。
-- 39.消息中心（支持短信、邮件、微信推送等）；集成WebSocket消息通知机制。
-- 40.支持多语言，提供国际化方案。
-- 41.数据变更记录日志，可记录数据每次变更内容，通过版本对比功能查看历史变化。
-- 42.提供简单易用的打印插件，支持谷歌、火狐、IE11+等各种浏览器。
-- 43.后端采用Maven分模块开发方式；前端支持菜单动态路由。
-- 44.提供丰富的示例代码，涵盖了常用的业务场景，便于学习和参考。
+##### 功能大模块
 
+- AI应用开发平台
+- AI知识库系统
+- AI大模型管理
+- AI流程编排
+- AI对话支持图片
+- AI对话助手(智能问答)
+- AI建表（Online表单）
+- AI写文章（CMS）
+- AI表单字段建议（表单设计器）
+
+
+
+#### Dify `VS` JEECG AI
+
+> JEECG AI与Dify相比，在多个方面展现出显著的优势，特别是在文档处理、格式和图片保持方面。以下是一些具体的优点：
+> - Markdown文档库导入：
+> JEECG AI允许用户直接导入整个Markdown文档库，这不仅保留markdown格式，还支持图片的导入，确保文档内容的完整性和可视化效果。
+> - 对话回复格式美观：
+> 在对话过程中，JEECG AI能够保持回复内容的原格式，也不丢失图片，使得输出的文章更加美观，不会出现格式错乱的情况，还支持图片的渲染。
+> - PDF文档导入与格式转换：
+> JEECG AI在处理PDF文档时，能够更好地保持原始格式和图片，确保转换后的内容与原始文档一致。这个功能在许多AI产品中表现不佳，而JEECG AI在这方面做出了显著的优化
+
+
+| 功能         | Dify             | Jeecg AI                                |
+|------------|------------------|-----------------------------------------|
+| AI工作流      | 有                | 有                                       |
+| RAG 管道向量搜索 | 有                | 有                                       |
+| AI模型管理     | 有                | 有                                       |
+| AI应用管理     | 有                | 有                                       |
+| AI知识库      | 有                | 有                                       |
+| 产品方向       | 一款独立的 LLM 应用开发平台 | 低代码与AIGC应用二者结合的平台                       |
+| 业务集成       | 业务集成能力弱          | 更方便与业务系统集成，调用系统接口和逻辑更加方便                |
+| AI业务流      | 侧重AI逻辑流程         | AI流程编排作为低代码的业务引擎，用户可以通过AI流程配置各种业务流和AI流程 |
+| 实现语言       | python + react | JAVA + vue3                             |
+| 上传markdown文档库(支持图片) | 不支持 | 支持 |
+| AI对话支持发图和展示图片 | 支持 | 支持 |
+
+
+
+### 技术文档
+
+- [AIGC开发文档](https://help.jeecg.com/aigc)
+- [安装向量库 pgvector](https://help.jeecg.com/aigc/config)
+
+
+
+## 功能特点
+
+- AI流程: 提供强大的AI流程设计器引擎，支持编排 AI 工作过程，满足复杂业务场景，支持画布上构建和实时运行查看 AI流程运行情况。
+- AI流程即服务: 通过AI流程编排你需要的智能体，结合AI+自定义开发节点 实现功能性 API，让你瞬间拥有各种智能体API。
+- AI助手对话功能: 集成 ChatGPT、Deepseek、智普、私有大模型 等 AI 模型，提供智能对话和生成式 AI 功能，深度与知识库结合提供更精准的知识。
+- RAG 功能: 涵盖从文档摄入到检索的所有内容，支持从 PDF、PPT 和其他常见文档格式中提取文本，支持检索增强生成（RAG），将未训练数据与 AI 模型集成，提升智能交互能力。
+- AI 知识库: 通过导入文档或已有问答对进行训练，让 AI 模型能根据文档以交互式对话方式回答问题。
+- 模型管理：支持对接各种大模型，包括本地私有大模型（Deepseek/ Llama 3 / Qwen 2 等）、国内公共大模型（通义千问 / 腾讯混元 / 字节豆包 / 百度千帆 / 智谱 AI / Kimi 等）和国外公共大模型（OpenAI / Claude / Gemini 等）；
+- 无缝嵌入：Iframe一键嵌入,支持将AI聊天助手快速嵌入到第三方系统，让系统快速拥有智能问答能力，提高用户满意度。
+
+
+
+
+#### 在线体验
+
+- JeecgBoot演示：  https://boot3.jeecg.com
+- 敲敲云在线搭建AI知识库：https://app.qiaoqiaoyun.com
+
+
+## 技术交流
+
+- 开发文档：https://help.jeecg.com/aigc 
+- QQ群：964611995、716488839(满)
+
+
+## 功能列表
+
+- AI应用管理(普通应用、高级流程应用)
+- AI模型管理
+- AI知识库
+- AI应用平台(普通、对接AI流程)
+- AI流程编排
+- AI聊天支持嵌入第三方
+- AI向量库对接
+
+
+
+## 支持AI模型
+
+| AI大模型         |  支持   |
+|---------------| --- |
+| DeepSeek      |  √   |
+| ChatGTP       |  √   |
+| Qwq           |  √   |
+| 智库            |  √   |
+| Ollama本地搭建大模型 |  √   |
+| 等等。。          |  √   |
+
+
+
+
+##  AIGC能做什么
+
+AIGC模块是一个基于AI的自动化流程编排工具和聊天应用搭建平台，它可以帮助用户快速生成AI流程接口和聊天应用，提高效率。
+以下是一些具体的应用场景和示例：
+
+- 你可能需要一个翻译接口，可以通过AI流程编排搭建出来。
+- 你可能需要一个接口转换工具，可以通过AI流程编排搭建出来。（比如：jimureport所需要接口返回格式与你的系统不同，你通过AI接口实现自动转换）
+- 你可能需要一个聊天机器人，可以通过AI流程编排搭建出来。
+- 你可能需要一个自动化流程，可以通过AI流程编排搭建出来。
+- 你可能需要一个自动化处理文件的流程，可以通过AI流程结合python脚本实现操作电脑，文件等。
 
 
 技术架构：
@@ -169,7 +149,6 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 - 前端IDE建议：IDEA、WebStorm、Vscode
 - 采用 Vue3.0+TypeScript+Vite6+Ant-Design-Vue4等新技术方案，包括二次封装组件、utils、hooks、动态菜单、权限校验、按钮级别权限控制等功能
 - 最新技术栈：Vue3.0 + TypeScript + Vite6 + ant-design-vue4 + pinia + echarts + unocss + vxe-table + qiankun + es6
-
 
 #### 后端
 
@@ -189,333 +168,52 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 - 其他：autopoi, fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。
 - 默认提供MySQL5.7+数据库脚本
 
-#### 数据库支持
 
-> jeecgboot平台支持以下数据库，默认我们只提供mysql脚本，其他数据库可以参考[转库文档](https://my.oschina.net/jeecg/blog/4905722)自己转。
+## AI应用平台功能展示
 
-|  数据库   |  支持   |
-| --- | --- |
-|   MySQL   |  √   |
-|  Oracle11g   |  √   |
-|  Sqlserver2017   |  √   |
-|   PostgreSQL   |  √   |
-|   MariaDB   |  √   |
-|   达梦   |  √   |
-|   人大金仓   |  √   |
-|   TiDB     |  √   |
-|   kingbase8   |  √   |
-
-
-
- 
-## 微服务解决方案
-
-- 1、服务注册和发现 Nacos √
-- 2、统一配置中心 Nacos  √
-- 3、路由网关 gateway(三种加载方式) √
-- 4、分布式 http feign √
-- 5、熔断降级限流 Sentinel √
-- 6、分布式文件 Minio、阿里OSS √ 
-- 7、统一权限控制 JWT + Shiro √
-- 8、服务监控 SpringBootAdmin√
-- 9、链路跟踪 Skywalking   [参考文档](https://help.jeecg.com/java/springcloud/super/skywarking)
-- 10、消息中间件 RabbitMQ  √
-- 11、分布式任务 xxl-job  √ 
-- 12、分布式事务 Seata
-- 13、轻量分布式日志 Loki+grafana套件
-- 14、支持 docker-compose、k8s、jenkins
-- 15、CAS 单点登录   √
-- 16、路由限流   √
-
-#### 微服务架构图
-![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot_springcloud2022.png "在这里输入图片标题")
-
-
-
-
-
-开源版与企业版区别?
------------------------------------
-
- - JeecgBoot开源版采用 [Apache-2.0 license](LICENSE) 协议附加补充条款：允许商用使用，不会造成侵权行为，允许基于本平台软件开展业务系统开发（但在任何情况下，您不得使用本软件开发可能被认为与本软件竞争的软件).
- - 商业版与开源版主要区别在于商业版提供了技术支持 和 更多的企业级功能(例如：Online图表、流程监控、流程设计、流程审批、表单设计器、表单视图、积木报表企业版、OA办公、商业APP、零代码应用、Online模块源码等功能). [更多商业功能介绍，点击查看](README-Enterprise.md)
- - JeecgBoot未来发展方向是：零代码平台的建设，也就是团队的另外一款产品 [敲敲云零代码](https://www.qiaoqiaoyun.com) ，无需编码即可通过拖拽快速搭建企业级应用，与JeecgBoot低代码平台形成互补，满足从简单业务到复杂系统的全场景开发需求，目前已经开源，[欢迎下载](https://qiaoqiaoyun.com/downloadCode)
-
-
-
-
-
-
-### Jeecg Boot 产品功能蓝图
-![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
-
-
-
-####  系统功能架构图
-
-![](https://oscimg.oschina.net/oscnet/up-1569487b95a07dbc3599fb1349a2e3aaae1.png)
-
-
-
-### 开源版功能清单
-```
-├─系统管理
-│  ├─用户管理
-│  ├─角色管理
-│  ├─菜单管理
-│  ├─首页配置
-│  ├─权限设置（支持按钮权限、数据权限）
-│  ├─表单权限（控制字段禁用、隐藏）
-│  ├─部门管理
-│  ├─我的部门（二级管理员）
-│  └─字典管理
-│  └─分类字典
-│  └─系统公告
-│  └─职务管理
-│  └─通讯录
-│  ├─多数据源管理
-│  ├─白名单管理
-│  ├─第三方配置（对接钉钉和企业微信）
-│  └─多租户管理（租户管理、租户角色、我的租户、租户默认套餐管理）
-├─Online在线开发(低代码)
-│  ├─Online在线表单
-│  ├─Online代码生成器
-│  ├─Online在线报表
-│  ├─仪表盘设计器
-│  ├─系统编码规则
-│  ├─系统校验规则
-│  ├─APP版本管理
-├─AI应用平台
-│  ├─AI知识库问答系统
-│  ├─AI大模型管理
-│  ├─AI流程编排
-│  ├─AI流程设计器
-│  ├─AI对话支持图片
-│  ├─AI对话助手(智能问答)
-│  ├─AI建表（Online表单）
-│  ├─AI聊天窗口支持嵌入第三方
-│  ├─AI聊天窗口支持移动端
-│  ├─支持常见大模型ChatGPT和DeepSeek、ollama等等
-│  ├─AI OCR示例
-├─数据可视化
-│  ├─报表设计器(支持打印设计）
-│  ├─大屏设和仪表盘设计
-├─OpenAPI（基于AK和SK认证鉴权）
-│  ├─接口管理
-│  ├─接口授权
-│  ├─接口文档
-├─消息中心
-│  ├─消息管理
-│  ├─模板管理
-├─代码生成器(低代码)
-│  ├─代码生成器功能（一键生成前后端代码，生成后无需修改直接用，绝对是后端开发福音）
-│  ├─代码生成器模板（提供4套模板，分别支持单表和一对多模型，不同风格选择）
-│  ├─代码生成器模板（生成代码，自带excel导入导出）
-│  ├─查询过滤器（查询逻辑无需编码，系统根据页面配置自动生成）
-│  ├─高级查询器（弹窗自动组合查询条件）
-│  ├─Excel导入导出工具集成（支持单表，一对多 导入导出）
-│  ├─平台移动自适应支持
-│  ├─提供新版uniapp3的代码生成器模板
-├─系统监控
-│  ├─Gateway路由网关
-│  ├─基于AK和SK认证鉴权OpenAPI功能
-│  ├─定时任务
-│  ├─数据源管理
-│  ├─性能扫描监控
-│  │  ├─监控 Redis
-│  │  ├─Tomcat
-│  │  ├─jvm
-│  │  ├─服务器信息
-│  │  ├─请求追踪
-│  │  ├─磁盘监控
-│  ├─系统日志
-│  ├─消息中心（支持短信、邮件、微信推送等等）
-│  ├─数据日志（记录数据快照，可对比快照，查看数据变更情况）
-│  ├─SQL监控
-│  ├─在线用户
-│─报表示例
-│  ├─曲线图
-│  └─饼状图
-│  └─柱状图
-│  └─折线图
-│  └─面积图
-│  └─雷达图
-│  └─仪表图
-│  └─进度条
-│  └─排名列表
-│  └─等等
-│─大屏模板
-│  ├─作战指挥中心大屏
-│  └─物流服务中心大屏
-│─常用示例
-│  ├─自定义组件
-│  ├─对象存储(对接阿里云)
-│  ├─JVXETable示例（各种复杂ERP布局示例）
-│  ├─单表模型例子
-│  └─一对多模型例子
-│  └─打印例子
-│  └─一对多TAB例子
-│  └─内嵌table例子
-│  └─常用选择组件
-│  └─异步树table
-│  └─接口模拟测试
-│  └─表格合计示例
-│  └─异步树列表示例
-│  └─一对多JEditable
-│  └─JEditable组件示例
-│  └─图片拖拽排序
-│  └─图片翻页
-│  └─图片预览
-│  └─PDF预览
-│  └─分屏功能
-│─封装通用组件	
-│  ├─行编辑表格JEditableTable
-│  └─省略显示组件
-│  └─时间控件
-│  └─高级查询
-│  └─用户选择组件
-│  └─报表组件封装
-│  └─字典组件
-│  └─下拉多选组件
-│  └─选人组件
-│  └─选部门组件
-│  └─通过部门选人组件
-│  └─封装曲线、柱状图、饼状图、折线图等等报表的组件（经过封装，使用简单）
-│  └─在线code编辑器
-│  └─上传文件组件
-│  └─验证码组件
-│  └─树列表组件
-│  └─表单禁用组件
-│  └─等等
-│─更多页面模板
-│  ├─各种高级表单
-│  ├─各种列表效果
-│  └─结果页面
-│  └─异常页面
-│  └─个人页面
-├─高级功能
-│  ├─提供单点登录CAS集成方案
-│  ├─提供APP发布方案
-│  ├─集成Websocket消息通知机制
-│  ├─支持electron桌面应用打包(支持windows、linux、macOS三大平台)
-│  ├─docker容器支持
-│  ├─提供移动APP框架及源码（Uniapp3版本）支持H5、小程序、APP、鸿蒙Next
-│  ├─提供移动APP低代码设计(Online表单、仪表盘)
-```
-
-
-
-### 系统效果
-
-##### PC端
-![](https://oscimg.oschina.net/oscnet/up-000530d95df337b43089ac77e562494f454.png)
-
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14155402_AmlV.png "在这里输入图片标题")
-
-![](https://oscimg.oschina.net/oscnet/up-9d6f36f251e71a0b515a01323474b03004c.png)
+AI模型列表
 
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160813_KmXS.png "在这里输入图片标题")
+![](https://oscimg.oschina.net/oscnet//a5fb3e0d69ca1706b0de221535c7acaa.png)
 
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160935_Nibs.png "在这里输入图片标题")
+选择AI模型，配置你的参数
 
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14161004_bxQ4.png "在这里输入图片标题")
+![](https://oscimg.oschina.net/oscnet//1f941472758a5fc227f54f2683953b8e.png)
 
-#####  系统交互
-![](https://oscimg.oschina.net/oscnet/up-78b151fc888d4319377bf1cc311fe826871.png)
 
-![](https://oscimg.oschina.net/oscnet/up-16c07e000278329b69b228ae3189814b8e9.png)
+AI知识库支持手工录入文本，导入pdf\\word\\excel等文档，支持问答对训练
 
+![](https://oscimg.oschina.net/oscnet//150bb33f48d6c8e2ae059e2a58f4200b.png)
 
-##### AI功能
+![](https://oscimg.oschina.net/oscnet//032d16c915b0f79318935484c81df260.png)
 
-AI聊天助手
 
-![](https://oscimg.oschina.net/oscnet//65298d5710b4e6039a5f802b5f8505c5.png)
 
-AI建表
+AI流程，提供强大的AI流程设计器引擎，支持编排 AI 工作过程，满足复杂业务场景，支持画布上构建和实时运行查看 AI流程运行情况。
 
-![](https://oscimg.oschina.net/oscnet/up-381423599f219a67def45dfd9a99df8ef3f.png)
+![](https://oscimg.oschina.net/oscnet//f40f9aa275cd4aea94e1c209513151e2.png)
 
-![](https://oscimg.oschina.net/oscnet/up-1508c2b0708c365605f68893044ee11f20d.png)
 
-AI写文章
+目前支持的节点有：开始、结束、AI知识库节点、AI节点、分类节点、分支节点、JAVA节点、脚本节点、子流程节点、http请求节点、直接回复节点等节点
 
-![](https://oscimg.oschina.net/oscnet/up-e3ee5b1fe497308805aa5e324b72994af79.png)
+![](https://oscimg.oschina.net/oscnet//6d86480ab1bbfab5b2e6992b416b2152.png)
 
+节点项配置
 
-#####  仪表盘设计器
+![](https://oscimg.oschina.net/oscnet//90a5f76b6b4fc406e2e2b87245b35459.png)
 
-![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/darg20240726105556.png)
+在线运行看结果
 
-![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/drag20240724135626.png)
+![](https://oscimg.oschina.net/oscnet//bc9817a7bbd94936a5a3e885abe3cb38.png)
 
-![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/drag20240724135619.png)
 
-![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/drag20240724135630.png)
+AI应用配置，支持AI流程配置和简单的AI配置
 
-![](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/drag20240726105547.png)
+![](https://oscimg.oschina.net/oscnet//a853d9be4d3756806799ad025e722df8.png)![](https://oscimg.oschina.net/oscnet//d3bcbf5977c6fb75a8f996e1e40590be.png)
 
-![](https://oscimg.oschina.net/oscnet/up-fad98d42b2cf92f92a903c9cff7579f18ec.png)
+可以关联多个知识库，右侧是AI智能回复，你可以搭建自己的智能体，比如搭建一个 “诗词达人” “翻译助手”
 
+![](https://oscimg.oschina.net/oscnet//c26a848136be3e22ec1e0651e78976c2.png)
 
-##### 报表设计器
-![](https://oscimg.oschina.net/oscnet/up-64648de000851f15f6c7b9573d107ebb5f8.png)
+可以将创建的聊天应用，集成到第三方系统中
 
-![](https://oscimg.oschina.net/oscnet/up-fa52b44445db281c51d3f267dce7450d21b.gif)
-
-![](https://oscimg.oschina.net/oscnet/up-68a19149d640f1646c8ed89ed4375e3326c.png)
-
-![](https://oscimg.oschina.net/oscnet/up-f7e9cb2e3740f2d19ff63b40ec2dd554f96.png)
-
-
-##### 手机端
-![](https://oscimg.oschina.net/oscnet/da543c5d0d57baab0cecaa4670c8b68c521.jpg)
-![](https://oscimg.oschina.net/oscnet/fda4bd82cab9d682de1c1fbf2060bf14fa6.jpg)
-
-##### PAD端
-![](https://oscimg.oschina.net/oscnet/e90fef970a8c33790ab03ffd6c4c7cec225.jpg)
-![](https://oscimg.oschina.net/oscnet/d78218803a9e856a0aa82b45efc49849a0c.jpg)
-![](https://oscimg.oschina.net/oscnet/59c23b230f52384e588ee16309b44fa20de.jpg)
-
-
-##### 图表示例
-![](https://oscimg.oschina.net/oscnet/up-218bc6a1669496b241ebb23506440c0083e.png)
-
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160834_Lo23.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160842_QK7B.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160849_GBm5.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160858_6RAM.png "在这里输入图片标题")
-
-##### 在线接口文档
-![输入图片说明](https://static.oschina.net/uploads/img/201908/27095258_M2Xq.png "在这里输入图片标题")
-![输入图片说明](https://static.oschina.net/uploads/img/201904/14160957_hN3X.png "在这里输入图片标题")
-
-
-##### UNIAPP效果
-
-![](https://oscimg.oschina.net/oscnet/up-aac943fbd26561879c57a41f7a406edf274.png)
-
-![](https://oscimg.oschina.net/oscnet/up-9a44ba2e82b09c750629d12fafd7f60f553.png)
-
-
-##### 大屏设计器
-![](https://oscimg.oschina.net/oscnet/up-402a6034124474bfef8dfc5b4b2bac1ce5c.png)
-
-![](https://oscimg.oschina.net/oscnet/up-6f7ba2e2ebbeea0d203db8d69fd87644c9f.png)
-
-![](https://oscimg.oschina.net/oscnet/up-ee8d34f318da466b8a6070a6e3111d12ce7.png)
-
-![](https://oscimg.oschina.net/oscnet/up-6b81781b43086819049c4421206810667c5.png)
-
-
-
-
-
-
-
-
-## 捐赠 
-
-如果觉得还不错，请作者喝杯咖啡吧 ☺
-
-![](https://static.oschina.net/uploads/img/201903/08155608_0EFX.png)
+![](https://oscimg.oschina.net/oscnet//39c6f589ef46f0454b229915ffa263f4.png)
