@@ -1,1 +1,0 @@
-update sys_depart set org_category = '2' where org_category ='1' and parent_id is not null
