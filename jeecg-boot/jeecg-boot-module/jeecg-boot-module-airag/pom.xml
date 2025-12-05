@@ -33,7 +33,7 @@
     <properties>
         <kotlin.version>2.2.0</kotlin.version>
         <liteflow.version>2.15.0</liteflow.version>
-        <apache-tika.version>2.9.1</apache-tika.version>
+        <apache-tika.version>3.2.2</apache-tika.version>
     </properties>
 
     <dependencyManagement>
