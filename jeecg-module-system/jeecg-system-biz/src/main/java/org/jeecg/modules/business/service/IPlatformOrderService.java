@@ -8,6 +8,7 @@ import org.jeecg.modules.business.domain.job.ThirdPartyStockAttributionParam;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
+import org.jeecg.modules.business.vo.clientPlatformOrder.PendingOrderVO;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PurchaseConfirmation;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.ClientInfo;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
@@ -311,4 +312,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderDataWithFees(List<String> orderIds);
 
     List<PlatformOrder> fetchByPlatformWarehouse(List<String> shopCodes, List<String> platformWarehouses);
+
+    List<PlatformOrder> findLongPendingOrdersBySales(String salesId, int timeoutDays);
+
+    List<PendingOrderVO> getPendingOrdersForSales(String salesId, int timeoutDays);
 }

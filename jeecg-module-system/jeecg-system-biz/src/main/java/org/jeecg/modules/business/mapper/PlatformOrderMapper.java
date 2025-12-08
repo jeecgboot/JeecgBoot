@@ -278,4 +278,9 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     List<PlatformOrder> fetchOrderByIdWithFees(@Param("orderIds") List<String> orderIds);
 
     List<PlatformOrder> fetchByPlatformWarehouse(List<String> shopCodes, List<String> platformWarehouses);
+
+    List<PlatformOrder> findLongPendingOrders(
+            @Param("clientIds") List<String> clientIds,
+            @Param("threshold") LocalDateTime threshold
+    );
 }

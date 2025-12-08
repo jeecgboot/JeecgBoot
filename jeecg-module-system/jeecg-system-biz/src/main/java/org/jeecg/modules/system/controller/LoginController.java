@@ -21,6 +21,8 @@ import org.jeecg.common.util.*;
 import org.jeecg.common.util.encryption.EncryptedString;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.modules.business.service.IPlatformOrderService;
+import org.jeecg.modules.business.vo.clientPlatformOrder.PendingOrderVO;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.entity.SysTenant;
@@ -67,6 +69,8 @@ public class LoginController {
 	private BaseCommonService baseCommonService;
 	@Autowired
 	private JeecgBaseConfig jeecgBaseConfig;
+	@Autowired
+	private IPlatformOrderService platformOrderService;
 
 	private final String BASE_CHECK_CODES = "qwertyuiplkjhgfdsazxcvbnmQWERTYUPLKJHGFDSAZXCVBNM1234567890";
 
@@ -468,4 +472,20 @@ public class LoginController {
 		redisUtil.set(key, ++val, 600);
 	}
 
+	@GetMapping("/pendingOrdersAlert")
+	public Result<List<PendingOrderVO>> pendingOrdersAlert(
+			@RequestParam(defaultValue = "7") int timeoutDays,
+			HttpServletRequest request
+	) {
+		String username = JwtUtil.getUserNameByToken(request);
+		SysUser sysUser = sysUserService.getUserByName(username);
+		if (!sysUserService.isSalesUser(username)) {
+			return Result.OK(Collections.emptyList());
+		}
+		List<PendingOrderVO> dtoList =
+				platformOrderService.getPendingOrdersForSales(sysUser.getId(), timeoutDays);
+		log.info("Pending orders alert for user {}: {} orders found waiting for more than {} days",
+				username, dtoList.size(), timeoutDays);
+		return Result.OK(dtoList);
+	}
 }

@@ -74,4 +74,6 @@ public interface IClientService extends IService<Client> {
 
     List<Client> getClientsByCodes(List<String> clientCodes);
 	List<Client> getClientsWithAutoInvoice();
+
+	List<String> findClientIdsBySalesId(String salesId);
 }

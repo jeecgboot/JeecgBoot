@@ -150,4 +150,9 @@
           AND c.use_balance = TRUE
           AND c.active = '1'
     </select>
+    <select id="findClientIdsBySalesId" resultType="java.lang.String">
+        SELECT id
+        FROM client
+        WHERE salesperson = #{salesId}
+    </select>
 </mapper>
