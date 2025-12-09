@@ -91,7 +91,19 @@ public class SysUserTenantServiceImpl extends ServiceImpl<SysUserTenantMapper, S
 
     @Override
     public List<SysUserTenantVo> getTenantListByUserId(String userId, List<String> userTenantStatus) {
-        return userTenantMapper.getTenantListByUserId(userId, userTenantStatus);
+        List<SysUserTenantVo> tenantListByUserId = userTenantMapper.getTenantListByUserId(userId, userTenantStatus);
+        // 代码逻辑说明: 【QQYUN-7283】1.已经是会员的租户，不是管理员时，没有购买按钮---
+        String noVip = "default";
+        tenantListByUserId.forEach((item) ->{
+            if(oConvertUtils.isNotEmpty(item.getMemberType()) && !noVip.equals(item.getMemberType())){
+                //查询是不是管理员
+                Long count = packUserMapper.izHaveBuyAuth(item.getId(), Integer.valueOf(item.getTenantUserId()));
+                if(count!=0){
+                    item.setTenantAdmin(true);
+                }
+            }
+        });
+        return tenantListByUserId;
     }
 
     @Override

@@ -47,11 +47,10 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 				}
 			}
 		}
-		//update-begin--Author:baihailong  Date:20191209 for：分类字典编码规则生成器做成公用配置
+		// 代码逻辑说明: 分类字典编码规则生成器做成公用配置
 		JSONObject formData = new JSONObject();
 		formData.put("pid",categoryPid);
 		categoryCode = (String) FillRuleUtil.executeRule(FillRuleConstant.CATEGORY,formData);
-		//update-end--Author:baihailong  Date:20191209 for：分类字典编码规则生成器做成公用配置
 		sysCategory.setCode(categoryCode);
 		sysCategory.setPid(categoryPid);
 		baseMapper.insert(sysCategory);
@@ -217,7 +216,7 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 		List<SysCategory> list = super.list(query);
 		// 取出name并返回
 		List<String> textList;
-		// update-begin--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
+		// 代码逻辑说明: 新增delNotExist参数，设为false不删除数据库里不存在的key ----
 		if (delNotExist) {
 			textList = list.stream().map(SysCategory::getName).collect(Collectors.toList());
 		} else {
@@ -227,7 +226,6 @@ public class SysCategoryServiceImpl extends ServiceImpl<SysCategoryMapper, SysCa
 				textList.add(res.size() > 0 ? res.get(0).getName() : id);
 			}
 		}
-		// update-end--author:sunjianlei--date:20210514--for：新增delNotExist参数，设为false不删除数据库里不存在的key ----
 		return textList;
 	}
 

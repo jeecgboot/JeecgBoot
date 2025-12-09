@@ -95,12 +95,11 @@
 
   function onDelete(record) {
     if (record) {
-      //update-begin-author:taoyan date:2022-7-14 for: VUEN-1652【bug】应用状态下不允许删除
+      // 代码逻辑说明: VUEN-1652【bug】应用状态下不允许删除
       if(record.useStatus == '1'){
         createMessage.warning('该模板已被应用禁止删除!');
         return;
       }
-      //update-end-author:taoyan date:2022-7-14 for: VUEN-1652【bug】应用状态下不允许删除
       doDeleteDepart([record.id], false);
     }
   }
@@ -125,14 +124,13 @@
 
   async function onDeleteBatch() {
     try {
-      //update-begin-author:taoyan date:2022-7-14 for: VUEN-1652【bug】应用状态下不允许删除
+      // 代码逻辑说明: VUEN-1652【bug】应用状态下不允许删除
       let arr = toRaw(selectedRows.value);
       let temp = arr.filter(item=>item.useStatus=='1')
       if(temp.length>0){
         createMessage.warning('选中的模板已被应用禁止删除!');
         return;
       }
-      //update-end-author:taoyan date:2022-7-14 for: VUEN-1652【bug】应用状态下不允许删除
       await doDeleteDepart(selectedRowKeys);
       selectedRowKeys.value = [];
     } finally {
@@ -148,9 +146,8 @@
    * 操作栏
    */
   function getTableAction(record): ActionItem[] {
-    //update-begin---author:wangshuai ---date:20221123  for：[VUEN-2807]消息模板加一个查看功能------------
+    // 代码逻辑说明: [VUEN-2807]消息模板加一个查看功能------------
     return [{ label: '查看', onClick: handleDetail.bind(null, record)}, { label: '编辑', onClick: onEdit.bind(null, record) }];
-    //update-end---author:wangshuai ---date:20221123  for：[VUEN-2807]消息模板加一个查看功能------------
   }
 
   /**

@@ -92,12 +92,11 @@ public class MySwaggerResourceProvider implements SwaggerResourcesProvider {
         routeLocator.getRoutes().filter(route -> route.getUri().getHost() != null)
                 .filter(route -> !self.equals(route.getUri().getHost()))
                 .subscribe(route ->{
-                    //update-begin---author:zyf ---date:20220413 for：过滤掉无效路由,避免接口文档报错无法打开
+                    // 代码逻辑说明: 过滤掉无效路由,避免接口文档报错无法打开
                     boolean hasRoute=checkRoute(route.getId());
                     if(hasRoute){
                         routeHosts.add(route.getUri().getHost());
                     }
-                    //update-end---author:zyf ---date:20220413 for：过滤掉无效路由,避免接口文档报错无法打开
                 });
 
         // 记录已经添加过的server，存在同一个应用注册了多个服务在nacos上

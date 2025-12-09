@@ -34,12 +34,11 @@
         return format ? format : isDatetime.value ? 'YYYY-MM-DD HH:mm:ss' : 'YYYY-MM-DD';
       });
       const openPicker = ref(true);
-      // update-begin--author:liaozhiyang---date:20240509---for：【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
+      // 代码逻辑说明: 【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
       const picker = computed(() => {
         const picker = originColumn.value.picker;
         return picker ? picker : null;
       });
-      // update-end--author:liaozhiyang---date:20240509---for：【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
       watch(
         innerValue,
         (val) => {
@@ -53,13 +52,12 @@
       );
 
       function handleChange(_mom, dateStr) {
-        // update-begin--author:liaozhiyang---date:20240509---for：【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
+        // 代码逻辑说明: 【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
         if (picker.value) {
           handleChangeCommon(_mom);
         } else {
           handleChangeCommon(dateStr);
         }
-        // update-begin--author:liaozhiyang---date:20240509---for：【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
       }
 
       return {
@@ -76,7 +74,7 @@
     enhanced: {
       aopEvents: {
       },
-      // update-begin--author:liaozhiyang---date:20240509---for：【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
+      // 代码逻辑说明: 【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
       translate: {
         enabled: true,
         handler(value, ctx) {
@@ -88,7 +86,6 @@
           return value;
         },
       },
-      // update-end--author:liaozhiyang---date:20240509---for：【QQYUN-9205】一对多(jVxetable组件date)支持年，年月，年度度，年周
     } as JVxeComponent.EnhancedPartial,
   });
 </script>

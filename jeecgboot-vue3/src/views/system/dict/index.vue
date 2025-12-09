@@ -77,7 +77,7 @@
         width: 240,
       },
     },
-    //update-begin---author:wangshuai ---date:20220616  for：[issues/I5AMDD]导入/导出功能，操作后提示没有传递 export.url/import.url 参数------------
+    // 代码逻辑说明: [issues/I5AMDD]导入/导出功能，操作后提示没有传递 export.url/import.url 参数------------
     exportConfig: {
       name: '数据字典列表',
       url: getExportUrl,
@@ -85,7 +85,6 @@
     importConfig: {
       url: getImportUrl,
     },
-    //update-end---author:wangshuai ---date:20220616  for：[issues/I5AMDD]导入/导出功能，操作后提示没有传递 export.url/import.url 参数--------------
   });
 
   //注册table数据
@@ -128,11 +127,10 @@
    */
   async function batchHandleDelete() {
     await batchDeleteDict({ ids: selectedRowKeys.value }, () => {
-      // update-begin--author:liaozhiyang---date:20240701---for：【TV360X-1665】数据字典批量删除后选中也清空
+      // 代码逻辑说明: 【TV360X-1665】数据字典批量删除后选中也清空
       reload();
       selectedRowKeys.value = [];
       selectedRows.value = [];
-      // update-end--author:liaozhiyang---date:20240701---for：【TV360X-1665】数据字典批量删除后选中也清空
     });
   }
   /**
@@ -153,10 +151,9 @@
     if (result.success) {
       const res = await queryAllDictItems();
       removeAuthCache(DB_DICT_DATA_KEY);
-      // update-begin--author:liaozhiyang---date:20230908---for：【QQYUN-6417】生产环境字典慢的问题
+      // 代码逻辑说明: 【QQYUN-6417】生产环境字典慢的问题
       const userStore = useUserStore();
       userStore.setAllDictItems(res.result);
-      // update-end--author:liaozhiyang---date:20230908---for：【QQYUN-6417】生产环境字典慢的问题
       createMessage.success('刷新缓存完成！');
     } else {
       createMessage.error('刷新缓存失败！');

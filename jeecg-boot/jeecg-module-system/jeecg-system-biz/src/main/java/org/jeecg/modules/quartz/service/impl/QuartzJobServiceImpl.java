@@ -104,9 +104,8 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 		String ymd = DateUtils.date2Str(startDate,DateUtils.yyyymmddhhmmss.get());
 		String identity =  jobName + ymd;
 		//3秒后执行 只执行一次
-		// update-begin--author:sunjianlei ---- date:20210511--- for：定时任务立即执行，延迟3秒改成0.1秒-------
+		// 代码逻辑说明: 定时任务立即执行，延迟3秒改成0.1秒-------
 		startDate.setTime(startDate.getTime() + 100L);
-		// update-end--author:sunjianlei ---- date:20210511--- for：定时任务立即执行，延迟3秒改成0.1秒-------
 		// 定义一个Trigger
 		SimpleTrigger trigger = (SimpleTrigger)TriggerBuilder.newTrigger()
 				.withIdentity(identity, JOB_TEST_GROUP)

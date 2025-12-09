@@ -44,7 +44,7 @@
       }
     }
   };
-  // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
+  // 代码逻辑说明: 【QQYUN-6366】升级到antd4.x
   const appTheme: any = ref({});
   const { getDarkMode } = useRootSetting();
   watch(
@@ -54,11 +54,10 @@
       if (newValue === ThemeEnum.DARK) {
         appTheme.value.algorithm = theme.darkAlgorithm;
       }
-      // update-begin--author:liaozhiyang---date:20240322---for：【QQYUN-8570】生产环境暗黑模式下主题色不生效
+      // 代码逻辑说明: 【QQYUN-8570】生产环境暗黑模式下主题色不生效
       if (import.meta.env.PROD) {
         changeTheme(appStore.getProjectConfig.themeColor);
       }
-      // update-end--author:liaozhiyang---date:20240322---for：【QQYUN-8570】生产环境暗黑模式下主题色不生效
       modeAction(appTheme.value);
       appTheme.value = {
         ...appTheme.value,
@@ -98,13 +97,11 @@
   setTimeout(() => {
     appStore.getProjectConfig?.themeColor && changeTheme(appStore.getProjectConfig.themeColor);
   }, 300);
-  // update-end--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
 
 </script>
 <style lang="less">
-  // update-begin--author:liaozhiyang---date:20230803---for：【QQYUN-5839】windi会影响到html2canvas绘制的图片样式
+  // 代码逻辑说明: 【QQYUN-5839】windi会影响到html2canvas绘制的图片样式
   img {
     display: inline-block;
   }
-  // update-end--author:liaozhiyang---date:20230803---for：【QQYUN-5839】windi会影响到html2canvas绘制的图片样式
 </style>

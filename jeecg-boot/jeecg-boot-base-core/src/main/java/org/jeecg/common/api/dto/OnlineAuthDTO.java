@@ -30,12 +30,10 @@ public class OnlineAuthDTO implements Serializable {
      */
     private String onlineFormUrl;
 
-    //update-begin---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
     /**
      * online工单的地址
      */
     private String onlineWorkOrderUrl;
-    //update-end---author:chenrui ---date:20240123  for：[QQYUN-7992]【online】工单申请下的online表单，未配置online表单开发菜单，操作报错无权限------------
 
     public OnlineAuthDTO(){
 

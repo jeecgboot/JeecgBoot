@@ -130,9 +130,8 @@
    * 导入
    */
   function importSuccess() {
-    //update-begin---author:wangshuai ---date:20220530  for：[issues/54]树字典，勾选，然后批量删除，系统错误------------
+    // 代码逻辑说明: [issues/54]树字典，勾选，然后批量删除，系统错误------------
     (selectedRowKeys.value = []) && reload();
-    //update-end---author:wangshuai ---date:20220530  for：[issues/54]树字典，勾选，然后批量删除，系统错误--------------
   }
   /**
    * 添加下级
@@ -156,14 +155,11 @@
         reload();
       } else {
         //新增子集
-        //update-begin-author:liusq---date:20230411--for: [issue/4550]分类字典数据量过多会造成数据查询时间过长--- 
+        // 代码逻辑说明: [issue/4550]分类字典数据量过多会造成数据查询时间过长---
         if(isSubAdd){
           await expandTreeNode(values.pid);
-        //update-end-author:liusq---date:20230411--for: [issue/4550]分类字典数据量过多会造成数据查询时间过长--- 
         }else{
-          //update-begin-author:wangshuai---date:20240319--for: 字典树删除之后其他节点出现loading---
           //expandedRowKeys.value = [];
-          //update-end-author:wangshuai---date:20240319--for: 字典树删除之后其他节点出现loading--- 
           for (let key of unref(expandedArr)) {
             await expandTreeNode(key);
           }
@@ -257,11 +253,10 @@
    * */
   async function expandTreeNode(key) {
     let record:any = findTableDataRecord(key);
-    //update-begin-author:liusq---date:20230411--for: [issue/4550]分类字典数据量过多会造成数据查询时间过长，显示“接口请求超时,请刷新页面重试!”--- 
+    // 代码逻辑说明: [issue/4550]分类字典数据量过多会造成数据查询时间过长，显示“接口请求超时,请刷新页面重试!”---
     if(!expandedRowKeys.value.includes(key)){
       expandedRowKeys.value.push(key);
     }
-    //update-end-author:liusq---date:20230411--for: [issue/4550]分类字典数据量过多会造成数据查询时间过长，显示“接口请求超时,请刷新页面重试!”--- 
     let result = await getChildList({ pid: key });
     if (result && result.length > 0) {
       record.children = getDataByResult(result);

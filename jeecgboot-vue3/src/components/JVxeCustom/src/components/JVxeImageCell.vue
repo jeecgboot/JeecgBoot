@@ -56,14 +56,12 @@
       
       const { createErrorModal } = useMessage();
       const setup = useFileCell(props, UploadTypeEnum.image, { multiple: true });
-      // update-begin--author:liaozhiyang---date:20240604---for：【TV360X-470】jVxetable上传图片组件限制类型
+      // 代码逻辑说明: 【TV360X-470】jVxetable上传图片组件限制类型
       const acceptFileType = 'image/*';
-      // update-end--author:liaozhiyang---date:20240604---for：【TV360X-470】jVxetable上传图片组件限制类型
-      // update-begin--author:liaozhiyang---date:20240105---for：【issues/953】online子表vxe-table展现形式详情图片上传可点击
+      // 代码逻辑说明: 【issues/953】online子表vxe-table展现形式详情图片上传可点击
       const clickEvent = computed(() => {
         return unref(setup.cellProps).disabled ? null : 'click';
       });
-      // update-end--author:liaozhiyang---date:20240105---for：【issues/953】online子表vxe-table展现形式详情图片上传可点击
       const { innerFile, maxCount } = setup;
 
       const imgList = computed(() => {
@@ -89,13 +87,12 @@
           });
         }
       }
-      // update-begin--author:liaozhiyang---date:20240523---for：【TV360X-121】jvxetable文件组件禁用状态(详情)下可下载
+      // 代码逻辑说明: 【TV360X-121】jvxetable文件组件禁用状态(详情)下可下载
       const handlePreview = () => {
         if (unref(setup.cellProps).disabled) {
           createImgPreview({ imageList: imgList.value });
         }
       };
-      // update-end--author:liaozhiyang---date:20240523---for：【TV360X-121】jvxetable文件组件禁用状态(详情)下可下载
       return {
         ...setup,
         imgList,

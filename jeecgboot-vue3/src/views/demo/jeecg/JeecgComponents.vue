@@ -25,7 +25,7 @@
       <JPopup
         v-model:value="model[field]"
         :formElRef="formElRef"
-        code="withparamreport"
+        code="ces_app_rep001"
         :param="{ sex: '1' }"
         :fieldConfig="[{ source: 'name', target: 'pop2' }]"
       />
@@ -34,7 +34,7 @@
       <JPopup
         v-model:value="model[field]"
         :formElRef="formElRef"
-        code="tj_user_report"
+        code="report_user"
         :param="{ sex: '1' }"
         :fieldConfig="[{ source: 'realname', target: 'pop3' }]"
       />

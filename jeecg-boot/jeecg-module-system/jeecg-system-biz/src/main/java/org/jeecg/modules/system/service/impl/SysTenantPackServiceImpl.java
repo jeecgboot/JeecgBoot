@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +86,6 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         if (null != tenantId && tenantId != 0) {
             List<String> userIds = sysUserTenantMapper.getUserIdsByTenantId(tenantId);
             if (CollectionUtil.isNotEmpty(userIds)) {
-                //update-begin---author:wangshuai---date:2025-09-03---for: 编辑时需要查看有没有未分配的用户---
                 // 查询已存在的用户
                 LambdaQueryWrapper<SysTenantPackUser> query = new LambdaQueryWrapper<>();
                 query.eq(SysTenantPackUser::getTenantId, tenantId);
@@ -105,7 +101,6 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
                         .filter(userId -> !existingUserIds.contains(userId))
                         .toList();
                 for (String userId : newUserIds) {
-                //update-end---author:wangshuai---date:2025-09-03---for: 编辑时需要查看有没有未分配的用户---
                     SysTenantPackUser tenantPackUser = new SysTenantPackUser(tenantId, packId, userId);
                     sysTenantPackUserMapper.insert(tenantPackUser);
                 }
@@ -317,8 +312,11 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         LambdaQueryWrapper<SysTenantPack> query = new LambdaQueryWrapper<>();
         query.eq(SysTenantPack::getPackType,"default");
         List<SysTenantPack> sysTenantPacks = sysTenantPackMapper.selectList(query);
+        // 取当前租户用户列表
+        List<String> userIds = sysUserTenantMapper.getUserIdsByTenantId(tenantId);
         for (SysTenantPack sysTenantPack: sysTenantPacks) {
-            syncDefaultPack2CurrentTenant(tenantId, sysTenantPack);
+            // 代码逻辑说明: 【QQYUN-14007】演示系统，初始化租户套餐很慢---
+            syncDefaultPack2CurrentTenant(tenantId, sysTenantPack, userIds);
         }
     }
 
@@ -333,16 +331,24 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         query.eq(SysTenantPack::getPackType,"custom");
         query.eq(SysTenantPack::getTenantId, tenantId);
         List<SysTenantPack> currentTenantPacks = sysTenantPackMapper.selectList(query);
-        Map<String, SysTenantPack> currentTenantPackMap = new HashMap<String, SysTenantPack>();
+        // 代码逻辑说明: 【QQYUN-14007】演示系统，初始化租户套餐很慢---
+        Map<String, SysTenantPack> currentTenantPackMap;
         if (oConvertUtils.listIsNotEmpty(currentTenantPacks)) {
             currentTenantPackMap = currentTenantPacks.stream().collect(Collectors.toMap(SysTenantPack::getPackName, o -> o, (existing, replacement) -> existing));
+        } else {
+            currentTenantPackMap = new HashMap<String, SysTenantPack>();
         }
-        // 添加不存在的套餐包
-        for (SysTenantPack defaultPacks : sysDefaultTenantPacks) {
-            if(!currentTenantPackMap.containsKey(defaultPacks.getPackName())){
-                syncDefaultPack2CurrentTenant(tenantId, defaultPacks);
-            }
-        }
+        // 预取当前租户用户列表，避免在循环中重复查询
+        List<String> userIds = sysUserTenantMapper.getUserIdsByTenantId(tenantId);
+        // 计算需要同步的默认套餐包列表
+        List<SysTenantPack> packsToSync = sysDefaultTenantPacks.stream()
+                .filter(p -> !currentTenantPackMap.containsKey(p.getPackName()))
+                .collect(Collectors.toList());
+
+        // 并行同步缺失的套餐包
+        packsToSync.parallelStream().forEach(defaultPacks -> {
+            syncDefaultPack2CurrentTenant(tenantId, defaultPacks, userIds);
+        });
     }
 
     /**
@@ -353,7 +359,7 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
      * @author chenrui
      * @date 2025/2/5 19:41
      */
-    private void syncDefaultPack2CurrentTenant(Integer tenantId, SysTenantPack defaultPacks) {
+    private void syncDefaultPack2CurrentTenant(Integer tenantId, SysTenantPack defaultPacks, List<String> userIds) {
         SysTenantPack pack = new SysTenantPack();
         BeanUtils.copyProperties(defaultPacks,pack);
         pack.setTenantId(tenantId);
@@ -361,22 +367,26 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         pack.setId("");
         sysTenantPackMapper.insert(pack);
         List<String> permissionsByPackId = sysPackPermissionMapper.getPermissionsByPackId(defaultPacks.getId());
+        List<SysPackPermission> permissionList = new ArrayList<>();
         for (String permission:permissionsByPackId) {
             SysPackPermission packPermission = new SysPackPermission();
             packPermission.setPackId(pack.getId());
             packPermission.setPermissionId(permission);
-            sysPackPermissionMapper.insert(packPermission);
+            permissionList.add(packPermission);
+        }
+        if(CollectionUtil.isNotEmpty(permissionList)){
+            sysPackPermissionMapper.insert(permissionList);
         }
         //如果需要自动分配给用户时候再去添加用户与套餐的关系数据
         if(oConvertUtils.isNotEmpty(defaultPacks.getIzSysn()) && CommonConstant.STATUS_1.equals(defaultPacks.getIzSysn())) {
-            //查询当前租户下的用户
-            List<String> userIds = sysUserTenantMapper.getUserIdsByTenantId(tenantId);
+            List<SysTenantPackUser> packUserList = new ArrayList<>();
             if (oConvertUtils.isNotEmpty(userIds)) {
                 for (String userId : userIds) {
                     //根据租户id和套餐id添加用户与套餐关系数据
                     SysTenantPackUser tenantPackUser = new SysTenantPackUser(tenantId, pack.getId(), userId);
-                    sysTenantPackUserMapper.insert(tenantPackUser);
+                    packUserList.add(tenantPackUser);
                 }
+                sysTenantPackUserMapper.insert(packUserList);
             }
         }
     }

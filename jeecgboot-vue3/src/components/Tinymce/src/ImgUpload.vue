@@ -40,7 +40,7 @@
     },
     emits: ['uploading', 'done', 'error', 'loading'],
     setup(props, { emit }) {
-      //update-begin-author:taoyan date:2022-5-13 for: 富文本上传图片不支持
+      // 代码逻辑说明: 富文本上传图片不支持
       function getheader() {
         return getHeaders();
       }
@@ -55,7 +55,6 @@
       const uploadUrl = domainUrl + '/sys/common/upload';
       //文件列表
       let uploadFileList = ref<any[]>([]);
-      //update-end-author:taoyan date:2022-5-13 for: 富文本上传图片不支持
       const { t } = useI18n();
       const { prefixCls } = useDesign('tinymce-img-upload');
 
@@ -121,17 +120,15 @@
       position: fixed;
       z-index: 10000;
     }
-    // update-begin--author:liaozhiyang---date:20230326---for：【QQYUN-8647】online tinymce组件上传图片按遮挡了控件栏的全屏按钮
+    // 代码逻辑说明: 【QQYUN-8647】online tinymce组件上传图片按遮挡了控件栏的全屏按钮
     .ant-btn {
       padding: 2px 4px;
       font-size: 12px;
       height: 24px;
-      // update-begin--author:liaozhiyang---date:20240524---for：【TV360X-235】富文本禁用状态下图片上传按钮文字看不清
+      // 代码逻辑说明: 【TV360X-235】富文本禁用状态下图片上传按钮文字看不清
       &.is-disabled {
         color: rgba(255, 255, 255, 0.5);
       }
-      // update-end--author:liaozhiyang---date:20240524---for：【TV360X-235】富文本禁用状态下图片上传按钮文字看不清
     }
-    // update-end--author:liaozhiyang---date:20230326---for：【QQYUN-8647】online tinymce组件上传图片按遮挡了控件栏的全屏按钮
   }
 </style>

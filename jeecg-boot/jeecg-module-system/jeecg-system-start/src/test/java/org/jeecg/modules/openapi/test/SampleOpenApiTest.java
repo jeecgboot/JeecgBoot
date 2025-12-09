@@ -21,7 +21,7 @@ public class SampleOpenApiTest {
     @Test
     public void test() throws Exception {
         // 根据部门ID查询用户
-        String url = base_url+"/openapi/call/TEwcXBlr?id=6d35e179cd814e3299bd588ea7daed3f";
+        String url = base_url+"/openapi/call/TEwcXBlr?id=c6d7cb4deeac411cb3384b1b31278596";
         JSONObject header = genTimestampAndSignature();
         HttpGet httpGet = new HttpGet(url);
         // 设置请求头

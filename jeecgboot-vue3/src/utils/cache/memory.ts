@@ -101,10 +101,9 @@ export class Memory<T = any, V = any> {
       const item = this.cache[key];
       item.timeoutId && clearTimeout(item.timeoutId);
     });
-    //update-begin---author:liusq  Date:20220108  for：不删除登录用户的租户id，其他缓存信息都清除----
+    // 代码逻辑说明: 不删除登录用户的租户id，其他缓存信息都清除----
     this.cache = {
       ...omit(this.cache, [TOKEN_KEY, USER_INFO_KEY, ROLES_KEY, DB_DICT_DATA_KEY, TENANT_ID, LOGIN_INFO_KEY, PROJ_CFG_KEY]),
     };
-    //update-end---author:liusq  Date:20220108  for：不删除登录用户的租户id，其他缓存信息都清除----
   }
 }

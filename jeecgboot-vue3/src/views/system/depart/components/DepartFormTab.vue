@@ -159,7 +159,6 @@
   }
 </script>
 <style lang="less">
-  // update-begin-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
 
   @prefix-cls: ~'@{namespace}-j-depart-form-content';
   /*begin 兼容暗夜模式*/
@@ -168,7 +167,6 @@
     border-top: 1px solid @border-color-base;
   }
   /*end 兼容暗夜模式*/
-  // update-end-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
 </style>
 <style lang="less" scoped>
   :deep(.ant-select-selector .ant-select-selection-item){

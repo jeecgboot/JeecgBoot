@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.entity.SysUserDepart;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.jeecg.modules.system.model.SysUserSysDepPostModel;
 
 /**
  * @Description: 用户部门mapper接口
@@ -98,4 +99,12 @@ public interface SysUserDepartMapper extends BaseMapper<SysUserDepart>{
 	 */
 	@Select("SELECT COUNT(*) FROM sys_user_depart WHERE user_id = #{userId} AND dep_id = #{departId}")
     Long getCountByDepartIdAndUserId(String userId, String departId);
+
+    /**
+     * 通过用户id集合获取用户id和部门code
+     * 
+     * @param userIdList
+     * @return
+     */
+    List<SysUserSysDepPostModel> getUserDepPostByUserIds(@Param("userIdList") List<String> userIdList);
 }

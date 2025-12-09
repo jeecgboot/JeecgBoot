@@ -52,19 +52,16 @@ public class CategoryCodeRule implements IFillRuleHandler {
          * */
         //找同类 确定上一个最大的code值
         SysCategoryMapper baseMapper = (SysCategoryMapper) SpringContextUtils.getBean("sysCategoryMapper");
-        //update-begin---author:wangshuai ---date:20230424  for：【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
+        // 代码逻辑说明: 【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
         Page<SysCategory> page = new Page<>(1,1);
         List<SysCategory> list = baseMapper.getMaxCategoryCodeByPage(page,categoryPid);
-        //update-end---author:wangshuai ---date:20230424  for：【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
         if (list == null || list.size() == 0) {
             if (ROOT_PID_VALUE.equals(categoryPid)) {
                 //情况1
                 categoryCode = YouBianCodeUtil.getNextYouBianCode(null);
             } else {
                 //情况2
-                //update-begin---author:wangshuai ---date:20230424  for：【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
                 SysCategory parent = (SysCategory) baseMapper.selectSysCategoryById(categoryPid);
-                //update-end---author:wangshuai ---date:20230424  for：【issues/4846】开启saas多租户功能后，租户管理员在添加分类字典时，报错------------
                 categoryCode = YouBianCodeUtil.getSubYouBianCode(parent.getCode(), null);
             }
         } else {

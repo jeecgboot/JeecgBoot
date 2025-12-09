@@ -138,9 +138,10 @@ public class SysAnnouncementSendController {
 	@DeleteMapping(value = "/delete")
 	public Result<SysAnnouncementSend> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
-		SysAnnouncementSend sysAnnouncementSend = sysAnnouncementSendService.getById(id);
-		if(sysAnnouncementSend==null) {
-			result.error500("未找到对应实体");
+        //根据用户id和通告阅读表的id获取当前用户已阅读的数量
+		long count = sysAnnouncementSendService.getReadCountByUserId(id);
+		if(0 == count) {
+			result.error500("删除失败，该数据不存在或尚未标记为“已读”");
 		}else {
 			boolean ok = sysAnnouncementSendService.removeById(id);
 			if(ok) {
@@ -162,8 +163,8 @@ public class SysAnnouncementSendController {
 		if(ids==null || "".equals(ids.trim())) {
 			result.error500("参数不识别！");
 		}else {
-			this.sysAnnouncementSendService.removeByIds(Arrays.asList(ids.split(",")));
-			result.success("删除成功!");
+			this.sysAnnouncementSendService.deleteBatchByIds(ids);
+			result.success("已阅读的消息删除成功!");
 		}
 		return result;
 	}
@@ -200,10 +201,9 @@ public class SysAnnouncementSendController {
 		LambdaUpdateWrapper<SysAnnouncementSend> updateWrapper = new UpdateWrapper().lambda();
 		updateWrapper.set(SysAnnouncementSend::getReadFlag, CommonConstant.HAS_READ_FLAG);
 		updateWrapper.set(SysAnnouncementSend::getReadTime, new Date());
-		//update-begin-author:liusq date:2023-09-04 for:系统模块存在的sql漏洞写法
+		// 代码逻辑说明: 系统模块存在的sql漏洞写法
 		updateWrapper.eq(SysAnnouncementSend::getAnntId,anntId);
 		updateWrapper.eq(SysAnnouncementSend::getUserId,userId);
-		//update-end-author:liusq date:2023-09-04 for: 系统模块存在的sql漏洞写法
 		//updateWrapper.last("where annt_id ='"+anntId+"' and user_id ='"+userId+"'");
 		SysAnnouncementSend announcementSend = new SysAnnouncementSend();
 		sysAnnouncementSendService.update(announcementSend, updateWrapper);
@@ -225,14 +225,13 @@ public class SysAnnouncementSendController {
 		announcementSendModel.setUserId(userId);
 		announcementSendModel.setPageNo((pageNo-1)*pageSize);
 		announcementSendModel.setPageSize(pageSize);
-		//update-begin---author:wangshuai---date:2024-06-11---for:【TV360X-545】我的消息列表不能通过时间范围查询---
+		// 代码逻辑说明: 【TV360X-545】我的消息列表不能通过时间范围查询---
 		if(StringUtils.isNotEmpty(announcementSendModel.getSendTimeBegin())){
 			announcementSendModel.setSendTimeBegin(announcementSendModel.getSendTimeBegin() + " 00:00:00");
 		}
 		if(StringUtils.isNotEmpty(announcementSendModel.getSendTimeBegin())){
 			announcementSendModel.setSendTimeEnd(announcementSendModel.getSendTimeEnd() + " 23:59:59");
 		}
-		//update-end---author:wangshuai---date:2024-06-11---for:【TV360X-545】我的消息列表不能通过时间范围查询---
 		Page<AnnouncementSendModel> pageList = new Page<AnnouncementSendModel>(pageNo,pageSize);
 		pageList = sysAnnouncementSendService.getMyAnnouncementSendPage(pageList, announcementSendModel);
 		result.setResult(pageList);
@@ -274,5 +273,26 @@ public class SysAnnouncementSendController {
 	 public Result<AnnouncementSendModel> getOne(@RequestParam(name="sendId",required=true) String sendId) {
 		 AnnouncementSendModel model = sysAnnouncementSendService.getOne(sendId);
 		 return Result.ok(model);
+	 }
+
+	 /**
+	  * 根据业务类型和ID修改阅读状态
+	  * @param busType
+	  * @return
+	  */
+	 @GetMapping(value = "/updateSysAnnounReadFlag")
+	 public Result<AnnouncementSendModel> updateSysAnnounReadFlag(
+			 @RequestParam(name="busId",required=true) String busId,
+			 @RequestParam(name="busType",required=false) String busType) {
+		 //更新阅读状态
+		 sysAnnouncementSendService.updateReadFlagByBusId(busId,busType);
+
+		 //刷新未读数量
+		 JSONObject obj = new JSONObject();
+		 obj.put(WebsocketConst.MSG_CMD, WebsocketConst.CMD_USER);
+		 LoginUser sysUser = LoginUserUtils.getSessionUser();
+		 webSocket.sendMessage(sysUser.getId(), obj.toJSONString());
+
+		 return Result.ok();
 	 }
 }

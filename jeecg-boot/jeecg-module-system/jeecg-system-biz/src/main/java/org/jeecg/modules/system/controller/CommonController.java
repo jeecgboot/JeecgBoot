@@ -1,26 +1,29 @@
 package org.jeecg.modules.system.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
+import org.jeecg.common.constant.enums.FileTypeEnum;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.system.util.HttpFileToMultipartFileUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 
 /**
@@ -80,6 +83,13 @@ public class CommonController {
             savePath = CommonUtils.upload(file, bizPath, uploadType);
         }
         if(oConvertUtils.isNotEmpty(savePath)){
+            
+            //添加到文件表
+            String orgName = file.getOriginalFilename();
+            // 获取文件名
+            orgName = CommonUtils.getFileName(orgName);
+            String type = orgName.substring(orgName.lastIndexOf(SymbolConstant.SPOT));
+            FileTypeEnum fileType = FileTypeEnum.getByType(type);
             result.setMessage(savePath);
             result.setSuccess(true);
         }else {
@@ -188,9 +198,8 @@ public class CommonController {
             if (imgPath.endsWith(SymbolConstant.COMMA)) {
                 imgPath = imgPath.substring(0, imgPath.length() - 1);
             }
-            //update-begin---author:liusq ---date:20230912  for：检查下载文件类型--------------
+            // 代码逻辑说明: 检查下载文件类型--------------
             SsrfFileTypeFilter.checkDownloadFileType(imgPath);
-            //update-end---author:liusq ---date:20230912  for：检查下载文件类型--------------
 
             String filePath = uploadpath + File.separator + imgPath;
             File file = new File(filePath);
@@ -301,6 +310,37 @@ public class CommonController {
         String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
         String bestMatchPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
         return new AntPathMatcher().extractPathWithinPattern(bestMatchPattern, path);
+    }
+
+    /**
+     * 根据网路图片地址上传到服务器
+     * @param jsonObject
+     * @param request
+     * @return
+     */
+    @PostMapping("/uploadImgByHttp")
+    public Result<String> uploadImgByHttp(@RequestBody JSONObject jsonObject, HttpServletRequest request){
+        String fileUrl = oConvertUtils.getString(jsonObject.get("fileUrl"));
+        String filename = oConvertUtils.getString(jsonObject.get("filename"));
+        String bizPath = oConvertUtils.getString(jsonObject.get("bizPath"));
+        try {
+            String savePath = "";
+            MultipartFile file = HttpFileToMultipartFileUtil.httpFileToMultipartFile(fileUrl, filename);
+            // 文件安全校验，防止上传漏洞文件
+            SsrfFileTypeFilter.checkUploadFileType(file, bizPath);
+            if (oConvertUtils.isEmpty(bizPath)) {
+                bizPath = CommonConstant.UPLOAD_TYPE_OSS.equals(uploadType) ? "upload" : "";
+            }
+            if(CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)){
+                savePath = this.uploadLocal(file,bizPath);
+            }else{
+                savePath = CommonUtils.upload(file, bizPath, uploadType);
+            }
+            return Result.OK(savePath);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Result.error(e.getMessage());
+        }
     }
 
 }

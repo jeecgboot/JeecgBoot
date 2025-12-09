@@ -35,11 +35,10 @@ export const useLocaleStore = defineStore({
     getLocale(): LocaleType {
       return this.localInfo?.locale ?? 'zh_CN';
     },
-    //update-begin-author:taoyan date:2022-6-1 for: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
+    // 代码逻辑说明: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
     getPathTitle: (state) => {
       return (path) => state.pathTitleMap[path];
     },
-    //update-end-author:taoyan date:2022-6-1 for: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
     getAppIndexTheme(): string {
       return this.appIndexTheme;
     },
@@ -65,11 +64,10 @@ export const useLocaleStore = defineStore({
         ...this.localInfo,
       });
     },
-    //update-begin-author:taoyan date:2022-6-1 for: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
+    // 代码逻辑说明: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
     setPathTitle(path, title) {
       this.pathTitleMap[path] = title;
     },
-    //update-end-author:taoyan date:2022-6-1 for: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
     setAppIndexTheme(theme) {
       this.appIndexTheme = theme;
     },

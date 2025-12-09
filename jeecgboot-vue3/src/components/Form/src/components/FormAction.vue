@@ -2,7 +2,6 @@
   <a-col v-bind="actionColOpt" v-if="showActionButtonGroup">
     <div class="btnArea" style="width: 100%" :style="{ textAlign: actionColOpt.style.textAlign }">
       <FormItem>
-        <!-- update-begin-author:zyf   Date:20211213  for：调换按钮前后位置-->
         <slot name="submitBefore"></slot>
         <Button type="primary" class="mr-2" v-bind="getSubmitBtnOptions" @click="submitAction" v-if="showSubmitButton">
           {{ getSubmitBtnOptions.text }}
@@ -12,7 +11,6 @@
         <Button type="default" class="mr-2" v-bind="getResetBtnOptions" @click="resetAction" v-if="showResetButton">
           {{ getResetBtnOptions.text }}
         </Button>
-        <!-- update-end-author:zyf    Date:20211213  for：调换按钮前后位置-->
 
         <slot name="advanceBefore"></slot>
         <Button type="link" size="small" @click="toggleAdvanced" v-if="showAdvancedButton && !hideAdvanceBtn">
@@ -75,9 +73,8 @@
         const { showAdvancedButton, actionSpan: span, actionColOptions } = props;
         const actionSpan = 24 - span;
         const advancedSpanObj = showAdvancedButton ? { span: actionSpan < 6 ? 24 : actionSpan } : {};
-        // update-begin--author:liaozhiyang---date:20240105---for：【QQYUN-6566】BasicForm支持一行显示(inline)
+        // 代码逻辑说明: 【QQYUN-6566】BasicForm支持一行显示(inline)
         const defaultSpan = props.layout == 'inline' ? {} : { span: showAdvancedButton ? 6 : 4 };
-        // update-end--author:liaozhiyang---date:20240105---for：【QQYUN-6566】BasicForm支持一行显示(inline)
         const actionColOpt: Partial<ColEx> = {
           style: { textAlign: 'right' },
           ...defaultSpan,
@@ -127,7 +124,7 @@
   });
 </script>
 <style lang="less" scoped>
-  // update-begin--author:liaozhiyang---date:20240617---for：【TV360X-999】在1753px宽度下 流程设计页面查询的展开换行了
+  // 代码逻辑说明: 【TV360X-999】在1753px宽度下 流程设计页面查询的展开换行了
   .btnArea {
     :deep(.ant-form-item-control-input-content) {
       display: flex;
@@ -137,5 +134,4 @@
       }
     }
   }
-  // update-end--author:liaozhiyang---date:20240617---for：【TV360X-999】在1753px宽度下 流程设计页面查询的展开换行了
 </style>

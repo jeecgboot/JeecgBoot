@@ -109,7 +109,7 @@ export const useCodeHinting = (CodeMirror, keywords, language) => {
             from: CodeMirror.Pos(cur.line, start),
             to: CodeMirror.Pos(cur.line, end),
           });
-          // update-begin--author:liaozhiyang---date:20240429---for：【QQYUN-8865】js增强加上鼠标移入提示
+          // 代码逻辑说明: 【QQYUN-8865】js增强加上鼠标移入提示
           const item = currentKeywords[0];
           if (item?.desc) {
             setTimeout(() => {
@@ -126,7 +126,6 @@ export const useCodeHinting = (CodeMirror, keywords, language) => {
               }
             }, 0);
           }
-          // update-end--author:liaozhiyang---date:20240429---for：【QQYUN-8865】js增强加上鼠标移入提示
         } else {
         }
       }

@@ -116,7 +116,7 @@
       async function generatedPrompt() {
         content.value = '';
         loading.value = true;
-        let readableStream = await promptGenerate({ prompt: prompt.value }).catch(() => {
+        let readableStream = await promptGenerate({ prompt: encodeURIComponent(prompt.value) }).catch(() => {
             loading.value = false;
         });
         const reader = readableStream.getReader();

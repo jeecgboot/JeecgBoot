@@ -20,7 +20,7 @@
   const $message = useMessage();
   const formRef = ref();
   const username = ref('');
-  // update-begin--author:liaozhiyang---date:20240124---for：【QQYUN-7970】国际化
+  // 代码逻辑说明: 【QQYUN-7970】国际化
   const title = ref(t('layout.changePassword.changePassword'));
   //表单配置
   const [registerForm, { resetFields, validate, clearValidate }] = useForm({
@@ -43,6 +43,10 @@
             required: true,
             message: t('layout.changePassword.pleaseEnterNewPassword'),
           },
+          {
+            pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[~!@#$%^&*()_+`\-={}:";'<>?,./]).{8,}$/,
+            message: '密码由 8 位及以上数字、大小写字母和特殊符号组成！',
+          },  
         ],
       },
       {
@@ -56,7 +60,6 @@
     wrapperCol: null,
     labelWidth: localeStore.getLocale == 'zh_CN' ? 100 : 160,
   });
-  // update-end--author:liaozhiyang---date:20240124---for：【QQYUN-7970】国际化
   //表单赋值
   const [registerModal, { setModalProps, closeModal }] = useModalInner();
 

@@ -138,9 +138,8 @@
   .item-style() {
     li {
       display: inline-block;
-      //update-begin---author:wangshuai---date:2024-06-24---for:【TV360X-1576】右键样式选中缺少了一块---
+      // 代码逻辑说明: 【TV360X-1576】右键样式选中缺少了一块---
       width: 100% !important;
-      //update-end---author:wangshuai---date:2024-06-24---for:【TV360X-1576】右键样式选中缺少了一块---
       height: @default-height;
       margin: 0 !important;
       line-height: @default-height;

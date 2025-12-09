@@ -1,8 +1,7 @@
 import { isObject, isString } from '/@/utils/is';
 import dayjs from "dayjs";
-// update-begin--author:liaozhiyang---date:20240426---for：【QQYUN-9138】系统用户保存的时间没有秒
+// 代码逻辑说明: 【QQYUN-9138】系统用户保存的时间没有秒
 const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-// update-end--author:liaozhiyang---date:20240426---for：【QQYUN-9138】系统用户保存的时间没有秒
 
 export function joinTimestamp<T extends boolean>(join: boolean, restful: T): T extends true ? string : object;
 

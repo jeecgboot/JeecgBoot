@@ -141,7 +141,7 @@
     </#if>
 <#-- 字段展示/DB类型 -->
     <#assign baseAttrs="view: '${po.classType}', type: 'string',">
-    <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+    <#if po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
         <#assign baseAttrs="view: 'number', type: 'number',">
     </#if>
 
@@ -244,7 +244,7 @@
   <#list columns as po>
       <#if po.isQuery=='Y'>
           <#if po.queryMode=='group'>
-              <#if po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal' || po.classType=='time' || po.classType=='date' || po.classType=='datetime'>
+              <#if po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal' || po.classType=='time' || po.classType=='date' || po.classType=='datetime'>
                   <#assign rangeField = rangeField + "${po.fieldName},">
               </#if>
           </#if>

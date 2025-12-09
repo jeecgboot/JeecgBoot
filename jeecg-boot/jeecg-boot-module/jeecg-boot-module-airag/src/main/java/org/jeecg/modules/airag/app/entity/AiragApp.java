@@ -168,6 +168,12 @@ public class AiragApp implements Serializable {
     private java.lang.String metadata;
 
     /**
+     * 插件 [{pluginId: '123213', pluginName: 'xxxx', category: 'mcp'}]
+     */
+    @Schema(description = "插件")
+    private java.lang.String plugins;
+
+    /**
      * 知识库ids
      */
     @TableField(exist = false)

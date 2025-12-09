@@ -176,6 +176,10 @@ html[data-theme='light'] {
       border-color: #eee !important;
       background-color: transparent !important;
     }
+    //【QQYUN-13754】switch在禁用的方式下效果有问题：字体为黑色
+    .ant-switch-disabled .ant-switch-inner-checked,.ant-switch-inner-unchecked{
+      color: #fff !important;
+    }
   }
 }
 html[data-theme='dark'] {

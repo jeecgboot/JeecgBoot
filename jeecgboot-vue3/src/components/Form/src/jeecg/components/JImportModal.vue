@@ -82,10 +82,9 @@
 
       //关闭方法
       function handleClose() {
-        // update-begin--author:liaozhiyang---date:20231226---for：【QQYUN-7477】关闭弹窗清空内容（之前上传失败关闭后不会清除）
+        // 代码逻辑说明: 【QQYUN-7477】关闭弹窗清空内容（之前上传失败关闭后不会清除）
         closeModal();
         reset();
-        // update-end--author:liaozhiyang---date:20231226---for：【QQYUN-7477】关闭弹窗清空内容（之前上传失败关闭后不会清除）
       }
 
       //校验状态切换
@@ -117,11 +116,10 @@
         if (unref(foreignKeys) && unref(foreignKeys).length > 0) {
           formData.append('foreignKeys', unref(foreignKeys));
         }
-        // update-begin--author:liaozhiyang---date:20240429---for：【issues/6124】当用户没有【Online表单开发】页面的权限时用户无权导入从表数据
+        // 代码逻辑说明: 【issues/6124】当用户没有【Online表单开发】页面的权限时用户无权导入从表数据
         if (isObject(foreignKeys.value)) {
           formData.append('foreignKeys', JSON.stringify(foreignKeys.value));
         }
-        // update-end--author:liaozhiyang---date:20240429---for：【issues/6124】当用户没有【Online表单开发】页面的权限时用户无权导入从表数据
         if (!!online) {
           formData.append('validateStatus', unref(validateStatus));
         }

@@ -5,7 +5,7 @@
   import { unref } from 'vue';
   import { useRouter } from 'vue-router';
   import { useMultipleTabStore } from '/@/store/modules/multipleTab';
-  // update-begin--author:liaozhiyang---date:20231123---for：【QQYUN-7099】动态路由匹配右键重新加载404
+  // 代码逻辑说明: 【QQYUN-7099】动态路由匹配右键重新加载404
   const { currentRoute, replace } = useRouter();
   const { params, query } = unref(currentRoute);
   const { path } = params;
@@ -26,5 +26,4 @@
       });
     }
   }
-  // update-end--author:liaozhiyang---date:20231123---for：【QQYUN-7099】动态路由匹配右键重新加载404
 </script>

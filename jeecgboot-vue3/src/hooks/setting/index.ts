@@ -41,6 +41,8 @@ export const useGlobSetting = (): Readonly<GlobConfig> => {
     urlPrefix: VITE_GLOB_API_URL_PREFIX,
     uploadUrl: VITE_GLOB_DOMAIN_URL,
     viewUrl: VITE_GLOB_ONLINE_VIEW_URL,
+    // true: 新任务办理页面弹窗, false:旧的任务办理页面弹窗
+    useNewTaskModal: true,
     // 当前是否运行在 electron 平台
     isElectronPlatform: VITE_GLOB_RUN_PLATFORM === 'electron',
 
@@ -55,7 +57,7 @@ export const useGlobSetting = (): Readonly<GlobConfig> => {
     window['_CONFIG'] = {}
   }
 
-  // update-begin--author:sunjianlei---date:220250115---for：【QQYUN-10956】配置了自定义前缀，外部连接打不开，需要兼容处理
+  // 代码逻辑说明: 【QQYUN-10956】配置了自定义前缀，外部连接打不开，需要兼容处理
   let domainURL = VITE_GLOB_DOMAIN_URL;
 
   // 如果不是以http(s)开头的，也不是以域名开头的，那么就是拼接当前域名
@@ -65,7 +67,6 @@ export const useGlobSetting = (): Readonly<GlobConfig> => {
     }
     domainURL = window.location.origin + domainURL;
   }
-  // update-end--author:sunjianlei---date:220250115---for：【QQYUN-10956】配置了自定义前缀，外部连接打不开，需要兼容处理
 
   // @ts-ignore
   window._CONFIG['domianURL'] = domainURL;

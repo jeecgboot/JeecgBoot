@@ -65,7 +65,7 @@
           <j-dict-select-tag type="${po.classType}" v-model="model.${po.fieldName}"  dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType=='list_multi' || po.classType=='checkbox'>
           <j-multi-select-tag type="${po.classType}" v-model="model.${po.fieldName}"  dictCode="${form_field_dictCode}" placeholder="请选择${po.filedComment}" <#if po.readonly=='Y'>disabled</#if>/>
-	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+	<#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
           <a-input-number v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}" style="width: 100%" <#if po.readonly=='Y'>disabled</#if>/>
 	<#elseif po.classType=='file'>
           <j-upload v-model="model.${po.fieldName}"  <#if po.readonly=='Y'>disabled</#if> <#if po.uploadnum??>:number=${po.uploadnum}</#if>></j-upload>

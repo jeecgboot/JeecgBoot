@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.constant.CommonConstant;
@@ -32,6 +33,7 @@ public class SysRoleIndexServiceImpl extends ServiceImpl<SysRoleIndexMapper, Sys
     public SysRoleIndex queryDefaultIndex() {
         LambdaQueryWrapper<SysRoleIndex> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysRoleIndex::getRoleCode, DefIndexConst.DEF_INDEX_ALL);
+        queryWrapper.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
         SysRoleIndex entity = super.getOne(queryWrapper);
         // 保证不为空
         if (entity == null) {
@@ -148,6 +150,35 @@ public class SysRoleIndexServiceImpl extends ServiceImpl<SysRoleIndexMapper, Sys
            type = url.contains(DefIndexConst.HOME_TYPE_SYSTEM) ? DefIndexConst.HOME_TYPE_SYSTEM : DefIndexConst.HOME_TYPE_PERSONAL;
         }
         redisUtil.set(DefIndexConst.CACHE_TYPE + username,type);
+    }
+
+    /**
+     * 更新其他全局默认的状态值
+     *
+     * @param roleCode
+     * @param status
+     * @param id
+     */
+    @Override
+    public void updateOtherDefaultStatus(String roleCode, String status, String id) {
+        //roleCode是全局默认
+        if(oConvertUtils.isNotEmpty(roleCode) && DefIndexConst.DEF_INDEX_ALL.equals(roleCode)){
+            //状态为开启状态
+            if(oConvertUtils.isNotEmpty(status) && CommonConstant.STATUS_1.equals(status)){
+                LambdaQueryWrapper<SysRoleIndex> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(SysRoleIndex::getRoleCode,roleCode);
+                queryWrapper.eq(SysRoleIndex::getStatus,CommonConstant.STATUS_1);
+                queryWrapper.ne(SysRoleIndex::getId,id);
+                queryWrapper.select(SysRoleIndex::getId);
+                List<SysRoleIndex> list = this.list(queryWrapper);
+                if(CollectionUtil.isNotEmpty(list)){
+                    list.forEach(sysRoleIndex -> {
+                        sysRoleIndex.setStatus(CommonConstant.STATUS_0);
+                    });
+                    this.updateBatchById(list);
+                }
+            }
+        }
     }
 
 }

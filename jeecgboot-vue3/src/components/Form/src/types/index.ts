@@ -106,6 +106,7 @@ export type ComponentType =
   | 'WeekPicker'
   | 'TimePicker'
   | 'DatePickerInFilter'
+  | 'JDatePickerMultiple'
   | 'Switch'
   | 'StrengthMeter'
   | 'Upload'

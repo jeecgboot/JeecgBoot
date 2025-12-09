@@ -161,7 +161,7 @@
         let idList = [];
         selectedUserList.value = [];
         if(ids){
-          // update-begin-author:sunjianlei date:20230330 for: 修复用户选择器逗号分割回显不生效的问题
+          // 代码逻辑说明: 修复用户选择器逗号分割回显不生效的问题
           let tempArray = ids.split(',').map(s => s.trim()).filter(s => s != '');
           if (tempArray.includes(mySelfExpress)) {
             hasUserExpress = true;
@@ -169,7 +169,6 @@
           } else {
             idList = tempArray;
           }
-          // update-end-author:sunjianlei date:20230330 for: 修复用户选择器逗号分割回显不生效的问题
         }
 
         if(idList.length>0){

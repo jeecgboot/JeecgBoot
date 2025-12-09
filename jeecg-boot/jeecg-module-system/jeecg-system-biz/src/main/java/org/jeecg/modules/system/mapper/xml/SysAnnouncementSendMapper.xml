@@ -40,7 +40,8 @@
 			sa.msg_abstract,
 			sa.files,
 			sa.visits_num,
-		    sa.iz_top
+		    sa.iz_top,
+		    sa.notice_type
 	   from sys_announcement_send sas
 	   left join sys_announcement sa ON sas.annt_id = sa.id
 	   where sa.send_status = '1'
@@ -51,6 +52,15 @@
 	   </if>
 	   <if test="announcementSendModel.sender !=null and announcementSendModel.sender != ''">
 	   		and sa.sender LIKE concat(concat('%',#{announcementSendModel.sender}),'%')
+	   </if>
+		<if test="announcementSendModel.noticeType !=null and announcementSendModel.noticeType != ''">
+			and sa.notice_type = #{announcementSendModel.noticeType}
+		</if>
+	   <if test="announcementSendModel.noticeTypeList !=null and announcementSendModel.noticeTypeList.size() > 0">
+		   and sa.notice_type in
+		   <foreach collection="announcementSendModel.noticeTypeList" index="index" item="noticeType" open="(" separator="," close=")">
+			   #{noticeType}
+		   </foreach>
 	   </if>
 	   <if test="announcementSendModel.readFlag !=null">
 	   		and sas.read_flag = #{announcementSendModel.readFlag}
@@ -115,4 +125,13 @@
 		where user_id = #{userId} and read_flag = 0
 	</update>
 
+    <!-- 根据用户id和阅读表的id获取所有阅读的数据 -->
+	<select id="getReadAnnSendByUserId" resultType="java.lang.String">
+        select id from sys_announcement_send
+        where user_id = #{userId} and read_flag = 1
+        and id in
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
 </mapper>

@@ -73,7 +73,7 @@ public class SensitiveDataAspect {
             SensitiveInfoUtil.handleNestedObject(result, entity, isEncode);
         }
         long endTime=System.currentTimeMillis();
-        log.info((isEncode ? "加密操作，" : "解密操作，") + "Aspect程序耗时：" + (endTime - startTime) + "ms");
+        log.debug((isEncode ? "加密操作，" : "解密操作，") + "Aspect程序耗时：" + (endTime - startTime) + "ms");
 
         return result;
     }

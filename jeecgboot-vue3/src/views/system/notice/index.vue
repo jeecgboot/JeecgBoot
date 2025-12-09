@@ -57,7 +57,8 @@
       columns: columns,
       formConfig: {
         schemas: searchFormSchema,
-      },
+        fieldMapToTime: [['sendTime', ['sendTime_begin', 'sendTime_end'], 'YYYY-MM-DD']]
+      }
     },
     exportConfig: {
       name: '消息通知列表',
@@ -198,13 +199,12 @@
   }
 
   onMounted(() => {
-    // update-begin--author:liaozhiyang---date:20250807---for：【JHHB-128】转公告
+    // 代码逻辑说明: 【JHHB-128】转公告
     const params = appStore.getMessageHrefParams;
     if (params?.add) {
       delete params.add;
       handleAdd(params);
       appStore.setMessageHrefParams('');
     }
-    // update-begin--author:liaozhiyang---date:20250807---for：【JHHB-128】转公告
   });
 </script>

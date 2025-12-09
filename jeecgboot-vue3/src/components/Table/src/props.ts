@@ -108,9 +108,8 @@ export const basicProps = {
   },
   minHeight: propTypes.number,
   maxHeight: propTypes.number,
-  // update-begin--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
+  // 代码逻辑说明: 【TV360X-116】内嵌风格字段较多时表格错位
   expandColumnWidth: propTypes.number.def(48),
-  // update-end--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
   // 统一设置列最大宽度
   maxColumnWidth: propTypes.number,
   dataSource: {
@@ -131,9 +130,8 @@ export const basicProps = {
     type: Function as PropType<(record: TableCustomRecord<any>, index: number) => string>,
   },
   scroll: {
-    // update-begin--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
+    // 代码逻辑说明: 【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
     type: Object as PropType<{ x?: number | true; y?: number; scrollToFirstRowOnChange?: boolean }>,
-    // update-end--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
     default: null,
   },
   beforeEditSubmit: {

@@ -78,9 +78,8 @@
     return btns.filter((btn) => {
       // 系统默认的批量删除编码配置为 batch_delete 此处需要兼容一下
       if (btn === 'remove') {
-        //update-begin-author:taoyan date:2022-6-1 for: VUEN-1162 子表按钮没控制
+        // 代码逻辑说明: VUEN-1162 子表按钮没控制
         return hasBtnAuth(btn) && hasBtnAuth('batch_delete');
-        //update-end-author:taoyan date:2022-6-1 for: VUEN-1162 子表按钮没控制
       }
       return hasBtnAuth(btn);
     });

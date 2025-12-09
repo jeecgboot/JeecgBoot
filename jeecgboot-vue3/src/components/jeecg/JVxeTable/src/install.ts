@@ -42,12 +42,11 @@ export function registerJVxeTable(app: App) {
 function preventClosingPopUp(this: any, params) {
   // 获取组件增强
   let col = params.column.params;
-  // update-begin--author:liaozhiyang---date:20250429---for：【issues/8178】使用原生vxe-table组件编辑模式下失去焦点报错
+  // 代码逻辑说明: 【issues/8178】使用原生vxe-table组件编辑模式下失去焦点报错
   if (col === undefined) {
     // 说明使用的是纯原生的vxe-table
     return;
   }
-  // update-end--author:liaozhiyang---date:20250429---for：【issues/8178】使用原生vxe-table组件编辑模式下失去焦点报错
   let { $event } = params;
   const interceptor = getEnhanced(col.type).interceptor;
   // 执行增强

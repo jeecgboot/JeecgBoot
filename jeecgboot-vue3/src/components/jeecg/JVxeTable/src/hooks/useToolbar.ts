@@ -20,17 +20,15 @@ export function useToolbar(props: JVxeTableProps, data: JVxeDataProps, methods: 
           removeBtnCfg: props.removeBtnCfg,
           // 新增事件
           onAdd: () => {
-            // update-begin--author:liaozhiyang---date:20240521---for：【TV360X-212】online新增字段就出校验提示
+            // 代码逻辑说明: 【TV360X-212】online新增字段就出校验提示
             setTimeout(() => {
               methods.addRows();
             }, 0);
-            // update-end--author:liaozhiyang---date:20240521---for：【TV360X-212】online新增字段就出校验提示
           },
           // 保存事件
           onSave: () => methods.trigger('save'),
           onRemove() {
             const $table = methods.getXTable();
-            // update-begin--author:liaozhiyang---date:20231018---for：【QQYUN-6805】修复asyncRemove字段不生效
             // 触发删除事件
             if (data.selectedRows.value.length > 0) {
               const deleteOldRows = methods.filterNewRows(data.selectedRows.value);
@@ -56,7 +54,6 @@ export function useToolbar(props: JVxeTableProps, data: JVxeDataProps, methods: 
             } else {
               methods.removeSelection();
             }
-            // update-end--author:liaozhiyang---date:20231018---for：【QQYUN-6805】修复asyncRemove字段不生效
           },
           // 清除选择事件
           onClearSelection: () => methods.clearSelection(),

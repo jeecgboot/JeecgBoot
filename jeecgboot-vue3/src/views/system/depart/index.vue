@@ -26,6 +26,9 @@
               <DepartUserList :data="departData" :key="reRender"></DepartUserList>
             </div>
           </a-tab-pane>
+          <a-tab-pane tab="部门负责人" key="departmentHead">
+            <DepartmentHeadList :data="departData"></DepartmentHeadList>
+          </a-tab-pane>
         </a-tabs>
         <div v-show="departData == null" style="padding-top: 40px">
           <a-empty description="尚未选择部门" />
@@ -43,6 +46,7 @@
   import DepartRuleTab from './components/DepartRuleTab.vue';
   import DepartRankRelation from './components/DepartRankRelation.vue';
   import DepartUserList from './components/DepartUserList.vue';
+  import DepartmentHeadList from './components/DepartmentHeadList.vue';
 
   const { prefixCls } = useDesign('depart-manage');
   provide('prefixCls', prefixCls);

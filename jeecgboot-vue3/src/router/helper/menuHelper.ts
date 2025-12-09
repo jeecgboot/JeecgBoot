@@ -7,7 +7,6 @@ import { RouteParams } from 'vue-router';
 import { toRaw } from 'vue';
 
 export function getAllParentPath<T = Recordable>(treeData: T[], path: string) {
-  // update-begin--author:sunjianlei---date:220230426---for：【issues/478】修复菜单展开合并BUG
   // 原代码
   // const menuList = findPath(treeData, (n) => n.path === path) as Menu[];
   // 先匹配不包含隐藏菜单的路径
@@ -16,7 +15,6 @@ export function getAllParentPath<T = Recordable>(treeData: T[], path: string) {
   if(!(menuList?.length)) {
     menuList = findMenuPath(treeData, path, true)
   }
-  // update-end--author:sunjianlei---date:220230426---for：【issues/478】修复菜单展开合并BUG
   return (menuList || []).map((item) => item.path);
 }
 

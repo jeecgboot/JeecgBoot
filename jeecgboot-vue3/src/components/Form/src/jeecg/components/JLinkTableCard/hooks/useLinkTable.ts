@@ -146,9 +146,8 @@ export function useLinkTable(props) {
       }
     }
     //添加一个空对象 为add操作占位
-    // update-begin--author:liaozhiyang---date:20240607---for：【TV360X-1095】高级查询关联记录去掉编辑按钮及去掉记录按钮
+    // 代码逻辑说明: 【TV360X-1095】高级查询关联记录去掉编辑按钮及去掉记录按钮
     props.editBtnShow && dataList.push({});
-    // update-end--author:liaozhiyang---date:20240607---for：【TV360X-1095】高级查询关联记录去掉编辑按钮及去掉记录按钮
     selectOptions.value = dataList;
   }
 
@@ -289,12 +288,11 @@ export function useLinkTable(props) {
   function getImageSrc(item) {
     if (props.imageField) {
       let url = item[props.imageField];
-      // update-begin--author:liaozhiyang---date:20250517---for：【TV360X-38】关联记录空间，被关联数据优多个图片时，封面图片不展示
+      // 代码逻辑说明: 【TV360X-38】关联记录空间，被关联数据优多个图片时，封面图片不展示
       if (typeof url === 'string') {
         // 有多张图时默认取第一张
         url = url.split(',')[0];
       }
-      // update-end--author:liaozhiyang---date:20250517---for：【TV360X-38】关联记录空间，被关联数据优多个图片时，封面图片不展示
       return getFileAccessHttpUrl(url);
     }
     return '';

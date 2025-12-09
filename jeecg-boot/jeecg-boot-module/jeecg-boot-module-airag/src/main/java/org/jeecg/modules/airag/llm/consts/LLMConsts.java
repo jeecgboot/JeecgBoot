@@ -80,4 +80,9 @@ public class LLMConsts {
      */
     public static final String KNOWLEDGE_DOC_METADATA_SOURCES_PATH = "sourcesPath";
 
+    /**
+     * DEEPSEEK推理模型
+     */
+    public static final String DEEPSEEK_REASONER = "deepseek-reasoner";
+
 }

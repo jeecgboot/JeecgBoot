@@ -106,7 +106,7 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         String[] idArray = ids.split(SymbolConstant.COMMA);
         String userId = null;
         SysUser userByPhone = null;
-        //update-begin---author:wangshuai ---date:20230313  for：【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户，通过手机号邀请------------
+        // 代码逻辑说明: 【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户，通过手机号邀请------------
         if(oConvertUtils.isNotEmpty(phone)){
             userByPhone = userService.getUserByPhone(phone);
             //说明用户不存在
@@ -125,7 +125,6 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
 
         //循环租户id
         for (String id:idArray) {
-            //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
             //获取被邀请人是否已存在
             SysUserTenant userTenant = userTenantMapper.getUserTenantByTenantId(userId, Integer.valueOf(id));
             if(null == userTenant){
@@ -136,21 +135,14 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                 userTenantMapper.insert(relation);
                 //给当前用户添加租户下的所有套餐
                 this.addPackUser(userId,id);
-                //update-begin---author:wangshuai---date:2025-09-06---for:【QQYUN-13720】邀请用户加入租户，没有系统提醒，移除有---
                 //邀请用户加入租户，发送消息
                 this.sendInvitationTenantMessage(userByPhone,id);
-                //update-end---author:wangshuai---date:2025-09-06---for:【QQYUN-13720】邀请用户加入租户，没有系统提醒，移除有---
             }else{
-                //update-begin---author:wangshuai ---date:20230711  for：【QQYUN-5723】2、用户已经在租户里了，再次要求提示成功，应该提示用户已经存在------------
-                //update-begin---author:wangshuai ---date:20230724  for：【QQYUN-5885】邀请用户加入提示不准确------------
+                // 代码逻辑说明: 【QQYUN-5885】邀请用户加入提示不准确------------
                 String tenantErrorInfo = getTenantErrorInfo(userTenant.getStatus());
                 String errMsg = "手机号用户:" + userByPhone.getPhone() + " 昵称：" + userByPhone.getRealname() + "，" + tenantErrorInfo;
-                //update-end---author:wangshuai ---date:20230724  for：【QQYUN-5885】邀请用户加入提示不准确------------
                 throw new JeecgBootException(errMsg);
-                //update-end---author:wangshuai ---date:20230711  for：【QQYUN-5723】2、用户已经在租户里了，再次要求提示成功，应该提示用户已经存在------------  
             }
-            //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
-        //update-end---author:wangshuai ---date:20230313  for：【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户，通过手机号邀请------------
         }
     }
 
@@ -183,19 +175,17 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     public void leaveTenant(String userIds, String tenantId) {
         String[] userIdArray = userIds.split(SymbolConstant.COMMA);
         for (String userId:userIdArray) {
-            //update-begin---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
+            // 代码逻辑说明: [QQYUN-3371]租户逻辑改造，改成关系表------------
             LambdaQueryWrapper<SysUserTenant> query = new LambdaQueryWrapper<>();
             query.eq(SysUserTenant::getTenantId,tenantId);
             query.eq(SysUserTenant::getUserId,userId);
             userTenantMapper.delete(query);
-            //update-end---author:wangshuai ---date:20221223  for：[QQYUN-3371]租户逻辑改造，改成关系表------------
-            //update-begin---author:wangshuai---date:2025-09-06---for:【QQYUN-13720】移出用户当前租户，没有系统提醒---
+            //代码逻辑说明: 【QQYUN-13720】移出用户当前租户，没有系统提醒---
             // 给移除人员发送消息
             SysTenantPackUser sysTenantPackUser = new SysTenantPackUser();
             sysTenantPackUser.setTenantId(Integer.valueOf(tenantId));
             sysTenantPackUser.setUserId(userId);
             sendMsgForDelete(sysTenantPackUser);
-            //update-end---author:wangshuai---date:2025-09-06---for:【QQYUN-13720】移出用户当前租户，没有系统提醒---
         }
         //租户移除用户，直接删除用户租户产品包
         sysTenantPackUserMapper.deletePackUserByTenantId(Integer.valueOf(tenantId),Arrays.asList(userIds.split(SymbolConstant.COMMA)));
@@ -222,11 +212,10 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         sysTenant.setHouseNumber(RandomUtil.randomStringUpper(6));
         sysTenant.setDelFlag(CommonConstant.DEL_FLAG_0);
         this.save(sysTenant);
-        //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
+        //代码逻辑说明:【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
         //当前登录人的id
         LoginUser loginUser = LoginUserUtils.getSessionUser();
         this.saveTenantRelation(sysTenant.getId(),loginUser.getId());
-        //update-end---author:wangshuai ---date:20230710  for：【QQYUN-5723】1、把当前创建人加入到租户关系里面------------
     }
 
     @Override
@@ -288,15 +277,11 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         }
         //删除租户
         tenantMapper.deleteByTenantId(list);
-        //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户彻底删除，用户租户关系表也需要删除------------
         //删除租户下的用户
         userTenantMapper.deleteUserByTenantId(list);
-        //update-ennd---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户彻底删除，用户租户关系表也需要删除------------
 
-        //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户彻底删除，用户租户关系表也需要删除------------
         //删除租户下的产品包
         this.deleteTenantPackByTenantId(list);
-        //update-ennd---author:wangshuai ---date:20230710  for：【QQYUN-5723】3、租户彻底删除，用户租户关系表也需要删除------------
     }
 
     @Override
@@ -333,9 +318,8 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
    public int tenantIdGenerate(){
        synchronized (this){
            //获取最大值id
-           //update-begin---author:wangshuai ---date:20230424  for：数据库没有租户的时候，如果为空的话会报错sql返回类型不匹配------------
+           // 代码逻辑说明: 数据库没有租户的时候，如果为空的话会报错sql返回类型不匹配------------
            int maxTenantId = oConvertUtils.getInt(tenantMapper.getMaxTenantId(),0);
-           //update-end---author:wangshuai ---date:20230424  for：数据库没有租户的时候，如果为空的话会报错sql返回类型不匹配------------
            if(maxTenantId >= 1000){
                return maxTenantId + 1;
            }else{
@@ -359,10 +343,8 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
                 //需要指配拥有者
                 throw new JeecgBootException("assignedOwen");
             } else if (null != userIdsByTenantId && userIdsByTenantId.size() == 1) {
-                //update-begin---author:wangshuai ---date:20230426  for：【QQYUN-5270】名下租户全部退出后，再次登录，提示租户全部冻结------------
                 //只有拥有者的时候需要去注销租户
                 throw new JeecgBootException("cancelTenant");
-                //update-end---author:wangshuai ---date:20230426  for：【QQYUN-5270】名下租户全部退出后，再次登录，提示租户全部冻结------------
             } else {
                 throw new JeecgBootException("退出租户失败，租户信息已不存在");
             }
@@ -376,14 +358,13 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
     @Override
     public void changeOwenUserTenant(String userId, String tId) {
         //查询当前用户是否存在该租户下
-        //update-begin---author:wangshuai ---date:20230705  for：租户id应该是传过来的，不应该是当前租户的------------
+        // 代码逻辑说明: 租户id应该是传过来的，不应该是当前租户的------------
         int tenantId = oConvertUtils.getInt(tId, 0);
         SysTenant sysTenant = tenantMapper.selectById(tenantId);
         if(null == sysTenant){
             throw new JeecgBootException("退出租户失败，不存在此租户");
         }
         String createBy = sysTenant.getCreateBy();
-        //update-end---author:wangshuai ---date:20230705  for：租户id应该是传过来的，不应该是当前租户的------------
         Integer count = userTenantMapper.userTenantIzExist(userId, tenantId);
         if (count == 0) {
             throw new JeecgBootException("退出租户失败，此租户下没有该用户");
@@ -405,7 +386,6 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         SysUserTenant userTenant = new SysUserTenant();
         userTenant.setStatus(CommonConstant.USER_TENANT_QUIT);
         userTenantMapper.update(userTenant,query);
-        //update-end---author:wangshuai ---date:20230705  for：旧拥有者退出后，需要将就拥有者的用户租户关系改成已离职------------
         //离职流程
         this.leveUserProcess(userId, String.valueOf(tenantId));
     }
@@ -468,13 +448,11 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         result.setSuccess(true);
         result.setMessage("邀请成员成功，成员同意后方可加入");
 
-        //update-begin---author:wangshuai ---date:20230329  for：[QQYUN-4671]部门与用户，手机号邀请，没有在当前部门下，目前是在全组织中------------
         //6.保存用户部门关系
         if(oConvertUtils.isNotEmpty(departId)){
             //保存用户部门关系
             this.saveUserDepart(userByPhone.getId(),departId);
         }
-        //update-end---author:wangshuai ---date:20230329  for：[QQYUN-4671]部门与用户，手机号邀请，没有在当前部门下，目前是在全组织中------------
         
         //  QQYUN-4527【应用】邀请成员加入组织，发送消息提醒
         sendMsgForInvitation(userByPhone, tenantId, sysUser.getRealname());
@@ -740,21 +718,18 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         messageDTO.setToAll(false);
         messageDTO.setToUser(user.getUsername());
         messageDTO.setFromUser("system");
-        //update-begin---author:wangshuai ---date:20230706  for：【QQYUN-5730】租户邀请加入提示消息应该显示邀请人的名字------------
+        // 代码逻辑说明: 【QQYUN-5730】租户邀请加入提示消息应该显示邀请人的名字------------
         String title = realname + " 邀请您加入 "+sysTenant.getName()+"。";
-        //update-end---author:wangshuai ---date:20230706  for：【QQYUN-5730】租户邀请加入提示消息应该显示邀请人的名字------------
         messageDTO.setTitle(title);
         Map<String, Object> data = new HashMap<>();
         messageDTO.setData(data);
         messageDTO.setContent(title);
         messageDTO.setType("system");
-        //update-begin---author:wangshuai---date:2023-11-24---for:【QQYUN-7168】邀请成员时，会报错，但实际已经邀请成功了---
+        // 代码逻辑说明: 【QQYUN-7168】邀请成员时，会报错，但实际已经邀请成功了---
         messageDTO.setCategory(CommonConstant.MSG_CATEGORY_1);
-        //update-end---author:wangshuai---date:2023-11-24---for:【QQYUN-7168】邀请成员时，会报错，但实际已经邀请成功了---
-        //update-begin---author:wangshuai ---date:20230721  for：【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
+        // 代码逻辑说明: 【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
         messageDTO.setBusType(SysAnnmentTypeEnum.TENANT_INVITE.getType());
         sysBaseApi.sendBusAnnouncement(messageDTO);
-        //update-end---author:wangshuai ---date:20230721  for：【QQYUN-5726】邀请加入租户加个按钮直接跳转过去------------
     }
 
 
@@ -771,13 +746,11 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
             packUser.setRealname(sysTenantPackUser.getRealname());
             currentService.addTenantPackUser(packUser);
             
-            //update-begin---author:wangshuai ---date:20230328  for：[QQYUN-4674]租户管理员同意或拒绝成员没有系统通知------------
             //超级管理员成功加入发送系统消息
             SysTenant sysTenant = tenantMapper.selectById(sysTenantPackUser.getTenantId());
             String content = " 您已成功加入"+sysTenant.getName()+"的超级管理员的成员。";
             SysUser sysUser = userService.getById(sysTenantPackUser.getUserId());
             this.sendMsgForAgreeAndRefuseJoin(sysUser,content);
-            //update-end---author:wangshuai ---date:20230328  for：[QQYUN-4674]租户管理员同意或拒绝成员没有系统通知------------
         }
     }
 
@@ -790,13 +763,11 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         SysTenantPackUser packUser = sysTenantPackUserMapper.selectOne(query);
         if(packUser!=null && packUser.getId()!=null && packUser.getStatus()==0){
             sysTenantPackUserMapper.deleteById(packUser.getId());
-            //update-begin---author:wangshuai ---date:20230328  for：[QQYUN-4674]租户管理员同意或拒绝成员没有系统通知------------
             //超级管理员拒绝加入发送系统消息
             SysTenant sysTenant = tenantMapper.selectById(sysTenantPackUser.getTenantId());
             String content = " 管理员已拒绝您加入"+sysTenant.getName()+"的超级管理员的成员请求。";
             SysUser sysUser = userService.getById(sysTenantPackUser.getUserId());
             this.sendMsgForAgreeAndRefuseJoin(sysUser,content);
-            //update-end---author:wangshuai ---date:20230328  for：[QQYUN-4674]租户管理员同意或拒绝成员没有系统通知------------
         }
     }
 
@@ -943,9 +914,8 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
             throw new JeecgBootException("您不是该用户的创建人，无法删除！");
         }
         
-        //update-begin---author:wangshuai---date:2025-04-11---for:【QQYUN-11839】删除用户，需要输入被删除用户的密码，这逻辑对吗？不应该是管理员的密码吗---
+        // 代码逻辑说明: 【QQYUN-11839】删除用户，需要输入被删除用户的密码，这逻辑对吗？不应该是管理员的密码吗---
         this.verifyCreateTimeAndPassword(sysUserData,password);
-        //update-end---author:wangshuai---date:2025-04-11---for:【QQYUN-11839】删除用户，需要输入被删除用户的密码，这逻辑对吗？不应该是管理员的密码吗---
 
         //step5 逻辑删除用户
         userService.deleteUser(userId);

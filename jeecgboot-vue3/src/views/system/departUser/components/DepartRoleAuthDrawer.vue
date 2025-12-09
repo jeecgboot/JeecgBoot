@@ -92,7 +92,7 @@
     departId.value = data.record.departId;
     loadData({
       success: (ids) => {
-        // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1619】同步系统角色改法加上缓存，默认层级关联修正原生层级关联bug
+        // 代码逻辑说明: 【TV360X-1619】同步系统角色改法加上缓存，默认层级关联修正原生层级关联bug
         const localData = localStorage.getItem(DEPART_ROLE_AUTH_CONFIG_KEY);
         if (localData) {
           const obj = JSON.parse(localData);
@@ -101,7 +101,6 @@
         } else {
           // expandedKeys.value = ids;
         }
-        // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1619】同步系统角色改法加上缓存，默认层级关联修正原生层级关联bug
       },
     });
   });
@@ -115,12 +114,10 @@
       const { ids, treeList } = await queryTreeListForDeptRole({ departId: departId.value });
       if (ids.length > 0) {
         allTreeKeys.value = ids;
-        // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1619】同步系统角色改法加上缓存，默认层级关联修正原生层级关联bug
+        // 代码逻辑说明: 【TV360X-1619】同步系统角色改法加上缓存，默认层级关联修正原生层级关联bug
         options.success?.(ids);
-        // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1619】同步系统角色改法加上缓存，默认层级关联修正原生层级关联bug
-        //update-begin---author:wangshuai---date:2024-04-08---for:【issues/1169】我的部门功能中的【部门权限】中未翻译 t('') 多语言---
+        // 代码逻辑说明: 【issues/1169】我的部门功能中的【部门权限】中未翻译 t('') 多语言---
         treeData.value = translateTitle(treeList);
-        //update-end---author:wangshuai---date:2024-04-08---for:【issues/1169】我的部门功能中的【部门权限】中未翻译 t('') 多语言---
         // 查询角色授权
         checkedKeys.value = await queryDeptRolePermission({ roleId: roleId.value });
         lastCheckedKeys.value = [checkedKeys.value];

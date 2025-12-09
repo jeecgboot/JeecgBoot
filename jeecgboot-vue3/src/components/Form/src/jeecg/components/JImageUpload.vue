@@ -134,7 +134,7 @@
       watch(
         () => props.value,
         (val, prevCount) => {
-         //update-begin---author:liusq ---date:20230601  for：【issues/556】JImageUpload组件value赋初始值没显示图片------------
+         // 代码逻辑说明: 【issues/556】JImageUpload组件value赋初始值没显示图片------------
             if (val && val instanceof Array) {
             val = val.join(',');
           }
@@ -143,7 +143,6 @@
           }
         },
         { immediate: true }
-        //update-end---author:liusq ---date:20230601  for：【issues/556】JImageUpload组件value赋初始值没显示图片------------
       );
 
       /**
@@ -187,12 +186,11 @@
        */
       function handleChange({ file, fileList, event }) {
         initTag.value = false;
-        // update-begin--author:liaozhiyang---date:20231116---for：【issues/846】上传多个列表只显示一个
         // uploadFileList.value = fileList;
         if (file.status === 'error') {
           createMessage.error(`${file.name} 上传失败.`);
         }
-        // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1640】上传图片大小超出限制显示优化
+        // 代码逻辑说明: 【TV360X-1640】上传图片大小超出限制显示优化
         if (file.status === 'done' && file.response.success === false) {
           const failIndex = uploadFileList.value.findIndex((item) => item.uid === file.uid);
           if (failIndex != -1) {
@@ -201,7 +199,6 @@
           createMessage.warning(file.response.message);
           return;
         }
-        // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1640】上传图片大小超出限制显示优化
         let fileUrls = [];
         let noUploadingFileCount = 0;
         if (file.status != 'uploading') {
@@ -219,14 +216,12 @@
           if (noUploadingFileCount == fileList.length) {
             state.value = fileUrls.join(',');
             emit('update:value', fileUrls.join(','));
-            // update-begin---author:wangshuai ---date:20221121  for：[issues/248]原生表单内使用图片组件,关闭弹窗图片组件值不会被清空------------
+            // 代码逻辑说明: [issues/248]原生表单内使用图片组件,关闭弹窗图片组件值不会被清空------------
             nextTick(() => {
               initTag.value = true;
             });
-            // update-end---author:wangshuai ---date:20221121  for：[issues/248]原生表单内使用图片组件,关闭弹窗图片组件值不会被清空------------
           }
         }
-        // update-end--author:liaozhiyang---date:20231116---for：【issues/846】上传多个列表只显示一个
       }
 
       /**

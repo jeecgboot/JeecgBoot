@@ -32,11 +32,10 @@ export default class signMd5Utils {
   static getSign(url, requestParams, requestBodyParams) {
     let urlParams = this.parseQueryString(url);
     let jsonObj = this.mergeObject(urlParams, requestParams);
-    //update-begin---author:wangshuai---date:2024-04-16---for:【QQYUN-9005】发送短信加签---
+    // 代码逻辑说明: 【QQYUN-9005】发送短信加签---
     if(requestBodyParams){
       jsonObj = this.mergeObject(jsonObj, requestBodyParams)
     }
-    //update-end---author:wangshuai---date:2024-04-16---for:【QQYUN-9005】发送短信加签---
     let requestBody = this.sortAsc(jsonObj);
     delete requestBody._t;
     // console.log('sign requestBody:', requestBody);
@@ -60,11 +59,9 @@ export default class signMd5Utils {
       if (lastpathVariable.includes('?')) {
         lastpathVariable = lastpathVariable.substring(0, lastpathVariable.indexOf('?'));
       }
-      //update-begin---author:wangshuai ---date:20221103  for：[issues/183]下拉搜索，使用动态字典，在线页面不报错，生成的代码报错 ------------
       //解决Sign 签名校验失败 #2728
       //decodeURI对特殊字符没有没有编码和解码的能力，需要使用decodeURIComponent
       result['x-path-variable'] = decodeURIComponent(lastpathVariable);
-      //update-end---author:wangshuai ---date:20221103  for：[issues/183]下拉搜索，使用动态字典，在线页面不报错，生成的代码报错 ------------
     }
     if (urlArray && urlArray[1]) {
       let paramString = urlArray[1],

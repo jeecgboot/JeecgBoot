@@ -6,13 +6,12 @@ import {_PATHS} from '../paths';
 import {$env, isDev} from '../env';
 
 const TrayIcons = {
-  // update-begin--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
+  // 代码逻辑说明: 【JHHB-13】桌面应用消息通知
   normal: nativeImage.createFromPath(
     process.platform === 'win32'
       ? path.join(_PATHS.publicRoot, 'logo.png')
       : path.join(_PATHS.electronRoot, './icons/mac/tray-icon.png').replace(/[\\/]dist[\\/]/, '/')
   ),
-  // update-end--author:liaozhiyang---date:20250725---for：【JHHB-13】桌面应用消息通知
   empty: nativeImage.createEmpty(),
 };
 

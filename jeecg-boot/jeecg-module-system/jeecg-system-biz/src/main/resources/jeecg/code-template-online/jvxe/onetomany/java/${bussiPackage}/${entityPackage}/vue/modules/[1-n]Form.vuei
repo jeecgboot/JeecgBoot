@@ -69,7 +69,7 @@
     	<#if po.dictText?default("")?trim?length gt 1>
     	<#assign form_cat_back = "${po.dictText}">
     	</#if>
-	<#elseif po.fieldDbType=='int' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
+	<#elseif po.fieldDbType=='int' || po.fieldDbType=='long' || po.fieldDbType=='double' || po.fieldDbType=='BigDecimal'>
               <a-input-number v-model="model.${po.fieldName}" placeholder="请输入${po.filedComment}" style="width: 100%"/>
 	<#elseif po.classType=='file'>
               <j-upload v-model="model.${po.fieldName}" ></j-upload>

@@ -126,7 +126,6 @@ export const rules = {
   },
 };
 
-//update-begin-author:taoyan date:2022-6-16 for: 代码生成-原生表单用
 /**
  * 唯一校验函数，给原生<a-form>使用，vben的表单校验建议使用上述rules
  * @param tableName 表名
@@ -152,4 +151,3 @@ export async function duplicateValidate(tableName, fieldName, fieldVal, dataId) 
     return Promise.reject('校验失败,可能是断网等问题导致的校验失败');
   }
 }
-//update-end-author:taoyan date:2022-6-16 for: 代码生成-原生表单用

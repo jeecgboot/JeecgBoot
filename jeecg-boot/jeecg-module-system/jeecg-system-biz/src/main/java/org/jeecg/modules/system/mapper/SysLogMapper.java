@@ -31,7 +31,6 @@ public interface SysLogMapper extends BaseMapper<SysLog> {
 	 */
 	Long findTotalVisitCount();
 
-	//update-begin--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 	/**
 	 * 获取系统今日访问次数
 	 * @param dayStart 开始时间
@@ -47,7 +46,6 @@ public interface SysLogMapper extends BaseMapper<SysLog> {
 	 * @return Long
 	 */
 	Long findTodayIp(@Param("dayStart") Date dayStart, @Param("dayEnd") Date dayEnd);
-	//update-end--Author:zhangweijian  Date:20190428 for：传入开始时间，结束时间参数
 	
 	/**
 	 *   首页：根据时间统计访问数量/ip数量

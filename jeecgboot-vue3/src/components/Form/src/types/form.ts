@@ -100,9 +100,8 @@ export interface FormProps {
   // 【jeecg】如果 showAdvancedButton 为 true，超过指定列数默认折叠，默认为3
   autoAdvancedCol?: number;
   // 如果 showAdvancedButton 为 true，超过指定行数行默认折叠
-  // update-begin--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
+  // 代码逻辑说明: 【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
   // autoAdvancedLine?: number;
-  // update-end--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
   // 折叠时始终保持显示的行数
   alwaysShowLines?: number;
   // Whether to show the operation button
@@ -135,9 +134,8 @@ export interface FormSchema {
   // Variable name bound to v-model Default value
   valueField?: string;
   // Label name
-  // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+  // 代码逻辑说明: 【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
   label: string | VNode | Fn;
-  // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
   // Auxiliary text
   subLabel?: string;
   // Help text on the right side of the text
@@ -200,11 +198,9 @@ export interface FormSchema {
   dynamicDisabled?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
 
   dynamicRules?: (renderCallbackParams: RenderCallbackParams) => Rule[];
-  // update-begin--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
   // 设置组件props的key
   dynamicPropskey?: string;
   dynamicPropsVal?: ((renderCallbackParams: RenderCallbackParams) => any);
-  // update-end--author:liaozhiyang---date:20240308---for：【QQYUN-8377】formSchema props支持动态修改
 
   // 这个属性自定义的 用于自定义的业务 比如在表单打开的时候修改表单的禁用状态，但是又不能重写componentProps，因为他的内容太多了，所以使用dynamicDisabled和buss实现
   buss?: any;

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-module-system</artifactId>
         <groupId>org.jeecgframework.boot3</groupId>
-        <version>3.8.3</version>
+        <version>3.9.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -25,12 +25,12 @@
             <version>${jeecgboot.version}</version>
         </dependency>
         
-        <!-- flyway 数据库自动升级 
+        <!-- flyway 数据库自动升级 -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
             <version>7.15.0</version>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -47,7 +47,7 @@
      <!--  <dependency>
            <groupId>org.jeecgframework.boot3</groupId>
            <artifactId>jeecg-cloud-test-shardingsphere</artifactId>
-           <version>3.8.3</version>
+           <version>3.9.0</version>
        </dependency>-->
     </dependencies>
 

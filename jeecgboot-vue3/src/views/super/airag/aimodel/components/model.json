@@ -1,6 +1,23 @@
 {
   "data": [
     {
+      "title": "Anthropic",
+      "value": "ANTHROPIC",
+      "LLM": [
+        {"label": "claude-sonnet-4-20250514", "value": "claude-sonnet-4-20250514","descr": "【Claude 4系列】Claude Sonnet 4具有卓越推理能力的高性能模型。\n\n支持文本和图像输入，文本输出，拥有200k上下文窗口（1M上下文测试版可用）。","type": "text,image"},
+        {"label": "claude-opus-4-20250514", "value": "claude-opus-4-20250514","descr": "【Claude 4系列】Claude Opus 4是最强大、最有能力的模型。\n\n支持文本和图像输入，文本输出，拥有200k上下文窗口，卓越的推理能力。","type": "text,image"},
+        {"label": "claude-3-7-sonnet-20250219", "value": "claude-3-7-sonnet-20250219","descr": "【Claude 3.7系列】Claude Sonnet 3.7中型模型，具备卓越的推理能力和效率。\n\n适合企业工作负载和大规模AI部署。","type": "text,image"},
+        {"label": "claude-3-5-sonnet-20241022", "value": "claude-3-5-sonnet-20241022","descr": "Claude 3.5 Sonnet是Anthropic最强大的AI模型。\n\n在编程、多步骤工作流、图表解释等复杂任务中表现出色。支持200k上下文长度，支持8k最大输出。","type": "text,image"},
+        {"label": "claude-3-5-haiku-20241022", "value": "claude-3-5-haiku-20241022","descr": "【快速模型】Claude 3.5 Haiku是Anthropic最快的AI模型。\n\n响应速度快，成本较低，适合高频交互场景。支持200k上下文长度，支持8k最大输出。","type": "text,image"},
+        {"label": "claude-3-opus-20240229", "value": "claude-3-opus-20240229","descr": "Claude 3 Opus是Claude 3系列中性能最强的模型。\n\n在高度复杂的任务上表现出色，如编写高质量代码、数学推理等。支持200k上下文长度，支持4k最大输出。","type": "text,image"},
+        {"label": "claude-3-sonnet-20240229", "value": "claude-3-sonnet-20240229","descr": "Claude 3 Sonnet在智能和速度之间取得了良好平衡。\n\n适合企业工作负载和大规模AI部署。支持200k上下文长度，支持4k最大输出。","type": "text,image"},
+        {"label": "claude-3-haiku-20240307", "value": "claude-3-haiku-20240307","descr": "Claude 3 Haiku是Claude 3系列中最快的模型。\n\n提供接近即时的响应，适合无缝AI体验。支持200k上下文长度，支持4k最大输出。","type": "text,image"}
+      ],
+      "type": ["LLM"],
+      "baseUrl": "https://api.anthropic.com/v1",
+      "LLMDefaultValue": "claude-3-5-sonnet-20241022"
+    },
+    {
       "title": "DeepSeek",
       "value": "DEEPSEEK",
       "LLM": [

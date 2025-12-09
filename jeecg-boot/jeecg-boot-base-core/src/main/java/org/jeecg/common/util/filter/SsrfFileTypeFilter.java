@@ -194,7 +194,7 @@ public class SsrfFileTypeFilter {
      */
 
     private static String getFileType(MultipartFile file, String customPath) throws Exception {
-        //update-begin-author:liusq date:20230404 for: [issue/4672]方法造成的文件被占用，注释掉此方法tomcat就能自动清理掉临时文件
+        // 代码逻辑说明: [issue/4672]方法造成的文件被占用，注释掉此方法tomcat就能自动清理掉临时文件
         String fileExtendName = null;
         InputStream is = null;
         try {
@@ -234,7 +234,6 @@ public class SsrfFileTypeFilter {
                 is.close();
             }
         }
-        //update-end-author:liusq date:20230404 for: [issue/4672]方法造成的文件被占用，注释掉此方法tomcat就能自动清理掉临时文件
     }
 
     /**

@@ -11,6 +11,10 @@ import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.springframework.beans.BeanUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -23,6 +27,7 @@ import java.sql.Date;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * 
@@ -563,10 +568,8 @@ public class oConvertUtils {
 			return "";
 		} else if (!name.contains(SymbolConstant.UNDERLINE)) {
 			// 不含下划线，仅将首字母小写
-			//update-begin--Author:zhoujf  Date:20180503 for：TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
-			//update-begin--Author:zhoujf  Date:20180503 for：TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
+			// 代码逻辑说明: TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
 			return name.substring(0, 1).toLowerCase() + name.substring(1).toLowerCase();
-			//update-end--Author:zhoujf  Date:20180503 for：TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
 		}
 		// 用下划线将原始字符串分割
 		String[] camels = name.split("_");
@@ -611,7 +614,6 @@ public class oConvertUtils {
 		return result.substring(0, result.length() - 1);
 	}
 	
-	//update-begin--Author:zhoujf  Date:20180503 for：TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
 	/**
 	 * 将下划线大写方式命名的字符串转换为驼峰式。(首字母写)
 	 * 如果转换前的下划线大写方式命名的字符串为空，则返回空字符串。</br>
@@ -644,7 +646,6 @@ public class oConvertUtils {
 		}
 		return result.toString();
 	}
-	//update-end--Author:zhoujf  Date:20180503 for：TASK #2500 【代码生成器】代码生成器开发一通用模板生成功能
 	
 	/**
 	 * 将驼峰命名转化成下划线
@@ -982,17 +983,18 @@ public class oConvertUtils {
 
 
 	/**
-	 * 判断 list1中的元素是否在list2中出现
+	 * 判断 sourceList中的元素是否在targetList中出现
+	 * 
 	 * QQYUN-5326【简流】获取组织人员 单/多 筛选条件 没有部门筛选
-	 * @param list1
-	 * @param list2
-	 * @return
+	 * @param sourceList 源列表，要检查的元素列表
+	 * @param targetList 目标列表，用于匹配的列表
+	 * @return 如果sourceList中有任何元素在targetList中存在则返回true，否则返回false
 	 */
-	public static boolean isInList(List<String> list1, List<String> list2){
-		for(String str1: list1){
+	public static boolean isInList(List<String> sourceList, List<String> targetList){
+		for(String sourceItem: sourceList){
 			boolean flag = false;
-			for(String str2: list2){
-				if(str1.equals(str2)){
+			for(String targetItem: targetList){
+				if(sourceItem.equals(targetItem)){
 					flag = true;
 					break;
 				}
@@ -1004,6 +1006,35 @@ public class oConvertUtils {
 		return false;
 	}
 
+	/**
+	 * 判断 sourceList中的所有元素是否都在targetList中存在
+	 * @param sourceList 源列表，要检查的元素列表
+	 * @param targetList 目标列表，用于匹配的列表
+	 * @return 如果sourceList中的所有元素都在targetList中存在则返回true，否则返回false
+	 */
+	public static boolean isAllInList(List<String> sourceList, List<String> targetList){
+		if(sourceList == null || sourceList.isEmpty()){
+			return true; // 空列表视为所有元素都存在
+		}
+		if(targetList == null || targetList.isEmpty()){
+			return false; // 目标列表为空，源列表非空时返回false
+		}
+
+		for(String sourceItem: sourceList){
+			boolean found = false;
+			for(String targetItem: targetList){
+				if(sourceItem.equals(targetItem)){
+					found = true;
+					break;
+				}
+			}
+			if(!found){
+				return false; // 有任何一个元素不在目标列表中，返回false
+			}
+		}
+		return true; // 所有元素都找到了
+	}
+	
 	/**
 	 * 计算文件大小转成MB
 	 * @param uploadCount
@@ -1168,5 +1199,37 @@ public class oConvertUtils {
 	public static boolean isEffectiveTenant(String tenantId) {
 		return MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && isNotEmpty(tenantId) && !("0").equals(tenantId);
 	}
+
+    /**
+     * 复制源对象的非空属性到目标对象（同名属性）
+     * 
+     * @param source 源对象（页面）
+     * @param target 目标对象（数据库实体）
+     */
+    public static void copyNonNullFields(Object source, Object target) {
+        if (source == null || target == null) {
+            return;
+        }
+        // 获取源对象的非空属性名数组
+        String[] nullPropertyNames = getNullPropertyNames(source);
+        // 复制：忽略源对象的空属性，仅覆盖目标对象的对应非空属性
+        BeanUtils.copyProperties(source, target, nullPropertyNames);
+    }
+
+    /**
+     * 获取源对象中值为 null 的属性名数组
+     * 
+     * @param source 
+     */
+    private static String[] getNullPropertyNames(Object source) {
+        BeanWrapper beanWrapper = new BeanWrapperImpl(source);
+        //获取类的属性
+        PropertyDescriptor[] propertyDescriptors = beanWrapper.getPropertyDescriptors();
+        // 过滤出值为 null 的属性名
+        return Stream.of(propertyDescriptors)
+                .map(PropertyDescriptor::getName)
+                .filter(name -> beanWrapper.getPropertyValue(name) == null)
+                .toArray(String[]::new);
+    }
 	
 }

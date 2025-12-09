@@ -96,9 +96,8 @@
     //先获取钉钉的企业id，如果没有配置 还是走原来的逻辑，走原来的逻辑 需要判断存不存在token，存在token直接去首页
     let tenantId = getAuthCache(OAUTH2_THIRD_LOGIN_TENANT_ID) || 0;
     let url = `/sys/thirdLogin/get/corpId/clientId?tenantId=${tenantId}`;
-    //update-begin---author:wangshuai---date:2024-12-09---for:不要使用getAction online里面的，要用defHttp---
+    // 代码逻辑说明: 不要使用getAction online里面的，要用defHttp---
     defHttp.get({ url:url },{ isTransformResponse: false }).then((res) => {
-    //update-end---author:wangshuai---date:2024-12-09---for:不要使用getAction online里面的，要用defHttp---
         if (res.success) {
           if(res.result && res.result.corpId && res.result.clientId){
             requestAuthCode({ corpId: res.result.corpId, clientId: res.result.clientId }).then((res) => {

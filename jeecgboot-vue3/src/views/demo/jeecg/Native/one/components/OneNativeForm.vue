@@ -269,7 +269,7 @@
     return props.formDisabled;
   });
   const emit = defineEmits(['register', 'ok']);
-  //update-begin---author:wangshuai ---date:20220616  for：报表示例验证修改--------------
+  // 代码逻辑说明: 报表示例验证修改--------------
   const formState = reactive<Record<string, any>>({
     name: '',
     miMa: '',
@@ -303,7 +303,6 @@
     yuanjia: '',
     nyrsfm: '',
   });
-  //update-end---author:wangshuai ---date:20220616  for：报表示例验证修改--------------
   const { createMessage } = useMessage();
   const formRef = ref();
   const useForm = Form.useForm;
@@ -349,9 +348,8 @@
     yuanjia: [{ required: false, message: '请输入数值!' }],
     nyrsfm: [{ required: false, message: '请选择年月日时分秒!' }],
   };
-  //update-begin---author:wangshuai ---date:20220616  for：报表示例验证修改------------
+  // 代码逻辑说明: 报表示例验证修改------------
   const { resetFields, validate, validateInfos } = useForm(formState, validatorRules, { immediate: false });
-  //update-end---author:wangshuai ---date:20220616  for：报表示例验证修改------------
   const ldzjsOptions = ref([
     { label: '男', value: '1' },
     { label: '女', value: '2' },
@@ -380,7 +378,7 @@
    */
   async function submitForm() {
     // 触发表单验证
-    //update-begin---author:wangshuai ---date:20220616  for：报表示例验证修改------------
+    // 代码逻辑说明: 报表示例验证修改------------
     await validate();
     confirmLoading.value = true;
     let httpurl = '';
@@ -425,7 +423,6 @@
       .finally(() => {
         confirmLoading.value = false;
       });
-    //update-end---author:wangshuai ---date:20220616  for：报表示例验证修改--------------
   }
 
   /**

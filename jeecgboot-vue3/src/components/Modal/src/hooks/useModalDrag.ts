@@ -37,11 +37,10 @@ export function useModalDragMove(context: UseModalDragMoveContext) {
       const maxDragDomLeft = screenWidth - dragDom.offsetLeft - dragDomWidth;
       const minDragDomTop = dragDom.offsetTop;
       let maxDragDomTop = screenHeight - dragDom.offsetTop - dragDomheight;
-      //update-begin-author:liusq---date:20230407--for: [issue/430]弹出页面出现自动吸顶，无法移动和显示头部--- 
+      // 代码逻辑说明: [issue/430]弹出页面出现自动吸顶，无法移动和显示头部---
       if(maxDragDomTop<0){
         maxDragDomTop = screenHeight - dragDom.offsetTop
       }
-      //update-end-author:liusq---date:20230407--for: [issue/430]弹出页面出现自动吸顶，无法移动和显示头部--- 
       // 获取到的值带px 正则匹配替换
       const domLeft = getStyle(dragDom, 'left');
       const domTop = getStyle(dragDom, 'top');

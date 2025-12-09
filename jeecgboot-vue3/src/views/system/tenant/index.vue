@@ -160,14 +160,13 @@
    * @param userSelectId
    */
   async function handleInviteUserOk(phone, username) {
-    //update-begin---author:wangshuai ---date:20230314  for：【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户------------
+    // 代码逻辑说明: 【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户------------
     if (phone) {
       await invitationUserJoin({ ids: selectedRowKeys.value.join(','), phone: phone });
     }
     if (username) {
       await invitationUserJoin({ ids: selectedRowKeys.value.join(','), username: username });
     }
-    //update-end---author:wangshuai ---date:20230314  for：【QQYUN-4605】后台的邀请谁加入租户，没办法选不是租户下的用户------------
   }
 
   /**

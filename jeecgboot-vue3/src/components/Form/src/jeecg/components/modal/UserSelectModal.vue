@@ -6,7 +6,7 @@
       @register="register"
       :title="modalTitle"
       :width="showSelected ? '1200px' : '900px'"
-      wrapClassName="j-user-select-modal"
+      :wrapClassName="modalWrapClassName"
       @ok="handleOk"
       @cancel="handleCancel"
       :maxHeight="maxHeight"
@@ -30,10 +30,9 @@
             :indexColumnProps="indexColumnProps"
             :afterFetch="afterFetch"
             :beforeFetch="beforeFetch"
+            :defSort="{ column: '', order: '' }"
           >
-            <!-- update-begin-author:taoyan date:2022-5-25 for: VUEN-1112一对多 用户选择 未显示选择条数，及清空 -->
             <template #tableTitle></template>
-            <!-- update-end-author:taoyan date:2022-5-25 for: VUEN-1112一对多 用户选择 未显示选择条数，及清空 -->
           </BasicTable>
         </a-col>
         <a-col :span="showSelected ? 6 : 0">
@@ -78,22 +77,29 @@
         type: String,
         default: '选择用户',
       },
-      //update-begin---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
       //排除用户id的集合
       excludeUserIdList: {
         type: Array,
         default: [],
       },
-      //update-end---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
 
+      // wrap类名
+      modalWrapClassName: {
+        type: String,
+        default: 'j-user-select-modal',
+      },
       // 查询table数据使用的自定义接口
       customListApi: {type: Function},
       // 自定义接口的查询条件是否使用 JInput
       customApiJInput: {type: Boolean, default: true},
+      // 自定义表单配置条件
+      customFormConfig: {type: Object},
+      // 自定义表格列
+      customTableColumns: {type: Array},
     },
     emits: ['register', 'getSelectResult', 'close'],
     setup(props, { emit, refs }) {
-      // update-begin-author:taoyan date:2022-5-24 for: VUEN-1086 【移动端】用户选择 查询按钮 效果不好 列表展示没有滚动条
+      // 代码逻辑说明: VUEN-1086 【移动端】用户选择 查询按钮 效果不好 列表展示没有滚动条
       const tableScroll = ref<any>({ x: false });
       const tableRef = ref();
       const maxHeight = ref(600);
@@ -107,15 +113,13 @@
         } else {
           tableScroll.value = { x: false };
         }
-        //update-begin-author:taoyan date:2022-6-2 for: VUEN-1112 一对多 用户选择 未显示选择条数，及清空
+        // 代码逻辑说明: VUEN-1112 一对多 用户选择 未显示选择条数，及清空
         setTimeout(() => {
           if (tableRef.value) {
             tableRef.value.setSelectedRowKeys(selectValues['value'] || []);
           }
         }, 800);
-        //update-end-author:taoyan date:2022-6-2 for: VUEN-1112 一对多 用户选择 未显示选择条数，及清空
       });
-      // update-end-author:taoyan date:2022-5-24 for: VUEN-1086 【移动端】用户选择 查询按钮 效果不好 列表展示没有滚动条
       const attrs = useAttrs();
       //表格配置
       const config = {
@@ -130,15 +134,13 @@
         emit
       );
       const searchInfo = ref(props.params);
-      // update-begin--author:liaozhiyang---date:20230811---for：【issues/657】右侧选中列表删除无效
+      // 代码逻辑说明: 【issues/657】右侧选中列表删除无效
       watch(rowSelection.selectedRowKeys, (newVal) => {
-        //update-begin---author:wangshuai ---date: 20230829  for：null指针异常导致控制台报错页面不显示------------
+        // 代码逻辑说明: null指针异常导致控制台报错页面不显示------------
         if(tableRef.value){
           tableRef.value.setSelectedRowKeys(newVal);
         }
-        //update-end---author:wangshuai ---date: 20230829 for：null指针异常导致控制台报错页面不显示------------
       });
-      // update-end--author:liaozhiyang---date:20230811---for：【issues/657】右侧选中列表删除无效
       //查询form
       const formConfig = {
         baseColProps: {
@@ -149,7 +151,7 @@
           xl: 6,
           xxl: 6,
         },
-        //update-begin-author:taoyan date:2022-5-24 for: VUEN-1086 【移动端】用户选择 查询按钮 效果不好 列表展示没有滚动条---查询表单按钮的栅格布局和表单的保持一致
+        // 代码逻辑说明: VUEN-1086 【移动端】用户选择 查询按钮 效果不好 列表展示没有滚动条---查询表单按钮的栅格布局和表单的保持一致
         actionColOptions: {
           xs: 24,
           sm: 8,
@@ -158,7 +160,6 @@
           xl: 8,
           xxl: 8,
         },
-        //update-end-author:taoyan date:2022-5-24 for: VUEN-1086 【移动端】用户选择 查询按钮 效果不好 列表展示没有滚动条---查询表单按钮的栅格布局和表单的保持一致
         schemas: [
           {
             label: '账号',
@@ -171,10 +172,12 @@
             component: (hasCustomApi.value && !props.customApiJInput) ? 'Input' : 'JInput',
           },
         ],
-        autoSubmitOnEnter: true
+        autoSubmitOnEnter: true,
+
+        ...props.customFormConfig,
       };
       //定义表格列
-      const columns = [
+      const columns = props.customTableColumns?.length ? props.customTableColumns : [
         {
           title: '用户账号',
           dataIndex: 'username',
@@ -195,10 +198,22 @@
           title: '手机号码',
           dataIndex: 'phone',
           width: 120,
+          customRender:( { record, text })=>{
+            if(record.izHideContact && record.izHideContact === '1'){
+              return '/';
+            }
+            return text;
+          }
         },
         {
           title: '邮箱',
           dataIndex: 'email',
+          customRender:( { record, text })=>{
+            if(record.izHideContact && record.izHideContact === '1'){
+              return text?'/':'';
+            }
+            return text;
+          }
           // width: 40,
         },
         {
@@ -243,7 +258,6 @@
         });
       }
       
-      //update-begin---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
       /**
        * 用户返回结果逻辑查询
        */
@@ -264,19 +278,15 @@
         }
         return record;
       }
-      // update-begin--author:liaozhiyang---date:20240517---for：【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
+      // 代码逻辑说明: 【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
       const handleCancel = () => {
         emit('close');
       };
-      // update-end--author:liaozhiyang---date:20240517---for：【QQYUN-9366】用户选择组件取消和关闭会把选择数据带入
-      //update-end---author:wangshuai ---date:20230703  for：【QQYUN-5685】5、离职人员可以选自己------------
 
-      // update-begin--author:liaozhiyang---date:20240607---for：【TV360X-305】小屏幕展示10条
+      // 代码逻辑说明: 【TV360X-305】小屏幕展示10条
       const clientHeight = document.documentElement.clientHeight * 200;
       maxHeight.value = clientHeight > 600 ? 600 : clientHeight;
-      // update-end--author:liaozhiyang---date:20240607---for：【TV360X-305】小屏幕展示10条
 
-      //update-begin---author:wangshuai---date:2024-07-03---for:【TV360X-1629】用户选择组件不是根据创建时间正序排序的---
       /**
        * 请求之前根据创建时间排序
        *
@@ -285,7 +295,6 @@
       function beforeFetch(params) {
         return Object.assign({ column: 'createTime', order: 'desc' }, params);
       }
-      //update-end---author:wangshuai---date:2024-07-03---for:【TV360X-1629】用户选择组件不是根据创建时间正序排序的---
 
       return {
         //config,

@@ -11,9 +11,7 @@
         </a-tab-pane>
         <a-tab-pane key="5" tab="内存信息" />
       </a-tabs>
-      <!--  update-begin---author:wangshuai ---date: 20230829 for：性能监控切换到磁盘监控再切回来报错列为空，不能用if判断------------>
       <BasicTable @register="registerTable" :searchInfo="searchInfo" :dataSource="dataSource" v-show="activeKey != 4">
-      <!--  update-end---author:wangshuai ---date: 20230829 for：性能监控切换到磁盘监控再切回来报错列为空，不能用if判断------------>
         <template #tableTitle>
           <div slot="message"
             >上次更新时间：{{ lastUpdateTime }}

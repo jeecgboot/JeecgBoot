@@ -37,6 +37,8 @@
 		    <bind name="bindRealname" value="'%'+realname+'%'"/>
 			and a.realname like #{bindRealname}
 		</if>
+		ORDER BY
+		a.sort,a.create_time desc
 	</select>
 
     <!--获取用户信息（聊天专用）-->
@@ -82,6 +84,7 @@
 				#{userId}
 			</foreach>
 		</if>
+		order by a.sort, a.create_time desc
 	</select>
 	
 	<!--获取租户下的部门-通过前台传过来的部门id-->
@@ -125,4 +128,16 @@
 			select id from sys_depart where tenant_id = #{tenantId}
 		)
 	</delete>
+    
+    <!-- 通过用户id集合获取用户id和部门code -->
+    <select id="getUserDepPostByUserIds" resultType="org.jeecg.modules.system.model.SysUserSysDepPostModel">
+        select su.id,sd.org_code from sys_user_depart sud
+        JOIN sys_user su ON sud.user_id = su.id
+        JOIN sys_depart sd ON sud.dep_id = sd.id
+        where
+        sud.user_id in
+        <foreach collection="userIdList" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+    </select>
 </mapper>

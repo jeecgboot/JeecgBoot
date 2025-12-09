@@ -163,7 +163,7 @@
         margin-bottom: 2px;
       }
     }
-    // update-begin--author:liaozhiyang---date:20240408---for：【QQYUN-8922】面包屑样式调整
+    // 代码逻辑说明: 【QQYUN-8922】面包屑样式调整
     &--light {
       .ant-breadcrumb-link {
         color: rgba(0, 0, 0, 0.85);
@@ -219,5 +219,4 @@
       }
     }
   }
-  // update-end--author:liaozhiyang---date:20240408---for：【QQYUN-8922】面包屑样式调整
 </style>

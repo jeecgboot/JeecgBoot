@@ -137,7 +137,7 @@
         e.preventDefault();
         e.stopPropagation();
       }
-//update-begin---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
+//代码逻辑说明: 【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
 /*      function records2DataList() {
         let arr:any[] = [];
         let excludeList = props.excludeUserIdList;
@@ -157,7 +157,6 @@
         if(excludeList && excludeList.length>0){
           return records2DataList();
         }*/
-//update-end---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
         return props.dataList;
       });
 

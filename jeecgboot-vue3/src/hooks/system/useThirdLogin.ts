@@ -68,15 +68,13 @@ export function useThirdLogin() {
       } else {
         createMessage.warning('不识别的信息传递');
       }
-      // update-begin--author:liaozhiyang---date:20240717---for：【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
+      // 代码逻辑说明: 【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
       if (openWin?.closed) {
         window.removeEventListener('message', receiveMessage, false);
       }
-      // update-end--author:liaozhiyang---date:20240717---for：【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
     };
-    // update-begin--author:liaozhiyang---date:20240717---for：【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
+    // 代码逻辑说明: 【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
     window.removeEventListener('message', receiveMessage, false);
-    // update-end--author:liaozhiyang---date:20240717---for：【TV360X-1827】mac系统谷歌浏览器企业微信第三方登录成功后没有弹出绑定手机弹窗
     window.addEventListener('message', receiveMessage, false);
   }
   // 根据token执行登录

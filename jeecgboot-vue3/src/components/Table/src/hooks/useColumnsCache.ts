@@ -16,10 +16,9 @@ export function useColumnsCache(opt, setColumns, handleColumnFixed) {
   const route = useRoute();
   // 列表配置缓存key
   const cacheKey = computed(() => {
-    // update-begin--author:liaozhiyang---date:20240226---for：【QQYUN-8367】online报表配置列展示保存，影响到其他页面的table字段的显示隐藏（开发环境热更新会有此问题，生产环境无问题）
+    // 代码逻辑说明: 【QQYUN-8367】online报表配置列展示保存，影响到其他页面的table字段的显示隐藏（开发环境热更新会有此问题，生产环境无问题）
     const path = route.path;
     let key = path.replace(/[\/\\]/g, '_');
-    // update-end--author:liaozhiyang---date:20240226---for：【QQYUN-8367】online报表配置列展示保存，影响到其他页面的table字段的显示隐藏（开发环境热更新会有此问题，生产环境无问题）
     let cacheKey = table.getBindValues.value.tableSetting?.cacheKey;
     if (cacheKey) {
       key += ':' + cacheKey;
@@ -97,14 +96,13 @@ export function useColumnsCache(opt, setColumns, handleColumnFixed) {
   /** 保存列配置 */
   function saveSetting() {
     const { checkedList } = opt.state;
-    // update-begin--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[重置之后保存的顺序还是上次的]
+    // 代码逻辑说明: 【TV360X-105】列展示设置问题[重置之后保存的顺序还是上次的]
     let sortedList = [];
     if (opt.restAfterOptions.value) {
       sortedList = opt.restAfterOptions.value.map((item) => item.value);
     } else {
       sortedList = unref(opt.plainSortOptions).map((item) => item.value);
     }
-    // update-end--author:liaozhiyang---date:20240611---for：【TV360X-105】列展示设置问题[重置之后保存的顺序还是上次的]
     $ls.set(cacheKey.value, {
       // 保存的列
       checkedList,

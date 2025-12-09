@@ -104,13 +104,12 @@ export function useSysMessage(setLocaleText) {
       starFlag,
       id: item.sendId
     }
-    //update-begin-author:taoyan date:2023-3-6 for: QQYUN-4491【应用】一些小问题  4、标星不需要提示吧
+    // 代码逻辑说明: QQYUN-4491【应用】一些小问题  4、标星不需要提示吧
     const data:any = await defHttp.put({url, params}, {isTransformResponse: false});
     if(data.success === true){
     }else{
       createMessage.warning(data.message)
     }
-    //update-end-author:taoyan date:2023-3-6 for: QQYUN-4491【应用】一些小问题  4、标星不需要提示吧
   }
 
 
@@ -138,6 +137,14 @@ export function useSysMessage(setLocaleText) {
       return '流程抄送:';
     }else if(item.busType=='bpm_task'){
       return '流程任务:';
+    } else if (item.busType == 'eoa_co_remind') {
+      return '协同催办:';
+    } else if (item.busType == 'eoa_co_notify') {
+      return '协同提醒:';
+    } else if (item.busType == 'eoa_sup_remind') {
+      return '督办催办:';
+    } else if (item.busType == 'eoa_sup_notify') {
+      return '督办提醒:';
     } else if (item.msgCategory == '2') {
       return '系统消息:';
     } else if (item.msgCategory == '1') {
@@ -161,6 +168,9 @@ export function useSysMessage(setLocaleText) {
         }
       }
       return '去处理'
+    } else if (['eoa_co_notify', 'eoa_co_remind', 'eoa_sup_notify', 'eoa_sup_remind'].includes(item.busType)) {
+      // 代码逻辑说明: 【JHHB-133】消息列表打开协同工作
+      return '去处理';
     } else {
       return '查看详情'
     }
@@ -189,7 +199,15 @@ export function useMessageHref(emit, props){
   //const [registerTaskModal, { openModal: openTaskModal }] = useModal();
   // 注册表单弹窗
   //const [registerDesignFormModal, { openModal: openDesignFormModal }] = useModal();
-  const messageHrefArray: any[] = getDictItemsByCode('messageHref');
+  let messageHrefArray: any[] = getDictItemsByCode('messageHref');
+  // 代码逻辑说明: 【JHHB-133】消息列表打开协同工作
+  messageHrefArray = [
+    ...messageHrefArray,
+    { value: 'eoa_co_remind', text: '/collaboration/pending', url: '/collaboration/launch' },
+    { value: 'eoa_co_notify', text: '/collaboration/pending', url: '/collaboration/launch' },
+    { value: 'eoa_sup_notify', text: '/superviser/pending' },
+    { value: 'eoa_sup_remind', text: '/superviser/pending' },
+  ];
   const router = useRouter();
   const appStore = useAppStore();
   const rt = useRoute();
@@ -303,7 +321,7 @@ export function useMessageHref(emit, props){
         // 从消息页面列表点击详情查看 直接打开modal
         openModalFun()
       }
-      // update-begin-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
+      // 代码逻辑说明: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
     }else if(record.busType == 'comment'){
       // de
       let msgAbstract = record.msgAbstract;
@@ -322,7 +340,6 @@ export function useMessageHref(emit, props){
           }
         }
       }
-      // update-end-author:taoyan date:2023-5-10 for: QQYUN-4744【系统通知】6、系统通知@人后，对方看不到是哪个表单@的，没有超链接
     }else if(record.busType == 'tenant_invite'){
       if(props.isLowApp===true){
         router.push({ name:"myapps-settings-user", query:{ page:'tenantSetting' }})
@@ -443,6 +460,13 @@ export function useMessageHref(emit, props){
       return;
     }
     let path = temp[0].text;
+    if (['eoa_co_notify', 'eoa_co_remind'].includes(busType)) {
+      if (busId.startsWith('coId-')) {
+        path = temp[0].url;
+      } else if (busId.startsWith('nodeId-')) {
+        path = temp[0].text;
+      }
+    }
     path = path.replace('{DETAIL_ID}', busId)
     //固定参数 detailId 用于查询表单数据
     let query:any = {
@@ -461,7 +485,7 @@ export function useMessageHref(emit, props){
     }
     if(query.taskDetail){
       // 查看任务详情的弹窗
-      await showHistory(query.procInsId)
+      await showHistory(query.procInsId, {taskOriginalId:query.taskId,busType,id:busId,readFlag:record.readFlag})
     }else{
       // 跳转路由
       appStore.setMessageHrefParams(query);
@@ -485,13 +509,15 @@ export function useMessageHref(emit, props){
   }
 
   //===============================================================================================================
-  //update-begin-author:taoyan date:2022-12-31 for:   QQYUN-3485 【查看流程】做一个查看页面，非办理页面，只通过流程实例参数即可
-  async function showHistory(processInstanceId) {
+  // 代码逻辑说明: QQYUN-3485 【查看流程】做一个查看页面，非办理页面，只通过流程实例参数即可
+  async function showHistory(processInstanceId, data?) {
     let { formData, formUrl } = await getTaskInfoForHistory({ processInstanceId });
     formData['PROCESS_TAB_TYPE'] = 'history';
     handleOpenType('history', {
       formData,
       formUrl,
+      isCc: data && data.busType == 'bpm_cc',
+      record: data,
       title: '流程历史',
     });
   }
@@ -553,7 +579,6 @@ export function useMessageHref(emit, props){
   function isURL(s) {
     return /^http[s]?:\/\/.*/.test(s);
   }
-  //update-end-author:taoyan date:2022-12-31 for:   QQYUN-3485 【查看流程】做一个查看页面，非办理页面，只通过流程实例参数即可
   //===============================================================================================================
 
   return {

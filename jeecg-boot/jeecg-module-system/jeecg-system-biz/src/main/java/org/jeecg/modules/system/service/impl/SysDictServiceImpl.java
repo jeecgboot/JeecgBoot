@@ -95,11 +95,10 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 		// 4.执行SQL 查询是否存在值
 		try{
-			//update-begin---author:chenrui ---date:20240715  for：[TV360X-49]postgres日期、年月日时分秒唯一校验报错------------
+			// 代码逻辑说明: [TV360X-49]postgres日期、年月日时分秒唯一校验报错------------
 			if(DbTypeUtils.dbTypeIsPostgre(CommonUtils.getDatabaseTypeEnum())){
 				duplicateCheckVo.setFieldName("CAST("+duplicateCheckVo.getFieldName()+" as text)");
 			}
-			//update-end---author:chenrui ---date:20240715  for：[TV360X-49]postgres日期、年月日时分秒唯一校验报错------------
 			if (StringUtils.isNotBlank(duplicateCheckVo.getDataId())) {
 				// [1].编辑页面校验
 				count = sysDictMapper.duplicateCheckCountSql(duplicateCheckVo);
@@ -151,9 +150,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		for (DictModelMany dict : list) {
 			List<DictModel> dictItemList = dictMap.computeIfAbsent(dict.getDictCode(), i -> new ArrayList<>());
 			
-			//update-begin-author:taoyan date:2023-4-28 for: QQYUN-5183【简流】多字段拼接-多选框、下拉框 等需要翻译的字段
+			// 代码逻辑说明: QQYUN-5183【简流】多字段拼接-多选框、下拉框 等需要翻译的字段
 			//dict.setDictCode(null);
-			//update-end-author:taoyan date:2023-4-28 for: QQYUN-5183【简流】多字段拼接-多选框、下拉框 等需要翻译的字段
 			
 			dictItemList.add(new DictModel(dict.getValue(), dict.getText(), dict.getColor()));
 		}
@@ -162,7 +160,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 	@Override
 	public Map<String, List<DictModel>> queryAllDictItems() {
-		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 		long start = System.currentTimeMillis();
 		Map<String, List<DictModel>> sysAllDictItems = new HashMap(5);
 		List<Integer> tenantIds = null;
@@ -181,16 +179,16 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		sysAllDictItems = sysDictItemList.stream()
 				.collect(Collectors.groupingBy(DictModelMany::getDictCode,
 						Collectors.mapping(d -> new DictModel(d.getValue(), d.getText(), d.getColor()), Collectors.toList())));
-		log.info("      >>> 1 获取系统字典项耗时（SQL）：" + (System.currentTimeMillis() - start) + "毫秒");
+		log.debug("      >>> 1 获取系统字典项耗时（SQL）：" + (System.currentTimeMillis() - start) + "毫秒");
 
 		Map<String, List<DictModel>> enumRes = ResourceUtil.getEnumDictData();
 		sysAllDictItems.putAll(enumRes);
-		log.info("      >>> 2 获取系统字典项耗时（Enum）：" + (System.currentTimeMillis() - start) + "毫秒");
+		log.debug("      >>> 2 获取系统字典项耗时（Enum）：" + (System.currentTimeMillis() - start) + "毫秒");
 		
-		log.info("      >>> end 获取系统字典库总耗时：" + (System.currentTimeMillis() - start) + "毫秒");
-		log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		log.debug("      >>> end 获取系统字典库总耗时：" + (System.currentTimeMillis() - start) + "毫秒");
+		log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
-		//log.info("-------登录加载系统字典-----" + sysAllDictItems.toString());
+		//log.debug("-------登录加载系统字典-----" + sysAllDictItems.toString());
 		return sysAllDictItems;
 	}
 
@@ -216,10 +214,9 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			List<DictModel> dictItemList = dictMap.computeIfAbsent(dict.getDictCode(), i -> new ArrayList<>());
 			dictItemList.add(new DictModel(dict.getValue(), dict.getText()));
 		}
-		//update-begin-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
+		// 代码逻辑说明: 系统字典数据应该包括自定义的java类-枚举
 		Map<String, List<DictModel>> enumRes = ResourceUtil.queryManyDictByKeys(dictCodeList, keys);
 		dictMap.putAll(enumRes);
-		//update-end-author:taoyan date:2022-7-8 for: 系统字典数据应该包括自定义的java类-枚举
 		return dictMap;
 	}
 
@@ -352,7 +349,6 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 				return null;
 			}
 		}
-		//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 
 		// 2.分割SQL获取表名和条件
 		String filterSql = null;
@@ -371,7 +367,6 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		text = SqlInjectionUtil.getSqlInjectField(text);
 		code = SqlInjectionUtil.getSqlInjectField(code);
 
-		//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
         // 切换为字典表的数据源
         if (isCustomDataSource) {
             DynamicDataSourceContextHolder.push(dataSource);
@@ -382,8 +377,6 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			DynamicDataSourceContextHolder.clear();
 		}
 		return restData;
-		//update-end---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
-		//update-end-author:taoyan date:20220113 for: @dict注解支持 dicttable 设置where条件
 	}
 
 	@Override
@@ -478,11 +471,10 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			 insert = sysDictMapper.insert(sysDict);
 			if (sysDictItemList != null) {
 				for (SysDictItem entity : sysDictItemList) {
-                    //update-begin---author:wangshuai ---date:20220211  for：[JTC-1168]如果字典项值为空，则字典项忽略导入------------
+                    // 代码逻辑说明: [JTC-1168]如果字典项值为空，则字典项忽略导入------------
 				    if(oConvertUtils.isEmpty(entity.getItemValue())){
 				        return -1;
                     }
-                    //update-end---author:wangshuai ---date:20220211  for：[JTC-1168]如果字典项值为空，则字典项忽略导入------------
 					entity.setDictId(sysDict.getId());
 					entity.setStatus(1);
 					sysDictItemMapper.insert(entity);
@@ -566,9 +558,8 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			if (oConvertUtils.isNotEmpty(keyword)) {
 				// 判断是否是多选
 				if (keyword.contains(SymbolConstant.COMMA)) {
-					//update-begin--author:scott--date:20220105--for：JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致 ----
+					// 代码逻辑说明: JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致 ----
 					String inKeywords = "'" + String.join("','", keyword.split(",")) + "'";
-					//update-end--author:scott--date:20220105--for：JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致----
 					keywordSql = "(" + text + " in (" + inKeywords + ") or " + code + " in (" + inKeywords + "))";
 				} else {
 					keywordSql = "("+text + " like '%"+keyword+"%' or "+ code + " like '%"+keyword+"%')";
@@ -577,7 +568,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}
 		
 		//下拉搜索组件 支持传入排序信息 查询排序
-		//update-begin---author:chenrui ---date:20240327  for：[QQYUN-8514]Online表单中 下拉搜索框 搜索时报sql错误，生成的SQL多了一个 “and" ------------
+		// 代码逻辑说明: [QQYUN-8514]Online表单中 下拉搜索框 搜索时报sql错误，生成的SQL多了一个 “and" ------------
         if (oConvertUtils.isNotEmpty(condition) && oConvertUtils.isNotEmpty(keywordSql)) {
             filterSql += sqlWhere + (tableHasWhere ? sqlAnd : " ") + condition + sqlAnd + keywordSql;
         } else if (oConvertUtils.isNotEmpty(condition)) {
@@ -587,7 +578,6 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         } else if (tableHasWhere) {
             filterSql += sqlWhere;
         }
-		//update-end---author:chenrui ---date:20240327  for：[QQYUN-8514]Online表单中 下拉搜索框 搜索时报sql错误，生成的SQL多了一个 “and" ------------
 		// 增加排序逻辑
 		if (oConvertUtils.isNotEmpty(orderField)) {
 			filterSql += " order by " + orderField + " " + orderType;
@@ -626,7 +616,15 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public List<TreeSelectModel> queryTreeList(Map<String, String> query, String table, String text, String code, String pidField, String pid, String hasChildField, int converIsLeafVal) {
 		//为了防止sql（jeecg提供了防注入的方法，可以在拼接 SQL 语句时自动对参数进行转义，避免SQL注入攻击）
 		// 1.针对采用 ${}写法的表名和字段进行转义和check
-		table = SqlInjectionUtil.getSqlInjectTableName(table);
+        //update-begin---author:chenrui ---date:20251015  for：[QQYUN-13741]【客户问题 南自】online表单自定义树 表后边加条件时 不生效------------
+        // 分割SQL获取表名和条件
+        String filterSql = null;
+        if(table.toLowerCase().indexOf(DataBaseConstant.SQL_WHERE)>0){
+            String[] arr = table.split(" (?i)where ");
+            table = arr[0];
+            filterSql = oConvertUtils.getString(arr[1], null);
+        }
+        table = SqlInjectionUtil.getSqlInjectTableName(table);
 		text = SqlInjectionUtil.getSqlInjectField(text);
 		code = SqlInjectionUtil.getSqlInjectField(code);
 		pidField = SqlInjectionUtil.getSqlInjectField(pidField);
@@ -641,6 +639,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		// 2.检测最终SQL是否存在SQL注入风险
 		String dictCode = table + "," + text + "," + code;
 		SqlInjectionUtil.filterContentMulti(dictCode);
+        SqlInjectionUtil.specialFilterContentForDictSql(filterSql);
 
 		// 【QQYUN-6533】表字典白名单check
 		sysBaseAPI.dictTableWhiteListCheckByDict(table, text, code);
@@ -650,14 +649,17 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			return null;
 		}
 		// 4.检测查询条件是否存在SQL注入
-		Map<String, String> queryParams = null;
+		Map<String, String> queryParams = queryParams = new HashMap<>(4);
 		if (query != null) {
-			queryParams = new HashMap<>(5);
 			for (Map.Entry<String, String> searchItem : query.entrySet()) {
 				String fieldName = searchItem.getKey();
 				queryParams.put(SqlInjectionUtil.getSqlInjectField(fieldName), searchItem.getValue());
 			}
 		}
+        // 代码逻辑说明: [QQYUN-13741]【客户问题 南自】online表单自定义树 表后边加条件时 不生效------------
+        if(oConvertUtils.isNotEmpty(filterSql)){
+            queryParams.put("_tableFilterSql", filterSql);
+        }
 		
 		return baseMapper.queryTreeList(queryParams, table, text, code, pidField, pid, hasChildField, converIsLeafVal);
 	}
@@ -675,14 +677,13 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 
 	@Override
 	public List<SysDict> queryDeleteList(String tenantId) {
-		//update-begin---author:wangshuai---date:2024-02-27---for:【QQYUN-8340】回收站查找软删除记录时，没有判断是否启用多租户，造成可以查找并回收其他租户的数据 #5907---
+		// 代码逻辑说明: 【QQYUN-8340】回收站查找软删除记录时，没有判断是否启用多租户，造成可以查找并回收其他租户的数据 #5907---
 		if(MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL){
 			if(oConvertUtils.isEmpty(tenantId)){
 				return new ArrayList<>();
 			}
 			return baseMapper.queryDeleteListBtTenantId(oConvertUtils.getInt(tenantId));
 		}
-		//update-end---author:wangshuai---date:2024-02-27---for:【QQYUN-8340】回收站查找软删除记录时，没有判断是否启用多租户，造成可以查找并回收其他租户的数据 #5907---
 		return baseMapper.queryDeleteList();
 	}
 
@@ -738,14 +739,13 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			//字典表
 			ls = this.queryDictItemsByCode(dictCode);
 		}
-		//update-begin-author:taoyan date:2022-8-30 for: 字典获取可以获取枚举类的数据
+		// 代码逻辑说明: 字典获取可以获取枚举类的数据
 		if (ls == null || ls.size() == 0) {
 			Map<String, List<DictModel>> map = ResourceUtil.getEnumDictData();
 			if (map.containsKey(dictCode)) {
 				return map.get(dictCode);
 			}
 		}
-		//update-end-author:taoyan date:2022-8-30 for: 字典获取可以获取枚举类的数据
 		return ls;
 	}
 
@@ -763,7 +763,7 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		SqlInjectionUtil.specialFilterContentForDictSql(dictCode);
 
 		if (dictCode.contains(SymbolConstant.COMMA)) {
-			//update-begin-author:taoyan date:20210329 for: 下拉搜索不支持表名后加查询条件
+			// 代码逻辑说明: 下拉搜索不支持表名后加查询条件
 			String[] params = dictCode.split(",");
 			String condition = null;
 			if (params.length != 3 && params.length != 4) {
@@ -771,11 +771,10 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 				return null;
 			} else if (params.length == 4) {
 				condition = params[3];
-				// update-begin-author:taoyan date:20220314 for: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500
+				// 代码逻辑说明: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500
 				if(condition.indexOf(SymbolConstant.SYS_VAR_PREFIX)>=0){
 					condition =  QueryGenerator.getSqlRuleValue(condition);
 				}
-				// update-end-author:taoyan date:20220314 for: online表单下拉搜索框表字典配置#{sys_org_code}报错 #3500
 			}
 
 			// 字典Code格式不正确 [表名为空]
@@ -788,7 +787,6 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			} else {
 				ls = this.queryAllTableDictItems(params[0], params[1], params[2], condition, keyword);
 			}
-			//update-end-author:taoyan date:20210329 for: 下拉搜索不支持表名后加查询条件
 			return ls;
 		} else {
 			// 字典Code格式不正确

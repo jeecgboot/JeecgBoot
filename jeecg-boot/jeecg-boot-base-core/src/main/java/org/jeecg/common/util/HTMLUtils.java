@@ -38,14 +38,12 @@ public class HTMLUtils {
      * @return
      */
     public static String parseMarkdown(String markdownContent) {
-        //update-begin---author:wangshuai---date:2024-06-26---for:【TV360X-1344】JDK17 邮箱发送失败，需要换写法---
         /*PegDownProcessor pdp = new PegDownProcessor();
         return pdp.markdownToHtml(markdownContent);*/
         Parser parser = Parser.builder().build();
         Node document = parser.parse(markdownContent);
         HtmlRenderer renderer = HtmlRenderer.builder().build();
         return renderer.render(document);
-        //update-end---author:wangshuai---date:2024-06-26---for:【TV360X-1344】JDK17 邮箱发送失败，需要换写法---
     }
 
 }

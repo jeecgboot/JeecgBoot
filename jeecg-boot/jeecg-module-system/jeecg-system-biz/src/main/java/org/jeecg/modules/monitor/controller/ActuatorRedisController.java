@@ -43,7 +43,6 @@ public class ActuatorRedisController {
         return Result.ok(infoList);
     }
 
-	//update-begin---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
 	/**
 	 * Redis历史性能指标查询(过去一小时)
 	 * @return
@@ -56,7 +55,6 @@ public class ActuatorRedisController {
 		Map<String,List<Map<String,Object>>> metricsHistory = this.redisService.getMetricsHistory();
 	    return Result.OK(metricsHistory);
 	}
-	//update-end---author:chenrui ---date:20240514  for：[QQYUN-9247]系统监控功能优化------------
 
     @GetMapping("/keysSize")
     public Map<String, Object> getKeysSize() throws Exception {
@@ -97,7 +95,6 @@ public class ActuatorRedisController {
         return redisService.getMemoryInfo();
     }
     
-  //update-begin--Author:zhangweijian  Date:20190425 for：获取磁盘信息
   	/**
   	 * @功能：获取磁盘信息
   	 * @param request
@@ -134,5 +131,4 @@ public class ActuatorRedisController {
   		}
   		return res;
   	}
-  	//update-end--Author:zhangweijian  Date:20190425 for：获取磁盘信息
 }

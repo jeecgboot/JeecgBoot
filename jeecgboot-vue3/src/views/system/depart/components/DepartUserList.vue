@@ -26,7 +26,7 @@
 
   import UserDrawer from '/@/views/system/user/UserDrawer.vue';
   import UserSelectModal from '/@/components/Form/src/jeecg/components/modal/UserSelectModal.vue';
-  import { queryByOrgCodeForAddressList } from '../depart.api';
+  import { queryDepartPostByOrgCode } from '../depart.api';
   import { ColEx } from '/@/components/Form/src/types';
   import { userColumns } from '@/views/system/depart/depart.data';
   import { linkDepartUserBatch } from '@/views/system/departUser/depart.user.api';
@@ -53,7 +53,7 @@
   // 列表页面公共参数、方法
   const { tableContext, createMessage } = useListPage({
     tableProps: {
-      api: queryByOrgCodeForAddressList,
+      api: queryDepartPostByOrgCode,
       columns: userColumns,
       canResize: false,
       rowKey: 'id',
@@ -130,6 +130,7 @@
 
   // 查看用户详情
   function showUserDetail(record) {
+    record.activitiSync = record.activitiSync? Number(record.activitiSync) : 1;
     openDrawer(true, {
       record,
       isUpdate: true,
@@ -139,6 +140,7 @@
 
   // 编辑用户信息
   function editUserInfo(record) {
+    record.activitiSync = record.activitiSync? Number(record.activitiSync) : 1;
     openDrawer(true, { isUpdate: true, record, departDisabled: true, departPostDisabled: true });
   }
 

@@ -77,29 +77,25 @@ export default function ({ advanceState, emit, getProps, getSchema, formModel, d
 
     if (isLastAction) {
       advanceState.hideAdvanceBtn = unref(getSchema).length <= autoAdvancedCol;
-      // update-begin--author:sunjianlei---date:20211108---for: 注释掉该逻辑，使小于等于2行时，也显示展开收起按钮
+      // 代码逻辑说明: 注释掉该逻辑，使小于等于2行时，也显示展开收起按钮
       /* if (itemColSum <= BASIC_COL_LEN * 2) {
         // 小于等于2行时，不显示折叠和展开按钮
         advanceState.hideAdvanceBtn = true;
         advanceState.isAdvanced = true;
       } else */
-      // update-end--author:sunjianlei---date:20211108---for: 注释掉该逻辑，使小于等于2行时，也显示展开收起按钮
-      // update-begin--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
       /*if (itemColSum > BASIC_COL_LEN * 2 && itemColSum <= BASIC_COL_LEN * (unref(getProps).autoAdvancedLine || 3)) {
         advanceState.hideAdvanceBtn = false;
 
         // 默认超过 3 行折叠
       } else*/
-      // update-end--author:liaozhiyang---date:202401009---for：【issues/7261】表格上方查询项autoAdvancedLine配置没有效果（删除autoAdvancedLine）
       if (!advanceState.isLoad) {
         advanceState.isLoad = true;
         advanceState.isAdvanced = !advanceState.isAdvanced;
-        // update-begin--author:sunjianlei---date:20211108---for: 如果总列数大于 autoAdvancedCol，就默认折叠
+        // 代码逻辑说明: 如果总列数大于 autoAdvancedCol，就默认折叠
         if (unref(getSchema).length > autoAdvancedCol) {
           advanceState.hideAdvanceBtn = false;
           advanceState.isAdvanced = false;
         }
-        // update-end--author:sunjianlei---date:20211108---for: 如果总列数大于 autoAdvancedCol，就默认折叠
       }
       return { isAdvanced: advanceState.isAdvanced, itemColSum };
     }

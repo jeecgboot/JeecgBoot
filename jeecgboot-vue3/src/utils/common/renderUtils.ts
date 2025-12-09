@@ -84,7 +84,6 @@ const render = {
         });
       })
     );
-    //update-end-author:taoyan date:2022-5-24 for:  VUEN-1084 【vue3】online表单测试发现的新问题 41、生成的代码，树默认图大小未改
   },
   /**
    * 渲染 Tooltip

@@ -43,11 +43,10 @@
       const [register, { closeModal }] = useModalInner();
 
       const [registerForm, { validateFields, resetFields }] = useForm({
-        //update-begin---author:wangshuai---date:2024-04-08---for:【QQYUN-8895】锁屏样式修改---
+        // 代码逻辑说明: 【QQYUN-8895】锁屏样式修改---
         labelWidth: 74,
         labelAlign:'left',
         wrapperCol:{},
-        //update-end---author:wangshuai---date:2024-04-08---for:【QQYUN-8895】锁屏样式修改---
         showActionButtonGroup: false,
         schemas: [
           {

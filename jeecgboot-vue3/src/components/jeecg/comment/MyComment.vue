@@ -96,12 +96,11 @@
       const buttonLoading = ref(false);
       const myComment = ref<string>('');
       function sendComment(e) {
-        // update-begin--author:liaozhiyang---date:20240618---for：【TV360X-932】评论加上换行
+        // 代码逻辑说明: 【TV360X-932】评论加上换行
         const keyCode = e.keyCode || e.which;
         if (keyCode == 13 && e.shiftKey) {
           return;
         }
-        // update-end--author:liaozhiyang---date:20240618---for：【TV360X-932】评论加上换行
         let content = myComment.value;
         if (!content && content !== '0') {
           disabledButton.value = true;
@@ -159,7 +158,7 @@
           if (realname && username) {
             let str = `${realname}[${username}]`;
             let temp = myComment.value;
-            // update-begin--author:liaozhiyang---date:20240726---for：【TV360X-929】选择@用户，应该插入到光标位置
+            // 代码逻辑说明: 【TV360X-929】选择@用户，应该插入到光标位置
             if (!temp) {
               myComment.value = '@' + str + ' ';
             } else {
@@ -180,18 +179,16 @@
                 myComment.value = startStr + _symbol + str + ' ' + endStr;
               }
             }
-            // update-begin--author:liaozhiyang---date:20240726---for：【TV360X-929】选择@用户，应该插入到光标位置
 
-            //update-begin---author:wangshuai---date:2024-01-22---for:【QQYUN-8002】选完人，鼠标应该放到后面并在前面加上空格---
+            // 代码逻辑说明: 【QQYUN-8002】选完人，鼠标应该放到后面并在前面加上空格---
             showHtml.value = false;
             commentRef.value.focus();
             commentActive.value = true;
-            //update-end---author:wangshuai---date:2024-01-22---for:【QQYUN-8002】选完人，鼠标应该放到后面并在前面加上空格---
           }
         }
         closeModal();        
       }
-      // update-begin--author:liaozhiyang---date:20240724---for：【TV360X-927】@只有在输入时弹出用户弹窗，删除时不应该弹出
+      // 代码逻辑说明: 【TV360X-927】@只有在输入时弹出用户弹窗，删除时不应该弹出
       function handleCommentChange(e) {
         if (e.data === '@') {
           e.target.blur();
@@ -206,7 +203,6 @@
       //     }
       //   }
       // );
-      // update-end--author:liaozhiyang---date:20240724---for：【TV360X-927】@只有在输入时弹出用户弹窗，删除时不应该弹出
 
       const emojiButton = ref();
       function onSelectEmoji(emoji) {
@@ -223,13 +219,12 @@
         if (str.indexOf('::') > 0) {
           str = str.substring(0, str.indexOf(':') + 1);
         }
-        // update-begin--author:liaozhiyang---date:20240603---for：【TV360X-931】评论表情插入光标位置
+        // 代码逻辑说明: 【TV360X-931】评论表情插入光标位置
         const index = commentRef.value?.selectionStart ?? temp.length;
         // myComment.value = temp + str;
         const startStr = temp.substring(0, index);
         const endStr = temp.substring(index);
         myComment.value = startStr + str + endStr;
-        // update-end--author:liaozhiyang---date:20240603---for：【TV360X-931】评论表情插入光标位置
         visibleEmoji.value = false;
         handleBlur();
       }
@@ -279,11 +274,10 @@
       }
       function handleBlur() {
         showHtml.value = true;
-        // update-begin--author:liaozhiyang---date:20240724---for：解决多行获取焦点和失去焦点时滚动位置不一致
+        // 代码逻辑说明: 解决多行获取焦点和失去焦点时滚动位置不一致
         setTimeout(() => {
           commentContentRef.value!.scrollTop = commentRef.value.scrollTop;
         }, 0);
-        // update-end--author:liaozhiyang---date:20240724---for：解决多行获取焦点和失去焦点时滚动位置不一致
       }
       
       const commentActive = ref(false);
@@ -343,13 +337,12 @@
 </script>
 
 <style lang="less">
-  // update-begin--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
+  // 代码逻辑说明: 【QQYUN-8639】暗黑主题适配
   .comment-main {
     border: 1px solid #eee;
     margin: 0;
     position: relative;
   }
-  // update-end--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
   .comment-content {
     box-sizing: border-box;
     margin: 0;
@@ -372,9 +365,8 @@
     width: 100%;
     border: solid 0px;
     outline: none;
-    // update-begin--author:liaozhiyang---date:20240724---for：【TV360X-933】评论框拖动之后底部评论列表被覆盖了部分
+    // 代码逻辑说明: 【TV360X-933】评论框拖动之后底部评论列表被覆盖了部分
     resize: none;
-    // update-end--author:liaozhiyang---date:20240724---for：【TV360X-933】评论框拖动之后底部评论列表被覆盖了部分
     .emoji-item {
       display: inline-block !important;
       width: 0 !important;
@@ -393,10 +385,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    // update-begin--author:liaozhiyang---date:20240724---for：解决多行获取焦点和失去焦点时滚动位置不一致
+    // 代码逻辑说明: 解决多行获取焦点和失去焦点时滚动位置不一致
     height: 78px;
     overflow-y: auto;
-    // update-end--author:liaozhiyang---date:20240724---for：解决多行获取焦点和失去焦点时滚动位置不一致
     &.bottom-div {
       z-index: -99;
     }
@@ -434,7 +425,7 @@
   .emoji-type-image.emoji-set-apple {
     background-image: url("./image/emoji.png");
   }
-  // update-begin--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
+  // 代码逻辑说明: 【QQYUN-8639】暗黑主题适配
   html[data-theme='dark'] {
     .emoji-type-image.emoji-set-apple {
       background-image: url("./image/emoji_native.png");
@@ -451,5 +442,4 @@
       border-color: rgba(253, 253, 253, 0.12);
     }
   }
-  // update-end--author:liaozhiyang---date:20240327---for：【QQYUN-8639】暗黑主题适配
 </style>

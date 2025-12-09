@@ -26,8 +26,10 @@ enum Api {
   userQuitAgent = '/sys/user/userQuitAgent',
   getQuitList = '/sys/user/getQuitList',
   putCancelQuit = '/sys/user/putCancelQuit',
+  resetPassword = '/sys/user/resetPassword',
   updateUserTenantStatus='/sys/tenant/updateUserTenantStatus',
   getUserTenantPageList='/sys/tenant/getUserTenantPageList',
+  getDepPostIdByDepId = '/sys/sysDepart/getDepPostIdByDepId',
 }
 /**
  * 导出api
@@ -193,6 +195,15 @@ export const frozenBatch = (params, handleSuccess) => {
     handleSuccess();
   });
 };
+/**
+ * 重置密码
+ * @param params
+ */
+export const resetPassword = (params, handleSuccess) => {
+  return defHttp.put({ url: Api.resetPassword, params },{joinParamsToUrl: true}).then(() => {
+    handleSuccess();
+  });
+};
 
 
 /**
@@ -226,4 +237,13 @@ export const getUserTenantPageList = (params) => {
  */
 export const updateUserTenantStatus = (params) => {
   return defHttp.put({ url: Api.updateUserTenantStatus, params }, { joinParamsToUrl: true, isTransformResponse: false });
+};
+
+/**
+ * 根据部门id和已选中的部门岗位id获取部门下的岗位id
+ * 
+ * @param params
+ */
+export const getDepPostIdByDepId = (params) => {
+  return defHttp.get({ url: Api.getDepPostIdByDepId, params },{ isTransformResponse: false });
 };

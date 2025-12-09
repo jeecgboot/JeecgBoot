@@ -5,9 +5,8 @@ export const selectProps = {
   //是否多选
   isRadioSelection: {
     type: Boolean,
-    //update-begin---author:wangshuai ---date:20220527  for：部门用户组件默认应该单选，否则其他地方有问题------------
+    // 代码逻辑说明: 部门用户组件默认应该单选，否则其他地方有问题------------
     default: false,
-    //update-end---author:wangshuai ---date:20220527  for：部门用户组件默认应该单选，否则其他地方有问题--------------
   },
   //回传value字段名
   rowKey: {

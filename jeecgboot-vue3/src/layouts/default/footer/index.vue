@@ -73,9 +73,8 @@
   @prefix-cls: ~'@{namespace}-layout-footer';
 
   @normal-color: rgba(0, 0, 0, 0.45);
-  // update-begin-author:liusq date:2023-7-12 for: [issues/608] dark 模式下底部 footer 文字 hover 样式导致文字消失
+  // 代码逻辑说明: [issues/608] dark 模式下底部 footer 文字 hover 样式导致文字消失
   @hover-color: v-bind(hoverColor);
-  // update-end-author:liusq date:2023-7-12 for: [issues/608] dark 模式下底部 footer 文字 hover 样式导致文字消失
   .@{prefix-cls} {
     color: @normal-color;
     text-align: center;

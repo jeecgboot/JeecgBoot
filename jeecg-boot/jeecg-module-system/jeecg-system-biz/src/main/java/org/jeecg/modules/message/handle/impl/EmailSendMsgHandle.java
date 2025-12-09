@@ -70,12 +70,11 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
     public void sendMsg(String esReceiver, String esTitle, String esContent) {
         JavaMailSender mailSender = (JavaMailSender) SpringContextUtils.getBean("mailSender");
         MimeMessage message = mailSender.createMimeMessage();
-        //update-begin-author：taoyan date:20200811 for:配置类数据获取
+        // 代码逻辑说明: 配置类数据获取
         if(oConvertUtils.isEmpty(emailFrom)){
             StaticConfig staticConfig = SpringContextUtils.getBean(StaticConfig.class);
             setEmailFrom(staticConfig.getEmailFrom());
         }
-        //update-end-author：taoyan date:20200811 for:配置类数据获取
         cachedThreadPool.execute(()->{
             try {
                 log.info("============> 开始邮件发送，接收人："+esReceiver);
@@ -97,12 +96,11 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
     public void sendMessage(MessageDTO messageDTO) {
         String content = messageDTO.getContent();
         String title = messageDTO.getTitle();
-        //update-begin---author:wangshuai---date:2024-11-20---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
+        // 代码逻辑说明: 【QQYUN-8523】敲敲云发邮件通知，不稳定---
         boolean timeJobSendEmail = this.isTimeJobSendEmail(messageDTO.getToUser(), title, content);
         if(timeJobSendEmail){
             return;
         }
-        //update-end---author:wangshuai---date:2024-11-20---for:【QQYUN-8523】敲敲云发邮件通知，不稳定---
         this.sendEmailMessage(messageDTO);
     }
 
@@ -127,7 +125,7 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
             sendMsg(email, title, content);
         }
         
-        //update-begin-author:taoyan date:2023-6-20 for: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
+        // 代码逻辑说明: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
         Set<String> toEmailList = messageDTO.getToEmailList();
         if(toEmailList!=null && toEmailList.size()>0){
             for(String email: toEmailList){
@@ -138,7 +136,6 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
                 sendMsg(email, title, content);
             }
         }
-        //update-end-author:taoyan date:2023-6-20 for: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
         
         //发送给抄送人
         sendMessageToCopyUser(messageDTO);
@@ -164,7 +161,7 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
                 content=replaceContent(user,content);
                 log.info("邮件内容：" + content);
                 
-            //update-begin-author:taoyan date:2023-6-20 for: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
+            // 代码逻辑说明: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
                 sendEmail(email, content, title);
             }
 
@@ -212,7 +209,6 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
             }
         });
     }
-    //update-end-author:taoyan date:2023-6-20 for: QQYUN-5557【简流】通知节点 发送邮箱 表单上有一个邮箱字段，流程中，邮件发送节点，邮件接收人 不可选择邮箱
     
 
     /**

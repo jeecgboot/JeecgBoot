@@ -61,16 +61,14 @@ export function useJvxeMethod(requestAddOrEdit, classifyIntoFormData, tableRefs,
       .catch((e) => {
         if (e.error === VALIDATE_FAILED) {
           // 如果有未通过表单验证的子表，就自动跳转到它所在的tab
-          //update-begin-author:taoyan date:2022-11-22 for: VUEN-2866【代码生成】Tab风格 一对多子表校验不通过时，点击提交表单空白了，流程附加页面也有此问题
+          // 代码逻辑说明: VUEN-2866【代码生成】Tab风格 一对多子表校验不通过时，点击提交表单空白了，流程附加页面也有此问题
           if(e.paneKey){
             activeKey.value = e.paneKey
           }else{
-            //update-begin-author:liusq date:2024-06-12 for: TV360X-478 一对多tab，校验未通过时，tab没有跳转
+            // 代码逻辑说明: TV360X-478 一对多tab，校验未通过时，tab没有跳转
             activeKey.value = e.subIndex == null ? (e.index == null ? unref(activeKey) : refKeys.value[e.index]) : Object.keys(tableRefs)[e.subIndex];
-            //update-end-author:liusq date:2024-06-12  for: TV360X-478 一对多tab，校验未通过时，tab没有跳转
           }
-          //update-end-author:taoyan date:2022-11-22 for: VUEN-2866【代码生成】Tab风格 一对多子表校验不通过时，点击提交表单空白了，流程附加页面也有此问题
-          //update-begin---author:wangshuai---date:2024-06-17---for:【TV360X-1064】非原生提交表单滚动校验没通过的项---
+          // 代码逻辑说明: 【TV360X-1064】非原生提交表单滚动校验没通过的项---
           if (e?.errorFields) {
             const firstField = e.errorFields[0];
             if (firstField) {
@@ -78,7 +76,6 @@ export function useJvxeMethod(requestAddOrEdit, classifyIntoFormData, tableRefs,
             }
           }
           return Promise.reject(e?.errorFields);
-          //update-end---author:wangshuai---date:2024-06-17---for:【TV360X-1064】非原生提交表单滚动校验没通过的项---
         } else {
           console.error(e);
         }
@@ -104,7 +101,6 @@ export function useJvxeMethod(requestAddOrEdit, classifyIntoFormData, tableRefs,
   return [handleChangeTabs, handleSubmit, requestSubTableData, formRef];
 }
 
-//update-begin-author:taoyan date:2022-6-16 for: 代码生成-原生表单用
 /**
  * 校验多个表单和子表table，用于原生的antd-vue的表单
  * @param activeKey 子表表单/vxe-table 所在tabs的 activeKey
@@ -194,4 +190,3 @@ export function useValidateAntFormAndTable(activeKey, refMap) {
     transformData,
   };
 }
-//update-end-author:taoyan date:2022-6-16 for: 代码生成-原生表单用

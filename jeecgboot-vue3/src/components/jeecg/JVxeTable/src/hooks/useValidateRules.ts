@@ -43,9 +43,8 @@ export function useValidateRules(args: HandleArgs) {
 function uniqueValidator({ methods }: HandleArgs) {
   return function (event) {
     const { cellValue, column, rule } = event;
-    // update-begin--author:liaozhiyang---date:20240522---for：【TV360X-299】JVxetable组件中唯一校验过滤掉空字符串
+    // 代码逻辑说明: 【TV360X-299】JVxetable组件中唯一校验过滤掉空字符串
     if (cellValue == '') return Promise.resolve();
-    // update-end--author:liaozhiyang---date:20240522---for：【TV360X-299】JVxetable组件中唯一校验过滤掉空字符串
     let tableData = methods.getTableData();
     let findCount = 0;
     for (let rowData of tableData) {
@@ -85,16 +84,14 @@ const fooPatterns = [
   { title: '6到16位数字', value: 'n6-16', pattern: /^\d{6,16}$/ },
   { title: '6到16位任意字符', value: '*6-16', pattern: /^.{6,16}$/ },
   { title: '6到18位字母', value: 's6-18', pattern: /^[a-z|A-Z]{6,18}$/ },
-  //update-begin-author:taoyan date:2022-6-1 for: VUEN-1160 对多子表，网址校验不正确
+  // 代码逻辑说明: VUEN-1160 对多子表，网址校验不正确
   {
     title: '网址',
     value: 'url',
     pattern: /^((ht|f)tps?):\/\/[\w\-]+(\.[\w\-]+)+([\w\-.,@?^=%&:\/~+#]*[\w\-@?^=%&\/~+#])?$/,
   },
-  //update-end-author:taoyan date:2022-6-1 for: VUEN-1160 对多子表，网址校验不正确
-  // update-begin--author:liaozhiyang---date:20240527---for：【TV360X-466】邮箱跟一对第一校验规则一致
+  // 代码逻辑说明: 【TV360X-466】邮箱跟一对第一校验规则一致
   { title: '电子邮件', value: 'e', pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/ },
-  // update-end--author:liaozhiyang---date:20240527---for：【TV360X-466】邮箱跟一对第一校验规则一致
   { title: '手机号码', value: 'm', pattern: /^1[3456789]\d{9}$/ },
   { title: '邮政编码', value: 'p', pattern: /^\d{6}$/ },
   { title: '字母', value: 's', pattern: /^[A-Z|a-z]+$/ },

@@ -15,6 +15,8 @@ public class SysLoginModel {
     private String username;
 	@Schema(description = "密码")
     private String password;
+	@Schema(description = "登录部门")
+    private String loginOrgCode;
 	@Schema(description = "验证码")
     private String captcha;
 	@Schema(description = "验证码key")
@@ -51,5 +53,12 @@ public class SysLoginModel {
 	public void setCheckKey(String checkKey) {
 		this.checkKey = checkKey;
 	}
-    
+
+    public String getLoginOrgCode() {
+        return loginOrgCode;
+    }
+
+    public void setLoginOrgCode(String loginOrgCode) {
+        this.loginOrgCode = loginOrgCode;
+    }
 }

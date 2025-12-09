@@ -84,7 +84,7 @@
   // onCreated
   loadData({
     success: (ids) => {
-      // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
+      // 代码逻辑说明: 【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
       const localData = localStorage.getItem(DEPART_MANGE_AUTH_CONFIG_KEY);
       if (localData) {
         const obj = JSON.parse(localData);
@@ -93,7 +93,6 @@
       } else {
         // expandedKeys.value = ids;
       }
-      // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
     }
   });
   watch(departId, () => loadDepartPermission(), { immediate: true });
@@ -102,13 +101,11 @@
     try {
       loading.value = true;
       let { treeList, ids } = await queryRoleTreeList();
-      //update-begin---author:wangshuai---date:2024-04-08---for:【issues/1169】部门管理功能中的【部门权限】中未翻译 t('') 多语言---
+      // 代码逻辑说明: 【issues/1169】部门管理功能中的【部门权限】中未翻译 t('') 多语言---
       treeData.value = translateTitle(treeList);
-      //update-end---author:wangshuai---date:2024-04-08---for:【issues/1169】部门管理功能中的【部门权限】中未翻译 t('') 多语言---
-      // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
+      // 代码逻辑说明: 【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
       allTreeKeys.value = ids;
       options.success?.(ids);
-      // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
     } finally {
       loading.value = false;
     }
@@ -219,7 +216,7 @@
 
   // 切换展开收起
   async function toggleExpandAll(flag) {
-    // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
+    // 代码逻辑说明: 【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
     if (flag) {
       expandedKeys.value = allTreeKeys.value;
       saveLocalOperation('expand', 'openAll');
@@ -227,30 +224,27 @@
       expandedKeys.value = [];
       saveLocalOperation('expand', 'closeAll');
     }
-    // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
   }
 
   // 切换全选
   async function toggleCheckALL(flag) {
-    // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
+    // 代码逻辑说明: 【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
     if (flag) {
       checkedKeys.value = allTreeKeys.value;
     } else {
       checkedKeys.value = [];
     }
-    // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
   }
 
   // 切换层级关联(独立)
   const toggleRelationAll = (flag) => {
-    // update-begin--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
+    // 代码逻辑说明: 【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
     checkStrictly.value = flag;
     if (flag) {
       saveLocalOperation('level', 'standAlone');
     } else {
       saveLocalOperation('level', 'relation');
     }
-    // update-end--author:liaozhiyang---date:20240704---for：【TV360X-1689】同步系统角色改法加上缓存层级关联等功能
   };
   /**
    * 2024-07-04

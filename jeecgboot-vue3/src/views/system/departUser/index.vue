@@ -42,12 +42,11 @@
 
   // 左侧树选择后触发
   function onTreeSelect(data) {
-    // update-begin--author:liaozhiyang---date:20250106---for：【issues/7658】我的部门无部门列表数据时，点击查询或者重置能查出数据
+    // 代码逻辑说明: 【issues/7658】我的部门无部门列表数据时，点击查询或者重置能查出数据
     if (reRender.value == -1) {
       // 重新渲染组件
       reRender.value = Math.random();
     }
-    // update-end--author:liaozhiyang---date:20250106---for：【issues/7658】我的部门无部门列表数据时，点击查询或者重置能查出数据
     departData.value = data;
   }
 </script>

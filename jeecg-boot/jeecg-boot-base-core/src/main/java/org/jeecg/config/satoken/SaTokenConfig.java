@@ -199,7 +199,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     // 设置当前线程上下文的租户ID
                     String tenantId = SaHolder.getRequest().getHeader(CommonConstant.TENANT_ID);
                     TenantContext.setTenant(tenantId);
-                    log.info("===【TenantContext 线程设置】=== 请求路径: {}, 租户ID: {}", SaHolder.getRequest().getRequestPath(), tenantId);
+                    log.debug("===【TenantContext 线程设置】=== 请求路径: {}, 租户ID: {}", SaHolder.getRequest().getRequestPath(), tenantId);
                 });
     }
 

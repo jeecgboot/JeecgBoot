@@ -13,9 +13,7 @@
             :disabled="item.disabled"
             :class="[{ 'is-pop-confirm': item.popConfirm }, item.class ?? []]"
           >
-            <!-- update-begin--author:liaozhiyang---date:20231110---for：【issues/839】BasicTable表格的更多操作按钮禁用还能点击弹出气泡框 -->
             <a-popconfirm :disabled="item.disabled" v-if="popconfirm && item.popConfirm" v-bind="getPopConfirmAttrs(item.popConfirm)">
-              <!-- update-end--author:liaozhiyang---date:20231110---for：【issues/839】BasicTable表格的更多操作按钮禁用还能点击弹出气泡框 -->
               <template #icon v-if="item.popConfirm.icon">
                 <Icon v-if="item.iconColor" :icon="item.popConfirm.icon" :color="item.iconColor" />
                 <Icon v-else :icon="item.popConfirm.icon" />
@@ -107,7 +105,7 @@
   @prefix-cls: ~'@{namespace}-basic-dropdown';
 
   .@{prefix-cls} {
-    // update-begin--author:sunjianlei---date:20220322---for: 【VUEN-180】更多下拉菜单，只有点到字上才有效，点到空白处什么都不会发生，体验不好
+    // 代码逻辑说明: 【VUEN-180】更多下拉菜单，只有点到字上才有效，点到空白处什么都不会发生，体验不好
     &-menu .ant-dropdown-menu-item.is-pop-confirm {
       padding: 0;
 
@@ -115,6 +113,5 @@
         padding: 5px 12px;
       }
     }
-    // update-end--author:sunjianlei---date:20220322---for: 【VUEN-180】更多下拉菜单，只有点到字上才有效，点到空白处什么都不会发生，体验不好
   }
 </style>

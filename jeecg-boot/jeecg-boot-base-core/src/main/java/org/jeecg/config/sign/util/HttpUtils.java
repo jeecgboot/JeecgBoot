@@ -41,19 +41,19 @@ public class HttpUtils {
         // 获取URL上最后带逗号的参数变量 sys/dict/getDictItems/sys_user,realname,username
         String pathVariable = request.getRequestURI().substring(request.getRequestURI().lastIndexOf("/") + 1);
         if (pathVariable.contains(SymbolConstant.COMMA)) {
-            log.info(" pathVariable: {}",pathVariable);
+            log.debug(" pathVariable: {}",pathVariable);
             String deString = URLDecoder.decode(pathVariable, "UTF-8");
           
             //https://www.52dianzi.com/category/article/37/565371.html
             if(deString.contains("%")){
                 try {
                     deString = URLDecoder.decode(deString, "UTF-8");
-                    log.info("存在%情况下，执行两次解码 — pathVariable decode: {}",deString);
+                    log.debug("存在%情况下，执行两次解码 — pathVariable decode: {}",deString);
                 } catch (Exception e) {
                     //e.printStackTrace();
                 }
             }
-            log.info(" pathVariable decode: {}",deString);
+            log.debug(" pathVariable decode: {}",deString);
             result.put(SignUtil.X_PATH_VARIABLE, deString);
         }
         // 获取URL上的参数
@@ -91,15 +91,15 @@ public class HttpUtils {
         // 获取URL上最后带逗号的参数变量 sys/dict/getDictItems/sys_user,realname,username
         String pathVariable = url.substring(url.lastIndexOf("/") + 1);
         if (pathVariable.contains(SymbolConstant.COMMA)) {
-            log.info(" pathVariable: {}",pathVariable);
+            log.debug(" pathVariable: {}",pathVariable);
             String deString = URLDecoder.decode(pathVariable, "UTF-8");
            
             //https://www.52dianzi.com/category/article/37/565371.html
             if(deString.contains("%")){
                 deString = URLDecoder.decode(deString, "UTF-8");
-                log.info("存在%情况下，执行两次解码 — pathVariable decode: {}",deString);
+                log.debug("存在%情况下，执行两次解码 — pathVariable decode: {}",deString);
             }
-            log.info(" pathVariable decode: {}",deString);
+            log.debug(" pathVariable decode: {}",deString);
             result.put(SignUtil.X_PATH_VARIABLE, deString);
         }
         // 获取URL上的参数
@@ -174,11 +174,10 @@ public class HttpUtils {
         String[] params = param.split("&");
         for (String s : params) {
             int index = s.indexOf("=");
-            //update-begin---author:chenrui ---date:20240222  for：[issues/5879]数据查询传ds=“”造成的异常------------
+            // 代码逻辑说明: [issues/5879]数据查询传ds=“”造成的异常------------
             if (index != -1) {
                 result.put(s.substring(0, index), s.substring(index + 1));
             }
-            //update-end---author:chenrui ---date:20240222  for：[issues/5879]数据查询传ds=“”造成的异常------------
         }
         return result;
     }
@@ -202,11 +201,10 @@ public class HttpUtils {
         String[] params = param.split("&");
         for (String s : params) {
             int index = s.indexOf("=");
-            //update-begin---author:chenrui ---date:20240222  for：[issues/5879]数据查询传ds=“”造成的异常------------
+            // 代码逻辑说明: [issues/5879]数据查询传ds=“”造成的异常------------
             if (index != -1) {
                 result.put(s.substring(0, index), s.substring(index + 1));
             }
-            //update-end---author:chenrui ---date:20240222  for：[issues/5879]数据查询传ds=“”造成的异常------------
         }
         return result;
     }

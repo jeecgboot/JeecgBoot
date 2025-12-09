@@ -80,10 +80,9 @@ export interface FetchParams {
 export interface GetColumnsParams {
   ignoreIndex?: boolean;
   ignoreAction?: boolean;
-  // update-begin--author:liaozhiyang---date:20250729---for：【issues/8502】解决权限列在列表中不显示，列配置中还显示
+  // 代码逻辑说明: 【issues/8502】解决权限列在列表中不显示，列配置中还显示
   ignoreAuth?: boolean;
   ignoreIfShow?: boolean | ((column: BasicColumn) => boolean);
-  // update-end--author:liaozhiyang---date:20250729---for：【issues/8502】解决权限列在列表中不显示，列配置中还显示
   sort?: boolean;
 }
 
@@ -228,10 +227,8 @@ export interface BasicTableProps<T = any> {
   maxHeight?: number;
   // 是否显示边框
   bordered?: boolean;
-  // update-begin--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
   // 展开列宽度
   expandColumnWidth: number;
-  // update-end--author:liaozhiyang---date:202401009---for：【TV360X-116】内嵌风格字段较多时表格错位
   // 分页配置
   pagination?: PaginationProps | boolean;
   // loading加载
@@ -331,9 +328,8 @@ export interface BasicTableProps<T = any> {
    * you need to add style .ant-table td { white-space: nowrap; }.
    * @type object
    */
-  // update-begin--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
+  // 代码逻辑说明: 【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
   scroll?: { x?: number | true | 'max-content'; y?: number; scrollToFirstRowOnChange?: boolean };
-  // update-end--author:liaozhiyang---date:20240424---for：【issues/1188】BasicTable加上scrollToFirstRowOnChange类型定义
 
   /**
    * Whether to show table header
@@ -438,9 +434,8 @@ export interface BasicColumn extends ColumnProps<Recordable> {
 
   //
   flag?: 'INDEX' | 'DEFAULT' | 'CHECKBOX' | 'RADIO' | 'ACTION';
-  // update-begin--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
+  // 代码逻辑说明: 【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
   title: string | Fn;
-  // update-end--author:liaozhiyang---date:20240724---for：【issues/6908】多语言无刷新切换时，BasicColumn和FormSchema里面的值不能正常切换
   customTitle?: VueNode;
 
   slots?: Recordable;
@@ -460,9 +455,8 @@ export interface BasicColumn extends ColumnProps<Recordable> {
   editRow?: boolean;
   editable?: boolean;
   editComponent?: ComponentType;
-  // update-begin--author:liaozhiyang---date:20250818---for：【issues/8680】editComponentProps可接受一个函数传入record
+  // 代码逻辑说明: 【issues/8680】editComponentProps可接受一个函数传入record
   editComponentProps?: Recordable | ((record: Recordable) => Recordable);
-  // update-end--author:liaozhiyang---date:20250818---for：【issues/8680】editComponentProps可接受一个函数传入record
   editRule?: boolean | ((text: string, record: Recordable) => Promise<string>);
   editValueMap?: (value: any) => string;
   onEditRow?: () => void;
@@ -472,7 +466,7 @@ export interface BasicColumn extends ColumnProps<Recordable> {
   ifShow?: boolean | ((column: BasicColumn) => boolean);
   //compType-用于记录类型
   compType?: string;
-  // update-begin--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
+  // 代码逻辑说明: 【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
   customSummaryRender?: (opt: {
     value: any;
     text: any;
@@ -481,7 +475,6 @@ export interface BasicColumn extends ColumnProps<Recordable> {
     renderIndex?: number;
     column: BasicColumn;
   }) => any | VNodeChild | JSX.Element;
-  // update-end--author:liaozhiyang---date:20240425---for：【pull/1201】添加antd的TableSummary功能兼容老的summary（表尾合计）
   // 额外的属性
   extraProps?: Recordable;
 }

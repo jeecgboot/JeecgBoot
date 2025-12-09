@@ -203,9 +203,8 @@
     initCharts();
     openTimer();
   });
-  // update-begin--author:liaozhiyang---date:220230719---for：【issues-615】系统监控中的REDIS监控页面打开，再关闭后，没有关闭计时器
+  // 代码逻辑说明: 【issues-615】系统监控中的REDIS监控页面打开，再关闭后，没有关闭计时器
   onUnmounted(() => {
     closeTimer();
   });
-  // update-end--author:liaozhiyang---date:220230719---for：【issues-615】系统监控中的REDIS监控页面打开，再关闭后，没有关闭计时器
 </script>

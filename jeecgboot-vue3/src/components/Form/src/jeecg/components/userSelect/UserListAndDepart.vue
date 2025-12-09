@@ -76,6 +76,7 @@
         const data = await loadDepartTree();
         if (data.success) {
           let arr = data.result;
+          fillTitles(arr);
           treeData.value = arr;
           emitDepartOptions(arr);
         } else {
@@ -121,6 +122,7 @@
         if (data.success) {
           let arr = data.result;
           treeNode.dataRef.children = [...arr];
+          fillTitles(treeData.value);
           treeData.value = [...treeData.value];
         } else {
           console.error(data.message);
@@ -128,11 +130,12 @@
       }
 
       const maxHeight = ref(300);
-      maxHeight.value = window.innerHeight - 300;
+      maxHeight.value = window.innerHeight - 500;
       const containerStyle = computed(() => {
         return {
           'overflow-y': 'auto',
-          'max-height': maxHeight.value + 'px',
+          // 代码逻辑说明: JHHB-911 【用户选择】用户选择组件 有滚动条时 不好用 没有显示简称
+          'max-height': (maxHeight.value>=300?maxHeight.value:300) + 'px',
         };
       });
 
@@ -149,11 +152,10 @@
         if (selectedDepartId.value) {
           params['departId'] = selectedDepartId.value;
         }
-        //update-begin---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
+        // 代码逻辑说明: 【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
         if(props.excludeUserIdList && props.excludeUserIdList.length>0){
           params['excludeUserIdList'] = props.excludeUserIdList.join(",");
         }
-        //update-end---author:wangshuai---date:2024-02-02---for:【QQYUN-8239】用户角色，添加用户 返回2页数据，实际只显示一页---
         const data = await defHttp.get({ url, params }, { isTransformResponse: false });
         if (data.success) {
           const { records } = data.result;
@@ -176,7 +178,18 @@
       function unSelectUser(id) {
         emit('unSelect', id);
       }
-
+      // 递归将 departNameAbbr 赋给 title，并递归处理 children
+      function fillTitles(nodes: any[] = []) {
+        for (const node of nodes) {
+          if (!node) continue;
+          if (node?.departNameAbbr) {
+            node.title = node.departNameAbbr;
+          }
+          if (Array.isArray(node.children) && node.children.length) {
+            fillTitles(node.children);
+          }
+        }
+      }
       return {
         containerStyle,
         treeData,

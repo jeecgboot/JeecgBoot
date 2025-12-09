@@ -18,6 +18,7 @@ import org.jeecg.common.util.Md5Util;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
+import org.jeecg.modules.jmreport.common.annotation.RequiresPermissions;
 import org.jeecg.modules.system.constant.DefIndexConst;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.model.SysPermissionTree;
@@ -108,7 +109,7 @@ public class SysPermissionController {
 			}
 			result.setResult(treeList);
 			result.setSuccess(true);
-            log.info("======获取全部菜单数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
+            log.debug("======获取全部菜单数据=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 		}
@@ -173,7 +174,6 @@ public class SysPermissionController {
 	}
 	/*update_end author:wuxianquan date:20190908 for:先查询一级菜单，当用户点击展开菜单时加载子菜单 */
 
-	// update_begin author:sunjianlei date:20200108 for: 新增批量根据父ID查询子级菜单的接口 -------------
 	/**
 	 * 查询子菜单
 	 *
@@ -207,7 +207,6 @@ public class SysPermissionController {
 			return Result.error("批量查询子菜单失败：" + e.getMessage());
 		}
 	}
-	// update_end author:sunjianlei date:20200108 for: 新增批量根据父ID查询子级菜单的接口 -------------
 
 //	/**
 //	 * 查询用户拥有的菜单权限和按钮权限（根据用户账号）
@@ -248,15 +247,13 @@ public class SysPermissionController {
 			}
 			List<SysPermission> metaList = sysPermissionService.queryByUser(loginUser.getId());
 			//添加首页路由
-			//update-begin-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 
-			//update-begin--Author:zyf Date:20220425  for:自定义首页地址 LOWCOD-1578
+			// 代码逻辑说明: 自定义首页地址 LOWCOD-1578
 			String version = request.getHeader(CommonConstant.VERSION);
 			SysRoleIndex defIndexCfg = sysUserService.getDynamicIndexByUserRole(loginUser.getUsername(), version);
 			if (defIndexCfg == null) {
 				defIndexCfg = sysRoleIndexService.initDefaultIndex();
 			}
-			//update-end--Author:zyf  Date:20220425  for：自定义首页地址 LOWCOD-1578
 
 			// 如果没有授权角色首页，则自动添加首页路由
 			if (!PermissionDataUtil.hasIndexPage(metaList, defIndexCfg)) {
@@ -281,7 +278,6 @@ public class SysPermissionController {
 				}
 				metaList.add(0, indexMenu);
 			}
-			//update-end-author:taoyan date:20200211 for: TASK #3368 【路由缓存】首页的缓存设置有问题，需要根据后台的路由配置来实现是否缓存
 
 /* TODO 注： 这段代码的主要作用是：把首页菜单的组件替换成角色菜单的组件，由于现在的逻辑如果角色菜单不存在则自动插入一条，所以这段代码暂时不需要
 			List<SysPermission> menus = metaList.stream().filter(sysPermission -> {
@@ -290,7 +286,7 @@ public class SysPermissionController {
 				}
 				return defIndexCfg.getUrl().equals(sysPermission.getUrl());
 			}).collect(Collectors.toList());
-			//update-begin---author:liusq ---date:2022-06-29  for：设置自定义首页地址和组件----------
+			// 代码逻辑说明: 设置自定义首页地址和组件----------
 			if (menus.size() == 1) {
 				String component = defIndexCfg.getComponent();
 				String routeUrl = defIndexCfg.getUrl();
@@ -303,7 +299,6 @@ public class SysPermissionController {
 					menus.get(0).setComponent(component);
 				}
 			}
-			//update-end---author:liusq ---date:2022-06-29  for：设置自定义首页地址和组件-----------
 */
 
 			JSONObject json = new JSONObject();
@@ -593,15 +588,15 @@ public class SysPermissionController {
 			String permissionIds = json.getString("permissionIds");
 			String lastPermissionIds = json.getString("lastpermissionIds");
 			this.sysRolePermissionService.saveRolePermission(roleId, permissionIds, lastPermissionIds);
-			
-			// 清除拥有该角色的所有用户的权限和角色缓存
-			clearRolePermissionCache(roleId);
-			
-			LoginUser loginUser = LoginUserUtils.getSessionUser();
-			baseCommonService.addLog("修改角色ID: " +roleId+" 的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
+            // 代码逻辑说明: [VUEN-234]用户管理角色授权添加敏感日志------------
+            LoginUser loginUser = LoginUserUtils.getSessionUser();
+			baseCommonService.addLog("修改角色ID: "+roleId+" 的权限配置，操作人： " +loginUser.getUsername() ,CommonConstant.LOG_TYPE_2, 2);
 			result.success("保存成功！");
 			log.info("======角色授权成功=====耗时:" + (System.currentTimeMillis() - start) + "毫秒");
-		} catch (Exception e) {
+            
+            // 清除拥有该角色的所有用户的权限和角色缓存
+            clearRolePermissionCache(roleId);
+        } catch (Exception e) {
 			result.error500("授权失败！");
 			log.error(e.getMessage(), e);
 		}
@@ -867,12 +862,11 @@ public class SysPermissionController {
 
 			meta.put("title", permission.getName());
 
-			//update-begin--Author:scott  Date:20201015 for：路由缓存问题，关闭了tab页时再打开就不刷新 #842
+			// 代码逻辑说明: 路由缓存问题，关闭了tab页时再打开就不刷新 #842
 			String component = permission.getComponent();
 			if(oConvertUtils.isNotEmpty(permission.getComponentName()) || oConvertUtils.isNotEmpty(component)){
 				meta.put("componentName", oConvertUtils.getString(permission.getComponentName(),component.substring(component.lastIndexOf("/")+1)));
 			}
-			//update-end--Author:scott  Date:20201015 for：路由缓存问题，关闭了tab页时再打开就不刷新 #842
 
 			if (oConvertUtils.isEmpty(permission.getParentId())) {
 				// 一级菜单跳转地址
@@ -888,11 +882,10 @@ public class SysPermissionController {
 			if (isWwwHttpUrl(permission.getUrl())) {
 				meta.put("url", permission.getUrl());
 			}
-			// update-begin--Author:sunjianlei  Date:20210918 for：新增适配vue3项目的隐藏tab功能
+			// 代码逻辑说明: 新增适配vue3项目的隐藏tab功能
 			if (permission.isHideTab()) {
 				meta.put("hideTab", true);
 			}
-			// update-end--Author:sunjianlei  Date:20210918 for：新增适配vue3项目的隐藏tab功能
 			json.put("meta", meta);
 		}
 

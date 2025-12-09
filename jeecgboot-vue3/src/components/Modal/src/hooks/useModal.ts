@@ -63,11 +63,10 @@ export function useModal(): UseModalReturnType {
     },
 
     openModal: <T = any>(visible = true, data?: T, openOnSet = true): void => {
-      // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
+      // 代码逻辑说明: 【QQYUN-6366】升级到antd4.x
       getInstance()?.setModalProps({
         open: visible,
       });
-      // update-end--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
 
       if (!data) return;
       const id = unref(uid);
@@ -83,9 +82,8 @@ export function useModal(): UseModalReturnType {
     },
 
     closeModal: () => {
-      // update-begin--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
+      // 代码逻辑说明: 【QQYUN-6366】升级到antd4.x
       getInstance()?.setModalProps({ open: false });
-      // update-end--author:liaozhiyang---date:20231218---for：【QQYUN-6366】升级到antd4.x
     },
   };
   return [register, methods];

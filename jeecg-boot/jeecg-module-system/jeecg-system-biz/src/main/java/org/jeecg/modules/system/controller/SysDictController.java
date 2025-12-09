@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.jeecg.common.util.LoginUserUtils;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.jeecg.common.api.vo.Result;
@@ -22,6 +24,7 @@ import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.modules.system.constant.DefIndexConst;
 import org.jeecg.modules.system.entity.SysDict;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.model.SysDictTree;
@@ -35,6 +38,7 @@ import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.ImportParams;
+import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 import org.jeecgframework.poi.excel.view.JeecgEntityExcelView;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,7 +182,7 @@ public class SysDictController {
 	 */
 	@RequestMapping(value = "/getDictItems/{dictCode}", method = RequestMethod.GET)
 	public Result<List<DictModel>> getDictItems(@PathVariable("dictCode") String dictCode, @RequestParam(value = "sign",required = false) String sign,HttpServletRequest request) {
-		log.info(" dictCode : "+ dictCode);
+		log.debug(" dictCode : "+ dictCode);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
 		try {
 			List<DictModel> ls = sysDictService.getDictItems(dictCode);
@@ -211,7 +215,7 @@ public class SysDictController {
 			@RequestParam(name = "pageNo", defaultValue = "1", required = false) Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10", required = false) Integer pageSize) {
 		
-		//update-begin-author:taoyan date:2023-5-22 for: /issues/4905 因为中括号(%5)的问题导致的 表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905 RouteToRequestUrlFilter
+		// 代码逻辑说明: /issues/4905 因为中括号(%5)的问题导致的 表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905 RouteToRequestUrlFilter
 		if(keyword!=null && keyword.indexOf("%5")>=0){
 			try {
 				keyword = URLDecoder.decode(keyword, "UTF-8");
@@ -219,7 +223,6 @@ public class SysDictController {
 				log.error("下拉搜索关键字解码失败", e);
 			}
 		}
-		//update-end-author:taoyan date:2023-5-22 for: /issues/4905 因为中括号(%5)的问题导致的  表单生成器字段配置时，选择关联字段，在进行高级配置时，无法加载数据库列表，提示 Sgin签名校验错误！ #4905
 		
 		log.info(" 加载字典表数据,加载关键字: "+ keyword);
 		Result<List<DictModel>> result = new Result<List<DictModel>>();
@@ -581,21 +584,19 @@ public class SysDictController {
 						Integer integer = sysDictService.saveMain(po, list.get(i).getSysDictItemList());
 						if(integer>0){
 							successLines++;
-                        //update-begin---author:wangshuai ---date:20220211  for：[JTC-1168]如果字典项值为空，则字典项忽略导入------------
+                        // 代码逻辑说明: [JTC-1168]如果字典项值为空，则字典项忽略导入------------
 						}else if(integer == -1){
                             errorLines++;
                             errorMessage.add("字典名称：" + po.getDictName() + "，对应字典列表的字典项值不能为空，忽略导入。");
                         }else{
-                        //update-end---author:wangshuai ---date:20220211  for：[JTC-1168]如果字典项值为空，则字典项忽略导入------------
 							errorLines++;
 							int lineNumber = i + 1;
-                            //update-begin---author:wangshuai ---date:20220209  for：[JTC-1168]字典编号不能为空------------
+                            // 代码逻辑说明: [JTC-1168]字典编号不能为空------------
                             if(oConvertUtils.isEmpty(po.getDictCode())){
                                 errorMessage.add("第 " + lineNumber + " 行：字典编码不能为空，忽略导入。");
                             }else{
                                 errorMessage.add("第 " + lineNumber + " 行：字典编码已经存在，忽略导入。");
                             }
-                            //update-end---author:wangshuai ---date:20220209  for：[JTC-1168]字典编号不能为空------------
                         }
 					}  catch (Exception e) {
 						errorLines++;

@@ -11,10 +11,13 @@
     :destroyOnClose="true"
     @visible-change="handleVisibleChange"
   >
-    <div class="print-btn" @click="onPrinter">
-      <Icon icon="ant-design:printer-filled" />
-      <span class="print-text">打印</span>
-    </div>
+   <template #title>
+     <span class="basic-title">查看详情</span>
+     <div class="print-btn" @click="onPrinter">
+       <Icon icon="ant-design:printer-filled" />
+       <span class="print-text">打印</span>
+     </div>
+   </template>
     <a-card class="daily-article">
       <a-card-meta :title="content.titile">
         <template #description>
@@ -76,6 +79,7 @@
   import { useGlobSetting } from '@/hooks/setting';
   import { encryptByBase64 } from '@/utils/cipher';
   import { getToken } from '@/utils/auth';
+  import {defHttp} from "@/utils/http/axios";
   const router = useRouter();
   const glob = useGlobSetting();
   const isUpdate = ref(true);
@@ -92,21 +96,22 @@
     noticeFiles.value = [];
     if (unref(isUpdate)) {
       //data.record.msgContent = '<p>2323</p><input onmouseover=alert(1)>xss test';
-      //update-begin-author:taoyan date:2022-7-14 for: VUEN-1702 【禁止问题】sql注入漏洞
+      // 代码逻辑说明: VUEN-1702 【禁止问题】sql注入漏洞
       if (data.record.msgContent) {
-        //update-begin---author:wangshuai---date:2023-11-15---for:【QQYUN-7049】3.6.0版本 通知公告中发布的富文本消息，在我的消息中查看没有样式---
+        // 代码逻辑说明: 【QQYUN-7049】3.6.0版本 通知公告中发布的富文本消息，在我的消息中查看没有样式---
         data.record.msgContent = xss(data.record.msgContent, options);
-        //update-end---author:wangshuai---date:2023-11-15---for:【QQYUN-7049】3.6.0版本 通知公告中发布的富文本消息，在我的消息中查看没有样式---
       }
-      //update-end-author:taoyan date:2022-7-14 for: VUEN-1702 【禁止问题】sql注入漏洞
 
-      //update-begin-author:liusq---date:2025-06-17--for: [QQYUN-12521]通知公告消息增加访问量
+      // 代码逻辑说明: [QQYUN-12521]通知公告消息增加访问量
       if (!data.record?.busId) {
         await addVisitsNum({ id: data.record.id });
       }
-      //update-end-author:liusq---date:2025-06-17--for: [QQYUN-12521]通知公告消息增加访问量
 
       content.value = data.record;
+      if(content.value.sender){
+        const userInfo = await defHttp.get({ url: '/sys/user/queryUserComponentData?isMultiTranslate=true', params: { username: content.value.sender } });
+        content.value.sender = userInfo && userInfo?.records && userInfo?.records.length>0?userInfo.records[0].realname : content.value.sender;
+      }
       console.log('data---------->>>', data);
       if (data.record?.files && data.record?.files.length > 0) {
         noticeFiles.value = data.record.files.split(',').map((item) => {
@@ -300,13 +305,14 @@
 
   .print-btn {
     position: absolute;
-    top: 80px;
-    right: 40px;
+    right: 100px;
+    top: 20px;
     cursor: pointer;
     color: #a3a3a5;
     z-index: 999;
     .print-text {
       margin-left: 5px;
+      font-size: 14px;
     }
     &:hover {
       color: #40a9ff;
@@ -363,5 +369,18 @@
   .article-content img {
     max-width: 100%;
     height: auto;
+  }
+  .basic-title{
+    position: relative;
+    display: flex;
+    padding-left: 7px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+    color: rgba(0,0,0,0.88);
+    cursor: move;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
   }
 </style>

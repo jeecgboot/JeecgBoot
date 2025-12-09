@@ -75,10 +75,10 @@ public class SysDepartTreeModel implements Serializable{
 
     private Date updateTime;
 
-    //update-begin---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人，新增字段部门负责人ids
-    /**部门负责人ids*/
+    /**部门负责人ids
+     * [JTC-119]在部门管理菜单下设置部门负责人，新增字段部门负责人ids
+     * */
     private String directorUserIds;
-    //update-end---author:wangshuai ---date:20200308  for：[JTC-119]在部门管理菜单下设置部门负责人，新增字段部门负责人ids
     
     /**职务*/
     private String positionId;

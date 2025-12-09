@@ -166,7 +166,6 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         user.setRealname(tlm.getUsername());
         user.setThirdUserUuid(tlm.getUuid());
         user.setTenantId(tenantId);
-        //update-begin---author:wangshuai ---date:20230306  for：判断如果是钉钉的情况下，需要将第三方的用户id查询出来，发送模板的时候有用------------
         //=============begin 判断如果是钉钉的情况下，需要将第三方的用户id查询出来，发送模板的时候有用==========
         if(CommonConstant.DINGTALK.toLowerCase().equals(tlm.getSource())){
             AccessToken accessToken = JdtBaseAPI.getAccessToken(dingTalkClientId, dingTalkClientSecret);
@@ -180,7 +179,6 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
         }else{
             user.setThirdUserId(tlm.getUuid());
         }
-        //update-end---author:wangshuai ---date:20230306  for：判断如果是钉钉的情况下，需要将第三方的用户id查询出来，发送模板的时候有用------------
         super.save(user);
         return user;
     }
@@ -216,13 +214,12 @@ public class SysThirdAccountServiceImpl extends ServiceImpl<SysThirdAccountMappe
     public SysThirdAccount getOneByUuidAndThirdType(String unionid, String thirdType,Integer tenantId,String thirdUserId) {
         LambdaQueryWrapper<SysThirdAccount> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysThirdAccount::getThirdType, thirdType);
-        //update-begin---author:wangshuai---date:2023-12-04---for: 如果第三方用户id为空那么就不走第三方用户查询逻辑，因为扫码登录third_user_id是唯一的，没有重复的情况---
+        // 代码逻辑说明: 如果第三方用户id为空那么就不走第三方用户查询逻辑，因为扫码登录third_user_id是唯一的，没有重复的情况---
         if(oConvertUtils.isNotEmpty(thirdUserId)){
             queryWrapper.and((wrapper) ->wrapper.eq(SysThirdAccount::getThirdUserUuid,unionid).or().eq(SysThirdAccount::getThirdUserId,thirdUserId));
         }else{
             queryWrapper.eq(SysThirdAccount::getThirdUserUuid, unionid);
         }
-        //update-end---author:wangshuai---date:2023-12-04---for:如果第三方用户id为空那么就不走第三方用户查询逻辑，因为扫码登录third_user_id是唯一的，没有重复的情况---
         queryWrapper.eq(SysThirdAccount::getTenantId, tenantId);
         return super.getOne(queryWrapper);
     }

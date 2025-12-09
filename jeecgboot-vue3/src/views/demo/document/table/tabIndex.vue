@@ -24,9 +24,10 @@
     InnerTableDemo,
     MergeHeaderDemo,
     MergeTableDemo,
-    SelectTableDemo,
-    TreeTableDemo,
-  } from './index';
+      SelectTableDemo,
+      TreeTableDemo,
+      MultipleTableDemo,
+    } from './index';
   export default defineComponent({
     name: 'document-table-demo',
     components: {
@@ -43,9 +44,10 @@
       InnerTableDemo,
       MergeHeaderDemo,
       MergeTableDemo,
-      SelectTableDemo,
-      TreeTableDemo,
-    },
+        SelectTableDemo,
+        TreeTableDemo,
+        MultipleTableDemo,
+      },
     setup() {
       //当前选中key
       const activeKey = ref('BasicTableDemo');
@@ -64,9 +66,10 @@
         { key: 'MergeHeaderDemo', label: '分组表头示例' },
         { key: 'MergeTableDemo', label: '合并行列' },
         { key: 'SelectTableDemo', label: '可选择表格' },
-        { key: 'TreeTableDemo', label: '树形表格' },
-        { key: 'AuthColumnDemo', label: '权限列设置' },
-      ]);
+          { key: 'TreeTableDemo', label: '树形表格' },
+          { key: 'AuthColumnDemo', label: '权限列设置' },
+          { key: 'MultipleTableDemo', label: '多表格实例' },
+        ]);
       //当前选中组件
       const currentComponent = computed(() => {
         return activeKey.value;

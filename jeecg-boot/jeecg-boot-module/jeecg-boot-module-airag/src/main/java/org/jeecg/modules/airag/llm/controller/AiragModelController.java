@@ -81,8 +81,9 @@ public class AiragModelController extends JeecgController<AiragModel, IAiragMode
         // 默认未激活
         if(oConvertUtils.isObjectEmpty(airagModel.getActivateFlag())){
             airagModel.setActivateFlag(0);
+        } else {
+            airagModel.setActivateFlag(1);
         }
-        airagModel.setActivateFlag(0);
         airagModelService.save(airagModel);
         return Result.OK("添加成功！");
     }
@@ -178,7 +179,7 @@ public class AiragModelController extends JeecgController<AiragModel, IAiragMode
             }
         }catch (Exception e){
             log.error("测试模型连接失败", e);
-            return Result.error("测试模型连接失败：" + e.getMessage());
+            return Result.error("测试模型连接失败，请检查模型配置是否正确！");
         }
         // 测试成功激活数据
         airagModel.setActivateFlag(1);

@@ -14,9 +14,10 @@
           :load-data="loadChildrenTreeData"
           v-model:expandedKeys="expandedKeys"
           @select="onSelect"
+          style="overflow-y: auto;height: calc(100vh - 330px);"
         >
-          <template #title="{ orgCategory, title }">
-            <TreeIcon :orgCategory="orgCategory" :title="title"></TreeIcon>
+          <template #title="{ orgCategory, title, departNameAbbr }">
+            <TreeIcon :orgCategory="orgCategory" :title="getTitle(title,departNameAbbr)"></TreeIcon>
           </template>
         </a-tree>
       </template>
@@ -147,7 +148,7 @@
       try {
         loading.value = true;
         treeData.value = [];
-        let result = await searchByKeywords({ keyWord: value, orgCategory: '1,2,3,4' });
+        let result = await searchByKeywords({ keyWord: value, orgCategory: '1,2,4' });
         if (Array.isArray(result)) {
           treeData.value = result;
         }
@@ -169,6 +170,18 @@
       // 这样可以防止用户取消选择
       setSelectedKey(selectedKeys.value[0]);
     }
+  }
+
+  /**
+   * 获取标题
+   * @param title 部门名称
+   * @param departNameAbbr 缩写
+   */
+  function getTitle(title, departNameAbbr) {
+    if (departNameAbbr){
+      return departNameAbbr;
+    }
+    return title;
   }
 
   defineExpose({

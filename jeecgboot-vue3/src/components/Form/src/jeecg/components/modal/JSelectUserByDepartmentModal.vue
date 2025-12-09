@@ -47,7 +47,7 @@
                       <template v-for="item in searchResult.depart" :key="item.id">
                         <div class="search-depart-item" @click="handleSearchDepartClick(item)">
                           <a-checkbox v-model:checked="item.checked" @click.stop @change="($event) => handleSearchDepartCheck($event, item)" />
-                          <div class="search-depart-item-name">{{ item.departName }}</div>
+                          <div class="search-depart-item-name">{{ getDepartName(item.departName, item.departNameAbbr) }}</div>
                           <RightOutlined />
                         </div>
                       </template>
@@ -62,16 +62,18 @@
               </template>
             </template>
             <template v-else>
-              <a-breadcrumb v-if="breadcrumb.length">
-                <a-breadcrumb-item @click="handleBreadcrumbClick()">
-                  <HomeOutlined />
-                </a-breadcrumb-item>
-                <template v-for="item in breadcrumb" :key="item?.id">
-                  <a-breadcrumb-item @click="handleBreadcrumbClick(item)">
-                    <span>{{ item.departName }}</span>
+              <div ref="breadcrumbBoxRef">
+                <a-breadcrumb v-if="breadcrumb.length">
+                  <a-breadcrumb-item @click="handleBreadcrumbClick()">
+                    <HomeOutlined />
                   </a-breadcrumb-item>
-                </template>
-              </a-breadcrumb>
+                  <template v-for="item in breadcrumb" :key="item?.id">
+                    <a-breadcrumb-item @click="handleBreadcrumbClick(item)">
+                      <span>{{ getDepartName(item.departName, item.departNameAbbr) }}</span>
+                    </a-breadcrumb-item>
+                  </template>
+                </a-breadcrumb>
+              </div>
               <div v-if="currentDepartUsers.length">
                 <!-- 当前部门用户树 -->
                 <div class="depart-users-tree">
@@ -96,7 +98,7 @@
                 <template v-for="item in currentDepartTree" :key="item.id">
                   <div class="depart-tree-item" @click="handleDepartTreeClick(item)">
                     <a-checkbox v-model:checked="item.checked" @click.stop @change="($event) => handleDepartTreeCheck($event, item)" />
-                    <div class="depart-tree-item-name">{{ item.departName }}</div>
+                    <div class="depart-tree-item-name">{{ getDepartName(item.departName, item.departNameAbbr) }}</div>
                     <RightOutlined />
                   </div>
                 </template>
@@ -130,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive } from 'vue';
+  import { ref, reactive, watch } from 'vue';
   import { RightOutlined, HomeOutlined, CloseOutlined } from '@ant-design/icons-vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { queryTreeList, getTableList as getTableListOrigin } from '/@/api/common/api';
@@ -163,6 +165,11 @@
     params: {
       type: Object,
       default: () => {},
+    },
+    // 是否启用公司简称
+    useCompanyShortName: {
+      type: Boolean,
+      default: true,
     },
     //最大选择数量
     maxSelectCount: {
@@ -198,6 +205,8 @@
     depart: [],
     user: [],
   });
+  // 面包屑框
+  const breadcrumbBoxRef = ref();
   // 映射部门和人员的关系
   const cacheDepartUser = {};
   //注册弹框
@@ -361,7 +370,7 @@
               }
             });
           }
-          currentDepartUsers.value = result;
+          currentDepartUsers.value = result.sort((a, b) => a.sort - b.sort );
         });
     } else {
       // 没有子节点，则显示用户
@@ -382,7 +391,7 @@
             }
           });
           currentDepartAllUsers.value = checked;
-          currentDepartUsers.value = res.records;
+          currentDepartUsers.value = res.records.sort((a, b) => a.sort - b.sort );
         }
       });
     }
@@ -467,6 +476,17 @@
     const result = currentDepartUsers.value.every((item: any) => !!item.checked);
     currentDepartAllUsers.value = result;
   };
+  watch(breadcrumb, () => {
+    setTimeout(() => {
+      breadcrumbScrollToRight();
+    }, 0);
+  });
+  const breadcrumbScrollToRight = () => {
+    const olEle = breadcrumbBoxRef.value?.querySelector('ol');
+    if (olEle) {
+      olEle.scrollLeft = 30000;
+    }
+  };
   // 解析参数
   const parseParams = (params) => {
     if (props?.params) {
@@ -542,7 +562,7 @@
     const result: any[] = [];
     const search = (nodes: any[]) => {
       for (const node of nodes) {
-        if (node.departName?.toLowerCase().includes(name.toLowerCase())) {
+        if (getDepartName(node.departName, node.departNameAbbr)?.toLowerCase().includes(name.toLowerCase())) {
           result.push(node);
         }
         if (node.children?.length) {
@@ -568,6 +588,13 @@
     }
     return null;
   };
+  // 获取部门名称（如果启用公司简称且公司简称不为空，则返回公司简称）
+  function getDepartName(departName, departNameAbbr) {
+    if (props.useCompanyShortName && departNameAbbr) {
+      return departNameAbbr;
+    }
+    return departName;
+  }
 </script>
 <style lang="less">
   .JSelectUserByDepartmentModal {
@@ -603,9 +630,34 @@
     :deep(.ant-breadcrumb) {
       font-size: 12px;
       margin-left: 16px;
+      margin-right: 16px;
       color: inherit;
       cursor: pointer;
+      ol {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        /* 美化滚动条 */
+        &::-webkit-scrollbar {
+          width: 4px;
+          height: 3px;
+          background: #f5f5f5;
+          border-radius: 2px;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: #bfbfbf;
+          border-radius: 3px;
+          transition: background-color 0.2s ease;
+          &:hover {
+            background: #999;
+          }
+        }
+        &::-webkit-scrollbar-track {
+          background: #f5f5f5;
+          border-radius: 3px;
+        }
+      }
       li {
+        flex: none;
         .ant-breadcrumb-link {
           cursor: pointer;
           &:hover {
@@ -777,7 +829,7 @@
     }
     .selected-users {
       flex: 1;
-      overflow-y: auto;
+      overflow: hidden auto;
     }
     .content {
       display: grid;

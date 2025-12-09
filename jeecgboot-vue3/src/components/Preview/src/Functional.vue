@@ -143,11 +143,10 @@
       function scaleFunc(num: number) {
         if (imgState.imgScale <= 0.2 && num < 0) return;
         imgState.imgScale += num;
-        // update-begin--author:liaozhiyang---date:20250722---for：【QQYUN-13162】图片预览点击缩小一下就没了
+        // 代码逻辑说明: 【QQYUN-13162】图片预览点击缩小一下就没了
         if (imgState.imgScale < 0.2) {
           imgState.imgScale = 0.2;
         }
-        // update-end--author:liaozhiyang---date:20250722---for：【QQYUN-13162】图片预览点击缩小一下就没了
       }
 
       // 旋转图片

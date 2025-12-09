@@ -7,6 +7,8 @@ enum Api {
   readAllMsg = '/sys/sysAnnouncementSend/readAll',
   syncNotic = '/sys/annountCement/syncNotic',
   getOne = '/sys/sysAnnouncementSend/getOne',
+  delete = '/sys/sysAnnouncementSend/delete',
+  deleteBatch = '/sys/sysAnnouncementSend/deleteBatch',
 }
 
 /**
@@ -58,4 +60,35 @@ export const syncNotic = (params) => {
 export const getOne = (sendId) => {
   return defHttp.get({ url: Api.getOne, params:{sendId} });
 };
+
+/**
+ * 删除用户通告阅读标记的数据
+ * @param params
+ * @param handleSuccess
+ */
+export const deleteAnnSend = (params, handleSuccess) =>{
+  return defHttp.delete({ url: Api.delete, params }, { joinParamsToUrl: true }).then(()=>{
+    handleSuccess();
+  })
+}
+
+/**
+ * 批量删除用户通告阅读标记的数据
+ * @param params
+ * @param handleSuccess
+ */
+export const deleteBatchAnnSend = (params, handleSuccess) =>{
+  Modal.confirm({
+    iconType: 'warning',
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({ url: Api.deleteBatch, params }, { joinParamsToUrl: true }).then(()=>{
+        handleSuccess();
+      })
+    },
+  });
+}
 

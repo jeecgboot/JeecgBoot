@@ -74,6 +74,7 @@
       name:"操作日志",
       url: getExportUrl,
       params: searchInfo,
+      timeout: 300000, // 设置超时时间为5分钟(300秒)
     },
   });
 
@@ -82,7 +83,7 @@
   // 日志类型
   function tabChange(key) {
     searchInfo.logType = key;
-    //update-begin---author:wangshuai ---date:20220506  for：[VUEN-943]vue3日志管理列表翻译不对------------
+    // 代码逻辑说明: [VUEN-943]vue3日志管理列表翻译不对------------
     if (key == '2') {
       logColumns.value = operationLogColumn;
       searchSchema.value = operationSearchFormSchema;
@@ -93,7 +94,6 @@
       searchSchema.value = searchFormSchema;
       logColumns.value = columns;
     }
-    //update-end---author:wangshuai ---date:20220506  for：[VUEN-943]vue3日志管理列表翻译不对--------------
     reload();
   }
 

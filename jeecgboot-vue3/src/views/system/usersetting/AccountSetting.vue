@@ -161,7 +161,7 @@
   });
 </script>
 <style lang="less">
-    // update-begin-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
+    // 代码逻辑说明: [issues/563]暗色主题部分失效
   @prefix-cls: ~'@{namespace}-j-user-account-setting-container';
 
   .@{prefix-cls}{
@@ -218,5 +218,4 @@
       margin-bottom: 20px;
     }
   }
-  // update-end-author:liusq date:20230625 for: [issues/563]暗色主题部分失效
 </style>
