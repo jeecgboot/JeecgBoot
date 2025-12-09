@@ -2,6 +2,7 @@ package org.jeecg.modules.system.controller;
 
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -327,7 +328,7 @@ public class SysUserController {
      * @param usernames
      * @return
      */
-    @RequiresRoles({"admin"})
+    @SaCheckRole({"admin"})
     @SaCheckPermission("system:user:resetPassword")
 	@RequestMapping(value = "/resetPassword", method = RequestMethod.PUT)
 	public Result<SysUser> resetPassword(@RequestParam(name = "usernames") String usernames) {

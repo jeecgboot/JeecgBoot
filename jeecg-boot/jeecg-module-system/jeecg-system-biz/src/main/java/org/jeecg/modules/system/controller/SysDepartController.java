@@ -1,5 +1,6 @@
 package org.jeecg.modules.system.controller;
 
+import cn.dev33.satoken.annotation.SaCheckRole;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -773,7 +774,7 @@ public class SysDepartController {
      */
     @PutMapping("/updateChangeDepart")
     @SaCheckPermission("system:depart:updateChange")
-    @RequiresRoles({"admin"})
+    @SaCheckRole({"admin"})
     public Result<String> updateChangeDepart(@RequestBody SysChangeDepartVo changeDepartVo) {
         sysDepartService.updateChangeDepart(changeDepartVo);
     	return Result.ok("调整部门位置成功！");
