@@ -371,11 +371,19 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
         if (isCustomDataSource) {
             DynamicDataSourceContextHolder.push(dataSource);
         }
-		List<DictModel> restData = sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, codeValues);
-		// 清理自定义的数据源
-		if (isCustomDataSource) {
-			DynamicDataSourceContextHolder.clear();
+		//update-begin---author:jarysun ---date:20251020  for：[issues/#9002]解决表字典查询出现异常之后，数据源不能恢复问题------------
+		List<DictModel> restData = null;
+
+		try {
+			restData = sysDictMapper.queryTableDictByKeysAndFilterSql(table, text, code, filterSql, codeValues);
+		} finally {
+			// 清理自定义的数据源
+			if (isCustomDataSource) {
+				DynamicDataSourceContextHolder.clear();
+			}
 		}
+		//update-end---author:jarysun ---date:20251020  for：[issues/#9002]解决表字典查询出现异常之后，数据源不能恢复问题------------
+
 		return restData;
 	}
 
