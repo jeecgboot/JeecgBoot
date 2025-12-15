@@ -21,6 +21,7 @@ import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.sign.annotation.SignatureCheck;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.service.ISysTenantPackService;
@@ -260,6 +261,7 @@ public class SysTenantController {
      * @param id
      * @return
      */
+    @SignatureCheck
     @RequestMapping(value = "/queryById", method = RequestMethod.GET)
     public Result<SysTenant> queryById(@RequestParam(name="id",required=true) String id) {
         Result<SysTenant> result = new Result<SysTenant>();
