@@ -132,8 +132,8 @@ export function useListPage(options: ListPageOptions) {
       for (const column of columns) {
         if(!column.defaultHidden){
           let dataIndex = column?.dataIndex;
-          if(column?.dataIndex!.toString().indexOf('_dictText')){
-            dataIndex = column?.dataIndex!.toString().replace('_dictText','')
+          if(column?.dataIndex?.toString()?.indexOf('_dictText') !== -1){
+            dataIndex = column?.dataIndex?.toString().replace('_dictText','')
           }
           exportFields.push(dataIndex);
         } else {
