@@ -1,9 +1,11 @@
 package org.jeecg.modules.system.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -20,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,6 +49,7 @@ public class SysUserOnlineController {
     @Resource
     private BaseCommonService baseCommonService;
 
+    @RequiresPermissions("system:online:list")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result<Page<SysUserOnlineVO>> list(@RequestParam(name="username", required=false) String username,
                                               @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,@RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
@@ -100,6 +102,7 @@ public class SysUserOnlineController {
     /**
      * 强退用户
      */
+    @RequiresPermissions("system:online:forceLogout")
     @RequestMapping(value = "/forceLogout",method = RequestMethod.POST)
     public Result<Object> forceLogout(@RequestBody SysUserOnlineVO online) {
         //用户退出逻辑
