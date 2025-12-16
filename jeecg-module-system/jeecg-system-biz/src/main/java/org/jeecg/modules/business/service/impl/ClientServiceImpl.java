@@ -205,4 +205,9 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     public List<Client> getClientsWithAutoInvoice() {
         return clientMapper.getClientsWithAutoInvoice();
     }
+
+    @Override
+    public List<String> findClientIdsBySalesId(String salesId) {
+        return clientMapper.findClientIdsBySalesId(salesId);
+    }
 }

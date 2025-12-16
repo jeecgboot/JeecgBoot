@@ -423,4 +423,10 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param ids
 	 */
 	void checkUserAdminRejectDel(String ids);
+	/**
+	 * 验证用户是否为销售
+	 * @param username
+	 * @return
+	 */
+	boolean isSalesUser(String username);
 }

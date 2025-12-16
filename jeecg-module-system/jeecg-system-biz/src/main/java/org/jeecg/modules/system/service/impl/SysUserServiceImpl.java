@@ -1868,4 +1868,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			throw new JeecgBootException("admin用户，不允许删除！");
 		}
 	}
+
+	@Override
+	public boolean isSalesUser(String username) {
+		List<String> roleCodes = this.getRole(username);
+		return roleCodes.stream()
+				.anyMatch("Sales"::equalsIgnoreCase);
+	}
 }

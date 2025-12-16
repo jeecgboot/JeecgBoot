@@ -16,6 +16,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
+import org.jeecg.modules.business.vo.clientPlatformOrder.PendingOrderVO;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PurchaseConfirmation;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.ClientInfo;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
@@ -30,6 +31,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -59,6 +62,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     private ExchangeRatesMapper exchangeRatesMapper;
     @Autowired
     private ISkuPriceService skuPriceService;
+    @Autowired
+    private IShopService shopService;
     @Autowired
     private IShopOptionsService shopOptionsService;
 
@@ -695,6 +700,41 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     @Override
     public List<PlatformOrder> fetchByPlatformWarehouse(List<String> shopCodes, List<String> platformWarehouses) {
         return platformOrderMap.fetchByPlatformWarehouse(shopCodes, platformWarehouses);
+    }
+    @Override
+    public List<PlatformOrder> findLongPendingOrdersBySales(String salesId, int timeoutDays) {
+        LocalDateTime nowFrance = LocalDateTime.now(ZoneId.of("Europe/Paris"));
+        LocalDateTime thresholdFrance = nowFrance.minusDays(timeoutDays);
+        ZonedDateTime franceZoned = thresholdFrance.atZone(ZoneId.of("Europe/Paris"));
+        LocalDateTime thresholdShanghai =
+                franceZoned.withZoneSameInstant(ZoneId.of("Asia/Shanghai"))
+                        .toLocalDateTime();
+        List<String> clientIds = clientService.findClientIdsBySalesId(salesId);
+        if (clientIds == null || clientIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return platformOrderMap.findLongPendingOrders(clientIds, thresholdShanghai);
+    }
+    @Override
+    public List<PendingOrderVO> getPendingOrdersForSales(String salesId, int timeoutDays) {
+
+        List<PlatformOrder> orders = findLongPendingOrdersBySales(salesId, timeoutDays);
+
+        return orders.stream().map(o -> {
+            PendingOrderVO vo = new PendingOrderVO();
+            vo.setPlatformOrderId(o.getPlatformOrderId());
+            Shop shop = shopService.getById(o.getShopId());
+            vo.setShopName(shop != null ? shop.getName() : "shop unknown");
+            String clientId = shop != null ? shop.getOwnerId() : null;
+            Client client = clientId != null ? clientService.getById(clientId) : null;
+            vo.setClientInternalCode(client != null ? client.getInternalCode() : "unknown");
+            long days = ChronoUnit.DAYS.between(
+                    o.getOrderTime().toInstant().atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime(),
+                    LocalDateTime.now(ZoneId.of("Asia/Shanghai"))
+            );
+            vo.setWaitingDays(days);
+            return vo;
+        }).collect(Collectors.toList());
     }
 
 }
