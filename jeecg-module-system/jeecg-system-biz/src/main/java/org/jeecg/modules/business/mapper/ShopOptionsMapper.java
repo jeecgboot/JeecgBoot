@@ -27,6 +27,7 @@ public interface ShopOptionsMapper extends BaseMapper<ShopOptions> {
 
     @MapKey("shopId")
     Map<String, ShopWithOptions> findByClientId(@Param("clientId") String clientId);
+    List<ShopOptions> getByShopIds(@Param("shopIds") List<String> shopIds);
 
     List<OrderBypassStock> getStockBypassByOrder(@Param("orderIds") List<String> orderIds);
 

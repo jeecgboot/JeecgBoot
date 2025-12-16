@@ -58,6 +58,14 @@
     WHERE swo.client_id = #{clientId}
     AND swo.is_shop_active = 1;
 </select>
+<select id="getByShopIds" resultType="org.jeecg.modules.business.entity.ShopOptions">
+    SELECT *
+    FROM shop_options
+    WHERE shop_id IN
+    <foreach collection="shopIds" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+</select>
 <select id="getStockBypassByOrder" resultType="org.jeecg.modules.business.vo.OrderBypassStock">
     SELECT po.id as order_id,
            so.is_self_ignore_stock

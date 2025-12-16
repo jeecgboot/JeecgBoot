@@ -64,6 +64,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     private ISkuPriceService skuPriceService;
     @Autowired
     private IShopService shopService;
+    @Autowired
+    private IShopOptionsService shopOptionsService;
 
     @Override
     @Transactional
@@ -604,6 +606,12 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
             default:
                 throw new IllegalArgumentException("The specified invoicing method is not supported : " + invoicingMethod);
         }
+        List<ShopOptions> shopOptions = shopOptionsService.getByShopIds(shopIds);
+        Map<String, Boolean> allowShowUnassigned =
+                shopOptions.stream().collect(Collectors.toMap(
+                        ShopOptions::getShopId,
+                        s -> Boolean.TRUE.equals(s.getShowUnassignedLogisticsOrders())
+                ));
         int offset = (pageNo - 1) * pageSize;
         List<PlatformOrderFront> platformOrders = platformOrderMap.listByClientAndShops(clientId, shopIds, erpStatuses, warehouses, startDate, endDate, order, column, offset, pageSize);
         if (platformOrders == null || platformOrders.isEmpty()) {
@@ -625,7 +633,23 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
             response.setError(message);
             return response;
         }
-        response.setData(platformOrders);
+        List<PlatformOrderFront> filtered =
+                platformOrders.stream()
+                        .filter(orderPO -> {
+                            Boolean allow = allowShowUnassigned.get(orderPO.getShopId());
+                            //shop not found, default to false
+                            if (allow == null) allow = false;
+                            if (allow) return true; // shop choose to allow show unassigned
+                            // shop not allow, filter those unassigned
+                            return orderPO.getLogisticChannelName() != null
+                                    && !orderPO.getLogisticChannelName().trim().isEmpty();
+                        })
+                        .collect(Collectors.toList());
+        if (filtered.isEmpty()) {
+            response.setError("All orders are unassigned for selected shops");
+            return response;
+        }
+        response.setData(filtered);
         return response;
     }
 
@@ -654,9 +678,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return platformOrderMap.selectForUpdateSkipLock(orderId);
     }
 
-    @Override
-    public List<String> fetchPlatformOrderIdsByShopifyNote(String shopifyNote) {
-        return platformOrderMap.fetchPlatformOrderIdsByShopifyNote(shopifyNote);
+    public List<PlatformOrder> fetchPlatformOrdersByShopifyNotes(List<String> shopifyNotes) {
+        return platformOrderMap.fetchPlatformOrdersByShopifyNotes(shopifyNotes);
     }
 
     @Override

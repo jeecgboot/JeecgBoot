@@ -94,4 +94,8 @@ public class ShopOptions implements Serializable {
 	@Excel(name = "是否开物流票写备注", width = 15)
     @ApiModelProperty(value = "是否开物流票写备注")
     private java.lang.Boolean hasShippingInvoiceRemark;
+    /**是否显示未交运订单*/
+    @Excel(name = "是否显示未交运订单", width = 15)
+    @ApiModelProperty(value = "是否显示未交运订单")
+    private java.lang.Boolean showUnassignedLogisticsOrders;
 }

@@ -44,7 +44,7 @@ public class ShopifyPromoCodeJob implements Job {
 
     private final String DEFAULT_ABNORMAL_LABEL_NAME = "AC自行处理";
 
-    private final String DEFAULT_PROMO_CODE = "BARBE20";
+    private static final List<String> DEFAULT_PROMO_CODES = Arrays.asList("BARBE20");
 
     @Autowired
     private IPlatformOrderService platformOrderService;
@@ -52,7 +52,7 @@ public class ShopifyPromoCodeJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         List<String> shops = DEFAULT_INCLUDED_SHOPS;
-        String promoCode = DEFAULT_PROMO_CODE;
+        List<String> promoCodes = DEFAULT_PROMO_CODES;
         JobDataMap jobDataMap = context.getMergedJobDataMap();
         String parameter = ((String) jobDataMap.get("parameter"));
         if (parameter != null) {
@@ -66,8 +66,13 @@ public class ShopifyPromoCodeJob implements Job {
                     }
                     shops = shopList;
                 }
-                if (!jsonObject.isNull("promoCode")) {
-                    promoCode = jsonObject.getString("promoCode");
+                if (!jsonObject.isNull("promoCodes")) {
+                    JSONArray codesArray = jsonObject.getJSONArray("promoCodes");
+                    List<String> codeList = new ArrayList<>();
+                    for (int i = 0; i < codesArray.length(); i++) {
+                        codeList.add(codesArray.getString(i));
+                    }
+                    promoCodes = codeList;
                 }
             } catch (JSONException e) {
                 log.error("Error while parsing parameter as JSON, falling back to default parameters.");
@@ -131,18 +136,23 @@ public class ShopifyPromoCodeJob implements Job {
         }
 
         log.info("Setting orders to abnormal...");
-        List<String> orderIdsByShopifyNote = platformOrderService.fetchPlatformOrderIdsByShopifyNote(promoCode);
-        String finalPromoCode = promoCode;
-        List<CompletableFuture<Boolean>> abnormalFutures =  orderIdsByShopifyNote.stream()
-                .map(id -> CompletableFuture.supplyAsync(() -> {
-                    OrderSuspendRequestBody body = new OrderSuspendRequestBody(id, DEFAULT_ABNORMAL_LABEL_NAME, finalPromoCode);
+        List<PlatformOrder> ordersByShopifyNote = platformOrderService.fetchPlatformOrdersByShopifyNotes(promoCodes);
+        List<CompletableFuture<Boolean>> abnormalFutures =  ordersByShopifyNote.stream()
+                .map(platformOrder -> CompletableFuture.supplyAsync(() -> {
+                    OrderSuspendRequestBody body = new OrderSuspendRequestBody(platformOrder.getPlatformOrderId(),
+                            DEFAULT_ABNORMAL_LABEL_NAME, platformOrder.getShopifyNote());
                     OrderSuspendRequest request = new OrderSuspendRequest(body);
                     OrderSuspendResponse response = request.send();
-                    return response.success();
+                    boolean success = response.success();
+                    if (success) {
+                        platformOrder.setAlreadySetAbnormal("1");
+                    }
+                    return success;
                 }, executor))
                 .collect(toList());
         List<Boolean> abnormalResults = abnormalFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
-        log.info("Successfully set {}/{} orders to abnormal.", abnormalResults.size(), orderIdsByShopifyNote.size());
+        log.info("Successfully set {}/{} orders to abnormal.", abnormalResults.size(), ordersByShopifyNote.size());
+        platformOrderService.updateBatchById(ordersByShopifyNote);
         executor.shutdown();
     }
 }

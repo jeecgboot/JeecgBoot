@@ -117,4 +117,9 @@ public class Transaction implements Serializable {
     @Excel(name = "ordered", width = 15)
     @ApiModelProperty(value = "ordered")
     private java.lang.Integer ordered;
+    /** Payment approved: 0 = not approved, 1 = approved */
+    @Excel(name = "paymentApproved", width = 15)
+    @ApiModelProperty(value = "paymentApproved")
+    private java.lang.Integer paymentApproved;
+
 }

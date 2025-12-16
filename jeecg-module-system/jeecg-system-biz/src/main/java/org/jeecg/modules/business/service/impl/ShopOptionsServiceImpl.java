@@ -51,6 +51,11 @@ public class ShopOptionsServiceImpl extends ServiceImpl<ShopOptionsMapper, ShopO
     }
 
     @Override
+    public List<ShopOptions> getByShopIds(List<String> shopIds) {
+        return shopOptionsMapper.getByShopIds(shopIds);
+    }
+
+    @Override
     public List<OrderBypassStock> getStockBypassByOrder(List<String> orderIds) {
         if(orderIds == null || orderIds.isEmpty()) {
             return new ArrayList<>();
