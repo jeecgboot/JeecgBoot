@@ -19,6 +19,7 @@ import org.jeecg.modules.business.entity.Currency;
 import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.Estimation;
+import org.jeecg.modules.business.vo.InvoiceType;
 import org.jeecg.modules.business.vo.ShippingFeesEstimation;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -199,16 +200,19 @@ public class TransactionController {
         if (StringUtils.isBlank(invoiceNumber) ||StringUtils.isBlank(paymentProofString)) {
             return Result.error("Invoice number and image cannot be empty");
         }
-        // invoice number validation
-        String[] parts = invoiceNumber.split("-");
-        String lastPart = parts[parts.length - 1];
-             if (!(lastPart.startsWith("1") || lastPart.startsWith("2") || lastPart.startsWith("7"))) {
-            return Result.error("Only invoice numbers starting with '1','2' or '7' are allowed");
+        // Parse invoice type from invoice number
+        InvoiceType invoiceType = InvoiceType.fromInvoiceNumber(invoiceNumber);
+        if (invoiceType == null) {
+            return Result.error("Unsupported invoice number format");
         }
-        char ticketType = lastPart.charAt(0);
+        Result<?> audit = transactionService.checkPaymentApproved(invoiceNumber);
+        if (!audit.isSuccess()) {
+            return audit;
+        }
+
         ShippingInvoice si = shippingInvoiceService.getShippingInvoice(invoiceNumber);
-        switch (ticketType) {
-            case '1': {// Invoice 1XXX:update purchase order
+        switch (invoiceType) {
+            case PURCHASE_INVOICE: {// Invoice 1XXX:update purchase order
                 PurchaseOrder po = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
                 if (po == null) {
                     return Result.error("Cannot find purchase order for invoice number: " + invoiceNumber);
@@ -220,7 +224,7 @@ public class TransactionController {
                 log.info("Purchase order updated successfully, payment proof set to: {}", paymentProofString);
                 break;
             }
-            case '2': { // Invoice 2XXX:update shipping invoice
+            case SHIPPING_INVOICE: { // Invoice 2XXX:update shipping invoice
                 if (si == null) {
                     return Result.error("Cannot find shipping invoice for invoice number: " + invoiceNumber);
                 }
@@ -231,7 +235,7 @@ public class TransactionController {
                 log.info("Shipping invoice updated successfully, payment proof set to: {}", paymentProofString);
                 break;
             }
-            case '7': { // Invoice 7XXX:update shipping invoice and  purchase order
+            case COMPLETE_INVOICE: { // Invoice 7XXX:update shipping invoice and  purchase order
                 if (si == null) {
                     return Result.error("Cannot find shipping invoice for invoice number: " + invoiceNumber);
                 }
@@ -254,7 +258,8 @@ public class TransactionController {
                 break;
             }
             default:
-                return Result.error("Unsupported ticket type: " + ticketType + ". Only type 1, 2 or 7 are allowed");
+                return Result.error("Unsupported ticket type: " + invoiceType + ". Only type 1, 2 or 7 are allowed");
+
         }
         // email
         try {
