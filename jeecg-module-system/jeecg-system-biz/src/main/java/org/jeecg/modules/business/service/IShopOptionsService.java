@@ -24,6 +24,8 @@ public interface IShopOptionsService extends IService<ShopOptions> {
 
     Map<String, ShopWithOptions> findByClientId(String clientId);
 
+    List<ShopOptions> getByShopIds(List<String> shopIds);
+
     List<OrderBypassStock> getStockBypassByOrder(List<String> orderIds);
 
     Boolean findCanSelfInvoiceByClientId(String clientId);

@@ -13,10 +13,7 @@ import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
-import org.jeecg.modules.business.service.IClientService;
-import org.jeecg.modules.business.service.IPlatformOrderService;
-import org.jeecg.modules.business.service.IShippingFeesWaiverProductService;
-import org.jeecg.modules.business.service.ISkuPriceService;
+import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
 import org.jeecg.modules.business.vo.clientPlatformOrder.ClientPlatformOrderPage;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PurchaseConfirmation;
@@ -62,6 +59,8 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     private ExchangeRatesMapper exchangeRatesMapper;
     @Autowired
     private ISkuPriceService skuPriceService;
+    @Autowired
+    private IShopOptionsService shopOptionsService;
 
     @Override
     @Transactional
@@ -602,6 +601,12 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
             default:
                 throw new IllegalArgumentException("The specified invoicing method is not supported : " + invoicingMethod);
         }
+        List<ShopOptions> shopOptions = shopOptionsService.getByShopIds(shopIds);
+        Map<String, Boolean> allowShowUnassigned =
+                shopOptions.stream().collect(Collectors.toMap(
+                        ShopOptions::getShopId,
+                        s -> Boolean.TRUE.equals(s.getShowUnassignedLogisticsOrders())
+                ));
         int offset = (pageNo - 1) * pageSize;
         List<PlatformOrderFront> platformOrders = platformOrderMap.listByClientAndShops(clientId, shopIds, erpStatuses, warehouses, startDate, endDate, order, column, offset, pageSize);
         if (platformOrders == null || platformOrders.isEmpty()) {
@@ -623,7 +628,23 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
             response.setError(message);
             return response;
         }
-        response.setData(platformOrders);
+        List<PlatformOrderFront> filtered =
+                platformOrders.stream()
+                        .filter(orderPO -> {
+                            Boolean allow = allowShowUnassigned.get(orderPO.getShopId());
+                            //shop not found, default to false
+                            if (allow == null) allow = false;
+                            if (allow) return true; // shop choose to allow show unassigned
+                            // shop not allow, filter those unassigned
+                            return orderPO.getLogisticChannelName() != null
+                                    && !orderPO.getLogisticChannelName().trim().isEmpty();
+                        })
+                        .collect(Collectors.toList());
+        if (filtered.isEmpty()) {
+            response.setError("All orders are unassigned for selected shops");
+            return response;
+        }
+        response.setData(filtered);
         return response;
     }
 

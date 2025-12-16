@@ -93,6 +93,7 @@ public class ShopOptionsController extends JeecgController<ShopOptions, IShopOpt
 			shopOptions.setIsSelfIgnoreStock(shopOptionsAddParam.getIsSelfIgnoreStock());
 			shopOptions.setHasStock(shopOptionsAddParam.getHasStock());
 			shopOptions.setHasShippingInvoiceRemark(shopOptionsAddParam.getHasShippingInvoiceRemark());
+			shopOptions.setShowUnassignedLogisticsOrders(shopOptionsAddParam.getShowUnassignedLogisticsOrders());
 			return shopOptions;
 		}).collect(Collectors.toList());
 		shopOptionsService.saveBatch(shopOptionsList);

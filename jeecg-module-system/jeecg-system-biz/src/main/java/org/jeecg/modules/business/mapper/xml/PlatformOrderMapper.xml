@@ -1325,7 +1325,7 @@
     <select id="countListByClientAndShops" resultType="java.lang.Integer">
         SELECT count(po.id)
         FROM platform_order po
-        JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
+        LEFT JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
         WHERE po.erp_status IN
                 <foreach collection="erpStatuses" separator="," open="(" close=")" index="index" item="erpStatus">
                     #{erpStatus}
@@ -1367,7 +1367,7 @@
         po.can_send                                 as can_send,
         po.product_available                        as product_available
         FROM platform_order po
-        JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
+        LEFT JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
         WHERE po.erp_status IN
                 <foreach collection="erpStatuses" separator="," open="(" close=")" index="index" item="erpStatus">
                     #{erpStatus}
