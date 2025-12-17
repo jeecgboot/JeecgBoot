@@ -140,4 +140,7 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
             @Param("clientId") String clientId);
 
     Client getShopOwnerFromInvoiceNumber(@Param("invoiceNumber") String invoiceNumber);
+
+    int countOrderedByInvoiceNumbers(@Param("invoiceNumbers") List<String> invoiceNumbers);
+
 }

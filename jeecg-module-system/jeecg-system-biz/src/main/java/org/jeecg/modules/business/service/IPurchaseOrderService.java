@@ -144,4 +144,6 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
             Page<PurchaseOrderPage> page, String clientId);
 
     Client getShopOwnerFromInvoiceNumber(String invoiceNumber);
+
+    boolean existsOrderedByInvoices(List<String> invoiceNumbers);
 }

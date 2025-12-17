@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpStatus;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
@@ -17,7 +16,6 @@ import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.UpdateResult;
-import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
@@ -41,12 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import static com.baomidou.mybatisplus.core.toolkit.Wrappers.lambdaUpdate;
 
@@ -82,6 +75,8 @@ public class PurchaseOrderController {
     @Autowired private IProviderMabangService providerMabangService;
     @Autowired
     private IPlatformOrderMabangService platformOrderMabangService;
+    @Autowired
+    private ICreatePurchaseOrderAsyncService createPurchaseOrderAsyncService;
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
@@ -733,88 +728,20 @@ public class PurchaseOrderController {
         return Result.OK(d);
     }
 
-    @GetMapping(value = "/createMabangPurchaseOrder")
-    public Result<?> createMabangPurchaseOrder(@RequestParam("invoiceNumbers") List<String> invoiceNumbers) {
-        log.info("Creating purchase order to Mabang for invoices : {} ", invoiceNumbers);
-        Map<String, Responses> responsesMappedByInvoiceNumber = new HashMap<>();
-        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(DEFAULT_NUMBER_OF_THREADS,
-                MABANG_API_RATE_LIMIT_PER_MINUTE, TimeUnit.MINUTES);
-        // providersHistory lists the providers that have already been processed, if the current provider is in the list and has been processed within the last 10 seconds, the thread will sleep for 10 seconds
-        AtomicReference<Map<String, LocalDateTime>> providersHistory = new AtomicReference<>(new HashMap<>());
-        List<CompletableFuture<Boolean>> future = invoiceNumbers.stream()
-                .map(invoiceNumber -> CompletableFuture.supplyAsync(() -> {
-                    log.info("Invoice number : {}", invoiceNumber);
-                    List<SkuQuantity> skuQuantities = purchaseOrderService.getSkuQuantityByInvoiceNumber(invoiceNumber);
-                    if(skuQuantities.isEmpty()) {
-                        return false;
-                    }
-                    Map<String, Integer> skuQuantityMap = skuQuantities.stream()
-                            .collect(Collectors.toMap(SkuQuantity::getErpCode, SkuQuantity::getQuantity));
-                    skuQuantityMap.forEach((s, integer) -> log.info("SKU: {} Quantity: {}", s, integer));
-                    Map<String, Integer> skuQtyNotEmptyMap = skuQuantityMap.entrySet().stream()
-                            .filter(entry -> entry.getValue() > 0)
-                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-                    InvoiceMetaData metaData = purchaseOrderService.getMetaDataFromInvoiceNumbers(invoiceNumber);
-                    Responses results = providerMabangService.addPurchaseOrderToMabang(skuQtyNotEmptyMap, metaData, providersHistory);
-                    if(responsesMappedByInvoiceNumber.get(invoiceNumber) != null) {
-                        responsesMappedByInvoiceNumber.get(invoiceNumber).getFailures().addAll(results.getFailures());
-                        responsesMappedByInvoiceNumber.get(invoiceNumber).getSuccesses().addAll(results.getSuccesses());
-                    } else {
-                        responsesMappedByInvoiceNumber.put(invoiceNumber, results);
-                    }
-                    return results.getFailures().isEmpty();
-                },throttlingExecutorService))
-                .collect(Collectors.toList());
 
-        List<Boolean> results = future.stream().map(CompletableFuture::join).collect(Collectors.toList());
-        long nbSuccesses = results.stream().filter(Boolean::booleanValue).count();
-        log.info("{}/{} purchase order requests have succeeded.", nbSuccesses, invoiceNumbers.size());
-
-        List<String> groupIdsToDelete = new ArrayList<>();
-        List<String> successfulInvoices = new ArrayList<>();
-        for (Map.Entry<String, Responses> entry : responsesMappedByInvoiceNumber.entrySet()) {
-            String invoiceNumber = entry.getKey();
-            Responses resp = entry.getValue();
-            if (!resp.getFailures().isEmpty()) {
-                groupIdsToDelete.addAll(resp.getSuccesses());
-            } else {
-                successfulInvoices.add(invoiceNumber);
-            }
-        }
-        if (!groupIdsToDelete.isEmpty()) {
-            log.info("Deleting purchase orders that have been incompletely created in Mabang : {}", groupIdsToDelete);
-            Responses groupIdsDeleteResult = providerMabangService.deletePurchaseOrderFromMabang(groupIdsToDelete);
-            responsesMappedByInvoiceNumber.put("groupIdDelete", groupIdsDeleteResult);
-        }
-        if (!successfulInvoices.isEmpty()) {
-            log.info("Updating order erp status to 2 in Mabang for invoices: {}", successfulInvoices);
-            List<String> platformOrderIds = platformOrderService.getPlatformOrderIdsByInvoiceNumbers(successfulInvoices);
-            Response<List<UpdateResult>, List<UpdateResult>> updateResponse = platformOrderMabangService.updateOrderStatusToPreparing(platformOrderIds);
-            Responses updateOrderStatusResponse = new Responses();
-            if(updateResponse.getStatus() == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
-                String errMsg = updateResponse.getError().get(0).getReason();
-                updateOrderStatusResponse.addFailure(errMsg);
-                responsesMappedByInvoiceNumber.put("UpdateOrderStatusError", updateOrderStatusResponse);
-            } else {
-                List<String> updateOrderStatusSuccess = updateResponse.getData().stream()
-                        .map(UpdateResult::getPlatformOrderId)
-                        .collect(Collectors.toList());
-                List<String> updateOrderStatusFailure = updateResponse.getError().stream()
-                        .map(UpdateResult::getPlatformOrderId)
-                        .collect(Collectors.toList());
-                log.info("Update order errors : {}", updateResponse.getError());
-                updateOrderStatusResponse.getSuccesses().addAll(updateOrderStatusSuccess);
-                updateOrderStatusResponse.getFailures().addAll(updateOrderStatusFailure);
-                if (responsesMappedByInvoiceNumber.containsKey("UpdateOrderStatus")) {
-                    responsesMappedByInvoiceNumber.get("UpdateOrderStatus")
-                            .getSuccesses().addAll(updateOrderStatusResponse.getSuccesses());
-                    responsesMappedByInvoiceNumber.get("UpdateOrderStatus")
-                            .getFailures().addAll(updateOrderStatusResponse.getFailures());
-                } else {
-                    responsesMappedByInvoiceNumber.put("UpdateOrderStatus", updateOrderStatusResponse);
-                }
-            }
-        }
-        return Result.OK(responsesMappedByInvoiceNumber);
-    }
+   @PostMapping("/createMabangPurchaseOrder")
+   public Result<?> createMabangPurchaseOrder(@RequestBody Map<String, String> params) {
+       String invoiceNumbers = params.get("invoiceNumbers");
+       List<String> invoiceList = Arrays.asList(invoiceNumbers.split(","));
+       if (createPurchaseOrderAsyncService.isCreating(invoiceList)) {
+           return Result.error("发票正在创建采购单中，请勿重复操作");
+       }
+       if (purchaseOrderService.existsOrderedByInvoices(invoiceList)) {
+           return Result.error("存在已创建采购单的发票，不能重复创建");
+       }
+       LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+       String userId = sysUser.getId();
+       createPurchaseOrderAsyncService.createMabangPurchaseOrderAsync(invoiceList, userId);
+       return Result.OK();
+   }
 }

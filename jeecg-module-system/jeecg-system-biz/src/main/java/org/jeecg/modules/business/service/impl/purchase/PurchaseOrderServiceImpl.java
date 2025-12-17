@@ -708,4 +708,11 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         return purchaseOrderMapper. getShopOwnerFromInvoiceNumber(invoiceNumber);
     }
 
+    @Override
+    public boolean existsOrderedByInvoices(List<String> invoiceNumbers) {
+        if (invoiceNumbers == null || invoiceNumbers.isEmpty()) {
+            return false;
+        }
+        return purchaseOrderMapper.countOrderedByInvoiceNumbers(invoiceNumbers) > 0;
+    }
 }
