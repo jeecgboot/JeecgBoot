@@ -118,6 +118,10 @@ JeecgBoot平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 | ChatGTP       |  √   |
 | Qwq           |  √   |
 | 智库            |  √   |
+| claude        |  √   |
+| vl模型          |  √   |
+| 千帆大模型         |  √   |
+| 通义千问          |  √   |
 | Ollama本地搭建大模型 |  √   |
 | 等等。。          |  √   |
 
