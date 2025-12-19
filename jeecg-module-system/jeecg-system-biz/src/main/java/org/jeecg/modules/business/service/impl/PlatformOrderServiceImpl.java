@@ -5,6 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jeecg.modules.business.controller.UserException;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus;
 import org.jeecg.modules.business.domain.api.yd.YDTrackingNumberData;
@@ -26,12 +30,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.jeecg.modules.business.entity.Invoice.InvoicingMethod;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.Function;
@@ -702,39 +707,96 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         return platformOrderMap.fetchByPlatformWarehouse(shopCodes, platformWarehouses);
     }
     @Override
-    public List<PlatformOrder> findLongPendingOrdersBySales(String salesId, int timeoutDays) {
-        LocalDateTime nowFrance = LocalDateTime.now(ZoneId.of("Europe/Paris"));
-        LocalDateTime thresholdFrance = nowFrance.minusDays(timeoutDays);
-        ZonedDateTime franceZoned = thresholdFrance.atZone(ZoneId.of("Europe/Paris"));
-        LocalDateTime thresholdShanghai =
-                franceZoned.withZoneSameInstant(ZoneId.of("Asia/Shanghai"))
+    public List<PlatformOrder> findLongPendingOrdersBySales(
+            String salesId,
+            int timeoutDays,
+            int maxMonths
+    ) {
+        ZoneId franceZone = ZoneId.of("Europe/Paris");
+        ZoneId shanghaiZone = ZoneId.of("Asia/Shanghai");
+        LocalDateTime nowFrance = LocalDateTime.now(franceZone);
+        // calculate time range in France timezone(from timeoutDays ago to maxMonths ago)
+        LocalDateTime minFrance = nowFrance.minusDays(timeoutDays);
+        LocalDateTime maxFrance = nowFrance.minusMonths(maxMonths);
+        LocalDateTime minShanghai =
+                minFrance.atZone(franceZone)
+                        .withZoneSameInstant(shanghaiZone)
+                        .toLocalDateTime();
+        LocalDateTime maxShanghai =
+                maxFrance.atZone(franceZone)
+                        .withZoneSameInstant(shanghaiZone)
                         .toLocalDateTime();
         List<String> clientIds = clientService.findClientIdsBySalesId(salesId);
         if (clientIds == null || clientIds.isEmpty()) {
             return Collections.emptyList();
         }
-        return platformOrderMap.findLongPendingOrders(clientIds, thresholdShanghai);
+        return platformOrderMap.findPendingOrdersBetween(
+                clientIds,
+                maxShanghai,
+                minShanghai
+        );
     }
     @Override
-    public List<PendingOrderVO> getPendingOrdersForSales(String salesId, int timeoutDays) {
+    public List<PendingOrderVO> getPendingOrdersForSales(String salesId, int timeoutDays, int maxMonths) {
+        List<PlatformOrder> orders = findLongPendingOrdersBySales(salesId, timeoutDays, maxMonths);
+        List<PendingOrderVO> list = orders.stream()
+                .map(o -> {
+                    PendingOrderVO vo = new PendingOrderVO();
+                    vo.setPlatformOrderId(o.getPlatformOrderId());
+                    Shop shop = shopService.getById(o.getShopId());
+                    vo.setShopName(shop != null ? shop.getName() : "shop unknown");
+                    String clientId = shop != null ? shop.getOwnerId() : null;
+                    Client client = clientId != null ? clientService.getById(clientId) : null;
+                    vo.setClientInternalCode(client != null ? client.getInternalCode() : "unknown");
+                    long days = ChronoUnit.DAYS.between(
+                            o.getOrderTime().toInstant()
+                                    .atZone(ZoneId.of("Europe/Paris"))
+                                    .toLocalDate(),
+                            LocalDate.now(ZoneId.of("Europe/Paris"))
+                    );
+                    vo.setWaitingDays(days);
+                    return vo;
+                }).sorted(Comparator
+                        .comparing(PendingOrderVO::getClientInternalCode, Comparator.nullsLast(String::compareTo))
+                        .thenComparing(PendingOrderVO::getShopName, Comparator.nullsLast(String::compareTo))
+                        .thenComparing(PendingOrderVO::getWaitingDays, Comparator.reverseOrder())).collect(Collectors.toList());
+        return list;
+    }
 
-        List<PlatformOrder> orders = findLongPendingOrdersBySales(salesId, timeoutDays);
-
-        return orders.stream().map(o -> {
-            PendingOrderVO vo = new PendingOrderVO();
-            vo.setPlatformOrderId(o.getPlatformOrderId());
-            Shop shop = shopService.getById(o.getShopId());
-            vo.setShopName(shop != null ? shop.getName() : "shop unknown");
-            String clientId = shop != null ? shop.getOwnerId() : null;
-            Client client = clientId != null ? clientService.getById(clientId) : null;
-            vo.setClientInternalCode(client != null ? client.getInternalCode() : "unknown");
-            long days = ChronoUnit.DAYS.between(
-                    o.getOrderTime().toInstant().atZone(ZoneId.of("Asia/Shanghai")).toLocalDateTime(),
-                    LocalDateTime.now(ZoneId.of("Asia/Shanghai"))
-            );
-            vo.setWaitingDays(days);
-            return vo;
-        }).collect(Collectors.toList());
+    @Override
+    public void exportPendingOrdersForSales(
+            String salesId,
+            int timeoutDays,
+            int maxMonths,
+            OutputStream outputStream
+    ) throws IOException {
+        List<PendingOrderVO> list =
+                getPendingOrdersForSales(salesId, timeoutDays, maxMonths);
+        log.info("Export pending orders: salesId={}, size={}", salesId, list.size());
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("异常订单");
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("客户");
+        header.createCell(1).setCellValue("店铺");
+        header.createCell(2).setCellValue("等待天数");
+        header.createCell(3).setCellValue("订单号");
+        int rowIdx = 1;
+        for (PendingOrderVO vo : list) {
+            Row row = sheet.createRow(rowIdx++);
+            row.createCell(0).setCellValue(vo.getClientInternalCode());
+            row.createCell(1).setCellValue(vo.getShopName());
+            row.createCell(2).setCellValue(vo.getWaitingDays());
+            row.createCell(3).setCellValue(vo.getPlatformOrderId());
+        }
+        for (int i = 0; i < 4; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        int minWidth = 12 * 256;
+        if (sheet.getColumnWidth(2) < minWidth) {
+            sheet.setColumnWidth(2, minWidth);
+        }
+        workbook.write(outputStream);
+        workbook.close();
     }
 
 }
