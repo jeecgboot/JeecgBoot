@@ -73,7 +73,7 @@ public class WebSocket {
             if (item.getKey().contains(userId)) {
                 Session session = item.getValue();
                 try {
-                    // 代码逻辑说明: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
+                    // 代码逻辑说明: websocket报错 https://gitee.org.jeecg/jeecg-boot/issues/I4C0MU
                     synchronized (session){
                         log.debug("【系统 WebSocket】推送单人消息:" + message);
                         session.getBasicRemote().sendText(message);

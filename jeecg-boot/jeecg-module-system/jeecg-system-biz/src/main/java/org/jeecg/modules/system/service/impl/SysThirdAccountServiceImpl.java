@@ -2,10 +2,10 @@ package org.jeecg.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jeecg.dingtalk.api.base.JdtBaseAPI;
-import com.jeecg.dingtalk.api.core.response.Response;
-import com.jeecg.dingtalk.api.core.vo.AccessToken;
-import com.jeecg.dingtalk.api.user.JdtUserAPI;
+import org.jeecg.dingtalk.api.base.JdtBaseAPI;
+import org.jeecg.dingtalk.api.core.response.Response;
+import org.jeecg.dingtalk.api.core.vo.AccessToken;
+import org.jeecg.dingtalk.api.user.JdtUserAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;

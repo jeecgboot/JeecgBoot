@@ -3,7 +3,7 @@ package org.jeecg.modules.system.controller;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.jeecg.dingtalk.api.core.response.Response;
+import org.jeecg.dingtalk.api.core.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;

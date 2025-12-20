@@ -1,6 +1,7 @@
 package org.jeecg.config.init;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,9 @@ import org.springframework.stereotype.Component;
  * 在应用启动时清除所有的Shiro授权缓存
  * 主要用于解决重启项目，用户未重新登录，按钮权限不生效的问题
  */
-@Slf4j
 @Component
 public class ShiroCacheClearRunner implements ApplicationRunner {
+    private static final Logger log = LoggerFactory.getLogger(ShiroCacheClearRunner.class);
 
     @Autowired
     private RedisUtil redisUtil;

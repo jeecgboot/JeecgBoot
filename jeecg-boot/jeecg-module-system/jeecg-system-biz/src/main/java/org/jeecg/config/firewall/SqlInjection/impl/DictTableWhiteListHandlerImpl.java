@@ -1,6 +1,7 @@
 package org.jeecg.config.firewall.SqlInjection.impl;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.exception.JeecgSqlInjectionException;
 import org.jeecg.common.util.oConvertUtils;
@@ -21,9 +22,9 @@ import java.util.*;
 /**
  * 通用情况的白名单处理，若有无法处理的情况，可以单独写实现类
  */
-@Slf4j
 @Component("dictTableWhiteListHandlerImpl")
 public class DictTableWhiteListHandlerImpl implements IDictTableWhiteListHandler {
+    private static final Logger log = LoggerFactory.getLogger(DictTableWhiteListHandlerImpl.class);
 
     /**
      * key-表名

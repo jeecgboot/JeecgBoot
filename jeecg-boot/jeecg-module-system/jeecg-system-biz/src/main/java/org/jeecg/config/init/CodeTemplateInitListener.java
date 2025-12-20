@@ -1,7 +1,8 @@
 package org.jeecg.config.init;
 
 import cn.hutool.core.io.FileUtil;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.apache.commons.io.IOUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -19,9 +20,9 @@ import java.nio.charset.StandardCharsets;
  * 解决JAR发布需要手工配置代码生成器模板问题
  * @author zhang
  */
-@Slf4j
 @Component
 public class CodeTemplateInitListener implements ApplicationListener<ApplicationReadyEvent> {
+    private static final Logger log = LoggerFactory.getLogger(CodeTemplateInitListener.class);
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {

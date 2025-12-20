@@ -1,6 +1,7 @@
 package org.jeecg.config.init;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.config.JeecgCloudCondition;
 import org.jeecg.modules.system.service.ISysGatewayRouteService;
@@ -15,10 +16,10 @@ import org.springframework.stereotype.Component;
  * @desc: 启动程序，初始化路由配置
  * @author: flyme
  */
-@Slf4j
 @Component
 @Conditional(JeecgCloudCondition.class)
 public class SystemInitListener implements ApplicationListener<ApplicationReadyEvent>, Ordered {
+    private static final Logger log = LoggerFactory.getLogger(SystemInitListener.class);
 
 
     @Autowired

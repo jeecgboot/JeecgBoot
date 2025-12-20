@@ -1,6 +1,6 @@
 package org.jeecg.modules.system.vo.thirdapp;
 
-import com.jeecg.qywx.api.department.vo.Department;
+import org.jeecg.qywx.api.department.vo.Department;
 import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
