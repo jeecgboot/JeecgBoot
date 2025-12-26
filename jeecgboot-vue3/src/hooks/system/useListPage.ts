@@ -75,6 +75,10 @@ export function useListPage(options: ListPageOptions) {
         if (options?.tableProps?.useSearchForm !== false) {
           paramsForm = await getForm().validate();
           console.log('paramsForm', paramsForm);
+          // 在这里把执行beforeFetch
+          if (options?.tableProps?.beforeFetch) {
+            paramsForm = await options?.tableProps?.beforeFetch(paramsForm);
+          }
         }
       } catch (e) {
         console.warn(e);
