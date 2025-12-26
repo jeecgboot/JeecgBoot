@@ -350,13 +350,19 @@ export const formSchema: FormSchema[] = [
     <#elseif po.classType=='list'>
     component: 'JDictSelectTag',
     componentProps:{
-        dictCode:"${form_field_dictCode}"
+        dictCode:"${form_field_dictCode}",
+     <#if po.fieldDbType=='int'>
+        stringToNumber: true
+     </#if>
      },
     <#elseif po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}",
-        type: "radio"
+        type: "radio",
+     <#if po.fieldDbType=='int'>
+        stringToNumber: true
+     </#if>
      },
      <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='list_multi'>
@@ -686,7 +692,10 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     <#elseif po.classType=='list' || po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
-        dictCode:"${form_field_dictCode}"
+        dictCode:"${form_field_dictCode}",
+     <#if po.fieldDbType=='int'>
+        stringToNumber: true
+     </#if>
      },
      <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='list_multi'>
