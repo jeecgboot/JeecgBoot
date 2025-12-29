@@ -727,6 +727,7 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
                         .withZoneSameInstant(shanghaiZone)
                         .toLocalDateTime();
         List<String> clientIds = clientService.findClientIdsBySalesId(salesId);
+        log.info("Find long pending orders for salesId={}, clientIds={}", salesId, clientIds);
         if (clientIds == null || clientIds.isEmpty()) {
             return Collections.emptyList();
         }

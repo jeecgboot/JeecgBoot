@@ -1,6 +1,7 @@
 package org.jeecg.modules.business.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -13,6 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @Description: 客户
@@ -214,6 +216,14 @@ public class Client implements Serializable {
     @Dict(dicCode = "yn")
     @ApiModelProperty(value = "是否通過郵件接收發票")
     private Boolean receiveInvoiceByEmail;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "跟单销售ID列表")
+    private List<String> salespersonIds;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "跟单销售")
+    private String salespersonNames;
 
     public String fullName() {
         return firstName + " " + surname;

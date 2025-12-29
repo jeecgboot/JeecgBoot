@@ -15,10 +15,12 @@ import org.jeecg.modules.business.entity.Balance;
 import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.ClientSku;
 import org.jeecg.modules.business.entity.Shop;
+import org.jeecg.modules.business.mapper.ClientSalespersonMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.ClientPage;
-import org.jeecg.modules.business.vo.PlatformOrderOption;
 import org.jeecg.modules.online.cgform.mapper.OnlCgformFieldMapper;
+import org.jeecg.modules.system.entity.SysUser;
+import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -58,13 +60,19 @@ public class ClientController {
 
     private final IPlatformOrderService platformOrderService;
 
+    private final ClientSalespersonMapper clientSalespersonMapper;
+
+    private final ISysUserService sysUserService;
+
     @Autowired
-    public ClientController(IClientService clientService, IShopService shopService, IClientSkuService clientSkuService, IBalanceService balanceService, IPlatformOrderService platformOrderService) {
+    public ClientController(IClientService clientService, IShopService shopService, IClientSkuService clientSkuService, IBalanceService balanceService, IPlatformOrderService platformOrderService, ClientSalespersonMapper clientSalespersonMapper, ISysUserService sysUserService) {
         this.clientService = clientService;
         this.shopService = shopService;
         this.clientSkuService = clientSkuService;
         this.balanceService = balanceService;
         this.platformOrderService = platformOrderService;
+        this.clientSalespersonMapper = clientSalespersonMapper;
+        this.sysUserService = sysUserService;
     }
 
 
@@ -85,6 +93,48 @@ public class ClientController {
         QueryWrapper<Client> queryWrapper = QueryGenerator.initQueryWrapper(client, req.getParameterMap());
         Page<Client> page = new Page<Client>(pageNo, pageSize);
         IPage<Client> pageList = clientService.page(page, queryWrapper);
+        List<Client> records = pageList.getRecords();
+        if (!records.isEmpty()) {
+            List<String> clientIds = records.stream()
+                    .map(Client::getId)
+                    .collect(Collectors.toList());
+            log.info("clientIds = {}", clientIds);
+            Map<String, List<String>> salesMap = new HashMap<>();
+            clientSalespersonMapper.selectByClientIds(clientIds)
+                    .forEach(cs ->
+                            salesMap
+                                    .computeIfAbsent(cs.getClientId(), k -> new ArrayList<>())
+                                    .add(cs.getSalespersonId())
+                    );
+            log.info("salesMap: {}", salesMap);
+            if (!salesMap.isEmpty()) {
+                Set<String> userIds = salesMap.values().stream()
+                        .flatMap(List::stream)
+                        .collect(Collectors.toSet());
+
+                if (!userIds.isEmpty()) {
+                    Map<String, String> userNameMap =
+                            sysUserService.listByIds(userIds).stream()
+                                    .collect(Collectors.toMap(
+                                            SysUser::getId,
+                                            SysUser::getRealname
+                                    ));
+                    for (Client c : records) {
+                        List<String> ids = salesMap.get(c.getId());
+                        if (ids != null) {
+                            c.setSalespersonIds(ids);
+                            c.setSalespersonNames(
+                                    ids.stream()
+                                            .map(userNameMap::get)
+                                            .filter(Objects::nonNull)
+                                            .collect(Collectors.joining(", "))
+                            );
+                        }
+                    }
+                    log.info("userNameMap: {}", userNameMap);
+                }
+            }
+        }
         return Result.OK(pageList);
     }
 
@@ -99,6 +149,10 @@ public class ClientController {
         Client client = new Client();
         BeanUtils.copyProperties(clientPage, client);
         clientService.saveMain(client, clientPage.getShopList(), clientPage.getClientSkuList());
+        clientService.saveClientSalespersons(
+                client.getId(),
+                clientPage.getSalespersonIds()
+        );
         Boolean useBalance = clientPage.getUseBalance();
         log.info("useBalance:{}", useBalance);
         if (useBalance) {
@@ -139,6 +193,10 @@ public class ClientController {
             balanceService.initBalance(client.getId());
         }
         clientService.updateMain(client, clientPage.getShopList());
+        clientService.saveClientSalespersons(
+                client.getId(),
+                clientPage.getSalespersonIds()
+        );
         updateShopId();
         log.info("useBalance from clientPage: {}, useBalance updated for client: {}", clientPage.getUseBalance(), client.getUseBalance());
         log.info("Shop names replaced by new created shop IDs");
@@ -248,8 +306,18 @@ public class ClientController {
         if (client == null) {
             return Result.error("未找到对应数据");
         }
-        return Result.OK(client);
-
+        ClientPage page = new ClientPage();
+        BeanUtils.copyProperties(client, page);
+        page.setShopList(
+                shopService.selectByMainId(id)
+        );
+        page.setClientSkuList(
+                clientSkuService.selectByMainId(id)
+        );
+        page.setSalespersonIds(
+                clientSalespersonMapper.getSalespersonIdsByClientId(id)
+        );
+        return Result.OK(page);
     }
 
     /**
