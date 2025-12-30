@@ -240,4 +240,20 @@
         JOIN purchase_order po ON po.client_id = c.id
         WHERE po.invoice_number = #{invoiceNumber};
     </select>
+    <select id="countOrderedByInvoiceNumbers" resultType="int">
+        SELECT COUNT(1)
+        FROM purchase_order
+        WHERE invoice_number IN
+        <foreach collection="invoiceNumbers"
+                 item="invoiceNumber"
+                 open="("
+                 separator=","
+                 close=")">
+            #{invoiceNumber}
+        </foreach>
+        AND (
+        ordered = 1
+        OR (group_id IS NOT NULL AND TRIM(group_id) != '')
+        )
+    </select>
 </mapper>

@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -21,6 +22,7 @@ import org.jeecg.modules.business.service.IProviderService;
 import org.jeecg.modules.business.service.IPurchaseOrderService;
 import org.jeecg.modules.business.vo.InvoiceMetaData;
 import org.jeecg.modules.business.vo.Responses;
+import org.jeecg.modules.message.websocket.WebSocketSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -192,6 +194,14 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
                     groupIds.add(response.getGroupId());
                     responses.addSuccess(response.getGroupId());
                     providersHistory.get().put(providerName, LocalDateTime.now());
+                    JSONObject msg = new JSONObject();
+                    msg.put("task", "createMabangPurchaseOrder");
+                    msg.put("msgTxt", "creating");
+                    JSONObject data = new JSONObject();
+                    data.put("invoice", metaData.getInvoiceCode());
+                    data.put("groupId", response.getGroupId());
+                    msg.put("data", data);
+                    WebSocketSender.sendToUser(sysUser.getId(), msg.toJSONString());
                     return true;
                 }, throttlingExecutorService))
                 .collect(Collectors.toList());
