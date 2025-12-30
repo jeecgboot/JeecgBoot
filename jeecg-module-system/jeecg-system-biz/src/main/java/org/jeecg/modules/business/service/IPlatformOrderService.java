@@ -14,6 +14,8 @@ import org.jeecg.modules.business.vo.clientPlatformOrder.section.ClientInfo;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrderQuantity;
 import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -313,7 +315,13 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrder> fetchByPlatformWarehouse(List<String> shopCodes, List<String> platformWarehouses);
 
-    List<PlatformOrder> findLongPendingOrdersBySales(String salesId, int timeoutDays);
+    List<PlatformOrder> findLongPendingOrdersBySales(String salesId, int timeoutDays, int maxMonths);
 
-    List<PendingOrderVO> getPendingOrdersForSales(String salesId, int timeoutDays);
+    List<PendingOrderVO> getPendingOrdersForSales(String salesId, int timeoutDays, int maxMonths);
+    void exportPendingOrdersForSales(
+            String salesId,
+            int timeoutDays,
+            int maxMonths,
+            OutputStream outputStream
+    ) throws IOException;
 }

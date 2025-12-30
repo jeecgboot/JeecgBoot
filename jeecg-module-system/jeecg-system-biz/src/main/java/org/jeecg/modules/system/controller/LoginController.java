@@ -1,10 +1,7 @@
 package org.jeecg.modules.system.controller;
 
-import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.aliyuncs.exceptions.ClientException;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +11,6 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
-import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
@@ -25,22 +21,20 @@ import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.vo.clientPlatformOrder.PendingOrderVO;
 import org.jeecg.modules.system.entity.SysDepart;
 import org.jeecg.modules.system.entity.SysRoleIndex;
-import org.jeecg.modules.system.entity.SysTenant;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
-import org.jeecg.modules.system.util.RandImageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @Author scott
@@ -475,6 +469,7 @@ public class LoginController {
 	@GetMapping("/pendingOrdersAlert")
 	public Result<List<PendingOrderVO>> pendingOrdersAlert(
 			@RequestParam(defaultValue = "7") int timeoutDays,
+			@RequestParam(defaultValue = "3") int maxMonths,
 			HttpServletRequest request
 	) {
 		String username = JwtUtil.getUserNameByToken(request);
@@ -483,9 +478,44 @@ public class LoginController {
 			return Result.OK(Collections.emptyList());
 		}
 		List<PendingOrderVO> dtoList =
-				platformOrderService.getPendingOrdersForSales(sysUser.getId(), timeoutDays);
-		log.info("Pending orders alert for user {}: {} orders found waiting for more than {} days",
-				username, dtoList.size(), timeoutDays);
+				platformOrderService.getPendingOrdersForSales(sysUser.getId(), timeoutDays,maxMonths);
+		log.info(
+				"Pending orders alert for user {}: {} orders found waiting between {} days and {} months",
+				username, dtoList.size(), timeoutDays, maxMonths
+		);
 		return Result.OK(dtoList);
+	}
+
+	@GetMapping("/pendingOrdersAlert/export")
+	public void exportPendingOrdersAlert(
+			@RequestParam(defaultValue = "7") int timeoutDays,
+			@RequestParam(defaultValue = "3") int maxMonths,
+			HttpServletRequest request,
+			HttpServletResponse response
+	) throws IOException {
+		String username = JwtUtil.getUserNameByToken(request);
+		SysUser sysUser = sysUserService.getUserByName(username);
+		if (!sysUserService.isSalesUser(username)) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+		response.setContentType(
+				"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+		);
+		response.setCharacterEncoding("utf-8");
+		String fileName = URLEncoder.encode(
+				"pending_orders.xlsx",
+				"UTF-8"
+		).replaceAll("\\+", "%20");
+		response.setHeader(
+				"Content-Disposition",
+				"attachment;filename=" + fileName
+		);
+		platformOrderService.exportPendingOrdersForSales(
+				sysUser.getId(),
+				timeoutDays,
+				maxMonths,
+				response.getOutputStream()
+		);
 	}
 }
