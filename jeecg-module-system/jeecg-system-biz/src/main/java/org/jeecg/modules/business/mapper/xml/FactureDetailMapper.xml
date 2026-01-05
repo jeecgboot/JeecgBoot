@@ -7,16 +7,6 @@
     </select>
 
     <select id="selectByShopsAndPeriod" resultType="org.jeecg.modules.business.vo.FactureDetail">
-        WITH LatestPrices AS (
-            SELECT sp.sku_id, sp.price, sp.date
-            FROM sku_price sp
-            JOIN (
-                SELECT sku_id, MAX(date) AS max_date
-                FROM sku_price
-                WHERE date &lt;= #{end} -- Upper limit of date range
-                GROUP BY sku_id
-            ) latest ON sp.sku_id = latest.sku_id AND sp.date = latest.max_date
-        )
         SELECT s.name                               AS 'Boutique',
         po.platform_order_id                        AS 'N° de Mabang',
         po.platform_order_number                    AS 'N° de commande',
@@ -31,7 +21,18 @@
         JSON_ARRAYAGG(poc.quantity)                 AS 'Quantité',
         COALESCE(SUM(
             CASE
-                WHEN poc.purchase_fee = 0 THEN poc.quantity * lp.price
+                WHEN poc.purchase_fee = 0 THEN
+                    poc.quantity * COALESCE(
+                        (
+                        SELECT sp.price
+                        FROM sku_price sp
+                        WHERE sp.sku_id = poc.sku_id
+                        AND sp.date &lt;= po.order_time
+                        ORDER BY sp.date DESC
+                        LIMIT 1
+                        ),
+                        0
+                        )
                 ELSE poc.purchase_fee
             END
         ),0)                                        AS 'Frais d\'achat',
@@ -45,9 +46,8 @@
         po.shipping_invoice_number                  AS 'N° de facture'
         FROM platform_order po
         JOIN shop s ON po.shop_id = s.id
-        RIGHT JOIN platform_order_content poc ON po.id = poc.platform_order_id
+        JOIN platform_order_content poc ON po.id = poc.platform_order_id
         JOIN sku ON poc.sku_id = sku.id
-        LEFT JOIN LatestPrices lp ON poc.sku_id = lp.sku_id AND lp.date &lt;= po.order_time
         WHERE shipping_invoice_number IS NOT NULL
         AND poc.erp_status &lt;&gt; 5
         AND po.order_time &gt; #{start}
