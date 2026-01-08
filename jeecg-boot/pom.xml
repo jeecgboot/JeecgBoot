@@ -57,7 +57,7 @@
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>2.2.0</jimureport-spring-boot-starter.version>
 		<jimubi-spring-boot-starter.version>2.2.0</jimubi-spring-boot-starter.version>
-		<minidao.version>1.10.16</minidao.version>
+		<minidao.version>1.10.18</minidao.version>
 		<autopoi-web.version>2.0.2</autopoi-web.version>
 		
 		<!-- 持久层 -->
@@ -477,17 +477,6 @@
 					<exclusion>
 						<groupId>org.apache.poi</groupId>
 						<artifactId>ooxml-schemas</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-core</artifactId>
-				<version>5.6.7.Final</version>
-				<exclusions>
-					<exclusion>
-						<groupId>commons-collections</groupId>
-						<artifactId>commons-collections</artifactId>
 					</exclusion>
 				</exclusions>
 			</dependency>
