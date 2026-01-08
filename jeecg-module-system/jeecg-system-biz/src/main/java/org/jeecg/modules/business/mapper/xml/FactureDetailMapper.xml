@@ -35,15 +35,15 @@
                         )
                 ELSE poc.purchase_fee
             END
-        ),0)                                        AS 'Frais d\'achat',
-        po.fret_fee                                 AS 'Frais de FRET',
-        SUM(poc.shipping_fee)                       AS 'Frais de livraison',
-        po.order_service_fee + SUM(poc.service_fee) AS 'Frais de service',
-        po.picking_fee + SUM(poc.picking_fee)       AS 'Frais de préparation',
-        po.packaging_material_fee                   AS 'Frais de matériel d\'emballage',
-        COALESCE(po.insurance_fee, 0.00)            AS 'Frais d\'assurance produits',
-        SUM(poc.vat)                                AS 'TVA',
-        po.shipping_invoice_number                  AS 'N° de facture'
+        ),0)                                                                  AS 'Frais d\'achat',
+        COALESCE(po.fret_fee, 0)                                              AS 'Frais de FRET',
+        COALESCE(SUM(poc.shipping_fee), 0)                                    AS 'Frais de livraison',
+        COALESCE(po.order_service_fee, 0) + COALESCE(SUM(poc.service_fee), 0) AS 'Frais de service',
+        COALESCE(po.picking_fee, 0) + COALESCE(SUM(poc.picking_fee), 0)       AS 'Frais de préparation',
+        COALESCE(po.packaging_material_fee, 0)                                AS 'Frais de matériel d\'emballage',
+        COALESCE(po.insurance_fee, 0.00)                                      AS 'Frais d\'assurance produits',
+        COALESCE(SUM(poc.vat), 0)                                             AS 'TVA',
+        po.shipping_invoice_number                                            AS 'N° de facture'
         FROM platform_order po
         JOIN shop s ON po.shop_id = s.id
         JOIN platform_order_content poc ON po.id = poc.platform_order_id
