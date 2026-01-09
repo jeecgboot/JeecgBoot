@@ -229,7 +229,7 @@ public class ThirdAppDingtalkServiceImpl implements IThirdAppService {
                 LambdaQueryWrapper<SysDepart> queryWrapper = new LambdaQueryWrapper<>();
                 // 根据 source_identifier 字段查询
                 // 代码逻辑说明: 【issues/6017】钉钉同步部门时没有最顶层的部门名，同步用户时，用户没有部门信息---
-                queryWrapper.and(item -> item.eq(SysDepart::getId, departmentTree.getSource_identifier()).or().eq(SysDepart::getDingIdentifier,departmentTree.getDept_id()));
+                queryWrapper.and(item -> item.eq(SysDepart::getId, departmentTree.getSource_identifier()).or().eq(SysDepart::getDingIdentifier,oConvertUtils.getString(departmentTree.getDept_id())));
                 SysDepart sysDepart = sysDepartService.getOne(queryWrapper);
                 if (sysDepart != null) {
                     //  执行更新操作
