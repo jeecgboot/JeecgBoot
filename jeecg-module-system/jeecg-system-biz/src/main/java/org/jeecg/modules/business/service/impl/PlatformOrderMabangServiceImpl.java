@@ -153,14 +153,10 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
 
         // for old orders, update themselves and delete and reinsert their content.
         List<OrderItem> allNewItemsOfOldItems = prepareItems(oldOrders);
-        log.info("{} allNewItemsOfOldItems to be inserted for {} oldOrders.", allNewItemsOfOldItems.size(), oldOrders.size());
+        log.info("[GROUP_DONE] {} allNewItemsOfOldItems to be inserted for {} oldOrders.", allNewItemsOfOldItems.size(), oldOrders.size());
         try {
             if (!oldOrders.isEmpty()) {
-                List<String> oldIds = oldOrders.stream()
-                        .map(Order::getId)
-                        .sorted()
-                        .collect(toList());
-                log.info("[MB_JOB][GROUP_DONE] oldOrdersCount={}", oldOrders.size());
+                List<String> oldIds = oldOrders.stream().map(Order::getId).sorted().collect(toList());
                 //lock the orders to be updated/deleted
                 platformOrderService.selectOrderDataForUpdate(oldIds);
                 //recheck invoiced orders after lock
@@ -168,7 +164,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         .filter(po -> po.getShippingInvoiceNumber() != null)
                         .map(PlatformOrder::getId)
                         .collect(Collectors.toSet());
-                log.info("[MB_JOB][AFTER_LOCK] excludedInvoicedIds(count={}) ids={}",
+                log.info("[AFTER_LOCK] excludedInvoicedIds(count={}) ids={}",
                         invoicedIds.size(),
                         invoicedIds.stream().limit(50).collect(toList()));
                 if (!invoicedIds.isEmpty()) {
