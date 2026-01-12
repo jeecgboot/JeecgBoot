@@ -29,6 +29,7 @@ import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.text.Normalizer;
 import java.util.*;
@@ -153,12 +154,38 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
 
         // for old orders, update themselves and delete and reinsert their content.
         List<OrderItem> allNewItemsOfOldItems = prepareItems(oldOrders);
+        log.info("{} allNewItemsOfOldItems to be inserted for {} oldOrders.", allNewItemsOfOldItems.size(), oldOrders.size());
         try {
             if (!oldOrders.isEmpty()) {
-                log.info("{} orders to be inserted/updated.", oldOrders.size());
-                platformOrderService.selectOrderDataForUpdate(oldOrders.stream().map(Order::getId).collect(toList()));
-                platformOrderMabangMapper.batchUpdateById(oldOrders);
-                platformOrderMabangMapper.batchDeleteByMainID(oldOrders.stream().map(Order::getId).collect(toList()));
+                List<String> oldIds = oldOrders.stream()
+                        .map(Order::getId)
+                        .sorted()
+                        .collect(toList());
+                log.info("[MB_JOB][GROUP_DONE] oldOrdersCount={}", oldOrders.size());
+                //lock the orders to be updated/deleted
+                platformOrderService.selectOrderDataForUpdate(oldIds);
+                //recheck invoiced orders after lock
+                Set<String> invoicedIds = platformOrderService.selectBatchIdsForUpdate(oldIds).stream()
+                        .filter(po -> po.getShippingInvoiceNumber() != null)
+                        .map(PlatformOrder::getId)
+                        .collect(Collectors.toSet());
+                log.info("[MB_JOB][AFTER_LOCK] excludedInvoicedIds(count={}) ids={}",
+                        invoicedIds.size(),
+                        invoicedIds.stream().limit(50).collect(toList()));
+                if (!invoicedIds.isEmpty()) {
+                    // remove new invoiced orders (avoid update + delete)
+                    oldOrders.removeIf(o -> invoicedIds.contains(o.getId()));
+                    // avoid re-insert
+                    allNewItemsOfOldItems.removeIf(item -> invoicedIds.contains(item.getPlatformOrderId()));
+                }
+                if (!oldOrders.isEmpty()) {
+                    List<String> filteredOldIds = oldOrders.stream().map(Order::getId).collect(toList());
+                    log.info("{} orders to be updated (non-invoiced after lock). ids={}", oldOrders.size(), filteredOldIds);
+                    platformOrderMabangMapper.batchUpdateById(oldOrders);
+                    platformOrderMabangMapper.batchDeleteByMainID(filteredOldIds);
+                } else {
+                    log.info("Skip delete: all oldOrders are invoiced after lock. ids={}", oldIds);
+                }
             }
             if (!ordersFromShippedToCompleted.isEmpty()) {
                 log.info("{} orders to be updated from Shipped to Completed.", ordersFromShippedToCompleted.size());
