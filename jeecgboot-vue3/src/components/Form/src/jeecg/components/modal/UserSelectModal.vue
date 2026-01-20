@@ -60,7 +60,7 @@
   import { useSelectBiz } from '/@/components/Form/src/jeecg/hooks/useSelectBiz';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { selectProps } from '/@/components/Form/src/jeecg/props/props';
-
+  import { isArray, cloneDeep } from 'lodash-es';
   export default defineComponent({
     name: 'UserSelectModal',
     components: {
@@ -115,8 +115,14 @@
         }
         // 代码逻辑说明: VUEN-1112 一对多 用户选择 未显示选择条数，及清空
         setTimeout(() => {
+          // update-begin--author:liaozhiyang---date:20260120--for：【issues/9275】用户组件第二次点击取消时勾选值还是回显了
+          let selectedData = selectValues['value'];
+          if (isArray(selectedData)) {
+            selectedData = cloneDeep(selectedData);
+          }
+          // update-end--author:liaozhiyang---date:20260120--for：【issues/9275】用户组件第二次点击取消时勾选值还是回显了
           if (tableRef.value) {
-            tableRef.value.setSelectedRowKeys(selectValues['value'] || []);
+            tableRef.value.setSelectedRowKeys(selectedData || []);
           }
         }, 800);
       });
