@@ -18,47 +18,52 @@
             </a-radio-group>
           </template>
           <!-- MCP类型选择 -->
-<!--          <template #type="{ model, field }">-->
-<!--            <a-select v-model:value="model[field]" @change="onTypeChange">-->
-<!--              <a-select-option value="sse">SSE</a-select-option>-->
-<!--              <a-select-option value="stdio">STDIO</a-select-option>-->
-<!--            </a-select>-->
-<!--          </template>-->
+          <template #type="{ model, field }">
+            <a-select v-model:value="model[field]" @change="onTypeChange" :disabled="isEdit">
+              <a-select-option value="sse">SSE</a-select-option>
+              <a-select-option value="stdio">STDIO</a-select-option>
+              <a-select-option value="http">HTTP</a-select-option>
+            </a-select>
+          </template>
           <!-- endpoint 根据类型切换 placeholder -->
           <template #endpoint="{ model, field }">
             <a-input
               v-model:value="model[field]"
               :placeholder="endpointPlaceholder"
+              autocomplete="new-password"
             />
           </template>
           <!-- headers 根据类型切换标签名称与 placeholder -->
           <template #headers>
-            <div class="headers-table-wrapper">
-              <a-button type="primary" size="small" @click="addHeaderRow" style="margin-bottom: 8px;">
-                添加
-              </a-button>
-              <div class="headers-table-container">
-                <a-table
-                  :dataSource="headersData"
-                  :columns="headersColumns"
-                  :pagination="false"
-                  size="small"
-                  bordered
-                >
-                  <template #bodyCell="{ column, record, index }">
-                    <template v-if="column.key === 'key'">
-                      <a-input v-model:value="record.key" placeholder="请输入键" size="small" />
+            <!-- 解决浏览抛warning 70+ -->
+            <a-form-item-rest>
+              <div class="headers-table-wrapper">
+                <a-button type="primary" size="small" @click="addHeaderRow" style="margin-bottom: 8px;">
+                  添加
+                </a-button>
+                <div class="headers-table-container">
+                  <a-table
+                    :dataSource="headersData"
+                    :columns="headersColumns"
+                    :pagination="false"
+                    size="small"
+                    bordered
+                  >
+                    <template #bodyCell="{ column, record, index }">
+                      <template v-if="column.key === 'key'">
+                        <a-input v-model:value="record.key" placeholder="请输入键" size="small" />
+                      </template>
+                      <template v-if="column.key === 'value'">
+                        <a-input v-model:value="record.value" placeholder="请输入值" size="small" />
+                      </template>
+                      <template v-if="column.key === 'action'">
+                        <a-button type="link" danger size="small" @click="deleteHeaderRow(index)">删除</a-button>
+                      </template>
                     </template>
-                    <template v-if="column.key === 'value'">
-                      <a-input v-model:value="record.value" placeholder="请输入值" size="small" />
-                    </template>
-                    <template v-if="column.key === 'action'">
-                      <a-button type="link" danger size="small" @click="deleteHeaderRow(index)">删除</a-button>
-                    </template>
-                  </template>
-                </a-table>
+                  </a-table>
+                </div>
               </div>
-            </div>
+            </a-form-item-rest>
           </template>
           <!-- 授权方式配置（仅插件类型） -->
           <template #authType="{ model, field }">
@@ -73,7 +78,7 @@
           </template>
           <!-- Token参数值（仅插件类型且选择Token授权时） -->
           <template #tokenParamValue="{ model, field }">
-            <a-input v-model:value="model[field]" type="password" placeholder="请输入Token值" />
+            <a-input  autocomplete="new-password" v-model:value="model[field]" type="password" placeholder="请输入Token值" />
           </template>
         </BasicForm>
       </div>
@@ -114,7 +119,7 @@ const endpointPlaceholder = computed(() => {
   if (categoryValue.value === 'plugin') {
     return '请输入BaseURL，例如：https://api.example.com（可选，不填使用当前系统地址）';
   }
-  return typeValue.value === 'sse' ? '请输入服务端点URL，例如：https://example.com/stream' : '请输入启动命令，例如：./start-mcp-service';
+  return typeValue.value === 'sse' || typeValue.value === 'http' ? '请输入服务端点URL，例如：https://example.com/stream' : '请输入启动命令，例如：./start-mcp-service';
 });
 
 // 表格数据
@@ -222,9 +227,9 @@ function onCategoryChange(val) {
     // MCP类型：显示原有字段
     updateSchema([
       { field: 'category', label: '类型' },
-      { field: 'endpoint', label: typeValue.value === 'sse' ? 'URL' : '命令', required: true },
-      { field: 'type', label: 'MCP类型', show: false },
-      { field: 'headers', label: typeValue.value === 'sse' ? '请求头（目前不支持）' : '环境变量', show: false },
+      { field: 'endpoint', label: typeValue.value === 'stdio' ? '命令' : 'URL', required: true },
+      { field: 'type', label: 'MCP类型', show: true },
+      { field: 'headers', label: '请求头', show:() =>typeValue.value !=='stdio'},
       { field: 'authType', show: false },
       { field: 'tokenParamName', show: false },
       { field: 'tokenParamValue', show: false },
@@ -249,7 +254,7 @@ const [registerForm, { resetFields, validate, setFieldsValue, updateSchema }] = 
     { field: 'name', component: 'Input', label: '名称', required: true, componentProps: { placeholder: '请输入名称' } },
     { field: 'icon', label: '图标', component: 'JImageUpload' },
     { field: 'category', component: 'RadioGroup', label: '类型', required: true, slot: 'category', defaultValue: 'mcp' },
-    { field: 'type', component: 'Select', label: 'MCP类型', required: false, show: false, slot: 'type', defaultValue: 'sse' },
+    { field: 'type', component: 'Select', label: 'MCP类型', required: true, slot: 'type', defaultValue: 'sse' },
     { field: 'endpoint', component: 'Input', label: 'URL', required: true, slot: 'endpoint' },
     { field: 'headers', component: 'InputTextArea', label: '请求头', slot: 'headers', show: false },
     { field: 'authType', component: 'Select', label: '授权方式', required: true, slot: 'authType', defaultValue: 'none', show: false },
@@ -343,9 +348,9 @@ const [registerModal, { closeModal }] = useModalInner(async (data) => {
     } else {
       updateSchema([
         { field: 'category', label: '类型', componentProps: { disabled: true } },
-        { field: 'endpoint', label: t === 'sse' ? 'URL' : '命令', required: true },
-        { field: 'type', label: 'MCP类型', show: false },
-        { field: 'headers', label: t === 'sse' ? '请求头（目前不支持）' : '环境变量', show: false },
+        { field: 'endpoint', label: t === 'stdio' ? '命令' : 'URL', required: true },
+        { field: 'type', label: 'MCP类型', show: true },
+        { field: 'headers', label: '请求头', show:() => t !== 'stdio' },
         { field: 'authType', show: false },
         { field: 'tokenParamName', show: false },
         { field: 'tokenParamValue', show: false },
@@ -377,7 +382,7 @@ const [registerModal, { closeModal }] = useModalInner(async (data) => {
     updateSchema([
       { field: 'category', label: '类型' },
       { field: 'endpoint', label: 'URL' },
-      { field: 'headers', label: '请求头', show: false },
+      { field: 'headers', label: '请求头', show: true },
       { field: 'authType', show: false },
       { field: 'tokenParamName', show: false },
       { field: 'tokenParamValue', show: false },
@@ -386,6 +391,18 @@ const [registerModal, { closeModal }] = useModalInner(async (data) => {
     setFieldsValue({ category: 'mcp', type: 'sse', authType: 'none', tokenParamName: 'X-Access-Token', tokenParamValue: '' });
   }
 });
+
+/**
+ * 类型改变事件
+ * @param val
+ */
+function onTypeChange(val: string){
+  typeValue.value = val;
+  updateSchema([
+    { field: 'endpoint', label: val === 'stdio' ? '命令' : 'URL' },
+    { field: 'headers', label: '请求头', show:() => val !== 'stdio' },
+  ]);
+}
 
 async function handleSubmit(){
   try {

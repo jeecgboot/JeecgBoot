@@ -11,11 +11,13 @@ export const columns: BasicColumn[] = [
     title: '用户账号',
     dataIndex: 'username',
     width: 120,
+    resizable: true,
   },
   {
     title: '用户姓名',
     dataIndex: 'realname',
     width: 100,
+    resizable: true,
   },
 /*  {
     title: '头像',
@@ -27,6 +29,7 @@ export const columns: BasicColumn[] = [
     title: '性别',
     dataIndex: 'sex',
     width: 80,
+    resizable: true,
     sorter: true,
     customRender: ({ text }) => {
       return render.renderDict(text, 'sex');
@@ -41,6 +44,7 @@ export const columns: BasicColumn[] = [
     title: '手机号',
     dataIndex: 'phone',
     width: 100,
+    resizable: true,
     customRender:( { record, text })=>{
       if(record.izHideContact && record.izHideContact === '1'){
         return '/';
@@ -51,6 +55,7 @@ export const columns: BasicColumn[] = [
   {
     title: '部门',
     width: 150,
+    resizable: true,
     dataIndex: 'belongDepIds',
     customRender:( { record, text })=>{
       if(!text){
@@ -62,6 +67,7 @@ export const columns: BasicColumn[] = [
   {
     title: '负责部门',
     width: 150,
+    resizable: true,
     dataIndex: 'departIds',
     customRender:( { record, text })=>{
       if(!text){
@@ -73,6 +79,7 @@ export const columns: BasicColumn[] = [
   {
     title: '主岗位',
     width: 150,
+    resizable: true,
     dataIndex: 'mainDepPostId',
     customRender: ({ record, text })=>{
       return getDepartName(getDepartPathName(record.mainDepPostId_dictText,text,false));
@@ -81,6 +88,7 @@ export const columns: BasicColumn[] = [
   {
     title: '兼职岗位',
     width: 150,
+    resizable: true,
     dataIndex: 'otherDepPostId',
     customRender:({ record, text })=>{
       if(!text){
@@ -93,6 +101,7 @@ export const columns: BasicColumn[] = [
     title: '状态',
     dataIndex: 'status_dictText',
     width: 80,
+    resizable: true,
   },
 ];
 

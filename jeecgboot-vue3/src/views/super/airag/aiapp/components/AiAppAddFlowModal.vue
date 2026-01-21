@@ -2,30 +2,35 @@
   <div class="p-2">
     <BasicModal destroyOnClose @register="registerModal" :canFullscreen="false" width="600px" :title="title" @ok="handleOk" @cancel="handleCancel">
       <div class="flex header">
-        <a-input
+        <JInput
           @pressEnter="loadFlowData"
           class="header-search"
           size="small"
           v-model:value="searchText"
           placeholder="请输入流程名称，回车搜索"
-        ></a-input>
+        />
       </div>
       <a-row :span="24">
         <a-col :span="12" v-for="item in flowList" @click="handleSelect(item)">
-          <a-card :style="item.id === flowId ? { border: '1px solid #3370ff' } : {}" hoverable class="checkbox-card" :body-style="{ width: '100%' }">
-            <div style="display: flex; width: 100%;align-items:center">
-              <img :src="getImage(item.icon)" class="flow-icon"/>
-              <div style="display: grid;margin-left: 5px;align-items: center">
-                <span class="checkbox-name ellipsis">{{ item.name }}</span>
-                <div class="flex text-status" v-if="item.metadata && item.metadata.length>0">
-                  <span class="tag-input">输入</span>
-                  <div v-for="(metaItem, index) in item.metadata">
-                    <a-tag color="#f2f3f8" class="tags-meadata">
-                      <span v-if="index<3" class="tag-text">{{ metaItem.field }}</span>
-                    </a-tag>
+          <!-- begin 流程选择支持单选和多选 -->
+          <a-card :style="getCardStyle(item)" hoverable class="checkbox-card" :body-style="{ width: '100%' }">
+            <div style="display: flex; width: 100%;align-items:center; justify-content: space-between">
+              <div style="display: flex; align-items:center; flex: 1; overflow: hidden; margin-right: 10px;">
+                <img :src="getImage(item.icon)" class="flow-icon"/>
+                <div style="display: grid;margin-left: 5px;align-items: center">
+                  <span class="checkbox-name ellipsis">{{ item.name }}</span>
+                  <div class="flex text-status" v-if="item.metadata && item.metadata.length>0">
+                    <span class="tag-input">输入</span>
+                    <div v-for="(metaItem, index) in item.metadata">
+                      <a-tag color="#f2f3f8" class="tags-meadata">
+                        <span v-if="index<3" class="tag-text">{{ metaItem.field }}</span>
+                      </a-tag>
+                    </div>
                   </div>
                 </div>
               </div>
+              <a-checkbox v-if="multiple" v-model:checked="item.checked" @click.stop @change="(e)=>handleChange(e,item)"></a-checkbox>
+              <!-- end 流程选择支持单选和多选 -->
             </div>
             <div class="text-desc mt-10">
               {{ item.descr || '暂无描述' }}
@@ -33,8 +38,13 @@
           </a-card>
         </a-col>
       </a-row>
-      <div v-if="flowId" class="use-select">
-        已选择 <span class="ellipsis" style="max-width: 150px">{{flowData.name}}</span>
+      <div v-if="showFooterSelection" class="use-select">
+        <template v-if="!multiple">
+          已选择 <span class="ellipsis" style="max-width: 100px">{{flowData.name}}</span>
+        </template>
+        <template v-else>
+          已选择 {{ flowId.length }} 个流程
+        </template>
         <span style="margin-left: 8px; color: #3d79fb; cursor: pointer" @click="handleClearClick">清空</span>
       </div>
       <Pagination
@@ -54,10 +64,11 @@
 </template>
 
 <script lang="ts">
-  import { ref, unref } from 'vue';
+  import { ref, unref, computed } from 'vue';
   import BasicModal from '@/components/Modal/src/BasicModal.vue';
   import { useModal, useModalInner } from '@/components/Modal';
   import { Pagination } from 'ant-design-vue';
+  import {JInput} from "@/components/Form";
   import { list } from '@/views/super/airag/aiknowledge/AiKnowledgeBase.api';
   import knowledge from '/@/views/super/airag/aiknowledge/icon/knowledge.png';
   import { cloneDeep } from 'lodash-es';
@@ -71,14 +82,20 @@
     components: {
       Pagination,
       BasicModal,
+      JInput,
     },
     emits: ['success', 'register'],
+    props: {
+      multiple:{ type: Boolean, default: false },
+      // 排除的流程ID，多个逗号分隔
+      excludedIds: { type: String, default: '' },
+    },
     setup(props, { emit }) {
       const title = ref<string>('选择流程');
       //应用类型
       const flowId = ref<any>([]);
       //流程数据
-      const flowList = ref<any>({});
+      const flowList = ref<any>([]);
       //选中的数据
       const flowData = ref<any>({})
       //当前页数
@@ -93,9 +110,16 @@
       const pageSizeOptions = ref<any>(['10', '20', '30']);
       //注册modal
       const [registerModal, { closeModal, setModalProps }] = useModalInner(async (data) => {
-        flowId.value = data.flowId ? cloneDeep(data.flowId) : '';
-        flowData.value = data.flowData ? cloneDeep(data.flowData) : {};
-        setModalProps({ minHeight: 500, bodyStyle: { padding: '10px' } });
+        //update-begin---author:wangshuai---date:2025-12-24---for: 流程选择支持单选和多选 ---
+        if (props.multiple) {
+          flowId.value = data.flowId ? (Array.isArray(data.flowId) ? cloneDeep(data.flowId) : data.flowId.split(',')) : [];
+          flowData.value = data.flowData ? cloneDeep(data.flowData) : [];
+        } else {
+          flowId.value = data.flowId ? cloneDeep(data.flowId) : '';
+          flowData.value = data.flowData ? cloneDeep(data.flowData) : {};
+        }
+        setModalProps({ minHeight: 500, bodyStyle: { padding: '10px', height: 'calc(100% - 20px)', overflowY: 'auto' } });
+        //update-end---author:wangshuai---date:2025-12-24---for:流程选择支持单选和多选---
         loadFlowData();
       });
 
@@ -116,20 +140,27 @@
 
       //复选框选中事件
       const handleSelect = (item) => {
-        if(flowId.value === item.id){
-          flowId.value = "";
-          flowData.value = null;
-          return;
+        //update-begin---author:wangshuai---date:2025-12-24---for: 流程选择支持单选和多选 ---
+        if(!props.multiple) {
+          if (flowId.value === item.id) {
+            flowId.value = "";
+            flowData.value = null;
+            return;
+          }
+          flowId.value = item.id;
+          flowData.value = item;
+        } else {
+          item.checked = !item.checked;
+          updateMultipleSelection(item);
         }
-        flowId.value = item.id;
-        flowData.value = item;
+        //update-end---author:wangshuai---date:2025-12-24---for: 流程选择支持单选和多选 ---
       };
 
       /**
        * 加载AI流程
        */
       function loadFlowData() {
-        let params = {
+        let params: Recordable = {
           pageNo: pageNo.value,
           pageSize: pageSize.value,
           column: 'createTime',
@@ -137,10 +168,21 @@
           name: searchText.value,
           status: 'enable,release'
         };
+
+        // 排除的流程ID，多个逗号分隔
+        if (props.excludedIds) {
+          params.excludedIds = props.excludedIds;
+        }
+
         getAiFlowList(params).then((res) =>{
           if(res){
             for (const data of res.records) {
               data.metadata = getMetadata(data.metadata);
+              //update-begin---author:wangshuai---date:2025-12-24---for: 流程选择支持单选和多选 ---
+              if (props.multiple && Array.isArray(flowId.value) && flowId.value.includes(data.id)) {
+                data.checked = true;
+              }
+              //update-end---author:wangshuai---date:2025-12-24---for: 流程选择支持单选和多选 ---
             }
             flowList.value = res.records;
             total.value = res.total;
@@ -170,8 +212,18 @@
        * 清空选中状态
        */
       function handleClearClick() {
-        flowId.value = "";
-        flowData.value = null;
+        //update-begin---author:wangshuai---date:2025-12-24---for: 流程选择支持单选和多选 ---
+        if (!props.multiple) {
+          flowId.value = "";
+          flowData.value = null;
+        } else {
+          flowId.value = [];
+          flowData.value = [];
+          if (flowList.value && Array.isArray(flowList.value)) {
+            flowList.value.forEach(item => item.checked = false);
+          }
+        }
+        //update-end---author:wangshuai---date:2025-12-24---for: 流程选择支持单选和多选 ---
       }
 
       /**
@@ -194,6 +246,41 @@
         let inputsArr = parse['inputs'];
         return [...inputsArr];
       }
+
+      /*===========begin 流程选择支持多选 ===========*/
+      function handleChange(e, item) {
+        updateMultipleSelection(item);
+      }
+
+      function updateMultipleSelection(item) {
+        if (item.checked) {
+          if (!flowId.value.includes(item.id)) {
+            flowId.value.push(item.id);
+            flowData.value.push(item);
+          }
+        } else {
+          const index = flowId.value.indexOf(item.id);
+          if (index > -1) {
+            flowId.value.splice(index, 1);
+            flowData.value.splice(index, 1);
+          }
+        }
+      }
+      
+      const showFooterSelection = computed(() => {
+        if (props.multiple) {
+          return flowId.value && flowId.value.length > 0;
+        }
+        return !!flowId.value;
+      });
+
+      function getCardStyle(item) {
+        if (props.multiple) {
+          return item.checked ? { border: '1px solid #3370ff' } : {};
+        }
+        return item.id === flowId.value ? { border: '1px solid #3370ff' } : {};
+      }
+      /*===========end 流程选择支持多选 ===========*/
       
       return {
         registerModal,
@@ -214,6 +301,9 @@
         handleClearClick,
         flowData,
         getImage,
+        handleChange,
+        getCardStyle,
+        showFooterSelection,
       };
     },
   };
@@ -243,7 +333,7 @@
   .list-footer {
     position: absolute;
     bottom: 0;
-    left: 260px;
+    left: 210px;
   }
   .checkbox-card {
     margin-bottom: 10px;
@@ -332,5 +422,15 @@
     display: flex;
     font-weight: 500;
     max-width: 100%;
+  }
+
+  :deep(.jeecg-modal-wrapper){
+    height: calc(100% - 20px);
+  }
+
+  .scroll-container {
+    height: 480px;
+    overflow-y: auto;
+    padding-bottom: 20px;
   }
 </style>

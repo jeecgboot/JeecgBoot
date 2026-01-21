@@ -109,6 +109,33 @@ export function filterMultiDictText(dictOptions, text) {
 }
 
 /**
+ * 字典值替换文本通用方法(多选)
+ * @param dictOptions  字典数组
+ * @param val  字典值
+ * @return {*[]} 返回字典项原对象
+ */
+export function filterMultiDictObjs(dictOptions, val) {
+  val = val?.toString?.() ?? '';
+  if (!val || !dictOptions || dictOptions.length === 0) {
+    return [];
+  }
+  const objs = [];
+  const vals = val.split(',');
+  for (const item of vals) {
+    const option = dictOptions.find((option) => option && option.value === item);
+    if (option) {
+      objs.push({
+        value: item,
+        text: option.text || option.title || option.label,
+        color: option.color,
+        hasColor: !!option.color,
+      });
+    }
+  }
+  return objs;
+}
+
+/**
  * 翻译字段值对应的文本
  * @param children
  * @returns string

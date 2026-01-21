@@ -57,7 +57,7 @@
           </div>
           <div class="header-tag">
             <a-tag color="#EBF1FF" style="margin-right: 0" v-if="item.type === 'chatSimple'">
-              <span style="color: #3370ff">简单配置</span>
+              <span style="color: #3370ff">智能体</span>
             </a-tag>
             <a-tag color="#FDF6EC" style="margin-right: 0" v-if="item.type === 'chatFLow'">
               <span style="color: #e6a343">高级编排</span>
@@ -69,14 +69,16 @@
           <div class="card-footer">
             <a-tooltip title="演示">
               <div class="card-footer-icon" @click.prevent.stop="handleViewClick(item.id)">
-                <Icon class="operation" icon="ant-design:youtube-outlined" size="20" color="#1F2329"></Icon>
+                <Icon class="operation" icon="ant-design:youtube-outlined" size="18" 
+                      color="#1F2329"></Icon>
               </div>
             </a-tooltip>
             <template v-if="item.status !== 'release'">
               <a-divider type="vertical" style="float: left" />
               <a-tooltip title="删除">
                 <div class="card-footer-icon" @click.prevent.stop="handleDeleteClick(item)">
-                  <Icon icon="ant-design:delete-outlined" class="operation" size="18" color="#1F2329"></Icon>
+                  <Icon icon="ant-design:delete-outlined" class="operation" size="16" 
+                        color="#1F2329"></Icon>
                 </div>
               </a-tooltip>
             </template>
@@ -84,20 +86,21 @@
             <a-tooltip title="发布">
               <a-dropdown class="card-footer-icon" placement="bottomRight" :trigger="['click']">
                 <div @click.prevent.stop>
-                  <Icon style="position: relative;top: 1px" icon="ant-design:send-outlined" size="16" color="#1F2329"></Icon>
+                  <Icon style="position: relative;top: 1px" icon="ant-design:send-outlined" 
+                        size="14" color="#1F2329"></Icon>
                 </div>
                 <template #overlay>
                   <a-menu>
                     <template v-if="item.status === 'enable'">
                       <a-menu-item key="release" @click.prevent.stop="handleSendClick(item,'release')">
-                        <Icon icon="lineicons:rocket-5" size="16"></Icon>
+                        <Icon icon="lineicons:rocket-5" size="14"></Icon>
                         发布
                       </a-menu-item>
                       <a-menu-divider/>
                     </template>
                     <template v-else-if="item.status === 'release'">
                       <a-menu-item key="un-release" @click.prevent.stop="handleSendClick(item,'un-release')">
-                        <Icon icon="tabler:rocket-off" size="16"></Icon>
+                        <Icon icon="tabler:rocket-off" size="14"></Icon>
                         取消发布
                       </a-menu-item>
                       <a-menu-divider/>
@@ -464,8 +467,8 @@
     box-shadow: 0 2px 4px #e6e6e6;
     transition: all 0.3s ease;
     .header-img {
-      width: 40px;
-      height: 40px;
+      width: 25px;
+      height: 25px;
       border-radius: 0.5rem;
     }
     .header-text {

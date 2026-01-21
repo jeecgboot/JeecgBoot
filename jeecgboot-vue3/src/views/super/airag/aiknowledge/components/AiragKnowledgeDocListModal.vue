@@ -39,7 +39,7 @@
               </a-space>
             </div>
             <a-row :span="24" class="knowledge-row">
-              <a-col :xxl="4" :xl="6" :lg="6" :md="6" :sm="12" :xs="24">
+              <a-col :xxl="4" :xl="6" :lg="6" :md="6" :sm="12" :xs="24" v-if="!type || type==='knowledge'">
                 <a-card class="add-knowledge-card" :bodyStyle="cardBodyStyle">
                   <span style="line-height: 18px;font-weight: 500;color:#676f83;font-size: 12px">
                     创建文档
@@ -359,7 +359,7 @@
       //注册modal
       const [docTextRegister, { openModal: docTextOpenModal }] = useModal();
       const [docTextDescRegister, { openModal: docTextDescOpenModal }] = useModal();
-
+      const type = ref<string>('');
       //注册modal
       const [registerModal, { closeModal, setModalProps }] = useModalInner(async (data) => {
         knowledgeId.value = data.id;
@@ -367,6 +367,7 @@
         selectedKey.value = 'document';
         spinning.value = false;
         notHit.value = false;
+        type.value = data.type;
         await reload();
         setModalProps({ confirmLoading: false });
       });
@@ -762,6 +763,7 @@
         onDeleteAll,
         onDeleteBatch,
         searchTextEnter,
+        type,
       };
     },
   };

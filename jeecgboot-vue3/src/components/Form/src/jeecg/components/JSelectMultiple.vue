@@ -10,9 +10,11 @@
     allowClear
     :getPopupContainer="getParentContainer"
   >
-    <a-select-option v-for="(item, index) in dictOptions" :key="index" :getPopupContainer="getParentContainer" :value="item.value">
-      <span :class="[useDicColor && item.color ? 'colorText' : '']" :style="{ backgroundColor: `${useDicColor && item.color}` }">{{ item.text || item.label }}</span>
-    </a-select-option>
+    <template v-for="item of getOptions" :key="item.key">
+      <a-select-option :value="item.value" :getPopupContainer="getParentContainer">
+        <span :class="item.class" :style="item.style">{{ item.text }}</span>
+      </a-select-option>
+    </template>
   </a-select>
 </template>
 <script lang="ts">
@@ -21,10 +23,8 @@
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { getDictItems } from '/@/api/common/api';
-  import { useMessage } from '/@/hooks/web/useMessage';
   import { setPopContainer } from '/@/utils';
 
-  const { createMessage, createErrorModal } = useMessage();
   export default defineComponent({
     name: 'JSelectMultiple',
     components: {},
@@ -82,6 +82,26 @@
       const dictOptions = ref<any[]>([]);
       const attrs = useAttrs();
       const [state, , , formItemContext] = useRuleFormItem(props, 'value', 'change', emitData);
+
+      // 处理下拉选项
+      const getOptions = computed(() => {
+        if (!Array.isArray(dictOptions.value)) {
+          return [];
+        }
+        return dictOptions.value.map((item, index) => {
+          const {useDicColor} = props;
+          const text = item.text || item.label || item.label || '';
+          const key = item.value + '_' + text + '_' + index;
+          return {
+            key: key,
+            text: text,
+            value: item.value,
+            color: item.color,
+            class: [useDicColor && item.color ? 'colorText' : ''],
+            style: {backgroundColor: `${useDicColor && item.color}`},
+          };
+        });
+      });
 
       onMounted(() => {
         if (props.dictCode) {
@@ -172,6 +192,7 @@
       return {
         state,
         attrs,
+        getOptions,
         dictOptions,
         onChange,
         arrayValue,

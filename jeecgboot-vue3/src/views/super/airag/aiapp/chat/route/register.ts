@@ -50,6 +50,15 @@ const ChatRoutes: RouteRecordRaw[] = [
       }
     ],
   },
+  {
+    path: '/ai/chat/portal',
+    name: 'ai-chat-portal',
+    component: () => import('/@/views/super/airag/aiapp/chat/portal/AppPortal.vue'),
+    meta: {
+      title: 'AI聊天',
+      ignoreAuth: false,
+    },
+  },
 ]
 
 /** 注册路由 */

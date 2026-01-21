@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from 'vue';
+  import { computed, defineComponent } from 'vue';
   import { isString } from '/@/utils/is';
   import { JVxeComponent, JVxeTypes } from '/@/components/jeecg/JVxeTable/types';
   import { useJVxeComponent, useJVxeCompProps } from '/@/components/jeecg/JVxeTable/hooks';
@@ -15,12 +15,41 @@
     setup(props: JVxeComponent.Props) {
       const { innerValue, cellProps, handleChangeCommon, handleBlurCommon } = useJVxeComponent(props);
 
+      // 是否是数字类型输入框
+      const isNumberType = props.type === JVxeTypes.inputNumber;
+
+      /**
+       * 计算数字类型的限制属性
+       * 包含最大值、最小值和精度配置，供输入组件和格式化逻辑使用
+       */
+      const numberProps = computed<{
+        max?: number,
+        min?: number,
+        precision?: number,
+      }>(() => {
+        const {max, min, precision} = cellProps.value as Recordable;
+        const nProps: Recordable = {};
+        // 最大值
+        if (typeof max === 'number') {
+          nProps.max = max;
+        }
+        // 最小值
+        if (typeof min === 'number') {
+          nProps.min = min;
+        }
+        // 数值精度，保留小数位数
+        if (typeof precision === 'number') {
+          nProps.precision = precision;
+        }
+        return nProps;
+      });
+
       /** 处理change事件 */
       function handleChange(event) {
         let { target } = event;
         let { value, selectionStart } = target;
         let change = true;
-        if (props.type === JVxeTypes.inputNumber) {
+        if (isNumberType) {
           // 判断输入的值是否匹配数字正则表达式，不匹配就还原
           if (!NumberRegExp.test(value) && value !== '' && value !== '-') {
             change = false;
@@ -51,20 +80,53 @@
       function handleBlur(event) {
         let { target } = event;
         // 判断输入的值是否匹配数字正则表达式，不匹配就置空
-        if (props.type === JVxeTypes.inputNumber) {
+        if (isNumberType) {
           if (!NumberRegExp.test(target.value)) {
             target.value = '';
           } else {
-            target.value = Number.parseFloat(target.value);
+            const parsedValue = Number.parseFloat(target.value);
+            const clampedValue = clampNumber(parsedValue);
+            target.value = applyPrecision(clampedValue);
           }
         }
         handleChangeCommon(target.value, true);
         handleBlurCommon(target.value);
       }
 
+      /**
+       * 依据最小值和最大值限制数值
+       * @param value 需要裁剪的数值
+       */
+      function clampNumber(value: number): number {
+        let result = value;
+        const { max, min } = numberProps.value;
+        // 应用最小值限制
+        if (typeof min === 'number') {
+          result = Math.max(min, result);
+        }
+        // 应用最大值限制
+        if (typeof max === 'number') {
+          result = Math.min(max, result);
+        }
+        return result;
+      }
+
+      /**
+       * 按配置精度格式化数值
+       * @param value 待格式化的数值
+       */
+      function applyPrecision(value: number): number {
+        const { precision } = numberProps.value;
+        if (typeof precision === 'number') {
+          return Number(value.toFixed(precision));
+        }
+        return value;
+      }
+
       return {
         innerValue,
         cellProps,
+        isNumberType,
         handleChange,
         handleBlur,
       };

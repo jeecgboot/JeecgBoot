@@ -17,8 +17,8 @@
         <div class="header-actions">
           <div v-if="showAdvertising" class="header-advertisint">
             AI客服由
-            <a style="color: #4183c4;margin-left: 2px;margin-right: 2px" href="https://www.qiaoqiaoyun.com/aiCustomerService" target="_blank">
-              敲敲云
+            <a style="color: #4183c4;margin-left: 2px;margin-right: 2px" href="https://jeecg.com/aigcIndex" target="_blank">
+              JEECG AI
             </a>
             提供
           </div>
@@ -35,14 +35,18 @@
                 :text="item.content"
                 :inversion="item.inversion || item.role"
                 :error="item.error"
+                :errorMsg="item.errorMsg"
+                :currentToolTag="currentToolTag"
                 :loading="item.loading"
                 :appData="appData"
                 :presetQuestion="item.presetQuestion"
                 :images = "item.images"
+                :files = "item.files"
                 :retrievalText="item.retrievalText"
                 :referenceKnowledge="item.referenceKnowledge"
                 :eventType="item.eventType"
                 :showAvatar="item.showAvatar"
+                :isLast="index === chatData.length -1"
                 @send="handleOutQuestion"
               ></chatMessage>
             </div>
@@ -90,13 +94,51 @@
             </svg>
           </a-button>
           <div class="chat-textarea" :class="textareaActive?'textarea-active':''">
-            <div class="textarea-top" v-if="uploadUrlList && uploadUrlList.length>0">
-              <div v-for="(item,index) in uploadUrlList" class="top-image" :key="index">
-                <img :src="getImage(item)" @click="handlePreview(item)"/>
-                <div class="upload-icon" @click="deleteImage(index)">
-                  <Icon icon="ant-design:close-outlined" size="12px"></Icon>
+            <!--   begin 兼容文件显示   -->
+            <div class="textarea-top" v-if="(uploadUrlList && uploadUrlList.length>0) || (fileList && fileList.length>0)">
+              <!-- 只拥有图片 -->
+              <template v-if="(!fileList || fileList.length===0)">
+                <div v-for="(item,index) in uploadUrlList" class="top-image" :key="index">
+                  <img :src="getImage(item)" @click="handlePreview(item)"/>
+                  <div class="upload-icon" @click="deleteImage(index)">
+                    <Icon icon="ant-design:close-outlined" size="12px"></Icon>
+                  </div>
                 </div>
-              </div>
+              </template>
+              <!-- 拥有文件 -->
+              <template v-else>
+                <div class="file-card-container" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  <!-- 图片渲染 -->
+                  <div v-for="(url, index) in uploadUrlList" :key="'img-'+index" class="file-card">
+                    <div class="file-card-icon">
+                      <img :src="getImage(url)" class="file-thumb" @click="handlePreview(url)"/>
+                    </div>
+                    <div class="file-card-info">
+                      <div class="file-name" :title="fileInfoList[index]?.name || '图片'">{{ fileInfoList[index]?.name || '图片' }}</div>
+                      <div class="file-size">{{ calculateFileSize(fileInfoList[index]?.size) }}</div>
+                    </div>
+                    <div class="file-card-close" @click="deleteImage(index)">
+                      <Icon icon="ant-design:close-outlined" size="12px"/>
+                    </div>
+                  </div>
+                  <!-- 文件渲染 -->
+                  <template v-for="(item, index) in fileList" :key="'file-'+index">
+                    <div class="file-card" v-if="item.status !== 'error'">
+                      <div class="file-card-icon">
+                        <Icon :icon="getFileIcon(item.name)" :color="getFileIconColor(item.name)" size="32" />
+                      </div>
+                      <div class="file-card-info">
+                        <div class="file-name" :title="item.name">{{ item.name }}</div>
+                        <div class="file-size">{{ calculateFileSize(item.size) }}</div>
+                      </div>
+                      <div class="file-card-close" @click="deleteFile(index)">
+                        <Icon icon="ant-design:close-outlined" size="12px"/>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </template>
+              <!--   end 兼容文件显示   -->
             </div>
             <div class="textarea-bottom">
               <a-textarea
@@ -113,83 +155,139 @@
                   @paste="paste"
               >
               </a-textarea>
-              <a-button v-if="loading" type="primary" danger @click="handleStopChat" class="stopBtn">
-                <svg
-                    t="1706148514627"
-                    class="icon"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    p-id="5214"
-                    width="18"
-                    height="18"
-                >
-                  <path
-                      d="M512 967.111111c-250.311111 0-455.111111-204.8-455.111111-455.111111s204.8-455.111111 455.111111-455.111111 455.111111 204.8 455.111111 455.111111-204.8 455.111111-455.111111 455.111111z m0-56.888889c221.866667 0 398.222222-176.355556 398.222222-398.222222s-176.355556-398.222222-398.222222-398.222222-398.222222 176.355556-398.222222 398.222222 176.355556 398.222222 398.222222 398.222222z"
-                      fill="currentColor"
-                      p-id="5215"
-                  />
-                  <path d="M341.333333 341.333333h341.333334v341.333334H341.333333z" fill="currentColor" p-id="5216"/>
-                </svg>
-              </a-button>
-              <a-tooltip v-if="!loading && showWebSearch" :title="enableSearch ? '关闭联网搜索' : '开启联网搜索'">
-                <a-button 
-                  class="sendBtn webSearchBtn" 
-                  type="text"
-                  :class="{'enabled': enableSearch}"
-                  @click="toggleWebSearch"
-                >
-                  <Icon icon="ant-design:global-outlined" :style="enableSearch ? {color: '#52c41a'} : {color: '#3d4353'}"></Icon>
-                </a-button>
-              </a-tooltip>
-              <a-upload
-                  accept=".jpg,.jpeg,.png"
-                  v-if="!loading"
-                  name="file"
-                  v-model:file-list="fileInfoList"
-                  :showUploadList="false"
-                  :headers="headers"
-                  :beforeUpload="beforeUpload"
-                  @change="handleChange"
-                  :multiple="true"
-                  :action="uploadUrl"
-                  :max-count="3"
-              >
-                <a-tooltip title="图片上传，支持jpg/jpeg/png">
+              <div class="textarea-action-bar">
+                <div class="left-actions">
+                <a-dropdown placement="topLeft" trigger="['click']" overlayClassName="chat-upload-dropdown">
+                  <template #overlay>
+                    <a-menu mode="vertical">
+                      <a-menu-item key="img">
+                        <a-upload
+                            accept=".jpg,.jpeg,.png"
+                            v-if="!loading"
+                            name="file"
+                            v-model:file-list="fileInfoList"
+                            :showUploadList="false"
+                            :headers="headers"
+                            :beforeUpload="beforeUpload"
+                            @change="handleChange"
+                            :multiple="true"
+                            :action="uploadUrl"
+                            :max-count="3"
+                        >
+                          <div style="display: flex; align-items: center">
+                            <Icon icon="ant-design:picture-outlined" style="margin-right:8px;color:#3d4353" />
+                            上传图片
+                          </div>
+                        </a-upload>
+                      </a-menu-item>
+                      <a-menu-item key="file">
+                        <a-upload
+                            accept=".txt, .pdf, .docx, .doc, .pptx, .ppt, .xlsx, .xls, .md"
+                            :maxCount="3"
+                            v-if="!loading"
+                            name="file"
+                            v-model:file-list="fileList"
+                            :showUploadList="false"
+                            :headers="headers"
+                            :beforeUpload="beforeUploadFile"
+                            @change="handleChangeFile"
+                            :multiple="true"
+                            :action="uploadUrl"
+                        >
+                          <div style="display: flex; align-items: center">
+                            <Icon icon="ant-design:file-add-outlined" style="margin-right:8px;color:#3d4353" />
+                            上传文件
+                          </div>
+                        </a-upload>
+                      </a-menu-item>
+                    </a-menu>
+                  </template>
                   <a-button class="sendBtn" type="text">
-                    <Icon icon="ant-design:picture-outlined" style="color: #3d4353"></Icon>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M17.3977 3.9588C15.8361 2.39727 13.3037 2.39727 11.7422 3.9588L5.03365 10.6673C2.60612 13.0952 2.60612 17.0314 5.03365 19.4592C7.46144 21.887 11.3983 21.8875 13.8262 19.4599L20.5348 12.7514C20.8472 12.439 21.3534 12.439 21.6658 12.7514C21.9781 13.0638 21.9782 13.5701 21.6658 13.8825L14.9573 20.591C11.9046 23.6435 6.95518 23.6429 3.90255 20.5903C0.850191 17.5377 0.850191 12.5889 3.90255 9.53624L10.6111 2.82771C12.7975 0.641334 16.3424 0.641334 18.5288 2.82771C20.7149 5.01409 20.7151 8.55906 18.5288 10.7454L11.8699 17.4042C10.5369 18.7372 8.37542 18.7365 7.04241 17.4035C5.70963 16.0705 5.7095 13.9096 7.04241 12.5767L13.7012 5.91785C14.0136 5.60547 14.5199 5.60557 14.8323 5.91785C15.1447 6.23027 15.1447 6.73652 14.8323 7.04894L8.1735 13.7078C7.46543 14.4159 7.46556 15.5642 8.1735 16.2724C8.88167 16.9806 10.03 16.9806 10.7381 16.2724L17.397 9.61358C18.9584 8.05211 18.959 5.52035 17.3977 3.9588Z" fill="currentColor"></path></svg>
                   </a-button>
-                </a-tooltip>
-              </a-upload>
-              <a-divider v-if="!loading" type="vertical" style="border-color:#38374314"></a-divider>
-              <a-button
-                  @click="
+                </a-dropdown>
+                  <a-divider type="vertical" v-if="showThink || showWebSearch || showDraw "/>
+                  <a-tooltip v-if="showThink" :title="enableThink ? '关闭深度思考' : '开启深度思考'">
+                    <a-button
+                        class="sendBtn webSearchBtn"
+                        type="text"
+                        :class="{ 'enabled': enableThink }"
+                        @click="toggleThink">
+                      <svg style="margin-right: 6px" :style="enableThink ? { color: '#06f' } : { color: '#3d4353' }" width="16" height="16" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.06428 5.93342C7.6876 5.93342 8.19304 6.43904 8.19319 7.06233C8.19319 7.68573 7.68769 8.19123 7.06428 8.19123C6.44096 8.19113 5.93537 7.68567 5.93537 7.06233C5.93552 6.43911 6.44105 5.93353 7.06428 5.93342Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M8.68147 0.963693C10.1168 0.447019 11.6266 0.374829 12.5633 1.31135C13.5 2.24805 13.4276 3.75776 12.911 5.19319C12.7126 5.74431 12.4385 6.31796 12.0965 6.89729C12.4969 7.54638 12.8141 8.19018 13.036 8.80647C13.5527 10.2419 13.625 11.7516 12.6883 12.6883C11.7516 13.625 10.2419 13.5527 8.80647 13.036C8.19019 12.8141 7.54638 12.4969 6.89729 12.0965C6.31794 12.4386 5.74432 12.7125 5.19319 12.911C3.75774 13.4276 2.24807 13.5 1.31135 12.5633C0.374829 11.6266 0.447019 10.1168 0.963693 8.68147C1.17182 8.10338 1.46318 7.50063 1.82893 6.8924C1.52179 6.35711 1.27232 5.82825 1.08869 5.31819C0.572038 3.88278 0.499683 2.37306 1.43635 1.43635C2.37304 0.499655 3.88277 0.572044 5.31819 1.08869C5.82825 1.27232 6.35712 1.5218 6.8924 1.82893C7.50063 1.46318 8.10338 1.17181 8.68147 0.963693ZM11.3572 8.01154C10.9083 8.62253 10.3901 9.22873 9.8094 9.8094C9.22874 10.3901 8.62252 10.9083 8.01154 11.3572C8.42567 11.5841 8.82867 11.7688 9.21272 11.9071C10.5455 12.3868 11.4246 12.2547 11.8397 11.8397C12.2547 11.4246 12.3869 10.5456 11.9071 9.21272C11.7688 8.82866 11.5841 8.42568 11.3572 8.01154ZM2.56526 8.02912C2.3734 8.39322 2.21492 8.74796 2.0926 9.08772C1.61288 10.4204 1.74509 11.2995 2.15998 11.7147C2.57502 12.1297 3.45412 12.2618 4.78694 11.7821C5.11053 11.6656 5.44783 11.5164 5.79377 11.3367C5.24897 10.9223 4.70919 10.4533 4.19026 9.9344C3.57575 9.31987 3.03166 8.67633 2.56526 8.02912ZM6.90705 3.2469C6.24062 3.70479 5.56457 4.26321 4.91389 4.91389C4.26322 5.56456 3.70479 6.24063 3.2469 6.90705C3.72671 7.63325 4.32774 8.37685 4.91389 8.96299C5.50003 9.54914 6.24362 10.1502 6.96983 10.6299C7.69601 10.1502 8.43961 9.54914 9.02575 8.96299C9.6119 8.37685 10.2129 7.63325 10.6927 6.90705C10.2129 6.18086 9.6119 5.43725 9.02575 4.8511C8.43961 4.26496 7.69601 3.66391 6.96983 3.18419C6.94896 3.205 6.92803 3.22593 6.90705 3.2469Z" fill="currentColor"></path></svg>
+                      深度思考
+                    </a-button>
+                  </a-tooltip>
+                  <a-tooltip v-if="showWebSearch" :title="enableSearch ? '关闭联网搜索' : '开启联网搜索'">
+                    <a-button
+                        class="sendBtn webSearchBtn"
+                        type="text"
+                        :class="{ 'enabled': enableSearch }"
+                        @click="toggleWebSearch">
+                      <Icon size="16" icon="ant-design:global-outlined" :style="enableSearch ? { color: '#06f' } : { color: '#3d4353' }"></Icon>
+                      联网搜索
+                    </a-button>
+                  </a-tooltip>
+                  <a-tooltip v-if="showDraw" :title="enableDraw ? '关闭图像生成' : '开启图像生成'">
+                    <a-button
+                        class="sendBtn webSearchBtn"
+                        type="text"
+                        :class="{ 'enabled': enableDraw }"
+                        @click="handleGenerateImage">
+                      <svg style="margin-right: 6px" :style="enableDraw ? { color: '#06f' } : { color: '#3d4353' }" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class=""><path d="M12 2.3584C14.1681 2.35841 16.1541 2.52965 17.7266 2.72754C19.9228 3.00409 21.6336 4.66074 21.9365 6.85352C22.1348 8.28975 22.2998 10.0677 22.2998 12L22.293 12.7168C22.2586 14.3712 22.1101 15.8897 21.9365 17.1465L21.9043 17.3496C21.5268 19.4411 19.8545 21.0045 17.7266 21.2725L17.1182 21.3457C15.655 21.511 13.8972 21.6416 12 21.6416L11.1963 21.6338C9.60724 21.6034 8.13686 21.4874 6.88281 21.3457L6.27441 21.2725C4.14635 21.0046 2.47428 19.4411 2.09668 17.3496L2.06445 17.1465C1.89093 15.8897 1.74239 14.3712 1.70801 12.7168L1.7002 12C1.7002 10.3092 1.82669 8.737 1.99121 7.4082L2.06445 6.85352C2.35801 4.72923 3.9719 3.10743 6.06934 2.75684L6.27441 2.72754C7.84674 2.52969 9.83219 2.35841 12 2.3584ZM11.9775 13.3496C11.4613 13.3496 10.9378 13.4818 10.2207 13.8066C9.48747 14.1388 8.61112 14.6435 7.37793 15.3555L3.76367 17.4424C4.13152 18.6436 5.16153 19.5204 6.47363 19.6855C7.99607 19.8771 9.91342 20.042 12 20.042C14.0865 20.042 16.0039 19.8771 17.5264 19.6855C18.8303 19.5214 19.8566 18.6546 20.2305 17.4648L16.5771 15.3555C15.344 14.6435 14.4676 14.1388 13.7344 13.8066C13.0173 13.4818 12.4938 13.3496 11.9775 13.3496ZM12 3.95801C9.91342 3.95802 7.99607 4.12286 6.47363 4.31445C4.98011 4.50243 3.85117 5.61215 3.64941 7.07324C3.45876 8.45412 3.2998 10.1566 3.2998 12C3.2998 13.3468 3.38385 14.6183 3.50391 15.7441L6.57715 13.9707C7.78367 13.2741 8.73894 12.7218 9.56055 12.3496C10.3981 11.9702 11.1542 11.75 11.9775 11.75C12.8008 11.75 13.557 11.9702 14.3945 12.3496C15.2161 12.7218 16.1714 13.2741 17.3779 13.9707L20.4922 15.7686C20.6134 14.6367 20.7002 13.3565 20.7002 12C20.7002 10.1566 20.5422 8.4541 20.3516 7.07324C20.1498 5.61218 19.0198 4.50249 17.5264 4.31445C16.0039 4.12287 14.0865 3.95802 12 3.95801ZM7.73438 7.0625C8.76128 7.0625 9.59375 7.89497 9.59375 8.92188C9.59375 9.94878 8.76128 10.7812 7.73438 10.7812C6.70747 10.7812 5.875 9.94878 5.875 8.92188C5.875 7.89497 6.70747 7.0625 7.73438 7.0625Z" fill="currentColor"></path></svg>
+                      <span style="font-size: 14px">图像生成</span>
+                    </a-button>
+                  </a-tooltip>
+                </div>
+                <div class="right-actions">
+                <a-button v-if="loading" type="primary" danger @click="handleStopChat" class="stopBtn">
+                  <svg
+                      t="1706148514627"
+                      class="icon"
+                      viewBox="0 0 1024 1024"
+                      version="1.1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      p-id="5214"
+                      width="18"
+                      height="18"
+                  >
+                    <path
+                        d="M512 967.111111c-250.311111 0-455.111111-204.8-455.111111-455.111111s204.8-455.111111 455.111111-455.111111 455.111111 204.8 455.111111 455.111111-204.8 455.111111-455.111111 455.111111z m0-56.888889c221.866667 0 398.222222-176.355556 398.222222-398.222222s-176.355556-398.222222-398.222222-398.222222-398.222222 176.355556-398.222222 398.222222 176.355556 398.222222 398.222222 398.222222z"
+                        fill="currentColor"
+                        p-id="5215"
+                    />
+                    <path d="M341.333333 341.333333h341.333334v341.333334H341.333333z" fill="currentColor" p-id="5216"/>
+                  </svg>
+                </a-button>
+                <a-button
+                    @click="
               () => {
                 handleSubmit();
               }
             "
-                  :disabled="!prompt"
-                  class="sendBtn"
-                  type="text"
-                  v-if="!loading"
-              >
-                <svg
-                    t="1706147858151"
-                    class="icon"
-                    viewBox="0 0 1024 1024"
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    p-id="4237"
-                    width="1em"
-                    height="1em"
+                    :disabled="!prompt"
+                    class="sendBtn"
+                    type="text"
+                    v-if="!loading"
                 >
-                  <path
-                      d="M865.28 202.5472c-17.1008-15.2576-41.0624-19.6608-62.5664-11.5712L177.7664 427.1104c-23.2448 8.8064-38.5024 29.696-39.6288 54.5792-1.1264 24.8832 11.9808 47.104 34.4064 58.0608l97.5872 47.7184c4.5056 2.2528 8.0896 6.0416 9.9328 10.6496l65.4336 161.1776c7.7824 19.1488 24.4736 32.9728 44.7488 37.0688 20.2752 4.096 41.0624-2.1504 55.6032-16.7936l36.352-36.352c6.4512-6.4512 16.5888-7.8848 24.576-3.3792l156.5696 88.8832c9.4208 5.3248 19.8656 8.0896 30.3104 8.0896 8.192 0 16.4864-1.6384 24.2688-5.0176 17.8176-7.68 30.72-22.8352 35.4304-41.6768l130.7648-527.1552c5.5296-22.016-1.7408-45.2608-18.8416-60.416z m-20.8896 50.7904L713.5232 780.4928c-1.536 6.2464-5.8368 11.3664-11.776 13.9264s-12.5952 2.1504-18.2272-1.024L526.9504 704.512c-9.4208-5.3248-19.8656-7.9872-30.208-7.9872-15.9744 0-31.744 6.144-43.52 17.92l-36.352 36.352c-3.8912 3.8912-8.9088 5.9392-14.2336 6.0416l55.6032-152.1664c0.512-1.3312 1.2288-2.56 2.2528-3.6864l240.3328-246.1696c8.2944-8.4992-2.048-21.9136-12.3904-16.0768L301.6704 559.8208c-4.096-3.584-8.704-6.656-13.6192-9.1136L190.464 502.9888c-11.264-5.5296-11.5712-16.1792-11.4688-19.3536 0.1024-3.1744 1.536-13.824 13.2096-18.2272L817.152 229.2736c10.4448-3.9936 18.0224 1.3312 20.8896 3.8912 2.8672 2.4576 9.0112 9.3184 6.3488 20.1728z"
-                      p-id="4238"
-                      fill="currentColor"
-                  />
-                </svg>
-              </a-button>
+                  <svg
+                      t="1706147858151"
+                      class="icon"
+                      viewBox="0 0 1024 1024"
+                      version="1.1"
+                      xmlns="http://www.w3.org/2000/svg"
+                      p-id="4237"
+                      width="18"
+                      height="18"
+                  >
+                    <path
+                        d="M865.28 202.5472c-17.1008-15.2576-41.0624-19.6608-62.5664-11.5712L177.7664 427.1104c-23.2448 8.8064-38.5024 29.696-39.6288 54.5792-1.1264 24.8832 11.9808 47.104 34.4064 58.0608l97.5872 47.7184c4.5056 2.2528 8.0896 6.0416 9.9328 10.6496l65.4336 161.1776c7.7824 19.1488 24.4736 32.9728 44.7488 37.0688 20.2752 4.096 41.0624-2.1504 55.6032-16.7936l36.352-36.352c6.4512-6.4512 16.5888-7.8848 24.576-3.3792l156.5696 88.8832c9.4208 5.3248 19.8656 8.0896 30.3104 8.0896 8.192 0 16.4864-1.6384 24.2688-5.0176 17.8176-7.68 30.72-22.8352 35.4304-41.6768l130.7648-527.1552c5.5296-22.016-1.7408-45.2608-18.8416-60.416z m-20.8896 50.7904L713.5232 780.4928c-1.536 6.2464-5.8368 11.3664-11.776 13.9264s-12.5952 2.1504-18.2272-1.024L526.9504 704.512c-9.4208-5.3248-19.8656-7.9872-30.208-7.9872-15.9744 0-31.744 6.144-43.52 17.92l-36.352 36.352c-3.8912 3.8912-8.9088 5.9392-14.2336 6.0416l55.6032-152.1664c0.512-1.3312 1.2288-2.56 2.2528-3.6864l240.3328-246.1696c8.2944-8.4992-2.048-21.9136-12.3904-16.0768L301.6704 559.8208c-4.096-3.584-8.704-6.656-13.6192-9.1136L190.464 502.9888c-11.264-5.5296-11.5712-16.1792-11.4688-19.3536 0.1024-3.1744 1.536-13.824 13.2096-18.2272L817.152 229.2736c10.4448-3.9936 18.0224 1.3312 20.8896 3.8912 2.8672 2.4576 9.0112 9.3184 6.3488 20.1728z"
+                        p-id="4238"
+                        fill="currentColor"
+                    />
+                  </svg>
+                </a-button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -212,7 +310,7 @@
   import dayjs from 'dayjs';
   import { defHttp } from '@/utils/http/axios';
   import { cloneDeep } from "lodash-es";
-  import {getFileAccessHttpUrl, getHeaders} from "@/utils/common/compUtils";
+  import { calculateFileSize, getFileAccessHttpUrl, getFileIcon, getHeaders, getFileIconColor } from "@/utils/common/compUtils";
   import { createImgPreview } from "@/components/Preview";
   import { useAppInject } from "@/hooks/web/useAppInject";
   import { useGlobSetting } from "@/hooks/setting";
@@ -222,7 +320,7 @@
     prefixCls: 'ai-chat-message',
   });
 
-  const props = defineProps(['uuid', 'prologue', 'formState', 'url', 'type','historyData','chatTitle','presetQuestion','quickCommandData','showAdvertising','hasExtraFlowInputs','conversationSettings']);
+  const props = defineProps(['uuid', 'prologue', 'formState', 'url', 'type','historyData','chatTitle','presetQuestion','quickCommandData','showAdvertising','hasExtraFlowInputs','conversationSettings','sessionType']);
   const emit = defineEmits(['save','reload-message-title','edit-settings']);
   const { scrollRef, scrollToBottom } = useScroll();
   const prompt = ref<string>('');
@@ -266,7 +364,26 @@
   const showWebSearch = ref<boolean>(false);
   //模型provider信息
   const modelProvider = ref<string>('');
-  
+  //是否显示深度思考( 只有deepsee-reason支持 )
+  const showThink = ref<boolean>(false);
+  //是否开启深度思考
+  const enableThink = ref<boolean>(false);
+  //模型名称
+  const modelName = ref<string>('');
+  //是否开启绘画
+  const enableDraw = ref<boolean>(false);
+  //是否显示工具栏
+  const showDraw = ref<boolean>(false);
+  //绘画模型的id
+  const drawModelId = ref<string>('');
+  //其他文件列表
+  const fileUrlList = ref<any>([]);
+  //文件列表（用于显示和管理）
+  const fileList = ref<any>([]);
+
+  // 当前正在调用的工具
+  const currentToolTag = ref<string>('');
+
   function handleEnter(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
@@ -316,6 +433,7 @@
       dateTime: new Date().toLocaleString(),
       content: userMessage,
       images:uploadUrlList.value?uploadUrlList.value:[],
+      files: fileUrlList.value ? fileUrlList.value : [],
       inversion: 'user',
       error: false,
       conversationOptions: null,
@@ -388,12 +506,16 @@
   const updateChatSome = (uuid, index, data) => {
     chatData.value[index] = { ...chatData.value[index], ...data };
   };
-  const updateChatFail = (uuid, index, data) => {
+  const updateChatFail = (uuid, data) => {
+    const index = chatData.value.length - 1
+    const oldChat = chatData.value[index];
     updateChat(uuid.value, chatData.value.length - 1, {
-      dateTime: new Date().toLocaleString(),
-      content: data,
+      ...oldChat,
+      // dateTime: new Date().toLocaleString(),
+      // content: data,
       inversion: 'ai',
       error: true,
+      errorMsg: data,
       loading: true,
       conversationOptions: null,
       requestOptions: null,
@@ -417,8 +539,14 @@
       wrapClassName:'ai-chat-modal',
       async onOk() {
         try {
+          //update-begin---author:wangshuai---date:2025-12-12---for:【QQYUN-14127】【AI】AI应用门户---
+          let url = '/airag/chat/messages/clear/' + uuid.value;
+          if(props.sessionType){
+            url += "/" + props.sessionType;
+          }
           defHttp.get({
-            url: '/airag/chat/messages/clear/' + uuid.value,
+            url: url,
+          //update-end---author:wangshuai---date:2025-12-12---for:【QQYUN-14127】【AI】AI应用门户---
           },{ isTransformResponse: false }).then((res) => {
             if(res.success){
               chatData.value = [];
@@ -481,26 +609,42 @@
       param = {
         content: message,
         images: uploadUrlList.value?uploadUrlList.value:[],
+        files: fileUrlList.value ? fileUrlList.value : [],
         topicId: topicId.value,
         app: appData.value,
         responseMode: 'streaming',
         // 添加对话设置参数（调试模式也需要）
         flowInputs: props.conversationSettings || {},
         // 添加网络搜索参数
-        enableSearch: enableSearch.value
+        enableSearch: enableSearch.value,
+        // 添加深度思考参数
+        enableThink: enableThink.value,
+        // 添加绘画参数
+        enableDraw: enableDraw.value,
+        drawModelId: enableDraw.value ? drawModelId.value : '',
+        // 添加消息类型 portal 门户
+        sessionType: props.sessionType || ''
       };
     }else{
       param = {
         content: message,
         topicId: usingContext.value?topicId.value:'',
         images: uploadUrlList.value?uploadUrlList.value:[],
+        files: fileUrlList.value ? fileUrlList.value : [],
         appId: appData.value.id,
         responseMode: 'streaming',
         conversationId: uuid.value === "1002"?'':uuid.value,
         // 添加对话设置参数
         flowInputs: props.conversationSettings || {},
         // 添加网络搜索参数
-        enableSearch: enableSearch.value
+        enableSearch: enableSearch.value,
+        // 添加深度思考参数
+        enableThink: enableThink.value,
+        // 添加绘画参数
+        enableDraw: enableDraw.value,
+        drawModelId: enableDraw.value ? drawModelId.value : '',
+        // 添加消息类型 portal 门户
+        sessionType: props.sessionType || ''
       };
 
       if(headerTitle.value == '新建聊天'){
@@ -512,6 +656,8 @@
 
     uploadUrlList.value = [];
     fileInfoList.value = [];
+    fileUrlList.value = [];
+    fileList.value = [];
     knowList.value = [];
     options.message = message;
     const readableStream = await defHttp.post(
@@ -528,11 +674,11 @@
     ).catch((e)=>{
       //update-begin---author:wangshuai---date:2025-04-28---for:【QQYUN-12297】【AI】聊天，超时以后提示---
       if(e.code === 'ETIMEDOUT'){
-        updateChatFail(uuid, chatData.value.length - 1, "当前用户较多，排队中，请稍候再次重试！");
+        updateChatFail(uuid, "当前用户较多，排队中，请稍候再次重试！");
         handleStop();
         return;
       }else{
-        updateChatFail(uuid, chatData.value.length - 1, "服务器错误，请稍后重试！");
+        updateChatFail(uuid, "服务器错误，请稍后重试！");
         handleStop();
         return;
       }
@@ -569,13 +715,15 @@
   async function renderText(item,conversationId,text,options) {
     let returnText = "";
     if (item.event == 'MESSAGE' || item.event == 'THINKING' || item.event == 'THINKING_END') {
-      let message = item.data.message;
+      let message = item.data?.message ?? "";
       let messageText = "";
       //update-begin---author:wangshuai---date:2025-04-24---for:应该先判断是否包含card---
       if(message && message.indexOf("::card::") !== -1){
         messageText = message;
+      } else if(message && message.indexOf("::cardConfig::") !== -1) {
+        messageText = message;
       } else {
-        text = text + item.data.message;
+        text = text + message;
         messageText = text;
         returnText = text;
       }
@@ -595,6 +743,7 @@
           dateTime: new Date().toLocaleString(),
           content: item.data.message,
           images:uploadUrlList.value?uploadUrlList.value:[],
+          files: fileUrlList.value ? fileUrlList.value : [],
           inversion: 'ai',
           error: false,
           conversationOptions: null,
@@ -634,7 +783,7 @@
     if (item.event == 'FLOW_FINISHED') {
       //update-begin---author:wangshuai---date:2025-03-07---for:【QQYUN-11457】聊天调用流程，执行失败了但是没提示---
       if(item.data && !item.data.success){
-        updateChatFail(uuid, chatData.value.length - 1, item.data.message?item.data.message:'请求出错，请稍后重试！');
+        updateChatFail(uuid, item.data.message?item.data.message:'请求出错，请稍后重试！');
         localStorage.removeItem('chat_requestId_' + uuid.value);
         handleStop();
         return "";
@@ -648,17 +797,27 @@
       handleStop();
     }
     if (item.event == 'ERROR') {
-      updateChatFail(uuid, chatData.value.length - 1, item.data.message?item.data.message:'请求出错，请稍后重试！');
+      updateChatFail(uuid, item.data.message?item.data.message:'请求出错，请稍后重试！');
       localStorage.removeItem('chat_requestId_' + uuid.value);
       handleStop();
       return "";
+    }
+
+    // 工具调用开始
+    if (item.event == 'TOOL_EXEC_BEFORE') {
+      currentToolTag.value = item.data?.message ?? '';
+    }
+
+    // 工具调用结束
+    if (item.event == 'TOOL_EXEC_DONE') {
+      currentToolTag.value = '';
     }
 
     //update-begin---author:wangshuai---date:2025-03-21---for:【QQYUN-11495】【AI】实时展示当前思考进度---
     if(item.event === "NODE_STARTED"){
       if(!item.data || item.data.type !== 'end'){
         let aiText = "";
-        if(item.data.type === 'llm'){
+        if(item.data.type === 'llm' || item.data.type === 'reply'){
           aiText = "正在构建响应内容";
         }
         if(item.data.type === 'knowledge'){
@@ -708,7 +867,7 @@
         }
       }
     }
-    if(!returnText){
+    if(!returnText && item.event !== 'NODE_FINISHED'){
       returnText = text;
     }
     return { returnText, conversationId };
@@ -887,7 +1046,7 @@
             continue;
           }
           if(!content.endsWith('}')){
-            buffer = buffer + line;
+            buffer = buffer + content;
             continue;
           }
           buffer = "";
@@ -1059,6 +1218,18 @@
     }
   }
 
+  /**
+   * 切换网络思考
+   */
+  function toggleThink() {
+    enableThink.value = !enableThink.value;
+    if (enableThink.value) {
+      message.success("已开启深度思考");
+    } else {
+      message.info("已关闭深度思考");
+    }
+  }
+
   // 检查模型是否支持网络搜索（从appData.metadata.modelInfo中获取）
   function checkModelProvider() {
     if (appData.value && appData.value.metadata) {
@@ -1066,22 +1237,90 @@
         const metadata = typeof appData.value.metadata === 'string' 
           ? JSON.parse(appData.value.metadata) 
           : appData.value.metadata;
+
+        //是否显示绘图工具
+        showDraw.value = metadata.izDraw === '1';
+        drawModelId.value = metadata.drawModelId;
+
         if (metadata && metadata.modelInfo) {
           modelProvider.value = metadata.modelInfo.provider || '';
+          modelName.value = metadata.modelInfo.modelName || '';
           // 只有千问模型支持网络搜索
           showWebSearch.value = modelProvider.value === 'QWEN';
+          showThink.value = modelName.value === 'deepseek-reasoner';
         } else {
           showWebSearch.value = false;
+          showThink.value = false;
         }
       } catch (e) {
         console.error('解析模型信息失败', e);
         showWebSearch.value = false;
+        showThink.value = false;
       }
     } else {
       showWebSearch.value = false;
+      showThink.value = false;
+      showDraw.value = false;
     }
   }
 
+  /**
+   * 生成图片
+   */
+  function handleGenerateImage() {
+    enableDraw.value = !enableDraw.value;
+    if (enableDraw.value) {
+      message.success("已开启生成图片");
+    } else {
+      message.info("已关闭生成图片");
+    }
+  }
+
+  //================================================== begin 【QQYUN-14261】AI助手，支持多模态能力- 文档 ====================================
+  /**
+   * 通用文件上传前校验
+   * 
+   * @param file
+   */
+  function beforeUploadFile(file) {
+    const fileName = file.name;
+    const fileType = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+    const allowFileTypes = ['txt', 'pdf', 'docx', 'doc', 'pptx', 'ppt', 'xlsx', 'xls', 'md'];
+    if (allowFileTypes.indexOf(fileType) === -1) {
+      message.warning('不支持该文件类型上传，请上传 txt, pdf, docx, doc, pptx, ppt, xlsx, xls, md 格式文件');
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * 文件上传（非图片）
+   * @param info
+   */
+  function handleChangeFile(info) {
+    let { file, fileList: newFileList } = info;
+    fileList.value = newFileList;
+    if (file.status === 'error' || (file.response && file.response.code == 500)) {
+      message.error(file.response?.message || `${file.name} 上传失败,请查看服务端日志`);
+      return;
+    }
+    fileUrlList.value = fileList.value
+        .filter(item => item.status === 'done' && item.response)
+        .map(item => item.response.message);
+  }
+
+  /**
+   * 删除文件
+   */
+  function deleteFile(index) {
+    fileList.value.splice(index, 1);
+    fileUrlList.value = fileList.value
+        .filter(item => item.status === 'done' && item.response)
+        .map(item => item.response.message);
+  }
+  
+  //================================================== end 【QQYUN-14261】AI助手，支持多模态能力- 文档 ====================================
+  
   //监听历史信息
   watch(
     () => props.historyData,
@@ -1116,6 +1355,8 @@
     scrollToBottom();
     uploadUrlList.value = [];
     fileInfoList.value = [];
+    fileUrlList.value = [];
+    fileList.value = [];
     // 检查模型是否支持网络搜索
     checkModelProvider();
   });
@@ -1199,19 +1440,39 @@
         font-size: 18px;
       }
       .sendBtn {
-        font-size: 18px;
-        width: 36px;
+        font-size: 14px;
+        width: 100%;
         display: flex;
-        padding: 8px;
+        padding: 4px 6px;
         align-items: center;
         &.enabled {
-          color: @primary-color;
+          color: #0a66ff !important;
         }
       }
       .webSearchBtn {
+        border-radius: 8px;
+        padding: 4px 8px;
+        height: 30px;
+        background-color: transparent;
+        border: 1px solid transparent;
+        color: #3d4353;
+        transition: all .2s ease;
+        :deep(.anticon){
+          margin-right: 6px;
+          color: #3d4353;
+        }
+        &:hover{
+          border-color: #d2d7e5;
+          background-color: #f7f9fc;
+        }
         &.enabled {
+          background-color: rgba(10,102,255,0.08);
+          border-color: #0a66ff;
+          color: #0a66ff;
+          box-shadow: none;
+          font-weight: 500;
           :deep(.anticon) {
-            color: #52c41a !important;
+            color: #0a66ff !important;
           }
         }
       }
@@ -1309,16 +1570,108 @@
           width: 60px;
         }
       }
+      /*begin 文件的样式*/
+      .file-card {
+        display: flex;
+        align-items: center;
+        background: #f4f6f8;
+        border-radius: 8px;
+        padding: 8px 12px;
+        width: 200px;
+        position: relative;
+        
+        .file-card-icon {
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: 8px;
+          .file-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            object-fit: cover;
+          }
+        }
+        
+        .file-card-info {
+          flex: 1;
+          overflow: hidden;
+          .file-name {
+            font-size: 14px;
+            color: #333;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+          .file-size {
+            font-size: 12px;
+            color: #999;
+          }
+        }
+        
+        .file-card-close {
+          position: absolute;
+          top: -6px;
+          right: -6px;
+          width: 16px;
+          height: 16px;
+          background: #ccc;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #fff;
+          font-size: 10px;
+          opacity: 0;
+          transition: opacity 0.2s;
+          
+          &:hover {
+            background: #ff4d4f;
+          }
+        }
+        
+        &:hover .file-card-close {
+          opacity: 1;
+        }
+        /*end 文件的样式*/
+      }
     }
     .textarea-bottom{
       display: flex;
-      flex-direction: row;
-      align-items: center;
+      flex-direction: column;
       flex: 1 1;
       min-height: 48px;
       position: relative;
-      padding: 8px 8px 8px 10px;
+      padding: 2px 10px;
       width: 100%;
+      /*begin 底部样式*/
+      .textarea-action-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-top: 8px;
+
+        .left-actions {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .right-actions {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .sendBtn {
+          width: auto;
+          padding: 4px 6px;
+          height: 30px;
+        }
+      }
+      /*end 底部样式*/
     }
   }
   .chat-textarea:hover{
@@ -1374,5 +1727,13 @@
  }
  .ai-chat-message{
    z-index: 9999 !important;
+ }
+
+ .chat-upload-dropdown .ant-dropdown-menu{
+   border-radius: 10px;
+   padding: 6px 4px;
+ }
+ .chat-upload-dropdown .ant-dropdown-menu-item:hover{
+   background-color: #f0f6ff;
  }
 </style>

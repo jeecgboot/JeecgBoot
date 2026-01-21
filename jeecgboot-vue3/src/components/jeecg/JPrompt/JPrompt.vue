@@ -2,7 +2,7 @@
   <ConfigProvider :locale="getAntdLocale">
     <Modal v-bind="getProps">
       <Spin :spinning="loading">
-        <div style="padding: 20px;">
+        <div class="j-prompt-content-body">
           <div v-html="options.content" style="margin-bottom: 8px"></div>
           <BasicForm @register="registerForm">
             <template #customInput="{ model, field }">
@@ -116,7 +116,7 @@
       function onChange() {
         validate()
       }
-      
+
       /** 提交表单 */
       async function onSubmit() {
         try {
@@ -158,3 +158,19 @@
     },
   });
 </script>
+
+<style lang="less">
+.j-prompt-content-body {
+  padding: 20px;
+
+  .ant-form-item-control-input-content {
+    & > div {
+      width: 100%;
+
+      & > .j-form-item-middleware {
+        width: 100%;
+      }
+    }
+  }
+}
+</style>

@@ -50,7 +50,7 @@ export const editModel = (params) => {
  * @param params
  */
 export const testConn = (params) => {
-  return defHttp.post({ url: Api.testConn, params });
+  return defHttp.post({ url: Api.testConn, params, timeout: 2*60*1000 });
 };
 
 /**

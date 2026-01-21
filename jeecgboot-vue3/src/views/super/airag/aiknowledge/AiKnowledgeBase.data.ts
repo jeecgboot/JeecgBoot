@@ -57,6 +57,20 @@ export const formSchema: FormSchema[] = [
     },
     defaultValue: 'enable',
   },
+  {
+    label: '类型',
+    field: 'type',
+    required: true,
+    component: 'JDictSelectTag',
+    componentProps: {
+      options: [
+        { label: '知识库', value: 'knowledge' },
+        { label: '记忆库', value: 'memory' },
+      ],
+      type: 'radioButton',
+    },
+    defaultValue: 'knowledge',
+  },  
 ];
 
 //文档文本表单

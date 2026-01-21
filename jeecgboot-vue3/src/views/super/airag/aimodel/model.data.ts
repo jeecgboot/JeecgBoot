@@ -50,6 +50,9 @@ export const formSchema: FormSchema[] = [
     field: 'apiKey',
     required: true,
     component: 'InputPassword',
+    componentProps: {
+      autocomplete: 'new-password',
+    },
     ifShow: ({ values }) => {
       if(values.provider==="OLLAMA"){
         return false;

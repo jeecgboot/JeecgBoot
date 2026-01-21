@@ -30,7 +30,8 @@
       const { setOptions } = useECharts(chartRef as Ref<HTMLDivElement>);
       const option = reactive({
         title: {
-          text: '基础雷达图',
+          text: '',
+          // text: '基础雷达图',
         },
         legend: {
           data: ['文综'],
@@ -79,7 +80,9 @@
           //data数据
           data.push(obj);
         });
-        option.radar.axisName = indicator;
+        option.legend.data = typeArr;
+        // option.radar.axisName = indicator;
+        option.radar.indicator = indicator;
         option.series[0]['data'] = data;
         setOptions(option);
       }

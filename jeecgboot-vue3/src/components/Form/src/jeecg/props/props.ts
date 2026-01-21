@@ -87,4 +87,6 @@ export const treeProps = {
   multiple: propTypes.bool.def(true),
   // 是否只选择岗位
   izOnlySelectDepartPost: propTypes.bool.def(false),
+  // 是否显示部门简称
+  izShowDepartNameAbbr: propTypes.bool.def(false),
 };

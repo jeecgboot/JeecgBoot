@@ -1,0 +1,73 @@
+import {defHttp} from '/@/utils/http/axios';
+import { useMessage } from "/@/hooks/web/useMessage";
+
+const { createConfirm } = useMessage();
+
+enum Api {
+  list = '/airag/prompts/list',
+  save='/airag/prompts/add',
+  edit='/airag/prompts/edit',
+  deleteOne = '/airag/prompts/delete',
+  deleteBatch = '/airag/prompts/deleteBatch',
+  importExcel = '/airag/prompts/importExcel',
+  exportXls = '/airag/prompts/exportXls',
+
+  promptExperiment = '/airag/prompts/experiment',
+}
+/**
+ * 导出api
+ * @param params
+ */
+export const getExportUrl = Api.exportXls;
+/**
+ * 导入api
+ */
+export const getImportUrl = Api.importExcel;
+/**
+ * 列表接口
+ * @param params
+ */
+export const list = (params) =>
+  defHttp.get({url: Api.list, params});
+
+/**
+ * 删除单个
+ */
+export const deleteOne = (params,handleSuccess) => {
+  return defHttp.delete({url: Api.deleteOne, params}, {joinParamsToUrl: true}).then(() => {
+    handleSuccess();
+  });
+}
+/**
+ * 批量删除
+ * @param params
+ */
+export const batchDelete = (params, handleSuccess) => {
+  createConfirm({
+    iconType: 'warning',
+    title: '确认删除',
+    content: '是否删除选中数据',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => {
+      return defHttp.delete({url: Api.deleteBatch, data: params}, {joinParamsToUrl: true}).then(() => {
+        handleSuccess();
+      });
+    }
+  });
+}
+/**
+ * 保存或者更新
+ * @param params
+ */
+export const saveOrUpdate = (params, isUpdate) => {
+  let url = isUpdate ? Api.edit : Api.save;
+  return defHttp.post({url: url, params});
+}
+/**
+ * 实验
+ * @param params
+ */
+export const promptExperiment = (params) => {
+  return defHttp.post({url: Api.promptExperiment, params},{ isTransformResponse: false });
+}

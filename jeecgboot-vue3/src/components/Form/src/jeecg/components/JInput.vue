@@ -17,6 +17,8 @@
       type: propTypes.string.def(JInputTypeEnum.JINPUT_QUERY_LIKE),
       placeholder: propTypes.string.def(''),
       trim: propTypes.bool.def(false),
+      class: propTypes.string,
+      style: propTypes.object,
     },
     emits: ['change', 'update:value'],
     setup(props, { emit }) {

@@ -235,6 +235,8 @@
       .then((res) => {
         if (res.success) {
           handleSuccess();
+        } else {
+          createMessage.warning(res.message);
         }
       })
       .catch((e) => {
@@ -291,7 +293,7 @@
   //============================================  租户离职交接  ============================================
 
 
-  //update-begin---author:wangshuai ---date:20230710  for：【QQYUN-5723】4、显示当前登录租户------------
+  // 代码逻辑说明: 【QQYUN-5723】4、显示当前登录租户------------
   const loginTenantName = ref<string>('');
 
   getTenantName();

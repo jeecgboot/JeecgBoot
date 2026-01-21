@@ -1,9 +1,12 @@
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" :width="800" title="查看详情" :showCancelBtn="false" :showOkBtn="false" :maxHeight="500">
-    <div class="print-btn" @click="onPrinter">
-      <Icon icon="ant-design:printer-filled" />
-      <span class="print-text">打印</span>
-    </div>
+    <template #title>
+      <span class="basic-title">查看详情</span>
+      <div class="print-btn" @click="onPrinter">
+        <Icon icon="ant-design:printer-filled" />
+        <span class="print-text">打印</span>
+      </div>
+    </template>
     <iframe ref="iframeRef" :src="frameSrc" class="detail-iframe" @load="onIframeLoad"></iframe>
     <template v-if="noticeFiles && noticeFiles.length > 0">
       <div class="files-title">相关附件：</div>
@@ -39,11 +42,12 @@
   import { propTypes } from '/@/utils/propTypes';
   import { ref } from 'vue';
   import { buildUUID } from '@/utils/uuid';
-  import { getFileAccessHttpUrl } from '@/utils/common/compUtils';
+  import {getElectronFileUrl, getFileAccessHttpUrl} from '@/utils/common/compUtils';
   import { DownloadOutlined, EyeOutlined, PaperClipOutlined } from '@ant-design/icons-vue';
   import { encryptByBase64 } from '@/utils/cipher';
   import { useGlobSetting } from '@/hooks/setting';
   import { getToken } from "@/utils/auth";
+  import {$electron} from "@/electron";
   const glob = useGlobSetting();
   // 获取props
   defineProps({
@@ -100,6 +104,11 @@
     if (filePath) {
       let url = encodeURIComponent(encryptByBase64(filePath));
       let previewUrl = `${glob.viewUrl}?url=` + url;
+      //update-begin-author:liusq---date:2025-12-16--for: JHHB-1139桌面端 文件预览统一修改 
+      if($electron.isElectron()){
+        previewUrl = getElectronFileUrl(filePath);
+      }
+      //update-end-author:liusq---date:2025-12-16--for: JHHB-1139桌面端 文件预览统一修改
       window.open(previewUrl, '_blank');
     }
   }
@@ -108,8 +117,8 @@
 <style scoped lang="less">
   .print-btn {
     position: absolute;
-    top: 80px;
-    right: 40px;
+    top: 20px;
+    right: 100px;
     cursor: pointer;
     color: #a3a3a5;
     z-index: 999;

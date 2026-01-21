@@ -1,5 +1,5 @@
 import type { DescriptionProps, DescInstance, UseDescReturnType } from './typing';
-import { ref, getCurrentInstance, unref } from 'vue';
+import { ref, getCurrentInstance, unref, onUnmounted } from 'vue';
 import { isProdMode } from '/@/utils/env';
 
 export function useDescription(props?: Partial<DescriptionProps>): UseDescReturnType {
@@ -10,9 +10,14 @@ export function useDescription(props?: Partial<DescriptionProps>): UseDescReturn
   const loaded = ref(false);
 
   function register(instance: DescInstance) {
-    if (unref(loaded) && isProdMode()) {
-      return;
-    }
+    // update-begin--author:liaozhiyang---date:20251223---for:【pull/9125】在抽屉中配置destroy-on-close，再次打开未正确渲染
+    isProdMode() &&
+      onUnmounted(() => {
+        desc.value = null;
+        loaded.value = false;
+      });
+    if (unref(loaded) && isProdMode() && instance === unref(desc)) return;
+    // update-end--author:liaozhiyang---date:20251223---for:【pull/9125】在抽屉中配置destroy-on-close，再次打开未正确渲染
     desc.value = instance;
     props && instance.setDescProps(props);
     loaded.value = true;

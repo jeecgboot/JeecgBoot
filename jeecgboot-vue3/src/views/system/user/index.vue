@@ -93,6 +93,7 @@
       title: '用户列表',
       api: listNoCareTenant,
       columns: columns,
+      canResize: true,
       size: 'small',
       formConfig: {
         // labelWidth: 200,
