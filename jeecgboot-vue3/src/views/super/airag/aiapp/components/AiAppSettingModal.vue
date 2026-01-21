@@ -522,7 +522,7 @@
   import JSearchSelect from "@/components/Form/src/jeecg/components/JSearchSelect.vue";
   import JMarkdownEditor from "@/components/Form/src/jeecg/components/JMarkdownEditor.vue";
   import AiAppJson from './AiApp.json'
-  import { VueDraggableNext as draggable } from 'vue-draggable-next';
+  import draggable from 'vuedraggable';
   import { useMessage } from "@/hooks/web/useMessage";
   import defaultFlowImg from "@/assets/images/ai/aiflow.png";
   import AiUserVariablesModal from "./AiUserVariablesModal.vue";
