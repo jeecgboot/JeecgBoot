@@ -1,6 +1,7 @@
 package org.jeecg.modules.airag.app.service;
 
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.modules.airag.app.vo.AiWriteGenerateVo;
 import org.jeecg.modules.airag.app.vo.AppDebugParams;
 import org.jeecg.modules.airag.app.vo.ChatConversation;
 import org.jeecg.modules.airag.app.vo.ChatSendParams;
@@ -59,21 +60,23 @@ public interface IAiragChatService {
      * 获取对话聊天记录
      *
      * @param conversationId
+     * @param sessionType 类型
      * @return
      * @author chenrui
      * @date 2025/2/26 15:16
      */
-    Result<?> getMessages(String conversationId);
+    Result<?> getMessages(String conversationId, String sessionType);
 
     /**
      * 删除会话
      *
      * @param conversationId
+     * @param sessionType
      * @return
      * @author chenrui
      * @date 2025/3/3 16:55
      */
-    Result<?> deleteConversation(String conversationId);
+    Result<?> deleteConversation(String conversationId, String sessionType);
 
     /**
      * 更新会话标题
@@ -87,11 +90,12 @@ public interface IAiragChatService {
     /**
      * 清空消息
      * @param conversationId
+     * @param sessionType
      * @return
      * @author chenrui
      * @date 2025/3/3 19:49
      */
-    Result<?> clearMessage(String conversationId);
+    Result<?> clearMessage(String conversationId, String sessionType);
 
     /**
      * 初始化聊天(忽略租户)
@@ -111,4 +115,27 @@ public interface IAiragChatService {
      * @date 2025/8/11 17:39
      */
     SseEmitter receiveByRequestId(String requestId);
+
+    /**
+     * 根据类型获取会话列表
+     * 
+     * @param sessionType
+     * @return
+     */
+    Result<?> getConversationsByType(String sessionType);
+
+    /**
+     * 生成海报图片
+     * @param chatSendParams
+     * @return
+     */
+    String genAiPoster(ChatSendParams chatSendParams);
+
+    /**
+     * 生成ai创作
+     *
+     * @param chatSendParams
+     * @return
+     */
+    SseEmitter genAiWriter(AiWriteGenerateVo chatSendParams);
 }

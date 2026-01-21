@@ -1,14 +1,18 @@
 package org.jeecg.modules.airag.llm.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.AssertUtils;
 import org.jeecg.common.util.TokenUtils;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.airag.common.vo.knowledge.KnowledgeSearchResult;
 import org.jeecg.modules.airag.llm.consts.LLMConsts;
@@ -22,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -80,6 +83,9 @@ public class AiragKnowledgeController {
     @RequiresPermissions("airag:knowledge:add")
     public Result<String> add(@RequestBody AiragKnowledge airagKnowledge) {
         airagKnowledge.setStatus(LLMConsts.STATUS_ENABLE);
+        if(oConvertUtils.isEmpty(airagKnowledge.getType())) {
+            airagKnowledge.setType(LLMConsts.KNOWLEDGE_TYPE_KNOWLEDGE);
+        }
         airagKnowledgeService.save(airagKnowledge);
         return Result.OK("添加成功！");
     }
@@ -101,6 +107,9 @@ public class AiragKnowledgeController {
             return Result.error("未找到对应数据");
         }
         String oldEmbedId = airagKnowledgeEntity.getEmbedId();
+        if(oConvertUtils.isEmpty(airagKnowledgeEntity.getType())) {
+            airagKnowledge.setType(LLMConsts.KNOWLEDGE_TYPE_KNOWLEDGE);
+        }
         airagKnowledgeService.updateById(airagKnowledge);
         if (!oldEmbedId.equalsIgnoreCase(airagKnowledge.getEmbedId())) {
             // 更新了模型,重建文档
@@ -356,6 +365,63 @@ public class AiragKnowledgeController {
         List<String> idList = Arrays.asList(ids.split(","));
         List<AiragKnowledge> airagKnowledges = airagKnowledgeService.listByIds(idList);
         return Result.OK(airagKnowledges);
+    }
+    
+    /**
+     * 添加记忆
+     *
+     * @param airagKnowledgeDoc
+     * @return
+     */
+    @Operation(summary = "添加记忆")
+    @PostMapping(value = "/plugin/add")
+    public Result<?> add(@RequestBody AiragKnowledgeDoc airagKnowledgeDoc, HttpServletRequest request) {
+        if (oConvertUtils.isEmpty(airagKnowledgeDoc.getKnowledgeId())) {
+            return Result.error("知识库ID不能为空");
+        }
+        if (oConvertUtils.isEmpty(airagKnowledgeDoc.getContent())) {
+            return Result.error("内容不能为空");
+        }
+
+        // 设置默认值
+        if (oConvertUtils.isEmpty(airagKnowledgeDoc.getTitle())) {
+            // 取内容前20个字作为标题
+            String content = airagKnowledgeDoc.getContent();
+            String title = content.length() > 20 ? content.substring(0, 20) : content;
+            airagKnowledgeDoc.setTitle(title);
+        }
+
+        airagKnowledgeDoc.setType(LLMConsts.KNOWLEDGE_DOC_TYPE_TEXT);
+        // 保存并构建向量
+        return airagKnowledgeDocService.editDocument(airagKnowledgeDoc);
+    }
+
+    /**
+     * 查询记忆
+     *
+     * @param params
+     * @return
+     */
+    @Operation(summary = "查询记忆")
+    @PostMapping(value = "/plugin/query")
+    public Result<?> pluginQuery(@RequestBody Map<String, Object> params, HttpServletRequest request) {
+        String knowId = (String) params.get("knowledgeId");
+        String queryText = (String) params.get("queryText");
+        if (oConvertUtils.isEmpty(knowId)) {
+            return Result.error("知识库ID不能为空");
+        }
+        if (oConvertUtils.isEmpty(queryText)) {
+            return Result.error("查询内容不能为空");
+        }
+        LambdaQueryWrapper<AiragKnowledgeDoc> queryWrapper = new LambdaQueryWrapper<AiragKnowledgeDoc>();
+        queryWrapper.eq(AiragKnowledgeDoc::getKnowledgeId, knowId);
+        long count = airagKnowledgeDocService.count(queryWrapper);
+        if(count == 0){
+            return Result.ok("");
+        }
+        // 默认查询前5条
+        KnowledgeSearchResult searchResp = embeddingHandler.embeddingSearch(Collections.singletonList(knowId), queryText, (int) count, null);
+        return Result.ok(searchResp);
     }
 
 }

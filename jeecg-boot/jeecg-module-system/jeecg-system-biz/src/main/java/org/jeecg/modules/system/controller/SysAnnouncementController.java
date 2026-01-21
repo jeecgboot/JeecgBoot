@@ -580,7 +580,11 @@ public class SysAnnouncementController {
             // 判断是否传递了Token，并且Token有效，如果传了就不做查看限制，直接返回
             // 如果Token无效，就做查看限制：只能查看已发布的
             if (tokenOk || ANNOUNCEMENT_SEND_STATUS_1.equals(announcement.getSendStatus())) {
-                modelAndView.addObject("data", announcement);
+				LoginUser user = sysBaseApi.getUserByName(announcement.getSender());
+				if(oConvertUtils.isNotEmpty(user)){
+					announcement.setSender(user.getRealname());
+				}
+				modelAndView.addObject("data", announcement);
                 modelAndView.setViewName("announcement/showContent");
                 return modelAndView;
             }

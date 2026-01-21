@@ -47,4 +47,14 @@ public class ChatConversation {
      * for [issues/8545]新建AI应用的时候只能选择没有自定义参数的AI流程
      */
     private Map<String, Object> flowInputs;
+
+    /**
+     * portal 应用门户
+     */
+    private String sessionType;
+
+    /**
+     * 是否保存会话
+     */
+    private Boolean izSaveSession;
 }

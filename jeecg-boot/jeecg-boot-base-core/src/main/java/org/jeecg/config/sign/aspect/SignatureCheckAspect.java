@@ -1,6 +1,5 @@
 package org.jeecg.config.sign.aspect;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +12,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * 基于AOP的签名验证切面
@@ -56,7 +60,22 @@ public class SignatureCheckAspect {
             log.info("签名验证已禁用，跳过");
             return;
         }
-        
+
+        // update-begin---author:sjlei---date:20260115 for: 查找带有@RequestBody注解的参数，解决签名校验时读取请求体为空的问题
+        Object bodyParam = null;
+        Object[] args = point.getArgs();
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        for (int i = 0; i < args.length; i++) {
+            Object arg = args[i];
+            Annotation[] annotations = parameterAnnotations[i];
+            boolean hasRequestBodyAnnotation = Arrays.stream(annotations).anyMatch(annotation -> annotation.annotationType().equals(RequestBody.class));
+            if (hasRequestBodyAnnotation) {
+                // 捕获携带@RequestBody注解的参数，供签名校验使用
+                bodyParam = arg;
+            }
+        }
+        // update-end-----author:sjlei---date:20260115 for: 查找带有@RequestBody注解的参数，解决签名校验时读取请求体为空的问题
+
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes == null) {
             log.error("无法获取请求上下文");
@@ -68,7 +87,7 @@ public class SignatureCheckAspect {
         
         try {
             // 直接调用SignAuthInterceptor的验证逻辑
-            signAuthInterceptor.validateSignature(request);
+            signAuthInterceptor.validateSignature(request, bodyParam);
             log.info("AOP签名验证通过");
             
         } catch (IllegalArgumentException e) {

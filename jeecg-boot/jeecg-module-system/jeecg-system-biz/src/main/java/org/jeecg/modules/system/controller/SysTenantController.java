@@ -264,6 +264,8 @@ public class SysTenantController {
     @SignatureCheck
     @RequestMapping(value = "/queryById", method = RequestMethod.GET)
     public Result<SysTenant> queryById(@RequestParam(name="id",required=true) String id) {
+        log.info("【敏感接口】查询租户信息，租户ID：{}", id);
+        
         Result<SysTenant> result = new Result<SysTenant>();
         if(oConvertUtils.isEmpty(id)){
             result.error500("参数为空！");
@@ -410,6 +412,7 @@ public class SysTenantController {
      * @param phone
      * @return
      */
+    @SignatureCheck
     @PutMapping("/invitationUserJoin")
     @RequiresPermissions("system:tenant:invitation:user")
     public Result<String> invitationUserJoin(@RequestParam("ids") String ids,@RequestParam(value = "phone", required = false) String phone, @RequestParam(value = "username", required = false) String username){
@@ -509,26 +512,27 @@ public class SysTenantController {
         return result;
     }
 
-//    /**
-//     * 加入租户通过门牌号【低代码应用专用接口】
-//     * @param sysTenant
-//     */
-//    @PostMapping("/joinTenantByHouseNumber")
-//    public Result<Integer> joinTenantByHouseNumber(@RequestBody SysTenant sysTenant){
-//        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-//        Integer tenantId = sysTenantService.joinTenantByHouseNumber(sysTenant, sysUser.getId());
-//        Result<Integer> result = new Result<>();
-//        if(tenantId != 0){
-//            result.setMessage("申请加入组织成功");
-//            result.setSuccess(true);
-//            result.setResult(tenantId);
-//            return result;
-//        }else{
-//            result.setMessage("该门牌号不存在");
-//            result.setSuccess(false);
-//            return result;
-//        }
-//    }
+    /**
+     * 申请加入租户通过门牌号【低代码应用专用接口】
+     * @param sysTenant
+     */
+    @SignatureCheck
+    @PostMapping("/joinTenantByHouseNumber")
+    public Result<Integer> joinTenantByHouseNumber(@RequestBody SysTenant sysTenant){
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        Integer tenantId = sysTenantService.joinTenantByHouseNumber(sysTenant, sysUser.getId());
+        Result<Integer> result = new Result<>();
+        if(tenantId != 0){
+            result.setMessage("申请加入组织成功");
+            result.setSuccess(true);
+            result.setResult(tenantId);
+            return result;
+        }else{
+            result.setMessage("该门牌号不存在");
+            result.setSuccess(false);
+            return result;
+        }
+    }
     
     /**
      * 分页获取租户用户数据(vue3用户租户页面)【低代码应用专用接口】
@@ -575,15 +579,33 @@ public class SysTenantController {
     }
 
     /**
+     * 【敲敲云管理员】 同意申请者加入租户
+     * 
      * 更新用户租户关系状态【低代码应用专用接口】
      */
     @PutMapping("/updateUserTenantStatus")
-    //@RequiresPermissions("system:tenant:updateUserTenantStatus")
+    @RequiresPermissions("system:tenant:updateUserTenantStatus")
     public Result<String> updateUserTenantStatus(@RequestBody SysUserTenant userTenant) {
         String tenantId = TenantContext.getTenant();
         if (oConvertUtils.isEmpty(tenantId)) {
             return Result.error("未找到当前租户信息"); 
         }
+        relationService.updateUserTenantStatus(userTenant.getUserId(), tenantId, userTenant.getStatus());
+        return Result.ok("更新用户租户状态成功");
+    }
+
+    /**
+     * 同意或者拒绝用户加入（敲敲云专用）
+     * @param userTenant
+     * @return
+     */
+    @PutMapping("/agreeOrRejectUserJoin")
+    public Result<String> agreeOrRejectUserJoin(@RequestBody SysUserTenant userTenant) {
+        String tenantId = TenantContext.getTenant();
+        if (oConvertUtils.isEmpty(tenantId)) {
+            return Result.error("未找到当前租户信息");
+        }
+        sysTenantPackService.izHaveManageUserAuth(tenantId);
         relationService.updateUserTenantStatus(userTenant.getUserId(), tenantId, userTenant.getStatus());
         return Result.ok("更新用户租户状态成功");
     }
@@ -714,8 +736,9 @@ public class SysTenantController {
      * @param departId
      * @return
      */
-    @PostMapping("/invitationUser")
+    @SignatureCheck
     @RequiresPermissions("system:tenant:invitation:user")
+    @PostMapping("/invitationUser")
     public Result<String> invitationUser(@RequestParam(name="phone") String phone,
                                          @RequestParam(name="departId",defaultValue = "") String departId){
         return sysTenantService.invitationUser(phone,departId);
@@ -914,43 +937,44 @@ public class SysTenantController {
         return Result.ok(pageList);
     }
 
-//    /**
-//     * 同意或拒绝加入租户
-//     */
-//    @PutMapping("/agreeOrRefuseJoinTenant")
-//    public Result<String> agreeOrRefuseJoinTenant(@RequestParam("tenantId") Integer tenantId, 
-//                                                  @RequestParam("status") String status){
-//        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
-//        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-//        String userId = sysUser.getId();
-//        SysTenant tenant = sysTenantService.getById(tenantId);
-//        if(null == tenant){
-//            return Result.error("不存在该组织");
-//        }
-//        SysUserTenant sysUserTenant = relationService.getUserTenantByTenantId(userId, tenantId);
-//        if (null == sysUserTenant) {
-//            return Result.error("该用户不存在该组织中，无权修改");
-//        }
-//        String content = "";
-//        SysUser user = new SysUser();
-//        user.setUsername(sysUserTenant.getCreateBy());
-//        String realname = oConvertUtils.getString(sysUser.getRealname(),sysUser.getUsername());
-//        //成功加入
-//        if(CommonConstant.USER_TENANT_NORMAL.equals(status)){
-//            //修改租户状态
-//            relationService.agreeJoinTenant(userId,tenantId);
-//            content = content + realname + "已同意您发送的加入 " + tenant.getName() + " 的邀请";
-//            sysTenantService.sendMsgForAgreeAndRefuseJoin(user, content);
-//            return Result.OK("您已同意该组织的邀请");
-//        }else if(CommonConstant.USER_TENANT_REFUSE.equals(status)){
-//            //直接删除关系表即可
-//            relationService.refuseJoinTenant(userId,tenantId);
-//            content = content + realname + "拒绝了您发送的加入 " + tenant.getName() + " 的邀请";
-//            sysTenantService.sendMsgForAgreeAndRefuseJoin(user, content);
-//            return Result.OK("您已成功拒绝该组织的邀请");
-//        }
-//        return Result.error("类型不匹配，禁止修改数据");
-//    }
+    /** 【被邀请人使用】
+     * 同意或拒绝加入租户
+     */
+    @SignatureCheck
+    @PutMapping("/agreeOrRefuseJoinTenant")
+    public Result<String> agreeOrRefuseJoinTenant(@RequestParam("tenantId") Integer tenantId, 
+                                                  @RequestParam("status") String status){
+        //是否开启系统管理模块的多租户数据隔离【SAAS多租户模式】
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String userId = sysUser.getId();
+        SysTenant tenant = sysTenantService.getById(tenantId);
+        if(null == tenant){
+            return Result.error("不存在该组织");
+        }
+        SysUserTenant sysUserTenant = relationService.getUserTenantByTenantId(userId, tenantId);
+        if (null == sysUserTenant) {
+            return Result.error("该用户不存在该组织中，无权修改");
+        }
+        String content = "";
+        SysUser user = new SysUser();
+        user.setUsername(sysUserTenant.getCreateBy());
+        String realname = oConvertUtils.getString(sysUser.getRealname(),sysUser.getUsername());
+        //成功加入
+        if(CommonConstant.USER_TENANT_NORMAL.equals(status)){
+            //修改租户状态
+            relationService.agreeJoinTenant(userId,tenantId);
+            content = content + realname + "已同意您发送的加入 " + tenant.getName() + " 的邀请";
+            sysTenantService.sendMsgForAgreeAndRefuseJoin(user, content);
+            return Result.OK("您已同意该组织的邀请");
+        }else if(CommonConstant.USER_TENANT_REFUSE.equals(status)){
+            //直接删除关系表即可
+            relationService.refuseJoinTenant(userId,tenantId);
+            content = content + realname + "拒绝了您发送的加入 " + tenant.getName() + " 的邀请";
+            sysTenantService.sendMsgForAgreeAndRefuseJoin(user, content);
+            return Result.OK("您已成功拒绝该组织的邀请");
+        }
+        return Result.error("类型不匹配，禁止修改数据");
+    }
     
     /**
      * 目前只给敲敲云租户下删除用户使用

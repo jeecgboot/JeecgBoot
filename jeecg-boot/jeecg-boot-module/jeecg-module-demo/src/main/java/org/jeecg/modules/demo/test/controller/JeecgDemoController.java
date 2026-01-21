@@ -72,10 +72,10 @@ public class JeecgDemoController extends JeecgController<JeecgDemo, IJeecgDemoSe
         Page<JeecgDemo> page = new Page<JeecgDemo>(pageNo, pageSize);
 
         IPage<JeecgDemo> pageList = jeecgDemoService.page(page, queryWrapper);
-        log.info("查询当前页：" + pageList.getCurrent());
-        log.info("查询当前页数量：" + pageList.getSize());
-        log.info("查询结果数量：" + pageList.getRecords().size());
-        log.info("数据总数：" + pageList.getTotal());
+        log.debug("查询当前页：" + pageList.getCurrent());
+        log.debug("查询当前页数量：" + pageList.getSize()); 
+        log.debug("查询结果数量：" + pageList.getRecords().size());
+        log.debug("数据总数：" + pageList.getTotal());
         return Result.OK(pageList);
     }
 

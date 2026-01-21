@@ -6,6 +6,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.TenantConstant;
+import org.jeecg.common.exception.JeecgBootBizTipException;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -476,6 +477,20 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
             if (oConvertUtils.isNotEmpty(sysTenantPack.getIzSysn()) && CommonConstant.STATUS_1.equals(sysTenantPack.getIzSysn())) {
                 this.addPackUserByPackTenantId(pack.getTenantId(), pack.getId());
             }
+        }
+    }
+
+
+    /**
+     * 是否为拥有管理用户权限【accountAdmin，superAdmin】
+     * @param tenantId
+     */
+    @Override
+    public void izHaveManageUserAuth(String tenantId) {
+        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        long count = sysTenantPackMapper.izHaveManageUserAuth(tenantId,sysUser.getId());
+        if(count == 0){
+            throw new JeecgBootBizTipException("你不是当前租户的组织账户管理员或超级管理员，无法进行此操作！");
         }
     }
 }

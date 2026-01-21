@@ -1,10 +1,12 @@
 package org.jeecg.config.sign.interceptor;
 
 
-import com.alibaba.fastjson.JSON;
+import java.io.PrintWriter;
+import java.util.SortedMap;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.DateUtils;
@@ -14,8 +16,9 @@ import org.jeecg.config.sign.util.HttpUtils;
 import org.jeecg.config.sign.util.SignUtil;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.io.PrintWriter;
-import java.util.SortedMap;
+import com.alibaba.fastjson.JSON;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 签名拦截器
@@ -47,7 +50,7 @@ public class SignAuthInterceptor implements HandlerInterceptor {
             return false;
         }
     }
-    
+
     /**
      * 签名验证核心逻辑
      * 提取出来供AOP切面复用
@@ -55,12 +58,22 @@ public class SignAuthInterceptor implements HandlerInterceptor {
      * @throws IllegalArgumentException 验证失败时抛出异常
      */
     public void validateSignature(HttpServletRequest request) throws IllegalArgumentException {
+        validateSignature(request, null);
+    }
+
+    /**
+     * 签名验证核心逻辑
+     * 提取出来供AOP切面复用
+     * @param request HTTP请求
+     * @throws IllegalArgumentException 验证失败时抛出异常
+     */
+    public void validateSignature(HttpServletRequest request, Object bodyParam) throws IllegalArgumentException {
         try {
             log.debug("开始签名验证: {} {}", request.getMethod(), request.getRequestURI());
             
             HttpServletRequest requestWrapper = new BodyReaderHttpServletRequestWrapper(request);
             //获取全部参数(包括URL和body上的)
-            SortedMap<String, String> allParams = HttpUtils.getAllParams(requestWrapper);
+            SortedMap<String, String> allParams = HttpUtils.getAllParams(requestWrapper, bodyParam);
             log.debug("提取参数: {}", allParams);
             
             //对参数进行签名验证

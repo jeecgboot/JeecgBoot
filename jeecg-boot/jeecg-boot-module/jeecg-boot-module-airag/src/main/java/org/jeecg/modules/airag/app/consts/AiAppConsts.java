@@ -44,4 +44,19 @@ public class AiAppConsts {
      */
     public static final String APP_METADATA_FLOW_INPUTS = "flowInputs";
 
+    /**
+     * 是否开启记忆
+     */
+    public static final Integer IZ_OPEN_MEMORY = 1;
+
+    /**
+     * 会话标题最大长度
+     */
+    public static final int CONVERSATION_MAX_TITLE_LENGTH = 10;
+
+
+    /**
+     * AI写作的应用id
+     */
+    public static final String WRITER_APP_ID = "2010634128233779202";
 }

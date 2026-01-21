@@ -17,6 +17,7 @@ import org.jeecg.common.util.AssertUtils;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.modules.airag.common.handler.AIChatParams;
 import org.jeecg.modules.airag.llm.consts.LLMConsts;
 import org.jeecg.modules.airag.llm.entity.AiragModel;
 import org.jeecg.modules.airag.llm.handler.AIChatHandler;
@@ -172,11 +173,16 @@ public class AiragModelController extends JeecgController<AiragModel, IAiragMode
         try {
             if(LLMConsts.MODEL_TYPE_LLM.equals(airagModel.getModelType())){
                 aiChatHandler.completions(airagModel, Collections.singletonList(UserMessage.from("To test whether it can be successfully called, simply return success")), null);
-            }else{
+            }else if(LLMConsts.MODEL_TYPE_EMBED.equals(airagModel.getModelType())){
                 AiModelOptions aiModelOptions = EmbeddingHandler.buildModelOptions(airagModel);
                 EmbeddingModel embeddingModel = AiModelFactory.createEmbeddingModel(aiModelOptions);
                 embeddingModel.embed("test text");
+            //update-begin---author:wangshuai---date:2026-01-07---for:【QQYUN-12145】【AI】AI 绘画创作---=
+            }else if(LLMConsts.MODEL_TYPE_IMAGE.equals(airagModel.getModelType())){
+                AIChatParams aiChatParams = new AIChatParams();
+                aiChatHandler.imageGenerate(airagModel, "To test whether it can be successfully called, simply return success", aiChatParams);
             }
+            //update-end---author:wangshuai---date:2026-01-07---for:【QQYUN-12145】【AI】AI 绘画创作---
         }catch (Exception e){
             log.error("测试模型连接失败", e);
             return Result.error("测试模型连接失败，请检查模型配置是否正确！");

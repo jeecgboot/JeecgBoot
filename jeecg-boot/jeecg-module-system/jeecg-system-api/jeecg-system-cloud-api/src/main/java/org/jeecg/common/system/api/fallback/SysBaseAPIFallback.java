@@ -12,6 +12,7 @@ import org.jeecg.common.constant.enums.DySmsEnum;
 import org.jeecg.common.constant.enums.EmailTemplateEnum;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.vo.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Map;
@@ -503,6 +504,11 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
 
     @Override
     public Object runAiragFlow(AiragFlowDTO airagFlowDTO) {
+        return null;
+    }
+
+    @Override
+    public SseEmitter runAiragFlowStream(AiragFlowDTO airagFlowDTO) {
         return null;
     }
 

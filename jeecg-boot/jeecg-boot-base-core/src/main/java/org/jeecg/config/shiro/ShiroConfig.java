@@ -177,6 +177,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sys/version/app3version", "anon");
         //仪表盘（按钮通信）
         filterChainDefinitionMap.put("/dragChannelSocket/**","anon");
+        //App vue3版本查询版本接口
+        filterChainDefinitionMap.put("/sys/version/app3version", "anon");
 
         //性能监控——安全隐患泄露TOEKN（durid连接池也有）
         //filterChainDefinitionMap.put("/actuator/**", "anon");
@@ -187,6 +189,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/error", "anon");
         // 企业微信证书排除
         filterChainDefinitionMap.put("/WW_verify*", "anon");
+
+        filterChainDefinitionMap.put("/openapi/call/**", "anon");
 
         // 添加自己的过滤器并且取名为jwt
         Map<String, Filter> filterMap = new HashMap<String, Filter>(1);
@@ -227,6 +231,11 @@ public class ShiroConfig {
         registration.addUrlPatterns("/airag/app/debug");
         registration.addUrlPatterns("/airag/app/prompt/generate");
         registration.addUrlPatterns("/airag/chat/receive/**");
+        // 添加SSE接口的异步支持
+        registration.addUrlPatterns("/airag/extData/evaluator/debug");
+        registration.addUrlPatterns("/drag/onlDragDatasetHead/generateChartSse");
+        registration.addUrlPatterns("/drag/onlDragDatasetHead/updateChartOptSse");
+        registration.addUrlPatterns("/drag/onlDragDatasetHead/generateSqlSse");
         //支持异步
         registration.setAsyncSupported(true);
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);

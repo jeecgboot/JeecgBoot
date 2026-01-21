@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 
 /**
  * @Description: AI应用
@@ -177,6 +176,18 @@ public class AiragAppController extends JeecgController<AiragApp, IAiragAppServi
     @PostMapping(value = "/prompt/generate")
     public SseEmitter generatePromptSse(@RequestParam(name = "prompt", required = true) String prompt) {
         return (SseEmitter) airagAppService.generatePrompt(prompt,false);
+    }
+
+    /**
+     * 根据应用ID生成变量和记忆提示词 (SSE)
+     * for: 【QQYUN-14479】提示词单独拆分
+     * @param variables
+     * @return
+     */
+    @PostMapping(value = "/prompt/generateMemoryByAppId")
+    public SseEmitter generatePromptByAppIdSse(@RequestParam(name = "variables") String variables,
+                                               @RequestParam(name = "memoryId") String memoryId) {
+        return (SseEmitter) airagAppService.generateMemoryByAppId(variables, memoryId,false);
     }
 
 }

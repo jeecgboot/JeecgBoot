@@ -12,6 +12,8 @@ import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.airag.common.consts.AiragConsts;
+import org.jeecg.modules.airag.flow.component.ToolsNode;
 import org.jeecg.modules.airag.llm.entity.AiragMcp;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -51,8 +53,9 @@ public class PluginToolBuilder {
             }
 
             String baseUrl = airagMcp.getEndpoint();
+            boolean isEmptyBaseUrl = oConvertUtils.isEmpty(baseUrl);
             // 如果baseUrl为空，使用当前系统地址
-            if (oConvertUtils.isEmpty(baseUrl)) {
+            if (isEmptyBaseUrl) {
                 if (currentHttpRequest != null) {
                     baseUrl = CommonUtils.getBaseUrl(currentHttpRequest);
                     log.info("插件[{}]的BaseURL为空，使用系统地址: {}", airagMcp.getName(), baseUrl);
@@ -64,7 +67,10 @@ public class PluginToolBuilder {
 
             // 解析headers
             Map<String, String> headersMap = parseHeaders(airagMcp.getHeaders());
-            
+
+            // 判断是否需要加签
+            boolean isNeedSign = isEmptyBaseUrl && ToolsNode.Helper.checkNeedSign(headersMap);
+
             // 解析并应用授权配置（从metadata中读取）
             applyAuthConfig(headersMap, airagMcp.getMetadata(), currentHttpRequest);
 
@@ -76,7 +82,7 @@ public class PluginToolBuilder {
 
                 try {
                     ToolSpecification spec = buildToolSpecification(toolConfig);
-                    ToolExecutor executor = buildToolExecutor(toolConfig, baseUrl, headersMap);
+                    ToolExecutor executor = buildToolExecutor(toolConfig, baseUrl, headersMap, isNeedSign);
                     if (spec != null && executor != null) {
                         tools.put(spec, executor);
                     }
@@ -187,7 +193,7 @@ public class PluginToolBuilder {
     /**
      * 构建ToolExecutor
      */
-    private static ToolExecutor buildToolExecutor(JSONObject toolConfig, String baseUrl, Map<String, String> defaultHeaders) {
+    private static ToolExecutor buildToolExecutor(JSONObject toolConfig, String baseUrl, Map<String, String> defaultHeaders, boolean isNeedSign) {
         String path = toolConfig.getString("path");
         String method = toolConfig.getString("method");
         JSONArray parameters = toolConfig.getJSONArray("parameters");
@@ -215,8 +221,13 @@ public class PluginToolBuilder {
                 JSONObject urlVariables = buildUrlVariables(parameters, args);
                 Object body = buildRequestBody(parameters, args, httpHeaders);
 
-                // 发送HTTP请求
-                ResponseEntity<String> response = RestUtil.request(url, httpMethod, httpHeaders, urlVariables, body, String.class);
+                if (isNeedSign) {
+                    // 发送请求前加签
+                    ToolsNode.Helper.applySignature(url, httpHeaders, urlVariables, body);
+                }
+
+                // 发送HTTP请求,增加超时时间
+                ResponseEntity<String> response = RestUtil.request(url, httpMethod, httpHeaders, urlVariables, body, String.class, AiragConsts.DEFAULT_TIMEOUT * 1000);
 
                 // 直接返回原始响应字符串，不进行解析
                 return response.getBody() != null ? response.getBody() : "";
@@ -335,7 +346,13 @@ public class PluginToolBuilder {
             if (isQueryParam || !isOtherType) {
                 Object value = args.get(paramName);
                 if (value != null) {
-                    urlVariables.put(paramName, value);
+                    //如果是知识库的id赋值默认值
+                    if ("knowledgeId".equalsIgnoreCase(paramName)) {
+                        String defaultValue = param.getString("defaultValue");
+                        urlVariables.put(paramName, defaultValue);
+                    } else {
+                        urlVariables.put(paramName, value);
+                    }
                 }
             }
         }
@@ -392,7 +409,13 @@ public class PluginToolBuilder {
 
                 Object value = args.get(paramName);
                 if (value != null) {
-                    body.put(paramName, value);
+                    //如果是知识库的id赋值默认值
+                    if ("knowledgeId".equalsIgnoreCase(paramName)) {
+                        String defaultValue = param.getString("defaultValue");
+                        body.put(paramName, defaultValue);
+                    } else {
+                        body.put(paramName, value);
+                    }
                 } else {
                     // 检查是否有默认值
                     String defaultValue = param.getString("defaultValue");

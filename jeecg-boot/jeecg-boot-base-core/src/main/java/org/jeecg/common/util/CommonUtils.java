@@ -56,7 +56,9 @@ public class CommonUtils {
     public static String uploadOnlineImage(byte[] data,String basePath,String bizPath,String uploadType){
         String dbPath = null;
         String fileName = "image" + Math.round(Math.random() * 100000000000L);
-        fileName += "." + PoiPublicUtil.getFileExtendName(data);
+        //update-begin---author:wangshuai---date:2026-01-08---for:【QQYUN-14535】ai生成图片的后缀不一致的，导致不展示---
+        fileName += "." + PoiPublicUtil.getFileExtendName(data).toLowerCase();
+        //update-end---author:wangshuai---date:2026-01-08---for:【QQYUN-14535】ai生成图片的后缀不一致的，导致不展示---
         try {
             if(CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)){
                 File file = new File(basePath + File.separator + bizPath + File.separator );

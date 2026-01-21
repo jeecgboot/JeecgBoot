@@ -33,4 +33,10 @@ public class AiragFlowDTO implements Serializable {
      * 输入参数
      */
     private Map<String, Object> inputParams;
+
+    /**
+     * 是否流式返回
+     */
+    private boolean isStream;
+
 }

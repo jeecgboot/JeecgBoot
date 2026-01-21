@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.jeecgframework.boot3</groupId>
         <artifactId>jeecg-boot-module</artifactId>
-        <version>3.9.0</version>
+        <version>3.9.1</version>
     </parent>
 
     <artifactId>jeecg-boot-module-airag</artifactId>
@@ -33,7 +33,7 @@
     <properties>
         <kotlin.version>2.2.0</kotlin.version>
         <liteflow.version>2.15.0</liteflow.version>
-        <apache-tika.version>2.9.1</apache-tika.version>
+        <apache-tika.version>3.2.3</apache-tika.version>
     </properties>
 
     <dependencyManagement>
@@ -41,14 +41,14 @@
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-bom</artifactId>
-                <version>1.3.0</version>
+                <version>1.9.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-community-bom</artifactId>
-                <version>1.3.0-beta9</version>
+                <version>1.9.1-beta17</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-aiflow</artifactId>
-            <version>3.9.0.1</version>
+            <version>3.9.1-beta</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
@@ -107,16 +107,16 @@
         </dependency>
         <dependency>
             <groupId>com.yomahub</groupId>
-            <artifactId>liteflow-script-python</artifactId>
+            <artifactId>liteflow-script-groovy</artifactId>
             <version>${liteflow.version}</version>
-            <scope>provided</scope>
+            <scope>runtime</scope>
         </dependency>
         <!-- end 注意：这几个依赖体积较大，每个约50MB。若发布时需要使用，请将 <scope>provided</scope> 删除 -->
 
         <!-- aiflow 脚本依赖 -->
         <dependency>
             <groupId>com.yomahub</groupId>
-            <artifactId>liteflow-script-groovy</artifactId>
+            <artifactId>liteflow-script-python</artifactId>
             <version>${liteflow.version}</version>
             <scope>runtime</scope>
         </dependency>
@@ -150,6 +150,11 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
+        </dependency>
+        <!-- langChain4j mcp support -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-mcp</artifactId>
         </dependency>
         <dependency>
             <groupId>dev.langchain4j</groupId>
@@ -197,7 +202,11 @@
             <artifactId>langchain4j-pgvector</artifactId>
             <version>1.3.0-beta9</version>
         </dependency>
-        <!-- langChain4j Document Parser -->
+        <!-- langChain4j Document Parser 适用于excel、ppt、word -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-document-parser-apache-poi</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
@@ -224,7 +233,12 @@
             <artifactId>tika-parser-text-module</artifactId>
             <version>${apache-tika.version}</version>
         </dependency>
-
+        <!-- word模版引擎 -->
+        <dependency>
+            <groupId>com.deepoove</groupId>
+            <artifactId>poi-tl</artifactId>
+            <version>1.12.2</version>
+        </dependency>
     </dependencies>
 
 </project>

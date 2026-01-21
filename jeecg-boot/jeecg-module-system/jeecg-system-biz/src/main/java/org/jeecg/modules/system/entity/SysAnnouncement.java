@@ -55,6 +55,7 @@ public class SysAnnouncement implements Serializable {
      * 发布人
      */
     @Excel(name = "发布人", width = 15)
+    @Dict(dictTable = "sys_user",dicCode = "username",dicText = "realname")
     private java.lang.String sender;
     /**
      * 优先级（L低，M中，H高）

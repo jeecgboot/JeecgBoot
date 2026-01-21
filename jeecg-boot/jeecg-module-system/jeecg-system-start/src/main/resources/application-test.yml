@@ -191,6 +191,8 @@ jeecg:
     timeout: 60
   # AIRag向量库
   ai-rag:
+    # AI流程敏感节点(stdio=命令行节点, sql=SQL节点)
+    allow-sensitive-nodes: sql,stdio
     embed-store:
       host: 127.0.0.1
       port: 5432

@@ -174,6 +174,29 @@ public class AiragApp implements Serializable {
     private java.lang.String plugins;
 
     /**
+     * 是否开启记忆(0 不开启，1开启)
+     */
+    @Schema(description = "是否开启记忆(0 不开启，1开启)")
+    private java.lang.Integer izOpenMemory;
+    /**
+     * 记忆库，知识库的id
+     */
+    @Schema(description = "记忆库")
+    private java.lang.String memoryId;
+
+    /**
+     * 变量
+     */
+    @Schema(description = "变量")
+    private java.lang.String variables;
+
+    /**
+     * 记忆和变量提示词
+     */
+    @Schema(description = "记忆和变量提示词")
+    private java.lang.String memoryPrompt;
+    
+    /**
      * 知识库ids
      */
     @TableField(exist = false)
