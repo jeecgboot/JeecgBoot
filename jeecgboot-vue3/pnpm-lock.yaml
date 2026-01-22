@@ -171,8 +171,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       vue-print-nb-jeecg:
-        specifier: ^1.0.12
-        version: 1.0.12
+        specifier: ^1.0.13
+        version: 1.0.13
       vue-router:
         specifier: ^4.5.1
         version: 4.6.4(vue@3.5.27(typescript@5.9.3))
@@ -7014,8 +7014,8 @@ packages:
   vue-infinite-scroll@2.0.2:
     resolution: {integrity: sha512-n+YghR059YmciANGJh9SsNWRi1YZEBVlODtmnb/12zI+4R72QZSWd+EuZ5mW6auEo/yaJXgxzwsuhvALVnm73A==}
 
-  vue-print-nb-jeecg@1.0.12:
-    resolution: {integrity: sha512-jHyWm6/TxB1iU2nHL7upQdHVdxb1SJQ9n3XKeYTaruFdbSphLo1vDtTunS2qVCjupk8lui7FlF5rxxSNr0zjZg==}
+  vue-print-nb-jeecg@1.0.13:
+    resolution: {integrity: sha512-8Yv8OCJQyFEI6hUfAKYWHa6LvAQi+xYnwFvxd/WXsI6exHhBfde26iyHyI42QCZpH6zURUq0oA0SAk8EpYiRng==}
 
   vue-router@4.6.4:
     resolution: {integrity: sha512-Hz9q5sa33Yhduglwz6g9skT8OBPii+4bFn88w6J+J4MfEo4KRRpmiNG/hHHkdbRFlLBOqxN8y8gf2Fb0MTUgVg==}
@@ -14680,7 +14680,7 @@ snapshots:
 
   vue-infinite-scroll@2.0.2: {}
 
-  vue-print-nb-jeecg@1.0.12:
+  vue-print-nb-jeecg@1.0.13:
     dependencies:
       babel-plugin-transform-runtime: 6.23.0
 
