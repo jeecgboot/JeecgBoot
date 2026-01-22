@@ -1,7 +1,7 @@
 import { BasicColumn } from '/@/components/Table';
 import { FormSchema } from '/@/components/Table';
 import {duplicateCheckDelay} from "@/views/system/user/user.api";
-import {DESFORM_NAME_MAX_LENGTH} from "@/views/super/online/desform/desform.data";
+export const DESFORM_NAME_MAX_LENGTH = 40;
 import {pinyin} from "pinyin-pro";
 //列表数据
 export const columns: BasicColumn[] = [
