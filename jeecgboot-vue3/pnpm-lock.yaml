@@ -21,8 +21,8 @@ importers:
         specifier: 3.9.1-beta
         version: 3.9.1-beta
       '@jeecg/online':
-        specifier: 3.9.0-beta2
-        version: 3.9.0-beta2
+        specifier: 3.9.1-beta
+        version: 3.9.1-beta
       '@logicflow/core':
         specifier: ^2.0.10
         version: 2.1.9
@@ -99,8 +99,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       lodash-es:
-        specifier: ^4.17.21
-        version: 4.17.22
+        specifier: ^4.17.23
+        version: 4.17.23
       lodash.get:
         specifier: ^4.4.2
         version: 4.4.2
@@ -1648,8 +1648,8 @@ packages:
   '@jeecg/aiflow@3.9.1-beta':
     resolution: {integrity: sha512-RwYobjK95Kb23rXIPOuL7+MgSTry8QxHs6l88vJRliZSY55aACHqy6YyyDybugSEsbGuckFAfaSOGlb6kN1/iQ==}
 
-  '@jeecg/online@3.9.0-beta2':
-    resolution: {integrity: sha512-KTo268287zwLLVgyGvp+arF2bvYESMrVu3qRPk8IgjRdedBDmWr0SYeHpMicg9RQ9NRm5SPB9Pg4s1Xix37VwA==}
+  '@jeecg/online@3.9.1-beta':
+    resolution: {integrity: sha512-PecK5QCazXpmCjdG0Y2Oa2+10M3hxCvfxy7gP1WDNDqDguN2Zl30rEN1ziOaqiv7on5/wp1XyLYOFid9n3egLA==}
 
   '@jest/console@29.7.0':
     resolution: {integrity: sha512-5Ni4CU7XHQi32IJ398EEP4RrB8eV09sXP2ROqD4bksHrnTree52PsxvX8tpL8LvTZ3pFzXyPbNQReSN41CAhOg==}
@@ -3058,8 +3058,8 @@ packages:
     resolution: {integrity: sha512-XgZ0pFcakEUlbwQEVNg3+QAis1FyTL3Qel9FYy8pSkQqoG3PNoT0bOCQtOXcOkur21r2Eq2kI+IE+gsmAEVlYw==}
     engines: {node: '>=0.10.0'}
 
-  core-js-compat@3.47.0:
-    resolution: {integrity: sha512-IGfuznZ/n7Kp9+nypamBhvwdwLsW6KC8IOaURw2doAK5e98AG3acVLdh0woOnEqCfUtS+Vu882JE4k/DAm3ItQ==}
+  core-js-compat@3.48.0:
+    resolution: {integrity: sha512-OM4cAF3D6VtH/WkLtWvyNC56EZVXsZdU3iqaMG2B4WvYrlqU831pc4UtG5yp0sE9z8Y02wVN7PjW5Zf9Gt0f1Q==}
 
   core-js@2.6.12:
     resolution: {integrity: sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==}
@@ -4984,8 +4984,8 @@ packages:
     resolution: {integrity: sha512-gvVijfZvn7R+2qyPX8mAuKcFGDf6Nc61GdvGafQsHL0sBIxfKzA+usWn4GFC/bk+QdwPUD4kWFJLhElipq+0VA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
-  lodash-es@4.17.22:
-    resolution: {integrity: sha512-XEawp1t0gxSi9x01glktRZ5HDy0HXqrM0x5pXQM98EaI0NxO6jVM7omDOxsuEo5UIASAnm2bRp1Jt/e0a2XU8Q==}
+  lodash-es@4.17.23:
+    resolution: {integrity: sha512-kVI48u3PZr38HdYz98UmfPnXl2DXrpdctLrFLCd3kOx1xUkOmpFPx7gCWWM5MPkL/fD8zb+Ph0QzjGFs4+hHWg==}
 
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
@@ -5038,6 +5038,9 @@ packages:
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+
+  lodash@4.17.23:
+    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
 
   log-symbols@4.1.0:
     resolution: {integrity: sha512-8XPvpAA8uyhfteu8pIvQxpJZ7SYYdpUivZpGy6sFsBuKRY/7rQGavedeB8aK+Zkyq6upMFVL/9AW6vOYzfRyLg==}
@@ -7088,10 +7091,12 @@ packages:
   whatwg-encoding@2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
     engines: {node: '>=12'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -8038,7 +8043,7 @@ snapshots:
       babel-plugin-polyfill-corejs2: 0.4.14(@babel/core@7.28.6)
       babel-plugin-polyfill-corejs3: 0.13.0(@babel/core@7.28.6)
       babel-plugin-polyfill-regenerator: 0.6.5(@babel/core@7.28.6)
-      core-js-compat: 3.47.0
+      core-js-compat: 3.48.0
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
@@ -8558,7 +8563,7 @@ snapshots:
 
   '@jeecg/aiflow@3.9.1-beta': {}
 
-  '@jeecg/online@3.9.0-beta2': {}
+  '@jeecg/online@3.9.1-beta': {}
 
   '@jest/console@29.7.0':
     dependencies:
@@ -8762,7 +8767,7 @@ snapshots:
   '@logicflow/core@2.1.9':
     dependencies:
       classnames: 2.5.1
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       mobx: 5.15.7
       mobx-preact: 3.0.0(mobx@5.15.7)(preact@10.28.2)
       mobx-utils: 5.6.2(mobx@5.15.7)
@@ -8776,7 +8781,7 @@ snapshots:
       '@logicflow/core': 2.1.9
       '@logicflow/vue-node-registry': 1.1.10(@logicflow/core@2.1.9)(vue@3.5.27(typescript@5.9.3))
       classnames: 2.5.1
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       medium-editor: 5.23.3
       mobx: 5.15.7
       preact: 10.28.2
@@ -8786,7 +8791,7 @@ snapshots:
   '@logicflow/vue-node-registry@1.1.10(@logicflow/core@2.1.9)(vue@3.5.27(typescript@5.9.3))':
     dependencies:
       '@logicflow/core': 2.1.9
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       vue: 3.5.27(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.27(typescript@5.9.3))
 
@@ -9671,7 +9676,7 @@ snapshots:
       dom-align: 1.12.4
       dom-scroll-into-view: 2.0.1
       lodash: 4.17.21
-      lodash-es: 4.17.22
+      lodash-es: 4.17.23
       resize-observer-polyfill: 1.5.1
       scroll-into-view-if-needed: 2.2.31
       shallow-equal: 1.2.1
@@ -9811,7 +9816,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.28.6
       '@babel/helper-define-polyfill-provider': 0.6.5(@babel/core@7.28.6)
-      core-js-compat: 3.47.0
+      core-js-compat: 3.48.0
     transitivePeerDependencies:
       - supports-color
 
@@ -10324,7 +10329,7 @@ snapshots:
 
   copy-descriptor@0.1.1: {}
 
-  core-js-compat@3.47.0:
+  core-js-compat@3.48.0:
     dependencies:
       browserslist: 4.28.1
 
@@ -12567,7 +12572,7 @@ snapshots:
     dependencies:
       p-locate: 6.0.0
 
-  lodash-es@4.17.22: {}
+  lodash-es@4.17.23: {}
 
   lodash.camelcase@4.3.0: {}
 
@@ -12602,6 +12607,8 @@ snapshots:
   lodash.upperfirst@4.3.1: {}
 
   lodash@4.17.21: {}
+
+  lodash@4.17.23: {}
 
   log-symbols@4.1.0:
     dependencies:
@@ -14860,7 +14867,7 @@ snapshots:
       fast-json-stable-stringify: 2.1.0
       fs-extra: 9.1.0
       glob: 11.1.0
-      lodash: 4.17.21
+      lodash: 4.17.23
       pretty-bytes: 5.6.0
       rollup: 2.79.2
       source-map: 0.8.0-beta.0

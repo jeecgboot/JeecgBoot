@@ -50,7 +50,7 @@
     "emoji-mart-vue-fast": "^15.0.5",
     "enquire.js": "^2.1.6",
     "intro.js": "^7.2.0",
-    "lodash-es": "^4.17.21",
+    "lodash-es": "^4.17.23",
     "lodash.get": "^4.4.2",
     "markdown-it": "^14.1.0",
     "markdown-it-link-attributes": "^4.0.1",
