@@ -23,6 +23,7 @@ import org.jeecg.common.util.dynamic.db.DataSourceCachePool;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.common.util.security.JdbcSecurityUtil;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.sign.annotation.SignatureCheck;
 import org.jeecg.modules.system.entity.SysDataSource;
 import org.jeecg.modules.system.service.ISysDataSourceService;
 import org.jeecg.modules.system.util.SecurityUtil;
@@ -82,6 +83,14 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
         return Result.ok(pageList);
     }
 
+    /**
+     * 下拉选项数据 (online报表使用)
+     * @param sysDataSource
+     * @param req
+     * @return
+     */
+    @SignatureCheck
+    @RequiresPermissions("online:report:add")
     @GetMapping(value = "/options")
     public Result<?> queryOptions(SysDataSource sysDataSource, HttpServletRequest req) {
         //------------------------------------------------------------------------------------------------
