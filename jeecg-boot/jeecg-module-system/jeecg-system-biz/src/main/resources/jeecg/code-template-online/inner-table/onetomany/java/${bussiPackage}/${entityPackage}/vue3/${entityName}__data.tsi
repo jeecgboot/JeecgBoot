@@ -100,7 +100,7 @@ export const searchFormSchema: FormSchema[] = [
 <#if po.classType=='sel_search'>
       component: 'JSearchSelect',
       componentProps:{
-         dict:"${po.dictTable},${po.dictText},${po.dictField}"
+         dict:"${query_field_dictCode}"
       },
 <#elseif po.classType=='sel_user'>
 <#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
