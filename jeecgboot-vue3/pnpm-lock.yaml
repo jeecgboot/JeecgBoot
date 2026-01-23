@@ -21,8 +21,8 @@ importers:
         specifier: 3.9.1-beta
         version: 3.9.1-beta
       '@jeecg/online':
-        specifier: 3.9.0-beta2
-        version: 3.9.0-beta2
+        specifier: 3.9.1-beta
+        version: 3.9.1-beta
       '@logicflow/core':
         specifier: ^2.0.10
         version: 2.1.9
@@ -1648,8 +1648,8 @@ packages:
   '@jeecg/aiflow@3.9.1-beta':
     resolution: {integrity: sha512-RwYobjK95Kb23rXIPOuL7+MgSTry8QxHs6l88vJRliZSY55aACHqy6YyyDybugSEsbGuckFAfaSOGlb6kN1/iQ==}
 
-  '@jeecg/online@3.9.0-beta2':
-    resolution: {integrity: sha512-KTo268287zwLLVgyGvp+arF2bvYESMrVu3qRPk8IgjRdedBDmWr0SYeHpMicg9RQ9NRm5SPB9Pg4s1Xix37VwA==}
+  '@jeecg/online@3.9.1-beta':
+    resolution: {integrity: sha512-PecK5QCazXpmCjdG0Y2Oa2+10M3hxCvfxy7gP1WDNDqDguN2Zl30rEN1ziOaqiv7on5/wp1XyLYOFid9n3egLA==}
 
   '@jest/console@29.7.0':
     resolution: {integrity: sha512-5Ni4CU7XHQi32IJ398EEP4RrB8eV09sXP2ROqD4bksHrnTree52PsxvX8tpL8LvTZ3pFzXyPbNQReSN41CAhOg==}
@@ -8558,7 +8558,7 @@ snapshots:
 
   '@jeecg/aiflow@3.9.1-beta': {}
 
-  '@jeecg/online@3.9.0-beta2': {}
+  '@jeecg/online@3.9.1-beta': {}
 
   '@jest/console@29.7.0':
     dependencies:
