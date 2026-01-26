@@ -75,7 +75,7 @@
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-aiflow</artifactId>
-            <version>3.9.1-beta</version>
+            <version>3.9.1-beta1</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
