@@ -185,7 +185,7 @@ public class AiragModelController extends JeecgController<AiragModel, IAiragMode
             //update-end---author:wangshuai---date:2026-01-07---for:【QQYUN-12145】【AI】AI 绘画创作---
         }catch (Exception e){
             log.error("测试模型连接失败", e);
-            return Result.error("测试模型连接失败，请检查模型配置是否正确！");
+            return Result.error(e.getMessage());
         }
         // 测试成功激活数据
         airagModel.setActivateFlag(1);

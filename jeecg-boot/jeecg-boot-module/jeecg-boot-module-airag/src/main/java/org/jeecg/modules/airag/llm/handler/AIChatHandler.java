@@ -3,6 +3,8 @@ package org.jeecg.modules.airag.llm.handler;
 import com.alibaba.fastjson.JSONObject;
 import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.data.message.*;
+import dev.langchain4j.exception.InvalidRequestException;
+import dev.langchain4j.exception.ToolExecutionException;
 import dev.langchain4j.mcp.McpToolProvider;
 import dev.langchain4j.rag.query.router.QueryRouter;
 import dev.langchain4j.service.TokenStream;
@@ -116,6 +118,9 @@ public class AIChatHandler implements IAIChatHandler {
         String resp;
         try {
             resp = llmHandler.completions(messages, params);
+        } catch (ToolExecutionException | InvalidRequestException e) {
+            log.error(e.getMessage(), e);
+            return "";
         } catch (Exception e) {
             // langchain4j 异常友好提示
             String errMsg = "调用大模型接口失败，详情请查看后台日志。";
@@ -133,7 +138,7 @@ public class AIChatHandler implements IAIChatHandler {
                 for (Map.Entry<String, String> entry : MODEL_ERROR_MAP.entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
-                    if (errMsg.contains(key)) {
+                    if (exceptionMsg.contains(key)) {
                         errMsg = value;
                         break;
                     }
@@ -454,7 +459,7 @@ public class AIChatHandler implements IAIChatHandler {
                 for (Map.Entry<String, String> entry : MODEL_ERROR_MAP.entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
-                    if (errMsg.contains(key)) {
+                    if (e.getMessage().contains(key)) {
                         errMsg = value;
                         break;
                     }
