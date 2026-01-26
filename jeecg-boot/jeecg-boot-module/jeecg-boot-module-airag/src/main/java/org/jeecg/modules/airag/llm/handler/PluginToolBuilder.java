@@ -233,10 +233,16 @@ public class PluginToolBuilder {
                 return response.getBody() != null ? response.getBody() : "";
             } catch (HttpClientErrorException e) {
                 log.error("插件工具HTTP请求失败: {}", e.getMessage(), e);
-                return "请求失败: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
+                //update-begin---author:wangshuai---date:2026-01-16---for:【QQYUN-14577】图片搜索失败会导致进行不下去---
+                return "插件调用失败（HTTP " + e.getStatusCode() + "）：" + e.getResponseBodyAsString()
+                        + "。请继续完成剩余任务。";
+                //update-end---author:wangshuai---date:2026-01-16---for:【QQYUN-14577】图片搜索失败会导致进行不下去---
             } catch (Exception e) {
                 log.error("插件工具执行失败: {}", e.getMessage(), e);
-                return "工具执行失败: " + e.getMessage();
+                //update-begin---author:wangshuai---date:2026-01-16---for:【QQYUN-14577】图片搜索失败会导致进行不下去---
+                return "插件工具执行失败：" + e.getMessage()
+                        + "。请继续完成剩余任务。";
+                //update-end---author:wangshuai---date:2026-01-16---for:【QQYUN-14577】图片搜索失败会导致进行不下去---
             }
         };
     }
