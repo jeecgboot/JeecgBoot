@@ -286,5 +286,38 @@ public class SsrfFileTypeFilter {
         }
     }
 
+    /**
+     * 校验文件路径安全性，防止路径遍历攻击
+     * @param filePath 文件路径
+     */
+    public static void checkPathTraversal(String filePath) {
+        if (StringUtils.isBlank(filePath)) {
+            return;
+        }
+        // 1. 防止路径遍历：不允许 ..
+        if (filePath.contains("..")) {
+            throw new JeecgBootException("文件路径包含非法字符");
+        }
+        // 2. 防止URL编码绕过：%2e = .
+        String fileLower = filePath.toLowerCase();
+        if (fileLower.contains("%2e")) {
+            throw new JeecgBootException("文件路径包含非法字符");
+        }
+    }
+
+    /**
+     * 批量校验文件路径安全性（逗号分隔的多个文件路径）
+     * @param files 逗号分隔的文件路径
+     */
+    public static void checkPathTraversalBatch(String files) {
+        if (StringUtils.isBlank(files)) {
+            return;
+        }
+        for (String file : files.split(",")) {
+            if (StringUtils.isNotBlank(file)) {
+                checkPathTraversal(file.trim());
+            }
+        }
+    }
     
 }

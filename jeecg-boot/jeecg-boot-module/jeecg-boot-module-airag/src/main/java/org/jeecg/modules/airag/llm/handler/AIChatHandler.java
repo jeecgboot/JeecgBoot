@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jeecg.ai.handler.LLMHandler;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.AssertUtils;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.common.consts.AiragConsts;
 import org.jeecg.modules.airag.common.handler.AIChatParams;
@@ -401,6 +402,7 @@ public class AIChatHandler implements IAIChatHandler {
                 String filePath = uploadpath + File.separator + imageUrl;
                 // 读取文件并转换为 base64 编码字符串
                 try {
+                    SsrfFileTypeFilter.checkPathTraversal(filePath);
                     Path path = Paths.get(filePath);
                     byte[] fileContent = Files.readAllBytes(path);
                     String base64Data = Base64.getEncoder().encodeToString(fileContent);
@@ -409,7 +411,7 @@ public class AIChatHandler implements IAIChatHandler {
                     // 构建 ImageContent 对象
                     imageContents.add(ImageContent.from(base64Data, mimeType));
                 } catch (IOException e) {
-                    log.error("读取文件失败: " + filePath, e);
+                    log.error("读取文件失败: {}", imageUrl, e);
                     throw new RuntimeException("发送消息失败,读取文件异常:" + e.getMessage(), e);
                 }
             }
@@ -529,12 +531,13 @@ public class AIChatHandler implements IAIChatHandler {
                     } else {
                         // 本地文件
                         String filePath = uploadpath + File.separator + imageUrl;
+                        SsrfFileTypeFilter.checkPathTraversal(filePath);
                         Path path = Paths.get(filePath);
                         fileContent = Files.readAllBytes(path);
                     }
                     originalImageBase64List.add(Base64.getEncoder().encodeToString(fileContent));
                 } catch (Exception e) {
-                    log.error("图片读取失败: " + imageUrl, e);
+                    log.error("图片读取失败: {}", imageUrl, e);
                     throw new JeecgBootException("图片读取失败: " + imageUrl);
                 }
             }

@@ -20,6 +20,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.message.enums.RangeDateEnum;
 import org.jeecg.modules.message.websocket.WebSocket;
@@ -142,6 +143,8 @@ public class SysAnnouncementController {
 			// 代码逻辑说明: 标题处理xss攻击的问题
 			String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
 			sysAnnouncement.setTitile(title);
+			// 【安全校验】校验附件文件名，防止路径遍历攻击
+			SsrfFileTypeFilter.checkPathTraversalBatch(sysAnnouncement.getFiles());
 			sysAnnouncement.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
             //未发布
 			sysAnnouncement.setSendStatus(CommonSendStatus.UNPUBLISHED_STATUS_0);
@@ -173,6 +176,8 @@ public class SysAnnouncementController {
 				// 代码逻辑说明: 标题处理xss攻击的问题
 				String title = XssUtils.scriptXss(sysAnnouncement.getTitile());
 				sysAnnouncement.setTitile(title);
+				// 【安全校验】校验附件文件名，防止路径遍历攻击
+				SsrfFileTypeFilter.checkPathTraversalBatch(sysAnnouncement.getFiles());
 				sysAnnouncement.setNoticeType(NoticeTypeEnum.NOTICE_TYPE_SYSTEM.getValue());
 				boolean ok = sysAnnouncementService.upDateAnnouncement(sysAnnouncement);
 				//TODO 返回false说明什么？

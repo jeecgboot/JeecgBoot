@@ -12,6 +12,7 @@ import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.FileDownloadUtils;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
@@ -303,6 +304,8 @@ public class SysAnnouncementServiceImpl extends ServiceImpl<SysAnnouncementMappe
 				if (oConvertUtils.isEmpty(fileUrl)) {
 					continue;
 				}
+				// 【安全校验】防止路径遍历攻击
+				SsrfFileTypeFilter.checkPathTraversal(fileUrl);
 				// 生成ZIP内文件名：避免重名，添加序号
 				String fileName = FileDownloadUtils.generateFileName(fileUrl, i, fileUrls.length);
 				String uploadUrl = jeecgBaseConfig.getPath().getUpload();
