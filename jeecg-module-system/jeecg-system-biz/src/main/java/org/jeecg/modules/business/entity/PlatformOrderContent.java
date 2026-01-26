@@ -78,6 +78,12 @@ public class PlatformOrderContent implements Serializable {
     @ApiModelProperty(value = "SKU数量")
     private Integer quantity;
     /**
+     * 开票实际购买数量
+     */
+    @Excel(name = "开票实际购买数量", width = 15)
+    @ApiModelProperty(value = "开票实际购买数量")
+    private Integer purchaseQuantity;
+    /**
      * 商品采购总费用
      */
     @Excel(name = "商品采购总费用", width = 15)

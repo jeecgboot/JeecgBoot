@@ -110,6 +110,10 @@ public class ShippingInvoiceFactory {
                         }
                     });
     private final List<String> CLIENT_STOCK_BYPASS_LIST = Arrays.asList("LA", "AP");
+    private static final String TAG_ORDER = "ORDER|";
+    private static final String TAG_SKU   = "SKU|";
+    private static final String TAG_SKUS  = "SKUS|";
+
 
     /**
      * Creates an invoice for a client according to type
@@ -254,18 +258,9 @@ public class ShippingInvoiceFactory {
                                          List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject, List<String> ordersWithStock) throws UserException {
         Response<CompleteInvoice, List<Response<String, String>>> response = new Response<>();
         Client client = clientMapper.selectById(customerId);
-        List<OrderBypassStock> orderBypassStockList = shopOptionsService.getStockBypassByOrder(ordersWithStock);
-        List<String> ordersCanBypassStock = orderBypassStockList.stream()
-                .filter(order -> order.getIsSelfIgnoreStock() == true)
-                .map(OrderBypassStock::getOrderId)
-                .collect(Collectors.toList());
-        log.info("Orders {} aren't allowed to bypass stock", orderBypassStockList.stream()
-                .filter(order -> order.getIsSelfIgnoreStock() == false)
-                .map(OrderBypassStock::getOrderId).collect(Collectors.toList()));
         log.info("User {} is creating a complete invoice for customer {}", username, client.getInternalCode());
-
         log.info("Orders to be invoiced: {}", orderAndContent);
-        if (orderAndContent == null) {
+        if (orderAndContent == null || orderAndContent.isEmpty()) {
             throw new UserException("No platform order in the selected period!");
         }
         Map<String, BigDecimal> skuRealWeights = new HashMap<>();
@@ -288,35 +283,59 @@ public class ShippingInvoiceFactory {
                 latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
         List<Response<String, String>> responsesWithPb = new ArrayList<>();
         if (!ordersWithPb.isEmpty()) {
+            // map of order DB ID to platform order ID
+            Map<String, String> orderDbIdToPlatformId = orderAndContent.keySet().stream()
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toMap(
+                            PlatformOrder::getId,
+                            o -> o.getPlatformOrderId() == null ? o.getId() : o.getPlatformOrderId(),
+                            (a, b) -> a
+                    ));
             for (Map.Entry<String, List<String>> entry : ordersWithPb.entrySet()) {
-                Response<String, String> responseWithPb = new Response<>();
-                responseWithPb.setData(entry.getKey());
-                responseWithPb.setError(String.join(", ", entry.getValue()));
-                responsesWithPb.add(responseWithPb);
+                String orderDbId = entry.getKey();
+                String platformOrderId = orderDbIdToPlatformId.getOrDefault(orderDbId, orderDbId);
+                List<String> msgs = entry.getValue();
+                if (msgs == null || msgs.isEmpty()) continue;
+                for (String msg : msgs) {
+                    Response<String, String> r = new Response<>();
+                    r.setData(platformOrderId);
+                    r.setError(msg);
+                    responsesWithPb.add(r);
+                }
             }
             response.setError(responsesWithPb);
+            orderAndContent.entrySet().removeIf(e -> ordersWithPb.containsKey(e.getKey().getId()));
+        }
+        if (orderAndContent.isEmpty()) {
+            log.warn("No order can be invoiced for customer {} in this run. invoiceCode={}", client.getInternalCode(), invoiceCode);
+            return response;
         }
         // Purchase fees
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
-        List<String> orderIds = orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(toList());
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
         List<PromotionDetail> promotionDetails = new ArrayList<>();
-        if(!ordersCanBypassStock.isEmpty()) {
-            orderIds = orderIds.stream().filter(orderId -> !ordersCanBypassStock.contains(orderId)).collect(toList());
-        }
-        if(!orderIds.isEmpty()){
-            List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(orderIds);
+        List<String> allOrderIds = orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(toList());
+        if(!allOrderIds.isEmpty()) {
+            List<SkuQuantity> skuQuantities = platformOrderContentService.listSkusToPurchaseForOrders(allOrderIds);
+            if (skuQuantities != null && !skuQuantities.isEmpty()) {
+                String purchaseID = purchaseOrderService.addPurchase(
+                        username,
+                        client,
+                        invoiceCode,
+                        skuQuantities,
+                        orderAndContent,
+                        null
+                );
 
-            String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent, ordersWithStock);
-
-            purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
-            promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
-            if (savRefunds != null) {
-                updateSavRefundsInDb(savRefunds, invoiceCode);
-            }
-            if(extraFees != null && !extraFees.isEmpty()) {
-                List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
-                extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
+                purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
+                promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
+                if (savRefunds != null) {
+                    updateSavRefundsInDb(savRefunds, invoiceCode);
+                }
+                if(extraFees != null && !extraFees.isEmpty()) {
+                    List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
+                    extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
+                }
             }
         }
         updateOrdersAndContentsInDb(orderAndContent);
@@ -365,8 +384,7 @@ public class ShippingInvoiceFactory {
         List<Response<String, String>> ordersToSkip = new ArrayList<>();
         List<Response<String, String>> ordersInsBalance = new ArrayList<>();
         log.info("User {} is creating a complete invoice in {} order, for customer {}", username, client.getInternalCode(), client.getIsChronologicalOrder().equals("0") ? "first can invoice" : "chronological");
-
-        if (orderAndContent == null || orderAndContent.isEmpty()) {
+        if (orderAndContent.isEmpty()) {
             throw new UserException("No platform order in the selected period!");
         }
         log.info("Orders to be invoiced: {}", orderAndContent);
@@ -393,7 +411,7 @@ public class ShippingInvoiceFactory {
             if(skip) {
                 Response<String, String> orderToSkip = new Response<>();
                 orderToSkip.setData(entry.getKey().getPlatformOrderId());
-                orderToSkip.setError("Order skipped due to insufficient balance in chronological order.");
+                orderToSkip.setError(tagOrder("Skipped due to insufficient balance in chronological order."));
                 ordersToSkip.add(orderToSkip);
                 continue;
             }
@@ -406,7 +424,7 @@ public class ShippingInvoiceFactory {
                 log.error("Couldn't calculate fee for order {} !", entry.getKey().getId());
                 Response<String, String> orderWithError = new Response<>();
                 orderWithError.setData(entry.getKey().getPlatformOrderId());
-                orderWithError.setError(e.getMessage());
+                orderWithError.setError(tagOrder("Fee calculation failed: " + e.getMessage()));
                 ordersWithError.add(orderWithError);
                 continue;
             }
@@ -423,7 +441,7 @@ public class ShippingInvoiceFactory {
                 log.error("Not enough balance for order {} !", entry.getKey().getId());
                 Response<String, String> orderInsBalance = new Response<>();
                 orderInsBalance.setData(entry.getKey().getPlatformOrderId());
-                orderInsBalance.setError("Not enough balance for order " + entry.getKey().getPlatformOrderId() + " : " + estimatedVirtualBalance);
+                orderInsBalance.setError(tagOrder("Not enough balance: " + estimatedVirtualBalance));
                 ordersInsBalance.add(orderInsBalance);
                 if(client.getIsChronologicalOrder().equals("1"))
                     skip = true;
@@ -466,12 +484,16 @@ public class ShippingInvoiceFactory {
             return response;
         }
         List<String> orderIds = orderAndContent.keySet().stream().map(PlatformOrder::getId).collect(toList());
-        List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(orderIds);
-
-        String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent, null);
-
-        List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
-        List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
+        List<SkuQuantity> skuQuantities = platformOrderContentService.listSkusToPurchaseForOrders(orderIds);
+        List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
+        List<PromotionDetail> promotionDetails = new ArrayList<>();
+        if (skuQuantities != null && !skuQuantities.isEmpty()) {
+            String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent, null);
+            purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
+            promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
+        } else {
+            log.info("[BALANCE][PURCHASE][SKIP] no sku to purchase");
+        }
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
@@ -834,14 +856,26 @@ public class ShippingInvoiceFactory {
         Map<String, String> logisticChannelNameToId = logisticChannelMapper.getAll().stream().collect(toMap(LogisticChannel::getInternalName, LogisticChannel::getId));
         // find logistic channel price for each order based on its content
         for (PlatformOrder uninvoicedOrder : orderContentMap.keySet()) {
+            String orderDbId = uninvoicedOrder.getId();
             String logisticChannelId = logisticChannelNameToId.get(uninvoicedOrder.getLogisticChannelName());
+            if (logisticChannelId == null || logisticChannelId.isEmpty()) {
+                platformOrderIdsWithPb.put(
+                        orderDbId,
+                        Collections.singletonList(tagOrder("Unknown logistic channel: " + uninvoicedOrder.getLogisticChannelName()))
+                );
+                continue;
+            }
             if(skip) {
-                platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList("Skipped"));
+                platformOrderIdsWithPb.put(orderDbId, Collections.singletonList(tagOrder("Skipped")));
                 continue;
             }
             List<PlatformOrderContent> contents = orderContentMap.get(uninvoicedOrder);
-            if (contents.isEmpty()) {
-                throw new UserException("Order: {} doesn't have content", uninvoicedOrder.getId());
+            if (contents == null || contents.isEmpty()) {
+                platformOrderIdsWithPb.put(
+                        orderDbId,
+                        Collections.singletonList(tagOrder("Order has no content"))
+                );
+                continue;
             }
             log.info("Calculating price for {} of order {}", contents, uninvoicedOrder);
             Map<String, Integer> contentSkuQtyMap = new HashMap<>();
@@ -859,8 +893,13 @@ public class ShippingInvoiceFactory {
                     contentSkuQtyMap,
                     skuRealWeights
             );
-            if(!contentWeightResult.getError().isEmpty()) {
-                platformOrderIdsWithPb.put(uninvoicedOrder.getId(), contentWeightResult.getError());
+            if (contentWeightResult.getError() != null && !contentWeightResult.getError().isEmpty()) {
+                // skuId -> erpCode
+                List<String> skuErpCodes = resolveSkuErpCodes(contentWeightResult.getError());
+                platformOrderIdsWithPb.put(
+                        orderDbId,
+                        Collections.singletonList(tagSkus(skuErpCodes, "SKU重量缺失/无效，无法计算运费"))
+                );
                 continue;
             }
             BigDecimal contentWeight = contentWeightResult.getData();
@@ -871,11 +910,17 @@ public class ShippingInvoiceFactory {
                         channelPriceMap, uninvoicedOrder, contentWeight);
             }
             catch ( UserException e ) {
-                platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList(e.getMessage()));
+                List<String> skuErpCodes = resolveSkuErpCodes(contentSkuQtyMap.keySet());
+                platformOrderIdsWithPb.put(
+                        orderDbId,
+                        Collections.singletonList(tagSkus(skuErpCodes, "渠道缺失/无效，无法匹配运费价格：" + e.getMessage()))
+                );
                 continue;
             }
             if(logisticChannelPriceResponse.getError() != null) {
-                platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList(logisticChannelPriceResponse.getError()));
+                platformOrderIdsWithPb.put(orderDbId,
+                        Collections.singletonList(tagOrder(logisticChannelPriceResponse.getError()))
+                );
                 continue;
             }
             logisticChannelPair = logisticChannelPriceResponse.getData();
@@ -945,7 +990,7 @@ public class ShippingInvoiceFactory {
                         skip = true;
                     }
                     insufficientBalanceOrders.add(uninvoicedOrder);
-                    platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList("Insufficient balance, order was not invoiced."));
+                    platformOrderIdsWithPb.put(uninvoicedOrder.getId(), Collections.singletonList(tagOrder("Insufficient balance, order was not invoiced.")));
                     continue;
                 }
             }
@@ -1064,7 +1109,8 @@ public class ShippingInvoiceFactory {
                 skuRealWeights
         );
         if(!contentWeightResult.getError().isEmpty()) {
-            response.setError("Order: " + order.getPlatformOrderId() + " has invalid sku weight: " + contentWeightResult.getError());
+            List<String> skuErpCodes = resolveSkuErpCodes(contentWeightResult.getError());
+            response.setError(tagSkus(skuErpCodes, "SKU重量缺失/无效，无法计算运费"));
             return response;
         }
         BigDecimal contentWeight = contentWeightResult.getData();
@@ -1076,7 +1122,7 @@ public class ShippingInvoiceFactory {
         }
         catch (UserException e) {
             log.error(e.getMessage());
-            response.setError(e.getMessage());
+            response.setError(tagOrder("渠道缺失/无效，无法匹配运费价格：" + e.getMessage()));
             return response;
         }
         if(logisticChannelPriceResponse.getError() != null) {
@@ -1124,13 +1170,17 @@ public class ShippingInvoiceFactory {
             }
             // if we are dealing with complete invoice, before inserting orders info
             // we calcute purchase fee and make sure we have enough balance
-            if(invoiceCode.toCharArray()[8] == '7') {
+            if(invoiceCode != null && invoiceCode.toCharArray()[8] == '7') {
                 BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
-                List<SkuQuantity> skuQuantities = platformOrderContentService.searchOrderContent(Collections.singletonList(order.getId()));
-                List<OrderContentDetail> details =  platformOrderService.searchPurchaseOrderDetail(skuQuantities);
-                OrdersStatisticData data = OrdersStatisticData.makeData(details, null);
-                BigDecimal purchaseFee = data.finalAmount();
-                virtualBalance = virtualBalance.subtract(purchaseFee.multiply(eurToUsd));
+                List<SkuQuantity> skuQuantities = platformOrderContentService.listSkusToPurchaseForOrders(Collections.singletonList(order.getId()));
+                if (skuQuantities != null && !skuQuantities.isEmpty()) {
+                    List<OrderContentDetail> details =  platformOrderService.searchPurchaseOrderDetail(skuQuantities);
+                    OrdersStatisticData data = OrdersStatisticData.makeData(details, null);
+                    BigDecimal purchaseFee = data.finalAmount();
+                    virtualBalance = virtualBalance.subtract(purchaseFee.multiply(eurToUsd));
+                } else {
+                    log.info("[BALANCE][ESTIMATE] orderId={}, no purchase needed (skuQuantities empty)", order.getId());
+                }
             }
             if (virtualBalance.compareTo(BigDecimal.ZERO) < 0) {
                 response.setData(virtualBalance);
@@ -1209,7 +1259,6 @@ public class ShippingInvoiceFactory {
             String skuId = content.getSkuId();
             Optional<SkuDeclaredValue> declaredValueForSKU = latestDeclaredValues.stream()
                     .filter(sdv -> sdv.getSkuId().equals(skuId)).findFirst();
-
             BigDecimal contentDeclaredValue;
             try {
                 contentDeclaredValue = declaredValueForSKU.get().getDeclaredValue()
@@ -1488,7 +1537,6 @@ public class ShippingInvoiceFactory {
         Client client = clientMapper.selectById(clientId);
         List<FeesEstimationPerOrder> estimations = new ArrayList<>();
         Map<String, List<String>> platformOrderIdsWithPb = new HashMap<>();
-        List<String> errorMessages = new ArrayList<>();
         Map<PlatformOrder, List<PlatformOrderContent>> ordersMap = platformOrderService.fetchOrderDataWithFees(orderIds);
         List<SkuOrderPage> orderSkus = platformOrderService.searchOrdersSkus(orderIds);
         List<LogisticChannel> logisticChannels = logisticChannelMapper.getAll();
@@ -1499,46 +1547,26 @@ public class ShippingInvoiceFactory {
                 .collect(toMap(SkuOrderPage::getId, sku -> BigDecimal.valueOf(sku.getWeight())));
         Map<String, BigDecimal> skuServiceFees = orderSkus.stream()
                 .collect(toMap(SkuOrderPage::getId, SkuOrderPage::getServiceFee));
-        Map<String, SkuPrice> skuPrices = orderSkus.stream()
-                .collect(toMap(SkuOrderPage::getId, sku -> {
-                    SkuPrice skuPrice = new SkuPrice();
-                    skuPrice.setId(sku.getId());
-                    skuPrice.setPrice(sku.getSkuPrice());
-                    skuPrice.setDiscountedPrice(sku.getDiscountedPrice());
-                    skuPrice.setDate(sku.getSkuPriceEffectiveDate());
-                    skuPrice.setThreshold(sku.getThreshold());
-                    skuPrice.setCurrencyId(sku.getCurrencyId());
-                    return skuPrice;
-                }));
         List<Country> countryList = countryService.findAll();
-        BigDecimal exchangeRateEurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
         Map<String, String> logisticChannelNameToId = logisticChannels.stream().collect(toMap(LogisticChannel::getInternalName, LogisticChannel::getId));
 
         for(PlatformOrder order: ordersMap.keySet()) {
             FeesEstimationPerOrder estimation = new FeesEstimationPerOrder();
-            BigDecimal purchaseEstimation = BigDecimal.ZERO;
-
-            List<String> skuIds = ordersMap.get(order).stream().map(PlatformOrderContent::getSkuId).distinct().collect(toList());
             estimation.setOrderId(order.getId());
-            boolean hasProductUnavailable = (order.getProductAvailable() == null || order.getProductAvailable().equals("0"))
-                    && order.getPurchaseInvoiceNumber() == null
-                    && order.getVirtualProductAvailable().equals("0");
+            BigDecimal purchaseEstimation = BigDecimal.ZERO;
 
             String logisticChannelId = logisticChannelNameToId.get(order.getLogisticChannelName());
             List<PlatformOrderContent> contents = ordersMap.get(order).stream().filter(content -> !content.getErpStatus().equals(OrderStatus.Obsolete.getCode())).collect(toList());
             if (contents.isEmpty()) {
                 throw new UserException("Order: {} doesn't have content", order.getId());
             }
+            List<String> skuIds = contents.stream().map(PlatformOrderContent::getSkuId).distinct().collect(toList());
             Map<String, Integer> contentSkuQtyMap = new HashMap<>();
             for (PlatformOrderContent content : contents) {
                 if(content.getErpStatus().equals(OrderStatus.Obsolete.getCode()))
                     continue;
                 String skuId = content.getSkuId();
-                if (contentSkuQtyMap.containsKey(skuId)) {
-                    contentSkuQtyMap.put(skuId, contentSkuQtyMap.get(skuId) + content.getQuantity());
-                } else {
-                    contentSkuQtyMap.put(skuId, content.getQuantity());
-                }
+                contentSkuQtyMap.put(skuId, contentSkuQtyMap.getOrDefault(skuId, 0) + content.getQuantity());
             }
             Response<BigDecimal, List<String>> contentWeightResult = platformOrderContentService.calculateWeight(contentSkuQtyMap, orderSkusWeights);
             if(!contentWeightResult.getError().isEmpty()) {
@@ -1624,23 +1652,17 @@ public class ShippingInvoiceFactory {
                 remainingShippingFee = calculateAndUpdateContentFees(orderSkusWeights, skuServiceFees, order, contentWeight,
                         totalShippingFee, clientVatPercentage, contentDeclaredValueMap, totalDeclaredValue, totalVAT,
                         vatApplicable, pickingFeePerItem, content, remainingShippingFee, contentSkuInsurance);
+            }
+            if (order.getPurchaseInvoiceNumber() == null) {
+                List<SkuQuantity> skuToBuy = platformOrderContentService
+                        .listSkusToPurchaseForOrders(Collections.singletonList(order.getId()));
 
-                if(hasProductUnavailable) {
-                    SkuPrice skuPrice = skuPrices.get(content.getSkuId());
-                    if(skuPrice == null) {
-                        Sku sku = skuService.getById(content.getSkuId());
-                        String erpCode = sku != null ? sku.getErpCode() : "Unknown SKU";
-                        errorMessages.add("No valid price for SKU: " + erpCode);
-                        log.warn("No valid price for SKU: {}", content.getSkuId());
-                        continue;
-                    }
-                    BigDecimal price = skuPriceService.getPrice(skuPrice, content.getQuantity(), exchangeRateEurToRmb);
-                    price = price.multiply(BigDecimal.valueOf(content.getQuantity()));
-                    purchaseEstimation = purchaseEstimation.add(price);
-                    log.info("Matched SKU: {}, Qty: {}, Final Price: {}", content.getSkuId(), content.getQuantity(), price);
+                if (skuToBuy != null && !skuToBuy.isEmpty()) {
+                    List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuToBuy);
+                    OrdersStatisticData data = OrdersStatisticData.makeData(details, null);
+                    purchaseEstimation = data.finalAmount() == null ? BigDecimal.ZERO : data.finalAmount();
                 }
             }
-            platformOrderIdsWithPb.forEach((key, value) -> errorMessages.addAll(value));
             if(platformOrderIdsWithPb.get(order.getId()) != null && !platformOrderIdsWithPb.get(order.getId()).isEmpty()) {
                 continue;
             }
@@ -1704,5 +1726,37 @@ public class ShippingInvoiceFactory {
 
         return new CompleteInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees,
                 purchaseOrderSkuList, promotionDetails, eurToUsd);
+    }
+    /** ===== Error tag helpers ===== */
+    private static String tagOrder(String reason) {
+        return TAG_ORDER + (reason == null ? "unknown" : reason.trim());
+    }
+    private static String tagSku(String erpCodeOrSkuId, String msg) {
+        return TAG_SKU + (erpCodeOrSkuId == null ? "" : erpCodeOrSkuId) + "|" + msg;
+    }
+    private static String tagSkus(Collection<String> erpCodesOrSkuIds, String msg) {
+        String joined = (erpCodesOrSkuIds == null || erpCodesOrSkuIds.isEmpty())
+                ? ""
+                : String.join(",", erpCodesOrSkuIds);
+        return TAG_SKUS + joined + "|" + msg;
+    }
+    /** skuId -> erpCode (fallback skuId) */
+    private String resolveSkuErpCode(String skuId) {
+        if (skuId == null) return "";
+        try {
+            Sku sku = skuService.getById(skuId);
+            if (sku != null && sku.getErpCode() != null && !sku.getErpCode().isEmpty()) {
+                return sku.getErpCode();
+            }
+        } catch (Exception ignore) {}
+        return skuId;
+    }
+    private List<String> resolveSkuErpCodes(Collection<String> skuIds) {
+        if (skuIds == null || skuIds.isEmpty()) return new ArrayList<>();
+        List<String> res = new ArrayList<>();
+        for (String skuId : skuIds) {
+            res.add(resolveSkuErpCode(skuId));
+        }
+        return res;
     }
 }

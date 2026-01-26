@@ -24,6 +24,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.mapper.PurchaseOrderContentMapper;
 import org.jeecg.modules.business.service.*;
 import org.jeecg.modules.business.vo.*;
+import org.jeecg.modules.business.vo.clientPlatformOrder.section.OrdersStatisticData;
 import org.jeecg.modules.message.service.ISysMessageService;
 import org.jeecg.modules.quartz.entity.QuartzJob;
 import org.jeecg.modules.quartz.service.IQuartzJobService;
@@ -31,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.CannotAcquireLockException;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +50,6 @@ import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,6 +92,8 @@ public class InvoiceController {
     private PlatformOrderMapper platformOrderMapper;
     @Autowired
     private IPlatformOrderService platformOrderService;
+    @Autowired
+    private IPlatformOrderContentService platformOrderContentService;
     @Autowired
     private PlatformOrderContentMapper platformOrderContentMap;
     @Autowired
@@ -399,7 +400,9 @@ public class InvoiceController {
     @PostMapping(value = "/makeManualComplete")
     public Result<?> makeManualCompleteInvoice(@RequestBody ManualInvoiceOrderParam param) {
         try {
-            Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse = shippingInvoiceService.makeManualCompleteInvoice(param);
+            LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            String operator = sysUser.getUsername();
+            Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse = shippingInvoiceService.makeManualCompleteInvoice(param,operator);
             InvoiceMetaData metaData = invoiceMetaDataResponse.getData();
 
             String clientId = param.getClientID();
@@ -920,7 +923,7 @@ public class InvoiceController {
      * @return One ShippingFeesEstimation
      */
     @PostMapping(value = "/completeFeesEstimation")
-    public Result<?> getCompleteFeesEstimation(@RequestBody ShippingInvoiceOrderParam param) {
+    public Result<?> getCompleteFeesEstimation(@RequestBody ShippingInvoiceOrderParam param) throws UserException {
         boolean isEmployee = securityService.checkIsEmployee();
         String currency = clientService.getById(param.clientID()).getCurrency();
         List<PlatformOrder> orders = platformOrderMapper.fetchByIds(param.orderIds());
@@ -942,63 +945,33 @@ public class InvoiceController {
                 return Result.OK("No estimation found.");
             String internalCode = shippingFeesEstimations.get(0).getCode();
 
-            // purchase estimation
-            // only calculate purchase estimation if products are not available and purchaseInvoiceNumber is null, else it's already been paid
-            List<String> orderIdsWithProductUnavailable = entry.getValue().stream()
-                    .filter(
-                        order -> (order.getProductAvailable() == null || order.getProductAvailable().equals("0"))
-                                && order.getPurchaseInvoiceNumber() == null
-                                && order.getVirtualProductAvailable().equals("0"))
-                    .map(PlatformOrder::getId).collect(Collectors.toList());
+            // purchase estimation: only estimate purchase part for orders without purchase invoice yet.
+            // actual qty to buy is computed by listSkusToPurchaseForOrders (stock rules inside).
+            List<String> orderIdsForPurchaseEstimation = entry.getValue().stream()
+                    .filter(o -> o.getPurchaseInvoiceNumber() == null)
+                    .map(PlatformOrder::getId)
+                    .collect(Collectors.toList());
 
             BigDecimal shippingFeesEstimation = BigDecimal.ZERO;
             BigDecimal purchaseEstimation = BigDecimal.ZERO;
             int ordersToProccess = 0;
             int processedOrders = 0;
-            boolean isCompleteInvoiceReady = true;
 
             for(ShippingFeesEstimation estimation: shippingFeesEstimations) {
                 shippingFeesEstimation = shippingFeesEstimation.add(estimation.getDueForProcessedOrders());
                 ordersToProccess += estimation.getOrdersToProcess();
                 processedOrders += estimation.getProcessedOrders();
             }
-            if(!orderIdsWithProductUnavailable.isEmpty()) {
-                List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(orderIdsWithProductUnavailable);
-                List<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toList());
-                List<SkuPrice> skuPrices = platformOrderContentMap.searchSkuPrice(skuIds);
-                BigDecimal exchangeRateEurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
-                for(SkuPrice skuPrice : skuPrices) {
-                    if(skuPrice.getPrice() == null) {
-                        isCompleteInvoiceReady = false;
-                        errorMessages.add("Some sku prices are missing.");
-                        break;
-                    }
-                }
-                Date today = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                for(PlatformOrderContent content : orderContents){
-                    Optional<SkuPrice> matched = skuPrices.stream()
-                            .filter(p -> content.getSkuId().equals(p.getSkuId()))
-                            .filter(p -> p.getDate() != null && !p.getDate().after(today))
-                            .max(Comparator.comparing(SkuPrice::getDate));
-                    log.info("Can't be after today: {} - {}", content.getSkuId(), matched.isPresent() ? matched.get().getDate() : "null");
-                    if (matched.isPresent()) {
-                        SkuPrice skuPrice = matched.get();
-                        BigDecimal price = skuPriceService.getPrice(skuPrice, content.getQuantity(), exchangeRateEurToRmb);
-                        price = price.multiply(BigDecimal.valueOf(content.getQuantity()));
-                        purchaseEstimation = purchaseEstimation.add(price);
-                        log.info("Matched SKU: {}, Qty: {}, Final Price: {}", content.getSkuId(), content.getQuantity(), price);
-                    } else {
-                        isCompleteInvoiceReady = false;
-                        Sku sku = skuService.getById(content.getSkuId());
-                        String erpCode = sku != null ? sku.getErpCode() : "Unknown SKU";
-                        errorMessages.add("No valid price for SKU: " + erpCode);
-                        log.warn("No valid price for SKU: {}", content.getSkuId());
-                    }
+            if(!orderIdsForPurchaseEstimation.isEmpty()) {
+                List<SkuQuantity> skuToBuy = platformOrderContentService
+                        .listSkusToPurchaseForOrders(orderIdsForPurchaseEstimation);
+                if (skuToBuy != null && !skuToBuy.isEmpty()) {
+                    List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuToBuy);
+                    OrdersStatisticData data = OrdersStatisticData.makeData(details, null);
+                    purchaseEstimation = data.finalAmount() == null ? BigDecimal.ZERO : data.finalAmount();
                 }
             }
-            else {
-                isCompleteInvoiceReady = false;
-            }
+            boolean isCompleteInvoiceReady = errorMessages.isEmpty();
             if(!currency.equals("EUR")) {
                 BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", currency);
                 purchaseEstimation = purchaseEstimation.multiply(exchangeRate).setScale(2, RoundingMode.CEILING);

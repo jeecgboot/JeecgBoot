@@ -270,9 +270,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
                 .collect(Collectors.toList());
         purchaseOrderContentMapper.addAll(client.fullName(), purchaseID, entries);
 
-        // 2.1 save extra sku
-        skuService.addInventory(skuQuantities, platformOrderIDs);
-
         // 3. save the application of promotion information
         List<PromotionHistoryEntry> promotionHistoryEntries = details.stream()
                 .filter(orderContentDetail -> orderContentDetail.getSkuDetail().getPromotion() != Promotion.ZERO_PROMOTION)
@@ -447,12 +444,6 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         List<String> orderIds = orderAndContent.keySet().stream()
                 .map(PlatformOrder::getId)
                 .collect(Collectors.toList());
-        if( ordersWithStock != null && !ordersWithStock.isEmpty()) {
-            orderIds = orderIds.stream()
-                    .filter(orderId -> !ordersWithStock.contains(orderId))
-                    .collect(Collectors.toList());
-        }
-        skuService.addInventory(skuQuantities, orderIds);
 
         // 3. save the application of promotion information
         List<PromotionHistoryEntry> promotionHistoryEntries = details.stream()
@@ -469,7 +460,19 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         // 4. update platform orders and contents for prices and statuses
         Map<String, Double> skuAvgPrices = new HashMap<>();
         for (OrderContentEntry entry : entries) {
-            skuAvgPrices.put(entry.getSkuID(), entry.getTotalAmount().doubleValue() / entry.getQuantity());
+            if (entry.getQuantity() <= 0) {
+                log.warn("[PURCHASE][AVG_PRICE_SKIP_ZERO_QTY] purchaseId={}, skuId={}, qty={}, total={}",
+                        purchaseID, entry.getSkuID(), entry.getQuantity(), entry.getTotalAmount());
+                continue;
+            }
+            double avg = entry.getTotalAmount().doubleValue() / entry.getQuantity();
+            skuAvgPrices.put(entry.getSkuID(), avg);
+        }
+        Map<String, Integer> skuQtyToBuy = new HashMap<>();
+        if (skuQuantities != null) {
+            for (SkuQuantity sq : skuQuantities) {
+                skuQtyToBuy.merge(sq.getID(), sq.getQuantity(), Integer::sum);
+            }
         }
         for (Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry : orderAndContent.entrySet()) {
             PlatformOrder platformOrder = entry.getKey();
@@ -479,7 +482,20 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
             platformOrder.setStatus(PlatformOrder.Status.Purchasing.code);
             for (PlatformOrderContent orderContent : orderContents) {
                 orderContent.setStatus(PlatformOrder.Status.Purchasing.code);
-                orderContent.setPurchaseFee(BigDecimal.valueOf(skuAvgPrices.get(orderContent.getSkuId()) * orderContent.getQuantity()));
+                String skuId = orderContent.getSkuId();
+                Double avg = skuAvgPrices.get(skuId);
+                if (avg == null) {
+                    log.info("[PURCHASE][AVG_PRICE_NOT_FOUND_SKIP_POC] purchaseId={}, invoiceNumber={}, orderId={}, contentId={}, skuId={}, pocQty={}, avgPriceKeys={}",
+                            purchaseID, invoiceNumber, platformOrder.getId(), orderContent.getId(), skuId, orderContent.getQuantity(), skuAvgPrices.keySet());
+                    orderContent.setPurchaseQuantity(0);
+                    continue;
+                }
+                int pocQty = orderContent.getQuantity() == null ? 0 : orderContent.getQuantity();
+                int remain = skuQtyToBuy.getOrDefault(skuId, 0);
+                int alloc = Math.min(pocQty, remain);
+                skuQtyToBuy.put(skuId, remain - alloc);
+                orderContent.setPurchaseQuantity(alloc);
+                orderContent.setPurchaseFee(BigDecimal.valueOf(avg * alloc));
             }
         }
 

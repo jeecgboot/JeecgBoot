@@ -195,7 +195,7 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
             List<SkuQuantity> used = platformOrderContentMapper.searchOrderContent(platformOrderIDs);
             for (SkuQuantity sq : used) {
                 if(!quantityPurchased.containsKey(sq.getID())) {
-                    break;
+                    continue;
                 }
                 int quantity = quantityPurchased.get(sq.getID());
                 quantityPurchased.put(sq.getID(), quantity - sq.getQuantity());
