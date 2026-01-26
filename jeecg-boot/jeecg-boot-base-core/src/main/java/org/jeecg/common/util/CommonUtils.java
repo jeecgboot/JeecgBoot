@@ -368,7 +368,7 @@ public class CommonUtils {
         }else{
             baseDomainPath = scheme + "://" + serverName + ":" + serverPort + contextPath ;
         }
-        log.debug("-----Common getBaseUrl----- : " + baseDomainPath);
+        log.info("-----Common getBaseUrl----- : " + baseDomainPath);
         return baseDomainPath;
     }
 
