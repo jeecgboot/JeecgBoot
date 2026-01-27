@@ -7,7 +7,7 @@
 JEECG BOOT AI Low Code Platform
 ===============
 
-Current version: 3.9.1 (Release date: 2026-01-22)
+Current version: 3.9.1 (Release date: 2026-01-28)
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
