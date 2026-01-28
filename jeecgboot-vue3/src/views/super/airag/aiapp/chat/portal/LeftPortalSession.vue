@@ -123,6 +123,7 @@
       name: 'AI绘画',
       icon: 'https://minio.jeecg.com/otatest/AiWrite_1769395779558.png',
       prologue: '请输入文本，并选择图像生成，我来为你生成图片',
+      metadata:"{\"izDraw\":\"1\"}"
     },
   ]);
 
