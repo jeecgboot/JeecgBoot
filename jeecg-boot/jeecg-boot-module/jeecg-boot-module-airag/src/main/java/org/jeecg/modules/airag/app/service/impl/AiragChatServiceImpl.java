@@ -933,21 +933,32 @@ public class AiragChatServiceImpl implements IAiragChatService {
     private SseEmitter genImageChat(SseEmitter emitter, ChatSendParams sendParams, String requestId, List<ChatMessage> messages, ChatConversation chatConversation, String topicId) {
         AssertUtils.assertNotEmpty("请选择绘画模型", sendParams.getDrawModelId());
         AIChatParams aiChatParams = new AIChatParams();
-            try {
-                List<String> images = sendParams.getImages();
-                List<Map<String, Object>> imageList = new ArrayList<>();
-                if(CollectionUtils.isEmpty(images)) {
-                    //生成图片
-                    imageList = aiChatHandler.imageGenerate(sendParams.getDrawModelId(), sendParams.getContent(), aiChatParams);    
-                } else {
-                    //图生图
-                    imageList = aiChatHandler.imageEdit(sendParams.getDrawModelId(), sendParams.getContent(), images, aiChatParams);
-                }
-                // 记录历史消息
-                String imageMarkdown = imageList.stream().map(map -> {
-                    String newUrl = this.uploadImage(map);
-                    return "![](" + newUrl + ")";
-                }).collect(Collectors.joining("\n"));
+        //update-begin---author:wangshuai---date:2026-01-26---for: 【QQYUN-14615】应用门户加入新工具：取绘画id---
+        String drawModelId = sendParams.getDrawModelId();
+        if(oConvertUtils.isEmpty(sendParams.getDrawModelId())){
+            AiragApp app = chatConversation.getApp();
+            String metadata = app.getMetadata();
+            if(oConvertUtils.isNotEmpty(metadata) && metadata.contains("drawModelId")){
+                drawModelId = JSONObject.parseObject(drawModelId).getString("drawModelId");
+            }
+        }
+
+        try {
+            List<String> images = sendParams.getImages();
+            List<Map<String, Object>> imageList;
+            if(CollectionUtils.isEmpty(images)) {
+                //生成图片
+                imageList = aiChatHandler.imageGenerate(drawModelId, sendParams.getContent(), aiChatParams);
+            } else {
+                //图生图
+                imageList = aiChatHandler.imageEdit(drawModelId, sendParams.getContent(), images, aiChatParams);
+            }
+            // 记录历史消息
+            String imageMarkdown = imageList.stream().map(map -> {
+                String newUrl = this.uploadImage(map);
+                return "![](" + newUrl + ")";
+            }).collect(Collectors.joining("\n"));
+            //update-end---author:wangshuai---date:2026-01-26---for:【QQYUN-14615】应用门户加入新工具：取绘画id---
             AiMessage aiMessage = new AiMessage(imageMarkdown);
             appendMessage(messages, aiMessage, chatConversation, topicId);
             // 处理绘画结果并通过SSE返回给客户端
@@ -1868,18 +1879,46 @@ public class AiragChatServiceImpl implements IAiragChatService {
     @Override
     public SseEmitter genAiWriter(AiWriteGenerateVo aiWriteGenerateVo) {
         String activeMode = "compose";
+        String reply = "reply";
         ChatSendParams sendParams = new ChatSendParams();
-        sendParams.setAppId(AiAppConsts.WRITER_APP_ID);
+        sendParams.setAppId(AiAppConsts.ARTICLE_WRITER_FLOW_ID);
         String content = "";
         //写作
         if (activeMode.equals(aiWriteGenerateVo.getActiveMode())) {
             content = StrUtil.format(Prompts.AI_WRITER_PROMPT, aiWriteGenerateVo.getPrompt(), aiWriteGenerateVo.getFormat(), aiWriteGenerateVo.getTone(), aiWriteGenerateVo.getLanguage(), aiWriteGenerateVo.getLength());
-        } else {
+        } else if(reply.equals(aiWriteGenerateVo.getActiveMode())){
             //回复
             content = StrUtil.format(Prompts.AI_REPLY_PROMPT, aiWriteGenerateVo.getPrompt(), aiWriteGenerateVo.getOriginalContent(), aiWriteGenerateVo.getFormat(), aiWriteGenerateVo.getTone(), aiWriteGenerateVo.getLanguage(), aiWriteGenerateVo.getLength());
+        } else {
+            content = StrUtil.format(Prompts.AI_TOUCHE_PROMPT, aiWriteGenerateVo.getPrompt(), aiWriteGenerateVo.getFormat(), aiWriteGenerateVo.getTone(), aiWriteGenerateVo.getLanguage(), aiWriteGenerateVo.getLength());
         }
         sendParams.setContent(content);
-        sendParams.setIzSaveSession(false);
-        return this.send(sendParams);
+        //组装会话
+        String requestId = UUIDGenerator.generate();
+        String topicId = UUIDGenerator.generate();
+        String conversationId = UUIDGenerator.generate();
+        ChatConversation chatConversation = new ChatConversation();
+        chatConversation.setId(conversationId);
+        chatConversation.setMessages(new ArrayList<>());
+        Map<String,Object> flowInputs = new HashMap<>();
+        flowInputs.put("type", aiWriteGenerateVo.getActiveMode());
+        flowInputs.put("version", "V1");
+        chatConversation.setFlowInputs(flowInputs);
+        SseEmitter emitter = createSSE(requestId);
+        // 缓存emitter
+        AiragLocalCache.put(AiragConsts.CACHE_TYPE_SSE, requestId, emitter);
+        // 缓存开始发送时间
+        log.info("[AI-CHAT]开始发送消息,requestId:{}", requestId);
+        AiragLocalCache.put(AiragConsts.CACHE_TYPE_SSE_SEND_TIME, requestId, System.currentTimeMillis());
+        // 初始化历史消息缓存
+        AiragLocalCache.put(AiragConsts.CACHE_TYPE_SSE_HISTORY_MSG, requestId, new CopyOnWriteArrayList<>());
+        
+        // 发送就绪消息
+        EventData eventRequestId = new EventData(requestId, null, EventData.EVENT_INIT_REQUEST_ID, chatConversation.getId(), topicId);
+        eventRequestId.setData(EventMessageData.builder().message("").build());
+        sendMessage2Client(emitter, eventRequestId);
+        
+        sendWithFlow(requestId, AiAppConsts.ARTICLE_WRITER_FLOW_ID, chatConversation, topicId, new ArrayList<>(), sendParams);
+        return emitter;
     }
 }

@@ -425,6 +425,9 @@ AI聊天助手
 ![](https://oscimg.oschina.net/oscnet//65298d5710b4e6039a5f802b5f8505c5.png)
 
 
+AI绘图
+
+![](https://oscimg.oschina.net/oscnet/up-a03658e8580be04d69821601de9dc5dc52d.png)
 
 AI写文章
 

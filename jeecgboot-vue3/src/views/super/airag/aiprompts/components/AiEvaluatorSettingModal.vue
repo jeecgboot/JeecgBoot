@@ -91,14 +91,14 @@
                       <div class="variable-container">
                         <div class="variable-container-header">
                           <Icon icon="ant-design:file-text-outlined" class="output-format-icon" />
-                          <span class="variable-format-title">评估器内容变量要求</span>
+                          <span class="variable-format-title">评估器内容变量要求（点击变量插入到评估器内容）</span>
                         </div>
                         <div class="variable-container-content">
                           <div class="variable-tag-wrapper">
-                            <a-tooltip title="评估的输入内容变量">
+                            <a-tooltip title="评估的输入内容变量（必填）">
                               <a-tag color="blue" class="variable-tag required-tag" @click="handleTagClick('input')">input</a-tag>
                             </a-tooltip>
-                            <a-tooltip title="评估的输出内容变量">
+                            <a-tooltip title="评估的输出内容变量（必填）">
                               <a-tag color="blue" class="variable-tag required-tag" @click="handleTagClick('output')">output</a-tag>
                             </a-tooltip>
                             <a-tooltip title="评估的参考内容变量">
@@ -141,7 +141,7 @@
               </a-row>
             </a-form>
             <a-button v-if="showTest" class="mt-10 ml" style="float: right" @click="showTest = false">取消</a-button>
-            <a-button class="mt-10" style="float: right" @click="showTest = true" type="primary">调试</a-button>
+<!--            <a-button class="mt-10" style="float: right" @click="showTest = true" type="primary">调试</a-button>-->
           </a-col>
           <a-col :span="12" class="setting-right" v-if="showTest">
             <EvaluatorDebug ref="debugRef" :content="formState.dataValue" @run="debugRun"></EvaluatorDebug>
@@ -180,7 +180,7 @@
   //uuid
   const uuid = ref(randomString(16));
   //showTest 显示调试器
-  const showTest = ref(false);
+  const showTest = ref(true);
   //debugRef 调试器引用
   const debugRef = ref(null);
   //form表单数据
@@ -263,8 +263,10 @@
    * @param type
    */
   function handleTagClick(type) {
-    if(formState.dataValue){
-      let label = type=='input'?'## 输入参数':type=='output'?'## 输出参数':'## 参考参数';
+    let label = type=='input'?'## 输入参数':type=='output'?'## 输出参数':'## 参考参数';
+    if(!formState.dataValue){
+      formState.dataValue = `${label}：{{${type}}}`;
+    }else{
       formState.dataValue += `\r\n\r\n${label}：{{${type}}}`;
       // 获取textarea元素并滚动到底部
       setTimeout(() => {
@@ -390,6 +392,8 @@
     debugRef.value.loading = false;
     if(res.success){
       debugRef.value.result = res.result
+    }else{
+      message.error(res.message);
     }
     console.log("debugEvaluator",res)
   }

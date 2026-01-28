@@ -81,8 +81,7 @@
                           <div style="align-items: center;display:flex;justify-content: center" v-if="!isRelease">
                             <a-button size="middle" ghost>
                               <span style="align-items: center;display:flex"  @click="openPromptApps">
-                                <Icon icon="ant-design:appstore-outlined"></Icon>
-                                <span style="margin-left: 4px">模版</span>
+                                <Icon icon="ant-design:database-outlined"></Icon>提示词库
                               </span>
                             </a-button>
                             <a-button  size="middle" ghost>

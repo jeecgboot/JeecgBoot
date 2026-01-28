@@ -168,4 +168,9 @@ public class Prompts {
      */
     public static final String AI_REPLY_PROMPT = "请针对如下内容：[{}] 做个回复。回复内容参考：[{}], 回复格式：{}，语气：{}，语言：{}，长度：{}。";
 
+    /**
+     * ai润色提提示词
+     */
+    public static final String AI_TOUCHE_PROMPT = "请针对如下内容：[{}] 进行润色。 回复格式：{}，语气：{}，语言：{}，长度：{}。";
+
 }

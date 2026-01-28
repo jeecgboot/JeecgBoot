@@ -36,7 +36,7 @@
                       </div>
                     </template>
                     <div class="card-content">
-                      <p class="description">{{ item.description || item.desc }}</p>
+                      <p class="description" :title="item.description || item.desc">{{ item.description || item.desc }}</p>
                       <div class="card-footer" >
                         <span class="create-time">
                           {{ formatTime(item.createTime) }}
@@ -315,7 +315,7 @@
             line-height: 1.5;
             margin: 8px 0;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             flex: 1; // 让描述区域自适应

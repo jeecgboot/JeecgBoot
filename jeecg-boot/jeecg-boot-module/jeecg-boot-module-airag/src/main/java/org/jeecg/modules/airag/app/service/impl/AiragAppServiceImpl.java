@@ -1,5 +1,6 @@
 package org.jeecg.modules.airag.app.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -10,15 +11,19 @@ import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.output.FinishReason;
 import dev.langchain4j.service.TokenStream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.exception.JeecgBootBizTipException;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.AssertUtils;
 import org.jeecg.common.util.UUIDGenerator;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.modules.airag.app.consts.AiAppConsts;
 import org.jeecg.modules.airag.app.consts.Prompts;
 import org.jeecg.modules.airag.app.entity.AiragApp;
 import org.jeecg.modules.airag.app.mapper.AiragAppMapper;
 import org.jeecg.modules.airag.app.service.IAiragAppService;
+import org.jeecg.modules.airag.app.vo.AiArticleWriteVersionVo;
 import org.jeecg.modules.airag.app.vo.AppVariableVo;
 import org.jeecg.modules.airag.common.consts.AiragConsts;
 import org.jeecg.modules.airag.common.handler.AIChatParams;
@@ -30,14 +35,18 @@ import org.jeecg.modules.airag.common.vo.event.EventMessageData;
 import org.jeecg.modules.airag.llm.entity.AiragKnowledge;
 import org.jeecg.modules.airag.llm.service.IAiragKnowledgeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @Description: AI应用
@@ -54,6 +63,9 @@ public class AiragAppServiceImpl extends ServiceImpl<AiragAppMapper, AiragApp> i
 
     @Autowired
     private IAiragKnowledgeService airagKnowledgeService;
+    
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public Object generatePrompt(String prompt, boolean blocking) {
@@ -245,6 +257,70 @@ public class AiragAppServiceImpl extends ServiceImpl<AiragAppMapper, AiragApp> i
             AiragLocalCache.remove(AiragConsts.CACHE_TYPE_SSE, eventData.getRequestId());
             // 关闭emitter
             emitter.complete();
+        }
+    }
+
+
+    /**
+     * 写作列表
+     */
+    @Override
+    public List<AiArticleWriteVersionVo> listArticleWrite() {
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String redisKey = StrUtil.format(AiAppConsts.ARTICLE_WRITER_KEY, loginUser.getUsername());
+        Object data = redisTemplate.opsForValue().get(redisKey);
+        if (data == null) {
+            return new ArrayList<>();
+        }
+        List<AiArticleWriteVersionVo> aiWriteViewVoList = (List<AiArticleWriteVersionVo>) data;
+        Collections.reverse(aiWriteViewVoList);
+        return aiWriteViewVoList;
+    }
+
+    /**
+     * 写作报错
+     */
+    @Override
+    public void saveArticleWrite(AiArticleWriteVersionVo aiWriteVersionVo) {
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String redisKey = StrUtil.format(AiAppConsts.ARTICLE_WRITER_KEY, loginUser.getUsername());
+        //先查看redis中是否存在
+        Object data = redisTemplate.opsForValue().get(redisKey);
+        if(null != data){
+            List<AiArticleWriteVersionVo> aiWriteVersionVos = (List<AiArticleWriteVersionVo>) data;
+            aiWriteVersionVo.setVersion("V"+(aiWriteVersionVos.size() + 1));
+            aiWriteVersionVos.add(aiWriteVersionVo);
+            redisTemplate.opsForValue().set(redisKey, aiWriteVersionVos);
+        }else{
+            List<AiArticleWriteVersionVo> aiWriteVersionVos = new ArrayList<>();
+            aiWriteVersionVo.setVersion("V1");
+            aiWriteVersionVos.add(aiWriteVersionVo);
+            redisTemplate.opsForValue().set(redisKey, aiWriteVersionVos);
+        }
+    }
+
+    /**
+     * 写作删除
+     */
+    @Override
+    public void deleteArticleWrite(String version) {
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        String redisKey = StrUtil.format(AiAppConsts.ARTICLE_WRITER_KEY, loginUser.getUsername());
+        Object data = redisTemplate.opsForValue().get(redisKey);
+        if (data == null) {
+            return;
+        }
+        List<AiArticleWriteVersionVo> aiWriteVersionVos = (List<AiArticleWriteVersionVo>) data;
+        if (aiWriteVersionVos.isEmpty()) {
+            return;
+        }
+        List<AiArticleWriteVersionVo> newList = aiWriteVersionVos.stream()
+                .filter(vo -> !version.equals(vo.getVersion()))
+                .collect(Collectors.toList());
+        if (newList.isEmpty()) {
+            redisTemplate.delete(redisKey);
+        } else {
+            redisTemplate.opsForValue().set(redisKey, newList);
         }
     }
 }

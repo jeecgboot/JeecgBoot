@@ -56,7 +56,12 @@ public class AiAppConsts {
 
 
     /**
-     * AI写作的应用id
+     * AI写作的流程id
      */
-    public static final String WRITER_APP_ID = "2010634128233779202";
+    public static final String ARTICLE_WRITER_FLOW_ID = "2011769909807579138";
+
+    /**
+     * AI写作redis请求前缀
+     */
+    public static final String ARTICLE_WRITER_KEY = "airag:chat:article:write:{}";
 }
