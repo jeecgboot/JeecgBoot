@@ -113,7 +113,7 @@ public class ThirdPartyStockAttributionJob implements Job {
         long fetchSuccessCount = fetchResults.stream().filter(Boolean::booleanValue).count();
         log.info("Successfully fetched {} out of {} orders from mabang.", fetchSuccessCount, fetchResults.size());
 
-        log.info("Clearing logistic channel names before inserting gifts");
+        log.info("Clearing logistic channel names before changing warehouse");
         platformOrderMabangService.clearLogisticChannel(mabangOrders.stream().filter(Order::hasLogisticChannelAssigned)
                 .collect(Collectors.toList()), executor);
 
