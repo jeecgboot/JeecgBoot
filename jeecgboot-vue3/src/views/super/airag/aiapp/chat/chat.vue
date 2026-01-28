@@ -371,7 +371,7 @@
   //模型名称
   const modelName = ref<string>('');
   //是否开启绘画
-  const enableDraw = ref<boolean>(true);
+  const enableDraw = ref<boolean>(false);
   //是否显示工具栏
   const showDraw = ref<boolean>(false);
   //绘画模型的id
