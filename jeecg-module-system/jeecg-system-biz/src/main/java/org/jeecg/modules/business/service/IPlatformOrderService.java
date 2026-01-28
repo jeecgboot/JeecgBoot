@@ -156,6 +156,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyNote(List<String> shopCodes);
 
+    List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyTags(List<String> shopCodes);
+
     List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(List<String> shopCodes);
 
     /**
@@ -304,6 +306,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     PlatformOrder selectForUpdateSkipLock(String orderId);
 
     List<PlatformOrder> fetchPlatformOrdersByShopifyNotes(List<String> shopifyNotes);
+
+    List<PlatformOrder> fetchPlatformOrdersWithShopifyTags();
 
     Integer countOrdersByShop(String shopId);
 

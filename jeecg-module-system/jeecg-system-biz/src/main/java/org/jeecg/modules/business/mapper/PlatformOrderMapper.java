@@ -171,6 +171,7 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     List<PlatformOrderShopSync> fetchOrderInShopsReadyForShopifySync(@Param("shops") List<String> shopCodes);
     List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyNote(@Param("shops") List<String> shopCodes);
+    List<PlatformOrderShopSync> fetchOrderInShopsWithoutShopifyTags(@Param("shops") List<String> shopCodes);
     List<PlatformOrder> fetchOrderInShopsReadyForAbnNumberJob(@Param("shops") List<String> shopCodes);
 
     List<String> fetchUninvoicedShippedOrderIDInShops(@Param("startDate") String startDate,
@@ -269,6 +270,9 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
     PlatformOrder selectForUpdateSkipLock(@Param("id") String orderId);
 
     List<PlatformOrder> fetchPlatformOrdersByShopifyNotes(List<String> shopifyNotes);
+
+    List<PlatformOrder> fetchPlatformOrdersWithShopifyTags();
+
     Integer countOrdersByShop(@Param("shopId") String shopId);
 
     List<ThirdPartyStockAttributionParam> fetchThirdPartyStockAttributionParams(LocalDateTime startDateTime, List<String> shopCodes, List<String> countries);
