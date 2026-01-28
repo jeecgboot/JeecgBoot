@@ -22,6 +22,9 @@ public class Order {
     @JsonProperty("discount_codes")
     private List<DiscountCode> discountCodes;
 
+    @JsonProperty("tags")
+    private String tags;
+
     public Order() {
     }
 
@@ -38,5 +41,9 @@ public class Order {
             return discountCodes.stream().map(DiscountCode::getCode).collect(Collectors.joining(","));
         }
         return null;
+    }
+
+    public boolean hasTags() {
+        return tags != null && !tags.isEmpty();
     }
 }

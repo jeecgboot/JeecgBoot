@@ -290,4 +290,10 @@ public class PlatformOrder implements Serializable {
     @Dict(dicCode = "yn")
     @ApiModelProperty(value = "已设置待审核")
     private java.lang.String alreadySetAbnormal;
+    /**
+     * Shopify平台标签
+     */
+    @Excel(name = "Shopify平台标签", width = 15)
+    @ApiModelProperty(value = "Shopify平台标签")
+    private java.lang.String shopifyTags;
 }
