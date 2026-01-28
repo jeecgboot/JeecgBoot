@@ -1240,6 +1240,8 @@
 
         //是否显示绘图工具
         showDraw.value = metadata.izDraw === '1';
+        //是否选中生成图片
+        enableDraw.value = metadata.izDraw === '1';
         drawModelId.value = metadata.drawModelId;
 
         if (metadata && metadata.modelInfo) {

@@ -931,7 +931,6 @@ public class AiragChatServiceImpl implements IAiragChatService {
      * @return
      */
     private SseEmitter genImageChat(SseEmitter emitter, ChatSendParams sendParams, String requestId, List<ChatMessage> messages, ChatConversation chatConversation, String topicId) {
-        AssertUtils.assertNotEmpty("请选择绘画模型", sendParams.getDrawModelId());
         AIChatParams aiChatParams = new AIChatParams();
         //update-begin---author:wangshuai---date:2026-01-26---for: 【QQYUN-14615】应用门户加入新工具：取绘画id---
         String drawModelId = sendParams.getDrawModelId();
@@ -939,10 +938,10 @@ public class AiragChatServiceImpl implements IAiragChatService {
             AiragApp app = chatConversation.getApp();
             String metadata = app.getMetadata();
             if(oConvertUtils.isNotEmpty(metadata) && metadata.contains("drawModelId")){
-                drawModelId = JSONObject.parseObject(drawModelId).getString("drawModelId");
+                drawModelId = JSONObject.parseObject(metadata).getString("drawModelId");
             }
         }
-
+        AssertUtils.assertNotEmpty("请选择绘画模型", drawModelId);
         try {
             List<String> images = sendParams.getImages();
             List<Map<String, Object>> imageList;
