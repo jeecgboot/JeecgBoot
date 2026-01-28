@@ -85,10 +85,9 @@ JeecgBoot低代码平台兼容所有J2EE项目开发，支持信创国产化，�
 技术文档
 -----------------------------------
 
-- 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 在线演示：  [平台演示](https://boot3.jeecg.com) | [APP演示](https://jeecg.com/appIndex)
+- 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 入门指南：  [快速入门](http://www.jeecg.com/doc/quickstart)  | [代码生成使用](https://help.jeecg.com/java/codegen/online) | [开发文档](https://help.jeecg.com)  | [AI应用手册](https://help.jeecg.com/aigc) | [视频教程](http://jeecg.com/doc/video)
-- AI编程实战视频：  [JEECG低代码与Cursor+GitHub Copilot实现AI高效编程实战](https://www.bilibili.com/video/BV11XyaBVEoH)
 - 技术支持：  [反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)    | [低代码体验一分钟](https://jeecg.blog.csdn.net/article/details/106079007) 
 - QQ交流群 ： 964611995、⑩716488839(满)、⑨808791225(满)、其他(满)
 
@@ -110,8 +109,11 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
 为什么选择JeecgBoot?
 -----------------------------------
-- 1.采用最新主流前后分离框架（Spring Boot3 + MyBatis + Shiro/SpringAuthorizationServer + Ant Design4 + Vue3），容易上手；代码生成器依赖性低，灵活的扩展能力，可快速实现二次开发。
-- 2.前端大版本换代，最新版采用 Vue3.0 + TypeScript + Vite6 + Ant Design Vue4 等新技术方案。
+> 界内首款AI低代码开发平台，同时具备AI应用平台和低代码平台，通过AI驱动低代码开发！
+> 开源界"小普元"超越传统商业平台。引领低代码开发模式(OnlineCoding-> 代码生成器 -> 手工MERGE)，低代码开发同时又支持灵活编码， 可以帮助解决Java项目70%的重复工作，让开发更多关注业务。既能快速提高开发效率，节省成本，同时又不失灵活性。
+
+- 1.提供了一套完善的AI应用管理系统模块，是一套类似`Dify`的`AIGC应用开发平台`+`知识库问答`，是一款基于LLM大语言模型AI应用平台和 RAG 的知识库问答系统。 其直观的界面结合了 AI 流程编排、RAG 管道、知识库管理、模型管理、对接向量库、实时运行可观察等，让您可以快速从原型到生产，拥有AI服务能力
+- 2.采用最新主流前后分离框架（Spring Boot3 + MyBatisPlus + Vue3.0 + TypeScript + Vite6 + Ant Design Vue4 ）等新技术方案。便于学习容易上手，代码生成器依赖性低，灵活的扩展能力，可快速实现二次开发。
 - 3.支持微服务Spring Cloud Alibaba（Nacos、Gateway、Sentinel、Skywalking），提供简易机制，支持单体和微服务自由切换（这样可以满足各类项目需求）。
 - 4.开发效率高，支持在线建表和AI建表，提供强大代码生成器，单表、树列表、一对多、一对一等数据模型，增删改查功能一键生成，菜单配置直接使用。
 - 5.代码生成器提供强大模板机制，支持自定义模板，目前提供四套风格模板（单表两套、树模型一套、一对多三套）。
@@ -157,7 +159,7 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
 
 
-技术架构：
+技术架构
 -----------------------------------
 
 #### 前端
@@ -228,23 +230,10 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 - 15、CAS 单点登录   √
 - 16、路由限流   √
 
-#### 微服务架构图
-![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot_springcloud2022.png "在这里输入图片标题")
 
 
 
-### Jeecg Boot 产品功能蓝图
-![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
-
-
-
-####  系统功能架构图
-
-![](https://oscimg.oschina.net/oscnet/up-1569487b95a07dbc3599fb1349a2e3aaae1.png)
-
-
-
-### 开源版功能清单
+### 功能清单
 ```
 ├─AI应用平台
 │  ├─AI模型管理
@@ -532,6 +521,21 @@ AI写文章
 
 
 
+
+
+#### 微服务架构图
+![微服务架构图](https://jeecgos.oss-cn-beijing.aliyuncs.com/files/jeecgboot_springcloud2022.png "在这里输入图片标题")
+
+
+
+### Jeecg Boot 产品功能蓝图
+![功能蓝图](https://jeecgos.oss-cn-beijing.aliyuncs.com/upload/test/Jeecg-Boot-lantu202005_1590912449914.jpg "在这里输入图片标题")
+
+
+
+####  系统功能架构图
+
+![](https://oscimg.oschina.net/oscnet/up-1569487b95a07dbc3599fb1349a2e3aaae1.png)
 
 
 
