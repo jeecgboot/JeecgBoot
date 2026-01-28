@@ -246,6 +246,26 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
 ### 开源版功能清单
 ```
+├─AI应用平台
+│  ├─AI模型管理
+│  ├─AI应用管理
+│  ├─AI知识库
+│  ├─AI流程编排
+│  ├─AI聊天助手(支持图片、文件)
+│  ├─AI聊天助手支持嵌入第三方、支持移动端
+│  ├─MCP插件管理
+│  ├─提示词管理
+│  ├─AI应用门户（汇总各种AI应用场景）
+│  ├─支持各种常见模型ChatGPT和DeepSeek、ollama等
+├─工具箱
+│  ├─OCR识别
+│  ├─AI 海报
+│  ├─AI 写作
+│  ├─AI 简历
+├─AI辅助功能
+│  ├─AI建表（Online表单）
+│  ├─AI生成报表（Online报表）
+│  ├─AI生成大屏
 ├─系统管理
 │  ├─用户管理
 │  ├─角色管理
@@ -272,18 +292,6 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 │  ├─系统编码规则
 │  ├─系统校验规则
 │  ├─APP版本管理
-├─AI应用平台
-│  ├─AI知识库问答系统
-│  ├─AI大模型管理
-│  ├─AI流程编排
-│  ├─AI流程设计器
-│  ├─AI对话支持图片
-│  ├─AI对话助手(智能问答)
-│  ├─AI建表（Online表单）
-│  ├─AI聊天窗口支持嵌入第三方
-│  ├─AI聊天窗口支持移动端
-│  ├─支持常见大模型ChatGPT和DeepSeek、ollama等等
-│  ├─AI OCR示例
 ├─数据可视化
 │  ├─报表设计器(支持打印设计）
 │  ├─大屏设和仪表盘设计
@@ -394,6 +402,47 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 
 ### 系统效果
 
+
+##### AI模型与应用管理
+
+![](https://oscimg.oschina.net/oscnet/up-0b1779e923566ccebb2d5a9cc9220c78b4a.png)
+
+![](https://oscimg.oschina.net/oscnet/up-c8956df1d37d66b2d40136afaeca677628b.png)
+
+![](https://oscimg.oschina.net/oscnet/up-8c348eeafd89673ca8cd1a2705014e3ac04.png)
+
+AI流程编排
+
+![](https://oscimg.oschina.net/oscnet/up-2343657de2c7ac8010bc471470d084075ae.png)
+
+MCP和工具管理
+
+![](https://oscimg.oschina.net/oscnet/up-8119d5dbc72e534236a3d042e11534c52ad.png)
+
+AI知识库（支持各种文档格式，尤其markdown适配很好）
+
+![](https://oscimg.oschina.net/oscnet/up-e2e9c118982ea366ed7f2b9827d4bb46c5d.png)
+
+AI工具箱
+
+![](https://oscimg.oschina.net/oscnet/up-bf2a808d22a11fd83e577ad74741d97884b.png)
+
+AI聊天助手
+
+![](https://oscimg.oschina.net/oscnet/up-2a51accc2ff0b647e0ee058a58d291fe811.png)
+
+![](https://oscimg.oschina.net/oscnet/up-ea1069c2a92a3ab2963d88763016cb037c2.png)
+
+![](https://oscimg.oschina.net/oscnet//65298d5710b4e6039a5f802b5f8505c5.png)
+
+
+
+AI写文章
+
+![](https://oscimg.oschina.net/oscnet/up-e3ee5b1fe497308805aa5e324b72994af79.png)
+
+
+
 ##### PC端
 ![](https://oscimg.oschina.net/oscnet/up-000530d95df337b43089ac77e562494f454.png)
 
@@ -413,21 +462,6 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 ![](https://oscimg.oschina.net/oscnet/up-16c07e000278329b69b228ae3189814b8e9.png)
 
 
-##### AI功能
-
-AI聊天助手
-
-![](https://oscimg.oschina.net/oscnet//65298d5710b4e6039a5f802b5f8505c5.png)
-
-AI建表
-
-![](https://oscimg.oschina.net/oscnet/up-381423599f219a67def45dfd9a99df8ef3f.png)
-
-![](https://oscimg.oschina.net/oscnet/up-1508c2b0708c365605f68893044ee11f20d.png)
-
-AI写文章
-
-![](https://oscimg.oschina.net/oscnet/up-e3ee5b1fe497308805aa5e324b72994af79.png)
 
 
 #####  仪表盘设计器
