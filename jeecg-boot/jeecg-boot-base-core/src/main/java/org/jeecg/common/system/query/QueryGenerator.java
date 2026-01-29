@@ -576,10 +576,15 @@ public class QueryGenerator {
 			value = val.substring(1, val.length() - 1);
 			//mysql 模糊查询之特殊字符下划线 （_、\）
 			value = specialStrConvert(value.toString());
-		} else if (rule == QueryRuleEnum.LEFT_LIKE || rule == QueryRuleEnum.NE) {
+		} else if (rule == QueryRuleEnum.LEFT_LIKE) {
 			value = val.substring(1);
 			//mysql 模糊查询之特殊字符下划线 （_、\）
 			value = specialStrConvert(value.toString());
+		} else if (rule == QueryRuleEnum.NE) {
+			// fix #9312: NE规则不应该截取首字符，只有当值以"!"开头时才截取
+			if (val.startsWith(QueryRuleEnum.NE.getValue())) {
+				value = val.substring(1);
+			}
 		} else if (rule == QueryRuleEnum.RIGHT_LIKE) {
 			value = val.substring(0, val.length() - 1);
 			//mysql 模糊查询之特殊字符下划线 （_、\）
