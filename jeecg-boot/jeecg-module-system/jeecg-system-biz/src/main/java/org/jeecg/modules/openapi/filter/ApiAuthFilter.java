@@ -17,9 +17,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @date 2024/12/19 16:55
@@ -46,8 +49,8 @@ public class ApiAuthFilter implements Filter {
 
         OpenApi openApi = findOpenApi(request);
 
-        // IP 黑名单核验
-        checkBlackList(openApi, ip);
+        // 访问清单核验
+        checkAccessList(openApi, ip);
 
         // 签名核验
         checkSignValid(appkey, signature, timestamp);
@@ -81,19 +84,121 @@ public class ApiAuthFilter implements Filter {
     }
 
     /**
-     * IP 黑名单核验
+     * 访问清单核验
      * @param openApi
      * @param ip
      */
-    protected void checkBlackList(OpenApi openApi, String ip) {
-        if (!StringUtils.hasText(openApi.getBlackList())) {
-            return;
+    protected void checkAccessList(OpenApi openApi, String ip) {
+        // 获取访问模式，默认白名单
+        String listMode = StringUtils.hasText(openApi.getListMode()) ? openApi.getListMode() : "WHITELIST";
+        // 检查列表模式是否有效，无效模式默认为白名单
+        if (!"WHITELIST".equals(listMode) && !"BLACKLIST".equals(listMode)) {
+            listMode = "WHITELIST";
+        }
+        String allowedList = openApi.getAllowedList();
+
+        // 如果清单为空，根据模式处理
+        if (!StringUtils.hasText(allowedList)) {
+            if ("WHITELIST".equals(listMode)) {
+                // 白名单模式下清单为空，拒绝访问
+                throw new JeecgBootException("目标接口白名单为空，拒绝访问");
+            } else {
+                // 黑名单模式下清单为空，无屏蔽项，放行
+                return;
+            }
         }
 
-        List<String> blackList = Arrays.asList(openApi.getBlackList().split(","));
-        if (blackList.contains(ip)) {
-            throw new JeecgBootException("目标接口限制IP[" + ip + "]进行访问，IP已记录，请停止访问");
+        // 解析清单
+        List<String> listItems = Arrays.asList(allowedList.split("[,\\n]")).stream()
+                .map(String::trim)
+                .filter(StringUtils::hasText)
+                .collect(Collectors.toList());
+
+        // 匹配结果
+        boolean isMatch = false;
+        for (String item : listItems) {
+            if (isIpMatch(ip, item) || isDomainMatch(ip, item)) {
+                isMatch = true;
+                break;
+            }
         }
+
+        // 根据模式判断是否放行
+        if ("WHITELIST".equals(listMode)) {
+            if (!isMatch) {
+                throw new JeecgBootException("目标接口限制IP[" + ip + "]进行访问，IP已记录，请停止访问");
+            }
+        } else {
+            if (isMatch) {
+                throw new JeecgBootException("目标接口限制IP[" + ip + "]进行访问，IP已记录，请停止访问");
+            }
+        }
+    }
+
+    /**
+     * IP/CIDR匹配
+     * @param ip
+     * @param item
+     * @return
+     */
+    private boolean isIpMatch(String ip, String item) {
+        // 简单实现IP和CIDR匹配，实际项目中建议使用成熟的IP库
+        if (item.contains("/")) {
+            // CIDR匹配
+            String[] parts = item.split("/");
+            if (parts.length != 2) {
+                return false;
+            }
+            String cidrIp = parts[0];
+            int prefixLength = Integer.parseInt(parts[1]);
+
+            // 这里只实现IPv4的CIDR匹配，IPv6需要更复杂的处理
+            if (ip.contains(".") && cidrIp.contains(".")) {
+                long ipLong = ipToLong(ip);
+                long cidrLong = ipToLong(cidrIp);
+                long mask = prefixLength == 0 ? 0 : (-1L << (32 - prefixLength));
+                return (ipLong & mask) == (cidrLong & mask);
+            }
+            return false;
+        } else {
+            // 精确IP匹配
+            return ip.equals(item);
+        }
+    }
+
+    /**
+     * 域名匹配
+     * @param ip
+     * @param domain
+     * @return
+     */
+    private boolean isDomainMatch(String ip, String domain) {
+        // 简单实现域名匹配，实际项目中需要考虑DNS缓存和IPv6
+        try {
+            InetAddress[] addresses = InetAddress.getAllByName(domain);
+            for (InetAddress addr : addresses) {
+                if (addr.getHostAddress().equals(ip)) {
+                    return true;
+                }
+            }
+        } catch (UnknownHostException e) {
+            log.warn("DNS解析失败: {}", domain);
+        }
+        return false;
+    }
+
+    /**
+     * IPv4转long
+     * @param ip
+     * @return
+     */
+    private long ipToLong(String ip) {
+        String[] parts = ip.split("\\.");
+        long result = 0;
+        for (int i = 0; i < 4; i++) {
+            result |= Long.parseLong(parts[i]) << (24 - (8 * i));
+        }
+        return result;
     }
 
     /**
