@@ -185,7 +185,7 @@ Technical Architecture:
 
 #### Development Environment
 
-- Language: Java Default Jdk17(support jdk8、jdk21)
+- Language: Java Default Jdk17(support jdk21、jdk24)
 
 - IDE(JAVA) : IDEA (lombok plug-in must be installed)
 
@@ -200,19 +200,19 @@ Technical Architecture:
 
 #### backend
 
-- Basic framework: Spring Boot 2.7.18
+- Basic framework: Spring Boot 3.5.5
 
-- Microservice framework: Spring Cloud Alibaba 2021.0.6.2
+- Microservice framework: Spring Cloud Alibaba 2023.0.3.3
 
-- Persistence layer framework: MybatisPlus 3.5.3.2
+- Persistence layer framework: MybatisPlus 3.5.12
 
-- Report tool: JimuReport 1.9.5
+- Report tool: JimuReport 2.3.0
 
-- Security framework: Apache Shiro 1.13.0, Jwt 4.5.0
+- Security framework: Apache Shiro 2.0.5, Jwt 4.5.0
 
 - Microservice technology stack: Spring Cloud Alibaba, Nacos, Gateway, Sentinel, Skywalking
 
-- Database connection pool: Alibaba Druid 1.1.24
+- Database connection pool: Alibaba Druid 1.2.24
 
 - Log printing: logback
 
@@ -243,6 +243,7 @@ Technical Architecture:
 |   达梦   |  √   |
 |   人大金仓   |  √   |
 |   TiDB   |  √   |
+|   kingbase8   |  √   |
 
 
 #### AI Support
