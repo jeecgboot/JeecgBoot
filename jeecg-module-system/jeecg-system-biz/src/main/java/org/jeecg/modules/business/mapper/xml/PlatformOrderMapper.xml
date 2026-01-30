@@ -1290,8 +1290,9 @@
              ON ssr.shouman_category_id = sc.id
                  STRAIGHT_JOIN shouman_regex sr
              ON sc.id = sr.shouman_category_id
-        WHERE p.erp_status IN (1, 2)
-          AND p.create_time > '2025-03-01'
+        WHERE p.erp_status = 1
+          AND p.can_send = 1
+          AND p.create_time > '2025-09-01'
           AND sr.is_active = 1
           AND NOT EXISTS (
             SELECT 1
@@ -1320,8 +1321,9 @@
              ON ssr.shouman_category_id = sc.id
                  STRAIGHT_JOIN shouman_regex sr
              ON sc.id = sr.shouman_category_id
-        WHERE p.erp_status IN (1, 2)
-          AND p.create_time > '2025-03-01'
+        WHERE p.erp_status = 1
+          AND p.can_send = 1
+          AND p.create_time > '2025-09-01'
           AND sr.is_active = 1
           AND NOT EXISTS (
             SELECT 1
