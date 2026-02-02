@@ -23,6 +23,7 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String LINE_BREAK = "\n";
     private final static String QUOTE = ":";
     private final static String WIA = "维亚智通";
+    private final static String DROP_SHIPPING = "海外代发";
     private final static String TRANSACTION_NUMBER = "交易号";
     private final static String SHOP_CODE = "店铺名称";
     private final static String PRODUCT_GROUP_KEY = "_gpo_product_group";
@@ -117,6 +118,10 @@ public class OrderCreationRequestBody implements RequestBody {
                 .append("-")
                 .append(instance.get(Calendar.DAY_OF_MONTH))
                 .append(")");
+        // VA 所有店铺订单都添加 海外代发
+        if (shopErpCode.contains("VA")) {
+            sb.append(DROP_SHIPPING);
+        }
         return sb.toString();
     }
 
