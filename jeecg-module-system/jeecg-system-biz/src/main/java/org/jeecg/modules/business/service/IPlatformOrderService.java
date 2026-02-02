@@ -113,6 +113,7 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
     Map<PlatformOrder, List<PlatformOrderContent>> fetchOrderData(List<String> orderIds);
 
     void selectOrderDataForUpdate(List<String> orderIds);
+    List<PlatformOrder> selectBatchIdsForUpdate(List<String> orderIds);
 
     Map<PlatformOrder, List<PlatformOrderContent>> fetchUninvoicedOrderDataForUpdate(List<String> orderIds);
 

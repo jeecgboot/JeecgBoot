@@ -335,13 +335,26 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
     @Override
     public void selectOrderDataForUpdate(List<String> orderIds) {
-        platformOrderMap.selectBatchIdsForUpdate(orderIds);
-        platformOrderContentMap.fetchOrderContentForUpdate(orderIds);
+        List<String> sortedIds = orderIds.stream()
+                .sorted()
+                .collect(Collectors.toList());
+        platformOrderMap.selectBatchIdsForUpdate(sortedIds);
+        platformOrderContentMap.fetchOrderContentForUpdate(sortedIds);
+    }
+    @Override
+    public List<PlatformOrder> selectBatchIdsForUpdate(List<String> orderIds) {
+        List<String> sortedIds = orderIds.stream()
+                .sorted()
+                .collect(Collectors.toList());
+        return platformOrderMap.selectBatchIdsForUpdate(sortedIds);
     }
     @Override
     public Map<PlatformOrder, List<PlatformOrderContent>> fetchUninvoicedOrderDataForUpdate(List<String> orderIds) {
-        Map<String, PlatformOrder> ordersMapById = platformOrderMap.selectBatchUninvoicedIdsForUpdate(orderIds);
-        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchUninvoicedOrderContentForUpdate(orderIds);
+        List<String> sortedIds = orderIds.stream()
+                .sorted()
+                .collect(Collectors.toList());
+        Map<String, PlatformOrder> ordersMapById = platformOrderMap.selectBatchUninvoicedIdsForUpdate(sortedIds);
+        List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchUninvoicedOrderContentForUpdate(sortedIds);
         return orderContents.stream().collect(groupingBy(platformOrderContent -> ordersMapById.get(platformOrderContent.getPlatformOrderId())));
     }
     @Override
