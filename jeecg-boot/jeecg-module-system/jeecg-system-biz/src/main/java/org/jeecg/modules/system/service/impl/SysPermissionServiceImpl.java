@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysPermission;
@@ -235,7 +237,14 @@ public class SysPermissionServiceImpl extends ServiceImpl<SysPermissionMapper, S
 
 	@Override
 	public List<SysPermission> queryByUser(String userId) {
-		List<SysPermission> permissionList = this.sysPermissionMapper.queryByUser(userId);
+        List<SysPermission> permissionList = new ArrayList<>();
+        // 查询租户对应的权限
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+			int tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(SpringContextUtils.getHttpServletRequest()), 0);
+            permissionList = this.sysPermissionMapper.queryByUserWithTenantId(userId, tenantId);
+        } else {
+            permissionList = this.sysPermissionMapper.queryByUser(userId);
+        }
 		//================= begin 开启租户的时候 如果没有test角色，默认加入test角色================
 		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
 			if (permissionList == null) {
