@@ -49,6 +49,9 @@ public class OrderItem {
 
     @JSONField(name="amazonAsin")
     private String saleUrl;
+
+    @JSONField(name="customizedURL")
+    private String customizationUrl;
     /**
      * Status :
      * 2 = Normal

@@ -17,6 +17,7 @@ public class ShoumanOrderContent {
     private String country;
     private String platformOrderContentId;
     private String customizationData;
+    private String customizationUrl;
     private Integer quantity;
     private String productName;
     private String remark;
@@ -42,6 +43,7 @@ public class ShoumanOrderContent {
                 ", country='" + country + '\'' +
                 ", platformOrderContentId='" + platformOrderContentId + '\'' +
                 ", customizationData='" + customizationData + '\'' +
+                ", customizationUrl='" + customizationUrl + '\'' +
                 ", quantity=" + quantity +
                 ", productName='" + productName + '\'' +
                 ", remark='" + remark + '\'' +
