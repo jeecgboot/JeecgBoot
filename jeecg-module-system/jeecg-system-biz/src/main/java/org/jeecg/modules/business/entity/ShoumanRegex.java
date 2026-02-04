@@ -16,8 +16,8 @@ import java.util.Date;
 /**
  * @Description: 首曼订单内容正则式
  * @Author: jeecg-boot
- * @Date: 2024-08-01
- * @Version: V1.0
+ * @Date: 2026-02-04
+ * @Version: V1.1
  */
 @ApiModel(value = "shouman_regex对象", description = "首曼订单内容正则式")
 @Data
@@ -96,4 +96,10 @@ public class ShoumanRegex implements Serializable {
     @Excel(name = "是否为解析尺寸正则式", width = 15, dicCode = "yn")
     @ApiModelProperty(value = "是否为解析尺寸正则式")
     private String isSizeRegex;
+    /**
+     * 是否为解析月份正则式
+     */
+    @Excel(name = "是否为解析月份正则式", width = 15, dicCode = "yn")
+    @ApiModelProperty(value = "是否为解析月份正则式")
+    private String isMonthRegex;
 }
