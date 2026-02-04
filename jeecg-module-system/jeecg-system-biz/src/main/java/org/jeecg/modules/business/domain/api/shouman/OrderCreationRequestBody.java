@@ -3,7 +3,6 @@ package org.jeecg.modules.business.domain.api.shouman;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
-import org.jeecg.modules.business.entity.Country;
 import org.jeecg.modules.business.entity.ShoumanOrderContent;
 import org.jeecg.modules.business.entity.ShoumanRegex;
 
@@ -11,7 +10,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Data
@@ -26,6 +24,7 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String DROP_SHIPPING = "海外代发";
     private final static String TRANSACTION_NUMBER = "交易号";
     private final static String SHOP_CODE = "店铺名称";
+    private final static String CUSTOM_PHOTO_URL = "定制照片链接";
     private final static String PRODUCT_GROUP_KEY = "_gpo_product_group";
     private final static String PARENT_PRODUCT_GROUP_KEY = "_gpo_parent_product_group";
 
@@ -57,13 +56,14 @@ public class OrderCreationRequestBody implements RequestBody {
         for (ShoumanOrderContent content : reducedContents.isEmpty() ? orderContents : reducedContents) {
             JSONObject contentJson = new JSONObject();
             putNonNull(contentJson, "productName", content.getProductName());
-            putNonNull(contentJson, "customerId", content.getPlatformOrderNumber());
+            putNonNull(contentJson, "customerId", content.getPlatformOrderNumber().replace("MS", ""));
             BigDecimal price = content.getPrice();
             putNonNull(contentJson, "price", price.toString());
             totalPrice = totalPrice.add(price);
             putNonNull(contentJson, "theImagePath", content.getImageUrl());
             putNonNull(contentJson, "comment", generateRemark(content.getRemark(), content.getCustomizationData(),
-                    content.getRegexList(), content.getShopErpCode(), content.getPlatformOrderNumber()));
+                    content.getRegexList(), content.getShopErpCode(), content.getPlatformOrderNumber(),
+                    content.getCustomizationUrl()));
             putNonNull(contentJson, "sku", content.getSku());
             putNonNull(contentJson, "outboundNumder", content.getQuantity()); // Typo intended
             outboundInfos.add(contentJson);
@@ -74,7 +74,7 @@ public class OrderCreationRequestBody implements RequestBody {
     }
 
     private String generateRemark(String baseRemark, String customizationData, List<ShoumanRegex> regexList,
-                                  String shopErpCode, String platformOrderNumber) {
+                                  String shopErpCode, String platformOrderNumber, String customizationURL) {
         StringBuilder sb = new StringBuilder();
         String[] baseRemarks = baseRemark.split(DEFAULT_SPLIT);
         for (String remark : baseRemarks) {
@@ -97,12 +97,25 @@ public class OrderCreationRequestBody implements RequestBody {
                     } else {
                         sb.append(regex.getPrefix())
                                 .append(customCounter++)
-                                .append(QUOTE)
-                                .append(content)
-                                .append(LINE_BREAK);
+                                .append(QUOTE);
+                        if (regex.getIsMonthRegex().equalsIgnoreCase("1")) {
+                            BirthStone birthStone = BirthStone.getByName(content);
+                            if (birthStone != null) {
+                                sb.append(birthStone.getChinese());
+                            }
+                        } else {
+                            sb.append(content);
+                        }
+                        sb.append(LINE_BREAK);
                     }
                 }
             }
+        }
+        if (customizationURL != null && !customizationURL.isEmpty()) {
+            sb.append(CUSTOM_PHOTO_URL)
+                    .append(QUOTE)
+                    .append(customizationURL)
+                    .append(LINE_BREAK);
         }
         sb.append(SHOP_CODE)
                 .append(shopErpCode)

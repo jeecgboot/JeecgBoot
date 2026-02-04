@@ -381,6 +381,7 @@
                po.country,
                poc.id as platform_order_content_id,
                poc.customization_data,
+               poc.customization_url,
                poc.quantity,
                sc.product_name,
                ssr.remark,
@@ -392,7 +393,8 @@
                sr.content_rec_regex,
                sr.content_ext_regex,
                sr.prefix,
-               sr.is_size_regex
+               sr.is_size_regex,
+               sr.is_month_regex
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
                  join shop sh on po.shop_id = sh.id
@@ -415,6 +417,7 @@
         <result property="city" column="city" javaType="string"/>
         <result property="country" column="country" javaType="string"/>
         <result property="customizationData" column="customization_data" javaType="string"/>
+        <result property="customizationUrl" column="customization_url" javaType="string"/>
         <result property="quantity" column="quantity"/>
         <result property="productName" column="product_name" javaType="string"/>
         <result property="remark" column="remark" javaType="string"/>
@@ -428,6 +431,7 @@
             <result property="contentExtRegex" column="content_ext_regex" javaType="string"/>
             <result property="prefix" column="prefix" javaType="string"/>
             <result property="isSizeRegex" column="is_size_regex" javaType="string"/>
+            <result property="isMonthRegex" column="is_month_regex" javaType="string"/>
         </collection>
     </resultMap>
 
@@ -442,6 +446,7 @@
                po.country,
                poc.id as platform_order_content_id,
                poc.customization_data,
+               poc.customization_url,
                poc.quantity,
                sc.product_name,
                ssr.remark,
@@ -453,7 +458,8 @@
                sr.content_rec_regex,
                sr.content_ext_regex,
                sr.prefix,
-               sr.is_size_regex
+               sr.is_size_regex,
+               sr.is_month_regex
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
                  join shop sh on po.shop_id = sh.id
