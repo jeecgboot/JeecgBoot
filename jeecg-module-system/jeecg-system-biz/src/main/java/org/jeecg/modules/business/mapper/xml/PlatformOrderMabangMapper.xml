@@ -214,14 +214,16 @@
         INSERT INTO platform_order_content(
         id, create_by, create_time,
         update_by, update_time, platform_order_id,
-        sku_id, quantity, erp_status, product_available, customization_data, warehouse_name, platform_warehouse_name)
+        sku_id, quantity, erp_status, product_available, customization_data, warehouse_name, platform_warehouse_name,
+        customization_url)
         VALUES
         <foreach collection="items" separator="," open="" close="" item="item" index="index">
             (
             UUID(), 'Mabang API', NOW(),
             'Mabang API', NOW(), #{item.platformOrderId},
             skuErpToId(#{item.erpCode}), #{item.quantity}, #{item.erpStatus},
-            #{item.productAvailable}, #{item.specifics}, #{item.warehouseName}, #{item.platformWarehouseName})
+            #{item.productAvailable}, #{item.specifics}, #{item.warehouseName}, #{item.platformWarehouseName},
+            #{item.customizationUrl})
         </foreach>
     </insert>
 

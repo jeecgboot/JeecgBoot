@@ -18,8 +18,8 @@ import java.util.Objects;
 /**
  * @Description: 平台订单内容
  * @Author: jeecg-boot
- * @Date: 2025-10-27
- * @Version: V1.6
+ * @Date: 2026-02-03
+ * @Version: V1.7
  */
 @ApiModel(value = "platform_order_content对象", description = "平台订单内容")
 @Data
@@ -158,6 +158,13 @@ public class PlatformOrderContent implements Serializable {
     @Excel(name = "商品平台发货仓库", width = 15)
     @ApiModelProperty(value = "商品平台发货仓库")
     private java.lang.String platformWarehouseName;
+
+    /**
+     * 定制内容URL
+     */
+    @Excel(name = "定制内容URL", width = 15)
+    @ApiModelProperty(value = "定制内容URL")
+    private java.lang.String customizationUrl;
 
     @Override
     public boolean equals(Object o) {
