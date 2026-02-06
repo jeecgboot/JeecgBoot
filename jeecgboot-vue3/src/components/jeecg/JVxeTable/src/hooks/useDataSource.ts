@@ -22,20 +22,15 @@ export function useDataSource(props, data: JVxeDataProps, methods: JVxeTableMeth
     { immediate: true }
   );
 }
-// update-begin--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
-function waitRef($ref, maxTries = 100) {
+
+function waitRef($ref) {
   return new Promise<any>((resolve) => {
-    let tries = 0;
     (function next() {
       if ($ref.value) {
         resolve($ref);
-      } else if (tries >= maxTries) {
-        resolve(null);
       } else {
-        tries++;
         nextTick(() => next());
       }
     })();
   });
 }
-// update-end--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿

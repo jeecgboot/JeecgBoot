@@ -4,7 +4,7 @@ import { simpleDebounce } from '/@/utils/common/compUtils';
 import { JVxeDataProps, JVxeRefs, JVxeTableProps, JVxeTypes } from '../types';
 import { getEnhanced } from '../utils/enhancedUtils';
 import { VxeTableInstance, VxeTablePrivateMethods } from 'vxe-table';
-import { cloneDeep, throttle } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import { isArray, isEmpty, isNull, isString } from '/@/utils/is';
 import { useLinkage } from './useLinkage';
 import { useWebSocket } from './useWebSocket';
@@ -67,7 +67,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
   };
 
   /** 监听vxe滚动条位置 */
-  const throttledScroll = throttle((event) => {
+  function handleVxeScroll(event) {
     let { scroll } = data;
 
     // 记录滚动条的位置
@@ -77,12 +77,7 @@ export function useMethods(props: JVxeTableProps, { emit }, data: JVxeDataProps,
     refs.subPopoverRef.value?.close();
     data.scrolling.value = true;
     closeScrolling();
-  }, 16);
-  // update-begin--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
-  function handleVxeScroll(event) {
-    throttledScroll(event);
   }
-  // update-begin--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
 
   // 当手动勾选单选时触发的事件
   function handleVxeRadioChange(event) {

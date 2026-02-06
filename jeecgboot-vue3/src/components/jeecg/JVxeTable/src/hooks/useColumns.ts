@@ -1,7 +1,7 @@
 import type { JVxeColumn, JVxeDataProps, JVxeTableProps } from '../types';
-import { computed, nextTick, toRaw, shallowRef, markRaw } from 'vue';
+import { computed, nextTick, toRaw } from 'vue';
 import { isArray, isEmpty, isPromise } from '/@/utils/is';
-import { cloneDeep, debounce } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import { JVxeTypePrefix, JVxeTypes } from '../types/JVxeTypes';
 import { initDictOptions } from '/@/utils/dict';
 import { pushIfNotExist } from '/@/utils/common/compUtils';
@@ -24,129 +24,97 @@ export interface HandleArgs {
 }
 
 export function useColumns(props: JVxeTableProps, data: JVxeDataProps, methods: JVxeTableMethods, slots) {
-  // update-begin--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
-  // 使用 shallowRef 优化列数据响应式性能
-  const columnsCache = shallowRef<JVxeColumn[]>([]);
-  let lastColumnsHash = '';
-
-  // 计算列哈希值，用于缓存判断
-  const getColumnsHash = (columns: JVxeColumn[]) => {
-    return JSON.stringify(columns.map(col => ({ key: col.key, type: col.type, title: col.title })));
-  };
-
-  // 防抖处理列计算，避免频繁重新计算
-  const debouncedComputeColumns = debounce(() => {
-    if (!isArray(props.columns)) {
-      columnsCache.value = [];
-      return;
-    }
-
-    const currentHash = getColumnsHash(props.columns);
-    if (currentHash === lastColumnsHash) {
-      return; // 列没有变化，直接返回缓存
-    }
-
-    lastColumnsHash = currentHash;
-    const columns: JVxeColumn[] = [];
-
-    // handle 方法参数
-    const args: HandleArgs = { props, slots, data, methods, columns };
-    let seqColumn, selectionColumn, expandColumn, dragSortColumn;
-
-    const handleColumn = (column: JVxeColumn, container: JVxeColumn[]) => {
-      // 排除未授权的列 1 = 显示/隐藏； 2 = 禁用
-      let auth = methods.getColAuth(column.key);
-      if (auth?.type == '1' && !auth.isAuth) {
-        return;
-      } else if (auth?.type == '2' && !auth.isAuth) {
-        column.disabled = true;
-      }
-      // type 不填，默认为 normal
-      if (column.type == null || isEmpty(column.type)) {
-        column.type = JVxeTypes.normal;
-      }
-      let col: JVxeColumn = cloneDeep(column);
-      // 处理隐藏列
-      if (col.type === JVxeTypes.hidden) {
-        return handleInnerColumn(args, col, handleHiddenColumn);
-      }
-      // 处理子级列
-      // 判断是否是分组列，如果当前是父级，则无需处理 render
-      if (Array.isArray(col.children) && col.children.length > 0) {
-        const children: JVxeColumn[] = [];
-        col.children.forEach((child: JVxeColumn) => handleColumn(child, children));
-        col.children = children;
-        container.push(col);
-        return;
-      }
-      // 组件未注册，自动设置为 normal
-      if (!isRegistered(col.type)) {
-        col.type = JVxeTypes.normal;
-      }
-      args.enhanced = getEnhanced(col.type);
-      args.col = col;
-      args.renderOptions = {
-        bordered: props.bordered,
-        disabled: props.disabled,
-        scrolling: data.scrolling,
-        isDisabledRow: methods.isDisabledRow,
-        listeners: {
-          trigger: (name, event) => methods.trigger(name, event),
-          valueChange: (event) => methods.trigger('valueChange', event),
-          /** 重新排序行 */
-          rowResort: (event) => {
-            methods.doSort(event.oldIndex, event.newIndex);
-            methods.trigger('dragged', event);
-          },
-          /** 在当前行下面插入一行 */
-          rowInsertDown: (rowIndex) => methods.insertRows({}, rowIndex + 1),
-        },
-      };
-      if (col.type === JVxeTypes.rowNumber) {
-        seqColumn = col;
-        container.push(col);
-      } else if (col.type === JVxeTypes.rowRadio || col.type === JVxeTypes.rowCheckbox) {
-        selectionColumn = col;
-        container.push(col);
-      } else if (col.type === JVxeTypes.rowExpand) {
-        expandColumn = col;
-        container.push(col);
-      } else if (col.type === JVxeTypes.rowDragSort) {
-        dragSortColumn = col;
-        container.push(col);
-      } else {
-        col.params = column;
-        args.columns = container;
-        handlerCol(args);
-      }
-    }
-
-    props.columns.forEach((column: JVxeColumn) => handleColumn(column, columns));
-
-    handleInnerColumn(args, seqColumn, handleSeqColumn);
-    handleInnerColumn(args, selectionColumn, handleSelectionColumn);
-    handleInnerColumn(args, expandColumn, handleExpandColumn);
-    handleInnerColumn(args, dragSortColumn, handleDragSortColumn, true);
-    // update-begin--author:liaozhiyang---date:2024-05-30---for【TV360X-371】不可编辑组件必填缺少*号
-    customComponentAddStar(columns);
-    // update-end--author:liaozhiyang---date:2024-05-30---for：【TV360X-371】不可编辑组件必填缺少*号
-
-    // 标记为原始对象，避免深度响应式
-    columnsCache.value = markRaw(columns);
-  }, 16); // 16ms 防抖，约等于一帧的时间
-
   data.vxeColumns = computed(() => {
-    // 【issues/7812】linkageConfig改变了，vxetable没更新 
-    // linkageConfig变化时也需要执行 
+    // linkageConfig变化时也需要执行
     const linkageConfig = toRaw(props.linkageConfig);
     if (linkageConfig) {
       // console.log(linkageConfig);
     }
-    // 触发防抖计算
-    debouncedComputeColumns();
-    return columnsCache.value;
+    let columns: JVxeColumn[] = [];
+    if (isArray(props.columns)) {
+      // handle 方法参数
+      const args: HandleArgs = { props, slots, data, methods, columns };
+      let seqColumn, selectionColumn, expandColumn, dragSortColumn;
+
+      const handleColumn = (column: JVxeColumn, container: JVxeColumn[]) => {
+        // 排除未授权的列 1 = 显示/隐藏； 2 = 禁用
+        let auth = methods.getColAuth(column.key);
+        if (auth?.type == '1' && !auth.isAuth) {
+          return;
+        } else if (auth?.type == '2' && !auth.isAuth) {
+          column.disabled = true;
+        }
+        // type 不填，默认为 normal
+        if (column.type == null || isEmpty(column.type)) {
+          column.type = JVxeTypes.normal;
+        }
+        let col: JVxeColumn = cloneDeep(column);
+        // 处理隐藏列
+        if (col.type === JVxeTypes.hidden) {
+          return handleInnerColumn(args, col, handleHiddenColumn);
+        }
+        // 处理子级列
+        // 判断是否是分组列，如果当前是父级，则无需处理 render
+        if (Array.isArray(col.children) && col.children.length > 0) {
+          const children: JVxeColumn[] = [];
+          col.children.forEach((child: JVxeColumn) => handleColumn(child, children));
+          col.children = children;
+          container.push(col);
+          return;
+        }
+        // 组件未注册，自动设置为 normal
+        if (!isRegistered(col.type)) {
+          col.type = JVxeTypes.normal;
+        }
+        args.enhanced = getEnhanced(col.type);
+        args.col = col;
+        args.renderOptions = {
+          bordered: props.bordered,
+          disabled: props.disabled,
+          scrolling: data.scrolling,
+          isDisabledRow: methods.isDisabledRow,
+          listeners: {
+            trigger: (name, event) => methods.trigger(name, event),
+            valueChange: (event) => methods.trigger('valueChange', event),
+            /** 重新排序行 */
+            rowResort: (event) => {
+              methods.doSort(event.oldIndex, event.newIndex);
+              methods.trigger('dragged', event);
+            },
+            /** 在当前行下面插入一行 */
+            rowInsertDown: (rowIndex) => methods.insertRows({}, rowIndex + 1),
+          },
+        };
+        if (col.type === JVxeTypes.rowNumber) {
+          seqColumn = col;
+          container.push(col);
+        } else if (col.type === JVxeTypes.rowRadio || col.type === JVxeTypes.rowCheckbox) {
+          selectionColumn = col;
+          container.push(col);
+        } else if (col.type === JVxeTypes.rowExpand) {
+          expandColumn = col;
+          container.push(col);
+        } else if (col.type === JVxeTypes.rowDragSort) {
+          dragSortColumn = col;
+          container.push(col);
+        } else {
+          col.params = column;
+          args.columns = container;
+          handlerCol(args);
+        }
+      }
+
+      props.columns.forEach((column: JVxeColumn) => handleColumn(column, columns));
+
+      handleInnerColumn(args, seqColumn, handleSeqColumn);
+      handleInnerColumn(args, selectionColumn, handleSelectionColumn);
+      handleInnerColumn(args, expandColumn, handleExpandColumn);
+      handleInnerColumn(args, dragSortColumn, handleDragSortColumn, true);
+      // update-begin--author:liaozhiyang---date:2024-05-30---for【TV360X-371】不可编辑组件必填缺少*号
+      customComponentAddStar(columns);
+    }
+    return columns;
   });
-  // update-end--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
 }
 
 /**

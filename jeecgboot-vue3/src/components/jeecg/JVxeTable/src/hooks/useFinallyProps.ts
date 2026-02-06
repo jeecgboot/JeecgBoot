@@ -1,5 +1,5 @@
-import { unref, computed, ref, watch, nextTick, shallowRef } from 'vue';
-import { merge, debounce, throttle } from 'lodash-es';
+import { unref, computed, ref, watch, nextTick } from 'vue';
+import { merge, debounce } from 'lodash-es';
 import { isArray } from '/@/utils/is';
 import { useAttrs } from '/@/hooks/core/useAttrs';
 import { useKeyboardEdit } from '../hooks/useKeyboardEdit';
@@ -11,19 +11,12 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
   const { keyboardEditConfig } = useKeyboardEdit(props);
   // vxe 最终 editRules
   const vxeEditRules = computed(() => merge({}, props.editRules, data.innerEditRules));
-  // ==================== 性能优化 - 开始 ====================
-  // 使用节流优化高频事件
-  const throttledScroll = throttle(methods.handleVxeScroll, 16); // 约60fps
-  const throttledCellClick = throttle(methods.handleCellClick, 100);
-
   // vxe 最终 events
   const vxeEvents = computed(() => {
     let listeners = { ...unref(attrs) };
     let events = {
-      // update-begin--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
-      onScroll: throttledScroll,
-      onCellClick: throttledCellClick,
-      // update-end--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
+      onScroll: methods.handleVxeScroll,
+      onCellClick: methods.handleCellClick,
       onEditClosed: methods.handleEditClosed,
       onEditActived: methods.handleEditActived,
       onRadioChange: methods.handleVxeRadioChange,
@@ -118,20 +111,14 @@ export function useFinallyProps(props: JVxeTableProps, data: JVxeDataProps, meth
     );
   });
 
-  // update-begin--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
-  // 使用 shallowRef 优化列更新性能
-  const vxeColumnsRef = shallowRef([])
+  // 代码逻辑说明: 【issues/8593】修复列改变后内容不刷新
+  const vxeColumnsRef = ref(data.vxeColumns!.value || [])
   const watchColumnsDebounce = debounce(async () => {
     vxeColumnsRef.value = []
     await nextTick()
-    vxeColumnsRef.value = data.vxeColumns?.value || []
-  }, 16) // 减少防抖时间到16ms，提高响应速度
-
-  // 安全地监听列变化
-  if (data.vxeColumns) {
-    watch(data.vxeColumns, watchColumnsDebounce)
-  }
-  // update-end--author:liaozhiyang---date:20260130---for:【QQYUN-14177】online配置界面，字段配置卡顿
+    vxeColumnsRef.value = data.vxeColumns!.value
+  }, 50)
+  watch(data.vxeColumns!, watchColumnsDebounce)
 
   const vxeProps = computed(() => {
     return {
