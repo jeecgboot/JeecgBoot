@@ -21,6 +21,7 @@
         
         <!-- 监控和测试例子 -->
         <module>jeecg-visual</module>
+        <module>jeecg-asset-cloud-start</module>
     </modules>
 
 </project>

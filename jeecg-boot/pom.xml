@@ -88,7 +88,8 @@
         <module>jeecg-boot-base-core</module>
         <module>jeecg-module-system</module>
 		<module>jeecg-boot-module</module>
-    </modules>
+		<module>jeecg-module-asset</module>
+	</modules>
 
 	<repositories>
 		<repository>
@@ -663,9 +664,9 @@
 				<!--Nacos配置分组名称-->
 				<config.group>DEFAULT_GROUP</config.group>
 				<!--Nacos用户名-->
-				<config.username></config.username>
+				<config.username>nacos</config.username>
 				<!--Nacos密码-->
-				<config.password></config.password>
+				<config.password>nacos</config.password>
             </properties>
         </profile>
 		<!-- 测试Nacos开启鉴权、设置分组和命名空间
