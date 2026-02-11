@@ -1297,8 +1297,10 @@
              ON ssr.shouman_category_id = sc.id
                  STRAIGHT_JOIN shouman_regex sr
              ON sc.id = sr.shouman_category_id
+            join shop on p.shop_id = shop.id
+            join client c on shop.owner_id = c.id
         WHERE p.erp_status = 1
-          AND p.shipping_label_url IS NOT NULL
+          AND ((p.shipping_label_url IS NOT NULL AND c.internal_code = 'VA') OR c.internal_code &lt;&gt; 'VA')
           AND p.can_send = 1
           AND p.create_time > '2025-09-01'
           AND sr.is_active = 1
@@ -1329,8 +1331,10 @@
              ON ssr.shouman_category_id = sc.id
                  STRAIGHT_JOIN shouman_regex sr
              ON sc.id = sr.shouman_category_id
+             join shop on p.shop_id = shop.id
+             join client c on shop.owner_id = c.id
         WHERE p.erp_status = 1
-          AND p.shipping_label_url IS NOT NULL
+          AND ((p.shipping_label_url IS NOT NULL AND c.internal_code = 'VA') OR c.internal_code &lt;&gt; 'VA')
           AND p.can_send = 1
           AND p.create_time > '2025-09-01'
           AND sr.is_active = 1
