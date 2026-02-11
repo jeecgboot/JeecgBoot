@@ -68,4 +68,12 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
 
     List<PlatformOrderContent> fetchOrderContent(List<String> orderIds);
 
+    /**
+     * Lists SKUs to purchase for a list of orders
+     * if it allows partial purchase, it will return only the SKUs that are out of stock
+     * if it does not allow partial purchase, it will return all SKUs in the orders
+     * @param orderIds
+     * @return
+     */
+    List<SkuQuantity> listSkusToPurchaseForOrders(List<String> orderIds);
 }

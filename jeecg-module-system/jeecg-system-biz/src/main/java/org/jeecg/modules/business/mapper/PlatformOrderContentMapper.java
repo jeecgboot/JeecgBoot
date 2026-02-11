@@ -88,4 +88,6 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     List<ShoumanOrderContent> searchShoumanOrderContentByPlatformOrderId(@Param("platformOrderId") String platformOrderId);
 
     List<PlatformOrderContent> fetchOrderContentByIdWithFees(@Param("orderIds") List<String> orderIds);
+
+    List<SkuQuantity> listSkusToPurchaseForOrders(@Param("orderIds") List<String> orderIds);
 }

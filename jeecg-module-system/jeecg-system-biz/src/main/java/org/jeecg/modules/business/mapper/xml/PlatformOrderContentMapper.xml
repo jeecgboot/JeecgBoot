@@ -312,6 +312,7 @@
             poc.service_fee  = NULL,
             poc.vat          = NULL,
             poc.purchase_fee = 0.0,
+            poc.purchase_quantity = 0,
             poc.erp_status =
                 CASE
                     WHEN poc.erp_status = '4' THEN '3'
@@ -328,6 +329,7 @@
         service_fee = NULL,
         vat = NULL,
         purchase_fee = 0.0,
+        poc.purchase_quantity = 0,
         erp_status =
             CASE erp_status
                 WHEN '4' THEN '3'
@@ -478,5 +480,43 @@
         <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
             #{orderId}
         </foreach>;
+    </select>
+    <select id="listSkusToPurchaseForOrders" resultType="org.jeecg.modules.business.vo.SkuQuantity">
+        SELECT sku_id AS ID,erp_code AS erpCode,(qty_not_allow_skip+CASE WHEN qty_allow_skip>virtual_stock THEN (qty_allow_skip-virtual_stock) ELSE 0 END) AS quantity -- qty to purchase for this invoice batch
+        FROM(
+        SELECT poc.sku_id AS sku_id,s.erp_code AS erp_code,
+        -- shops NOT allow skip: buy all required qty
+        SUM(CASE WHEN COALESCE(so.is_self_ignore_stock,0)=0 THEN COALESCE(poc.quantity,0) ELSE 0 END) AS qty_not_allow_skip,
+        -- shops allow skip: buy only shortage vs virtual_stock
+        SUM(CASE WHEN COALESCE(so.is_self_ignore_stock,0)=1 THEN COALESCE(poc.quantity,0) ELSE 0 END) AS qty_allow_skip,
+        -- available+in_transit - reserved by uninshipped invoiced orders(未发货订单的占用库存量) -can not be negative
+        GREATEST(COALESCE(s.available_amount,0)+COALESCE(s.purchasing_amount,0)-COALESCE(reserved.reserved_qty,0),0) AS virtual_stock
+        FROM platform_order_content poc
+        JOIN platform_order po ON po.id=poc.platform_order_id
+        JOIN shop_options so ON so.shop_id=po.shop_id
+        JOIN sku s ON s.id=poc.sku_id
+        LEFT JOIN(
+        -- do NOT subtract purchase_quantity; in_transit is already counted in purchasing_amount
+        SELECT poc2.sku_id,SUM(COALESCE(poc2.quantity,0)) AS reserved_qty
+        FROM platform_order_content poc2
+        JOIN platform_order po2 ON po2.id=poc2.platform_order_id
+        JOIN(
+        SELECT DISTINCT pocx.sku_id FROM platform_order_content pocx
+        WHERE pocx.platform_order_id IN <foreach collection="orderIds" item="oid" open="(" separator="," close=")">#{oid}</foreach>
+        AND pocx.erp_status&lt;&gt;'5'
+        ) cur_skus ON cur_skus.sku_id=poc2.sku_id -- limit reserved scan to SKUs involved in this invoice batch
+        WHERE po2.shipping_invoice_number IS NOT NULL -- already invoiced
+        AND po2.erp_status IN('1','2') -- not shipped yet
+        AND poc2.erp_status&lt;&gt;'5'
+        AND po2.update_time &gt;=DATE_SUB(NOW(),INTERVAL 90 DAY)
+        GROUP BY poc2.sku_id
+        ) reserved ON reserved.sku_id=poc.sku_id
+        WHERE poc.platform_order_id IN <foreach collection="orderIds" item="oid" open="(" separator="," close=")">#{oid}</foreach>
+        AND poc.erp_status&lt;&gt;'5'
+        AND po.shipping_invoice_number IS NULL
+        GROUP BY poc.sku_id,s.erp_code,s.available_amount,s.purchasing_amount,reserved.reserved_qty
+        ) sku_purchase_qty
+        -- only skus with qty to purchase >0
+        WHERE (qty_not_allow_skip+CASE WHEN qty_allow_skip>virtual_stock THEN (qty_allow_skip-virtual_stock) ELSE 0 END)>0
     </select>
 </mapper>

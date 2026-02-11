@@ -100,4 +100,11 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
     public List<PlatformOrderContent> findOrderContentsWithStock(List<String> orderIds) {
         return platformOrderContentMapper.findOrderContentsWithStock(orderIds);
     }
+    @Override
+    public List<SkuQuantity> listSkusToPurchaseForOrders(List<String> orderIds) {
+        if (orderIds == null || orderIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return platformOrderContentMapper.listSkusToPurchaseForOrders(orderIds);
+    }
 }

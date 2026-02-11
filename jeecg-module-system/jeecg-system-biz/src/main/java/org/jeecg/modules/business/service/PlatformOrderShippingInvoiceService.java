@@ -263,14 +263,32 @@ public class PlatformOrderShippingInvoiceService {
     }
 
     @Transactional
-    public Response<InvoiceMetaData, List<Response<String, String>>> makeManualCompleteInvoice(ManualInvoiceOrderParam param) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
+    public Response<InvoiceMetaData, List<Response<String, String>>> makeManualCompleteInvoice(ManualInvoiceOrderParam param,String operator) throws UserException, ParseException, IOException, MessagingException, InterruptedException {
         Response<InvoiceMetaData, List<Response<String, String>>> response = new Response<>();
-        String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
+        List<String> orderIds = param.getOrderIds();
+        if (orderIds == null || orderIds.isEmpty()) {
+            throw new UserException("No orders selected");
+        }
+        Response<CompleteInvoice, List<Response<String, String>>> invoiceResponse =
+                factory.createCompleteShippingInvoice(
+                        operator,
+                        param.getClientID(),
+                        null,
+                        orderIds,
+                        param.getType(),
+                        null,
+                        null,
+                         null
+                );
         // Creates invoice by factory
-        List<String> ordersWithStock = platformOrderService.fetchOrdersWithProductAvailableByOrders(param.getOrdersWithStock());
-        Response<CompleteInvoice, List<Response<String, String>>> invoiceResponse = factory.createCompleteShippingInvoice(username, param.getClientID(), null, param.getOrderIds(), param.getType(), null, null, ordersWithStock);
         CompleteInvoice invoice = invoiceResponse.getData();
-        response.setData(getInvoiceMetaDataAndInsert(username, invoice));
+        if (invoice == null) {
+            response.setData(null);
+            response.setError(invoiceResponse.getError() != null ? invoiceResponse.getError()
+                    : Collections.singletonList(new Response<>("NO_ORDER_TO_INVOICE")));
+            return response;
+        }
+        response.setData(getInvoiceMetaDataAndInsert(operator, invoice));
         if(invoiceResponse.getError() != null)
             response.setError(invoiceResponse.getError());
         return response;
