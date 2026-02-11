@@ -329,4 +329,6 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
             int maxMonths,
             OutputStream outputStream
     ) throws IOException;
+
+    List<String> fetchPlatformOrderIdsWithoutShippingLabelUrlForShops(LocalDateTime startDate, LocalDateTime endDate, List<String> shops);
 }

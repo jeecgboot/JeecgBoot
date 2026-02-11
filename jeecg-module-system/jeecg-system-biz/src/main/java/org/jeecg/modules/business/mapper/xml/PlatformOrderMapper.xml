@@ -1678,4 +1678,26 @@
         <result property="platform_order_id" column="platformOrderId" javaType="String"/>
         <result property="shopId" column="erp_code" javaType="String"/>
     </resultMap>
+
+    <select id="fetchPlatformOrderIdsWithoutShippingLabelUrlForShops" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND shipping_invoice_number IS NULL
+        AND tracking_number IS NOT NULL
+        AND shipping_label_url IS NULL
+        AND order_time &gt;= #{startDateTime}
+        AND order_time &lt;= #{endDateTime}
+        AND erp_status IN (1);
+    </select>
 </mapper>

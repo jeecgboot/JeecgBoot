@@ -288,4 +288,6 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
             @Param("maxTime") LocalDateTime maxTime,
             @Param("minTime") LocalDateTime minTime
     );
+
+    List<String> fetchPlatformOrderIdsWithoutShippingLabelUrlForShops(LocalDateTime startDateTime, LocalDateTime endDateTime, List<String> shops);
 }

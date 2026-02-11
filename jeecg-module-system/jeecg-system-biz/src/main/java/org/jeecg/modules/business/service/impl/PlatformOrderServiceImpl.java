@@ -821,4 +821,9 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         workbook.close();
     }
 
+    @Override
+    public List<String> fetchPlatformOrderIdsWithoutShippingLabelUrlForShops(LocalDateTime startDate, LocalDateTime endDate, List<String> shops) {
+        return platformOrderMap.fetchPlatformOrderIdsWithoutShippingLabelUrlForShops(startDate, endDate, shops);
+    }
+
 }
