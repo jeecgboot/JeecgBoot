@@ -13,7 +13,6 @@ public class ShippingLabelRequestBody implements RequestBody {
 
     private String platformOrderId;
     private static String CALL_BACK_URL = "https://app.wia-sourcing.com/app/wia/shippingLabelCallback";
-    private static String CALL_BACK_URL_DEV = "http://82.96.170.75:8080/jeecg-boot/wia/shippingLabelCallback";
 
     public ShippingLabelRequestBody(String platformOrderId) {
         this.platformOrderId = platformOrderId;
@@ -28,7 +27,7 @@ public class ShippingLabelRequestBody implements RequestBody {
     public Map<String, Object> parameters() {
         JSONObject json = new JSONObject();
         putNonNull(json, "platformOrderId", platformOrderId);
-        putNonNull(json, "callbackurl", CALL_BACK_URL_DEV);
+        putNonNull(json, "callbackurl", CALL_BACK_URL);
         return json;
     }
 
