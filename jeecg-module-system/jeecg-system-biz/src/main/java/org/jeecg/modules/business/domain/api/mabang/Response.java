@@ -27,4 +27,9 @@ public abstract class Response {
         return status == Code.ERROR;
     }
 
+    public String toString() {
+        return getClass().getSimpleName() +
+                "{, code=" + this.success() +
+                '}';
+    }
 }
