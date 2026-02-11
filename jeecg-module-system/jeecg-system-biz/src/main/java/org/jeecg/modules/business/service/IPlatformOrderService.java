@@ -258,6 +258,8 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrder> fetchOrdersWithMissingStock(LocalDateTime start);
 
+    PlatformOrder selectByPlatformOrderId(String platformOrderId);
+
     List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
 
     void removePurchaseInvoiceNumber(String purchaseInvoiceNumber, String clientId);

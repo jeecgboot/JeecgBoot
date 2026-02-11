@@ -211,6 +211,8 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     List<PlatformOrder> fetchOrdersWithMissingStock(@Param("start") LocalDateTime start);
 
+    PlatformOrder selectByPlatformOrderId(@Param("platformOrderId") String platformOrderId);
+
     List<PlatformOrder> selectByPlatformOrderIds(@Param("platformOrderIds") List<String> platformOrderIds);
 
     void removePurchaseInvoiceNumber(@Param("invoiceNumber") String purchaseInvoiceNumber, @Param("clientId") String clientId);
