@@ -70,12 +70,14 @@ public class OrderCreationRequestBody implements RequestBody {
         }
         putNonNull(json, "totalPrice", totalPrice.toString());
         putNonNull(json, "outboundInfos", outboundInfos);
-        JSONObject logisticsInfo = new JSONObject();
-        putNonNull(logisticsInfo, "carrierName", shoumanOrderBase.getLogisticChannelName());
-        putNonNull(logisticsInfo, "carrierCode", shoumanOrderBase.getLogisticChannelCode());
-        putNonNull(logisticsInfo, "trackingNumber", shoumanOrderBase.getTrackingNumber());
-        putNonNull(logisticsInfo, "labelUrl", shoumanOrderBase.getShippingLabelUrl());
-        putNonNull(json, "logisticsInfo", logisticsInfo);
+        if (shoumanOrderBase.getShippingLabelUrl() != null) {
+            JSONObject logisticsInfo = new JSONObject();
+            putNonNull(logisticsInfo, "carrierName", shoumanOrderBase.getLogisticChannelName());
+            putNonNull(logisticsInfo, "carrierCode", shoumanOrderBase.getLogisticChannelCode());
+            putNonNull(logisticsInfo, "trackingNumber", shoumanOrderBase.getTrackingNumber());
+            putNonNull(logisticsInfo, "labelUrl", shoumanOrderBase.getShippingLabelUrl());
+            putNonNull(json, "logisticsInfo", logisticsInfo);
+        }
         return json;
     }
 
