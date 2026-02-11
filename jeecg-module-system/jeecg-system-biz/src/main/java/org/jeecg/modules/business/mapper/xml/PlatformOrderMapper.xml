@@ -962,6 +962,13 @@
             AND po.order_time &gt;= #{start}
         ORDER BY po.order_time;
     </select>
+
+    <select id="selectByPlatformOrderId" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE platform_order_id = #{platformOrderId};
+    </select>
+
     <select id="selectByPlatformOrderIds" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
         FROM platform_order
@@ -1290,7 +1297,10 @@
              ON ssr.shouman_category_id = sc.id
                  STRAIGHT_JOIN shouman_regex sr
              ON sc.id = sr.shouman_category_id
+            join shop on p.shop_id = shop.id
+            join client c on shop.owner_id = c.id
         WHERE p.erp_status = 1
+          AND ((p.shipping_label_url IS NOT NULL AND c.internal_code = 'VA') OR c.internal_code &lt;&gt; 'VA')
           AND p.can_send = 1
           AND p.create_time > '2025-09-01'
           AND sr.is_active = 1
@@ -1321,7 +1331,10 @@
              ON ssr.shouman_category_id = sc.id
                  STRAIGHT_JOIN shouman_regex sr
              ON sc.id = sr.shouman_category_id
+             join shop on p.shop_id = shop.id
+             join client c on shop.owner_id = c.id
         WHERE p.erp_status = 1
+          AND ((p.shipping_label_url IS NOT NULL AND c.internal_code = 'VA') OR c.internal_code &lt;&gt; 'VA')
           AND p.can_send = 1
           AND p.create_time > '2025-09-01'
           AND sr.is_active = 1
@@ -1678,4 +1691,26 @@
         <result property="platform_order_id" column="platformOrderId" javaType="String"/>
         <result property="shopId" column="erp_code" javaType="String"/>
     </resultMap>
+
+    <select id="fetchPlatformOrderIdsWithoutShippingLabelUrlForShops" resultType="java.lang.String">
+        SELECT platform_order_id
+        FROM platform_order po join shop s ON po.shop_id = s.id
+        WHERE erp_code IN
+        <foreach
+                collection="shops"
+                separator=","
+                open="("
+                close=")"
+                index="index"
+                item="shop"
+        >
+            #{shop}
+        </foreach>
+        AND shipping_invoice_number IS NULL
+        AND tracking_number IS NOT NULL
+        AND shipping_label_url IS NULL
+        AND order_time &gt;= #{startDateTime}
+        AND order_time &lt;= #{endDateTime}
+        AND erp_status IN (1);
+    </select>
 </mapper>

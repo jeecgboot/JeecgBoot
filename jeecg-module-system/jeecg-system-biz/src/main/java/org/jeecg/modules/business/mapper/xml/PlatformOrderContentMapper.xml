@@ -373,7 +373,7 @@
     </select>
 
     <select id="searchShoumanOrderContent"
-            resultType="org.jeecg.modules.business.entity.ShoumanOrderContent" resultMap="shoumanOrderContentResultMap">
+            resultType="org.jeecg.modules.business.entity.Shouman.ShoumanOrderBase" resultMap="shoumanOrderBaseResultMap">
         select sh.erp_code,
                po.platform_order_id,
                po.platform_order_number,
@@ -381,6 +381,10 @@
                po.recipient,
                po.city,
                po.country,
+               po.shipping_label_url,
+               po.tracking_number,
+               lc.zh_name as logistic_channel_name,
+               lc.code as logistic_channel_code,
                poc.id as platform_order_content_id,
                poc.customization_data,
                poc.customization_url,
@@ -399,46 +403,54 @@
                sr.is_month_regex
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
+                 left join logistic_channel lc on po.logistic_channel_name = lc.zh_name
                  join shop sh on po.shop_id = sh.id
                  join sku s on poc.sku_id = s.id
                  join shouman_sku_relation ssr on s.id = ssr.sku_id
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
-        where poc.erp_status in (1,2)
+        where po.order_time > '2025-06-01'
+          and poc.erp_status in (1)
           and sr.is_active = 1
           and po.platform_order_id not in (select platform_order_id from shouman_order);
     </select>
 
-    <resultMap id="shoumanOrderContentResultMap" type="org.jeecg.modules.business.entity.ShoumanOrderContent">
-        <id property="platformOrderContentId" column="platform_order_content_id" javaType="string"/>
+    <resultMap id="shoumanOrderBaseResultMap" type="org.jeecg.modules.business.entity.Shouman.ShoumanOrderBase">
+        <id property="platformOrderId" column="platform_order_id" javaType="string"/>
         <result property="shopErpCode" column="erp_code" javaType="string"/>
-        <result property="platformOrderId" column="platform_order_id" javaType="string"/>
         <result property="platformOrderNumber" column="platform_order_number" javaType="string"/>
         <result property="postcode" column="postcode" javaType="string"/>
         <result property="recipient" column="recipient" javaType="string"/>
         <result property="city" column="city" javaType="string"/>
         <result property="country" column="country" javaType="string"/>
-        <result property="customizationData" column="customization_data" javaType="string"/>
-        <result property="customizationUrl" column="customization_url" javaType="string"/>
-        <result property="quantity" column="quantity"/>
-        <result property="productName" column="product_name" javaType="string"/>
-        <result property="remark" column="remark" javaType="string"/>
-        <result property="price" column="price"/>
-        <result property="imageUrl" column="image_url" javaType="string"/>
-        <result property="sku" column="sku" javaType="string"/>
-        <result property="isNecklace" column="is_necklace" javaType="boolean"/>
-        <result property="isGem" column="is_gem" javaType="boolean"/>
-        <collection property="regexList" ofType="org.jeecg.modules.business.entity.ShoumanRegex">
-            <result property="contentRecRegex" column="content_rec_regex" javaType="string"/>
-            <result property="contentExtRegex" column="content_ext_regex" javaType="string"/>
-            <result property="prefix" column="prefix" javaType="string"/>
-            <result property="isSizeRegex" column="is_size_regex" javaType="string"/>
-            <result property="isMonthRegex" column="is_month_regex" javaType="string"/>
+        <result property="trackingNumber" column="tracking_number" javaType="string"/>
+        <result property="logisticChannelName" column="logistic_channel_name" javaType="string"/>
+        <result property="logisticChannelCode" column="logistic_channel_code" javaType="string"/>
+        <result property="shippingLabelUrl" column="shipping_label_url" javaType="string"/>
+        <collection property="contentList" ofType="org.jeecg.modules.business.entity.Shouman.ShoumanOrderContent">
+            <id property="platformOrderContentId" column="platform_order_content_id" javaType="string"/>
+            <result property="customizationData" column="customization_data" javaType="string"/>
+            <result property="customizationUrl" column="customization_url" javaType="string"/>
+            <result property="quantity" column="quantity"/>
+            <result property="productName" column="product_name" javaType="string"/>
+            <result property="remark" column="remark" javaType="string"/>
+            <result property="price" column="price"/>
+            <result property="imageUrl" column="image_url" javaType="string"/>
+            <result property="sku" column="sku" javaType="string"/>
+            <result property="isNecklace" column="is_necklace" javaType="boolean"/>
+            <result property="isGem" column="is_gem" javaType="boolean"/>
+            <collection property="regexList" ofType="org.jeecg.modules.business.entity.ShoumanRegex">
+                <result property="contentRecRegex" column="content_rec_regex" javaType="string"/>
+                <result property="contentExtRegex" column="content_ext_regex" javaType="string"/>
+                <result property="prefix" column="prefix" javaType="string"/>
+                <result property="isSizeRegex" column="is_size_regex" javaType="string"/>
+                <result property="isMonthRegex" column="is_month_regex" javaType="string"/>
+            </collection>
         </collection>
     </resultMap>
 
     <select id="searchShoumanOrderContentByPlatformOrderId"
-            resultType="org.jeecg.modules.business.entity.ShoumanOrderContent" resultMap="shoumanOrderContentResultMap">
+            resultType="org.jeecg.modules.business.entity.Shouman.ShoumanOrderBase" resultMap="shoumanOrderBaseResultMap">
         select sh.erp_code,
                po.platform_order_id,
                po.platform_order_number,
@@ -446,6 +458,10 @@
                po.recipient,
                po.city,
                po.country,
+               po.shipping_label_url,
+               po.tracking_number,
+               lc.zh_name as logistic_channel_name,
+               lc.code as logistic_channel_code,
                poc.id as platform_order_content_id,
                poc.customization_data,
                poc.customization_url,
@@ -464,12 +480,14 @@
                sr.is_month_regex
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
+                 left join logistic_channel lc on po.logistic_channel_name = lc.zh_name
                  join shop sh on po.shop_id = sh.id
                  join sku s on poc.sku_id = s.id
                  join shouman_sku_relation ssr on s.id = ssr.sku_id
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
-        where poc.erp_status in (1,2)
+        where po.order_time > '2025-06-01'
+          and poc.erp_status in (1)
           and sr.is_active = 1
           and po.platform_order_id = #{platformOrderId};
     </select>

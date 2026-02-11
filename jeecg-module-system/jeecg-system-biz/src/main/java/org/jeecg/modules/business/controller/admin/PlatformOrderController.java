@@ -31,6 +31,7 @@ import org.jeecg.modules.business.domain.api.shouman.ShoumanOrderRequest;
 import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.*;
 import org.jeecg.modules.business.entity.Shouman.ShoumanOrder;
+import org.jeecg.modules.business.entity.Shouman.ShoumanOrderBase;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.mapper.PlatformOrderMapper;
 import org.jeecg.modules.business.service.*;
@@ -594,8 +595,8 @@ public class PlatformOrderController {
     @ApiOperation(value = "潜在首曼订单-订单备注预览", notes = "潜在首曼订单-订单备注预览")
     @GetMapping(value = "/shouman/preview")
     public Result<?> generateShoumanRemarkForOrder(@RequestParam(name = "platformOrderId") String platformOrderId) {
-        List<ShoumanOrderContent> shoumanOrderContents = platformOrderContentMapper.searchShoumanOrderContentByPlatformOrderId(platformOrderId);
-        OrderCreationRequestBody requestBody = new OrderCreationRequestBody(shoumanOrderContents);
+        ShoumanOrderBase shoumanOrderBase = platformOrderContentMapper.searchShoumanOrderContentByPlatformOrderId(platformOrderId);
+        OrderCreationRequestBody requestBody = new OrderCreationRequestBody(shoumanOrderBase);
         return Result.OK(requestBody.parameters().get("outboundInfos"));
     }
 
@@ -612,9 +613,9 @@ public class PlatformOrderController {
     public Result<?> generateShoumanOrder(@RequestBody List<ShoumanOrderRequest> shoumanOrderRequests) {
         List<ShoumanOrder> shoumanOrders = new ArrayList<>();
         for (ShoumanOrderRequest shoumanOrderRequest : shoumanOrderRequests) {
-            List<ShoumanOrderContent> shoumanOrderContents = platformOrderContentMapper.searchShoumanOrderContentByPlatformOrderId(shoumanOrderRequest.getPlatformOrderId());
+            ShoumanOrderBase shoumanOrderBase = platformOrderContentMapper.searchShoumanOrderContentByPlatformOrderId(shoumanOrderRequest.getPlatformOrderId());
             LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-            OrderCreationRequestBody requestBody = new OrderCreationRequestBody(shoumanOrderContents);
+            OrderCreationRequestBody requestBody = new OrderCreationRequestBody(shoumanOrderBase);
             ShoumanOrder shoumanOrder = new ShoumanOrder();
             JSONObject jsonToUpdate = requestBody.parameters();
             // Override remarks if present

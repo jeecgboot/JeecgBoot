@@ -1,6 +1,7 @@
-package org.jeecg.modules.business.entity;
+package org.jeecg.modules.business.entity.Shouman;
 
 import lombok.Data;
+import org.jeecg.modules.business.entity.ShoumanRegex;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -8,13 +9,6 @@ import java.util.List;
 @Data
 public class ShoumanOrderContent {
 
-    private String shopErpCode;
-    private String platformOrderId;
-    private String platformOrderNumber;
-    private String postcode;
-    private String recipient;
-    private String city;
-    private String country;
     private String platformOrderContentId;
     private String customizationData;
     private String customizationUrl;
@@ -34,13 +28,6 @@ public class ShoumanOrderContent {
     @Override
     public String toString() {
         return "ShoumanOrderContent{" +
-                "shopErpCode='" + shopErpCode + '\'' +
-                "platformOrderId='" + platformOrderId + '\'' +
-                "platformOrderNumber='" + platformOrderNumber + '\'' +
-                ", postcode='" + postcode + '\'' +
-                ", recipient='" + recipient + '\'' +
-                ", city='" + city + '\'' +
-                ", country='" + country + '\'' +
                 ", platformOrderContentId='" + platformOrderContentId + '\'' +
                 ", customizationData='" + customizationData + '\'' +
                 ", customizationUrl='" + customizationUrl + '\'' +

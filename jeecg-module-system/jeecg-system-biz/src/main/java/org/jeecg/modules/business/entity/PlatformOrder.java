@@ -17,8 +17,8 @@ import java.util.Date;
 /**
  * @Description: 平台订单表
  * @Author: jeecg-boot
- * @Date: 2025-12-02
- * @Version: V1.11
+ * @Date: 2026-02-05
+ * @Version: V1.12
  */
 @ApiModel(value = "platform_order对象", description = "平台订单表")
 @Data
@@ -296,4 +296,10 @@ public class PlatformOrder implements Serializable {
     @Excel(name = "Shopify平台标签", width = 15)
     @ApiModelProperty(value = "Shopify平台标签")
     private java.lang.String shopifyTags;
+    /**
+     * 物流面单URL
+     */
+    @Excel(name = "物流面单URL", width = 15)
+    @ApiModelProperty(value = "物流面单URL")
+    private java.lang.String shippingLabelUrl;
 }

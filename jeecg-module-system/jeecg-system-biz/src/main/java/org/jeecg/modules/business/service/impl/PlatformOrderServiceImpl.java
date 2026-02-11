@@ -517,6 +517,11 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
+    public PlatformOrder selectByPlatformOrderId(String platformOrderId) {
+        return platformOrderMap.selectByPlatformOrderId(platformOrderId);
+    }
+
+    @Override
     public List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds) {
         return platformOrderMap.selectByPlatformOrderIds(platformOrderIds);
     }
@@ -819,6 +824,11 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
         }
         workbook.write(outputStream);
         workbook.close();
+    }
+
+    @Override
+    public List<String> fetchPlatformOrderIdsWithoutShippingLabelUrlForShops(LocalDateTime startDate, LocalDateTime endDate, List<String> shops) {
+        return platformOrderMap.fetchPlatformOrderIdsWithoutShippingLabelUrlForShops(startDate, endDate, shops);
     }
 
 }
