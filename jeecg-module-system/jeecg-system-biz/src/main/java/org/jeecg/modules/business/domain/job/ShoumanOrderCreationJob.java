@@ -2,10 +2,8 @@ package org.jeecg.modules.business.domain.job;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.modules.business.domain.api.shouman.OrderCreationRequestBody;
-import org.jeecg.modules.business.entity.Country;
 import org.jeecg.modules.business.entity.Shouman.ShoumanOrder;
-import org.jeecg.modules.business.entity.ShoumanOrderContent;
-import org.jeecg.modules.business.mapper.CountryMapper;
+import org.jeecg.modules.business.entity.Shouman.ShoumanOrderBase;
 import org.jeecg.modules.business.mapper.PlatformOrderContentMapper;
 import org.jeecg.modules.business.service.IShoumanOrderService;
 import org.quartz.Job;
@@ -19,8 +17,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toMap;
-
 @Slf4j
 public class ShoumanOrderCreationJob implements Job {
 
@@ -33,16 +29,16 @@ public class ShoumanOrderCreationJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         log.info("Started Shouman order creation job");
 
-        List<ShoumanOrderContent> shoumanOrderContents = platformOrderContentMapper.searchShoumanOrderContent();
-        log.info("Fetched {} shouman order contents", shoumanOrderContents.size());
-        Map<String, List<ShoumanOrderContent>> groupedByPlatformOrderId = shoumanOrderContents
+        List<ShoumanOrderBase> shoumanOrderBases = platformOrderContentMapper.searchShoumanOrderContent();
+        log.info("Fetched {} shouman order contents", shoumanOrderBases.size());
+        Map<String, ShoumanOrderBase> groupedByPlatformOrderId = shoumanOrderBases
                 .stream()
-                .collect(Collectors.groupingBy(ShoumanOrderContent::getPlatformOrderId));
+                .collect(Collectors.toMap(ShoumanOrderBase::getPlatformOrderId, Function.identity()));
         log.info("After grouping by PlatformOrderId, {} Shouman Orders should be created", groupedByPlatformOrderId.size());
 
         log.info("Started constructing Shouman request bodies");
         List<ShoumanOrder> shoumanOrders = new ArrayList<>();
-        for (Map.Entry<String, List<ShoumanOrderContent>> entry : groupedByPlatformOrderId.entrySet()) {
+        for (Map.Entry<String, ShoumanOrderBase> entry : groupedByPlatformOrderId.entrySet()) {
             OrderCreationRequestBody requestBody = new OrderCreationRequestBody(entry.getValue());
             ShoumanOrder shoumanOrder = new ShoumanOrder();
             shoumanOrder.setOrderJson(requestBody.parameters().toJSONString());

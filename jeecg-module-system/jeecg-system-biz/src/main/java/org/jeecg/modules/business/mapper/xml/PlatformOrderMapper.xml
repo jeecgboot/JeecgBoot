@@ -962,6 +962,13 @@
             AND po.order_time &gt;= #{start}
         ORDER BY po.order_time;
     </select>
+
+    <select id="selectByPlatformOrderId" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT *
+        FROM platform_order
+        WHERE platform_order_id = #{platformOrderId};
+    </select>
+
     <select id="selectByPlatformOrderIds" resultType="org.jeecg.modules.business.entity.PlatformOrder">
         SELECT *
         FROM platform_order
@@ -1291,6 +1298,7 @@
                  STRAIGHT_JOIN shouman_regex sr
              ON sc.id = sr.shouman_category_id
         WHERE p.erp_status = 1
+          AND p.shipping_label_url IS NOT NULL
           AND p.can_send = 1
           AND p.create_time > '2025-09-01'
           AND sr.is_active = 1
@@ -1322,6 +1330,7 @@
                  STRAIGHT_JOIN shouman_regex sr
              ON sc.id = sr.shouman_category_id
         WHERE p.erp_status = 1
+          AND p.shipping_label_url IS NOT NULL
           AND p.can_send = 1
           AND p.create_time > '2025-09-01'
           AND sr.is_active = 1

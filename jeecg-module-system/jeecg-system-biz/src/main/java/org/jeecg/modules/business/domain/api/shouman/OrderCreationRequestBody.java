@@ -3,7 +3,8 @@ package org.jeecg.modules.business.domain.api.shouman;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.Data;
-import org.jeecg.modules.business.entity.ShoumanOrderContent;
+import org.jeecg.modules.business.entity.Shouman.ShoumanOrderBase;
+import org.jeecg.modules.business.entity.Shouman.ShoumanOrderContent;
 import org.jeecg.modules.business.entity.ShoumanRegex;
 
 import java.math.BigDecimal;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 @Data
 public class OrderCreationRequestBody implements RequestBody {
 
-    private List<ShoumanOrderContent> orderContents;
+    private ShoumanOrderBase shoumanOrderBase;
 
     private final static String DEFAULT_SPLIT = ";";
     private final static String LINE_BREAK = "\n";
@@ -28,8 +29,8 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String PRODUCT_GROUP_KEY = "_gpo_product_group";
     private final static String PARENT_PRODUCT_GROUP_KEY = "_gpo_parent_product_group";
 
-    public OrderCreationRequestBody(List<ShoumanOrderContent> orderContents) {
-        this.orderContents = orderContents;
+    public OrderCreationRequestBody(ShoumanOrderBase shoumanOrderBase) {
+        this.shoumanOrderBase = shoumanOrderBase;
     }
 
     @Override
@@ -41,28 +42,27 @@ public class OrderCreationRequestBody implements RequestBody {
     public JSONObject parameters() {
         JSONObject json = new JSONObject();
         // TODO: 2023/11/29 Change to real address
-        ShoumanOrderContent anyContent = orderContents.get(0);
         putNonNull(json, "address", "收货人：王生 收货地址： 广东省东镇芦莞市寮步溪二路40号汇元佳科技园二栋10楼公司前台 手机：17633551138");
         putNonNull(json, "addressee", "王生");
         putNonNull(json, "city", "东莞市");
         putNonNull(json, "country", "CHINA");
         putNonNull(json, "countryCode", "CN");
         // TODO: 2023/11/29 Change to real address
-        putNonNull(json, "orderId", anyContent.getPlatformOrderId());
+        putNonNull(json, "orderId", shoumanOrderBase.getPlatformOrderId());
         JSONArray outboundInfos = new JSONArray();
         BigDecimal totalPrice = BigDecimal.ZERO;
         // Merge contents in case of necklaces with gems
-        List<ShoumanOrderContent> reducedContents = mergeContentsForNecklaceWithGems(orderContents);
-        for (ShoumanOrderContent content : reducedContents.isEmpty() ? orderContents : reducedContents) {
+        List<ShoumanOrderContent> reducedContents = mergeContentsForNecklaceWithGems(shoumanOrderBase.getContentList());
+        for (ShoumanOrderContent content : reducedContents.isEmpty() ? shoumanOrderBase.getContentList() : reducedContents) {
             JSONObject contentJson = new JSONObject();
             putNonNull(contentJson, "productName", content.getProductName());
-            putNonNull(contentJson, "customerId", content.getPlatformOrderNumber().replace("MS", ""));
+            putNonNull(contentJson, "customerId", shoumanOrderBase.getPlatformOrderNumber().replace("MS", ""));
             BigDecimal price = content.getPrice();
             putNonNull(contentJson, "price", price.toString());
             totalPrice = totalPrice.add(price);
             putNonNull(contentJson, "theImagePath", content.getImageUrl());
             putNonNull(contentJson, "comment", generateRemark(content.getRemark(), content.getCustomizationData(),
-                    content.getRegexList(), content.getShopErpCode(), content.getPlatformOrderNumber(),
+                    content.getRegexList(), shoumanOrderBase.getShopErpCode(), shoumanOrderBase.getPlatformOrderNumber(),
                     content.getCustomizationUrl()));
             putNonNull(contentJson, "sku", content.getSku());
             putNonNull(contentJson, "outboundNumder", content.getQuantity()); // Typo intended
@@ -70,6 +70,12 @@ public class OrderCreationRequestBody implements RequestBody {
         }
         putNonNull(json, "totalPrice", totalPrice.toString());
         putNonNull(json, "outboundInfos", outboundInfos);
+        JSONObject logisticsInfo = new JSONObject();
+        putNonNull(logisticsInfo, "carrierName", shoumanOrderBase.getLogisticChannelName());
+        putNonNull(logisticsInfo, "carrierCode", shoumanOrderBase.getLogisticChannelCode());
+        putNonNull(logisticsInfo, "trackingNumber", shoumanOrderBase.getTrackingNumber());
+        putNonNull(logisticsInfo, "labelUrl", shoumanOrderBase.getShippingLabelUrl());
+        putNonNull(json, "logisticsInfo", logisticsInfo);
         return json;
     }
 
@@ -88,9 +94,10 @@ public class OrderCreationRequestBody implements RequestBody {
             for (String s : strings) {
                 if (s.matches(regex.getContentRecRegex())) {
                     String trimmed = s.trim();
-                    String content = trimmed.split(regex.getContentExtRegex())[1];
+                    String[] split = trimmed.split(regex.getContentExtRegex());
+                    String content = split[split.length - 1];
                     if (regex.getIsSizeRegex().equalsIgnoreCase("1")) {
-                        RingSize ringSize = RingSize.getBySize(Integer.parseInt(content));
+                        RingSize ringSize = RingSize.getBySize(content);
                         if (ringSize != null) {
                             sb.append(ringSize.getText());
                         }
