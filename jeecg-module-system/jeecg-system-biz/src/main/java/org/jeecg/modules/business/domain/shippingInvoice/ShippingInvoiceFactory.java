@@ -853,7 +853,7 @@ public class ShippingInvoiceFactory {
         Map<String, List<LogisticInsurance>> skuInsuranceFees = new HashMap<>();
 
         // TODO optimize
-        Map<String, String> logisticChannelNameToId = logisticChannelMapper.getAll().stream().collect(toMap(LogisticChannel::getInternalName, LogisticChannel::getId));
+        Map<String, String> logisticChannelNameToId = logisticChannelMapper.getAll().stream().collect(toMap(LogisticChannel::getZhName, LogisticChannel::getId));
         // find logistic channel price for each order based on its content
         for (PlatformOrder uninvoicedOrder : orderContentMap.keySet()) {
             String orderDbId = uninvoicedOrder.getId();
@@ -1457,11 +1457,11 @@ public class ShippingInvoiceFactory {
                     // Calculate total amounts
                     invoice.tableData();
                     estimations.add(new ShippingFeesEstimation(
-                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), invoice.getTotalAmount(), client.getIsCompleteInvoice(), "", new ArrayList<>()));
+                            client.getInternalCode(), shop.getErpCode(), 0, orders.size(), invoice.getTotalAmount(), client.getIsCompleteInvoice(), "", new ArrayList<>()));
                 } catch (UserException e) {
                     log.error("Couldn't calculate all fees for shop {} for following reason {}", shop.getErpCode(), e.getMessage());
                     estimations.add(new ShippingFeesEstimation(
-                            client.getInternalCode(), shop.getErpCode(), 0, orders.entrySet().size(), BigDecimal.ZERO, client.getIsCompleteInvoice(), e.getMessage(), new ArrayList<>()));
+                            client.getInternalCode(), shop.getErpCode(), 0, orders.size(), BigDecimal.ZERO, client.getIsCompleteInvoice(), e.getMessage(), new ArrayList<>()));
                     errorMessages.add(e.getMessage());
                 }
                 currentIndex++;
