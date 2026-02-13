@@ -52,7 +52,7 @@
     "intro.js": "^7.2.0",
     "lodash-es": "^4.17.21",
     "lodash.get": "^4.4.2",
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^14.1.1",
     "markdown-it-link-attributes": "^4.0.1",
     "event-source-polyfill": "^1.0.31",
     "highlight.js": "^11.11.1",
