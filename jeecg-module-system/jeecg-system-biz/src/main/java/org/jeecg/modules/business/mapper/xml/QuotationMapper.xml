@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.QuotationMapper">
+    <select id="pageByStatus" resultType="org.jeecg.modules.business.entity.Quotation">
+        SELECT *
+        FROM quotation
+        <where>
+            <if test="q != null and q.status != null and q.status != ''">
+                status = #{q.status}
+            </if>
+        <if test="q != null">
+            <if test="q.productName != null and q.productName != ''">
+                AND product_name LIKE CONCAT('%', #{q.productName}, '%')
+            </if>
+            <if test="q.supplierSku != null and q.supplierSku != ''">
+                AND supplier_sku = #{q.supplierSku}
+            </if>
+            <if test="q.inquiryClient != null and q.inquiryClient != ''">
+                AND inquiry_client = #{q.inquiryClient}
+            </if>
+            <if test="q.inquirySales != null and q.inquirySales != ''">
+                AND inquiry_sales = #{q.inquirySales}
+            </if>
+            <if test="q.inquiryCountry != null and q.inquiryCountry != ''">
+                AND FIND_IN_SET(#{q.inquiryCountry}, inquiry_country)
+            </if>
+            <if test="q.country != null and q.country != ''">
+                AND country = #{q.country}
+            </if>
+        </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="getByIdAndStatus" resultType="org.jeecg.modules.business.entity.Quotation">
+        SELECT *
+        FROM quotation
+        WHERE id = #{id}
+          AND status = #{status}
+    </select>
+
+    <!-- for inquiry editing: only allow update if status = '0' -->
+    <sql id="InquiryUpdateSet">
+        <if test="q.productName != null and q.productName != ''">product_name = #{q.productName},</if>
+        <if test="q.supplierSku != null and q.supplierSku != ''">supplier_sku = #{q.supplierSku},</if>
+        <if test="q.moq != null and q.moq != ''">moq = #{q.moq},</if>
+        <if test="q.photo != null and q.photo != ''">photo = #{q.photo},</if>
+        <if test="q.customerUrl != null and q.customerUrl != ''">customer_url = #{q.customerUrl},</if>
+        <if test="q.customerPrice != null">customer_price = #{q.customerPrice},</if>
+        <if test="q.country != null and q.country != ''">country = #{q.country},</if>
+        <if test="q.category != null and q.category != ''">category = #{q.category},</if>
+        <if test="q.inquiryClient != null">inquiry_client = #{q.inquiryClient},</if>
+        <if test="q.inquirySales != null">inquiry_sales = #{q.inquirySales},</if>
+
+        <if test="q.inquiryLink != null and q.inquiryLink != ''">inquiry_link = #{q.inquiryLink},</if>
+        <if test="q.inquiryCountry != null and q.inquiryCountry != ''">inquiry_country = #{q.inquiryCountry},</if>
+        <if test="q.expectedSales != null">expected_sales = #{q.expectedSales},</if>
+
+        <if test="q.inquiryPhoto != null">inquiry_photo = #{q.inquiryPhoto},</if>
+        <if test="q.inquirySpec != null">inquiry_spec = #{q.inquirySpec},</if>
+        <if test="q.inquiryColor != null">inquiry_color = #{q.inquiryColor},</if>
+        <if test="q.inquiryRemark != null">inquiry_remark = #{q.inquiryRemark},</if>
+        <if test="q.attachments != null">attachments = #{q.attachments},</if>
+    </sql>
+
+    <update id="updateInquiryFields">
+        UPDATE quotation
+        <set>
+            <include refid="InquiryUpdateSet"/>
+            update_time = NOW()
+        </set>
+        WHERE id = #{q.id}
+        AND status = '0'
+    </update>
+    <!-- for quote editing -->
+    <sql id="QuoteUpdateSet">
+        <if test="q.status != null and q.status != ''">status = #{q.status},</if>
+        <if test="q.productName != null and q.productName != ''">product_name = #{q.productName},</if>
+        <if test="q.supplierSku != null and q.supplierSku != ''">supplier_sku = #{q.supplierSku},</if>
+        <if test="q.moq != null and q.moq != ''">moq = #{q.moq},</if>
+        <if test="q.photo != null and q.photo != ''">photo = #{q.photo},</if>
+
+        <if test="q.customerUrl != null and q.customerUrl != ''">customer_url = #{q.customerUrl},</if>
+        <if test="q.customerPrice != null">customer_price = #{q.customerPrice},</if>
+
+        <if test="q.country != null and q.country != ''">country = #{q.country},</if>
+
+        <if test="q.category != null and q.category != ''">category = #{q.category},</if>
+
+        <if test="q.logisticChannel != null and q.logisticChannel != ''">logistic_channel = #{q.logisticChannel},</if>
+        <if test="q.livraison != null and q.livraison != ''">livraison = #{q.livraison},</if>
+        <if test="q.prixAchat != null">prix_achat = #{q.prixAchat},</if>
+        <if test="q.logisticsFee != null">logistics_fee = #{q.logisticsFee},</if>
+        <if test="q.totalFee != null">total_fee = #{q.totalFee},</if>
+
+        <if test="q.expressWeightG != null">express_weight_g = #{q.expressWeightG},</if>
+
+        <if test="q.purchasePriceRmb != null">purchase_price_rmb = #{q.purchasePriceRmb},</if>
+        <if test="q.sizeRange != null and q.sizeRange != ''">size_range = #{q.sizeRange},</if>
+        <if test="q.domesticShippingRmb != null">domestic_shipping_rmb = #{q.domesticShippingRmb},</if>
+
+        <if test="q.costRmb != null">cost_rmb = #{q.costRmb},</if>
+        <if test="q.costEur != null">cost_eur = #{q.costEur},</if>
+
+        <if test="q.salePriceRmb != null">sale_price_rmb = #{q.salePriceRmb},</if>
+        <if test="q.salePriceEur != null">sale_price_eur = #{q.salePriceEur},</if>
+
+        <if test="q.partnerSalePrice != null">partner_sale_price = #{q.partnerSalePrice},</if>
+
+        <if test="q.profitRmb != null">profit_rmb = #{q.profitRmb},</if>
+        <if test="q.profitEur != null">profit_eur = #{q.profitEur},</if>
+        <if test="q.margin != null">margin = #{q.margin},</if>
+
+        <if test="q.grossWeightG != null">gross_weight_g = #{q.grossWeightG},</if>
+        <if test="q.packWeightG != null and q.packWeightG != ''">pack_weight_g = #{q.packWeightG},</if>
+
+        <if test="q.isVolumetric != null">is_volumetric = #{q.isVolumetric},</if>
+        <if test="q.packageLength != null">package_length = #{q.packageLength},</if>
+        <if test="q.packageWidth != null">package_width = #{q.packageWidth},</if>
+        <if test="q.packageHeight != null">package_height = #{q.packageHeight},</if>
+
+        <if test="q.supplierLink != null and q.supplierLink != ''">supplier_link = #{q.supplierLink},</if>
+        <if test="q.supplierName != null and q.supplierName != ''">supplier_name = #{q.supplierName},</if>
+
+        <if test="q.supplierPrice != null and q.supplierPrice != ''">supplier_price = #{q.supplierPrice},</if>
+
+        <if test="q.inStock != null">in_stock = #{q.inStock},</if>
+
+        <if test="q.productSize != null and q.productSize != ''">product_size = #{q.productSize},</if>
+        <if test="q.productSizeImg != null and q.productSizeImg != ''">product_size_img = #{q.productSizeImg},</if>
+
+        <if test="q.specification != null and q.specification != ''">specification = #{q.specification},</if>
+        <if test="q.colorNote != null and q.colorNote != ''">color_note = #{q.colorNote},</if>
+
+        <if test="q.colorImg != null and q.colorImg != ''">color_img = #{q.colorImg},</if>
+        <if test="q.outerPackageImg != null and q.outerPackageImg != ''">outer_package_img = #{q.outerPackageImg},</if>
+    </sql>
+
+    <update id="addQuoteBasedOnInquiry">
+        UPDATE quotation
+        <set>
+            <include refid="QuoteUpdateSet"/>
+            status = '1',
+            update_time = NOW()
+        </set>
+        WHERE id = #{q.id}
+        AND status = '0'
+    </update>
+
+    <update id="updateQuoteFields">
+        UPDATE quotation
+        <set>
+            <include refid="QuoteUpdateSet"/>
+            update_time = NOW()
+        </set>
+        WHERE id = #{q.id}
+        AND status = '0'
+    </update>
+
+    <sql id="RevokeQuoteSet">
+        status = '0',
+      sale_price_rmb = NULL,
+      sale_price_eur = NULL,
+      purchase_price_rmb = NULL,
+      domestic_shipping_rmb = NULL,
+      cost_rmb = NULL,
+      cost_eur = NULL,
+      profit_rmb = NULL,
+      profit_eur = NULL,
+      margin = NULL,
+      prix_achat = NULL,
+      logistics_fee = NULL,
+      total_fee = NULL,
+      gross_weight_g = NULL,
+      pack_weight_g = NULL,
+      express_weight_g = NULL,
+      customer_price = NULL,
+      customer_url = NULL,
+      partner_sale_price = NULL,
+      logistic_channel = NULL,
+      livraison = NULL,
+      product_name = NULL,
+      supplier_sku = NULL,
+      moq = NULL,
+      photo = NULL,
+      supplier_link = NULL,
+      supplier_name = NULL,
+      supplier_price = NULL,
+      in_stock = NULL,
+      size_range = NULL,
+      product_size = NULL,
+      product_size_img = NULL,
+      is_volumetric = NULL,
+      category = NULL,
+      package_length = NULL,
+      package_width = NULL,
+      package_height = NULL,
+      specification = NULL,
+      color_note = NULL,
+      color_img = NULL,
+      outer_package_img = NULL
+    </sql>
+
+    <update id="revokeQuoteById">
+        UPDATE quotation
+        <set>
+            <include refid="RevokeQuoteSet"/>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <update id="revokeQuoteBatch">
+        UPDATE quotation
+        <set>
+            <include refid="RevokeQuoteSet"/>
+            update_time = NOW()
+        </set>
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
+
+
+</mapper>
