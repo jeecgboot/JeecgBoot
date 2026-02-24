@@ -14,4 +14,6 @@ public class GiftRule {
     private final Boolean matchQuantity;
 
     private final String erpStatus;
+
+    private final String countries;
 }

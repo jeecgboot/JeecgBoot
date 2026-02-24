@@ -6,7 +6,8 @@
                sku.erp_code AS sku,
                g.normal_sku_regex AS regex,
                g.match_normal_sku_quantity AS match_quantity,
-               g.poc_erp_status AS erp_status
+               g.poc_erp_status AS erp_status,
+               g.countries AS countries
         FROM gift_rules g JOIN shop s ON g.shop_id = s.id
         JOIN sku ON g.gift_sku_id = sku.id
         WHERE s.erp_code IN
