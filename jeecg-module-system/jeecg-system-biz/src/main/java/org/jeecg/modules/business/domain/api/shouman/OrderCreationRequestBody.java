@@ -77,6 +77,10 @@ public class OrderCreationRequestBody implements RequestBody {
             putNonNull(logisticsInfo, "trackingNumber", shoumanOrderBase.getTrackingNumber());
             putNonNull(logisticsInfo, "labelUrl", shoumanOrderBase.getShippingLabelUrl());
             putNonNull(json, "logisticsInfo", logisticsInfo);
+            // VA 代发订单添加国家卡片到备注
+            if (shoumanOrderBase.getShopErpCode().contains("VA")) {
+                putNonNull(json, "orderMemo", shoumanOrderBase.getCountry() + "卡片");
+            }
         }
         return json;
     }

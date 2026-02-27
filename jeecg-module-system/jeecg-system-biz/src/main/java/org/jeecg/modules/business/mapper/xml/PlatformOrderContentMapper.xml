@@ -380,7 +380,7 @@
                po.postcode,
                po.recipient,
                po.city,
-               po.country,
+               c.name_zh,
                po.shipping_label_url,
                po.tracking_number,
                lc.zh_name as logistic_channel_name,
@@ -409,6 +409,7 @@
                  join shouman_sku_relation ssr on s.id = ssr.sku_id
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
+                 join country c on po.country = c.name_en
         where po.order_time > '2025-06-01'
           and poc.erp_status in (1)
           and sr.is_active = 1
@@ -422,7 +423,7 @@
         <result property="postcode" column="postcode" javaType="string"/>
         <result property="recipient" column="recipient" javaType="string"/>
         <result property="city" column="city" javaType="string"/>
-        <result property="country" column="country" javaType="string"/>
+        <result property="country" column="name_zh" javaType="string"/>
         <result property="trackingNumber" column="tracking_number" javaType="string"/>
         <result property="logisticChannelName" column="logistic_channel_name" javaType="string"/>
         <result property="logisticChannelCode" column="logistic_channel_code" javaType="string"/>
@@ -457,7 +458,7 @@
                po.postcode,
                po.recipient,
                po.city,
-               po.country,
+               c.name_zh,
                po.shipping_label_url,
                po.tracking_number,
                lc.zh_name as logistic_channel_name,
@@ -486,6 +487,7 @@
                  join shouman_sku_relation ssr on s.id = ssr.sku_id
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
+                 join country c on po.country = c.name_en
         where po.order_time > '2025-06-01'
           and poc.erp_status in (1)
           and sr.is_active = 1
