@@ -215,7 +215,14 @@ public class EmbeddingHandler implements IEmbeddingHandler {
         }
         //update-end---author:wangshuai---date:2025-12-26---for:【QQYUN-14265】【AI】支持记忆---
         Document from = Document.from(content, metadata);
-        ingestor.ingest(from);
+        //update-begin---author:jeecg---date:2026-02-26---for:[#9374]【AI知识库】千帆向量报错，添加异常处理防止空指针
+        try {
+            ingestor.ingest(from);
+        } catch (Exception e) {
+            log.error("向量存储失败，请检查向量模型配置是否正确", e);
+            throw new JeecgBootException("向量存储失败：" + e.getMessage());
+        }
+        //update-end---author:jeecg---date:2026-02-26---for:[#9374]【AI知识库】千帆向量报错，添加异常处理防止空指针
         return metadata.toMap();
     }
 
