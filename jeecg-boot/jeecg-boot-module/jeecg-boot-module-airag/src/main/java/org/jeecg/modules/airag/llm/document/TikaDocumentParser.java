@@ -30,7 +30,6 @@ import org.jeecg.common.util.AssertUtils;
 import org.xml.sax.ContentHandler;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -73,8 +72,8 @@ public class TikaDocumentParser {
     public Document parse(File file) {
         AssertUtils.assertNotEmpty("请选择文件", file);
         try {
-            // 用于解析
-            InputStream isForParsing = Files.newInputStream(file.toPath());
+            // 用于解析(使用FileInputStream避免file.toPath()在Linux非UTF-8环境下中文文件名报错)
+            InputStream isForParsing = new FileInputStream(file);
             // 使用 Tika 自动检测 MIME 类型
             String fileName = file.getName().toLowerCase();
             //后缀
@@ -102,7 +101,7 @@ public class TikaDocumentParser {
      */
     public Document parseDocExcelPdfUsingApachePoi(File file) {
         AssertUtils.assertNotEmpty("请选择文件", file);
-        try (InputStream inputStream = Files.newInputStream(file.toPath())) {
+        try (InputStream inputStream = new FileInputStream(file)) {
             ApachePoiDocumentParser parser = new ApachePoiDocumentParser();
             Document document = parser.parse(inputStream);
             if (document == null || Utils.isNullOrBlank(document.text())) {
