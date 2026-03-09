@@ -3,6 +3,7 @@ node_modules
 .github
 dist
 .cache
+.playwright-mcp
 
 tests/server/static
 tests/server/static/upload

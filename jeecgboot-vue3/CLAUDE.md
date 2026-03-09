@@ -4,13 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-JeecgBoot Vue3 frontend — an enterprise low-code platform built with Vue 3 + Vite 6 + Ant Design Vue 4 + TypeScript. Uses pnpm as package manager. Node 20+ required.
+JeecgBoot Vue3 frontend — an enterprise low-code platform built with Vue 3 + Vite 6 + Ant Design Vue 4 + TypeScript. Uses pnpm as package manager. Node 18 or 20+ required (`engines: "^18 || >=20"`).
 
 ## Common Commands
 
 ```bash
 pnpm dev              # Start dev server (port 3100, mock enabled)
 pnpm build            # Production build (output: dist/)
+pnpm build:docker     # Docker production build
+pnpm build:dockercloud # Docker cloud production build
 pnpm build:report     # Build with bundle visualizer
 pnpm preview          # Build + preview
 
@@ -19,13 +21,13 @@ npx eslint src/path/to/file.vue          # Lint specific file
 npx stylelint "src/**/*.{vue,less,css}"  # Stylelint
 pnpm batch:prettier                       # Format all src files
 
-# Testing
-npx jest                        # Run all tests
-npx jest tests/test.spec.ts     # Run specific test
-# Framework: Jest 29 + ts-jest, config in jest.config.mjs
+# Testing (Jest configured but not integrated into npm scripts)
+# Tests exist in tests/ directory but no test script in package.json
+# Run manually if needed: npx jest
 
 pnpm clean:cache      # Clear Vite cache
-pnpm gen:icon          # Regenerate icon data
+pnpm gen:icon         # Regenerate icon data
+pnpm reinstall        # Clean reinstall all dependencies
 ```
 
 ## Path Aliases
@@ -40,7 +42,7 @@ The `/@/` prefix (with leading slash) is the project's conventional alias — pr
 
 ### Bootstrap Sequence (src/main.ts)
 
-`createApp` → pinia → i18n → app config → registerPackages (@jeecg/online) → registerGlobComp (core Ant Design components) → SSO login → registerSuper (dynamic module discovery) → router setup → guards → directives → error handler → registerThirdComp (vxe-table, emoji, dayjs) → mount
+`createApp` → createRouter → setupStore (pinia) → setupProps → i18n → initAppConfigStore → registerPackages (@jeecg/online) → registerGlobComp (core Ant Design components) → SSO login → registerSuper (dynamic module discovery) → setupRouter → guards → directives → error handler → registerThirdComp (vxe-table, emoji, dayjs) → setupElectron → router.isReady() → mount
 
 ### Routing & Permissions
 
@@ -94,6 +96,20 @@ Three icon approaches:
 - `@jeecg/online` and `@jeecg/aiflow` are external monorepo packages excluded from Vite optimizeDeps (CJS compatibility issues)
 - Registered via `registerPackages(app)` in main.ts
 
+### Performance Optimization Patterns
+
+**Critical: Use dynamic imports for non-critical modules**
+- Static `import` at top of file causes the entire dependency chain to load on initial page
+- Use `await import('module')` or `import('path/to/module').then()` for lazy loading
+- Key files using dynamic imports:
+  - `src/settings/registerThirdComp.ts` — vxe-table, emoji picker (loaded after mount)
+  - `src/views/super/registerSuper.ts` — dynamic module discovery
+  - Non-critical Ant Design Vue components loaded asynchronously
+
+**Vite optimizeDeps**
+- Pre-bundled dependencies in `vite.config.ts` include: dayjs, axios, pinia, nprogress, qs, crypto-js, md5, sortablejs, xe-utils, vue-i18n, lodash-es, xss, mockjs
+- External packages (`@jeecg/*`) excluded due to CJS issues
+
 ### Micro-Frontend (Qiankun)
 
 - Can run as master (hosting sub-apps) or child (embedded in parent)
@@ -112,6 +128,9 @@ Three icon approaches:
 - `.env` — base config (port 3100, app title, SSO/qiankun flags)
 - `.env.development` — mock enabled, proxy to `localhost:8080/jeecg-boot`
 - `.env.production` — mock disabled, gzip compression
+- `.env.docker` — Docker production build config
+- `.env.dockercloud` — Docker cloud production build config
+- `.env.prod_electron` — Electron production build config
 - `VITE_GLOB_*` vars are injected at runtime via `dist/_app.config.js` (changeable post-build)
 
 ### Build
@@ -122,8 +141,8 @@ Three icon approaches:
 
 ## Code Style
 
-- **Prettier**: 150 char width, single quotes, trailing commas (es5), 2-space indent, `endOfLine: 'auto'`
-- **ESLint**: Vue3 recommended + TypeScript recommended + Prettier. `any` is allowed. Unused vars prefixed with `_` are ignored
+- **Prettier**: 150 char width, single quotes, trailing commas (es5), 2-space indent, `endOfLine: 'auto'`, `vueIndentScriptAndStyle: true` (indent inside `<script>`/`<style>`), `htmlWhitespaceSensitivity: 'strict'`
+- **ESLint**: Vue3 recommended + TypeScript recommended + Prettier. `any` is allowed. Unused vars prefixed with `_` are ignored. Note: `prettier/prettier` rule is `'off'` — Prettier is not enforced via ESLint, run it separately
 - **Commits**: Conventional commits enforced via commitlint. Types: feat, fix, perf, style, docs, test, refactor, build, ci, chore, revert, wip, workflow, types, release. Max header: 108 chars
 - **i18n**: Chinese (zh-CN) and English supported. Locale files in `src/locales/lang/`
 
