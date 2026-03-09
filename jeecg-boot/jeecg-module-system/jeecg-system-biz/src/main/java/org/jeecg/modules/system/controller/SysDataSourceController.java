@@ -90,7 +90,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      * @return
      */
     @SignatureCheck
-    @RequiresPermissions("online:report:add")
+    @SaCheckPermission("online:report:add")
     @GetMapping(value = "/options")
     public Result<?> queryOptions(SysDataSource sysDataSource, HttpServletRequest req) {
         //------------------------------------------------------------------------------------------------

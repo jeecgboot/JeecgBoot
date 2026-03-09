@@ -22,6 +22,7 @@ import org.jeecg.common.util.PasswordUtil;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.sign.annotation.SignatureCheck;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.service.ISysTenantPackService;
@@ -737,7 +738,7 @@ public class SysTenantController {
      * @return
      */
     @SignatureCheck
-    @RequiresPermissions("system:tenant:invitation:user")
+    @SaCheckPermission("system:tenant:invitation:user")
     @PostMapping("/invitationUser")
     public Result<String> invitationUser(@RequestParam(name="phone") String phone,
                                          @RequestParam(name="departId",defaultValue = "") String departId){
