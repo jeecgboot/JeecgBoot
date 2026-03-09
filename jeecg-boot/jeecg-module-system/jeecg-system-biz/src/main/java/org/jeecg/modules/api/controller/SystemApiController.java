@@ -16,6 +16,7 @@ import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Map;
@@ -1078,6 +1079,19 @@ public class SystemApiController {
     @PostMapping(value = "/runAiragFlow")
     Object runAiragFlow(@RequestBody AiragFlowDTO airagFlowDTO) {
         return sysBaseApi.runAiragFlow(airagFlowDTO);
+    }
+
+    /**
+     * 流式运行AIRag流程
+     * for  [QQYUN-13634]在baseapi里面封装方法，方便其他模块调用
+     *
+     * @param airagFlowDTO
+     * @return 流程执行结果,可能是String或者Map
+     * @return
+     */
+    @PostMapping(value = "/runAiragFlowStream")
+    SseEmitter runAiragFlowStream(@RequestBody AiragFlowDTO airagFlowDTO) {
+        return sysBaseApi.runAiragFlowStream(airagFlowDTO);
     }
 
     /**

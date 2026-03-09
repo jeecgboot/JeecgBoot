@@ -16,13 +16,15 @@ import org.jeecg.modules.airag.app.consts.AiAppConsts;
 import org.jeecg.modules.airag.app.entity.AiragApp;
 import org.jeecg.modules.airag.app.service.IAiragAppService;
 import org.jeecg.modules.airag.app.service.IAiragChatService;
+import org.jeecg.modules.airag.app.vo.AiArticleWriteVersionVo;
 import org.jeecg.modules.airag.app.vo.AppDebugParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 
 /**
  * @Description: AI应用
@@ -179,4 +181,43 @@ public class AiragAppController extends JeecgController<AiragApp, IAiragAppServi
         return (SseEmitter) airagAppService.generatePrompt(prompt,false);
     }
 
+    /**
+     * 根据应用ID生成变量和记忆提示词 (SSE)
+     * for: 【QQYUN-14479】提示词单独拆分
+     * @param variables
+     * @return
+     */
+    @PostMapping(value = "/prompt/generateMemoryByAppId")
+    public SseEmitter generatePromptByAppIdSse(@RequestParam(name = "variables") String variables,
+                                               @RequestParam(name = "memoryId") String memoryId) {
+        return (SseEmitter) airagAppService.generateMemoryByAppId(variables, memoryId,false);
+    }
+
+    /**
+     * 写作保存
+     */
+    @PostMapping("/save/article/write")
+    public Result<String> saveArticleWrite(@RequestBody AiArticleWriteVersionVo aiWriteVersionVo) {
+        airagAppService.saveArticleWrite(aiWriteVersionVo);
+        return Result.OK("保存成功！");
+    }
+    
+    /**
+     * 写作删除
+     */
+    @DeleteMapping("/delete/article/write")
+    public Result<String> deleteArticleWrite(@RequestParam(name = "version") String version) {
+        AssertUtils.assertNotEmpty("版本号不能为空", version);
+        airagAppService.deleteArticleWrite(version);
+        return Result.OK("删除成功！");
+    }
+    
+    /**
+     * 写作查询
+     */
+    @GetMapping("/list/article/write")
+    public Result<List<AiArticleWriteVersionVo>> listArticleWrite() {
+        List<AiArticleWriteVersionVo> list = airagAppService.listArticleWrite();
+        return Result.OK(list);
+    }
 }

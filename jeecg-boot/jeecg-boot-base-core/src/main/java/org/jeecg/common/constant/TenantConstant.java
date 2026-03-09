@@ -47,4 +47,8 @@ public interface TenantConstant {
      */
     String APP_ADMIN = "appAdmin";
 
+    /**
+     * 增加SignatureCheck注解POST请求的URL
+     */
+    String[] SIGNATURE_CHECK_POST_URL = { "/sys/tenant/joinTenantByHouseNumber", "/sys/tenant/invitationUser" };
 }

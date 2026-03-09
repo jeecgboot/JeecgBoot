@@ -48,6 +48,11 @@ public class ChatSendParams {
     private List<String> images;
 
     /**
+     * 文件列表
+     */
+    private List<String> files;
+
+    /**
      * 工作流额外入参配置
      * key: 参数field, value: 参数值
      * for [issues/8545]新建AI应用的时候只能选择没有自定义参数的AI流程
@@ -58,5 +63,40 @@ public class ChatSendParams {
      * 是否开启网络搜索（仅千问模型支持）
      */
     private Boolean enableSearch;
+
+    /**
+     * 是否开启深度思考
+     */
+    private Boolean enableThink;
+
+    /**
+     * 会话类型: portal 应用门户
+     */
+    private String sessionType;
+
+    /**
+     * 是否开启生成绘画
+     */
+    private Boolean enableDraw;
+
+    /**
+     * 绘画模型的id
+     */
+    private String drawModelId;
+
+    /**
+     * 图片尺寸
+     */
+    private String imageSize;
+
+    /**
+     * 一张图片
+     */
+    private String imageUrl;
+
+    /**
+     * 是否保存会话
+     */
+    private Boolean izSaveSession;
 
 }

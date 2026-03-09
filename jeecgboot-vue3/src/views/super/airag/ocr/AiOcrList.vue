@@ -1,16 +1,16 @@
 <template>
-  <div class="p-2">
-    <BasicTable @register="registerTable" :rowSelection="rowSelection">
-      <!--插槽:table标题-->
+  <div class="ocr-page p-2">
+    <AiOcrAnalysisModal />
+<!--    <BasicTable @register="registerTable" :rowSelection="rowSelection">
+      &lt;!&ndash;插槽:table标题&ndash;&gt;
       <template #tableTitle>
         <a-button type="primary" preIcon="ant-design:plus-outlined" @click="handleCreate">新增</a-button>
       </template>
       <template #action="{ record }">
         <TableAction :actions="getTableAction(record)" />
       </template>
-    </BasicTable>
-    <AiOcrModal @register="registerModal" @success="reload()"></AiOcrModal>
-    <AiOcrAnalysisModal @register="registerAnalysisModal" @success="reload()"></AiOcrAnalysisModal>
+    </BasicTable>-->
+<!--    <AiOcrModal @register="registerModal" @success="reload()"></AiOcrModal>-->
   </div>
 </template>
 <script lang="ts" name="site-list" setup>
@@ -102,3 +102,11 @@
     ];
   }
 </script>
+<style lang="less" scoped>
+  .ocr-page{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+</style>

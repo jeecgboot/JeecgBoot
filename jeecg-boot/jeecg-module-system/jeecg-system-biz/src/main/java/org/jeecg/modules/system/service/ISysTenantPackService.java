@@ -104,4 +104,11 @@ public interface ISysTenantPackService extends IService<SysTenantPack> {
      * @return
      */
     List<SysTenantPack> getPackListByTenantId(String tenantId);
+
+    /**
+     * 是否为拥有管理用户权限【accountAdmin，superAdmin】
+     * 
+     * @param tenantId
+     */
+    void izHaveManageUserAuth(String tenantId);
 }

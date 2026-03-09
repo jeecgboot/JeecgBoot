@@ -40,6 +40,7 @@ public class SysUserOnlineController {
     /**
      * 获取在线用户列表（使用Sa-Token）
      */
+    @RequiresPermissions("system:online:list")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result<Page<SysUserOnlineVO>> list(@RequestParam(name="username", required=false) String username,
                                               @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -112,6 +113,7 @@ public class SysUserOnlineController {
     /**
      * 强退用户（使用Sa-Token）
      */
+    @RequiresPermissions("system:online:forceLogout")
     @RequestMapping(value = "/forceLogout",method = RequestMethod.POST)
     public Result<Object> forceLogout(@RequestBody SysUserOnlineVO online) {
         try {

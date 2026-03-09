@@ -12,19 +12,24 @@
       </div>
       <a-row :span="24">
         <a-col :span="12" v-for="item in appKnowledgeOption" @click="handleSelect(item)">
-          <a-card :style="item.checked ? { border: '1px solid #3370ff' } : {}" hoverable class="checkbox-card" :body-style="{ width: '100%' }">
+          <a-card :style="getCardStyle(item)" hoverable class="checkbox-card" :body-style="{ width: '100%' }">
             <div style="display: flex; width: 100%; justify-content: space-between">
               <div>
                 <img class="checkbox-img" :src="knowledge" />
                 <span class="checkbox-name">{{ item.name }}</span>
               </div>
-              <a-checkbox v-model:checked="item.checked" @click.stop class="quantum-checker" @change="(e)=>handleChange(e,item)"> </a-checkbox>
+              <a-checkbox v-if="multiple" v-model:checked="item.checked" @click.stop class="quantum-checker" @change="(e)=>handleChange(e,item)"> </a-checkbox>
             </div>
           </a-card>
         </a-col>
       </a-row>
-      <div v-if="knowledgeIds.length > 0" class="use-select">
-        已选择 {{ knowledgeIds.length }} 知识库
+      <div v-if="knowledgeIds && knowledgeIds.length > 0" class="use-select">
+        <template v-if="!multiple">
+          已选择 <span class="ellipsis" style="max-width: 150px">{{knowledgeData.name}}</span>
+        </template>
+        <template v-else>
+          已选择 {{ knowledgeIds.length }} 知识库
+        </template>
         <span style="margin-left: 8px; color: #3d79fb; cursor: pointer" @click="handleClearClick">清空</span>
       </div>
       <Pagination
@@ -59,6 +64,10 @@
       BasicModal,
     },
     emits: ['success', 'register'],
+    props: {
+      multiple:{ type: Boolean, default: true },
+      type: { type: String, default: 'knowledge' }
+    },
     setup(props, { emit }) {
       const title = ref<string>('添加关联知识库');
 
@@ -80,8 +89,15 @@
       const pageSizeOptions = ref<any>(['10', '20', '30']);
       //注册modal
       const [registerModal, { closeModal, setModalProps }] = useModalInner(async (data) => {
-        knowledgeIds.value = data.knowledgeIds ? cloneDeep(data.knowledgeIds.split(',')) : [];
-        knowledgeData.value = data.knowledgeDataList ? cloneDeep(data.knowledgeDataList) : [];
+        //update-begin---author:wangshuai---date:2025-12-25---for:知识库选择支持单选和多选---
+        if (props.multiple) {
+          knowledgeIds.value = data.knowledgeIds ? cloneDeep(data.knowledgeIds.split(',')) : [];
+          knowledgeData.value = data.knowledgeDataList ? cloneDeep(data.knowledgeDataList) : [];
+        } else {
+          knowledgeIds.value = data.knowledgeIds ? cloneDeep(data.knowledgeIds) : '';
+          knowledgeData.value = data.knowledgeData ? cloneDeep(data.knowledgeData) : {};
+        }
+        //update-end---author:wangshuai---date:2025-12-25---for:知识库选择支持单选和多选---
         setModalProps({ minHeight: 500, bodyStyle: { padding: '10px' } });
         loadKnowledgeData();
       });
@@ -91,7 +107,13 @@
        */
       async function handleOk() {
         console.log("知识库确定选中的值",knowledgeData.value);
-        emit('success', knowledgeIds.value, knowledgeData.value);
+        //update-begin---author:wangshuai---date:2025-12-25---for:知识库选择支持单选和多选---
+        if (props.multiple) {
+          emit('success', knowledgeIds.value, knowledgeData.value);
+        } else {
+          emit('success', knowledgeIds.value, knowledgeData.value);
+        }
+        //update-end---author:wangshuai---date:2025-12-25---for:知识库选择支持单选和多选---
         handleCancel();
       }
 
@@ -104,27 +126,39 @@
 
       //复选框选中事件
       function handleSelect(item){
-        let id = item.id;
-        const target = appKnowledgeOption.value.find((item) => item.id === id);
-        if (target) {
-          target.checked = !target.checked;
-        }
-        //存放选中的知识库的id
-        if (!knowledgeIds.value || knowledgeIds.value.length == 0) {
-          knowledgeIds.value.push(id);
-          knowledgeData.value.push(item);
-          console.log("知识库勾选或取消勾选复选框的值",knowledgeData.value);
-          return;
-        }
-        let findIndex = knowledgeIds.value.findIndex((item) => item === id);
-        if (findIndex === -1) {
-          knowledgeIds.value.push(id);
-          knowledgeData.value.push(item);
+        //update-begin---author:wangshuai---date:2025-12-25---for:知识库选择支持单选和多选---
+        if(!props.multiple) {
+          if (knowledgeIds.value === item.id) {
+            knowledgeIds.value = "";
+            knowledgeData.value = null;
+            return;
+          }
+          knowledgeIds.value = item.id;
+          knowledgeData.value = item;
         } else {
-          knowledgeIds.value.splice(findIndex, 1);
-          knowledgeData.value.splice(findIndex, 1);
+          let id = item.id;
+          const target = appKnowledgeOption.value.find((item) => item.id === id);
+          if (target) {
+            target.checked = !target.checked;
+          }
+          //存放选中的知识库的id
+          if (!knowledgeIds.value || knowledgeIds.value.length == 0) {
+            knowledgeIds.value.push(id);
+            knowledgeData.value.push(item);
+            console.log("知识库勾选或取消勾选复选框的值",knowledgeData.value);
+            return;
+          }
+          let findIndex = knowledgeIds.value.findIndex((item) => item === id);
+          if (findIndex === -1) {
+            knowledgeIds.value.push(id);
+            knowledgeData.value.push(item);
+          } else {
+            knowledgeIds.value.splice(findIndex, 1);
+            knowledgeData.value.splice(findIndex, 1);
+          }
+          console.log("知识库勾选或取消勾选复选框的值",knowledgeData.value);
         }
-        console.log("知识库勾选或取消勾选复选框的值",knowledgeData.value);
+        //update-end---author:wangshuai---date:2025-12-25---for:知识库选择支持单选和多选---
       }
 
       /**
@@ -135,10 +169,11 @@
           pageNo: pageNo.value,
           pageSize: pageSize.value,
           name: searchText.value,
+          type: props.type,
         };
         list(params).then((res) => {
           if (res.success) {
-            if (knowledgeIds.value.length > 0) {
+            if (props.multiple && knowledgeIds.value.length > 0) {
               for (const item of res.result.records) {
                 if (knowledgeIds.value.includes(item.id)) {
                   item.checked = true;
@@ -171,11 +206,18 @@
        * 清空选中状态
        */
       function handleClearClick() {
-        knowledgeIds.value = [];
-        knowledgeData.value = [];
-        appKnowledgeOption.value.forEach((item) => {
-          item.checked = false;
-        });
+        //update-begin---author:wangshuai---date:2025-12-25---for:知识库选择支持单选和多选---
+        if (!props.multiple) {
+          knowledgeIds.value = "";
+          knowledgeData.value = null;
+        } else {
+          knowledgeIds.value = [];
+          knowledgeData.value = [];
+          appKnowledgeOption.value.forEach((item) => {
+            item.checked = false;
+          });
+        }
+        //update-end---author:wangshuai---date:2025-12-25---for:知识库选择支持单选和多选---
       }
 
       /**
@@ -197,6 +239,18 @@
         }
       }
 
+      /**
+       * 获取卡片样式
+       * 
+       * @param item
+       */
+      function getCardStyle(item) {
+        if (props.multiple) {
+          return item.checked ? { border: '1px solid #3370ff' } : {};
+        }
+        return item.id === knowledgeIds.value ? { border: '1px solid #3370ff' } : {};
+      }
+
       return {
         registerModal,
         title,
@@ -215,12 +269,19 @@
         loadKnowledgeData,
         handleClearClick,
         handleChange,
+        getCardStyle,
+        knowledgeData,
       };
     },
   };
 </script>
 
 <style scoped lang="less">
+  .ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .header {
     color: #646a73;
     width: 100%;

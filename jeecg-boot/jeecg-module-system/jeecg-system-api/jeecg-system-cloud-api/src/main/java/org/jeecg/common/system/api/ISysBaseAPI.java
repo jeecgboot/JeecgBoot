@@ -18,6 +18,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Map;
@@ -871,6 +872,18 @@ public interface ISysBaseAPI extends CommonAPI {
      */
     @PostMapping(value = "/sys/api/runAiragFlow")
     Object runAiragFlow(@RequestBody AiragFlowDTO airagFlowDTO);
+
+    /**
+     * 流式运行AIRag流程
+     * for  [QQYUN-13634]在baseapi里面封装方法，方便其他模块调用
+     *
+     * @param airagFlowDTO
+     * @return 流程执行结果,可能是String或者Map
+     * @author chenrui
+     * @date 2025/9/2 11:43
+     */
+    @PostMapping(value = "/sys/api/runAiragFlowStream")
+    SseEmitter runAiragFlowStream(@RequestBody AiragFlowDTO airagFlowDTO);
 
     /**
      * 根据部门code或部门id获取部门名称(当前和上级部门)

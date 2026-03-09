@@ -1,6 +1,7 @@
 package org.jeecg.config.sign.interceptor;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.constant.TenantConstant;
 import org.jeecg.common.util.PathMatcherUtil;
 import org.jeecg.config.JeecgBaseConfig;
 import org.jeecg.config.filter.RequestBodyReserveFilter;
@@ -64,6 +65,8 @@ public class SignAuthConfiguration implements WebMvcConfigurer {
         //------------------------------------------------------------
         // 建议此处只添加post请求地址而不是所有的都需要走过滤器
         registration.addUrlPatterns(signUrlsArray);
+        // 增加注解签名请求
+        registration.addUrlPatterns(TenantConstant.SIGNATURE_CHECK_POST_URL);
         return registration;
     }
 

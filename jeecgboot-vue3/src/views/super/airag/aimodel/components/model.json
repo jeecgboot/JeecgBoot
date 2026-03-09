@@ -90,10 +90,17 @@
         {"label": "text-embedding-3-small", "value": "text-embedding-3-small","descr": "用于生成文本的嵌入表示，网络结构较小，计算资源需求较低。虽然可能不如\"large\"版本那样精准，但它更适合于资源受限的环境或需要更快速处理的任务。","type": "vector,embeddings"},
         {"label": "text-embedding-3-large", "value": "text-embedding-3-large","descr": "用于生成文本的嵌入表示，即将文本转换为高维空间中的点，这些点的距离可以表示文本之间的相似度。有较大的网络结构，能够捕捉更丰富的语言特征，适用于需要高质量文本相似度或分类任务的场景。","type": "vector,embeddings"}
       ],
-      "type": ["LLM", "EMBED"],
+      "IMAGE": [
+        {"label": "gpt-image-1.5", "value": "gpt-image-1.5","descr": "openAI强大的图片生成模型，支持图像生成与编辑功能，生图图片支持中文文字。相比上一版本，拥有更好的指令跟踪和对提示词的遵循。","type": "imageGen"},
+        {"label": "gpt-image-1", "value": "gpt-image-1","descr": "是一个图片生成模型，支持图像生成与编辑功能，生图图片支持中文文字。","type": "imageGen"},
+        {"label": "dall-e-2", "value": "dall-e-2","descr": "是OpenAI推出的文本生成图像系统","type": "imageGen"},
+        {"label": "dall-e-3", "value": "dall-e-3","descr": "是OpenAI开发的第三代文本到图像生成模型,提升了图像细节处理和艺术风格迁移能力","type": "imageGen"}
+      ],
+      "type": ["LLM", "EMBED","IMAGE"],
       "baseUrl": "https://api.openai.com/v1/",
       "LLMDefaultValue": "gpt-4o-mini",
-      "EMBEDDefaultValue": "text-embedding-ada-002"
+      "EMBEDDefaultValue": "text-embedding-ada-002",
+      "IMAGEDefaultValue": "gpt-image-1.5"
     },
     {
       "title": "通义千问",
@@ -106,10 +113,19 @@
       "EMBED": [
         {"label": "text-embedding-v2", "value": "text-embedding-v2","descr": "是一种将文本数据转换为向量的技术，通过深度学习模型将文本的语义信息嵌入到高维向量空间中。这些向量不仅能表达文本内容，还能捕捉文本之间的相似性和关系，从而让计算机高效地进行文本检索、分类、聚类等任务。","type": "vector"}
       ],
-      "type": ["LLM", "EMBED"],
+      "IMAGE": [
+        { "label": "wan2.2-t2i-plus", "value": "wan2.2-t2i-plus","descr": "全新升级的通义万相2.2文生图，更快的生成速度。在生成图像创意性、稳定性、写实质感方面全面升级，指令遵循更强，原生支持多种风格。支持最大200万像素生成，支持智能提示词改写等。","type": "imageGen"},
+        { "label": "wan2.2-t2i-flash", "value": "wan2.2-t2i-flash","descr": "全新升级的通义万相2.2文生图，更快的生成速度。在生成图像创意性、稳定性、写实质感方面全面升级，指令遵循更强，原生支持多种风格。支持最大200万像素生成，支持智能提示词改写等。","type": "imageGen"},
+        { "label": "wan2.5-i2i-preview", "value": "wan2.5-i2i-preview","descr": "是万相2.5系列中的图像编辑模型，专注于通用图像编辑任务，支持单图编辑和多图融合功能","type": "imageGen"},
+        { "label": "wanx2.1-imageedit", "value": "wanx2.1-imageedit","descr": "是阿里云百炼平台提供的通用图像编辑模型，适用于多种图像处理任务，如风格迁移、内容编辑、尺寸优化等","type": "imageGen"},
+        { "label": "wanx-v1", "value": "wanx-v1","descr": "是通义万相系列中的文本生成图像模型，支持中英文双语输入和多种图像风格生成","type": "imageGen"}
+      ],
+      "type": ["LLM", "EMBED","IMAGE"],
       "baseUrl": "https://dashscope.aliyuncs.com/api/v1/services/",
+      "baseImageUrl": "https://dashscope.aliyuncs.com/api/v1/",
       "LLMDefaultValue": "qwen-plus",
-      "EMBEDDefaultValue": "text-embedding-v2"
+      "EMBEDDefaultValue": "text-embedding-v2",
+      "IMAGEDefaultValue": "wan2.2-t2i-plus"
     },
     {
       "title": "千帆大模型",
@@ -156,10 +172,15 @@
         {"label": "Embedding-3", "value": "Embedding-3","descr": "主要用于文本搜索、聚类、推荐等任务。它通过将文本映射到低维向量空间，使得文本之间的语义关系可以通过向量之间的距离或相似度来衡量，从而支持各种基于向量的应用。","type": "vector"},
         {"label": "Embedding-2", "value": "Embedding-2","descr": "用于将高维离散数据映射到低维连续数值向量中，以便机器学习模型能够更好地处理和理解这些数据","type": "vector"}
       ],
-      "type": ["LLM", "EMBED"],
+      "IMAGE": [
+        {"label": "CogView-4", "value": "CogView-4","descr": "智谱首个支持生成汉字的开源文生图模型，在语义理解、图像生成质量、中英文字生成能力等方面全面提升，支持任意长度的中英双语输入，能够生成在给定范围内的任意分辨率图像。","type": "imageGen"},
+        {"label": "Cogview-3-Flash", "value": "Cogview-3-Flash","descr": "是智谱推出的免费图像生成模型，能够根据用户指令生成符合要求且美学评分更高的图像。CogView-3-Flash 主要应用于艺术创作、设计参考、游戏开发、虚拟现实等领域，帮助用户快速实现从文本到图像的转换需求。","type": "imageGen"}
+      ],
+      "type": ["LLM", "EMBED", "IMAGE"],
       "baseUrl": "https://open.bigmodel.cn",
       "LLMDefaultValue": "glm-4-flash",
-      "EMBEDDefaultValue": "Embedding-2"
+      "EMBEDDefaultValue": "Embedding-2",
+      "IMAGEDefaultValue": "CogView-4"
     }
   ]
 }

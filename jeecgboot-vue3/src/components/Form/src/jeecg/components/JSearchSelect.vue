@@ -43,7 +43,9 @@
     <template #notFoundContent>
       <a-spin v-if="loading" size="small" />
     </template>
-    <a-select-option v-for="d in options" :key="d?.value" :value="d?.value">{{ d?.text }}</a-select-option>
+    <a-select-option v-for="d in options" :key="d?.value" :value="d?.value">
+      <span :class="[useDicColor && d.color ? 'colorText' : '']" :style="{ backgroundColor: `${useDicColor && d.color}` }">{{ d?.text || d?.label }}</span>
+    </a-select-option>
   </a-select>
 </template>
 
@@ -90,6 +92,10 @@
       multiple:{
         type: Boolean,
         default: false
+      },
+      useDicColor: {
+        type: Boolean,
+        default: false,
       },
     },
     emits: ['change', 'update:value'],
@@ -534,4 +540,15 @@
   });
 </script>
 
-<style scoped></style>
+<style scoped>
+.colorText {
+  display: inline-block;
+  height: 20px;
+  line-height: 20px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background-color: red;
+  color: #fff;
+  font-size: 12px;
+}
+</style>

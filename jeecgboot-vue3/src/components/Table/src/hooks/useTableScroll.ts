@@ -106,7 +106,8 @@ export function useTableScroll(
     const paddingHeight = 32;
     // Pager height
     let paginationHeight = 2;
-    if (!isBoolean(pagination)) {
+    // 【issues/9217】当配置了pagination: true时,BasicTable组件自适应高度异常
+    if (pagination !== false) {
       paginationEl = tableEl.querySelector('.ant-pagination') as HTMLElement;
       if (paginationEl) {
         const offsetHeight = paginationEl.offsetHeight;

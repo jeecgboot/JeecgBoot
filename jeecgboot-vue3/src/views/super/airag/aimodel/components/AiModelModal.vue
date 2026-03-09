@@ -51,7 +51,8 @@
                 <a-select v-model:value="model[field]" @change="handleModelTypeChange" :disabled="modelTypeDisabled">
                   <a-select-option v-for="item in modelTypeAddOption" :value="item">
                     <span v-if="item === 'LLM'">语言模型</span>
-                    <span v-else>向量模型</span>
+                    <span v-else-if="item === 'EMBED'">向量模型</span>
+                    <span v-else-if="item === 'IMAGE'">图像模型</span>
                   </a-select-option>
                 </a-select>
               </template>
@@ -66,10 +67,11 @@
                       <div style="display: flex;justify-content: space-between;">
                         <span>{{label}}</span>
                         <div>
-                          <a-tag v-if="type && type.indexOf('text') != -1" color="#E8D7C3">文本</a-tag>
-                          <a-tag v-if="type && type.indexOf('image') != -1" color="#C3D9DC">图像分析</a-tag>
-                          <a-tag v-if="type && type.indexOf('vector') != -1" color="#D4E0D8">向量</a-tag>
-                          <a-tag v-if="type && type.indexOf('embeddings') != -1" color="#FFEBD3">文本嵌入</a-tag>
+                          <a-tag v-if="type && type.split(',').includes('text')" color="#E8D7C3">文本</a-tag>
+                          <a-tag v-if="type && type.split(',').includes('imageGen')" color="#FFEBD3">图像生成</a-tag>
+                          <a-tag v-if="type && type.split(',').includes('image')" color="#C3D9DC">图像分析</a-tag>
+                          <a-tag v-if="type && type.split(',').includes('vector')" color="#D4E0D8">向量</a-tag>
+                          <a-tag v-if="type && type.split(',').includes('embeddings')" color="#FFEBD3">文本嵌入</a-tag>
                         </div>
                       </div>
                     </a-tooltip>
@@ -403,6 +405,11 @@
           modelParamsShow.value = true;
         }else{
           modelParamsShow.value = false;
+        }
+        if(value === "IMAGE" && modelData.value.baseImageUrl){
+          setFieldsValue({ 'baseUrl': modelData.value.baseImageUrl })
+        } else if(modelData.value.baseUrl) {
+          setFieldsValue({ 'baseUrl': modelData.value.baseUrl })
         }
       }
 

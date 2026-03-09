@@ -10,11 +10,14 @@ import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.mcp.client.DefaultMcpClient;
 import dev.langchain4j.mcp.client.McpClient;
 import dev.langchain4j.mcp.client.transport.http.HttpMcpTransport;
+import dev.langchain4j.mcp.client.transport.http.StreamableHttpMcpTransport;
+import dev.langchain4j.mcp.client.transport.stdio.StdioMcpTransport;
 import dev.langchain4j.model.chat.request.json.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.AiRagConfigBean;
 import org.jeecg.modules.airag.llm.entity.AiragMcp;
 import org.jeecg.modules.airag.llm.mapper.AiragMcpMapper;
 import org.jeecg.modules.airag.llm.service.IAiragMcpService;
@@ -22,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,12 +35,15 @@ import java.util.stream.Collectors;
  * @Date: 2025-10-20
  * @Version: V1.0
  */
-@Service("airagMcpServiceImpl")
 @Slf4j
+@SuppressWarnings("removal")
+@Service("airagMcpServiceImpl")
 public class AiragMcpServiceImpl extends ServiceImpl<AiragMcpMapper, AiragMcp> implements IAiragMcpService {
 
     @Autowired
     private ObjectMapper objectMapper; // 使用全局配置的 Jackson ObjectMapper
+    @Autowired
+    private AiRagConfigBean aiRagConfigBean;
 
     /**
      * 新增或编辑Mcpserver
@@ -125,7 +132,7 @@ public class AiragMcpServiceImpl extends ServiceImpl<AiragMcpMapper, AiragMcp> i
         Map<String, String> headers = null;
         if (oConvertUtils.isNotEmpty(mcp.getHeaders())) {
             try {
-                headers = JSONObject.parseObject(mcp.getHeaders(), Map.class);
+                headers = JSONObject.parseObject(mcp.getHeaders(), new com.alibaba.fastjson.TypeReference<Map<String, String>>() {});
             } catch (JSONException e) {
                 headers = null;
             }
@@ -136,19 +143,53 @@ public class AiragMcpServiceImpl extends ServiceImpl<AiragMcpMapper, AiragMcp> i
         McpClient mcpClient = null;
         try {
             if ("sse".equalsIgnoreCase(type)) {
-                HttpMcpTransport.Builder builder = new HttpMcpTransport.Builder()
+                //TODO 1.4.0-beta10被弃用,推荐使用http
+                log.info("[MCP]使用SSE协议(HttpMcpTransport), endpoint:{}", endpoint);
+                HttpMcpTransport.Builder builder = HttpMcpTransport.builder()
                         .sseUrl(endpoint)
                         .logRequests(true)
                         .logResponses(true);
+                if (headers != null && !headers.isEmpty()) {
+                    builder.customHeaders(headers);
+                }
                 mcpClient = new DefaultMcpClient.Builder().transport(builder.build()).build();
             } else if ("stdio".equalsIgnoreCase(type)) {
-                // stdio 类型：endpoint 可能是一个命令行，需要拆分为命令列表
-//                List<String> cmdParts = Arrays.asList(endpoint.trim().split("\\s+"));
-//                StdioMcpTransport.Builder builder = new StdioMcpTransport.Builder()
-//                        .command(cmdParts)
-//                        .environment(headers);
-//                mcpClient = new DefaultMcpClient.Builder().transport(builder.build()).build();
-                return Result.error("不支持的MCP类型:" + type);
+                //update-begin---author:wangshuai---date:2025-12-18---for:【QQYUN-14242】【AI】添加参数控制 是否开启 默认禁用 stdio 调用执行命令---
+                String openSafe = aiRagConfigBean.getAllowSensitiveNodes();
+                if(oConvertUtils.isNotEmpty(openSafe) && openSafe.toLowerCase().contains("stdio")) {
+                    log.info("[MCP]使用STDIO协议(StdioMcpTransport), endpoint:{}", endpoint);
+                    // stdio 类型：endpoint 可能是一个命令行
+                    // Windows 下需要通过 cmd.exe /c 来执行命令，否则找不到 npx 等程序
+                    List<String> cmdParts;
+                    String os = System.getProperty("os.name").toLowerCase();
+                    if (os.contains("win")) {
+                        // Windows: 使用 cmd.exe /c 执行
+                        cmdParts = new ArrayList<>();
+                        cmdParts.add("cmd.exe");
+                        cmdParts.add("/c");
+                        cmdParts.add(endpoint.trim());
+                    } else {
+                        // Linux/Mac: 使用 sh -c 执行
+                        cmdParts = new ArrayList<>();
+                        cmdParts.add("sh");
+                        cmdParts.add("-c");
+                        cmdParts.add(endpoint.trim());
+                    }
+                    log.info("[MCP]执行stdio命令: {}", cmdParts);
+                    StdioMcpTransport.Builder builder = new StdioMcpTransport.Builder()
+                            .command(cmdParts)
+                            .environment(headers);
+                    mcpClient = new DefaultMcpClient.Builder().transport(builder.build()).build();
+                } else {
+                    String disabledMsg = "stdio 功能已禁用。若需启用，请在 yml 的 jeecg.airag.allow-sensitive-nodes 中加入 stdio。";
+                    log.warn("[MCP]{}", disabledMsg);
+                    return Result.error(disabledMsg);
+                }
+                //update-end---author:wangshuai---date:2025-12-19---for:【QQYUN-14242】【AI】添加参数控制 是否开启 默认禁用 stdio 调用执行命令---
+            }else if("http".equalsIgnoreCase(type)){
+                log.info("[MCP]使用HTTP协议(StreamableHttpMcpTransport), endpoint:{}", endpoint);
+                //增加http选项
+                mcpClient = mcpHttpCreate(endpoint,headers);
             } else {
                 return Result.error("不支持的MCP类型:" + type);
             }
@@ -202,6 +243,29 @@ public class AiragMcpServiceImpl extends ServiceImpl<AiragMcpMapper, AiragMcp> i
                 }
             }
         }
+    }
+
+    /**
+     * mcp插件http创建
+     * 
+     * @param endpoint
+     * @param headers
+     * @return
+     */
+    private McpClient mcpHttpCreate(String endpoint, Map<String, String> headers) {
+        StreamableHttpMcpTransport.Builder builder = new StreamableHttpMcpTransport.Builder()
+                .url(endpoint)
+                .timeout(Duration.ofMinutes(60))
+                .logRequests(true)
+                .logResponses(true);
+
+        if (headers != null && !headers.isEmpty()) {
+            builder.customHeaders(headers);
+        }
+
+        return new DefaultMcpClient.Builder()
+                .transport(builder.build())
+                .build();
     }
 
     // 安全序列化单个对象为 JSON 字符串

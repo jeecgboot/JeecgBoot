@@ -65,7 +65,11 @@ export const analysisSchemas: FormSchema[] = [
     label: '提示词',
     field: 'prompt',
     component: 'InputTextArea',
-    show:false,
+    componentProps: {
+      row: 2,
+      autosize: { minRows: 2, maxRows: 2 },
+      placeholder:"请填写提示词，如提取图片中的文字"
+    }
   },
   {
     label: '解析结果',

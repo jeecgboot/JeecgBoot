@@ -81,6 +81,20 @@
         <a-input-number v-bind="maxTokensProps" v-model:value="model.maxTokens" :disabled="model['maxTokens'] === null"/>
       </a-space>
     </div>
+    <!-- timeout 超时 -->
+    <div class="setting-item" v-if="type === 'model'">
+      <div class="label">
+        <span>超时时间</span>
+        <a-tooltip :title="tips.timeout">
+          <Icon icon="ant-design:question-circle" />
+        </a-tooltip>
+      </div>
+      <a-space>
+        <a-switch v-model:checked="timeoutEnable" size="small" />
+        <a-slider v-bind="timeoutProps" v-model:value="model.timeout" :disabled="model['timeout'] === null"/>
+        <a-input-number v-bind="timeoutProps" v-model:value="model.timeout" :disabled="model['timeout'] === null"/>
+      </a-space>
+    </div>
     <!-- top k -->
     <div class="setting-item" v-if="type === 'knowledge'">
       <div class="label">
@@ -142,6 +156,7 @@
             presencePenalty: 0.1,
             frequencyPenalty: 0.1,
             maxTokens: null,
+            timeout: 60,
           },
         },
         {
@@ -153,6 +168,7 @@
             presencePenalty: 0.2,
             frequencyPenalty: 0.3,
             maxTokens: null,
+            timeout: 60,
           },
         },
         {
@@ -164,6 +180,7 @@
             presencePenalty: 0.5,
             frequencyPenalty: 0.5,
             maxTokens: null,
+            timeout: 60,
           },
         },
       ];
@@ -177,7 +194,8 @@
         maxTokens:
           '设置Ai最大回复内容大小，会影响返回结果的长度。普通聊天建议500-800；短文生成建议800-2000；代码生成建议2000-3600；长文生成建议4000左右（或选择长回复模型)',
         topNumber: '用于筛选与用户问题相似度最高的文本片段。系统同时会根据选用模型上下文窗口大小动态调整分段数量。',
-        similarity: '用于设置文本片段筛选的相似度阅值。'
+        similarity: '用于设置文本片段筛选的相似度阅值。',
+        timeout: '等待AI响应的最长时间，单位为秒。'
       };
 
       // 参数：温度
@@ -226,6 +244,13 @@
         step: 0.1,
       });
       
+      //参数：超时时间
+      const timeoutProps = ref<any>({
+        min: 1,
+        step: 1,
+        max: 3600,
+      })
+      
       
       //参数对象
       const model = ref<any>(props.modelParams || {})
@@ -270,6 +295,12 @@
       const similarityEnable = computed({
         get:()=> model.value.similarity != null,
         set:(value) => model.value.similarity = !value? null: 0.74
+      });    
+      
+      //timeout超时时间
+      const timeoutEnable = computed({
+        get:()=> model.value.timeout != null,
+        set:(value) => model.value.timeout = !value? null: 60
       });
       
       // 加载预设
@@ -319,6 +350,8 @@
         similarityEnable,
         similarityProps,
         setModalParams,
+        timeoutEnable,
+        timeoutProps,
       };
     },
   };

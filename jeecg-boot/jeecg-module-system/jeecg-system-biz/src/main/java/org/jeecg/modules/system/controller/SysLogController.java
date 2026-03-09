@@ -87,10 +87,10 @@ public class SysLogController extends JeecgController<SysLog, ISysLogService> {
 		//TODO 一个强大的功能，前端传一个字段字符串，后台只返回这些字符串对应的字段
 		//创建时间/创建人的赋值
 		IPage<SysLog> pageList = sysLogService.page(page, queryWrapper);
-//		log.info("查询当前页："+pageList.getCurrent());
-//		log.info("查询当前页数量："+pageList.getSize());
-//		log.info("查询结果数量："+pageList.getRecords().size());
-//		log.info("数据总数："+pageList.getTotal());
+		log.debug("查询当前页："+pageList.getCurrent());
+		log.debug("查询当前页数量："+pageList.getSize());
+		log.debug("查询结果数量："+pageList.getRecords().size());
+		log.debug("数据总数："+pageList.getTotal());
 		result.setSuccess(true);
 		result.setResult(pageList);
 		return result;

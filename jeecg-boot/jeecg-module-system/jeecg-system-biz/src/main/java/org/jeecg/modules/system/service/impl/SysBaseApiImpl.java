@@ -71,6 +71,7 @@ import org.springframework.util.PathMatcher;
 import jakarta.annotation.Resource;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -639,6 +640,13 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 			dingtalkService.sendActionCardMessage(announcement, mobileOpenUrl, true);
 			// 企业微信通知
 			wechatEnterpriseService.sendTextCardMessage(announcement, mobileOpenUrl, true);
+			// Uniapp手机端消息推送
+			PushMessageDTO pushMessageDTO = new PushMessageDTO();
+			pushMessageDTO.setTitle(announcement.getTitile());
+			pushMessageDTO.setContent(announcement.getMsgContent());
+			pushMessageDTO.setPayload(new HashMap<>(message.getTemplateParam()));
+			pushMessageDTO.setUsernames(Arrays.asList(toUser));
+			this.uniPushMsgToUser(pushMessageDTO);
 		} catch (Exception e) {
 			log.error("同步发送第三方APP消息失败！", e);
 		}
@@ -2111,6 +2119,14 @@ public class SysBaseApiImpl implements ISysBaseAPI {
         Result<Object> o = (Result<Object>)airagFlowService.runFlow(airagFlowDTO);
         return o.getResult();
     }
+
+	@Override
+	public SseEmitter runAiragFlowStream(AiragFlowDTO airagFlowDTO) {
+		if (oConvertUtils.isEmpty(airagFlowDTO.getFlowId())) {
+			throw new JeecgBootException("流程ID不能为空");
+		}
+		return airagFlowService.runFlowStream(airagFlowDTO);
+	}
 
 	/**
 	 * uniPush推送消息给APP用户

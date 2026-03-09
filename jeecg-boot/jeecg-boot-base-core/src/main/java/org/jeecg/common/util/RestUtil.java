@@ -46,7 +46,7 @@ public class RestUtil {
 
     public static String getBaseUrl() {
         String basepath = getDomain() + getPath();
-        log.info(" RestUtil.getBaseUrl: " + basepath);
+        log.debug(" RestUtil.getBaseUrl: " + basepath);
         return basepath;
     }
 
@@ -199,7 +199,7 @@ public class RestUtil {
      * @return ResponseEntity<responseType>
      */
     public static <T> ResponseEntity<T> request(String url, HttpMethod method, HttpHeaders headers, JSONObject variables, Object params, Class<T> responseType) {
-        log.info(" RestUtil  --- request ---  url = "+ url);
+        log.debug(" RestUtil  --- request ---  url = "+ url);
         if (StringUtils.isEmpty(url)) {
             throw new RuntimeException("url 不能为空");
         }
@@ -230,7 +230,7 @@ public class RestUtil {
             String current = headers.getFirst(HttpHeaders.CONTENT_LENGTH);
             if (current == null || !current.equals(String.valueOf(contentLength))) {
                 headers.setContentLength(contentLength);
-                log.info(" RestUtil  --- request --- 修正/设置 Content-Length = " + contentLength + (current!=null?" (原值="+current+")":""));
+                log.debug(" RestUtil  --- request --- 修正/设置 Content-Length = " + contentLength + (current!=null?" (原值="+current+")":""));
             }
         }
         // 发送请求
@@ -252,7 +252,7 @@ public class RestUtil {
      */
     public static <T> ResponseEntity<T> request(String url, HttpMethod method, HttpHeaders headers,
                                                 JSONObject variables, Object params, Class<T> responseType, int timeout) {
-        log.info(" RestUtil  --- request ---  url = "+ url + ", timeout = " + timeout);
+        log.debug(" RestUtil  --- request ---  url = "+ url + ", timeout = " + timeout);
 
         if (StringUtils.isEmpty(url)) {
             throw new RuntimeException("url 不能为空");
@@ -302,7 +302,7 @@ public class RestUtil {
             String current = headers.getFirst(HttpHeaders.CONTENT_LENGTH);
             if (current == null || !current.equals(String.valueOf(contentLength))) {
                 headers.setContentLength(contentLength);
-                log.info(" RestUtil  --- request(timeout) --- 修正/设置 Content-Length = " + contentLength + (current!=null?" (原值="+current+")":""));
+                log.debug(" RestUtil  --- request(timeout) --- 修正/设置 Content-Length = " + contentLength + (current!=null?" (原值="+current+")":""));
             }
         }
 

@@ -9,8 +9,11 @@ export enum Api {
   delete = '/airag/app/delete',
   queryById = '/airag/app/queryById',
   queryBathById = '/airag/knowledge/query/batch/byId',
+  queryKnowledgeById = '/airag/knowledge/queryById',
   queryFlowById = '/airag/flow/queryById',
+  queryFlowByIds = '/airag/flow/list',
   promptGenerate = '/airag/app/prompt/generate',
+  generateMemoryByAppId = '/airag/app/prompt/generateMemoryByAppId',
 }
 
 /**
@@ -27,6 +30,14 @@ export const appList = (params) => {
  */
 export const queryKnowledgeBathById = (params) => {
   return defHttp.get({ url: Api.queryBathById, params }, { isTransformResponse: false });
+};
+
+/**
+ * 查询知识库(单条)
+ * @param params
+ */
+export const queryKnowledgeById = (params) => {
+  return defHttp.get({ url: Api.queryKnowledgeById, params }, { isTransformResponse: false });
 };
 
 /**
@@ -85,6 +96,14 @@ export const queryFlowById = (params) => {
 };
 
 /**
+ * 根据应用id查询流程
+ * @param params
+ */
+export const queryFlowByIds = (params) => {
+  return defHttp.get({ url: Api.queryFlowByIds, params }, { isTransformResponse: false });
+};
+
+/**
  * 应用编排
  * @param params
  */
@@ -92,6 +111,24 @@ export const promptGenerate = (params) => {
   return defHttp.post(
     {
       url: Api.promptGenerate+'?prompt='+ params.prompt,
+      adapter: 'fetch',
+      responseType: 'stream',
+      timeout: 5 * 60 * 1000,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
+};
+
+/**
+ * 应用编排
+ * @param params
+ */
+export const generateMemoryByAppId = (params) => {
+  return defHttp.post(
+    {
+      url: Api.generateMemoryByAppId+'?variables='+ params.variables + '&memoryId='+ params.memoryId,
       adapter: 'fetch',
       responseType: 'stream',
       timeout: 5 * 60 * 1000,
