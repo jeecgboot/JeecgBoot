@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="13px" height="14px" viewBox="0 0 13 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>编组 10</title>
+    <g id="页面-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="iPhone-SE备份" transform="translate(-230.000000, -215.000000)" fill="currentColor">
+            <g id="编组-10" transform="translate(230.000000, 215.000000)">
+                <rect id="矩形" x="1" y="4" width="11" height="1"></rect>
+                <rect id="矩形备份-168" x="1" y="9" width="11" height="1"></rect>
+                <rect id="矩形" x="3" y="1" width="1" height="12"></rect>
+                <path d="M13,0 L13,14 L0,14 L0,0 L13,0 Z M12,1 L1,1 L1,13 L12,13 L12,1 Z" id="形状结合"></path>
+            </g>
+        </g>
+    </g>
+</svg>

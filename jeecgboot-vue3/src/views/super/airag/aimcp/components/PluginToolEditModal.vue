@@ -333,7 +333,13 @@ async function handleSave() {
       createMessage.warning('请填写完整的工具基本信息');
       return;
     }
-    
+
+    // 校验 name 正则 ^[a-zA-Z0-9_-]+$
+    if (!/^[a-zA-Z0-9_-]+$/.test(toolForm.name)) {
+      createMessage.warning('工具名称只能包含字母、数字、下划线和中划线');
+      return;
+    }
+
     // Body和Form-Data可以同时存在，后端会默认使用Body
     
     if (!pluginId.value) {

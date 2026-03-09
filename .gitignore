@@ -16,3 +16,4 @@ derby.log
 *.log
 .cursor
 .history
+.claude

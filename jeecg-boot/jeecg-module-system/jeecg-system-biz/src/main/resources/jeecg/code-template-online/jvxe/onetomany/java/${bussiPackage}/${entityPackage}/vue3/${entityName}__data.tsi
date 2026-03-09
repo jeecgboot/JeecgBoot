@@ -100,7 +100,7 @@ export const searchFormSchema: FormSchema[] = [
 <#if po.classType=='sel_search'>
       component: 'JSearchSelect',
       componentProps:{
-         dict:"${po.dictTable},${po.dictText},${po.dictField}"
+         dict:"${query_field_dictCode}"
       },
 <#elseif po.classType=='sel_user'>
 <#-- update-begin---author:chenrui ---date:20240102  for：[issue/#5711]修复用户选择组件在生成代码后变成部门用户选择组件---------- -->
@@ -351,13 +351,19 @@ export const formSchema: FormSchema[] = [
     <#elseif po.classType=='list'>
     component: 'JDictSelectTag',
     componentProps:{
-        dictCode:"${form_field_dictCode}"
+        dictCode:"${form_field_dictCode}",
+     <#if po.fieldDbType=='int'>
+        stringToNumber: true
+     </#if>
      },
     <#elseif po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}",
-        type: "radio"
+        type: "radio",
+     <#if po.fieldDbType=='int'>
+        stringToNumber: true
+     </#if>
      },
      <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='list_multi'>
@@ -599,13 +605,19 @@ export const ${sub.entityName?uncap_first}FormSchema: FormSchema[] = [
     <#elseif po.classType=='list'>
     component: 'JDictSelectTag',
     componentProps:{
-        dictCode:"${form_field_dictCode}"
+        dictCode:"${form_field_dictCode}",
+     <#if po.fieldDbType=='int'>
+        stringToNumber: true
+     </#if>
      },
     <#elseif po.classType=='radio'>
     component: 'JDictSelectTag',
     componentProps:{
         dictCode:"${form_field_dictCode}",
-        type: "radio"
+        type: "radio",
+      <#if po.fieldDbType=='int'>
+        stringToNumber: true
+      </#if>
      },
     <#-- update-begin---author:chenrui ---date:20231228  for：[QQYUN-7583] Vue3风格表单页面多选控件渲染成了下拉多选---------- -->
     <#elseif po.classType=='list_multi'>

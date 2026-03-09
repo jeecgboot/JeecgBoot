@@ -131,7 +131,6 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
         List<AiragKnowledgeDoc> docList = airagKnowledgeDocMapper.selectBatchIds(docIdList);
         AssertUtils.assertNotEmpty("文档不存在", docList);
 
-        HttpServletRequest request = SpringContextUtils.getHttpServletRequest();
         // 检查状态
         List<AiragKnowledgeDoc> knowledgeDocs = docList.stream()
                 .filter(doc -> {
@@ -330,6 +329,7 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
                 if (File.separator.equals("\\")) {
                     // Windows path handling
                     String escapedPath = uploadpath.replace("//", "\\\\");
+                    escapedPath = escapedPath.replace("/", "\\\\");
                     relativePath = uploadedFile.getPath().replaceFirst("^" + escapedPath, "");
                 } else {
                     // Unix path handling

@@ -1,5 +1,8 @@
 package org.jeecg.modules.airag.llm.consts;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -34,6 +37,11 @@ public class LLMConsts {
      * 模型类型:聊天
      */
     public static final String MODEL_TYPE_LLM = "LLM";
+
+    /**
+     * 模型类型: 图像生成
+     */
+    public static final String MODEL_TYPE_IMAGE = "IMAGE";
 
     /**
      * 向量模型：默认维度
@@ -84,5 +92,30 @@ public class LLMConsts {
      * DEEPSEEK推理模型
      */
     public static final String DEEPSEEK_REASONER = "deepseek-reasoner";
+
+    /**
+     * 知识库类型：知识库
+     */
+    public static final String KNOWLEDGE_TYPE_KNOWLEDGE = "knowledge";
+    
+    /**
+     * 知识库类型：记忆库
+     */
+    public static final String KNOWLEDGE_TYPE_MEMORY = "memory";
+
+    /**
+     * 支持文件的后缀
+     */
+    public static final Set<String> CHAT_FILE_EXT_WHITELIST = new HashSet<>(Arrays.asList("txt", "pdf", "docx", "doc", "pptx", "ppt", "xlsx", "xls", "md"));
+
+    /**
+     * 文件内容最大长度
+     */
+    public static final int CHAT_FILE_TEXT_MAX_LENGTH = 20000;
+
+    /**
+     * 上传文件对打数量
+     */
+    public static final int CHAT_FILE_MAX_COUNT = 3;
 
 }

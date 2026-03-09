@@ -11,6 +11,9 @@ import Big from 'big.js';
 import { Modal } from "ant-design-vue";
 import { defHttp } from "@/utils/http/axios";
 import { useI18n } from "@/hooks/web/useI18n";
+import {$electron} from "@/electron";
+import {router} from "@/router";
+import {encryptByBase64} from "@/utils/cipher";
 //存放部门路径的数组
 const departNamePath = ref<Record<string, string>>({});
 
@@ -37,6 +40,17 @@ export const getFileAccessHttpUrl = (fileUrl, prefix = 'http') => {
     }
   } catch (err) {}
   return result;
+};
+/**
+ *  获取桌面端wps的文件服务访问路径
+ * @param fileUrl 文件路径
+ */
+export const getElectronFileUrl = (url) => {
+  let fileUrl: any = url;
+  if (url && $electron.isElectron()) {
+    fileUrl = router.resolve({path: '/onlinePreview', query: {url: encryptByBase64(getFileAccessHttpUrl(url))}}).href;
+  }
+  return fileUrl;
 };
 
 /**
@@ -703,4 +717,65 @@ export function getDepartName(departNamePath) {
     },textElements)
   }
   return departNamePath;
+}
+
+/**
+ * 获取文件表
+ * @param fileUrl
+ */
+export function getFileIcon(fileUrl) {
+  if(!fileUrl) {
+    return 'ant-design:file-outlined';
+  }
+  const suffix = fileUrl.substring(fileUrl.lastIndexOf('.') + 1).toLowerCase();
+  if(['xls','xlsx','csv'].includes(suffix)) {
+    return 'ant-design:file-excel-filled';
+  }
+  if(['doc','docx'].includes(suffix)) {
+    return 'ant-design:file-word-filled';
+  }
+  if(['pdf'].includes(suffix)) {
+    return 'ant-design:file-pdf-filled';
+  }
+  if(['ppt','pptx'].includes(suffix)) {
+    return 'ant-design:file-ppt-filled';
+  }
+  if(['txt'].includes(suffix)) {
+    return 'ant-design:file-text-filled';
+  }
+  if(['md'].includes(suffix)) {
+    return 'ant-design:file-markdown-filled';
+  }
+  return 'ant-design:file-unknown-filled';
+}
+
+/**
+ * 获取文件图标颜色
+ *
+ * @param fileUrl
+ */
+export function getFileIconColor(fileUrl) {
+  if(!fileUrl) {
+    return '#999';
+  }
+  const suffix = fileUrl.substring(fileUrl.lastIndexOf('.') + 1).toLowerCase();
+  if(['xls','xlsx','csv'].includes(suffix)) {
+    return '#52c41a';
+  }
+  if(['doc','docx'].includes(suffix)) {
+    return '#1890ff';
+  }
+  if(['pdf'].includes(suffix)) {
+    return '#ff4d4f';
+  }
+  if(['ppt','pptx'].includes(suffix)) {
+    return '#fa8c16';
+  }
+  if(['txt'].includes(suffix)) {
+    return '#666';
+  }
+  if(['md'].includes(suffix)) {
+    return '#000';
+  }
+  return '#999';
 }

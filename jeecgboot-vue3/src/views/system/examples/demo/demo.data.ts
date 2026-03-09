@@ -47,7 +47,7 @@ export const columns: BasicColumn[] = [
       multiple: 3
     },
     customRender: ({ record }) => {
-      return render.renderDict(record.sex, 'sex');
+      return render.renderDict(record.sex, 'sex', true);
       // let v = record.sex ? (record.sex == '1' ? '男' : '女') : '';
       // return h('span', v);
     },

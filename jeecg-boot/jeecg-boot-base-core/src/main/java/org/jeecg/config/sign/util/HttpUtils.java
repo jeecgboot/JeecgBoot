@@ -35,7 +35,7 @@ public class HttpUtils {
      * @date 20210621
      * @param request
      */
-    public static SortedMap<String, String> getAllParams(HttpServletRequest request) throws IOException {
+    public static SortedMap<String, String> getAllParams(HttpServletRequest request, Object bodyParam) throws IOException {
 
         SortedMap<String, String> result = new TreeMap<>();
         // 获取URL上最后带逗号的参数变量 sys/dict/getDictItems/sys_user,realname,username
@@ -65,7 +65,13 @@ public class HttpUtils {
         Map<String, String> allRequestParam = new HashMap<>(16);
         // get请求不需要拿body参数
         if (!HttpMethod.GET.name().equals(request.getMethod())) {
-            allRequestParam = getAllRequestParam(request);
+            if (bodyParam != null) {
+                // update-begin---author:sjlei---date:20260115 for: 解决签名校验时读取请求体为空的问题
+                allRequestParam = JSONObject.parseObject(JSONObject.toJSONString(bodyParam), Map.class);
+                // update-end-----author:sjlei---date:20260115 for: 解决签名校验时读取请求体为空的问题
+            } else {
+                allRequestParam = getAllRequestParam(request);
+            }
         }
         // 将URL的参数和body参数进行合并
         if (allRequestParam != null) {

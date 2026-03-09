@@ -9,8 +9,7 @@ import { changeTheme } from '/@/logics/theme';
 import { updateDarkTheme } from '/@/logics/theme/dark';
 import { useRootSetting } from '/@/hooks/setting/useRootSetting';
 import { MenuModeEnum, MenuTypeEnum } from '/@/enums/menuEnum';
-import { HEADER_PRESET_BG_COLOR_LIST, SIDE_BAR_BG_COLOR_LIST } from '/@/settings/designSetting';
-import { getThemeColorByMenuType } from '/@/utils/getThemeColorByMenuType';
+import { getConfigByMenuType } from '../../../utils/getConfigByMenuType';
 import { isObject } from '/@/utils/is';
 import { ThemeEnum } from '/@/enums/appEnum';
 import { APP__THEME__COLOR } from '/@/enums/cacheEnum';
@@ -27,10 +26,10 @@ export function layoutHandler(event: HandlerEnum, value: any) {
   const appStore = useAppStore();
   const darkMode = appStore.getDarkMode === ThemeEnum.DARK;
   // 根据菜单类型动态获取主题色
-  const dynamicThemeColor = getThemeColorByMenuType(value.type);
+  const {themeColor: dynamicThemeColor, headerBgColor, sideBgColor } = getConfigByMenuType(value.type);
   if (isHTopMenu) {
     baseHandler(event, value);
-    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[4]);
+    baseHandler(HandlerEnum.HEADER_THEME, headerBgColor);
     baseHandler(HandlerEnum.CHANGE_THEME_COLOR, dynamicThemeColor);
     if (darkMode) {
       updateHeaderBgColor();
@@ -39,8 +38,8 @@ export function layoutHandler(event: HandlerEnum, value: any) {
     baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value);
   } else if (isMixMenu) {
     baseHandler(event, value);
-    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[2]);
-    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[3]);
+    baseHandler(HandlerEnum.HEADER_THEME, headerBgColor);
+    baseHandler(HandlerEnum.MENU_THEME, sideBgColor);
     if (darkMode) {
       updateHeaderBgColor();
       updateSidebarBgColor();
@@ -51,8 +50,8 @@ export function layoutHandler(event: HandlerEnum, value: any) {
   } else if (isMixSidebarMenu) {
     baseHandler(event, value);
     baseHandler(HandlerEnum.CHANGE_THEME_COLOR, dynamicThemeColor);
-    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[0]);
-    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[0]);
+    baseHandler(HandlerEnum.HEADER_THEME, headerBgColor);
+    baseHandler(HandlerEnum.MENU_THEME, sideBgColor);
     if (darkMode) {
       updateHeaderBgColor();
       updateSidebarBgColor();
@@ -60,8 +59,8 @@ export function layoutHandler(event: HandlerEnum, value: any) {
     baseHandler(HandlerEnum.TABS_THEME, tabsThemeOptions[1].value);
   } else {
     baseHandler(event, value);
-    baseHandler(HandlerEnum.HEADER_THEME, HEADER_PRESET_BG_COLOR_LIST[4]);
-    baseHandler(HandlerEnum.MENU_THEME, SIDE_BAR_BG_COLOR_LIST[7]);
+    baseHandler(HandlerEnum.HEADER_THEME, headerBgColor);
+    baseHandler(HandlerEnum.MENU_THEME, sideBgColor);
     if (darkMode) {
       updateHeaderBgColor();
       updateSidebarBgColor();

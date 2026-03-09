@@ -1,14 +1,14 @@
 /**
- * @description: menu type
+ * @description: 默认四种菜单主题
  */
 export enum MenuTypeEnum {
-  // left menu
+  // 左侧边菜单导航风格
   SIDEBAR = 'sidebar',
-
-  MIX_SIDEBAR = 'mix-sidebar',
-  // mixin menu
+  // 顶部栏导航风格
   MIX = 'mix',
-  // top menu
+ // 侧边折叠导航风格
+  MIX_SIDEBAR = 'mix-sidebar',
+  //顶部混合导航风格
   TOP_MENU = 'top-menu',
 }
 

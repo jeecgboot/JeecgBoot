@@ -21,6 +21,7 @@ import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.security.utils.SecureUtil;
+import org.jeecg.config.sign.annotation.SignatureCheck;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.service.ISysTenantPackService;
@@ -261,8 +262,11 @@ public class SysTenantController {
      * @param id
      * @return
      */
+    @SignatureCheck
     @RequestMapping(value = "/queryById", method = RequestMethod.GET)
     public Result<SysTenant> queryById(@RequestParam(name="id",required=true) String id) {
+        log.info("【敏感接口】查询租户信息，租户ID：{}", id);
+        
         Result<SysTenant> result = new Result<SysTenant>();
         if(oConvertUtils.isEmpty(id)){
             result.error500("参数为空！");
@@ -409,6 +413,7 @@ public class SysTenantController {
      * @param phone
      * @return
      */
+    @SignatureCheck
     @PutMapping("/invitationUserJoin")
     @PreAuthorize("@jps.requiresPermissions('system:tenant:invitation:user')")
     public Result<String> invitationUserJoin(@RequestParam("ids") String ids,@RequestParam(value = "phone", required = false) String phone, @RequestParam(value = "username", required = false) String username){
@@ -509,9 +514,10 @@ public class SysTenantController {
     }
 
     /**
-     * 加入租户通过门牌号【低代码应用专用接口】
+     * 申请加入租户通过门牌号【低代码应用专用接口】
      * @param sysTenant
      */
+    @SignatureCheck
     @PostMapping("/joinTenantByHouseNumber")
     public Result<Integer> joinTenantByHouseNumber(@RequestBody SysTenant sysTenant){
         LoginUser sysUser = SecureUtil.currentUser();
@@ -574,15 +580,33 @@ public class SysTenantController {
     }
 
     /**
+     * 【敲敲云管理员】 同意申请者加入租户
+     * 
      * 更新用户租户关系状态【低代码应用专用接口】
      */
     @PutMapping("/updateUserTenantStatus")
-    //@RequiresPermissions("system:tenant:updateUserTenantStatus")
+    @PreAuthorize("@jps.requiresPermissions('system:tenant:updateUserTenantStatus')")
     public Result<String> updateUserTenantStatus(@RequestBody SysUserTenant userTenant) {
         String tenantId = TenantContext.getTenant();
         if (oConvertUtils.isEmpty(tenantId)) {
             return Result.error("未找到当前租户信息"); 
         }
+        relationService.updateUserTenantStatus(userTenant.getUserId(), tenantId, userTenant.getStatus());
+        return Result.ok("更新用户租户状态成功");
+    }
+
+    /**
+     * 同意或者拒绝用户加入（敲敲云专用）
+     * @param userTenant
+     * @return
+     */
+    @PutMapping("/agreeOrRejectUserJoin")
+    public Result<String> agreeOrRejectUserJoin(@RequestBody SysUserTenant userTenant) {
+        String tenantId = TenantContext.getTenant();
+        if (oConvertUtils.isEmpty(tenantId)) {
+            return Result.error("未找到当前租户信息");
+        }
+        sysTenantPackService.izHaveManageUserAuth(tenantId);
         relationService.updateUserTenantStatus(userTenant.getUserId(), tenantId, userTenant.getStatus());
         return Result.ok("更新用户租户状态成功");
     }
@@ -713,6 +737,8 @@ public class SysTenantController {
      * @param departId
      * @return
      */
+    @SignatureCheck
+    @PreAuthorize("@jps.requiresPermissions('system:tenant:invitation:user')")
     @PostMapping("/invitationUser")
     public Result<String> invitationUser(@RequestParam(name="phone") String phone,
                                          @RequestParam(name="departId",defaultValue = "") String departId){
@@ -912,9 +938,10 @@ public class SysTenantController {
         return Result.ok(pageList);
     }
 
-    /**
+    /** 【被邀请人使用】
      * 同意或拒绝加入租户
      */
+    @SignatureCheck
     @PutMapping("/agreeOrRefuseJoinTenant")
     public Result<String> agreeOrRefuseJoinTenant(@RequestParam("tenantId") Integer tenantId, 
                                                   @RequestParam("status") String status){

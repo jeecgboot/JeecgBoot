@@ -75,11 +75,12 @@
   import xss from 'xss';
   import { options } from './XssWhiteList';
   import { ref, unref } from 'vue';
-  import { getFileAccessHttpUrl } from '@/utils/common/compUtils';
+  import { getElectronFileUrl, getFileAccessHttpUrl } from '@/utils/common/compUtils';
   import { useGlobSetting } from '@/hooks/setting';
   import { encryptByBase64 } from '@/utils/cipher';
   import { getToken } from '@/utils/auth';
   import {defHttp} from "@/utils/http/axios";
+  import {$electron} from "@/electron";
   const router = useRouter();
   const glob = useGlobSetting();
   const isUpdate = ref(true);
@@ -110,7 +111,8 @@
       content.value = data.record;
       if(content.value.sender){
         const userInfo = await defHttp.get({ url: '/sys/user/queryUserComponentData?isMultiTranslate=true', params: { username: content.value.sender } });
-        content.value.sender = userInfo && userInfo?.records && userInfo?.records.length>0?userInfo.records[0].realname : content.value.sender;
+        content.value.sender = userInfo && userInfo?.records && userInfo?.records.length>0
+            ?userInfo.records.find((item) => item.username === content.value.sender)?.realname : content.value.sender;
       }
       console.log('data---------->>>', data);
       if (data.record?.files && data.record?.files.length > 0) {
@@ -279,6 +281,11 @@
       console.log('glob.onlineUrl', glob.viewUrl);
       let url = encodeURIComponent(encryptByBase64(filePath));
       let previewUrl = `${glob.viewUrl}?url=` + url;
+      //update-begin-author:liusq---date:2025-12-16--for: JHHB-1139桌面端 文件预览统一修改 
+      if($electron.isElectron()){
+        previewUrl = getElectronFileUrl(filePath);
+      }
+      //update-end-author:liusq---date:2025-12-16--for: JHHB-1139桌面端 文件预览统一修改
       window.open(previewUrl, '_blank');
     }
   }

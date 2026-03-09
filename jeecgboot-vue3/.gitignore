@@ -3,6 +3,7 @@ node_modules
 .github
 dist
 .cache
+.playwright-mcp
 
 tests/server/static
 tests/server/static/upload
@@ -33,3 +34,4 @@ os_del.cmd
 /.vscode/
 /.history/
 /svn clear.bat
+.claude

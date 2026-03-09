@@ -75,6 +75,10 @@ export function useListPage(options: ListPageOptions) {
         if (options?.tableProps?.useSearchForm !== false) {
           paramsForm = await getForm().validate();
           console.log('paramsForm', paramsForm);
+          // 在这里把执行beforeFetch
+          if (options?.tableProps?.beforeFetch) {
+            paramsForm = await options?.tableProps?.beforeFetch(paramsForm);
+          }
         }
       } catch (e) {
         console.warn(e);
@@ -132,8 +136,8 @@ export function useListPage(options: ListPageOptions) {
       for (const column of columns) {
         if(!column.defaultHidden){
           let dataIndex = column?.dataIndex;
-          if(column?.dataIndex!.toString().indexOf('_dictText')){
-            dataIndex = column?.dataIndex!.toString().replace('_dictText','')
+          if(column?.dataIndex?.toString()?.indexOf('_dictText') !== -1){
+            dataIndex = column?.dataIndex?.toString().replace('_dictText','')
           }
           exportFields.push(dataIndex);
         } else {

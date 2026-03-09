@@ -182,6 +182,8 @@ mybatis-plus:
 minidao:
   base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
+  # 自定义资源请求前缀（js、css等解决nginx转发问题）
+  custom-resource-prefix-path:
   # AI集成
   ai-chat:
     enabled: true

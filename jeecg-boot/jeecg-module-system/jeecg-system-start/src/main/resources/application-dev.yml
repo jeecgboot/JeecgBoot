@@ -121,7 +121,7 @@ spring:
       web-stat-filter:
         enabled: true
     dynamic:
-      druid: # 全局druid参数，绝大部分值和默认保持一致。(现已支持的参数如下,不清楚含义不要乱设置)
+      druid:
         # 连接池的配置信息
         # 初始化大小，最小，最大
         initial-size: 5
@@ -186,6 +186,8 @@ mybatis-plus:
 minidao:
   base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
+  # 自定义资源请求前缀（js、css等解决nginx转发问题）
+  custom-resource-prefix-path:
   # AI集成
   ai-chat:
     enabled: true
@@ -195,6 +197,8 @@ jeecg:
     timeout: 60
   # AIRag向量库
   ai-rag:
+    # AI流程敏感节点(stdio=命令行节点, sql=SQL节点)
+    allow-sensitive-nodes: sql,stdio
     embed-store:
       host: 127.0.0.1
       port: 5432

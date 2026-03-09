@@ -34,12 +34,18 @@ export default {
         if(!data.metadata.hasOwnProperty("temperature") ){
           data.metadata['temperature'] = 0.7;
         }
+        if(!data.metadata.hasOwnProperty("timeout") ){
+          data.metadata['timeout'] = 60;
+        }
       }else{
         if(!data.metadata.hasOwnProperty("topNumber") ){
           data.metadata['topNumber'] = 4;
         } 
         if(!data.metadata.hasOwnProperty("similarity") ){
           data.metadata['similarity'] = 0.76;
+        }
+        if(!data.metadata.hasOwnProperty("timeout") ){
+          data.metadata['timeout'] = 60;
         }
       }
       setTimeout(()=>{

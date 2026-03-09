@@ -1,6 +1,7 @@
 package org.jeecg.modules.system.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.jeecg.common.api.vo.Result;
@@ -18,12 +19,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenType;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +56,7 @@ public class SysUserOnlineController {
     @Autowired
     private CacheManager cacheManager;
 
+    @PreAuthorize("@jps.requiresPermissions('system:online:list')")
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public Result<Page<SysUserOnlineVO>> list(@RequestParam(name="username", required=false) String username,
                                               @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,@RequestParam(name="pageSize", defaultValue="10") Integer pageSize) {
@@ -107,6 +109,7 @@ public class SysUserOnlineController {
     /**
      * 强退用户
      */
+    @PreAuthorize("@jps.requiresPermissions('system:online:forceLogout')")
     @RequestMapping(value = "/forceLogout",method = RequestMethod.POST)
     public Result<Object> forceLogout(@RequestBody SysUserOnlineVO online) {
         //用户退出逻辑

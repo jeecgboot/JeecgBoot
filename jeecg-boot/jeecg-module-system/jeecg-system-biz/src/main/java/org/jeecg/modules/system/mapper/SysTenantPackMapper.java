@@ -29,4 +29,13 @@ public interface SysTenantPackMapper extends BaseMapper<SysTenantPack> {
      */
     @Select("select id from sys_tenant_pack where tenant_id = #{tenantId} and (pack_code not in('superAdmin','accountAdmin','appAdmin') or pack_code is null) and iz_sysn = '1'")
     List<String> getPackIdByPackCodeAndTenantId(@Param("tenantId") Integer tenantId);
+
+    /**
+     * 是否为拥有管理用户权限【accountAdmin，superAdmin】
+     * @param tenantId
+     * @param userId
+     * @return
+     */
+    @Select("select count(1) from sys_tenant_pack_user where user_id = #{userId} and tenant_id = #{tenantId} and pack_id in(select id from sys_tenant_pack where tenant_id = #{tenantId} and pack_type = 'custom' and pack_code in('accountAdmin','superAdmin'))")
+    long izHaveManageUserAuth(@Param("tenantId") String tenantId,@Param("userId") String userId);
 }

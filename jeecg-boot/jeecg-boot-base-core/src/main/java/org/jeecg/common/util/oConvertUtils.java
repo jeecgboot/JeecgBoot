@@ -1231,5 +1231,26 @@ public class oConvertUtils {
                 .filter(name -> beanWrapper.getPropertyValue(name) == null)
                 .toArray(String[]::new);
     }
+
+    /**
+     * String转换long类型
+     *
+     * @param v
+     * @param def
+     * @return
+     */
+    public static long getLong(Object v, long def) {
+        if (v == null) {
+            return def;
+        };
+        if (v instanceof Number) {
+            return ((Number) v).longValue();
+        }
+        try {
+            return Long.parseLong(v.toString());
+        } catch (Exception e) {
+            return def;
+        }
+    }
 	
 }

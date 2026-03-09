@@ -2,10 +2,13 @@ package org.jeecg.config.jimureport;
 
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.TokenUtils;
+import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.jmreport.api.JmReportTokenServiceI;
+import org.jeecg.modules.jmreport.common.vo.JmDictModel;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -13,9 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 /**
  * 自定义积木报表鉴权(如果不进行自定义，则所有请求不做权限控制)
@@ -36,7 +38,11 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
 
     @Override
     public String getToken(HttpServletRequest request) {
+        try {
         return TokenUtils.getTokenByRequest(request);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
@@ -103,5 +109,22 @@ public class JimuReportTokenService implements JmReportTokenServiceI {
             return null;
         }
         return userPermissions.toArray(new String[0]);
+    }
+    
+    //TODO 待升级积木报表依赖版本后启用
+//    @Override
+    public List<JmDictModel> getDictItems(String dictCode) {
+        List<JmDictModel> dictItems  = new ArrayList<>();
+        if(oConvertUtils.isNotEmpty(dictCode)){
+            List<DictModel> dictItemsList = sysBaseApi.getDictItems(dictCode);
+            dictItemsList.forEach(dictItem->{
+                JmDictModel dictModel = new JmDictModel();
+                dictModel.setText(dictItem.getText());
+                dictModel.setValue(dictItem.getValue());
+                dictModel.setDictCode(dictCode);
+                dictItems.add(dictModel);
+            });
+        }
+        return dictItems;
     }
 }

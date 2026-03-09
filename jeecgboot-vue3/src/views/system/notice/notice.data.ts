@@ -20,7 +20,7 @@ export const columns: BasicColumn[] = [
   {
     title: '发布人',
     width: 100,
-    dataIndex: 'sender',
+    dataIndex: 'sender_dictText',
   },
   {
     title: '优先级',

@@ -13,6 +13,14 @@
           <div v-for="(item,index) in images" :key="index" class="image" @click="handlePreview(item)">
             <img :src="getImageUrl(item)"/>
           </div>
+      </div>     
+      <div v-if="inversion === 'user' && files && files.length>0" class="file-list">
+          <div v-for="(item,index) in files" :key="index" class="file-item" @click="handleFilePreview(item?.filePath || item)">
+            <div class="file-icon">
+              <Icon :icon="getFileIcon(item?.filePath || item)" :color="getFileIconColor(item?.filePath || item)" size="24" />
+            </div>
+            <div class="file-name" :title="item.name">{{ getFileName(item?.filePath || item)}}</div>
+          </div>
       </div>
       <div v-if="inversion === 'ai' && retrievalText && loading" class="retrieval">
         {{retrievalText}}
@@ -30,15 +38,22 @@
           </a-col>
         </a-row>
       </div>
-      <div class="thinkArea" style="margin-bottom: 10px" v-if="!isCard && (eventType === 'thinking' || eventType === 'thinking_end')">
+      <div v-if="inversion === 'ai' && isCardConfig" class="card">
+        <a-row>
+          <a-col :xl="6" :lg="8" :md="10" :sm="24" style="flex:1;margin-right: 10px;" v-for="item in getCardConfigList()">
+            <CardTemplate :template-id="cardConfig?.templateId" :card-data="item" :card-config="cardConfig" @click="handleJumpClick(item)"></CardTemplate>
+          </a-col>
+        </a-row>
+      </div>
+      <div class="thinkArea" style="margin-bottom: 10px" v-if="!isCard && !isCardConfig && (eventType === 'thinking' || eventType === 'thinking_end')">
         <a-collapse v-model:activeKey="activeKey" ghost>
           <a-collapse-panel :key="uuid" :header="loading?'正在思考中':'思考结束'">
             <ThinkText :text="text" :inversion="inversion" :error="error" :loading="loading"></ThinkText>
           </a-collapse-panel>
         </a-collapse>
       </div>
-      <div class="msgArea" v-else-if="!isCard" :class="showAvatar == 'no' ? 'hidden-avatar' : ''">
-        <chatText :text="text" :inversion="inversion" :error="error" :loading="loading" :referenceKnowledge="referenceKnowledge"></chatText>
+      <div class="msgArea" v-else-if="!isCard && !isCardConfig" :class="showAvatar == 'no' ? 'hidden-avatar' : ''">
+        <chatText :text="text" :inversion="inversion" :error="error" :errorMsg="errorMsg" :currentToolTag="currentToolTag" :loading="loading" :referenceKnowledge="referenceKnowledge" :isLast="isLast"></chatText>
       </div>
       <div v-if="presetQuestion" v-for="item in presetQuestion" class="question" @click="presetQuestionClick(item.descr)">
         <span>{{item.descr}}</span>
@@ -55,12 +70,16 @@
   import defaultImg from '../img/ailogo.png';
   import { ref } from 'vue';
   import { buildUUID } from '/@/utils/uuid';
-  import { getFileAccessHttpUrl } from '/@/utils/common/compUtils';
+  import { getFileAccessHttpUrl, getFileIcon, getFileIconColor } from '/@/utils/common/compUtils';
   import { createImgPreview } from "@/components/Preview";
   import { computed } from "vue";
+  import CardTemplate from '/@/views/super/airag/aiapp/chat/components/CardTemplate.vue';
+  import { useGlobSetting } from "@/hooks/setting";
+  import {encryptByBase64} from "@/utils/cipher";
 
-  const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'loading','appData','presetQuestion','images','retrievalText', 'referenceKnowledge', 'eventType', 'showAvatar']);
-  
+  const { domainUrl, viewUrl } = useGlobSetting();
+  const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'loading','errorMsg', 'currentToolTag', 'appData','presetQuestion','images','retrievalText', 'referenceKnowledge', 'eventType', 'showAvatar',"files", 'isLast']);
+
   const uuid = ref<any>(buildUUID());
   const activeKey = ref<any>(uuid.value);
   const getText = computed(()=>{
@@ -77,7 +96,17 @@
       return true;
     }
     return false;
+  });  
+  
+  const isCardConfig = computed(() => {
+    let text = props.text;
+    if (text && text.indexOf('::cardConfig::') != -1) {
+      return true;
+    }
+    return false;
   });
+  //卡片配置
+  const cardConfig = ref<any>();
 
   const { userInfo } = useUserStore();
   const avatar = () => {
@@ -107,7 +136,8 @@
       url = item.url;
     }
     if(item.hasOwnProperty('base64Data') && item.base64Data){
-      return item.base64Data;
+      let mimeType = item.mimeType ? item.mimeType:'image/png';
+      return "data:"+ mimeType +";base64,"+ item.base64Data;
     }
     return getFileAccessHttpUrl(url);
   }
@@ -144,6 +174,60 @@
    */
   function aiCardHandleClick(url){
     window.open(url,'_blank');
+  }
+
+
+  /**
+   * 从config获取取卡片列表
+   */
+  function getCardConfigList() {
+    let text = props.text;
+    let card = text.replace('::cardConfig::', 'cardConfig').replace(/\s+/g, '');
+    try {
+      let parse = JSON.parse(card);
+      cardConfig.value = JSON.parse(parse?.cardConfig);
+      return JSON.parse(parse?.content);
+    } catch (e){
+      console.log(e)
+      return '';
+    }
+  }
+
+  /**
+   * 卡片点击跳转
+   */
+  function handleJumpClick(item) {
+    if(cardConfig.value?.enableJump){
+      let src = item[cardConfig.value?.jumpUrl];
+      let reg = /#\s*{\s*domainURL\s*}/g;
+      src = src.replace(reg,domainUrl);
+      window.open(src,"_blank")
+    }
+  }
+
+  /**
+   * 获取文件名字
+   * 
+   * @param fileUrl
+   */
+  function getFileName(fileUrl){
+    if(!fileUrl) {
+      return '未命名的文件';
+    }
+    let fileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).toLowerCase();
+    fileName = fileName.substring(0,fileName.lastIndexOf("."));
+    return fileName;
+  }
+
+  /**
+   * 文件预览
+   * 
+   * @param fileUrl
+   */
+  function handleFilePreview(fileUrl) {
+    let filePath = encodeURIComponent(encryptByBase64(getFileAccessHttpUrl(fileUrl)));
+    let url = `${viewUrl}?url=` + filePath;
+    window.open(url, "_blank")
   }
 </script>
 
@@ -192,6 +276,9 @@
       font-size: 28px;
     }
   }
+  .chat.chatgpt .avatar img{
+    border-radius: 4px;
+  }
   .content {
     width: 90%;
     .date {
@@ -237,6 +324,43 @@
       }
     }
   }
+
+  /*begin文件列表的样式*/
+  .file-list {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    background: #f4f6f8;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    width: fit-content;
+    max-width: 100%;
+
+    .file-icon {
+      margin-right: 8px;
+      display: flex;
+      align-items: center;
+    }
+
+    .file-name {
+      font-size: 14px;
+      color: #333;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 200px;
+    }
+  }
+  /*end文件列表的样式*/
+
   .retrieval,
   .card {
     background-color: #f4f6f8;

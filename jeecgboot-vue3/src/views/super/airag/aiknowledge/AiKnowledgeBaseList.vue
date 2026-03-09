@@ -39,7 +39,7 @@
         </a-card>
       </a-col>
       <a-col v-if="knowledgeList && knowledgeList.length>0" :xxl="4" :xl="6" :lg="6" :md="6" :sm="12" :xs="24" v-for="item in knowledgeList">
-        <a-card class="knowledge-card pointer" @click="handleDocClick(item.id)">
+        <a-card class="knowledge-card pointer" @click="handleDocClick(item.id, item.type)">
           <div class="knowledge-header">
             <div class="flex">
               <img class="header-img" src="./icon/knowledge.png" />
@@ -52,9 +52,15 @@
           <div class="mt-10 text-desc">
             <span>{{ item.descr || '暂无描述' }}</span>
           </div>
-          <div class="knowledge-footer">
-            <Icon class="knowledge-footer-icon" icon="ant-design:deployment-unit-outlined" size="14"></Icon>
-            <span>{{ item.embedId_dictText }}</span>
+          <div class="knowledge-footer flex" style="justify-content: space-between">
+            <div style="width: calc(100% - 60px)" class="ellipsis">
+              <Icon class="knowledge-footer-icon" icon="ant-design:deployment-unit-outlined" size="14"></Icon>
+              <span :title="item.embedId_dictText">{{ item.embedId_dictText }}</span>
+            </div>
+            <div>
+              <a-tag v-if="item.type == 'memory'" color="orange" class="tag-style">记忆库</a-tag>
+              <a-tag v-else color="blue" class="tag-style">知识库</a-tag>
+            </div>
           </div>
           <div class="knowledge-btn">
             <a-dropdown placement="bottomRight" :trigger="['click']" :getPopupContainer="(node) => node.parentNode">
@@ -265,9 +271,10 @@
        * 参数配置点击事件
        *
        * @param id
+       * @param type
        */
-      function handleDocClick(id) {
-        openDocModal(true, { id });
+      function handleDocClick(id, type) {
+        openDocModal(true, { id, type });
       }
 
       /**
@@ -496,5 +503,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .tag-style{
+    margin-right: 5px;
+    height: 20px;
+    line-height: 18px;
   }
 </style>

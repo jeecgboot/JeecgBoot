@@ -10,11 +10,14 @@ import {
   SessionTimeoutProcessingEnum,
   TabsThemeEnum,
 } from '/@/enums/appEnum';
-import { SIDE_BAR_BG_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST } from './designSetting';
 import { darkMode } from '/@/settings/designSetting';
-import { getThemeColorByMenuType } from '/@/utils/getThemeColorByMenuType';
-
+import { getConfigByMenuType } from '../utils/getConfigByMenuType';
+// 修改此属性，实现默认的四个系统主题快速切换
 const menuType = MenuTypeEnum.SIDEBAR;
+
+// update-begin--author:liaozhiyang---date:20251201---for【QQYUN-14176】修改一个配置就能切换默认四个主题，不需要额外修改颜色等
+const { themeColor, headerBgColor, sideBgColor, split, mode } = getConfigByMenuType(menuType);
+// update-end--author:liaozhiyang---date:20251201---for【QQYUN-14176】修改一个配置就能切换默认四个主题，不需要额外修改颜色等
 // ! 改动后需要清空浏览器缓存
 const setting: ProjectConfig = {
   // 是否显示SettingButton
@@ -43,7 +46,7 @@ const setting: ProjectConfig = {
   // SessionTimeoutProcessingEnum.PAGE_COVERAGE: 生成登录弹窗，覆盖当前页面
   sessionTimeoutProcessing: SessionTimeoutProcessingEnum.ROUTE_JUMP,
   // 项目主题色 - 根据导航栏模式确定主题色动态设置
-  themeColor: getThemeColorByMenuType(menuType),
+  themeColor: themeColor,
   // 项目主题模式
   themeMode: darkMode,
 
@@ -71,7 +74,7 @@ const setting: ProjectConfig = {
   // 头部配置
   headerSetting: {
     // 背景色
-    bgColor: HEADER_PRESET_BG_COLOR_LIST[4],
+    bgColor: headerBgColor,
     // 固定头部
     fixed: true,
     // 是否显示顶部
@@ -93,7 +96,7 @@ const setting: ProjectConfig = {
   // 菜单配置
   menuSetting: {
     // 背景色
-    bgColor: SIDE_BAR_BG_COLOR_LIST[0],
+    bgColor: sideBgColor,
     // 是否固定住左侧菜单
     fixed: true,
     // 菜单折叠
@@ -110,15 +113,15 @@ const setting: ProjectConfig = {
     // 菜单宽度
     menuWidth: 210,
     // 菜单模式
-    mode: MenuModeEnum.INLINE,
+    mode,
     // 菜单类型
-    type: MenuTypeEnum.SIDEBAR,
+    type: menuType,
     // 菜单主题
-    theme: ThemeEnum.DARK,
+    theme: ThemeEnum.LIGHT,
     // 左侧导航栏文字颜色调整区分彩色和暗黑 (不对应配置)
     isThemeBright: false,
     // 分割菜单
-    split: false,
+    split,
     // 顶部菜单布局
     topMenuAlign: 'center',
     // 折叠触发器的位置

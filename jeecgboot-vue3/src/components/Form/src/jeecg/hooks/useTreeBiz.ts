@@ -243,6 +243,10 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
     if (props.izOnlySelectDepartPost) {
       setCompanyDepartCheckable(record);
     }
+    //是否缩写departNameAbbr
+    if (props.izShowDepartNameAbbr) {
+      record = getDepartAbbrData(record);
+    }
     if (!props.serverTreeData) {
       //前端处理数据为tree结构
       record = listToTree(record, props, startPid);
@@ -288,6 +292,17 @@ export function useTreeBiz(treeRef, getList, props, realProps, emit) {
   function getCompanyData(record){
     const companyData = record.filter(item=>item.orgCategory && ['1','4'].includes(item.orgCategory));
     return companyData
+  }
+  /**
+   * 获取到公司/子公司数据
+   * @param record
+   */
+  function getDepartAbbrData(record){
+    const departAbbrData = record;
+    departAbbrData.forEach(item=>{
+      item.title = item.departNameAbbr || item.title;
+    })
+    return departAbbrData
   }
   /**
    * 异步加载时检测是否含有下级节点
