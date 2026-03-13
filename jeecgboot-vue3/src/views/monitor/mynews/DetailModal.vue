@@ -279,7 +279,8 @@
   function handleViewFile(filePath) {
     if (filePath) {
       console.log('glob.onlineUrl', glob.viewUrl);
-      let url = encodeURIComponent(encryptByBase64(filePath));
+      // 获取当前url
+      let url = encodeURIComponent(encryptByBase64(getFileAccessHttpUrl(filePath)));
       let previewUrl = `${glob.viewUrl}?url=` + url;
       //update-begin-author:liusq---date:2025-12-16--for: JHHB-1139桌面端 文件预览统一修改 
       if($electron.isElectron()){
