@@ -33,6 +33,14 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
      * @return List<SysPermission>
 	 */
 	public List<SysPermission> queryByUser(@Param("userId") String userId);
+
+	/**
+	 * 根据用户id和租户id查询用户权限
+	 * @param userId 用户ID
+	 * @param tenantId 租户ID
+	 * @return List<SysPermission>
+	 */
+	public List<SysPermission> queryByUserWithTenantId(@Param("userId") String userId,@Param("tenantId") Integer tenantId);
 	
 	/**
 	 * 修改菜单状态字段： 是否子节点

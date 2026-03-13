@@ -22,7 +22,7 @@ public class JeecgNacosApplication {
     /** 是否单机模式启动 */
     private static String standalone = "true";
     /** 是否开启鉴权 */
-    private static String enabled = "false";
+    private static String enabled = "true";
 
     public static void main(String[] args) {
         System.setProperty("nacos.standalone", standalone);

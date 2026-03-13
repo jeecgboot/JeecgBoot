@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.auth.mapper.AssetFieldValueMapper">
+
+    <select id="getAssetFieldValueList" resultType="org.jeecg.modules.auth.entity.AssetFieldValue">
+        select `tenant_asset_field_value`.*
+        from `tenant_asset_field_value`
+        join `tenant_asset_field_definition` on `tenant_asset_field_value`.`field_definition_id` =
+        `tenant_asset_field_definition`.`id`
+        <where>
+            `tenant_asset_field_definition`.`status` = 1
+            AND `tenant_asset_field_value`.`tenant_id` = #{tenantId}
+            <if test="assetIds != null and assetIds.size() > 0">
+                AND `tenant_asset_field_value`.`asset_id` in
+                <foreach collection="assetIds" index="index" item="assetId" open="(" separator="," close=")">
+                    #{assetId}
+                </foreach>
+            </if>
+            <if test="fieldDefinitionIds != null and fieldDefinitionIds.size() > 0">
+                AND `tenant_asset_field_value`.`asset_id` in
+                <foreach collection="fieldDefinitionIds" index="index" item="definitionId" open="(" separator=","
+                         close=")">
+                    #{definitionId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>
