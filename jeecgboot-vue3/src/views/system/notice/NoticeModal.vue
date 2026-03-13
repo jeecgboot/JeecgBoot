@@ -44,7 +44,7 @@
     setModalProps({ confirmLoading: false });
     isUpdate.value = !!data?.isUpdate;
     if (unref(isUpdate)) {
-      if (data.record.userIds) {
+      if (data.record.userIds && data.record.userIds.endsWith(",")) {
         data.record.userIds = data.record.userIds.substring(0, data.record.userIds.length - 1);
       }
       //表单赋值
