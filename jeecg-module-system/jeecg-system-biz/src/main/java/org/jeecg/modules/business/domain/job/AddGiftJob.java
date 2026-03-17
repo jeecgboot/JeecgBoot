@@ -175,8 +175,8 @@ public class AddGiftJob implements Job {
                 // Determine whether order is pending or preparing
                 order.resolveStatus();
                 log.info("Processing order {} ", order.getPlatformOrderId());
-                // Non matching-quantity rules only apply once per order
-                boolean nonMatchingRulesApplied = false;
+                // Non matching-quantity rules can each apply once per order
+                Set<String> nonMatchingRulesApplied = new HashSet<>();
                 HashMap<String, Integer> newGiftMap = new HashMap<>();
                 Map<Boolean, List<OrderItem>> orderItemMap = order.getOrderItems()
                         .stream()
@@ -188,14 +188,17 @@ public class AddGiftJob implements Job {
                 }
                 for (OrderItem orderItem : orderItemMap.get(Boolean.FALSE)) {
                     String erpCode = orderItem.getErpCode();
-                    if (!nonMatchingRulesApplied && nonMatchingQuantityRules != null) {
+                    if (nonMatchingQuantityRules != null) {
                         for (GiftRule giftRule : nonMatchingQuantityRules) {
                             // Ignore gift rule if its erp status is present yet different from the order item's
                             if (shouldIgnoreForErpStatusOrCountry(order, giftRule)) continue;
+                            String ruleKey = giftRule.getSku() + "|" + giftRule.getRegex();
+                            if (nonMatchingRulesApplied.contains(ruleKey)) {
+                                continue;
+                            }
                             if (erpCode.matches(giftRule.getRegex())) {
-                                nonMatchingRulesApplied = true;
+                                nonMatchingRulesApplied.add(ruleKey);
                                 putValueInMapOrReduce(giftRule.getSku(), 1, newGiftMap);
-                                break;
                             }
                         }
                     }
@@ -265,3 +268,4 @@ public class AddGiftJob implements Job {
         }
     }
 }
+
