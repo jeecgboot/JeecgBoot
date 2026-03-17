@@ -8,6 +8,7 @@ import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.vo.DynamicDataSourceModel;
 import org.jeecg.common.util.ReflectHelper;
 import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.common.util.security.JdbcSecurityUtil;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
@@ -39,9 +40,12 @@ public class DynamicDBUtil {
         String driverClassName = dbSource.getDbDriver();
         String url = dbSource.getDbUrl();
         // url配置成 “123” 会触发Druid死循环，一直去重复尝试连接
-        if (oConvertUtils.isEmpty(url) || !url.toLowerCase().startsWith("jdbc:")) {
-            throw new JeecgBootException("数据源URL配置格式不正确！");
+        if (oConvertUtils.isEmpty(url) || !url.toLowerCase().startsWith(“jdbc:”)) {
+            throw new JeecgBootException(“数据源URL配置格式不正确！”);
         }
+        // 纵深防御: 连接建立时二次校验 URL 和驱动安全性
+        JdbcSecurityUtil.validate(url);
+        JdbcSecurityUtil.validateDriver(driverClassName);
         
         String dbUser = dbSource.getDbUsername();
         String dbPassword = dbSource.getDbPassword();
