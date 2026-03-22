@@ -1247,8 +1247,12 @@ public class AiragChatServiceImpl implements IAiragChatService {
             aiChatParams = new AIChatParams();
         }
         // 如果是默认app,加载系统默认工具
+        // Security fix: 仅已登录用户可加载敏感业务工具(add_user,grant_user_roles等),匿名用户仍可正常使用AI聊天
         if(chatConversation.getApp().getId().equals(AiAppConsts.DEFAULT_APP_ID)){
-            aiChatParams.setTools(jeecgToolsProvider.getDefaultTools());
+            String currentUser = getUsername(SpringContextUtils.getHttpServletRequest());
+            if(oConvertUtils.isNotEmpty(currentUser)){
+                aiChatParams.setTools(jeecgToolsProvider.getDefaultTools());
+            }
         }
         if(CollectionUtils.isEmpty(aiChatParams.getKnowIds())){
             aiChatParams.setKnowIds(chatConversation.getApp().getKnowIds());
