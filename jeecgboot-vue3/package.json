@@ -23,7 +23,7 @@
     "husky:install": "husky install"
   },
   "dependencies": {
-    "@jeecg/online": "3.9.1-beta",
+    "@jeecg/online": "3.9.1-RC",
     "@jeecg/aiflow":"3.9.1-beta",
     "@logicflow/core": "^2.0.10",
     "@logicflow/extension": "^2.0.14",

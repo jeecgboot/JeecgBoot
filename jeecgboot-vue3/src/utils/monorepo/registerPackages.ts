@@ -1,7 +1,7 @@
 import type { App } from 'vue';
 import { warn } from '/@/utils/log';
 import { registerDynamicRouter } from '/@/utils/monorepo/dynamicRouter';
-import { add } from '/@/components/Form/src/componentMap';
+import { createAsyncComponent } from "@/utils/factory/createAsyncComponent";
 
 // 懒加载模块配置（按需加载，访问相关路由时才加载对应包）
 const lazyPackages = [
@@ -19,6 +19,14 @@ const installOptions = {
 export function registerPackages(app: App) {
   // 仅保存 app 实例，不立即加载模块
   appInstance = app;
+  app.component(
+    'SuperQuery',
+    createAsyncComponent(() => import('@jeecg/online').then(mod => mod.SuperQuery))
+  );
+  app.component(
+    'JOnlineSearchSelect',
+    createAsyncComponent(() => import('@jeecg/online').then(mod => mod.JOnlineSearchSelect))
+  );
 }
 
 /** 已加载的包缓存 */
