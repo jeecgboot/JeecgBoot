@@ -70,10 +70,17 @@ public class AiragAppController extends JeecgController<AiragApp, IAiragAppServi
      */
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     @RequiresPermissions("airag:app:edit")
-    public Result<String> edit(@RequestBody AiragApp airagApp) {
+    public Result<String> edit(@RequestBody AiragApp airagApp, HttpServletRequest request) {
         AssertUtils.assertNotEmpty("参数异常", airagApp);
         AssertUtils.assertNotEmpty("请输入应用名称", airagApp.getName());
         AssertUtils.assertNotEmpty("请选择应用类型", airagApp.getType());
+        //update-begin---author:jeecgai ---date:20260325  for：[issues/9462]跨租户写入漏洞修复------------
+        //如果是saas隔离的情况下，忽略客户端传入的tenantId，使用当前登录用户的租户ID
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            String currentTenantId = TokenUtils.getTenantIdByRequest(request);
+            airagApp.setTenantId(currentTenantId);
+        }
+        //update-end---author:jeecgai ---date:20260325  for：[issues/9462]跨租户写入漏洞修复------------
         airagApp.setStatus(AiAppConsts.STATUS_ENABLE);
         airagAppService.saveOrUpdate(airagApp);
         return Result.OK("保存完成!", airagApp.getId());
