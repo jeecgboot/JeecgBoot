@@ -217,10 +217,11 @@
   /**
    * 表格改变事件
    */
-  function handleTableChange({ pagination, filters, sorter }) {
+  function handleTableChange(pagination, filters, sorter) {
     ipagination.value = pagination;
     iSorter.value = sorter;
     iFilters.value = { ...filters };
+    loadData();
   }
 
   /**
