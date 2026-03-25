@@ -135,10 +135,12 @@ public class QueryGenerator {
 		//权限规则自定义SQL表达式
 		for (String c : ruleMap.keySet()) {
 			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
-				queryWrapper.and(i ->i.apply(getSqlRuleValue(ruleMap.get(c).getRuleValue())));
+				String sqlRule = getSqlRuleValue(ruleMap.get(c).getRuleValue());
+				SqlInjectionUtil.filterContent(sqlRule, null);
+				queryWrapper.and(i ->i.apply(sqlRule));
 			}
 		}
-		
+
 		String name, type, column;
 		//定义实体字段和数据库字段名称的映射 高级查询中 只能获取实体字段 如果设置TableField注解 那么查询条件会出问题
 		Map<String,String> fieldColumnMap = new HashMap<>(5);
@@ -984,7 +986,9 @@ public class QueryGenerator {
 		PropertyDescriptor[] origDescriptors = PropertyUtils.getPropertyDescriptors(clazz);
 		for (String c : ruleMap.keySet()) {
 			if(oConvertUtils.isNotEmpty(c) && c.startsWith(SQL_RULES_COLUMN)){
-				queryWrapper.and(i ->i.apply(getSqlRuleValue(ruleMap.get(c).getRuleValue())));
+				String sqlRule = getSqlRuleValue(ruleMap.get(c).getRuleValue());
+				SqlInjectionUtil.filterContent(sqlRule, null);
+				queryWrapper.and(i ->i.apply(sqlRule));
 			}
 		}
 		String name, column;
