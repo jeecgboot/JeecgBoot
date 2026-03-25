@@ -18,6 +18,8 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -131,6 +133,10 @@ public class FileDownloadUtils {
      * @date 2024/1/19 10:09
      */
     public static String download2DiskFromNet(String fileUrl, String storePath) {
+        // 路径遍历安全校验
+        SsrfFileTypeFilter.checkPathTraversal(storePath);
+        validateStorePath(storePath);
+
         try {
             URL url = new URL(fileUrl);
             URLConnection conn = url.openConnection();
@@ -155,6 +161,25 @@ public class FileDownloadUtils {
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new JeecgBootException(e);
+        }
+    }
+
+    /**
+     * 校验存储路径安全性，防止路径遍历攻击
+     * 通过路径标准化后比较，确保不会通过 ../ 等方式逃逸出预期目录
+     *
+     * @param storePath 存储路径
+     */
+    private static void validateStorePath(String storePath) {
+        if (storePath == null || storePath.trim().isEmpty()) {
+            throw new JeecgBootException("存储路径不能为空");
+        }
+        Path normalized = Paths.get(storePath).normalize();
+        // 标准化后的路径不应与原始路径的文件名部分不同（检测 ../ 逃逸）
+        Path original = Paths.get(storePath);
+        if (!normalized.toAbsolutePath().equals(original.toAbsolutePath())) {
+            log.error("检测到非法存储路径尝试! storePath: {}", storePath);
+            throw new JeecgBootException("非法的文件存储路径");
         }
     }
 
