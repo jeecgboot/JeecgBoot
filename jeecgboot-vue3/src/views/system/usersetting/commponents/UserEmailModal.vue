@@ -18,7 +18,7 @@ import BasicModal from "/@/components/Modal/src/BasicModal.vue";
 import { CountdownInput } from '/@/components/CountDown';
 import { useUserStore } from "/@/store/modules/user";
 import { useMessage } from "/@/hooks/web/useMessage";
-import { defineEmits, ref, reactive, toRaw } from "vue";
+import { ref, reactive, toRaw } from "vue";
 import { useModalInner } from "/@/components/Modal";
 import { getCaptcha } from "/@/api/sys/user";
 import { SmsEnum } from "/@/views/sys/login/useLogin";

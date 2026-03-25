@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, nextTick, defineExpose } from 'vue';
+  import { ref, nextTick } from 'vue';
   import AuthForm from './AuthForm.vue';
   import JModal from '/@/components/Modal/src/JModal/JModal.vue';
 

@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, defineExpose, defineProps, nextTick, reactive, ref } from "vue";
+import { computed, nextTick, reactive, ref } from "vue";
 import { useMessage } from '/@/hooks/web/useMessage';
 import { getApiList, getPermissionList, permissionAddFunction } from '../OpenApiAuth.api';
 import { Form, Pagination } from 'ant-design-vue';

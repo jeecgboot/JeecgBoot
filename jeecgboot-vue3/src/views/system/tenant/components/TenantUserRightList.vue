@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, defineEmits } from 'vue';
+  import { defineComponent } from 'vue';
   import { BasicModal } from '@/components/Modal';
   import { BasicTable, TableAction } from '@/components/Table';
   import TenantUserSelectModal from '@/views/system/tenant/components/TenantUserSelectModal.vue';

@@ -21,7 +21,7 @@
   <TenantPackMenuModal @register="registerPackMenu" @success="success" />
 </template>
 <script lang="ts">
-  import { ref, unref, defineComponent, defineEmits } from 'vue';
+  import { ref, unref, defineComponent } from 'vue';
   import { useModal } from '/@/components/Modal';
   import { packFormSchema, tenantPackColumns } from '../tenant.data';
   import { getLoginTenantName, packList } from '../tenant.api';

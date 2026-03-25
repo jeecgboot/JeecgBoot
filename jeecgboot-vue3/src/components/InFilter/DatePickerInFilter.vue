@@ -41,7 +41,7 @@ export default defineComponent({
 </script>
 
 <script lang="ts" setup>
-import {ref, watch, computed, nextTick, useAttrs, defineProps} from 'vue'
+import {ref, watch, computed, nextTick, useAttrs} from 'vue'
 import {DatePicker} from 'ant-design-vue'
 import {useDesign} from '/@/hooks/web/useDesign';
 import { Form } from 'ant-design-vue';

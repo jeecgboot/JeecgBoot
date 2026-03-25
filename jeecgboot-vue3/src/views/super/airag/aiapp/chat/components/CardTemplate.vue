@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, defineProps, defineEmits, computed } from 'vue';
+  import { ref, computed } from 'vue';
   import {useGlobSetting} from "@/hooks/setting";
   const props = defineProps({
     templateId: { type: String, default: '' },

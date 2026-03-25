@@ -8,7 +8,7 @@
 import { BasicModal, useModalInner } from '/@/components/Modal';
 import { BasicForm, useForm } from '/@/components/Form';
 import { formSchema } from '../UserSetting.data';
-import { ref, unref, defineEmits } from 'vue';
+import { ref, unref } from 'vue';
 import { userEdit } from "../UserSetting.api";
 import { useUserStore } from "/@/store/modules/user";
 import { useMessage } from "/@/hooks/web/useMessage";
