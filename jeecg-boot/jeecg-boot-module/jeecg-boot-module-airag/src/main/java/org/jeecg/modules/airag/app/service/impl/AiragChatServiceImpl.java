@@ -1138,6 +1138,12 @@ public class AiragChatServiceImpl implements IAiragChatService {
                 if (metadata.containsKey("maxTokens")) {
                     aiChatParams.setMaxTokens(metadata.getInteger("maxTokens"));
                 }
+                if (metadata.containsKey("topNumber")) {
+                    aiChatParams.setTopNumber(metadata.getInteger("topNumber"));
+                }
+                if (metadata.containsKey("similarity")) {
+                    aiChatParams.setSimilarity(metadata.getDouble("similarity"));
+                }
                 if (metadata.containsKey(FlowConsts.FLOW_NODE_OPTION_TIME_OUT)) {
                     aiChatParams.setTimeout(oConvertUtils.getInt(metadata.getInteger(FlowConsts.FLOW_NODE_OPTION_TIME_OUT), 300));
                 }
