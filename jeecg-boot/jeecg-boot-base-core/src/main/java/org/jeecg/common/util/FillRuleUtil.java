@@ -73,8 +73,18 @@ public class FillRuleUtil {
                 if (formData == null) {
                     formData = new JSONObject();
                 }
-                // 通过反射执行配置的类里的方法
-                IFillRuleHandler ruleHandler = (IFillRuleHandler) Class.forName(ruleClass).newInstance();
+                // 包路径白名单校验，防止任意类加载漏洞
+                if (!ruleClass.startsWith("org.jeecg.")) {
+                    log.error("检测到非法填值规则类加载尝试: {}", ruleClass);
+                    throw new SecurityException("不允许加载非 org.jeecg 包路径下的填值规则类: " + ruleClass);
+                }
+
+                // 通过反射执行配置的类里的方法（先加载类并校验接口，再实例化）
+                Class<?> clazz = Class.forName(ruleClass);
+                if (!IFillRuleHandler.class.isAssignableFrom(clazz)) {
+                    throw new IllegalArgumentException("类 " + ruleClass + " 未实现 IFillRuleHandler 接口");
+                }
+                IFillRuleHandler ruleHandler = (IFillRuleHandler) clazz.getDeclaredConstructor().newInstance();
                 return ruleHandler.execute(params, formData);
             } catch (Exception e) {
                 e.printStackTrace();
