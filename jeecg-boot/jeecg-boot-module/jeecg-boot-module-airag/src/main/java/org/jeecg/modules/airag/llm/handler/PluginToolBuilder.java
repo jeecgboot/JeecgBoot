@@ -8,6 +8,7 @@ import dev.langchain4j.service.tool.ToolExecutor;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.CommonUtils;
 import org.jeecg.common.util.RestUtil;
 import org.jeecg.common.util.TokenUtils;
@@ -277,6 +278,10 @@ public class PluginToolBuilder {
 
                 Object value = args.get(paramName);
                 if (value != null) {
+                    // 路径遍历防护：禁止Path参数中包含 .. 序列
+                    if (value.toString().contains("..")) {
+                        throw new JeecgBootException("Invalid path parameter: path traversal detected");
+                    }
                     url = url.replace("{" + paramName + "}", value.toString());
                 }
             }
