@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -61,7 +63,18 @@ public class CommonUtils {
         //update-end---author:wangshuai---date:2026-01-08---for:【QQYUN-14535】ai生成图片的后缀不一致的，导致不展示---
         try {
             if(CommonConstant.UPLOAD_TYPE_LOCAL.equals(uploadType)){
-                File file = new File(basePath + File.separator + bizPath + File.separator );
+                //update-begin---author:jeecgai---date:2026-03-25---for:【issues/9435】uploadOnlineImage路径遍历漏洞修复---
+                // 1. 使用已有的路径遍历检查
+                SsrfFileTypeFilter.checkPathTraversal(bizPath);
+                // 2. 标准化路径并校验是否在basePath范围内
+                Path root = Paths.get(basePath).toAbsolutePath().normalize();
+                Path targetDir = root.resolve(bizPath).toAbsolutePath().normalize();
+                if (!targetDir.startsWith(root)) {
+                    log.error("检测到路径遍历攻击！非法 bizPath: {}", bizPath);
+                    throw new SecurityException("Illegal access to path outside of base directory.");
+                }
+                //update-end---author:jeecgai---date:2026-03-25---for:【issues/9435】uploadOnlineImage路径遍历漏洞修复---
+                File file = targetDir.toFile();
                 if (!file.exists()) {
                     file.mkdirs();// 创建文件根目录
                 }
