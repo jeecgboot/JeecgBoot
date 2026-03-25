@@ -681,7 +681,7 @@ public class SysAnnouncementController {
 		Result<Page<SysAnnouncementSend>> result = new Result<>();
 		//----------------------------------------------------------------------------------------
 		// step.1 此接口过慢，可以采用缓存一小时方案
-		String keyString = String.format(CommonConstant.CACHE_KEY_USER_LAST_ANNOUNT_TIME_1HOUR + "_" + noticeType, userId);
+		String keyString = String.format(CommonConstant.CACHE_KEY_USER_LAST_ANNOUNT_TIME_1HOUR, userId) + "_" + noticeType;
 		if (redisTemplate.hasKey(keyString)) {
 			log.debug("[SysAnnouncementSend Redis] 通过Redis缓存查询用户最后一次收到系统通知时间，userId={}", userId);
 			Page<SysAnnouncementSend> pageList = (Page<SysAnnouncementSend>) redisTemplate.opsForValue().get(keyString);
