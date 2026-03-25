@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -61,6 +62,7 @@ public class AiragMcpController extends JeecgController<AiragMcp, IAiragMcpServi
      * @return
      */
     @Operation(summary = "MCP-保存")
+    @RequiresPermissions("airag:mcp:add")
     @PostMapping(value = "/save")
     public Result<String> save(@RequestBody AiragMcp airagMcp) {
         return airagMcpService.edit(airagMcp);
@@ -77,6 +79,7 @@ public class AiragMcpController extends JeecgController<AiragMcp, IAiragMcpServi
      * @date 2025/10/21 10:54
      */
     @Operation(summary = "MCP-保存并同步")
+    @RequiresPermissions("airag:mcp:edit")
     @PostMapping(value = "/saveAndSync")
     public Result<?> saveAndSync(@RequestBody AiragMcp airagMcp) {
         Result<String> saveResult = airagMcpService.edit(airagMcp);
@@ -141,6 +144,7 @@ public class AiragMcpController extends JeecgController<AiragMcp, IAiragMcpServi
      * @return
      */
     @Operation(summary = "MCP-通过id删除")
+    @RequiresPermissions("airag:mcp:delete")
     @DeleteMapping(value = "/delete")
     public Result<String> delete(@RequestParam(name = "id", required = true) String id) {
         airagMcpService.removeById(id);
