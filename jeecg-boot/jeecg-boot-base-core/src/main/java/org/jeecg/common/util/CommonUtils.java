@@ -155,6 +155,8 @@ public class CommonUtils {
      */
     public static String uploadLocal(MultipartFile mf,String bizPath,String uploadpath){
         try {
+            // 路径安全校验，防止路径遍历攻击
+            SsrfFileTypeFilter.checkPathTraversal(bizPath);
             // 文件安全校验，防止上传漏洞文件
             SsrfFileTypeFilter.checkUploadFileType(mf, bizPath);
             
