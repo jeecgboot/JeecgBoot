@@ -29,6 +29,7 @@ import org.jeecg.ai.factory.AiModelOptions;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.*;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.modules.airag.common.handler.IEmbeddingHandler;
 import org.jeecg.modules.airag.common.vo.knowledge.KnowledgeSearchResult;
 import org.jeecg.modules.airag.llm.config.EmbedStoreConfigBean;
@@ -659,6 +660,7 @@ public class EmbeddingHandler implements IEmbeddingHandler {
         }
         String filePath = metadataJson.getString(LLMConsts.KNOWLEDGE_DOC_METADATA_FILEPATH);
         AssertUtils.assertNotEmpty("请先上传文件", filePath);
+        SsrfFileTypeFilter.checkPathTraversal(filePath);
         filePath = ensureFile(filePath);
 
         File docFile = new File(filePath);
@@ -725,6 +727,7 @@ public class EmbeddingHandler implements IEmbeddingHandler {
             filePath = tempFilePath;
         } else {
             //本地文件
+            SsrfFileTypeFilter.checkPathTraversal(filePath);
             filePath = uploadpath + File.separator + filePath;
         }
         return filePath;
