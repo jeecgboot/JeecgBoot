@@ -121,6 +121,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      */
     @AutoLog(value = "多数据源管理-添加")
     @Operation(summary = "多数据源管理-添加")
+    @RequiresPermissions("system:datasource:add")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody SysDataSource sysDataSource) {
         // 代码逻辑说明: jdbc连接地址漏洞问题
@@ -141,6 +142,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      */
     @AutoLog(value = "多数据源管理-编辑")
     @Operation(summary = "多数据源管理-编辑")
+    @RequiresPermissions("system:datasource:edit")
     @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<?> edit(@RequestBody SysDataSource sysDataSource) {
         // 代码逻辑说明: jdbc连接地址漏洞问题
@@ -161,6 +163,7 @@ public class SysDataSourceController extends JeecgController<SysDataSource, ISys
      */
     @AutoLog(value = "多数据源管理-通过id删除")
     @Operation(summary = "多数据源管理-通过id删除")
+    @RequiresPermissions("system:datasource:delete")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id") String id) {
         return sysDataSourceService.deleteDataSource(id);
