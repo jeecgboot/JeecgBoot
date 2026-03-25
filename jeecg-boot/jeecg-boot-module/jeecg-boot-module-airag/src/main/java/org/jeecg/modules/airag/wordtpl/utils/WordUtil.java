@@ -12,6 +12,7 @@ import org.apache.xmlbeans.XmlToken;
 import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.wordtpl.consts.WordTitleEnum;
 import org.jeecg.modules.airag.wordtpl.dto.MergeColDTO;
@@ -713,6 +714,7 @@ public class WordUtil {
                         .getEnvironment()
                         .getProperty("jeecg.path.upload", "");
                 // 将本地图片读取到 InputStream
+                SsrfFileTypeFilter.checkPathTraversal(imageUrl);
                 String filePath = uploadPath + File.separator + imageUrl;
                 in = new FileInputStream(filePath);
             }

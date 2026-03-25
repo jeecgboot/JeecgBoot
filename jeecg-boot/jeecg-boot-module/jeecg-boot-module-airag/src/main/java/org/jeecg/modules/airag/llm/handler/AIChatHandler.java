@@ -535,6 +535,7 @@ public class AIChatHandler implements IAIChatHandler {
                         }
                     } else {
                         // 本地文件
+                        SsrfFileTypeFilter.checkPathTraversal(imageUrl);
                         String filePath = uploadpath + File.separator + imageUrl;
                         SsrfFileTypeFilter.checkPathTraversal(filePath);
                         Path path = Paths.get(filePath);
