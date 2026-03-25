@@ -98,6 +98,18 @@
       const attrs = useAttrs();
       const [state, , , formItemContext] = useRuleFormItem(props, 'value', 'change');
       const getBindValue = Object.assign({}, unref(props), unref(attrs));
+
+      // fix: #9420 当 mode 为 multiple 时，将逗号分隔的字符串转为数组，以便正确回显标签
+      watch(
+        () => props.value,
+        (val) => {
+          const { mode } = unref<Recordable>(getBindValue);
+          if (mode === 'multiple' && typeof val === 'string' && val !== '') {
+            state.value = val.split(',');
+          }
+        },
+        { immediate: true }
+      );
       // 是否正在加载回显数据
       const loadingEcho = ref<boolean>(false);
       // 是否是首次加载回显，只有首次加载，才会显示 loading
