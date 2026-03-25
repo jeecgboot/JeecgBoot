@@ -193,6 +193,9 @@ public final class XmlUtils {
     
     public static Map<String, Object> extractCustomAttributes(final String xml) {
         final SAXParserFactory spf = SAXParserFactory.newInstance();
+        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
         spf.setNamespaceAware(true);
         spf.setValidating(false);
         try {
