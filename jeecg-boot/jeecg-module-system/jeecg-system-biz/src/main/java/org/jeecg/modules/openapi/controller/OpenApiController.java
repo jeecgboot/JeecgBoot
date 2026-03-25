@@ -34,7 +34,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -159,6 +161,8 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         }
 
         String url = openApi.getOriginUrl();
+        // SSRF防护：校验originUrl不指向内网地址
+        validateUrlNotInternal(url);
         String method = openApi.getRequestMethod();
         String appkey = request.getHeader("appkey");
         OpenApiAuth openApiAuth = openApiAuthService.getByAppkey(appkey);
@@ -411,5 +415,60 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         r.setCode(CommonConstant.SC_OK_200);
         r.setResult(PathGenerator.genPath());
         return r;
+    }
+
+    /**
+     * SSRF防护：校验URL不指向内网/私有地址
+     * @param urlStr 待校验的URL
+     */
+    private void validateUrlNotInternal(String urlStr) {
+        if (StrUtil.isEmpty(urlStr)) {
+            return;
+        }
+        try {
+            String host;
+            if (urlStr.startsWith("http://") || urlStr.startsWith("https://")) {
+                host = new URL(urlStr).getHost();
+            } else {
+                // 对于相对路径（如 /api/xxx），无需校验
+                return;
+            }
+            if (StrUtil.isEmpty(host)) {
+                return;
+            }
+            String hostLower = host.toLowerCase();
+            // 检查常见内网主机名
+            if ("localhost".equals(hostLower) || "127.0.0.1".equals(hostLower) || "0.0.0.0".equals(hostLower)) {
+                throw new IllegalArgumentException("请求地址不允许指向本地地址: " + host);
+            }
+            // 检查私有IP段
+            if (hostLower.startsWith("10.")
+                    || hostLower.startsWith("192.168.")
+                    || hostLower.startsWith("169.254.")) {
+                throw new IllegalArgumentException("请求地址不允许指向内网地址: " + host);
+            }
+            // 检查172.16.0.0 - 172.31.255.255
+            if (hostLower.startsWith("172.")) {
+                String[] parts = hostLower.split("\\.");
+                if (parts.length >= 2) {
+                    try {
+                        int second = Integer.parseInt(parts[1]);
+                        if (second >= 16 && second <= 31) {
+                            throw new IllegalArgumentException("请求地址不允许指向内网地址: " + host);
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            // DNS解析后二次校验，防止DNS重绑定到内网IP
+            InetAddress address = InetAddress.getByName(host);
+            if (address.isLoopbackAddress() || address.isSiteLocalAddress() || address.isLinkLocalAddress()) {
+                throw new IllegalArgumentException("请求地址解析后指向内网地址: " + host);
+            }
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("请求地址校验失败: " + urlStr, e);
+        }
     }
 }
