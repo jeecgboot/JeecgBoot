@@ -34,7 +34,7 @@ public class SqlInjectionUtil {
 	/**
 	 * 字典专用—sql注入关键词
 	 */
-	private static String specialDictSqlXssStr = "exec |peformance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|+|--";
+	private static String specialDictSqlXssStr = "exec |peformance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|+|--|and |or |'|substring |substring(";
 	/**
 	 * 完整匹配的key，不需要考虑前空格
 	 */
@@ -43,6 +43,7 @@ public class SqlInjectionUtil {
 		FULL_MATCHING_KEYWRODS.add(";");
 		FULL_MATCHING_KEYWRODS.add("+");
 		FULL_MATCHING_KEYWRODS.add("--");
+		FULL_MATCHING_KEYWRODS.add("'");
 	}
 	
 	

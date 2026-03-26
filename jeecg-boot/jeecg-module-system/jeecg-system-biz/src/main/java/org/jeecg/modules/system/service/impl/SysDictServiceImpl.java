@@ -564,10 +564,22 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 			}
 
 			if (oConvertUtils.isNotEmpty(keyword)) {
+				// 【安全】对keyword进行SQL注入检测和单引号转义，防止通过keyword参数进行SQL注入
+				SqlInjectionUtil.specialFilterContentForDictSql(keyword);
+				keyword = keyword.replace("'", "''");
+
 				// 判断是否是多选
 				if (keyword.contains(SymbolConstant.COMMA)) {
 					// 代码逻辑说明: JTC-529【表单设计器】 编辑页面报错，in参数采用双引号导致 ----
-					String inKeywords = "'" + String.join("','", keyword.split(",")) + "'";
+					String[] keywordArr = keyword.split(",");
+					StringBuilder inKeywordsBuilder = new StringBuilder();
+					for (int i = 0; i < keywordArr.length; i++) {
+						if (i > 0) {
+							inKeywordsBuilder.append(",");
+						}
+						inKeywordsBuilder.append("'").append(keywordArr[i].replace("'", "''")).append("'");
+					}
+					String inKeywords = inKeywordsBuilder.toString();
 					keywordSql = "(" + text + " in (" + inKeywords + ") or " + code + " in (" + inKeywords + "))";
 				} else {
 					keywordSql = "("+text + " like '%"+keyword+"%' or "+ code + " like '%"+keyword+"%')";
