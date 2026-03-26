@@ -1,6 +1,7 @@
 package org.jeecg.modules.airag;
 
-import com.alibaba.fastjson.JSON;
+import org.apache.shiro.SecurityUtils;
+import org.jeecg.common.system.vo.LoginUser;import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -52,16 +53,27 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
 
     public Map<ToolSpecification, ToolExecutor> getDefaultTools(){
         Map<ToolSpecification, ToolExecutor> tools = new HashMap<>();
-        JeecgLlmTools userTool = queryUserTool();
-        tools.put(userTool.getToolSpecification(), userTool.getToolExecutor());
-        JeecgLlmTools addUser = addUserTool();
-        tools.put(addUser.getToolSpecification(), addUser.getToolExecutor());
-        // 新增：查询所有角色
-        JeecgLlmTools queryRoles = queryAllRolesTool();
-        tools.put(queryRoles.getToolSpecification(), queryRoles.getToolExecutor());
-        // 新增：给用户授予角色
-        JeecgLlmTools grantRoles = grantUserRolesTool();
-        tools.put(grantRoles.getToolSpecification(), grantRoles.getToolExecutor());
+        
+        if (SecurityUtils.getSubject().isPermitted("system:user:list")) {
+            JeecgLlmTools userTool = queryUserTool();
+            tools.put(userTool.getToolSpecification(), userTool.getToolExecutor());
+        }
+        
+        if (SecurityUtils.getSubject().isPermitted("system:user:add")) {
+            JeecgLlmTools addUser = addUserTool();
+            tools.put(addUser.getToolSpecification(), addUser.getToolExecutor());
+        }
+        
+        if (SecurityUtils.getSubject().isPermitted("system:role:list")) {
+            JeecgLlmTools queryRoles = queryAllRolesTool();
+            tools.put(queryRoles.getToolSpecification(), queryRoles.getToolExecutor());
+        }
+        
+        if (SecurityUtils.getSubject().isPermitted("system:user:addUserRole")) {
+            JeecgLlmTools grantRoles = grantUserRolesTool();
+            tools.put(grantRoles.getToolSpecification(), grantRoles.getToolExecutor());
+        }
+        
         return tools;
     }
 
