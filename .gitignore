@@ -16,3 +16,13 @@ derby.log
 .cursor
 .history
 .claude
+
+## eclipse metadata
+**/.classpath
+**/.factorypath
+**/.project
+**/.settings/
+
+## local agent runtime cache
+/registered_agents.json
+/task_agent_mapping.json
