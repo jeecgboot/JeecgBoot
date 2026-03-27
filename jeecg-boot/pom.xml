@@ -575,6 +575,28 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
+			<!-- 构建前校验JDK范围（支持17~24，25+请切换到受支持版本） -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>enforce-supported-java</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireJavaVersion>
+									<version>[17,25)</version>
+									<message>Unsupported JDK detected. Please use a supported JDK version from 17 to 24.</message>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
             <!-- 打包跳过测试 -->
             <plugin>
 		        <groupId>org.apache.maven.plugins</groupId>
