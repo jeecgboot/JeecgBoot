@@ -1,0 +1,32 @@
+name: jeecgboot-codeql-scope
+
+paths:
+  - jeecg-boot
+  - jeecgboot-vue3/src
+  - jeecgboot-vue3/types
+
+paths-ignore:
+  # Build and dependency artifacts
+  - '**/target/**'
+  - '**/node_modules/**'
+  - '**/dist/**'
+  - '**/coverage/**'
+
+  # Non-production test/demo sources
+  - '**/src/test/**'
+  - jeecg-boot/jeecg-server-cloud/jeecg-visual/jeecg-cloud-test/**
+
+  # Local/cloud duplicated API package set: keep local-api variant
+  - jeecg-boot/jeecg-module-system/jeecg-system-api/jeecg-system-cloud-api/**
+
+  # Code templates and static vendor assets that create parser noise
+  - jeecg-boot/**/src/main/resources/jeecg/code-template*/**
+  - jeecg-boot/**/src/main/resources/static/**
+  - jeecgboot-vue3/public/**
+
+  # Frontend generated and non-runtime sources
+  - jeecgboot-vue3/tests/**
+  - jeecgboot-vue3/mock/**
+  - '**/*.min.js'
+  - '**/*.map'
+  - '**/*.d.ts'
