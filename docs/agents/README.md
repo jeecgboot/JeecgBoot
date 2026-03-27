@@ -4,7 +4,7 @@
 
 - Use subagents for analysis and verification when tasks span multiple streams.
 - Use memory to persist durable repo/workflow decisions.
-- Use PR continuity checks before creating new PRs.
+- Use PR continuity checks before creating or updating PRs.
 
 ## For CI/Security Workflow Changes
 

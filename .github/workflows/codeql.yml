@@ -13,6 +13,9 @@ permissions:
   contents: read
   security-events: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 concurrency:
   group: codeql-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -44,7 +47,7 @@ jobs:
           cache: maven
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
@@ -54,14 +57,12 @@ jobs:
         if: matrix.language == 'java-kotlin'
         run: >
           mvn -B -ntp -f jeecg-boot/pom.xml
-          -pl jeecg-module-system/jeecg-system-start
-          -am
           -Dmaven.test.skip=true
           -DskipITs
           -Dspring-boot.repackage.skip=true
           clean compile
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: /language:${{ matrix.language }}

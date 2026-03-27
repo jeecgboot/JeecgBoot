@@ -20,5 +20,5 @@
 ## PR Rules
 
 - Commit and push branch updates.
-- Run PR continuity before creating a new PR.
+- Run PR continuity before creating or updating a PR.
 - Do not dismiss reviews without explicit user direction.
