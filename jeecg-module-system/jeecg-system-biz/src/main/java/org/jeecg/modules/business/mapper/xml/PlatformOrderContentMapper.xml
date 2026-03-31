@@ -396,6 +396,7 @@
                sc.sku,
                sc.is_necklace,
                sc.is_gem,
+               sc.is_memo,
                sr.content_rec_regex,
                sr.content_ext_regex,
                sr.prefix,
@@ -410,7 +411,7 @@
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
                  join country c on po.country = c.name_en
-        where po.order_time > '2025-06-01'
+        where po.order_time > '2025-08-01'
           and poc.erp_status in (1)
           and sr.is_active = 1
           and po.platform_order_id not in (select platform_order_id from shouman_order);
@@ -440,6 +441,7 @@
             <result property="sku" column="sku" javaType="string"/>
             <result property="isNecklace" column="is_necklace" javaType="boolean"/>
             <result property="isGem" column="is_gem" javaType="boolean"/>
+            <result property="isMemo" column="is_memo" javaType="boolean"/>
             <collection property="regexList" ofType="org.jeecg.modules.business.entity.ShoumanRegex">
                 <result property="contentRecRegex" column="content_rec_regex" javaType="string"/>
                 <result property="contentExtRegex" column="content_ext_regex" javaType="string"/>
@@ -474,6 +476,7 @@
                sc.sku,
                sc.is_necklace,
                sc.is_gem,
+               sc.is_memo,
                sr.content_rec_regex,
                sr.content_ext_regex,
                sr.prefix,
@@ -488,7 +491,7 @@
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
                  join country c on po.country = c.name_en
-        where po.order_time > '2025-06-01'
+        where po.order_time > '2025-08-01'
           and poc.erp_status in (1)
           and sr.is_active = 1
           and po.platform_order_id = #{platformOrderId};

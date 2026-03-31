@@ -20,6 +20,7 @@ public class ShoumanOrderContent {
     private String sku;
     private Boolean isNecklace;
     private Boolean isGem;
+     private Boolean isMemo;
     private List<ShoumanRegex> regexList;
 
     public ShoumanOrderContent() {
@@ -39,6 +40,7 @@ public class ShoumanOrderContent {
                 ", sku='" + sku + '\'' +
                 ", isNecklace='" + isNecklace + '\'' +
                 ", isGem='" + isGem + '\'' +
+                ", isMemo='" + isMemo + '\'' +
                 ", regexList='" + regexList + '\'' +
                 '}';
     }

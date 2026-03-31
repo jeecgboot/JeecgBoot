@@ -51,9 +51,15 @@ public class OrderCreationRequestBody implements RequestBody {
         putNonNull(json, "orderId", shoumanOrderBase.getPlatformOrderId());
         JSONArray outboundInfos = new JSONArray();
         BigDecimal totalPrice = BigDecimal.ZERO;
+        StringBuilder memo = new StringBuilder();
         // Merge contents in case of necklaces with gems
         List<ShoumanOrderContent> reducedContents = mergeContentsForNecklaceWithGems(shoumanOrderBase.getContentList());
         for (ShoumanOrderContent content : reducedContents.isEmpty() ? shoumanOrderBase.getContentList() : reducedContents) {
+            if (content.getIsMemo()) {
+                if (!memo.isEmpty()) memo.append(LINE_BREAK);
+                memo.append(content.getRemark());
+                continue;
+            }
             JSONObject contentJson = new JSONObject();
             putNonNull(contentJson, "productName", content.getProductName());
             putNonNull(contentJson, "customerId", shoumanOrderBase.getPlatformOrderNumber().replace("MS", ""));
@@ -77,11 +83,8 @@ public class OrderCreationRequestBody implements RequestBody {
             putNonNull(logisticsInfo, "trackingNumber", shoumanOrderBase.getTrackingNumber());
             putNonNull(logisticsInfo, "labelUrl", shoumanOrderBase.getShippingLabelUrl());
             putNonNull(json, "logisticsInfo", logisticsInfo);
-            // VA 代发订单添加国家卡片到备注
-            if (shoumanOrderBase.getShopErpCode().contains("VA")) {
-                putNonNull(json, "orderMemo", shoumanOrderBase.getCountry() + "卡片");
-            }
         }
+        putNonNull(json, "orderMemo", memo.toString());
         return json;
     }
 
