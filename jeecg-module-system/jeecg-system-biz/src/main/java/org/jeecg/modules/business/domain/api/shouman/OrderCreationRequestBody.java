@@ -84,7 +84,9 @@ public class OrderCreationRequestBody implements RequestBody {
             putNonNull(logisticsInfo, "labelUrl", shoumanOrderBase.getShippingLabelUrl());
             putNonNull(json, "logisticsInfo", logisticsInfo);
         }
-        putNonNull(json, "orderMemo", memo.toString());
+        if (!memo.isEmpty()) {
+            putNonNull(json, "orderMemo", memo.toString());
+        }
         return json;
     }
 
