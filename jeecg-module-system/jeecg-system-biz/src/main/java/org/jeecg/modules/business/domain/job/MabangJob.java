@@ -6,7 +6,12 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
+import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequest;
+import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequestBody;
+import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendResponse;
 import org.jeecg.modules.business.service.IPlatformOrderMabangService;
+import org.jeecg.modules.business.vo.PlatformOrderOperation;
+import org.jeecg.modules.business.vo.Responses;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -20,7 +25,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.jeecg.modules.business.domain.api.mabang.getorderlist.OrderStatus.*;
 
 @Setter
@@ -34,7 +44,10 @@ public class MabangJob implements Job {
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;
     private static final Integer SKIP_RECENT_MINUTES = 5;
     private static final DateType DEFAULT_DATE_TYPE = DateType.EXPRESS;
+    private static final String ABNORMAL_TYPE_LABEL = "订单在平台已发货";
     private static final List<OrderStatus> DEFAULT_STATUSES = Arrays.asList(AllUnshipped, Shipped, Completed);
+    private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
+    private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -80,6 +93,7 @@ public class MabangJob implements Job {
             throw new RuntimeException("No more than 30 days can separate startDateTime and endDateTime !");
         }
 
+        List<String> fulfilledOrderIds = new ArrayList<>();
         try {
             while (startDateTime.until(endDateTime, ChronoUnit.HOURS) > 0) {
                 LocalDateTime dayBeforeEndDateTime = endDateTime.minusDays(1);
@@ -92,10 +106,49 @@ public class MabangJob implements Job {
                     log.info("{} {} orders from {} to {} ({})to be inserted/updated.", unshipped.size(), status,
                             dayBeforeEndDateTime, endDateTime, dateType);
                     platformOrderMabangService.saveOrderFromMabang(unshipped);
+                    fulfilledOrderIds.addAll(
+                            unshipped.stream().filter(Order::isFulfilled)
+                                    .map(Order::getPlatformOrderId)
+                                    .collect(Collectors.toList()));
                 }
                 endDateTime = dayBeforeEndDateTime;
             }
         } catch (OrderListRequestErrorException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(
+                    DEFAULT_NUMBER_OF_THREADS,
+                    MABANG_API_RATE_LIMIT_PER_MINUTE,
+                    TimeUnit.MINUTES);
+            Responses responses = new Responses();
+            log.info("{} orders are at least partially fulfilled by third party, suspending those orders now.",
+                    fulfilledOrderIds.size());
+            List<CompletableFuture<Responses>> futures = fulfilledOrderIds.stream()
+                    .map(id -> CompletableFuture.supplyAsync(() -> {
+                        OrderSuspendRequestBody body = new OrderSuspendRequestBody(
+                                id,
+                                ABNORMAL_TYPE_LABEL,
+                                "mabangJob"
+                        );
+                        OrderSuspendRequest request = new OrderSuspendRequest(body);
+                        OrderSuspendResponse response = request.send();
+                        Responses r = new Responses();
+                        if (response.success())
+                            r.addSuccess(id);
+                        else
+                            r.addFailure(id);
+                        return r;
+                    }, throttlingExecutorService))
+                    .collect(toList());
+            List<Responses> results = futures.stream().map(CompletableFuture::join).collect(toList());
+            results.forEach(r -> {
+                responses.getSuccesses().addAll(r.getSuccesses());
+                responses.getFailures().addAll(r.getFailures());
+            });
+            log.info("{}/{} orders suspended successfully by {}.", responses.getSuccesses().size(), fulfilledOrderIds.size(), "mabangJob");
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
