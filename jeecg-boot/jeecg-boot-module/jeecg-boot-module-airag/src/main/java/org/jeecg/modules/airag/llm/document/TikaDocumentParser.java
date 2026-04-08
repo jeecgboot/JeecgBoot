@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * tika文档解析器,重写langchain4j的TikaDocumentParser <br/>
@@ -87,6 +89,8 @@ public class TikaDocumentParser {
             } else if (FILE_SUFFIX.contains(ext.toLowerCase())) {
                 return parseDocExcelPdfUsingApachePoi(file);
             //update-end---author:wangshuai---date:2026-01-09---for:【QQYUN-14261】【AI】AI助手，支持多模态能力- 文档---
+            } else if ("zip".equalsIgnoreCase(ext)) {
+                return extractFromZip(file);
             } else {
                 throw new IllegalArgumentException("不支持的文件格式: " + FilenameUtils.getExtension(fileName));
             }
@@ -280,6 +284,48 @@ public class TikaDocumentParser {
             }
             return Document.from(text.toString());
         }
+    }
+
+    private Document extractFromZip(File file) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(file.toPath()))) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                if (entry.isDirectory()) {
+                    zis.closeEntry();
+                    continue;
+                }
+                String entryExt = FilenameUtils.getExtension(entry.getName()).toLowerCase();
+                byte[] bytes = toByteArray(zis);
+                try {
+                    Document doc = null;
+                    if ("txt".equals(entryExt) || "md".equals(entryExt) || "pdf".equals(entryExt)) {
+                        doc = extractByTika(new ByteArrayInputStream(bytes));
+                    } else if (FILE_SUFFIX.contains(entryExt)) {
+                        File tmp = File.createTempFile("zip_entry_", "." + entryExt);
+                        try {
+                            try (OutputStream os = Files.newOutputStream(tmp.toPath())) {
+                                os.write(bytes);
+                            }
+                            doc = parseDocExcelPdfUsingApachePoi(tmp);
+                        } finally {
+                            tmp.delete();
+                        }
+                    }
+                    if (doc != null && !Utils.isNullOrBlank(doc.text())) {
+                        sb.append(doc.text()).append("\n");
+                    }
+                } catch (Exception e) {
+                    // skip unparseable entry
+                }
+                zis.closeEntry();
+            }
+        }
+        String text = sb.toString();
+        if (Utils.isNullOrBlank(text)) {
+            throw new BlankDocumentException();
+        }
+        return Document.from(text);
     }
 
     private static byte[] toByteArray(InputStream inputStream) throws IOException {
