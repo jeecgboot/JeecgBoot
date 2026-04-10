@@ -722,7 +722,8 @@ public class AiragChatServiceImpl implements IAiragChatService {
                                             .arguments(toolReq.getArguments())
                                             .build())
                                     .collect(Collectors.toList());
-                            chatMessage = AiMessage.from(history.getContent(), toolRequests);
+                            String aiText = history.getContent() != null ? history.getContent() : "";
+                            chatMessage = AiMessage.from(aiText, toolRequests);
                         } else {
                             chatMessage = new AiMessage(history.getContent());
                         }
@@ -735,7 +736,8 @@ public class AiragChatServiceImpl implements IAiragChatService {
                                 .name("unknown") // 工具名称在重建时不重要，因为主要用于AI理解结果
                                 .arguments("{}")
                                 .build();
-                        chatMessage = ToolExecutionResultMessage.from(recreatedRequest, history.getToolExecutionResult());
+                        String toolResult = history.getToolExecutionResult() != null ? history.getToolExecutionResult() : "";
+                        chatMessage = ToolExecutionResultMessage.from(recreatedRequest, toolResult);
                         break;
                 }
                 if (null == chatMessage) {
@@ -812,7 +814,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
         } else if (message.type().equals(ChatMessageType.AI)) {
             historyMessage.setRole(AiragConsts.MESSAGE_ROLE_AI);
             AiMessage aiMessage = (AiMessage) message;
-            historyMessage.setContent(aiMessage.text());
+            historyMessage.setContent(aiMessage.text() != null ? aiMessage.text() : "");
             // 处理工具执行请求
             if (oConvertUtils.isObjectNotEmpty(aiMessage.toolExecutionRequests())) {
                 List<MessageHistory.ToolExecutionRequestHistory> toolRequests = new ArrayList<>();
