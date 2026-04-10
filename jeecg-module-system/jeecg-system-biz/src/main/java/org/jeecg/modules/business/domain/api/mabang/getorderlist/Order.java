@@ -170,7 +170,7 @@ public class Order {
     /**
      * 订单在平台状态
      */
-    @JSONField(name = "platformOrderStatus")
+    @JSONField(name = "platformFulfillmentStatus")
     private String platformStatus;
 
     public void setTrackingNumber(String trackingNumber) {
@@ -244,6 +244,6 @@ public class Order {
     }
 
     public boolean isFulfilled() {
-        return platformStatus.equalsIgnoreCase("Shipped");
+        return platformStatus.equalsIgnoreCase("fulfilled");
     }
 }
