@@ -74,7 +74,7 @@ public class FillRuleUtil {
                     formData = new JSONObject();
                 }
                 // 通过反射执行配置的类里的方法
-                IFillRuleHandler ruleHandler = (IFillRuleHandler) Class.forName(ruleClass).newInstance();
+                IFillRuleHandler ruleHandler = (IFillRuleHandler) Class.forName(ruleClass, true, Thread.currentThread().getContextClassLoader()).getDeclaredConstructor().newInstance();
                 return ruleHandler.execute(params, formData);
             } catch (Exception e) {
                 e.printStackTrace();

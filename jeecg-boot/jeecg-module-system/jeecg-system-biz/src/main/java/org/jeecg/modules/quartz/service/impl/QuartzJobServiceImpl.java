@@ -175,8 +175,8 @@ public class QuartzJobServiceImpl extends ServiceImpl<QuartzJobMapper, QuartzJob
 	}
 
 	private static Job getClass(String classname) throws Exception {
-		Class<?> class1 = Class.forName(classname);
-		return (Job) class1.newInstance();
+		Class<?> class1 = Class.forName(classname, true, Thread.currentThread().getContextClassLoader());
+		return (Job) class1.getDeclaredConstructor().newInstance();
 	}
 
 }

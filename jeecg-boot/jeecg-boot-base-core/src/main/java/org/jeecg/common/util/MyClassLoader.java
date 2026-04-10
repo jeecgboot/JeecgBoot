@@ -9,7 +9,7 @@ public class MyClassLoader extends ClassLoader {
 	public static Class getClassByScn(String className) {
 		Class myclass = null;
 		try {
-			myclass = Class.forName(className);
+			myclass = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 			throw new RuntimeException(className+" not found!");
