@@ -141,6 +141,11 @@ public class EmbeddingHandler implements IEmbeddingHandler {
     private static final Pattern PATTERN_MD_IMAGE = Pattern.compile("!\\[(.*?)]\\((.*?)\\)");
 
     /**
+     * 匹配完整 HTML 表格块，避免分段时把 table/tr/td 切断。
+     */
+    private static final Pattern PATTERN_HTML_TABLE = Pattern.compile("(?is)<table\\b.*?</table>");
+
+    /**
      * 向量化文档
      *
      * @param knowId
@@ -184,14 +189,6 @@ public class EmbeddingHandler implements IEmbeddingHandler {
         EmbeddingStore<TextSegment> embeddingStore = getEmbedStore(model);
         // 删除旧数据
         embeddingStore.removeAll(metadataKey(EMBED_STORE_METADATA_DOCID).isEqualTo(doc.getId()));
-        // 分段器
-        DocumentSplitter splitter = DocumentSplitters.recursive(DEFAULT_SEGMENT_SIZE, DEFAULT_OVERLAP_SIZE);
-        // 分段并存储
-        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
-                .documentSplitter(splitter)
-                .embeddingModel(embeddingModel)
-                .embeddingStore(embeddingStore)
-                .build();
         Metadata metadata = Metadata.metadata(EMBED_STORE_METADATA_DOCID, doc.getId())
                 .put(EMBED_STORE_METADATA_KNOWLEDGEID, doc.getKnowledgeId())
                 .put(EMBED_STORE_METADATA_DOCNAME, FilenameUtils.getName(doc.getTitle()))
@@ -215,15 +212,59 @@ public class EmbeddingHandler implements IEmbeddingHandler {
         }
         //update-end---author:wangshuai---date:2025-12-26---for:【QQYUN-14265】【AI】支持记忆---
         Document from = Document.from(content, metadata);
-        //update-begin---author:jeecg---date:2026-02-26---for:[#9374]【AI知识库】千帆向量报错，添加异常处理防止空指针
-        try {
-            ingestor.ingest(from);
-        } catch (Exception e) {
-            log.error("向量存储失败，请检查向量模型配置是否正确", e);
-            throw new JeecgBootException("向量存储失败：" + e.getMessage());
-        }
-        //update-end---author:jeecg---date:2026-02-26---for:[#9374]【AI知识库】千帆向量报错，添加异常处理防止空指针
+        List<TextSegment> segments = splitDocumentPreservingHtmlTables(from, DEFAULT_SEGMENT_SIZE, DEFAULT_OVERLAP_SIZE);
+        List<Embedding> embeddings = embeddingModel.embedAll(segments).content();
+        embeddingStore.addAll(embeddings, segments);
         return metadata.toMap();
+    }
+
+    static List<TextSegment> splitDocumentPreservingHtmlTables(Document document, int segmentSize, int overlapSize) {
+        String content = document.text();
+        if (oConvertUtils.isEmpty(content) || !PATTERN_HTML_TABLE.matcher(content).find()) {
+            return reindexSegments(DocumentSplitters.recursive(segmentSize, overlapSize).split(document), document.metadata());
+        }
+
+        List<TextSegment> result = new ArrayList<>();
+        Matcher matcher = PATTERN_HTML_TABLE.matcher(content);
+        int currentIndex = 0;
+        while (matcher.find()) {
+            if (matcher.start() > currentIndex) {
+                appendSplitText(result, content.substring(currentIndex, matcher.start()), document.metadata(), segmentSize, overlapSize);
+            }
+            appendSegment(result, matcher.group(), document.metadata());
+            currentIndex = matcher.end();
+        }
+        if (currentIndex < content.length()) {
+            appendSplitText(result, content.substring(currentIndex), document.metadata(), segmentSize, overlapSize);
+        }
+        return reindexSegments(result, document.metadata());
+    }
+
+    private static void appendSplitText(List<TextSegment> result, String text, Metadata metadata, int segmentSize, int overlapSize) {
+        if (oConvertUtils.isEmpty(text) || text.trim().isEmpty()) {
+            return;
+        }
+        Document textDocument = Document.from(text, metadata.copy());
+        result.addAll(DocumentSplitters.recursive(segmentSize, overlapSize).split(textDocument));
+    }
+
+    private static void appendSegment(List<TextSegment> result, String text, Metadata metadata) {
+        if (oConvertUtils.isEmpty(text) || text.trim().isEmpty()) {
+            return;
+        }
+        result.add(TextSegment.from(text, metadata.copy()));
+    }
+
+    private static List<TextSegment> reindexSegments(List<TextSegment> segments, Metadata baseMetadata) {
+        List<TextSegment> reindexedSegments = new ArrayList<>(segments.size());
+        for (int i = 0; i < segments.size(); i++) {
+            TextSegment segment = segments.get(i);
+            Metadata metadata = baseMetadata.copy();
+            metadata.putAll(segment.metadata().toMap());
+            metadata.put("index", i);
+            reindexedSegments.add(TextSegment.from(segment.text(), metadata));
+        }
+        return reindexedSegments;
     }
 
     /**
@@ -548,8 +589,11 @@ public class EmbeddingHandler implements IEmbeddingHandler {
      * @date 2025/3/11 17:45
      */
     public static AiModelOptions buildModelOptions(AiragModel model) {
+        // OneAPI 网关统一返回 OpenAPI 格式，映射为 OPENAI 客户端
+        String provider = LLMConsts.MODEL_PROVIDER_ONEAPI.equals(model.getProvider())
+                ? LLMConsts.MODEL_PROVIDER_OPENAI : model.getProvider();
         AiModelOptions.AiModelOptionsBuilder modelOpBuilder = AiModelOptions.builder()
-                .provider(model.getProvider())
+                .provider(provider)
                 .modelName(model.getModelName())
                 .baseUrl(model.getBaseUrl());
         if (oConvertUtils.isObjectNotEmpty(model.getCredential())) {

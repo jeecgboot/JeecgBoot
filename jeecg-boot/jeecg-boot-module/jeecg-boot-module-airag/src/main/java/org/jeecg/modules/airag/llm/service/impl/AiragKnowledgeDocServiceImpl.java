@@ -398,6 +398,11 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
                     throw new IOException("解压文件数量超限，可能是zip bomb攻击");
                 }
 
+                if (shouldSkipZipEntry(entry.getName())) {
+                    log.info("跳过压缩包中的隐藏文件: {}", entry.getName());
+                    continue;
+                }
+
                 Path newPath = safeResolve(targetDir, entry.getName());
 
                 if (entry.isDirectory()) {
@@ -422,6 +427,21 @@ public class AiragKnowledgeDocServiceImpl extends ServiceImpl<AiragKnowledgeDocM
                 }
             }
         }
+    }
+
+    /**
+     * 过滤压缩包中的系统隐藏文件，例如 macOS 自动生成的 __MACOSX 和 ._ 文件。
+     */
+    static boolean shouldSkipZipEntry(String entryName) {
+        if (oConvertUtils.isEmpty(entryName)) {
+            return true;
+        }
+        String normalizedName = entryName.replace("\\", "/");
+        if (normalizedName.startsWith("__MACOSX/")) {
+            return true;
+        }
+        String fileName = Paths.get(normalizedName).getFileName().toString();
+        return fileName.startsWith("._") || fileName.equals(".DS_Store");
     }
 
     /**
