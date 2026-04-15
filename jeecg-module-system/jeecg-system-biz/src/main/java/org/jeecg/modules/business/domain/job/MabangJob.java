@@ -107,7 +107,9 @@ public class MabangJob implements Job {
                             dayBeforeEndDateTime, endDateTime, dateType);
                     platformOrderMabangService.saveOrderFromMabang(unshipped);
                     fulfilledOrderIds.addAll(
-                            unshipped.stream().filter(Order::isFulfilled)
+                            unshipped.stream()
+                                    .filter(order -> !order.isResend())
+                                    .filter(Order::isFulfilled)
                                     .map(Order::getPlatformOrderId)
                                     .collect(Collectors.toList()));
                 }

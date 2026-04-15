@@ -126,6 +126,9 @@ public class Order {
     @JSONField(name = "isNewOrder")
     private String isNewOrder;
 
+    @JSONField(name = "isResend")
+    private String isResend;
+
     /**
      * 订单备注
      */
@@ -245,5 +248,9 @@ public class Order {
 
     public boolean isFulfilled() {
         return platformStatus.equalsIgnoreCase("fulfilled");
+    }
+
+    public boolean isResend() {
+        return isResend.equalsIgnoreCase("1");
     }
 }
