@@ -33,4 +33,9 @@ public class CountryController {
         System.out.println(countryList);
         return Result.OK(countryList);
     }
+
+    @GetMapping(value = "/popularList")
+    public Result<List<Country>> getPopularList() {
+        return Result.OK(countryService.getPopularCountries());
+    }
 }

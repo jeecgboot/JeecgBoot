@@ -2,8 +2,10 @@ package org.jeecg.modules.business.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.jeecg.modules.business.domain.logistic.CostTrialCalculation;
+import org.jeecg.modules.business.entity.Country;
 import org.jeecg.modules.business.entity.LogisticChannel;
 import org.jeecg.modules.business.entity.LogisticChannelPrice;
+import org.jeecg.modules.business.mapper.CountryMapper;
 import org.jeecg.modules.business.mapper.LogisticChannelMapper;
 import org.jeecg.modules.business.mapper.LogisticChannelPriceMapper;
 import org.jeecg.modules.business.service.ILogisticChannelService;
@@ -29,6 +31,8 @@ public class LogisticChannelServiceImpl extends ServiceImpl<LogisticChannelMappe
     private LogisticChannelMapper logisticChannelMapper;
     @Autowired
     private LogisticChannelPriceMapper logisticChannelPriceMapper;
+    @Autowired
+    private CountryMapper countryMapper;
 
     @Override
     @Transactional
@@ -134,13 +138,35 @@ public class LogisticChannelServiceImpl extends ServiceImpl<LogisticChannelMappe
     }
 
     @Override
+    public List<LogisticChannel> listAvailableByCountry(String country) {
+        String countryCode = resolveCountryCode(country);
+        if (countryCode == null || countryCode.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return logisticChannelMapper.listAvailableByCountryCode(countryCode);
+    }
+
+    @Override
     public List<LogisticChannel> listByIdAndZhName() {
         return logisticChannelMapper.listByIdAndZhName();
     }
 
-    @Override
-    public List<LogisticChannel> getFromZhName(List<String> zhNames) {
-        return logisticChannelMapper.getFromZhName(zhNames);
+    private String resolveCountryCode(String country) {
+        if (country == null || country.trim().isEmpty()) {
+            return null;
+        }
+        String value = country.trim();
+        Country countryEntity = countryMapper.selectById(value);
+        if (countryEntity == null) {
+            countryEntity = countryMapper.findByCode(value);
+        }
+        if (countryEntity == null) {
+            countryEntity = countryMapper.findByEnName(value);
+        }
+        if (countryEntity == null) {
+            countryEntity = countryMapper.findByZhName(value);
+        }
+        return countryEntity == null ? value : countryEntity.getCode();
     }
 
 }

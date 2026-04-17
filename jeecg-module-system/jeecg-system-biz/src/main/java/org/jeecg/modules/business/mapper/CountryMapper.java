@@ -51,4 +51,5 @@ public interface CountryMapper extends BaseMapper<Country> {
 
     List<Country> findAll();
     List<Country> findActiveCountries();
+    List<Country> findByCodes(@Param("codes") List<String> codes);
 }

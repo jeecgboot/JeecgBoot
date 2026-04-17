@@ -1,10 +1,10 @@
 package org.jeecg.modules.business.entity;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -120,4 +120,13 @@ public class LogisticChannel implements Serializable {
     @Dict(dictTable = "logistic_channel", dicText = "internal_name", dicCode = "id")
     @ApiModelProperty(value = "对标物流渠道ID")
     private java.lang.String samePriceChannelId;
+
+    @TableField(exist = false)
+    private Boolean priceFromReference;
+
+    @TableField(exist = false)
+    private String priceReferenceChannelName;
+
+    @TableField(exist = false)
+    private String priceNote;
 }

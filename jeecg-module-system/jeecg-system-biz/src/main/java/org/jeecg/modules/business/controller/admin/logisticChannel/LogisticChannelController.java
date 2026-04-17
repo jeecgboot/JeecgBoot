@@ -95,6 +95,12 @@ public class LogisticChannelController {
      * @param logisticChannelPage
      * @return
      */
+    @ApiOperation(value = "List available logistic channels by country", notes = "Only returns active channels with price rows for the selected country")
+    @GetMapping(value = "/listByCountry")
+    public Result<List<LogisticChannel>> listByCountry(@RequestParam(name = "country") String country) {
+        return Result.OK(logisticChannelService.listAvailableByCountry(country));
+    }
+
     @AutoLog(value = "物流渠道-添加")
     @ApiOperation(value = "物流渠道-添加", notes = "物流渠道-添加")
     @PostMapping(value = "/add")

@@ -109,14 +109,17 @@ public class Quotation implements Serializable {
     /**Prix_d_achat*/
     @Excel(name = "Prix_d_achat", width = 15)
     @ApiModelProperty(value = "Prix_d_achat")
+    @TableField(exist = false)
     private java.math.BigDecimal prixAchat;
     /**物流费(€)*/
     @Excel(name = "物流费(€)", width = 15)
     @ApiModelProperty(value = "物流费(€)")
+    @TableField(exist = false)
     private java.math.BigDecimal logisticsFee;
     /**总费用(€)*/
     @Excel(name = "总费用(€)", width = 15)
     @ApiModelProperty(value = "总费用(€)")
+    @TableField(exist = false)
     private java.math.BigDecimal totalFee;
     /**采购价(¥)*/
     @Excel(name = "采购价(¥)", width = 15)
@@ -133,10 +136,12 @@ public class Quotation implements Serializable {
     /**成本价 RMB*/
     @Excel(name = "成本价 RMB", width = 15)
     @ApiModelProperty(value = "成本价 RMB")
+    @TableField(exist = false)
     private java.math.BigDecimal costRmb;
     /**成本价 EURO*/
     @Excel(name = "成本价 EURO", width = 15)
     @ApiModelProperty(value = "成本价 EURO")
+    @TableField(exist = false)
     private java.math.BigDecimal costEur;
     /**售价 RMB*/
     @Excel(name = "售价 RMB", width = 15)
@@ -145,6 +150,7 @@ public class Quotation implements Serializable {
     /**售价 EURO*/
     @Excel(name = "售价 EURO", width = 15)
     @ApiModelProperty(value = "售价 EURO")
+    @TableField(exist = false)
     private java.math.BigDecimal salePriceEur;
     /**合作伙伴售价*/
     @Excel(name = "合作伙伴售价", width = 15)
@@ -153,18 +159,22 @@ public class Quotation implements Serializable {
     /**利润 RMB*/
     @Excel(name = "利润 RMB", width = 15)
     @ApiModelProperty(value = "利润 RMB")
+    @TableField(exist = false)
     private java.math.BigDecimal profitRmb;
     /**利润 EURO*/
     @Excel(name = "利润 EURO", width = 15)
     @ApiModelProperty(value = "利润 EURO")
+    @TableField(exist = false)
     private java.math.BigDecimal profitEur;
     /**利润率*/
     @Excel(name = "利润率", width = 15)
     @ApiModelProperty(value = "利润率")
+    @TableField(exist = false)
     private java.math.BigDecimal margin;
     /**快递重量(g)*/
     @Excel(name = "快递重量(g)", width = 15)
     @ApiModelProperty(value = "快递重量(g)")
+    @TableField(exist = false)
     private java.lang.Integer expressWeightG;
     /**毛重g*/
     @Excel(name = "毛重g", width = 15)
@@ -274,6 +284,12 @@ public class Quotation implements Serializable {
     @Excel(name = "询单备注", width = 30)
     @ApiModelProperty(value = "询单备注")
     private java.lang.String inquiryRemark;
+
+    @Excel(name = "优先级模式", width = 15, dicCode = "priority_mode")
+    @Dict(dicCode = "priority_mode")
+    @ApiModelProperty(value = "优先级模式")
+    @TableField(value = "priorityMode")
+    private java.lang.String priorityMode;
 
     @TableField(exist = false)
     private List<String> inquiryCountryList;

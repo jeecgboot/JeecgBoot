@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.QuotationMapper">
@@ -23,10 +23,48 @@
                 AND inquiry_sales = #{q.inquirySales}
             </if>
             <if test="q.inquiryCountry != null and q.inquiryCountry != ''">
-                AND FIND_IN_SET(#{q.inquiryCountry}, inquiry_country)
+                AND (
+                    FIND_IN_SET(#{q.inquiryCountry}, inquiry_country)
+                    OR EXISTS (
+                        SELECT 1
+                        FROM country c
+                        WHERE c.id = #{q.inquiryCountry}
+                          AND (
+                              FIND_IN_SET(c.name_en, inquiry_country)
+                              OR FIND_IN_SET(c.special_name, inquiry_country)
+                              OR FIND_IN_SET(c.name_zh, inquiry_country)
+                              OR FIND_IN_SET(c.code, inquiry_country)
+                          )
+                    )
+                )
+            </if>
+            <if test="q.priorityMode != null and q.priorityMode != ''">
+                AND `priorityMode` = #{q.priorityMode}
             </if>
             <if test="q.country != null and q.country != ''">
-                AND country = #{q.country}
+                AND (
+                    country = #{q.country}
+                    OR country IN (
+                        SELECT c.name_en
+                        FROM country c
+                        WHERE c.id = #{q.country}
+                    )
+                    OR country IN (
+                        SELECT c.special_name
+                        FROM country c
+                        WHERE c.id = #{q.country}
+                    )
+                    OR country IN (
+                        SELECT c.name_zh
+                        FROM country c
+                        WHERE c.id = #{q.country}
+                    )
+                    OR country IN (
+                        SELECT c.code
+                        FROM country c
+                        WHERE c.id = #{q.country}
+                    )
+                )
             </if>
         </if>
         </where>
@@ -62,6 +100,7 @@
         <if test="q.inquiryColor != null">inquiry_color = #{q.inquiryColor},</if>
         <if test="q.inquiryRemark != null">inquiry_remark = #{q.inquiryRemark},</if>
         <if test="q.attachments != null">attachments = #{q.attachments},</if>
+        <if test="q.priorityMode != null">`priorityMode` = #{q.priorityMode},</if>
     </sql>
 
     <update id="updateInquiryFields">
@@ -87,30 +126,18 @@
         <if test="q.country != null and q.country != ''">country = #{q.country},</if>
 
         <if test="q.category != null and q.category != ''">category = #{q.category},</if>
+        <if test="q.priorityMode != null">`priorityMode` = #{q.priorityMode},</if>
 
         <if test="q.logisticChannel != null and q.logisticChannel != ''">logistic_channel = #{q.logisticChannel},</if>
         <if test="q.livraison != null and q.livraison != ''">livraison = #{q.livraison},</if>
-        <if test="q.prixAchat != null">prix_achat = #{q.prixAchat},</if>
-        <if test="q.logisticsFee != null">logistics_fee = #{q.logisticsFee},</if>
-        <if test="q.totalFee != null">total_fee = #{q.totalFee},</if>
-
-        <if test="q.expressWeightG != null">express_weight_g = #{q.expressWeightG},</if>
 
         <if test="q.purchasePriceRmb != null">purchase_price_rmb = #{q.purchasePriceRmb},</if>
         <if test="q.sizeRange != null and q.sizeRange != ''">size_range = #{q.sizeRange},</if>
         <if test="q.domesticShippingRmb != null">domestic_shipping_rmb = #{q.domesticShippingRmb},</if>
 
-        <if test="q.costRmb != null">cost_rmb = #{q.costRmb},</if>
-        <if test="q.costEur != null">cost_eur = #{q.costEur},</if>
-
         <if test="q.salePriceRmb != null">sale_price_rmb = #{q.salePriceRmb},</if>
-        <if test="q.salePriceEur != null">sale_price_eur = #{q.salePriceEur},</if>
 
         <if test="q.partnerSalePrice != null">partner_sale_price = #{q.partnerSalePrice},</if>
-
-        <if test="q.profitRmb != null">profit_rmb = #{q.profitRmb},</if>
-        <if test="q.profitEur != null">profit_eur = #{q.profitEur},</if>
-        <if test="q.margin != null">margin = #{q.margin},</if>
 
         <if test="q.grossWeightG != null">gross_weight_g = #{q.grossWeightG},</if>
         <if test="q.packWeightG != null and q.packWeightG != ''">pack_weight_g = #{q.packWeightG},</if>
@@ -161,20 +188,10 @@
     <sql id="RevokeQuoteSet">
         status = '0',
       sale_price_rmb = NULL,
-      sale_price_eur = NULL,
       purchase_price_rmb = NULL,
       domestic_shipping_rmb = NULL,
-      cost_rmb = NULL,
-      cost_eur = NULL,
-      profit_rmb = NULL,
-      profit_eur = NULL,
-      margin = NULL,
-      prix_achat = NULL,
-      logistics_fee = NULL,
-      total_fee = NULL,
       gross_weight_g = NULL,
       pack_weight_g = NULL,
-      express_weight_g = NULL,
       customer_price = NULL,
       customer_url = NULL,
       partner_sale_price = NULL,
@@ -199,7 +216,7 @@
       specification = NULL,
       color_note = NULL,
       color_img = NULL,
-      outer_package_img = NULL
+      outer_package_img = NULL,
     </sql>
 
     <update id="revokeQuoteById">
