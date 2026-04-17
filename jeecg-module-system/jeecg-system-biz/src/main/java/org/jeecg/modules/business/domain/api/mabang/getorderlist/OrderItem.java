@@ -85,4 +85,8 @@ public class OrderItem {
             productAvailable = "1";
         }
     }
+
+    public boolean isObsolete() {
+        return status.equals("4");
+    }
 }

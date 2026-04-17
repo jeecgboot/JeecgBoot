@@ -51,9 +51,15 @@ public class OrderCreationRequestBody implements RequestBody {
         putNonNull(json, "orderId", shoumanOrderBase.getPlatformOrderId());
         JSONArray outboundInfos = new JSONArray();
         BigDecimal totalPrice = BigDecimal.ZERO;
+        StringBuilder memo = new StringBuilder();
         // Merge contents in case of necklaces with gems
         List<ShoumanOrderContent> reducedContents = mergeContentsForNecklaceWithGems(shoumanOrderBase.getContentList());
         for (ShoumanOrderContent content : reducedContents.isEmpty() ? shoumanOrderBase.getContentList() : reducedContents) {
+            if (content.getIsMemo()) {
+                if (!memo.isEmpty()) memo.append(LINE_BREAK);
+                memo.append(content.getRemark());
+                continue;
+            }
             JSONObject contentJson = new JSONObject();
             putNonNull(contentJson, "productName", content.getProductName());
             putNonNull(contentJson, "customerId", shoumanOrderBase.getPlatformOrderNumber().replace("MS", ""));
@@ -77,6 +83,9 @@ public class OrderCreationRequestBody implements RequestBody {
             putNonNull(logisticsInfo, "trackingNumber", shoumanOrderBase.getTrackingNumber());
             putNonNull(logisticsInfo, "labelUrl", shoumanOrderBase.getShippingLabelUrl());
             putNonNull(json, "logisticsInfo", logisticsInfo);
+        }
+        if (!memo.isEmpty()) {
+            putNonNull(json, "orderMemo", memo.toString());
         }
         return json;
     }

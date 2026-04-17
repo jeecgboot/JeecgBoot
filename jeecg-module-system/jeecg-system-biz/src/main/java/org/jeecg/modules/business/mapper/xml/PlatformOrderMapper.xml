@@ -1659,7 +1659,7 @@
                 item="shopCode">
             #{shopCode}
         </foreach>
-        AND poc.erp_status IN (1, 2)
+        AND poc.erp_status IN (1)
         AND platform_warehouse_name IN
         <foreach
                 collection="platformWarehouses"

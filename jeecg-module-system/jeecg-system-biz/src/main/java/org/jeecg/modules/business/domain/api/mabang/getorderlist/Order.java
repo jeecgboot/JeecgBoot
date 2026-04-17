@@ -126,6 +126,9 @@ public class Order {
     @JSONField(name = "isNewOrder")
     private String isNewOrder;
 
+    @JSONField(name = "isResend")
+    private String isResend;
+
     /**
      * 订单备注
      */
@@ -166,6 +169,12 @@ public class Order {
      */
     @JSONField(name = "shippingService")
     private String shippingService;
+
+    /**
+     * 订单在平台状态
+     */
+    @JSONField(name = "platformFulfillmentStatus")
+    private String platformStatus;
 
     public void setTrackingNumber(String trackingNumber) {
         if (trackingNumber != null && trackingNumber.isEmpty()) {
@@ -235,5 +244,13 @@ public class Order {
 
     public boolean hasLogisticChannelAssigned() {
         return logisticChannelName != null && !logisticChannelName.isEmpty();
+    }
+
+    public boolean isFulfilled() {
+        return platformStatus.equalsIgnoreCase("fulfilled");
+    }
+
+    public boolean isResend() {
+        return isResend.equalsIgnoreCase("1");
     }
 }

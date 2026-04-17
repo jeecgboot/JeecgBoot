@@ -62,6 +62,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
     private static final String ABNORMAL_LABEL_NAME = "客户要求暂时不处理";
+    private static final String FULFILLED_LABEL_NAME = "订单在平台已发货";
 
     @Override
     @Transactional
@@ -399,6 +400,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
             requests.add(new OrderListRequestBody().setPlatformOrderIds(platformOrderIdList));
         }
         List<Order> mabangOrders = new ArrayList<>();
+        List<String> fulfilledOrderIds = new ArrayList<>();
         ExecutorService executor = Executors.newFixedThreadPool(10);
         List<CompletableFuture<Boolean>> futures = requests.stream()
                 .map(request -> CompletableFuture.supplyAsync(() -> {
@@ -408,6 +410,11 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         OrderListStream stream = new OrderListStream(rawStream);
                         List<Order> orders = stream.all();
                         mabangOrders.addAll(orders);
+                        fulfilledOrderIds.addAll(orders.stream()
+                                .filter(order -> !order.isResend())
+                                .filter(Order::isFulfilled)
+                                .map(Order::getPlatformOrderId)
+                                .collect(toList()));
                         success = !orders.isEmpty();
                     } catch (RuntimeException e) {
                         log.error("Error communicating with MabangAPI", e);
@@ -424,10 +431,38 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
 
         log.info("{} orders to be updated.", syncedOrderNumber);
         saveOrderFromMabang(mabangOrders);
+        executor.shutdown();
 
         JSONObject res = new JSONObject();
         res.put("synced_order_number", syncedOrderNumber);
         res.put("synced_order_ids", syncedOrderIds);
+
+        ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(
+                DEFAULT_NUMBER_OF_THREADS,
+                MABANG_API_RATE_LIMIT_PER_MINUTE,
+                TimeUnit.MINUTES);
+        log.info("{} orders are at least partially fulfilled by third party, suspending those orders now.",
+                fulfilledOrderIds.size());
+        List<CompletableFuture<Boolean>> fulfilledFutures = fulfilledOrderIds.stream()
+                .map(id -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        OrderSuspendRequestBody body = new OrderSuspendRequestBody(
+                                id,
+                                FULFILLED_LABEL_NAME,
+                                ""
+                        );
+                        OrderSuspendRequest request = new OrderSuspendRequest(body);
+                        OrderSuspendResponse response = request.send();
+                        return response.success();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }, throttlingExecutorService))
+                .collect(toList());
+        results = fulfilledFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        nbSuccesses = results.stream().filter(b -> b).count();
+        log.info("{}/{} orders suspended successfully", nbSuccesses, fulfilledOrderIds.size());
+        throttlingExecutorService.shutdown();
         return res;
     }
 

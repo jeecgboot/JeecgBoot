@@ -24,6 +24,8 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -38,6 +40,7 @@ public class AddGiftJob implements Job {
 
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 30;
 
+    private static final ZoneId CTT = ZoneId.of("Asia/Shanghai");
     private static final List<String> DEFAULT_SHOPS = Arrays.asList("FC Takumiya", "FCFR");
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 10;
     private static final String OBSOLETE_STATUS_CODE = "4";
@@ -51,7 +54,8 @@ public class AddGiftJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        LocalDateTime endDateTime = LocalDateTime.now();
+        ZonedDateTime nowCtt = ZonedDateTime.now(CTT);
+        LocalDateTime endDateTime = nowCtt.toLocalDateTime();
         LocalDateTime startDateTime = endDateTime.minusDays(DEFAULT_NUMBER_OF_DAYS);
         List<String> shops = DEFAULT_SHOPS;
         JobDataMap jobDataMap = context.getMergedJobDataMap();
@@ -171,8 +175,8 @@ public class AddGiftJob implements Job {
                 // Determine whether order is pending or preparing
                 order.resolveStatus();
                 log.info("Processing order {} ", order.getPlatformOrderId());
-                // Non matching-quantity rules only apply once per order
-                boolean nonMatchingRulesApplied = false;
+                // Non matching-quantity rules can each apply once per order
+                Set<String> nonMatchingRulesApplied = new HashSet<>();
                 HashMap<String, Integer> newGiftMap = new HashMap<>();
                 Map<Boolean, List<OrderItem>> orderItemMap = order.getOrderItems()
                         .stream()
@@ -184,20 +188,23 @@ public class AddGiftJob implements Job {
                 }
                 for (OrderItem orderItem : orderItemMap.get(Boolean.FALSE)) {
                     String erpCode = orderItem.getErpCode();
-                    if (!nonMatchingRulesApplied && nonMatchingQuantityRules != null) {
+                    if (nonMatchingQuantityRules != null) {
                         for (GiftRule giftRule : nonMatchingQuantityRules) {
                             // Ignore gift rule if its erp status is present yet different from the order item's
-                            if (shouldIgnoreForErpStatus(order, giftRule)) continue;
+                            if (shouldIgnoreForErpStatusOrCountry(order, giftRule)) continue;
+                            String ruleKey = giftRule.getSku() + "|" + giftRule.getRegex();
+                            if (nonMatchingRulesApplied.contains(ruleKey)) {
+                                continue;
+                            }
                             if (erpCode.matches(giftRule.getRegex())) {
-                                nonMatchingRulesApplied = true;
+                                nonMatchingRulesApplied.add(ruleKey);
                                 putValueInMapOrReduce(giftRule.getSku(), 1, newGiftMap);
-                                break;
                             }
                         }
                     }
                     if (matchingQuantityRules == null) continue;
                     for (GiftRule giftRule : matchingQuantityRules) {
-                        if (shouldIgnoreForErpStatus(order, giftRule)) continue;
+                        if (shouldIgnoreForErpStatusOrCountry(order, giftRule)) continue;
                         if (erpCode.matches(giftRule.getRegex())) {
                             putValueInMapOrReduce(giftRule.getSku(), orderItem.getQuantity(), newGiftMap);
                         }
@@ -231,17 +238,26 @@ public class AddGiftJob implements Job {
         return giftInsertionRequests;
     }
 
-    private static boolean shouldIgnoreForErpStatus(Order order, GiftRule giftRule) {
+    private static boolean shouldIgnoreForErpStatusOrCountry(Order order, GiftRule giftRule) {
         // Ignore gift rule if its erp status is present yet different from the order item's
-        if (giftRule.getErpStatus() != null && !giftRule.getErpStatus().equalsIgnoreCase(order.getStatus())) {
-            log.info("Gift rule only applies to status {} while order item status {},  rule on {} to be ignored", giftRule.getErpStatus(),
+        String erpStatus = giftRule.getErpStatus();
+        String countries = giftRule.getCountries();
+        if (erpStatus != null && !erpStatus.isEmpty() && !erpStatus.equalsIgnoreCase(order.getStatus())) {
+            log.info("Gift rule only applies to status {} while order item status {},  rule on {} to be ignored", erpStatus,
                     order.getStatus(), giftRule.getSku());
             return true;
-        } else {
-            log.info("Gift rule status {} matches order item status {},  rule on {} to be applied", giftRule.getErpStatus(),
-                    order.getStatus(), giftRule.getSku());
-            return false;
+        } else if (countries != null && !countries.isEmpty()) {
+            // Ignore gift rule if countries list exists, and DO NOT contain order's country
+            String[] countriesArray = countries.split(",");
+            if (!Arrays.asList(countriesArray).contains(order.getCountry())) {
+                log.info("Gift rule only applies to following countries {} while order is from {}, rule on {} to be ignored",
+                        countries, order.getCountry(), giftRule.getSku());
+                return true;
+            }
         }
+        log.info("Gift rule status {} matches order item status {}, countries list {}/ countries list contains order's country {}, " +
+                "rule on {} to be applied", erpStatus, order.getStatus(), countries, order.getCountry(), giftRule.getSku());
+        return false;
     }
 
     private static void putValueInMapOrReduce(String key, Integer value, HashMap<String, Integer> giftMap) {
@@ -252,3 +268,4 @@ public class AddGiftJob implements Job {
         }
     }
 }
+
