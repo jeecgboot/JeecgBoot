@@ -108,7 +108,7 @@ public class MabangJob implements Job {
                     platformOrderMabangService.saveOrderFromMabang(unshipped);
                     fulfilledOrderIds.addAll(
                             unshipped.stream()
-                                    .filter(order -> !order.isResend())
+                                    .filter(order -> !order.isResend() && (order.isPending() || order.isPreparing()))
                                     .filter(Order::isFulfilled)
                                     .map(Order::getPlatformOrderId)
                                     .collect(Collectors.toList()));
