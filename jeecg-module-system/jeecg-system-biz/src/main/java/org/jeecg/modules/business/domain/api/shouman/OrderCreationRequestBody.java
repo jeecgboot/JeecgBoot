@@ -113,6 +113,7 @@ public class OrderCreationRequestBody implements RequestBody {
                             sb.append(ringSize.getText());
                         }
                     } else {
+                        if (content.isEmpty()) continue;
                         sb.append(regex.getPrefix())
                                 .append(customCounter++)
                                 .append(QUOTE);
