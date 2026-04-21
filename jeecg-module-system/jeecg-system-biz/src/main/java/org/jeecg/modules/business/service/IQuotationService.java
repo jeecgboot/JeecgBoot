@@ -21,6 +21,7 @@ public interface IQuotationService extends IService<Quotation> {
     int updateQuoteFields(Quotation q);
     Quotation estimateQuote(Quotation input);
     void normalizeCountryFields(Quotation quotation);
+    void fillInquirySalesByClient(Quotation quotation);
     int revokeQuoteById(String id);
     int revokeQuoteBatch(List<String> ids);
     Result<String> applyClientScope(Quotation quotation);

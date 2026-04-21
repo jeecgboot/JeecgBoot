@@ -294,6 +294,61 @@ public class Quotation implements Serializable {
     @TableField(exist = false)
     private List<String> inquiryCountryList;
 
+    @TableField(exist = false)
+    private List<String> inquirySalesList;
+
+    @JsonGetter("inquirySalesList")
+    public List<String> getInquirySalesAsList() {
+        if (inquirySales == null || inquirySales.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        String[] arr = inquirySales.split(",");
+        List<String> list = new ArrayList<String>(arr.length);
+        for (String s : arr) {
+            if (s != null) {
+                String t = s.trim();
+                if (!t.isEmpty()) list.add(t);
+            }
+        }
+        return list;
+    }
+
+    @JsonSetter("inquirySales")
+    public void setInquirySalesFlexible(JsonNode node) {
+        if (node == null || node.isNull()) {
+            this.inquirySales = null;
+            return;
+        }
+        if (node.isArray()) {
+            List<String> list = new ArrayList<String>();
+            for (JsonNode n : node) {
+                if (n != null && !n.isNull()) {
+                    String v = n.asText();
+                    if (v != null) {
+                        v = v.trim();
+                        if (!v.isEmpty()) list.add(v);
+                    }
+                }
+            }
+            this.inquirySales = list.isEmpty() ? null : joinComma(list);
+            return;
+        }
+        String s = node.asText();
+        if (s == null || s.trim().isEmpty()) {
+            this.inquirySales = null;
+            return;
+        }
+        String[] arr = s.split(",");
+        List<String> list = new ArrayList<String>(arr.length);
+        for (String item : arr) {
+            if (item != null) {
+                String t = item.trim();
+                if (!t.isEmpty()) list.add(t);
+            }
+        }
+        this.inquirySales = list.isEmpty() ? null : joinComma(list);
+    }
+
     //support two formats for output: 1) "id1,id2"   2) ["id1","id2"]
     @JsonGetter("inquiryCountryList")
     public List<String> getInquiryCountryAsList() {

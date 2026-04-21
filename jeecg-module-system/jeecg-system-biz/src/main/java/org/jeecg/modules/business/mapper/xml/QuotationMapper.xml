@@ -20,7 +20,7 @@
                 AND inquiry_client = #{q.inquiryClient}
             </if>
             <if test="q.inquirySales != null and q.inquirySales != ''">
-                AND inquiry_sales = #{q.inquirySales}
+                AND FIND_IN_SET(#{q.inquirySales}, inquiry_sales)
             </if>
             <if test="q.inquiryCountry != null and q.inquiryCountry != ''">
                 AND (

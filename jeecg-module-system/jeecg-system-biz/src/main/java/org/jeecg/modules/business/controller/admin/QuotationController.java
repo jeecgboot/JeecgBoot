@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.business.entity.Quotation;
+import org.jeecg.modules.business.mapper.ClientSalespersonMapper;
 import org.jeecg.modules.business.service.IQuotationService;
 import org.jeecg.modules.business.service.ISecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 @Api(tags = "Inquiry quotation")
 @RestController
@@ -35,6 +37,8 @@ public class QuotationController {
     private IQuotationService quotationService;
     @Autowired
     private ISecurityService securityService;
+    @Autowired
+    private ClientSalespersonMapper clientSalespersonMapper;
 
     @ApiOperation("Inquiry list")
     @GetMapping("/inquiry/list")
@@ -61,6 +65,7 @@ public class QuotationController {
             return Result.error(clientScopeError.getCode(), clientScopeError.getMessage());
         }
         quotationService.normalizeCountryFields(q);
+        quotationService.fillInquirySalesByClient(q);
         q.setStatus(STATUS_INQUIRY);
         quotationService.save(q);
         return Result.OK("Added successfully");
@@ -101,6 +106,19 @@ public class QuotationController {
         }
         Quotation q = quotationService.getByIdAndStatus(id, STATUS_INQUIRY);
         return q != null ? Result.OK(q) : Result.error("Record not found or not in inquiry status");
+    }
+
+    @ApiOperation("Get salespersons by client")
+    @GetMapping("/clientSalespersons")
+    public Result<List<String>> getClientSalespersons(@RequestParam("clientId") String clientId) {
+        if (StringUtils.isBlank(clientId)) return Result.error("clientId cannot be empty");
+        Quotation q = new Quotation();
+        q.setInquiryClient(clientId);
+        Result<String> clientScopeError = quotationService.applyClientScope(q);
+        if (clientScopeError != null) {
+            return Result.error(clientScopeError.getCode(), clientScopeError.getMessage());
+        }
+        return Result.OK(clientSalespersonMapper.getSalespersonIdsByClientId(q.getInquiryClient()));
     }
 
     @ApiOperation("Quote list")

@@ -52,6 +52,7 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
     @Autowired private ExchangeRatesMapper exchangeRateMapper;
     @Autowired private ISecurityService securityService;
     @Autowired private IUserClientService userClientService;
+    @Autowired private ClientSalespersonMapper clientSalespersonMapper;
 
     @Override
     public IPage<Quotation> pageByStatus(Page<Quotation> page, Quotation q) {
@@ -219,6 +220,7 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
     @Override
     public int updateInquiryFields(Quotation q) {
         normalizeCountryFields(q);
+        fillInquirySalesByClient(q);
         return baseMapper.updateInquiryFields(q);
     }
 
@@ -241,6 +243,23 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         }
         q.setCountry(normalizeCountryValue(q.getCountry()));
         q.setInquiryCountry(normalizeCountryList(q.getInquiryCountry()));
+    }
+
+    @Override
+    public void fillInquirySalesByClient(Quotation q) {
+        if (q == null || StringUtils.isBlank(q.getInquiryClient()) || StringUtils.isNotBlank(q.getInquirySales())) {
+            return;
+        }
+        List<String> salespersonIds = clientSalespersonMapper.getSalespersonIdsByClientId(q.getInquiryClient());
+        if (salespersonIds == null || salespersonIds.isEmpty()) {
+            return;
+        }
+        String sales = salespersonIds.stream()
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.joining(","));
+        if (StringUtils.isNotBlank(sales)) {
+            q.setInquirySales(sales);
+        }
     }
 
     @Override
