@@ -203,4 +203,8 @@ public class ClientPage {
     @ApiModelProperty(value = "客户名下SKU")
     private List<ClientSku> clientSkuList;
 
+    @ExcelCollection(name = "跟单销售IDs")
+    @ApiModelProperty(value = "跟单销售IDs")
+    private List<String> salespersonIds;
+
 }
