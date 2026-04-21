@@ -172,6 +172,47 @@ public class PlatformOrderShippingInvoiceService {
             "Prix unitaire",
             "N° de facture"
     };
+    private final static String[] DETAILS_TITLES_EN = {
+            "Shop",
+            "Mabang No.",
+            "Order No.",
+            "Tracking No.",
+            "Order Date",
+            "Shipping Date",
+            "Client Name",
+            "Country",
+            "Postal Code",
+            "SKU",
+            "Product Name",
+            "Quantity",
+            "Purchase Fee",
+            "Freight Fee",
+            "Shipping Fee",
+            "Service Fee",
+            "Picking Fee",
+            "Packaging Material Fee",
+            "Product Insurance Fee",
+            "VAT",
+            "Invoice No."
+    };
+    private final static String[] SAV_TITLES_EN = {
+            "Shop",
+            "Mabang No.",
+            "Order No.",
+            "Refund Date",
+            "Purchase Refund Amount",
+            "Shipping Refund Amount",
+            "Total Refund Amount",
+            "Invoice No."
+    };
+    private final static String[] EXTRA_FEE_TITLES_EN = {
+            "Shop",
+            "Type",
+            "Description",
+            "Quantity",
+            "Unit Price",
+            "Invoice No."
+    };
     private final static String[] PURCHASE_INVENTORY_TITLES = {
             "SKU",
             "Nom Anglais",
@@ -440,9 +481,9 @@ public class PlatformOrderShippingInvoiceService {
     }
 
     public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, List<ExtraFeeResult> extraFees, String fileNameInfo, String invoiceEntity, String internalCode) throws IOException {
-        SheetManager sheetManager = SheetManager.createXLSX();
+        SheetManager sheetManager = SheetManager.createXLSX("Details", "SAV", "Additional Fees");
         sheetManager.startDetailsSheet();
-        for (String title : DETAILS_TITLES) {
+        for (String title : DETAILS_TITLES_EN) {
             sheetManager.write(title);
             sheetManager.nextCol();
         }
@@ -495,7 +536,7 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.nextRow();
         }
         sheetManager.startSavSheet();
-        for (String title : SAV_TITLES) {
+        for (String title : SAV_TITLES_EN) {
             sheetManager.write(title);
             sheetManager.nextCol();
         }
@@ -527,7 +568,7 @@ public class PlatformOrderShippingInvoiceService {
         }
 
         sheetManager.startExtraFeeSheet();
-        for (String title: EXTRA_FEE_TITLES) {
+        for (String title: EXTRA_FEE_TITLES_EN) {
             sheetManager.write(title);
             sheetManager.nextCol();
         }
