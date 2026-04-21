@@ -1740,13 +1740,25 @@ public class AiragChatServiceImpl implements IAiragChatService {
                 //下载网络图片
                 InputStream inputStream = FileDownloadUtils.getDownInputStream(value, "");
                 if (inputStream != null) {
-                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                    byte[] inpByte = new byte[1024]; // 1KB缓冲区
-                    int nRead;
-                    while ((nRead = inputStream.read(inpByte, 0, data.length)) != -1) {
-                        buffer.write(inpByte, 0, nRead);
+                    try {
+                        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                        byte[] inpByte = new byte[1024]; // 1KB缓冲区
+                        int nRead;
+                        while ((nRead = inputStream.read(inpByte)) != -1) {
+                            buffer.write(inpByte, 0, nRead);
+                        }
+                        data = buffer.toByteArray();
+                    } catch (IOException e) {
+                        log.error("读取图片流失败", e);
+                    } finally {
+                        try {
+                            if (inputStream != null) {
+                                inputStream.close();
+                            }
+                        } catch (IOException e) {
+                            log.error("关闭图片流失败", e);
+                        }
                     }
-                    data = buffer.toByteArray();
                 }
             }
             if (data != null) {
