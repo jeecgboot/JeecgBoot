@@ -76,4 +76,9 @@ public interface IClientService extends IService<Client> {
 	List<Client> getClientsWithAutoInvoice();
 
 	List<String> findClientIdsBySalesId(String salesId);
+	/**
+	 * Save the salespersons assigned to a client.
+	 */
+	void saveClientSalespersons(String clientId, List<String> salespersonIds);
+
 }

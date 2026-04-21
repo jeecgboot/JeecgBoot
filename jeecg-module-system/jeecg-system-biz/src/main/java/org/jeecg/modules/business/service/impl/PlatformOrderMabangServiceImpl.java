@@ -411,7 +411,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                         List<Order> orders = stream.all();
                         mabangOrders.addAll(orders);
                         fulfilledOrderIds.addAll(orders.stream()
-                                .filter(order -> !order.isResend())
+                                .filter(order -> !order.isResend() && (order.isPending() || order.isPreparing()))
                                 .filter(Order::isFulfilled)
                                 .map(Order::getPlatformOrderId)
                                 .collect(toList()));

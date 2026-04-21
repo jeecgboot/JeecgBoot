@@ -247,10 +247,10 @@ public class Order {
     }
 
     public boolean isFulfilled() {
-        return platformStatus.equalsIgnoreCase("fulfilled");
+        return platformStatus !=null && platformStatus.equalsIgnoreCase("fulfilled");
     }
 
     public boolean isResend() {
-        return isResend.equalsIgnoreCase("1");
+        return isResend != null && isResend.equalsIgnoreCase("1");
     }
 }

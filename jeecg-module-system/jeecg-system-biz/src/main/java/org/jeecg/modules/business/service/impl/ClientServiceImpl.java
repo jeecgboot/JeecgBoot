@@ -3,12 +3,10 @@ package org.jeecg.modules.business.service.impl;
 import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.ClientSalesperson;
 import org.jeecg.modules.business.entity.Shop;
 import org.jeecg.modules.business.entity.ClientSku;
-import org.jeecg.modules.business.mapper.ClientUserMapper;
-import org.jeecg.modules.business.mapper.ShopMapper;
-import org.jeecg.modules.business.mapper.ClientSkuMapper;
-import org.jeecg.modules.business.mapper.ClientMapper;
+import org.jeecg.modules.business.mapper.*;
 import org.jeecg.modules.business.service.IClientService;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -32,14 +30,16 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     private final ShopMapper shopMapper;
     private final ClientSkuMapper clientSkuMapper;
     private final ClientUserMapper clientUserMap;
+    private final ClientSalespersonMapper clientSalespersonMapper;
 
     @Autowired
     public ClientServiceImpl(ClientMapper clientMapper, ShopMapper shopMapper,
-                             ClientSkuMapper clientSkuMapper, ClientUserMapper clientUserMap) {
+                             ClientSkuMapper clientSkuMapper, ClientUserMapper clientUserMap,ClientSalespersonMapper clientSalespersonMapper) {
         this.clientMapper = clientMapper;
         this.shopMapper = shopMapper;
         this.clientSkuMapper = clientSkuMapper;
         this.clientUserMap = clientUserMap;
+        this.clientSalespersonMapper = clientSalespersonMapper;
     }
 
     @Override
@@ -93,6 +93,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Override
     @Transactional
     public void delMain(String id) {
+        clientSalespersonMapper.deleteByClientId(id);
         shopMapper.deleteByMainId(id);
         clientSkuMapper.deleteByMainId(id);
         clientMapper.deleteById(id);
@@ -102,6 +103,7 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
     @Transactional
     public void delBatchMain(Collection<? extends Serializable> idList) {
         for (Serializable id : idList) {
+            clientSalespersonMapper.deleteByClientId(id.toString());
             shopMapper.deleteByMainId(id.toString());
             clientSkuMapper.deleteByMainId(id.toString());
             clientMapper.deleteById(id);
@@ -208,6 +210,20 @@ public class ClientServiceImpl extends ServiceImpl<ClientMapper, Client> impleme
 
     @Override
     public List<String> findClientIdsBySalesId(String salesId) {
-        return clientMapper.findClientIdsBySalesId(salesId);
+        return clientSalespersonMapper.getActiveClientIdsBySalespersonId(salesId);
+    }
+
+    @Override
+    @Transactional
+    public void saveClientSalespersons(String clientId, List<String> salespersonIds) {
+        clientSalespersonMapper.deleteByClientId(clientId);
+        if (salespersonIds != null) {
+            for (String userId : salespersonIds) {
+                ClientSalesperson cs = new ClientSalesperson();
+                cs.setClientId(clientId);
+                cs.setSalespersonId(userId);
+                clientSalespersonMapper.insert(cs);
+            }
+        }
     }
 }
