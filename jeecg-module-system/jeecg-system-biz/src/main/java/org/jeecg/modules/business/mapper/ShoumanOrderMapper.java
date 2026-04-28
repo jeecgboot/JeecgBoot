@@ -16,4 +16,6 @@ import java.util.List;
 public interface ShoumanOrderMapper extends BaseMapper<ShoumanOrder> {
 
     List<ShoumanOrder> findShoumanOrderToSend();
+
+    List<ShoumanOrder> findShoumanOrderWithStatusLessThan6();
 }

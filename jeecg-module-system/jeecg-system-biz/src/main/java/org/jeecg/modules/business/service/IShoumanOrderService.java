@@ -14,4 +14,6 @@ import java.util.List;
 public interface IShoumanOrderService extends IService<ShoumanOrder> {
 
     List<ShoumanOrder> findShoumanOrderToSend();
+
+    List<ShoumanOrder> findShoumanOrderWithStatusLessThan6();
 }
