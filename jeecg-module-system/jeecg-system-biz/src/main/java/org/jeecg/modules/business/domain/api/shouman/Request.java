@@ -24,10 +24,9 @@ import java.util.Map;
  */
 @Slf4j
 public abstract class Request {
-    private final static String BASE_URL = "http://43.192.16.96:8012/api";
-    private static final HttpMethod METHOD = HttpMethod.POST;
-    private static final String KEY = "BpQWy6AtvKcixjePQ4ZMuvBqUyIsXWWX";
-    private static final String SHOP_CODE = "8ee5c82004c44049b9f22a0ed8dc4db3";
+    protected static final String BASE_URL = "http://43.192.16.96:8012/api";
+    protected static final String KEY = "BpQWy6AtvKcixjePQ4ZMuvBqUyIsXWWX";
+    protected static final String SHOP_CODE = "8ee5c82004c44049b9f22a0ed8dc4db3";
     private static final String SHIPPING_SERVICE_LEVEL_CATEGORY = "Standard";
     private final RequestBody body;
 
@@ -40,20 +39,26 @@ public abstract class Request {
      *
      * @return the response of the body or null, if response
      */
+    public ResponseEntity<String> rawSend() {
+        return rawSend(null);
+    }
+
     public ResponseEntity<String> rawSend(ShoumanOrder shoumanOrder) {
         int attempts = 0;
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
 
-        String bodyString = generateJsonBodyString(body);
+        String bodyString = generateRequestPayload();
         String signatureString = generateSignForJson(bodyString);
         String signatureMd5 = DigestUtils.md5Hex(signatureString).toUpperCase();
-        shoumanOrder.setSignatureString(signatureString);
-        shoumanOrder.setSignatureMd5(signatureMd5);
+        if (shoumanOrder != null) {
+            shoumanOrder.setSignatureString(signatureString);
+            shoumanOrder.setSignatureMd5(signatureMd5);
+        }
         headers.add("signature", signatureMd5);
         while (attempts++ < 5) {
             try {
-                return RestUtil.request(BASE_URL + body.path(), METHOD, headers, null, bodyString, String.class);
+                return RestUtil.request(buildUrl(), method(), headers, null, requestBody(bodyString), String.class);
             } catch (Exception e) {
                 log.error("Request failed on attempt n°" + attempts);
             }
@@ -61,23 +66,44 @@ public abstract class Request {
         return null;
     }
 
+    protected HttpMethod method() {
+        return HttpMethod.POST;
+    }
+
     /**
      * Convert body's json parameters to json string with the necessary extra parameter to
      * send request.
-     *
-     * @param body body to convert
+     * 
      * @return json string
      */
-    private static String generateJsonBodyString(RequestBody body) {
+    protected String generateRequestPayload() {
         JSONObject param = new JSONObject();
         param.putAll(body.parameters());
-        param.put("shipmentServiceLevelCategory", SHIPPING_SERVICE_LEVEL_CATEGORY);
-        param.put("isSendStandardPro", true);
+        if (useDefaultParameters()) {
+            param.put("shipmentServiceLevelCategory", SHIPPING_SERVICE_LEVEL_CATEGORY);
+            param.put("isSendStandardPro", true);
+        }
         param.put("shopCode", SHOP_CODE);
         return param.toJSONString();
     }
 
-    private static String generateSignForJson(String jsonString) {
+    protected String buildUrl() {
+        return BASE_URL + body.path();
+    }
+
+    protected Object requestBody(String bodyString) {
+        return bodyString;
+    }
+
+    protected boolean useDefaultParameters() {
+        return true;
+    }
+
+    protected RequestBody body() {
+        return body;
+    }
+
+    protected static String generateSignForJson(String jsonString) {
         log.info("JSON:{}", jsonString);
         if (jsonString.isEmpty()) {
             return null;
