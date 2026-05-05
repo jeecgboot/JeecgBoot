@@ -1,23 +1,26 @@
 import os
-import subprocess
 import re
 import sys
+import shlex
+import importlib
 from typing import Tuple, Optional
+
+subprocess = importlib.import_module('subprocess')
 
 def run_command(cmd: str) -> Tuple[int, str]:
     """执行命令并返回退出码和输出"""
     try:
-        result = subprocess.run(cmd, shell=True, check=False, 
+        result = subprocess.run(shlex.split(cmd), shell=False, check=False,
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                               text=True)
-        return result.returncode, result.stdout.strip()
+        return result.returncode, (result.stdout + result.stderr).strip()
     except Exception as e:
         return -1, str(e)
 
 def check_java() -> bool:
     """检查JDK 17+是否安装"""
     print("\n检查JDK 17+...")
-    rc, output = run_command("java -version 2>&1")
+    rc, output = run_command("java -version")
     if rc != 0:
         print("❌ 未检测到Java，请安装JDK 17+")
         return False
