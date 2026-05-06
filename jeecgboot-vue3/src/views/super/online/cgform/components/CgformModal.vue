@@ -404,37 +404,50 @@
       const SYS_BUILT_IN_FIELDS = ['create_by', 'create_time', 'update_by', 'update_time', 'sys_org_code'];
       // update-end--author:liaozhiyang---date:20260414---for：【QQYUN-15128】新增字段时系统字段永远在最下面
 
+      // update-begin--author:liaozhiyang---date:20260506---for:【issues/9593】树表的页面属性中子节点和父节点的属性串了
+      let onTableAddedQueue: Promise<unknown> = Promise.resolve();
+      // update-end--author:liaozhiyang---date:20260506---for:【issues/9593】树表的页面属性中子节点和父节点的属性串了
+
       /** 当新增了的时候应立即同步 */
-      async function onTableAdded() {
-        // update-begin--author:liaozhiyang---date:20260414---for：【QQYUN-15128】新增行时系统字段永远在最下面（系统字段被删除时退化为正常追加）
-        const dbJVxeRef = tables.dbTable.value?.tableRef;
-        if (dbJVxeRef) {
-          const fullData = dbJVxeRef.getXTable().internalData.tableFullData;
-          const sysIndex = fullData.findIndex((row) => SYS_BUILT_IN_FIELDS.includes(row.dbFieldName));
-          const lastIndex = fullData.length - 1;
-          // 末尾是新增行，且在系统字段后面，且本身不是系统字段
-          if (sysIndex !== -1 && lastIndex > sysIndex && !SYS_BUILT_IN_FIELDS.includes(fullData[lastIndex]?.dbFieldName)) {
-            const newRowData = { ...fullData[lastIndex] };
-            // 在 dbTable 中把末尾新行移到第一个系统字段前面
-            await dbJVxeRef.rowResort(lastIndex, sysIndex);
-            // 对其他 tables 直接在系统字段前面插入，不走 syncAllTableNow 的追加逻辑
-            const { pageTable, checkTable, fkTable, queryTable } = tables;
-            for (const t of [pageTable, checkTable, fkTable, queryTable]) {
-              const jvxeRef = t.value?.tableRef;
-              if (!jvxeRef) continue;
-              const tFullData = jvxeRef.getXTable().internalData.tableFullData;
-              const tSysIndex = tFullData.findIndex((row) => SYS_BUILT_IN_FIELDS.includes(row.dbFieldName));
-              if (tSysIndex !== -1) {
-                jvxeRef.insertRows(newRowData, tSysIndex);
-              } else {
-                jvxeRef.addRows(newRowData);
+      function onTableAdded() {
+        // update-begin--author:liaozhiyang---date:20260506---for: 【issues/9593】树表的页面属性中子节点和父节点的属性串了
+        onTableAddedQueue = onTableAddedQueue.then(async () => {
+          // update-begin--author:liaozhiyang---date:20260414---for：【QQYUN-15128】新增行时系统字段永远在最下面（系统字段被删除时退化为正常追加）
+          const dbJVxeRef = tables.dbTable.value?.tableRef;
+          if (dbJVxeRef) {
+            const fullData = dbJVxeRef.getXTable().internalData.tableFullData;
+            const sysIndex = fullData.findIndex((row) => SYS_BUILT_IN_FIELDS.includes(row.dbFieldName));
+            const lastIndex = fullData.length - 1;
+            // 末尾是新增行，且在系统字段后面，且本身不是系统字段
+            if (sysIndex !== -1 && lastIndex > sysIndex && !SYS_BUILT_IN_FIELDS.includes(fullData[lastIndex]?.dbFieldName)) {
+              const newRowData = { ...fullData[lastIndex] };
+              // 在 dbTable 中把末尾新行移到第一个系统字段前面
+              await dbJVxeRef.rowResort(lastIndex, sysIndex);
+              // 对其他 tables 直接在系统字段前面插入，不走 syncAllTableNow 的追加逻辑
+              const { pageTable, checkTable, fkTable, queryTable } = tables;
+              for (const t of [pageTable, checkTable, fkTable, queryTable]) {
+                const jvxeRef = t.value?.tableRef;
+                if (!jvxeRef) continue;
+                const tFullData = jvxeRef.getXTable().internalData.tableFullData;
+                const tSysIndex = tFullData.findIndex((row) => SYS_BUILT_IN_FIELDS.includes(row.dbFieldName));
+                // 串行 await 附表 insertRows/addRows，确保下一次队列任务读到的是完全收尾后的状态
+                if (tSysIndex !== -1) {
+                  await jvxeRef.insertRows(newRowData, tSysIndex);
+                } else {
+                  await jvxeRef.addRows(newRowData);
+                }
               }
+              return;
             }
-            return;
           }
-        }
-        // update-end--author:liaozhiyang---date:20260414---for：【QQYUN-15128】新增行时系统字段永远在最下面（系统字段被删除时退化为正常追加）
-        syncAllTableNow();
+          // update-end--author:liaozhiyang---date:20260414---for：【QQYUN-15128】新增行时系统字段永远在最下面（系统字段被删除时退化为正常追加）
+          syncAllTableNow();
+        });
+        // 兜底：队列异常不阻塞后续调用
+        onTableAddedQueue = onTableAddedQueue.catch((e) => {
+          console.error('[onTableAdded] queue error:', e);
+        });
+        // update-end--author:liaozhiyang---date:20260506---for: 【issues/9593】树表的页面属性中子节点和父节点的属性串了
       }
 
       /** 当删除的时候也应立即同步 */
@@ -504,8 +517,10 @@
             newData.id = uuidTemp;
           });
           dbTable.value!.tableRef!.addRows(treeFields, { setActive: false });
-          pageTable.value!.tableRef!.addRows(treeFields, { setActive: false });
-          checkTable.value!.tableRef!.addRows(treeFields, { setActive: false });
+          // update-begin--author:liaozhiyang---date:20260506---for: 【issues/9593】树表的页面属性中子节点和父节点的属性串了
+          // pageTable.value!.tableRef!.addRows(treeFields, { setActive: false });
+          // checkTable.value!.tableRef!.addRows(treeFields, { setActive: false });
+          // update-end--author:liaozhiyang---date:20260506---for: 【issues/9593】树表的页面属性中子节点和父节点的属性串了
           nextTick(() => syncAllTableNow());
           treeFieldAdded = true;
         }
