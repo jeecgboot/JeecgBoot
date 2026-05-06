@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.vo.ExtraFeeParam;
 import org.jeecg.modules.business.vo.ExtraFeeResult;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -14,6 +15,12 @@ import java.util.List;
  * @Version: V1.0
  */
 public interface IExtraFeeService extends IService<ExtraFee> {
+
+    void createExtraFee(ExtraFeeParam feeParam);
+
+    byte[] generateImportTemplate() throws IOException;
+
+    int importExtraFees(List<ExtraFeeParam> feeParams);
 
     List<ExtraFeeResult> listWithFilters(String shop, String status, Integer pageNo, Integer pageSize, String column, String order);
 
