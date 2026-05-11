@@ -22,6 +22,9 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "paths": {
+      "@rys-fe/vite-plugin-theme/es/client": ["build/vite/plugin/theme-plugin/client/client.ts"],
+      "@rys-fe/vite-plugin-theme/es/colorUtils": ["build/vite/plugin/theme-plugin/client/colorUtils.ts"],
+      "@rys-fe/vite-plugin-theme": ["build/vite/plugin/theme-plugin/index.ts"],
       "/@/*": ["src/*"],
       "/#/*": ["types/*"],
       "@/*": ["src/*"],

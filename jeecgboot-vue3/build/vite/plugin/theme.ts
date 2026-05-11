@@ -4,7 +4,8 @@
  */
 import type { PluginOption } from 'vite';
 import path from 'path';
-import { viteThemePlugin, antdDarkThemePlugin, mixLighten, mixDarken, tinycolor } from '@rys-fe/vite-plugin-theme';
+// 项目内置版本（适配 vite 8）：原 @rys-fe/vite-plugin-theme 不再适配 vite 8，已搬入 ./theme-plugin
+import { viteThemePlugin, antdDarkThemePlugin, mixLighten, mixDarken, tinycolor } from './theme-plugin';
 import { getThemeColors, generateColors } from '../../config/themeConfig';
 import { generateModifyVars } from '../../generate/generateModifyVars';
 

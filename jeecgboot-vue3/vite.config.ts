@@ -51,6 +51,27 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
     root,
     resolve: {
       alias: [
+        // @logicflow/vue-node-registry 1.1.13 的 npm 包只发布了 src/，但 package.json
+        // main/module 指向 lib/、es/（不存在）。vite 6 esbuild 宽松能找到 src，rolldown 严格直接报错。
+        // 暂时直接把 import 重定向到 src/index.ts。
+        {
+          find: /^@logicflow\/vue-node-registry$/,
+          replacement: pathResolve('node_modules/@logicflow/vue-node-registry/src/index.ts'),
+        },
+        // 把 @rys-fe/vite-plugin-theme 的客户端运行时重定向到项目内置版本（vite 8 适配）
+        // 用 RegExp 精确匹配，避免被父级别名误吞；不写后缀让 vite 自动用 resolve.extensions 补全
+        {
+          find: /^@rys-fe\/vite-plugin-theme\/es\/client$/,
+          replacement: pathResolve('build/vite/plugin/theme-plugin/client/client'),
+        },
+        {
+          find: /^@rys-fe\/vite-plugin-theme\/es\/colorUtils$/,
+          replacement: pathResolve('build/vite/plugin/theme-plugin/client/colorUtils'),
+        },
+        {
+          find: /^@rys-fe\/vite-plugin-theme$/,
+          replacement: pathResolve('build/vite/plugin/theme-plugin/index'),
+        },
         {
           find: 'vue-i18n',
           replacement: 'vue-i18n/dist/vue-i18n.cjs.js',

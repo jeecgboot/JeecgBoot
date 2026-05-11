@@ -46,6 +46,11 @@ declare global {
     path?: EventTarget[];
   }
   interface ImportMetaEnv extends ViteEnv {
+    readonly BASE_URL: string;
+    readonly MODE: string;
+    readonly DEV: boolean;
+    readonly PROD: boolean;
+    readonly SSR: boolean;
     __: unknown;
   }
 
