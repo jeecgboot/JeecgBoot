@@ -28,6 +28,7 @@ import org.jeecg.common.constant.enums.MessageTypeEnum;
 import org.jeecg.common.constant.enums.RoleIndexConfigEnum;
 import org.jeecg.common.desensitization.annotation.SensitiveEncode;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.common.util.*;
@@ -59,6 +60,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -131,6 +133,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Autowired
 	private ISysDepartService sysDepartService;
 	@Autowired
+	private Environment env;
+
 	private static final String ORG_CODE_WIA_CLIENT = "A02";
 
 	@Override
@@ -545,6 +549,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		if (role == null) return Collections.emptyList();
 		return userMapper.getUserByRoleId(new Page<>(1, 100), role.getId(), null).getRecords();
 
+	}
+
+	@Override
+	public List<DictModel> listSalespersonOptions() {
+		String companyOrgCode = sysDepartService.queryCodeByDepartName(env.getProperty("company.orgName"));
+		return this.list(new LambdaQueryWrapper<SysUser>()
+						.eq(SysUser::getDelFlag, CommonConstant.DEL_FLAG_0)
+						.eq(SysUser::getStatus, CommonConstant.USER_UNFREEZE)
+						.eq(SysUser::getOrgCode, companyOrgCode)
+						.ne(SysUser::getUsername, "_reserve_user_external"))
+				.stream()
+				.filter(Objects::nonNull)
+				.filter(user -> StringUtils.isNotBlank(user.getId()))
+				.sorted(Comparator.comparing(this::getSalespersonDisplayName, String.CASE_INSENSITIVE_ORDER))
+				.map(user -> new DictModel(user.getId(), getSalespersonDisplayName(user)))
+				.collect(Collectors.toList());
+	}
+
+	private String getSalespersonDisplayName(SysUser user) {
+		return StringUtils.defaultString(user.getUsername());
 	}
 
 
