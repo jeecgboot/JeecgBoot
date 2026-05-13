@@ -45,23 +45,7 @@ export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
     if (isObject(src[key]) && isObject(target[key])) {
       src[key] = deepMerge(src[key], target[key]);
     } else {
-      // 代码逻辑说明: 【issues/7940】componentProps写成函数形式时，updateSchema写成对象时，参数没合并
-      try {
-        if (isFunction(src[key]) && isObject(src[key]()) && isObject(target[key])) {
-          // src[key]是函数且返回对象，且target[key]是对象
-          src[key] = deepMerge(src[key](), target[key]);
-        } else if (isObject(src[key]) && isFunction(target[key]) && isObject(target[key]())) {
-          // target[key]是函数且返回对象，且src[key]是对象
-          src[key] = deepMerge(src[key], target[key]());
-        } else if (isFunction(src[key]) && isFunction(target[key]) && isObject(src[key]()) && isObject(target[key]())) {
-          // src[key]是函数且返回对象，target[key]是函数且返回对象
-          src[key] = deepMerge(src[key](), target[key]());
-        } else {
-          src[key] = target[key];
-        }
-      } catch (error) {
-        src[key] = target[key];
-      }
+      src[key] = target[key];
     }
   }
   return src;

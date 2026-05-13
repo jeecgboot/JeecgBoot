@@ -19,6 +19,25 @@ interface UseFormActionContext {
   schemaRef: Ref<FormSchema[]>;
   handleFormValues: Fn;
 }
+
+function mergeComponentProps(srcProps: any, targetProps: any) {
+  if (targetProps == undefined) return srcProps;
+  if (srcProps == undefined) return targetProps;
+  if (isObject(srcProps) && isObject(targetProps)) {
+    return deepMerge(cloneDeep(srcProps), targetProps);
+  }
+  if (isFunction(srcProps) && isObject(targetProps)) {
+    return (ctx: any) => ({ ...(srcProps(ctx) ?? {}), ...targetProps });
+  }
+  if (isObject(srcProps) && isFunction(targetProps)) {
+    return (ctx: any) => ({ ...srcProps, ...(targetProps(ctx) ?? {}) });
+  }
+  if (isFunction(srcProps) && isFunction(targetProps)) {
+    return (ctx: any) => ({ ...(srcProps(ctx) ?? {}), ...(targetProps(ctx) ?? {}) });
+  }
+  return targetProps;
+}
+
 export function useFormEvents({
   emit,
   getProps,
@@ -201,7 +220,14 @@ export function useFormEvents({
     updateData.forEach((item) => {
       unref(getSchema).forEach((val) => {
         if (val.field === item.field) {
-          const newSchema = deepMerge(val, item);
+          // update-begin-author:liaozhiyang date:2026-05-12 for:【issue/9612】updateSchema中的函数执行两次
+          const { componentProps: itemCp, ...restItem } = item as any;
+          const newSchema = deepMerge(val, restItem);
+          if (Reflect.has(item, 'componentProps')) {
+            //【issues/7940】componentProps写成函数形式时，updateSchema写成对象时，参数没合并
+            newSchema.componentProps = mergeComponentProps(val.componentProps, itemCp);
+          }
+          // update-end-author:liaozhiyang date:2026-05-12 for:【issue/9612】updateSchema中的函数执行两次
           schema.push(newSchema as FormSchema);
         } else {
           schema.push(val);
