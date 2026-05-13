@@ -281,7 +281,7 @@
       }
       // 代码逻辑说明: 【issues/3656】popupdict回显
       watchEffect(() => {
-        if (props.selected && props.rowkey) {
+        if (props.selected && props.rowkey && unref(visible)) {
           const selected = props.multi ? props.selected : [props.selected];
           checkedKeys!.value = selected.map((item) => item[props.rowkey]);
           selectRows!.value = selected;
