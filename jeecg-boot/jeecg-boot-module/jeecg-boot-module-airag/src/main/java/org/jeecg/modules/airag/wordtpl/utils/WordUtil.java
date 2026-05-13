@@ -12,6 +12,7 @@ import org.apache.xmlbeans.XmlToken;
 import org.apache.xmlbeans.impl.xb.xmlschema.SpaceAttribute;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.wordtpl.consts.WordTitleEnum;
 import org.jeecg.modules.airag.wordtpl.dto.MergeColDTO;
@@ -19,6 +20,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -692,15 +694,23 @@ public class WordUtil {
             String imageUrl = content.getString("value");
             Matcher matcher = WEB_PATTERN.matcher(imageUrl);
             if (matcher.matches()) {
+                //update-begin---author:wangshuai ---date:2026-05-11  for：[issues/9610]【安全漏洞】修复WordUtil.addImage存储型SSRF漏洞(CWE-918)-----------
                 // 网络资源,先下载到临时目录
                 log.info("[批量下载文件]网络资源,下载到临时目录:" + imageUrl);
+                // SSRF 校验：拒绝 loopback / link-local（含云元数据 169.254.169.254 / ::1 / fe80:）
+                SsrfFileTypeFilter.checkSsrfHttpUrl(imageUrl);
                 try {
                     String fileName = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
                     imageUrl = imageUrl.replace(fileName, URLEncoder.encode(fileName, "UTF-8"));
                     URL url = new URL(imageUrl);
                     URLConnection conn = url.openConnection();
+                    // 禁止重定向跟随，防止 302 跳转到内网/元数据接口绕过校验
+                    if (conn instanceof HttpURLConnection) {
+                        ((HttpURLConnection) conn).setInstanceFollowRedirects(false);
+                    }
                     // 设置超时间为3秒
                     conn.setConnectTimeout(3 * 1000);
+                    conn.setReadTimeout(5 * 1000);
                     // 防止屏蔽程序
                     conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
                     in = conn.getInputStream();
@@ -708,6 +718,7 @@ public class WordUtil {
                     log.error(e.getMessage(), e);
                     throw new JeecgBootException(e);
                 }
+                //update-end---author:wangshuai ---date:2026-05-11  for：[issues/9610]【安全漏洞】修复WordUtil.addImage存储型SSRF漏洞(CWE-918)-----------
             } else {
                 //update-begin---author:liusq ---date:2026-03-30  for：[issues/9429]【安全漏洞】修复WordUtil.addImage路径遍历漏洞(CWE-22)-----------
                 String uploadPath = SpringContextUtils.getApplicationContext()
