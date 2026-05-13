@@ -241,8 +241,13 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         if (q == null) {
             return;
         }
-        q.setCountry(normalizeCountryValue(q.getCountry()));
-        q.setInquiryCountry(normalizeCountryList(q.getInquiryCountry()));
+        String normalizedCountry = normalizeCountryValue(q.getCountry());
+        String normalizedInquiryCountry = normalizeCountryList(q.getInquiryCountry());
+        if (StringUtils.isBlank(normalizedCountry)) {
+            normalizedCountry = firstCountryFromList(normalizedInquiryCountry);
+        }
+        q.setCountry(normalizedCountry);
+        q.setInquiryCountry(normalizedInquiryCountry);
     }
 
     @Override
@@ -539,6 +544,19 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
             log.warn("Normalize quotation country failed, value={}, err={}", value, e.getMessage());
         }
         return value;
+    }
+
+    private String firstCountryFromList(String countryList) {
+        if (StringUtils.isBlank(countryList)) {
+            return null;
+        }
+        String[] values = countryList.split(",");
+        for (String value : values) {
+            if (StringUtils.isNotBlank(value)) {
+                return value.trim();
+            }
+        }
+        return null;
     }
 
     private BigDecimal safeBd(Object v) {
