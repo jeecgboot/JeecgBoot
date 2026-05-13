@@ -57,11 +57,11 @@
 </template>
 <script lang="ts">
   import { defineComponent, PropType, ref, reactive, watchEffect, computed, unref, watch, onMounted, nextTick } from 'vue';
+  import { Form } from 'ant-design-vue';
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
   import { initDictOptions } from '/@/utils/dict';
   import { get, omit } from 'lodash-es';
-  import { useRuleFormItem } from '/@/hooks/component/useFormItem';
   import { CompTypeEnum } from '/@/enums/CompTypeEnum';
   import { LoadingOutlined } from '@ant-design/icons-vue';
 
@@ -85,7 +85,7 @@
       // 下拉项-online使用
       options: {
         type: Array,
-        default: [],
+        default: () => [],
         required: false,
       },
       style: propTypes.any,
@@ -96,8 +96,25 @@
     setup(props, { emit, refs }) {
       const dictOptions = ref<any[]>([]);
       const attrs = useAttrs();
-      const [state, , , formItemContext] = useRuleFormItem(props, 'value', 'change');
+      const formItemContext = Form.useInjectFormItemContext();
+      const state = ref<any>(props.value);
       const getBindValue = Object.assign({}, unref(props), unref(attrs));
+      // update-begin-author:liaozhiyang date:2026-05-12 for:【issues/9420】系统用户职务多选回显时显示1,2,3
+      watch(
+        () => props.value,
+        (val) => {
+          const { mode } = unref<Recordable>(getBindValue);
+          if ((mode === 'multiple' || mode === 'tags') && typeof val === 'string') {
+            const arr = val ? val.split(',') : [];
+            state.value = props.stringToNumber ? arr.map((v) => Number(v)) : arr;
+          } else {
+            const isMulti = mode === 'multiple' || mode === 'tags';
+            state.value = isMulti && val == null ? [] : val;
+          }
+        },
+        { immediate: true }
+      );
+      // update-end-author:liaozhiyang date:2026-05-12 for:【issues/9420】系统用户职务多选回显时显示1,2,3
       // 是否正在加载回显数据
       const loadingEcho = ref<boolean>(false);
       // 是否是首次加载回显，只有首次加载，才会显示 loading
@@ -175,16 +192,20 @@
         state.value = changeValue;
 
         // 代码逻辑说明: 【issues/4507】JDictSelectTag组件使用时，浏览器给出警告提示：Expected Function, got Array------------
-        emit('update:value',changeValue)
-        
-        // nextTick(() => formItemContext.onFieldChange());
+        emit('update:value', changeValue);
+        // 不再依赖 useRuleFormItem 的 setter 自动 emit('change')，这里显式触发，保证 BasicForm 的 onChange wrapper 能写回 formModel 并校验
+        emit('change', changeValue);
+        nextTick(() => formItemContext.onFieldChange());
       }
 
       /** 单选radio的值变化事件 */
       function handleChangeRadio(e) {
-        state.value = e?.target?.value ?? e;
+        const radioValue = e?.target?.value ?? e;
+        state.value = radioValue;
         // 代码逻辑说明: 【issues/506】JDictSelectTag 组件 type="radio" 没有返回值------------
-        emit('update:value',e?.target?.value ?? e)
+        emit('update:value', radioValue);
+        emit('change', radioValue);
+        nextTick(() => formItemContext.onFieldChange());
       }
 
       /** 用于搜索下拉框中的内容 */
