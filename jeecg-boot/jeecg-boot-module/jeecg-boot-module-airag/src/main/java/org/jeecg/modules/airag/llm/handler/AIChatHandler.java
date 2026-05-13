@@ -374,14 +374,13 @@ public class AIChatHandler implements IAIChatHandler {
                 airagModel.getProvider(), modelName, isDsThinking, params.getReturnThinking(), params.getSendThinking());
         if (isDsThinking) {
             // returnThinking: 把响应中的 reasoning_content 解析到 AiMessage.thinking
-            if (null == params.getReturnThinking()) {
-                params.setReturnThinking(true);
-            }
+            //update-begin---author:wangshuai ---date:2026-05-11  for：[issues/9607]deepseek-v4-flash 联网搜索后模型调用异常-----------
+            //新模型中returnThinking必须为true，即深度思考
+            params.setReturnThinking(true);
             // sendThinking: 把 AiMessage.thinking 以 reasoning_content 字段回传到下次请求
-            if (null == params.getSendThinking()) {
-                params.setSendThinking(true);
-            }
-            log.info("[AI-CHAT][issues/9585] mergeParams after-fix returnThinking={}, sendThinking={}",
+            params.setSendThinking(true);
+            //update-end---author:wangshuai ---date:2026-05-11  for：[issues/9607]deepseek-v4-flash 联网搜索后模型调用异常-----------
+            log.info("[AI-CHAT][issues/9585][issues/9607] mergeParams after-fix returnThinking={}, sendThinking={}",
                     params.getReturnThinking(), params.getSendThinking());
         }
         //update-end---author:scott ---date:20260429  for：[issues/9585]DeepSeek大模型切换为新发布deepseek-v4-flash，流程中调用出现异常------------
