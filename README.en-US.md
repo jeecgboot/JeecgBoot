@@ -7,6 +7,8 @@
 JEECG BOOT AI Low Code Platform
 ===============
 
+🚀 **Low-Code enters the v2.0 era — generate an entire system with a single natural-language sentence**
+
 Current version: 3.9.2 (2026-04-30)
 
 
