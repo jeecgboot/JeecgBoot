@@ -3,6 +3,9 @@ package org.jeecg.modules.business.controller.admin;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.io.IOException;
+import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,19 +13,20 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.base.CaseFormat;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.modules.business.entity.ExtraFee;
-import org.jeecg.modules.business.entity.ExtraFeeOption;
-import org.jeecg.modules.business.service.IExtraFeeOptionService;
 import org.jeecg.modules.business.service.IExtraFeeService;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.common.system.base.controller.JeecgController;
-import org.jeecg.modules.business.service.IShopService;
 import org.jeecg.modules.business.vo.ExtraFeeParam;
 import org.jeecg.modules.business.vo.ExtraFeeResult;
+import org.jeecgframework.poi.excel.ExcelImportUtil;
+import org.jeecgframework.poi.excel.entity.ImportParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,10 +48,6 @@ import static org.jeecg.common.util.SqlInjectionUtil.specialFilterContentForDict
 public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeService> {
 	@Autowired
 	private IExtraFeeService extraFeeService;
-	@Autowired
-	private IExtraFeeOptionService extraFeeOptionService;
-	@Autowired
-	private IShopService shopService;
 	
 	/**
 	 * 分页列表查询
@@ -194,6 +194,14 @@ public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeServi
         return super.exportXls(request, extraFee, ExtraFee.class, "extra fee content");
     }
 
+	@GetMapping(value = "/importTemplate")
+	public void importTemplate(HttpServletResponse response) throws IOException {
+		String fileName = URLEncoder.encode("extra_fee_import_template.xlsx", "UTF-8");
+		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+		response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+		response.getOutputStream().write(extraFeeService.generateImportTemplate());
+	}
+
     /**
       * 通过excel导入数据
     *
@@ -201,38 +209,48 @@ public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeServi
     * @param response
     * @return
     */
-    @RequiresPermissions("business:extra_fee:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
-        return super.importExcel(request, response, ExtraFee.class);
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+        Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
+        for (Map.Entry<String, MultipartFile> entry : fileMap.entrySet()) {
+            MultipartFile file = entry.getValue();
+            ImportParams params = new ImportParams();
+            params.setHeadRows(1);
+            params.setNeedSave(false);
+            try {
+                List<ExtraFeeParam> rows = ExcelImportUtil.importExcel(file.getInputStream(), ExtraFeeParam.class, params);
+                int importedCount = extraFeeService.importExtraFees(rows);
+                return Result.OK("文件导入成功！数据行数:" + importedCount);
+            } catch (Exception e) {
+                log.error("Extra fee import failed", e);
+                return Result.error("文件导入失败:" + e.getMessage());
+            } finally {
+                try {
+                    file.getInputStream().close();
+                } catch (Exception e) {
+                    log.warn("Failed to close uploaded file stream", e);
+                }
+            }
+        }
+        return Result.error("文件导入失败:未找到上传文件");
     }
 
 	@PostMapping(value = "/create")
 	public Result<?> create(@RequestBody ExtraFeeParam feeParam) {
-		String autresOptionName = "Autres";
-		ExtraFeeOption option = extraFeeOptionService.getById(feeParam.getOptionId());
-		String shopId = shopService.getIdByCode(feeParam.getShop());
-		if(shopId == null) {
-			return Result.error(404, "Shop not found");
+		try {
+			extraFeeService.createExtraFee(feeParam);
+			return Result.ok();
+		} catch (IllegalArgumentException e) {
+			String message = e.getMessage();
+			if ("Shop not found".equals(message) || "Option not found".equals(message)) {
+				return Result.error(404, message);
+			}
+			if ("Description is empty".equals(message)) {
+				return Result.error(403, message);
+			}
+			return Result.error(message);
 		}
-		if(option == null) {
-			return Result.error(404, "Option not found");
-		}
-		ExtraFeeOption otherOption = extraFeeOptionService.getByName(autresOptionName);
-		if(option.getId().equals(otherOption.getId())) {
-			if(feeParam.getDescription().isEmpty())
-				return Result.error(403, "Description is empty");
-		} else {
-			feeParam.setDescription(null);
-		}
-		ExtraFee fee = new ExtraFee();
-		fee.setShop_id(shopId);
-		fee.setOptionId(feeParam.getOptionId());
-		fee.setDescription(feeParam.getDescription());
-		fee.setQuantity(feeParam.getQuantity());
-		fee.setUnitPrice(feeParam.getUnitPrice());
-		extraFeeService.save(fee);
-		return Result.ok();
 	}
 
 	@PostMapping(value = "/update")
