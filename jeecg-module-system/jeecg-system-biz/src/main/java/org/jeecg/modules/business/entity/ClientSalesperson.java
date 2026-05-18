@@ -3,11 +3,11 @@ package org.jeecg.modules.business.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.format.annotation.DateTimeFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -37,9 +37,6 @@ public class ClientSalesperson implements Serializable {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新时间")
     private Date updateTime;
-
-    @ApiModelProperty(value = "所属部门")
-    private String sysOrgCode;
 
     @ApiModelProperty(value = "客户ID")
     private String clientId;
