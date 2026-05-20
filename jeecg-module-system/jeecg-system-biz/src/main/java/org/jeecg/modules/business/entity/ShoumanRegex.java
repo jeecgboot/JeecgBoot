@@ -102,4 +102,10 @@ public class ShoumanRegex implements Serializable {
     @Excel(name = "是否为解析月份正则式", width = 15, dicCode = "yn")
     @ApiModelProperty(value = "是否为解析月份正则式")
     private String isMonthRegex;
+    /**
+     * 是否合并为逗号分隔单行
+     */
+    @Excel(name = "是否合并为逗号分隔单行", width = 15, dicCode = "yn")
+    @ApiModelProperty(value = "是否合并为逗号分隔单行")
+    private String isCommaSeparated;
 }

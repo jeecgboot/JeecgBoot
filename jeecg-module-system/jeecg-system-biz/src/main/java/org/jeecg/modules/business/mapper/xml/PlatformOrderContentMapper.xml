@@ -401,7 +401,8 @@
                sr.content_ext_regex,
                sr.prefix,
                sr.is_size_regex,
-               sr.is_month_regex
+               sr.is_month_regex,
+               sr.is_comma_separated
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
                  left join logistic_channel lc on po.logistic_channel_name = lc.zh_name
@@ -448,6 +449,7 @@
                 <result property="prefix" column="prefix" javaType="string"/>
                 <result property="isSizeRegex" column="is_size_regex" javaType="string"/>
                 <result property="isMonthRegex" column="is_month_regex" javaType="string"/>
+                <result property="isCommaSeparated" column="is_comma_separated" javaType="string"/>
             </collection>
         </collection>
     </resultMap>
@@ -481,7 +483,8 @@
                sr.content_ext_regex,
                sr.prefix,
                sr.is_size_regex,
-               sr.is_month_regex
+               sr.is_month_regex,
+               sr.is_comma_separated
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
                  left join logistic_channel lc on po.logistic_channel_name = lc.zh_name
