@@ -92,6 +92,8 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
+    private static final String SYNC_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String SYNC_TIME_ZONE = "Asia/Shanghai";
 
 
     private final static String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
@@ -302,11 +304,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             sp.setCreateBy("mabang api");
             sp.setPrice(skuData.getSalePrice());
             sp.setSkuId( skuListMabangMapper.searchSkuId(skuData.getErpCode()));
-            try {
-                sp.setDate(new SimpleDateFormat("yyyy-MM-dd").parse(skuData.getCreatedTime()));
-            } catch (ParseException e) {
-                sp.setDate(new Date());
-            }
+            sp.setDate(parseMabangCreatedTime(skuData.getCreatedTime()));
             l.add(sp);
         }
         skuPriceService.saveBatch(l);
@@ -317,21 +315,13 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
      * @param skuDataList
      */
     public void saveSkuDeclaredValues(List<SkuData> skuDataList) {
-        Calendar cal = Calendar.getInstance();
-        //set time to 00:00:00
-        cal.set(Calendar.HOUR_OF_DAY,0);
-        cal.set(Calendar.MINUTE,0);
-        cal.set(Calendar.SECOND,0);
-        cal.set(Calendar.MILLISECOND,0);
-        Date date = cal.getTime();
-
         List<SkuDeclaredValue> l = new ArrayList<>();
         for(SkuData skuData : skuDataList) {
             SkuDeclaredValue sdv = new SkuDeclaredValue();
             sdv.setCreateBy("mabang api");
             sdv.setDeclaredValue(skuData.getDeclareValue());
             sdv.setSkuId(skuListMabangMapper.searchSkuId(skuData.getErpCode()));
-            sdv.setEffectiveDate(date);
+            sdv.setEffectiveDate(parseMabangCreatedTime(skuData.getCreatedTime()));
             l.add(sdv);
         }
         skuDeclaredValueService.saveBatch(l);
@@ -387,6 +377,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         final String normalSensitiveAttributeId = skuListMabangMapper.searchSensitiveAttributeId("Normal goods");
         Map<Sku, String> skuMap = new HashMap<>();
         for(SkuData skuData : skuDataList) {
+            Date mabangCreatedTime = parseMabangCreatedTime(skuData.getCreatedTime());
             Sku s = new Sku();
             s.setId(UUID.randomUUID().toString());
             s.setErpCode(skuData.getErpCode());
@@ -433,16 +424,16 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             }
             skuService.save(s);
             // we are going to set the weight of the product
-            String remark = createSkuWeight(s, skuData.getSaleRemark());
+            String remark = createSkuWeight(s, skuData.getSaleRemark(), mabangCreatedTime);
             skuMap.put(s, remark);
         }
         return skuMap;
     }
-    public String createSkuWeight(Sku sku, String salesRemark) {
+    public String createSkuWeight(Sku sku, String salesRemark, Date effectiveDate) {
         String remark = "";
         SkuWeight sw = new SkuWeight();
         sw.setSkuId(sku.getId());
-        sw.setEffectiveDate(new Date());
+        sw.setEffectiveDate(effectiveDate);
         Matcher saleRemarkMatcher = saleRemarkPattern.matcher(salesRemark);
         if(saleRemarkMatcher.matches() && !saleRemarkMatcher.group(1).isEmpty()) {
             String saleRemark = saleRemarkMatcher.group(1);
@@ -454,6 +445,21 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         }
         skuWeightService.save(sw);
         return remark;
+    }
+
+    private Date parseMabangCreatedTime(String createdTime) {
+        if (createdTime == null || createdTime.trim().isEmpty()) {
+            log.warn("Mabang SKU sync [time] empty createdTime received, falling back to current time.");
+            return new Date();
+        }
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat(SYNC_TIME_PATTERN);
+            formatter.setTimeZone(TimeZone.getTimeZone(SYNC_TIME_ZONE));
+            return formatter.parse(createdTime.trim());
+        } catch (ParseException e) {
+            log.warn("Mabang SKU sync [time] failed to parse createdTime={}, falling back to current time.", createdTime, e);
+            return new Date();
+        }
     }
     public String updateSkuWeight(Sku sku, String salesRemark) {
         boolean isUpdated = false;
