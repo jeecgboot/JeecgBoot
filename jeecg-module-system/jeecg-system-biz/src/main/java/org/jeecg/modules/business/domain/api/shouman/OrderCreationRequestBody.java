@@ -132,7 +132,8 @@ public class OrderCreationRequestBody implements RequestBody {
                     if (isEnabled(regex.getIsSizeRegex())) {
                         RingSize ringSize = RingSize.getBySize(content);
                         if (ringSize != null) {
-                            sb.append(ringSize.getText());
+                            sb.append(ringSize.getText())
+                                    .append(LINE_BREAK);
                         }
                     } else {
                         if (content.isEmpty()) continue;
@@ -143,7 +144,8 @@ public class OrderCreationRequestBody implements RequestBody {
                             sb.append(regex.getPrefix())
                                     .append(customCounter++)
                                     .append(QUOTE)
-                                    .append(remarkContent);
+                                    .append(remarkContent)
+                                    .append(LINE_BREAK);
                         }
                     }
                 }
@@ -151,7 +153,8 @@ public class OrderCreationRequestBody implements RequestBody {
             if (!commaSeparatedContents.isEmpty()) {
                 sb.append(regex.getPrefix())
                         .append(QUOTE)
-                        .append(String.join(",", commaSeparatedContents));
+                        .append(String.join(",", commaSeparatedContents))
+                        .append(LINE_BREAK);
             }
         }
         if (customizationURL != null && !customizationURL.isEmpty()) {
