@@ -24,6 +24,7 @@ import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.modules.business.entity.Client;
@@ -113,6 +114,15 @@ public class SysUserController {
 
     @Autowired
     private IUserClientService userClientService;
+
+    /**
+     * Salesperson options for frontend select components.
+     */
+    @GetMapping("/salespersons")
+    public Result<List<DictModel>> salespersonOptions() {
+        return Result.OK(sysUserService.listSalespersonOptions());
+    }
+
     /**
      * 获取租户下用户数据（支持租户隔离）
      * @param user

@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.system.vo.DictModel;
 import org.jeecg.common.system.vo.SysUserCacheInfo;
 import org.jeecg.modules.system.entity.SysRoleIndex;
 import org.jeecg.modules.system.entity.SysUser;
@@ -201,6 +202,14 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @return 拥有该角色的用户列表
 	 */
 	List<SysUser> getUsersByRoleCode(String roleCode);
+
+	/**
+	 * Query active employee users for salesperson select components.
+	 *
+	 * @return employee options, value is user id and text is username
+	 */
+	List<DictModel> listSalespersonOptions();
+
 	/**
 	 * 根据用户名设置部门ID
 	 * @param username
