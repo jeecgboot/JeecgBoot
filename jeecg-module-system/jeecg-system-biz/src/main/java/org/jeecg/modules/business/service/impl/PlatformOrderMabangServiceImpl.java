@@ -437,13 +437,14 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         res.put("synced_order_number", syncedOrderNumber);
         res.put("synced_order_ids", syncedOrderIds);
 
+        List<String> orderIdsToSuspend = filterOrdersNotAlreadySetAbnormal(fulfilledOrderIds);
         ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(
                 DEFAULT_NUMBER_OF_THREADS,
                 MABANG_API_RATE_LIMIT_PER_MINUTE,
                 TimeUnit.MINUTES);
         log.info("{} orders are at least partially fulfilled by third party, suspending those orders now.",
-                fulfilledOrderIds.size());
-        List<CompletableFuture<Boolean>> fulfilledFutures = fulfilledOrderIds.stream()
+                orderIdsToSuspend.size());
+        List<CompletableFuture<Boolean>> fulfilledFutures = orderIdsToSuspend.stream()
                 .map(id -> CompletableFuture.supplyAsync(() -> {
                     try {
                         OrderSuspendRequestBody body = new OrderSuspendRequestBody(
@@ -461,9 +462,34 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                 .collect(toList());
         results = fulfilledFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
         nbSuccesses = results.stream().filter(b -> b).count();
-        log.info("{}/{} orders suspended successfully", nbSuccesses, fulfilledOrderIds.size());
+        log.info("{}/{} orders suspended successfully", nbSuccesses, orderIdsToSuspend.size());
         throttlingExecutorService.shutdown();
         return res;
+    }
+
+    private List<String> filterOrdersNotAlreadySetAbnormal(List<String> fulfilledOrderIds) {
+        if (fulfilledOrderIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> distinctFulfilledOrderIds = new ArrayList<>(new LinkedHashSet<>(fulfilledOrderIds));
+        List<PlatformOrder> localOrders = platformOrderService.lambdaQuery()
+                .select(PlatformOrder::getPlatformOrderId, PlatformOrder::getAlreadySetAbnormal)
+                .in(PlatformOrder::getPlatformOrderId, distinctFulfilledOrderIds)
+                .list();
+        Set<String> alreadySetAbnormalOrderIds = localOrders.stream()
+                .filter(order -> "1".equals(order.getAlreadySetAbnormal()))
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(Collectors.toSet());
+
+        if (!alreadySetAbnormalOrderIds.isEmpty()) {
+            log.info("{} fulfilled orders already set abnormal, skipping suspension: {}",
+                    alreadySetAbnormalOrderIds.size(), alreadySetAbnormalOrderIds);
+        }
+
+        return distinctFulfilledOrderIds.stream()
+                .filter(id -> !alreadySetAbnormalOrderIds.contains(id))
+                .collect(toList());
     }
 
     @Override

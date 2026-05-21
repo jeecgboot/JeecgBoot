@@ -9,8 +9,9 @@ import org.jeecg.modules.business.domain.api.mabang.getorderlist.*;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequest;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendRequestBody;
 import org.jeecg.modules.business.domain.api.mabang.orderDoOrderAbnormal.OrderSuspendResponse;
+import org.jeecg.modules.business.entity.PlatformOrder;
 import org.jeecg.modules.business.service.IPlatformOrderMabangService;
-import org.jeecg.modules.business.vo.PlatformOrderOperation;
+import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.vo.Responses;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -24,7 +25,10 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +44,9 @@ public class MabangJob implements Job {
 
     @Autowired
     private IPlatformOrderMabangService platformOrderMabangService;
+
+    @Autowired
+    private IPlatformOrderService platformOrderService;
 
     private static final Integer DEFAULT_NUMBER_OF_DAYS = 5;
     private static final Integer SKIP_RECENT_MINUTES = 5;
@@ -125,9 +132,10 @@ public class MabangJob implements Job {
                     MABANG_API_RATE_LIMIT_PER_MINUTE,
                     TimeUnit.MINUTES);
             Responses responses = new Responses();
+            List<String> orderIdsToSuspend = filterOrdersNotAlreadySetAbnormal(fulfilledOrderIds);
             log.info("{} orders are at least partially fulfilled by third party, suspending those orders now.",
-                    fulfilledOrderIds.size());
-            List<CompletableFuture<Responses>> futures = fulfilledOrderIds.stream()
+                    orderIdsToSuspend.size());
+            List<CompletableFuture<Responses>> futures = orderIdsToSuspend.stream()
                     .map(id -> CompletableFuture.supplyAsync(() -> {
                         OrderSuspendRequestBody body = new OrderSuspendRequestBody(
                                 id,
@@ -149,10 +157,35 @@ public class MabangJob implements Job {
                 responses.getSuccesses().addAll(r.getSuccesses());
                 responses.getFailures().addAll(r.getFailures());
             });
-            log.info("{}/{} orders suspended successfully by {}.", responses.getSuccesses().size(), fulfilledOrderIds.size(), "mabangJob");
+            log.info("{}/{} orders suspended successfully by {}.", responses.getSuccesses().size(), orderIdsToSuspend.size(), "mabangJob");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private List<String> filterOrdersNotAlreadySetAbnormal(List<String> fulfilledOrderIds) {
+        if (fulfilledOrderIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> distinctFulfilledOrderIds = new ArrayList<>(new LinkedHashSet<>(fulfilledOrderIds));
+        List<PlatformOrder> localOrders = platformOrderService.lambdaQuery()
+                .select(PlatformOrder::getPlatformOrderId, PlatformOrder::getAlreadySetAbnormal)
+                .in(PlatformOrder::getPlatformOrderId, distinctFulfilledOrderIds)
+                .list();
+        Set<String> alreadySetAbnormalOrderIds = localOrders.stream()
+                .filter(order -> "1".equals(order.getAlreadySetAbnormal()))
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(Collectors.toSet());
+
+        if (!alreadySetAbnormalOrderIds.isEmpty()) {
+            log.info("{} fulfilled orders already set abnormal, skipping suspension: {}",
+                    alreadySetAbnormalOrderIds.size(), alreadySetAbnormalOrderIds);
+        }
+
+        return distinctFulfilledOrderIds.stream()
+                .filter(id -> !alreadySetAbnormalOrderIds.contains(id))
+                .collect(toList());
     }
 
 }
