@@ -412,10 +412,11 @@
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
                  join country c on po.country = c.name_en
-        where po.order_time > '2025-07-01'
+        where po.order_time > '2025-09-01'
           and poc.erp_status in (1)
           and sr.is_active = 1
-          and po.platform_order_id not in (select platform_order_id from shouman_order);
+          and po.platform_order_id not in (select platform_order_id from shouman_order)
+        order by sc.id, sr.priority;
     </select>
 
     <resultMap id="shoumanOrderBaseResultMap" type="org.jeecg.modules.business.entity.Shouman.ShoumanOrderBase">
@@ -494,10 +495,11 @@
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
                  join country c on po.country = c.name_en
-        where po.order_time > '2025-07-01'
+        where po.order_time > '2025-09-01'
           and poc.erp_status in (1)
           and sr.is_active = 1
-          and po.platform_order_id = #{platformOrderId};
+          and po.platform_order_id = #{platformOrderId}
+        order by sc.id, sr.priority;
     </select>
     <select id="fetchOrderContentByIdWithFees" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
         SELECT *
