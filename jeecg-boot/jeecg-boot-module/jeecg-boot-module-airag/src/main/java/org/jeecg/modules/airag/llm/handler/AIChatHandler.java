@@ -69,7 +69,7 @@ public class AIChatHandler implements IAIChatHandler {
 
     @Autowired
     private AiChatConfig aiChatConfig;
-    
+
     /**
      * 问答
      *
@@ -443,7 +443,7 @@ public class AIChatHandler implements IAIChatHandler {
             if (!mcpToolProviders.isEmpty()) {
                 params.setMcpToolProviders(mcpToolProviders);
             }
-            
+
             // 保存MCP连接包装器，用于后续关闭
             // for [QQYUN-9234] MCP服务连接关闭
             if (!mcpToolProviderWrappers.isEmpty()) {
@@ -602,6 +602,9 @@ public class AIChatHandler implements IAIChatHandler {
                     byte[] fileContent;
                     if (matcher.matches()) {
                         // 来源于网络
+                        //update-begin---author:Rangsh ---date:2026-06-01  for：【安全漏洞】修复图生图接口存在的SSRF探测漏洞-----------
+                        SsrfFileTypeFilter.checkSsrfHttpUrl(imageUrl);
+                        //update-end---author:Rangsh ---date:2026-06-01  for：【安全漏洞】修复图生图接口存在的SSRF探测漏洞-----------
                         java.net.URL url = new java.net.URL(imageUrl);
                         java.net.URLConnection conn = url.openConnection();
                         conn.setConnectTimeout(5000);
