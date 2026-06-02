@@ -116,21 +116,21 @@ public class ShiroConfig {
         // 代码逻辑说明: 排除静态资源后缀
         filterChainDefinitionMap.put("/", "anon");
         filterChainDefinitionMap.put("/doc.html", "anon");
-        filterChainDefinitionMap.put("/**/*.js", "anon");
-        filterChainDefinitionMap.put("/**/*.css", "anon");
-        filterChainDefinitionMap.put("/**/*.html", "anon");
-        filterChainDefinitionMap.put("/**/*.svg", "anon");
-        filterChainDefinitionMap.put("/**/*.pdf", "anon");
-        filterChainDefinitionMap.put("/**/*.jpg", "anon");
-        filterChainDefinitionMap.put("/**/*.png", "anon");
-        filterChainDefinitionMap.put("/**/*.gif", "anon");
-        filterChainDefinitionMap.put("/**/*.ico", "anon");
-        filterChainDefinitionMap.put("/**/*.ttf", "anon");
-        filterChainDefinitionMap.put("/**/*.woff", "anon");
-        filterChainDefinitionMap.put("/**/*.woff2", "anon");
+        filterChainDefinitionMap.put("/*.js", "anon");
+        filterChainDefinitionMap.put("/*.css", "anon");
+        filterChainDefinitionMap.put("/*.html", "anon");
+        filterChainDefinitionMap.put("/*.svg", "anon");
+        filterChainDefinitionMap.put("/*.pdf", "anon");
+        filterChainDefinitionMap.put("/*.jpg", "anon");
+        filterChainDefinitionMap.put("/*.png", "anon");
+        filterChainDefinitionMap.put("/*.gif", "anon");
+        filterChainDefinitionMap.put("/*.ico", "anon");
+        filterChainDefinitionMap.put("/*.ttf", "anon");
+        filterChainDefinitionMap.put("/*.woff", "anon");
+        filterChainDefinitionMap.put("/*.woff2", "anon");
 
-        filterChainDefinitionMap.put("/**/*.glb", "anon");
-        filterChainDefinitionMap.put("/**/*.wasm", "anon");
+        filterChainDefinitionMap.put("/*.glb", "anon");
+        filterChainDefinitionMap.put("/*.wasm", "anon");
 
         filterChainDefinitionMap.put("/druid/**", "anon");
         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
@@ -142,8 +142,8 @@ public class ShiroConfig {
 
         //积木报表排除
         filterChainDefinitionMap.put("/jmreport/**", "anon");
-        filterChainDefinitionMap.put("/**/*.js.map", "anon");
-        filterChainDefinitionMap.put("/**/*.css.map", "anon");
+        filterChainDefinitionMap.put("/*.js.map", "anon");
+        filterChainDefinitionMap.put("/*.css.map", "anon");
         
         //积木BI大屏和仪表盘排除
         filterChainDefinitionMap.put("/drag/view", "anon");
