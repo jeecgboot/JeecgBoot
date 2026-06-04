@@ -31,6 +31,7 @@
 		<jeecgboot.version>3.9.2</jeecgboot.version>
 		<!-- JDK版本支持17、21、24、25 -->
 		<java.version>17</java.version>
+		<tomcat.version>10.1.55</tomcat.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- 微服务 -->
