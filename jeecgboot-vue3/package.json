@@ -175,7 +175,8 @@
     "vue-eslint-parser": "^9.4.3",
     "vue-tsc": "^1.8.27",
     "dingtalk-jsapi": "^3.2.0",
-    "big.js": "^6.2.2"
+    "big.js": "^6.2.2",
+    "tinycolor2": "1.6.0"
   },
   "repository": {
     "type": "git",
