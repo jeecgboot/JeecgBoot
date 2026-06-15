@@ -11,13 +11,14 @@ public interface QuotationMapper extends BaseMapper<Quotation> {
 
     IPage<Quotation> pageByStatus(Page<Quotation> page,
                                   @Param("q") Quotation q);
+    IPage<Quotation> pageByStatusForClient(Page<Quotation> page,
+                                           @Param("q") Quotation q,
+                                           @Param("clientId") String clientId);
 
     Quotation getByIdAndStatus(@Param("id") String id,
                                @Param("status") String status);
-
-    int updateInquiryFields(@Param("q") Quotation q);
-
-    int addQuoteBasedOnInquiry(@Param("q") Quotation q);
+    Quotation getByIdForClient(@Param("id") String id,
+                               @Param("clientId") String clientId);
 
     int updateQuoteFields(@Param("q") Quotation q);
 

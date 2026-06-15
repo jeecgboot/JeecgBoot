@@ -7,8 +7,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.Inquiry;
 import org.jeecg.modules.business.entity.Quotation;
-import org.jeecg.modules.business.mapper.ClientSalespersonMapper;
+import org.jeecg.modules.business.service.IClientService;
+import org.jeecg.modules.business.service.IInquiryService;
 import org.jeecg.modules.business.service.IQuotationService;
 import org.jeecg.modules.business.service.ISecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,119 +26,46 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-@Api(tags = "Inquiry quotation")
+@Api(tags = "Quotation")
 @RestController
 @RequestMapping("/quotation")
 @Slf4j
 public class QuotationController {
-    private static final String STATUS_INQUIRY = "0";
-    private static final String STATUS_QUOTED = "1";
 
     @Autowired
     private IQuotationService quotationService;
     @Autowired
+    private IInquiryService inquiryService;
+    @Autowired
     private ISecurityService securityService;
     @Autowired
-    private ClientSalespersonMapper clientSalespersonMapper;
-
-    @ApiOperation("Inquiry list")
-    @GetMapping("/inquiry/list")
-    public Result<IPage<Quotation>> inquiryList(
-            Quotation q,
-            @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
-            @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        Result<String> clientScopeError = quotationService.applyClientScope(q);
-        if (clientScopeError != null) {
-            return Result.error(clientScopeError.getCode(), clientScopeError.getMessage());
-        }
-        q.setStatus(STATUS_INQUIRY);
-        return Result.OK(quotationService.pageByStatus(new Page<>(pageNo, pageSize), q));
-    }
-
-    @ApiOperation("Inquiry add")
-    @PostMapping("/inquiry/add")
-    public Result<String> inquiryAdd(@RequestBody Quotation q) {
-        if (StringUtils.isBlank(q.getInquiryLink())) return Result.error("inquiryLink cannot be empty");
-        if (StringUtils.isBlank(q.getInquiryCountry())) return Result.error("inquiryCountry cannot be empty");
-        if (q.getExpectedSales() == null) return Result.error("expectedSales cannot be empty");
-        Result<String> clientScopeError = quotationService.applyClientScope(q);
-        if (clientScopeError != null) {
-            return Result.error(clientScopeError.getCode(), clientScopeError.getMessage());
-        }
-        quotationService.normalizeCountryFields(q);
-        quotationService.fillInquirySalesByClient(q);
-        q.setStatus(STATUS_INQUIRY);
-        quotationService.save(q);
-        return Result.OK("Added successfully");
-    }
-
-    @ApiOperation("Inquiry edit")
-    @RequestMapping(value = "/inquiry/edit", method = {RequestMethod.PUT, RequestMethod.POST})
-    public Result<String> inquiryEdit(@RequestBody Quotation q) {
-        if (StringUtils.isBlank(q.getId())) return Result.error("id cannot be empty");
-        Result<String> ownershipError = quotationService.checkInquiryOwnership(q.getId());
-        if (ownershipError != null) {
-            return Result.error(ownershipError.getCode(), ownershipError.getMessage());
-        }
-        int rows = quotationService.updateInquiryFields(q);
-        return rows > 0 ? Result.OK("Edited successfully") : Result.error("Edit failed: record not found or not in inquiry status");
-    }
-
-    @ApiOperation("Inquiry delete")
-    @DeleteMapping("/inquiry/delete")
-    public Result<String> inquiryDelete(@RequestParam("id") String id) {
-        if (StringUtils.isBlank(id)) return Result.error("id cannot be empty");
-        Result<String> ownershipError = quotationService.checkInquiryOwnership(id);
-        if (ownershipError != null) {
-            return Result.error(ownershipError.getCode(), ownershipError.getMessage());
-        }
-        Quotation q = quotationService.getByIdAndStatus(id, STATUS_INQUIRY);
-        if (q == null) return Result.error("Record not found or not in inquiry status");
-        boolean ok = quotationService.removeById(id);
-        return ok ? Result.OK("Deleted successfully") : Result.error("Delete failed");
-    }
-
-    @ApiOperation("Inquiry query by id")
-    @GetMapping("/inquiry/queryById")
-    public Result<Quotation> inquiryQueryById(@RequestParam("id") String id) {
-        Result<String> ownershipError = quotationService.checkInquiryOwnership(id);
-        if (ownershipError != null) {
-            return Result.error(ownershipError.getCode(), ownershipError.getMessage());
-        }
-        Quotation q = quotationService.getByIdAndStatus(id, STATUS_INQUIRY);
-        return q != null ? Result.OK(q) : Result.error("Record not found or not in inquiry status");
-    }
-
-    @ApiOperation("Get salespersons by client")
-    @GetMapping("/clientSalespersons")
-    public Result<List<String>> getClientSalespersons(@RequestParam("clientId") String clientId) {
-        if (StringUtils.isBlank(clientId)) return Result.error("clientId cannot be empty");
-        Quotation q = new Quotation();
-        q.setInquiryClient(clientId);
-        Result<String> clientScopeError = quotationService.applyClientScope(q);
-        if (clientScopeError != null) {
-            return Result.error(clientScopeError.getCode(), clientScopeError.getMessage());
-        }
-        return Result.OK(clientSalespersonMapper.getSalespersonIdsByClientId(q.getInquiryClient()));
-    }
+    private IClientService clientService;
 
     @ApiOperation("Quote list")
-    @GetMapping("/quote/list")
+    @GetMapping("/list")
     public Result<IPage<Quotation>> quoteList(
             Quotation q,
             @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
             @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-        Result<String> clientScopeError = quotationService.applyClientScope(q);
-        if (clientScopeError != null) {
-            return Result.error(clientScopeError.getCode(), clientScopeError.getMessage());
+        if (securityService.checkIsEmployee()) {
+            return Result.OK(quotationService.pageByStatus(new Page<>(pageNo, pageSize), q));
         }
-        return Result.OK(quotationService.pageByStatus(new Page<>(pageNo, pageSize), q));
+        Client client = clientService.getCurrentClient();
+        if (client == null || StringUtils.isBlank(client.getId())) {
+            return Result.error(403, "Access denied");
+        }
+        return Result.OK(quotationService.pageByStatusForClient(new Page<>(pageNo, pageSize), q, client.getId()));
     }
 
     @ApiOperation("Export customer visible quotes")
-    @GetMapping("/quote/exportCustomerQuotes")
+    @GetMapping("/exportCustomerQuotes")
     public void exportCustomerQuotes(
             Quotation q,
             @RequestParam(name = "selections", required = false) String selections,
@@ -143,77 +73,153 @@ public class QuotationController {
         quotationService.exportCustomerQuotes(q, selections, response);
     }
 
-    @ApiOperation("Quote add")
-    @PostMapping("/quote/add")
+    @ApiOperation("Create quote from inquiry")
+    @PostMapping("/add")
     public Result<String> quoteAdd(@RequestBody Quotation q) {
-        if (StringUtils.isBlank(q.getId())) return Result.error("id cannot be empty");
         if (!securityService.checkIsEmployee()) return Result.error(403, "Access denied");
-        Result<String> ownershipError = quotationService.checkInquiryOwnership(q.getId());
-        if (ownershipError != null) {
-            return Result.error(ownershipError.getCode(), ownershipError.getMessage());
+        if (q == null || StringUtils.isBlank(q.getInquiryId())) {
+            return Result.error("inquiryId cannot be empty");
         }
-        int rows = quotationService.addQuoteBasedOnInquiry(q);
-        return rows > 0 ? Result.OK("Quote added successfully") : Result.error("Add quote failed: record not found or not in inquiry status");
+        Inquiry inquiry = inquiryService.getById(q.getInquiryId());
+        if (inquiry == null) {
+            return Result.error("Inquiry not found");
+        }
+        if (StringUtils.isBlank(q.getCountry())) {
+            q.setCountry(inquiryService.resolvePrimaryCountryId(inquiry));
+        }
+        try {
+            quotationService.prepareDirectQuote(q);
+            q.setInquiryId(inquiry.getId());
+            quotationService.save(q);
+            return Result.OK("Quote added successfully");
+        } catch (IllegalArgumentException e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    @ApiOperation("Quote direct add")
+    @PostMapping("/directAdd")
+    public Result<String> quoteDirectAdd(@RequestBody Quotation q) {
+        if (!securityService.checkIsEmployee()) return Result.error(403, "Access denied");
+        try {
+            if (q != null) {
+                q.setInquiryId(null);
+            }
+            quotationService.prepareDirectQuote(q);
+            quotationService.save(q);
+            return Result.OK("Direct quote added successfully");
+        } catch (IllegalArgumentException e) {
+            return Result.error(e.getMessage());
+        }
     }
 
     @ApiOperation("Quote edit")
-    @RequestMapping(value = "/quote/edit", method = {RequestMethod.PUT, RequestMethod.POST})
+    @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     public Result<String> quoteEdit(@RequestBody Quotation q) {
         if (StringUtils.isBlank(q.getId())) return Result.error("id cannot be empty");
         if (!securityService.checkIsEmployee()) return Result.error(403, "Access denied");
-        Result<String> ownershipError = quotationService.checkInquiryOwnership(q.getId());
-        if (ownershipError != null) {
-            return Result.error(ownershipError.getCode(), ownershipError.getMessage());
-        }
         int rows = quotationService.updateQuoteFields(q);
-        return rows > 0 ? Result.OK("Edited successfully") : Result.error("Edit failed: record not found or not in quote status");
+        return rows > 0 ? Result.OK("Edited successfully") : Result.error("Edit failed: record not found or quote already completed");
     }
 
     @ApiOperation("Quote query by id")
-    @GetMapping("/quote/queryById")
+    @GetMapping("/queryById")
     public Result<Quotation> quoteQueryById(@RequestParam("id") String id) {
-        Result<String> ownershipError = quotationService.checkInquiryOwnership(id);
-        if (ownershipError != null) {
-            return Result.error(ownershipError.getCode(), ownershipError.getMessage());
+        Quotation q;
+        if (securityService.checkIsEmployee()) {
+            q = quotationService.getQuoteById(id);
+        } else {
+            Client client = clientService.getCurrentClient();
+            if (client == null || StringUtils.isBlank(client.getId())) {
+                return Result.error(403, "Access denied");
+            }
+            q = quotationService.getQuoteByIdForClient(id, client.getId());
         }
-        Quotation q = quotationService.getByIdAndStatus(id, STATUS_QUOTED);
-        return q != null ? Result.OK(q) : Result.error("Record not found or not in quote status");
+        return q != null ? Result.OK(q) : Result.error("Record not found");
     }
 
     @ApiOperation("Quote estimate")
-    @PostMapping("/quote/estimate")
+    @PostMapping("/estimate")
     public Result<Quotation> estimate(@RequestBody Quotation q) {
         if (!securityService.checkIsEmployee()) return Result.error(403, "Access denied");
         return Result.OK(quotationService.estimateQuote(q));
     }
 
+    @ApiOperation("Quote delete")
+    @DeleteMapping("/delete")
+    public Result<String> delete(@RequestParam("id") String id) {
+        if (!securityService.checkIsEmployee()) return Result.error(403, "Access denied");
+        if (StringUtils.isBlank(id)) {
+            return Result.error("id cannot be empty");
+        }
+        boolean removed = quotationService.removeById(id);
+        return removed ? Result.OK("Deleted successfully") : Result.error("Delete failed: record not found");
+    }
+
+    @ApiOperation("Quote batch delete")
+    @DeleteMapping("/deleteBatch")
+    public Result<String> deleteBatch(
+            @RequestParam(value = "ids", required = false) String idsParam,
+            @RequestBody(required = false) Map<String, Object> body) {
+        if (!securityService.checkIsEmployee()) return Result.error(403, "Access denied");
+        List<String> ids = resolveIds(idsParam, body);
+        if (ids.isEmpty()) {
+            return Result.error("ids cannot be empty");
+        }
+        boolean removed = quotationService.removeByIds(ids);
+        return removed ? Result.OK("Deleted successfully") : Result.error("Delete failed: no records found");
+    }
+
     @ApiOperation("Quote revoke")
-    @PostMapping("/quote/revoke")
+    @PostMapping("/revoke")
     public Result<String> revokeQuote(
             @RequestParam(value = "id", required = false) String id,
-            @RequestBody(required = false) java.util.Map<String, Object> body
+            @RequestBody(required = false) Map<String, Object> body
     ) {
         if (!securityService.checkIsEmployee()) return Result.error(403, "Access denied");
         if (StringUtils.isNotBlank(id)) {
-            Result<String> ownershipError = quotationService.checkInquiryOwnership(id);
-            if (ownershipError != null) {
-                return Result.error(ownershipError.getCode(), ownershipError.getMessage());
-            }
             int rows = quotationService.revokeQuoteById(id);
-            return rows > 0 ? Result.OK("Quote revoked successfully") : Result.error("Revoke failed: record not found or not in quote status");
+            return rows > 0 ? Result.OK("Quote revoked successfully") : Result.error("Revoke failed: record not found");
         }
         if (body != null && body.get("ids") != null) {
             @SuppressWarnings("unchecked")
             java.util.List<String> ids = (java.util.List<String>) body.get("ids");
-            for (String quoteId : ids) {
-                Result<String> ownershipError = quotationService.checkInquiryOwnership(quoteId);
-                if (ownershipError != null) {
-                    return Result.error(ownershipError.getCode(), ownershipError.getMessage());
-                }
-            }
             int rows = quotationService.revokeQuoteBatch(ids);
-            return rows > 0 ? Result.OK("Quotes revoked successfully") : Result.error("Revoke failed: no records found or not in quote status");
+            return rows > 0 ? Result.OK("Quotes revoked successfully") : Result.error("Revoke failed: no records found");
         }
         return Result.error("id or ids cannot be empty");
+    }
+
+    private List<String> resolveIds(String idsParam, Map<String, Object> body) {
+        if (StringUtils.isNotBlank(idsParam)) {
+            return splitIds(idsParam);
+        }
+        if (body == null) {
+            return Collections.emptyList();
+        }
+        Object idsValue = body.get("ids");
+        if (idsValue instanceof String) {
+            return splitIds((String) idsValue);
+        }
+        if (idsValue instanceof List<?>) {
+            List<String> ids = new ArrayList<>();
+            for (Object item : (List<?>) idsValue) {
+                if (item != null && StringUtils.isNotBlank(String.valueOf(item))) {
+                    ids.add(String.valueOf(item).trim());
+                }
+            }
+            return ids;
+        }
+        return Collections.emptyList();
+    }
+
+    private List<String> splitIds(String ids) {
+        if (StringUtils.isBlank(ids)) {
+            return Collections.emptyList();
+        }
+        return Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
     }
 }
