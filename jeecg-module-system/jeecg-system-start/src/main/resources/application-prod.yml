@@ -239,6 +239,7 @@ jeecg:
     # shipping invoice template
     shippingTemplatePath_EU: /wia/files/Shipping_Invoice_Template_EU.xlsx
     shippingTemplatePath_US: /wia/files/Shipping_Invoice_Template_US.xlsx
+    shippingTemplatePath_CA: /wia/files/Shipping_Invoice_Template_CA.xlsx
 
     # complete invoice template
     completeTemplatePath_EU: /wia/files/Complete_Invoice_Template_EU.xlsx

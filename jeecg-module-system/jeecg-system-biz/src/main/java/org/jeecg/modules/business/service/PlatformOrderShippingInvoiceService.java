@@ -86,9 +86,10 @@ public class PlatformOrderShippingInvoiceService {
     Environment env;
     @Value("${jeecg.path.shippingTemplatePath_EU}")
     private String SHIPPING_INVOICE_TEMPLATE_EU;
-
     @Value("${jeecg.path.shippingTemplatePath_US}")
     private String SHIPPING_INVOICE_TEMPLATE_US;
+    @Value("${jeecg.path.shippingTemplatePath_CA}")
+    private String SHIPPING_INVOICE_TEMPLATE_CA;
 
     @Value("${jeecg.path.completeTemplatePath_EU}")
     private String COMPLETE_INVOICE_TEMPLATE_EU;
@@ -394,6 +395,8 @@ public class PlatformOrderShippingInvoiceService {
         } else {
             if (invoice.getTargetClient().getCurrency().equals("USD")) {
                 src = Paths.get(SHIPPING_INVOICE_TEMPLATE_US);
+            } else if (invoice.getTargetClient().getCurrency().equals("CAD")) {
+                src = Paths.get(SHIPPING_INVOICE_TEMPLATE_CA);
             } else {
                 src = Paths.get(SHIPPING_INVOICE_TEMPLATE_EU);
             }
