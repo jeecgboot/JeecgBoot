@@ -82,7 +82,7 @@ public class CreditInvoice extends AbstractInvoice<String, Object, Integer, Obje
         creditAmountStyle.setDataFormat(creationHelper.createDataFormat().getFormat("#,##0.00"));
         configCell("H", lineNum, rowValue.getCol5(), creditAmountStyle);
 
-        if (currency.equals("USD")) {
+        if (!currency.equals("EUR")) {
             org.apache.poi.ss.usermodel.Row euroRow;
             euroRow = sheet.getRow(FIRST_ROW + 2);
             String formula = "H"+ (FIRST_ROW + 2) +" /" + exchangeRate;
