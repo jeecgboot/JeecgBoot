@@ -18,6 +18,8 @@ public class ShopOptionsAddParam {
     private Boolean isSelfIgnoreStock;
     private Boolean hasStock;
     private Boolean hasShippingInvoiceRemark;
+    private Boolean hasPreshippingInvoiceRemark;
+    private Boolean hasPostshippingInvoiceRemark;
     private Boolean showUnassignedLogisticsOrders;
 
     public ShopOptionsAddParam(@JsonProperty("shopIds") List<String> shopIds,
@@ -31,6 +33,8 @@ public class ShopOptionsAddParam {
                                @JsonProperty("isSelfIgnoreStock") Boolean isSelfIgnoreStock,
                                @JsonProperty("hasStock") Boolean hasStock,
                                @JsonProperty("hasShippingInvoiceRemark") Boolean hasShippingInvoiceRemark,
+                               @JsonProperty("hasPreshippingInvoiceRemark") Boolean hasPreshippingInvoiceRemark,
+                               @JsonProperty("hasPostshippingInvoiceRemark") Boolean hasPostshippingInvoiceRemark,
                                @JsonProperty("showUnassignedLogisticsOrders") Boolean showUnassignedLogisticsOrders
 
     ) {
@@ -45,6 +49,8 @@ public class ShopOptionsAddParam {
         this.isSelfIgnoreStock = isSelfIgnoreStock;
         this.hasStock = hasStock;
         this.hasShippingInvoiceRemark = hasShippingInvoiceRemark;
+        this.hasPreshippingInvoiceRemark = hasPreshippingInvoiceRemark;
+        this.hasPostshippingInvoiceRemark = hasPostshippingInvoiceRemark;
         this.showUnassignedLogisticsOrders = showUnassignedLogisticsOrders;
     }
 }

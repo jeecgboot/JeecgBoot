@@ -386,21 +386,12 @@ public class AutoInvoiceServiceImpl implements IAutoInvoiceService {
     @Override
     public void tryEditOrdersRemarkAfterInvoice(String invoiceNumber, Invoice.InvoicingMethod invoicingMethod) {
         try {
-            boolean hasRemarkInShippingInvoice = false;
             List<ShopOptions> options = shopOptionsService.getByInvoiceNumber(invoiceNumber);
             if (options == null || options.isEmpty()) {
                 log.info("[AUTO_INVOICE][REMARK] skip invoice={} (no shop options)", invoiceNumber);
                 return;
             }
-            for (ShopOptions option : options) {
-                if (Boolean.TRUE.equals(option.getHasShippingInvoiceRemark())) {
-                    hasRemarkInShippingInvoice = true;
-                    break;
-                }
-            }
-            boolean shouldApply =
-                    (invoicingMethod == PRESHIPPING)
-                            || (invoicingMethod == null && hasRemarkInShippingInvoice);
+            boolean shouldApply = shopOptionsService.shouldEditShippingInvoiceRemark(options, invoicingMethod);
             if (!shouldApply) {
                 log.info("[AUTO_INVOICE][REMARK] skip invoice={} (method not supported / no remark needed)", invoiceNumber);
                 return;

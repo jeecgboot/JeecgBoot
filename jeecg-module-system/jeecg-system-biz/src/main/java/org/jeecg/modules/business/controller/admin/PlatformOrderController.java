@@ -68,7 +68,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static org.jeecg.modules.business.entity.Invoice.InvoicingMethod.PRESHIPPING;
 import static org.jeecg.modules.business.vo.PlatformOrderOperation.Action.*;
 
 /**
@@ -671,17 +670,10 @@ public class PlatformOrderController {
     public Result<?> editOrdersRemark(@RequestBody InvoiceOrdersEditParam param) {
         boolean isEmployee = securityService.checkIsEmployee();
         String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
-        boolean hasRemarkInShippingInvoice = false;
         List<ShopOptions> options = shopOptionsService.getByInvoiceNumber(param.getInvoiceNumber());
-        if(options == null)
+        if(options == null || options.isEmpty())
             return Result.OK();
-        for (ShopOptions option : options) {
-            if (option.getHasShippingInvoiceRemark()) {
-                hasRemarkInShippingInvoice = true;
-                break;
-            }
-        }
-        if((param.getInvoicingMethod() != null && param.getInvoicingMethod() == PRESHIPPING) || (hasRemarkInShippingInvoice && param.getInvoicingMethod() == null)) {
+        if(shopOptionsService.shouldEditShippingInvoiceRemark(options, param.getInvoicingMethod())) {
             ResponsesWithMsg<String> mabangResponses = platformOrderMabangService.editOrdersRemark(param.getInvoiceNumber());
             if(isEmployee) {
                 if (!mabangResponses.getFailures().isEmpty())
@@ -691,7 +683,7 @@ public class PlatformOrderController {
             }
             return Result.OK(mabangResponses);
         }
-        if(!hasRemarkInShippingInvoice && param.getInvoicingMethod() == null) {
+        if(param.getInvoicingMethod() == null) {
             return Result.OK();
         }
         if (isEmployee) sysMessageService.pushProgress(userId, "Method not supported");
