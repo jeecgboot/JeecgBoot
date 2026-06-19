@@ -158,7 +158,7 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3",
     "unplugin-vue-components": "~0.24.1",
-    "vite": "^7.3.3",
+    "vite": "^7.3.5",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-html": "^3.2.2",
     "vite-plugin-mkcert": "^1.17.9",
