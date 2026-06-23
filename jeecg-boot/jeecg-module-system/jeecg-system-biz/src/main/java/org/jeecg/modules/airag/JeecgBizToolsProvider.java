@@ -8,10 +8,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import dev.langchain4j.agent.tool.ToolSpecification;
 import dev.langchain4j.model.chat.request.json.JsonObjectSchema;
 import dev.langchain4j.service.tool.ToolExecutor;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.PasswordUtil;
+import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.llm.handler.JeecgToolsProvider;
 import org.jeecg.modules.base.service.BaseCommonService;
@@ -21,10 +24,7 @@ import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * for [QQYUN-13565]【AI助手】新增创建用户和查询用户的工具扩展
@@ -32,6 +32,7 @@ import java.util.Map;
  * @Author: chenrui
  * @Date: 2025/8/26 18:06
  */
+@Slf4j
 @Component
 public class JeecgBizToolsProvider implements JeecgToolsProvider {
 
@@ -51,31 +52,92 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
     private org.jeecg.modules.system.service.ISysUserService sysUserService;
 
     public Map<ToolSpecification, ToolExecutor> getDefaultTools() {
+       log.info("--------【AI工具】创建用户和查询用户工具扩展------------------");
         Map<ToolSpecification, ToolExecutor> tools = new HashMap<>();
 
-        if (SecurityUtils.getSubject().isPermitted("system:user:list")) {
-            JeecgLlmTools userTool = queryUserTool();
+        // 改为从当前 HTTP 请求的 JWT 解析用户名，再按 userId 查权限码集合用于鉴权。
+        Set<String> perms = currentUserPermissions();
+        if (perms.isEmpty()) {
+            // 匿名访问或登录态无效，不暴露任何业务工具
+            log.info("【AI工具】当前为匿名/未登录会话，跳过所有业务工具注册");
+            return tools;
+        }
+
+        if (perms.contains("system:user:listAll")) {
+            // 查询所有用户工具
+            JeecgLlmTools userTool = queryUserTool(perms);
             tools.put(userTool.getToolSpecification(), userTool.getToolExecutor());
+        } else {
+            log.info("【AI工具】当前用户无 system:user:listAll 权限，跳过 query_user_by_name 工具注册");
         }
 
-        if (SecurityUtils.getSubject().isPermitted("system:user:add")) {
-            JeecgLlmTools addUser = addUserTool();
+        if (perms.contains("system:user:add")) {
+            // 添加用户工具
+            JeecgLlmTools addUser = addUserTool(perms);
             tools.put(addUser.getToolSpecification(), addUser.getToolExecutor());
+        } else {
+            log.info("【AI工具】当前用户无 system:user:add 权限，跳过 add_user 工具注册");
         }
 
-        if (SecurityUtils.getSubject().isPermitted("system:role:list")) {
-            // 新增：查询所有角色
-            JeecgLlmTools queryRoles = queryAllRolesTool();
+        if (perms.contains("system:role:list")) {
+            // 查询所有角色
+            JeecgLlmTools queryRoles = queryAllRolesTool(perms);
             tools.put(queryRoles.getToolSpecification(), queryRoles.getToolExecutor());
+        } else {
+            log.info("【AI工具】当前用户无 system:role:list 权限，跳过 query_all_roles 工具注册");
         }
 
-        if (SecurityUtils.getSubject().isPermitted("system:user:addUserRole")) {
-            // 新增：给用户授予角色
-            JeecgLlmTools grantRoles = grantUserRolesTool();
+        if (perms.contains("system:user:addUserRole")) {
+            // 给用户授予角色
+            JeecgLlmTools grantRoles = grantUserRolesTool(perms);
             tools.put(grantRoles.getToolSpecification(), grantRoles.getToolExecutor());
+        } else {
+            log.info("【AI工具】当前用户无 system:user:addUserRole 权限，跳过 grant_user_roles 工具注册");
         }
 
         return tools;
+    }
+
+    /**
+     * 解析当前 HTTP 请求 JWT 对应用户的权限码集合。
+     * 因为 /airag/chat/send 入口标了 @IgnoreAuth，Shiro 过滤器被跳过，
+     * 当前线程的 Subject 是匿名的，无法用 SecurityUtils.getSubject().isPermitted(...) 鉴权。
+     *
+     * @return 当前登录用户的权限码集合；未登录、token 无效或解析失败时返回空集合
+     */
+    private Set<String> currentUserPermissions() {
+        try {
+            HttpServletRequest req = SpringContextUtils.getHttpServletRequest();
+            if (req == null) {
+                log.info("【AI工具】未获取到当前 HTTP 请求上下文，按匿名处理（无业务工具权限）");
+                return Collections.emptySet();
+            }
+            String token = req.getHeader("X-Access-Token");
+            if (StringUtils.isBlank(token)) {
+                log.info("【AI工具】请求头缺少 X-Access-Token，按匿名处理（无业务工具权限）");
+                return Collections.emptySet();
+            }
+            String username = JwtUtil.getUsername(token);
+            if (StringUtils.isBlank(username)) {
+                log.info("【AI工具】X-Access-Token 解析不到 username，按匿名处理（无业务工具权限）");
+                return Collections.emptySet();
+            }
+            SysUser user = sysUserService.getUserByName(username);
+            if (user == null) {
+                log.warn("【AI工具】token 中的用户在系统中不存在: username={}，按匿名处理", username);
+                return Collections.emptySet();
+            }
+            Set<String> perms = sysUserService.getUserPermissionsSet(user.getId());
+            if (perms == null || perms.isEmpty()) {
+                log.info("【AI工具】用户无任何权限码: username={}, userId={}", username, user.getId());
+                return Collections.emptySet();
+            }
+            log.info("【AI工具】当前用户权限解析完成: username={}, perms.size={}", username, perms.size());
+            return perms;
+        } catch (Exception e) {
+            log.warn("【AI工具】解析当前用户权限失败: {}", e.getMessage());
+            return Collections.emptySet();
+        }
     }
 
     /**
@@ -84,7 +146,8 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
      * @author chenrui
      * @date 2025/8/27 09:51
      */
-    private JeecgLlmTools addUserTool(){
+    private JeecgLlmTools addUserTool(Set<String> perms){
+        log.info("--------【AI工具】添加用户工具------------------");
         ToolSpecification toolSpecification = ToolSpecification.builder()
                 .name("add_user")
                 .description("添加用户,返回添加结果;" +
@@ -105,12 +168,13 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                 )
                 .build();
 
-        // 在主线程（Shiro上下文可用）提前检查权限
-        final boolean hasAddPermission = SecurityUtils.getSubject().isPermitted("system:user:add");
+        // 鉴权改用调用方传入的权限集合（来自 JWT→userId→sysUserService.getUserPermissionsSet）
+        final boolean hasAddPermission = perms != null && perms.contains("system:user:add");
 
         ToolExecutor toolExecutor = (toolExecutionRequest, memoryId) -> {
             // 权限校验（使用提前捕获的结果，避免在异步线程中调用 Shiro）
             if (!hasAddPermission) {
+                log.warn("【AI工具】add_user 调用被拒绝：当前用户无 system:user:add 权限");
                 return "无权限：您没有添加用户的权限（system:user:add）";
             }
             JSONObject arguments = JSONObject.parseObject(toolExecutionRequest.arguments());
@@ -155,7 +219,7 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
      * @author chenrui
      * @date 2025/8/26 18:52
      */
-    private JeecgLlmTools queryUserTool() {
+    private JeecgLlmTools queryUserTool(Set<String> perms) {
         ToolSpecification toolSpecification = ToolSpecification.builder()
                 .name("query_user_by_name")
                 .description("查询用户详细信息，返回json数组。支持用户名、真实姓名、邮箱、手机号 多字段组合查询，用户名、真实姓名、邮箱、手机号均为模糊查询。无条件则返回全部用户。")
@@ -169,12 +233,13 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                 )
                 .build();
 
-        // 在主线程（Shiro上下文可用）提前检查权限
-        final boolean hasListPermission = SecurityUtils.getSubject().isPermitted("system:user:list");
+        // 鉴权改用调用方传入的权限集合
+        final boolean hasListPermission = perms != null && perms.contains("system:user:listAll");
 
         ToolExecutor toolExecutor = (toolExecutionRequest, memoryId) -> {
             // 权限校验（使用提前捕获的结果，避免在异步线程中调用 Shiro）
             if (!hasListPermission) {
+                log.warn("【AI工具】query_user_by_name 调用被拒绝：当前用户无 system:user:listAll 权限");
                 return "无权限：您没有查询用户列表的权限";
             }
             SysUser args = JSONObject.parseObject(toolExecutionRequest.arguments(), SysUser.class);
@@ -208,7 +273,7 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
      * @author chenrui
      * @date 2025/8/27 09:52
      */
-    private JeecgLlmTools queryAllRolesTool() {
+    private JeecgLlmTools queryAllRolesTool(Set<String> perms) {
         ToolSpecification spec = ToolSpecification.builder()
                 .name("query_all_roles")
                 .description("查询所有角色，返回json数组。包含字段：id、roleName、roleCode；默认按创建时间/排序号规则由后端决定。")
@@ -220,12 +285,13 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                 )
                 .build();
 
-        // 在主线程（Shiro上下文可用）提前检查权限
-        final boolean hasRoleListPermission = SecurityUtils.getSubject().isPermitted("system:role:list");
+        // 鉴权改用调用方传入的权限集合
+        final boolean hasRoleListPermission = perms != null && perms.contains("system:role:list");
 
         ToolExecutor exec = (toolExecutionRequest, memoryId) -> {
             // 权限校验（使用提前捕获的结果，避免在异步线程中调用 Shiro）
             if (!hasRoleListPermission) {
+                log.warn("【AI工具】query_all_roles 调用被拒绝：当前用户无 system:role:list 权限");
                 return "无权限：您没有查询角色列表的权限";
             }
             // 做租户隔离查询（若开启）
@@ -259,7 +325,7 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
      * @author chenrui
      * @date 2025/8/27 09:52
      */
-    private JeecgLlmTools grantUserRolesTool() {
+    private JeecgLlmTools grantUserRolesTool(Set<String> perms) {
         ToolSpecification spec = ToolSpecification.builder()
                 .name("grant_user_roles")
                 .description("给用户授予角色，支持一次授予多个角色；如果关系已存在则跳过。返回授予结果统计。")
@@ -272,13 +338,14 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                 )
                 .build();
 
-        // 在主线程（Shiro上下文可用）提前检查权限
-        final boolean hasGrantPermission = SecurityUtils.getSubject().isPermitted("system:user:addUserRole")
-                || SecurityUtils.getSubject().isPermitted("system:user:edit");
+        // 鉴权改用调用方传入的权限集合
+        final boolean hasGrantPermission = perms != null
+                && (perms.contains("system:user:addUserRole") || perms.contains("system:user:edit"));
 
         ToolExecutor exec = (toolExecutionRequest, memoryId) -> {
             // 权限校验（使用提前捕获的结果，避免在异步线程中调用 Shiro）
             if (!hasGrantPermission) {
+                log.warn("【AI工具】grant_user_roles 调用被拒绝：当前用户无 system:user:addUserRole 或 system:user:edit 权限");
                 return "无权限：您没有给用户授予角色的权限";
             }
             JSONObject args = JSONObject.parseObject(toolExecutionRequest.arguments());
