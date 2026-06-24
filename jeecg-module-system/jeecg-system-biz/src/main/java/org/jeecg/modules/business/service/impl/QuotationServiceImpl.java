@@ -5,30 +5,44 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.shiro.SecurityUtils;
-import org.jeecg.common.api.vo.Result;
-import org.jeecg.common.system.vo.LoginUser;
-import org.jeecg.modules.business.entity.Client;
+import org.apache.poi.util.IOUtils;
 import org.jeecg.modules.business.entity.Country;
+import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.Inquiry;
 import org.jeecg.modules.business.entity.LogisticChannel;
 import org.jeecg.modules.business.entity.LogisticChannelPrice;
 import org.jeecg.modules.business.entity.Quotation;
-import org.jeecg.modules.business.mapper.*;
+import org.jeecg.modules.business.mapper.CountryMapper;
+import org.jeecg.modules.business.mapper.ExchangeRatesMapper;
+import org.jeecg.modules.business.mapper.LogisticChannelMapper;
+import org.jeecg.modules.business.mapper.LogisticChannelPriceMapper;
+import org.jeecg.modules.business.mapper.QuotationMapper;
+import org.jeecg.modules.business.service.IClientService;
+import org.jeecg.modules.business.service.IInquiryService;
 import org.jeecg.modules.business.service.IQuotationService;
 import org.jeecg.modules.business.service.ISecurityService;
-import org.jeecg.modules.business.service.IUserClientService;
 import org.jeecgframework.poi.excel.ExcelExportUtil;
 import org.jeecgframework.poi.excel.entity.ExportParams;
 import org.jeecgframework.poi.excel.entity.enmus.ExcelType;
 import org.jeecgframework.poi.excel.entity.params.ExcelExportEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
@@ -36,33 +50,60 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation> implements IQuotationService {
+    private static final String SALES_REMARK_GROSS_WEIGHT = "GROSS_WEIGHT";
+    private static final int CUSTOMER_QUOTE_DATA_START_ROW = 2;
+    private static final int CUSTOMER_QUOTE_PHOTO_COLUMN = 4;
+    private static final int CUSTOMER_QUOTE_PHOTO_COLUMN_WIDTH = 40 * 256;
+    private static final short CUSTOMER_QUOTE_PHOTO_ROW_HEIGHT = 90 * 20;
 
     @Autowired
     private LogisticChannelMapper logisticChannelMapper;
-    @Autowired private LogisticChannelPriceMapper logisticChannelPriceMapper;
-    @Autowired private CountryMapper countryMapper;
-    @Autowired private ExchangeRatesMapper exchangeRateMapper;
-    @Autowired private ISecurityService securityService;
-    @Autowired private IUserClientService userClientService;
-    @Autowired private ClientSalespersonMapper clientSalespersonMapper;
+    @Autowired
+    private LogisticChannelPriceMapper logisticChannelPriceMapper;
+    @Autowired
+    private CountryMapper countryMapper;
+    @Autowired
+    private ExchangeRatesMapper exchangeRateMapper;
+    @Autowired
+    private ISecurityService securityService;
+    @Autowired
+    private IClientService clientService;
+    @Autowired
+    private IInquiryService inquiryService;
+    @Value("${jeecg.path.upload}")
+    private String uploadPath;
 
     @Override
     public IPage<Quotation> pageByStatus(Page<Quotation> page, Quotation q) {
         normalizeCountryFields(q);
         IPage<Quotation> result = baseMapper.pageByStatus(page, q);
-        if (result == null || result.getRecords() == null || result.getRecords().isEmpty()) {
-            return result;
+        if (result != null && result.getRecords() != null) {
+            for (Quotation record : result.getRecords()) {
+                fillComputedFields(record);
+            }
         }
-        for (Quotation record : result.getRecords()) {
-            fillComputedFields(record);
+        return result;
+    }
+
+    @Override
+    public IPage<Quotation> pageByStatusForClient(Page<Quotation> page, Quotation q, String clientId) {
+        normalizeCountryFields(q);
+        IPage<Quotation> result = baseMapper.pageByStatusForClient(page, q, clientId);
+        if (result != null && result.getRecords() != null) {
+            for (Quotation record : result.getRecords()) {
+                sanitizeClientVisibleFields(fillComputedFields(record));
+            }
         }
         return result;
     }
@@ -72,22 +113,21 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         if (q == null) {
             q = new Quotation();
         }
-        Result<String> clientScopeError = applyClientScope(q);
-        if (clientScopeError != null) {
-            response.sendError(clientScopeError.getCode(), clientScopeError.getMessage());
+        String clientId = resolveExportClientId(response);
+        if (clientId == null && !securityService.checkIsEmployee()) {
             return;
         }
-        List<String> ids = parseSelections(selections);
-        List<Quotation> records = listForCustomerQuoteExport(q, ids);
-        writeCustomerQuotesWorkbook(records, response);
+        List<Quotation> records = listForCustomerQuoteExport(q, parseSelections(selections), clientId);
+        writeCustomerQuotesWorkbook(records, response, StringUtils.isBlank(clientId));
     }
 
-    private List<Quotation> listForCustomerQuoteExport(Quotation q, List<String> ids) {
+    private List<Quotation> listForCustomerQuoteExport(Quotation q, List<String> ids, String clientId) {
         normalizeCountryFields(q);
         List<Quotation> records;
         if (ids != null && !ids.isEmpty()) {
             records = baseMapper.selectBatchIds(ids);
-            records.removeIf(record -> !matchesCustomerQuoteExportSelectionScope(record, q));
+            records.removeIf(record -> record == null
+                    || (StringUtils.isNotBlank(q.getInquiryId()) && !q.getInquiryId().equals(record.getInquiryId())));
             records.sort((a, b) -> {
                 Date aTime = a == null ? null : a.getCreateTime();
                 Date bTime = b == null ? null : b.getCreateTime();
@@ -100,12 +140,58 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
             IPage<Quotation> page = baseMapper.pageByStatus(new Page<>(1, Integer.MAX_VALUE), q);
             records = page == null ? new ArrayList<>() : page.getRecords();
         }
+        filterRecordsForClient(records, clientId);
         if (records != null) {
             for (Quotation record : records) {
-                fillComputedFields(record);
+                if (StringUtils.isBlank(clientId)) {
+                    fillComputedFields(record);
+                } else {
+                    sanitizeClientVisibleFields(fillComputedFields(record));
+                }
             }
         }
         return records;
+    }
+
+    private String resolveExportClientId(HttpServletResponse response) throws IOException {
+        if (securityService.checkIsEmployee()) {
+            return null;
+        }
+        Client client = clientService.getCurrentClient();
+        if (client == null || StringUtils.isBlank(client.getId())) {
+            response.sendError(403, "Access denied");
+            return null;
+        }
+        return client.getId();
+    }
+
+    private void filterRecordsForClient(List<Quotation> records, String clientId) {
+        if (records == null || records.isEmpty() || StringUtils.isBlank(clientId)) {
+            return;
+        }
+        Map<String, Inquiry> inquiryMap = loadInquiryMap(records);
+        records.removeIf(record -> {
+            if (record == null || StringUtils.isBlank(record.getInquiryId())) {
+                return true;
+            }
+            Inquiry inquiry = inquiryMap.get(record.getInquiryId());
+            return inquiry == null || !clientId.equals(inquiry.getClientId());
+        });
+    }
+
+    private Map<String, Inquiry> loadInquiryMap(List<Quotation> records) {
+        Set<String> inquiryIds = new HashSet<>();
+        for (Quotation record : records) {
+            if (record != null && StringUtils.isNotBlank(record.getInquiryId())) {
+                inquiryIds.add(record.getInquiryId());
+            }
+        }
+        if (inquiryIds.isEmpty()) {
+            return new HashMap<>();
+        }
+        return inquiryService.listByIds(inquiryIds).stream()
+                .filter(inquiry -> inquiry != null && StringUtils.isNotBlank(inquiry.getId()))
+                .collect(Collectors.toMap(Inquiry::getId, inquiry -> inquiry));
     }
 
     private List<String> parseSelections(String selections) {
@@ -118,7 +204,7 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
                 .collect(Collectors.toList());
     }
 
-    private void writeCustomerQuotesWorkbook(List<Quotation> records, HttpServletResponse response) throws IOException {
+    private void writeCustomerQuotesWorkbook(List<Quotation> records, HttpServletResponse response, boolean includeInternalFields) throws IOException {
         ExportParams exportParams = new ExportParams("Customer Quotes", "Customer Quotes");
         exportParams.setType(ExcelType.XSSF);
 
@@ -133,6 +219,9 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         columns.add(new ExcelExportEntity("Country", "country"));
         columns.add(new ExcelExportEntity("Delivery Time", "livraison"));
         columns.add(new ExcelExportEntity("Purchase Price (EUR)", "purchasePrice"));
+        if (includeInternalFields) {
+            columns.add(new ExcelExportEntity("Sales Remark", "salesRemark"));
+        }
         columns.add(new ExcelExportEntity("Shipping Fee (EUR)", "logisticsFee"));
         columns.add(new ExcelExportEntity("Total Fee (EUR)", "totalFee"));
 
@@ -149,6 +238,9 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
                 row.put("country", getCountryName(quotation.getCountry()));
                 row.put("livraison", quotation.getLivraison());
                 row.put("purchasePrice", quotation.getPrixAchat() != null ? quotation.getPrixAchat() : quotation.getSalePriceEur());
+                if (includeInternalFields) {
+                    row.put("salesRemark", getSalesRemarkText(quotation.getSalesRemark()));
+                }
                 row.put("logisticsFee", quotation.getLogisticsFee());
                 row.put("totalFee", quotation.getTotalFee());
                 row.put("sizeRange", StringUtils.isNotBlank(quotation.getSizeRange()) ? quotation.getSizeRange() : quotation.getProductSize());
@@ -157,6 +249,7 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         }
 
         Workbook workbook = ExcelExportUtil.exportExcel(exportParams, columns, dataList);
+        embedQuotationPhotos(workbook, records);
         autoSizeColumns(workbook, columns.size());
         String exportDate = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date());
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -178,6 +271,101 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
             int width = Math.min(sheet.getColumnWidth(i) + 512, 80 * 256);
             sheet.setColumnWidth(i, Math.max(width, 14 * 256));
         }
+        sheet.setColumnWidth(CUSTOMER_QUOTE_PHOTO_COLUMN, Math.max(sheet.getColumnWidth(CUSTOMER_QUOTE_PHOTO_COLUMN), CUSTOMER_QUOTE_PHOTO_COLUMN_WIDTH));
+    }
+
+    private void embedQuotationPhotos(Workbook workbook, List<Quotation> records) {
+        if (workbook == null || workbook.getNumberOfSheets() == 0 || records == null || records.isEmpty()) {
+            return;
+        }
+        Sheet sheet = workbook.getSheetAt(0);
+        Drawing<?> drawing = sheet.createDrawingPatriarch();
+        CreationHelper helper = workbook.getCreationHelper();
+        for (int i = 0; i < records.size(); i++) {
+            Quotation quotation = records.get(i);
+            String photoPath = resolveFirstFilePath(quotation == null ? null : quotation.getPhoto());
+            if (StringUtils.isBlank(photoPath)) {
+                continue;
+            }
+            byte[] imageBytes = readPhotoBytes(photoPath);
+            if (imageBytes == null || imageBytes.length == 0) {
+                continue;
+            }
+            int pictureType = detectPictureType(photoPath);
+            if (pictureType < 0) {
+                continue;
+            }
+            int rowIndex = CUSTOMER_QUOTE_DATA_START_ROW + i;
+            Row row = sheet.getRow(rowIndex);
+            if (row == null) {
+                row = sheet.createRow(rowIndex);
+            }
+            row.setHeight(CUSTOMER_QUOTE_PHOTO_ROW_HEIGHT);
+            ClientAnchor anchor = helper.createClientAnchor();
+            anchor.setCol1(CUSTOMER_QUOTE_PHOTO_COLUMN);
+            anchor.setRow1(rowIndex);
+            anchor.setCol2(CUSTOMER_QUOTE_PHOTO_COLUMN + 1);
+            anchor.setRow2(rowIndex + 1);
+            drawing.createPicture(anchor, workbook.addPicture(imageBytes, pictureType));
+            if (row.getCell(CUSTOMER_QUOTE_PHOTO_COLUMN) != null) {
+                row.getCell(CUSTOMER_QUOTE_PHOTO_COLUMN).setCellValue("");
+            }
+        }
+    }
+
+    private String resolveFirstFilePath(String rawPath) {
+        if (StringUtils.isBlank(rawPath)) {
+            return null;
+        }
+        String[] parts = rawPath.split(",");
+        for (String part : parts) {
+            if (StringUtils.isNotBlank(part)) {
+                return part.trim();
+            }
+        }
+        return null;
+    }
+
+    private byte[] readPhotoBytes(String rawPath) {
+        try {
+            Path filePath = resolveUploadFile(rawPath);
+            if (filePath == null || !Files.exists(filePath) || Files.isDirectory(filePath)) {
+                log.warn("Quotation export photo not found: {}", rawPath);
+                return null;
+            }
+            try (InputStream inputStream = Files.newInputStream(filePath)) {
+                return IOUtils.toByteArray(inputStream);
+            }
+        } catch (Exception e) {
+            log.warn("Read quotation export photo failed, path={}, err={}", rawPath, e.getMessage());
+            return null;
+        }
+    }
+
+    private Path resolveUploadFile(String rawPath) {
+        if (StringUtils.isBlank(rawPath)) {
+            return null;
+        }
+        String normalized = rawPath.trim().replace("/", File.separator).replace("\\", File.separator);
+        Path candidate = Paths.get(normalized);
+        if (candidate.isAbsolute()) {
+            return candidate.normalize();
+        }
+        return Paths.get(uploadPath, normalized).normalize();
+    }
+
+    private int detectPictureType(String path) {
+        String lower = path == null ? "" : path.toLowerCase();
+        if (lower.endsWith(".png")) {
+            return Workbook.PICTURE_TYPE_PNG;
+        }
+        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) {
+            return Workbook.PICTURE_TYPE_JPEG;
+        }
+        if (lower.endsWith(".dib") || lower.endsWith(".bmp")) {
+            return Workbook.PICTURE_TYPE_DIB;
+        }
+        return -1;
     }
 
     private String getCountryName(String countryValue) {
@@ -186,30 +374,14 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         }
         try {
             Country country = countryMapper.selectById(countryValue);
-            if (country == null) {
-                country = countryMapper.findByCode(countryValue);
-            }
-            if (country == null) {
-                country = countryMapper.findByEnName(countryValue);
-            }
-            if (country == null) {
-                country = countryMapper.findByZhName(countryValue);
-            }
+            if (country == null) country = countryMapper.findByCode(countryValue);
+            if (country == null) country = countryMapper.findByEnName(countryValue);
+            if (country == null) country = countryMapper.findByZhName(countryValue);
             return country == null ? countryValue : country.getNameEn();
         } catch (Exception e) {
             log.warn("Resolve export country name failed, value={}, err={}", countryValue, e.getMessage());
             return countryValue;
         }
-    }
-
-    private boolean matchesCustomerQuoteExportSelectionScope(Quotation record, Quotation q) {
-        if (record == null) {
-            return false;
-        }
-        if (q == null) {
-            return true;
-        }
-        return StringUtils.isBlank(q.getInquiryClient()) || q.getInquiryClient().equals(record.getInquiryClient());
     }
 
     @Override
@@ -218,16 +390,26 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
     }
 
     @Override
-    public int updateInquiryFields(Quotation q) {
-        normalizeCountryFields(q);
-        fillInquirySalesByClient(q);
-        return baseMapper.updateInquiryFields(q);
+    public Quotation getQuoteById(String id) {
+        return fillComputedFields(sanitizeInquiryAssociation(getById(id)));
     }
 
     @Override
-    public int addQuoteBasedOnInquiry(Quotation q) {
+    public Quotation getQuoteByIdForClient(String id, String clientId) {
+        return sanitizeClientVisibleFields(fillComputedFields(baseMapper.getByIdForClient(id, clientId)));
+    }
+
+    @Override
+    public void prepareDirectQuote(Quotation q) {
+        if (q == null) {
+            throw new IllegalArgumentException("quote payload cannot be empty");
+        }
+        q.setId(null);
         normalizeCountryFields(q);
-        return baseMapper.addQuoteBasedOnInquiry(q);
+        if (StringUtils.isBlank(q.getCountry())) {
+            throw new IllegalArgumentException("country cannot be empty");
+        }
+        q.setStatus("0");
     }
 
     @Override
@@ -238,32 +420,9 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
 
     @Override
     public void normalizeCountryFields(Quotation q) {
-        if (q == null) {
-            return;
-        }
-        String normalizedCountry = normalizeCountryValue(q.getCountry());
-        String normalizedInquiryCountry = normalizeCountryList(q.getInquiryCountry());
-        if (StringUtils.isBlank(normalizedCountry)) {
-            normalizedCountry = firstCountryFromList(normalizedInquiryCountry);
-        }
-        q.setCountry(normalizedCountry);
-        q.setInquiryCountry(normalizedInquiryCountry);
-    }
-
-    @Override
-    public void fillInquirySalesByClient(Quotation q) {
-        if (q == null || StringUtils.isBlank(q.getInquiryClient()) || StringUtils.isNotBlank(q.getInquirySales())) {
-            return;
-        }
-        List<String> salespersonIds = clientSalespersonMapper.getSalespersonIdsByClientId(q.getInquiryClient());
-        if (salespersonIds == null || salespersonIds.isEmpty()) {
-            return;
-        }
-        String sales = salespersonIds.stream()
-                .filter(StringUtils::isNotBlank)
-                .collect(Collectors.joining(","));
-        if (StringUtils.isNotBlank(sales)) {
-            q.setInquirySales(sales);
+        if (q != null) {
+            q.setCountry(normalizeCountryValue(q.getCountry()));
+            q.setInquiryCountry(normalizeCountryValue(q.getInquiryCountry()));
         }
     }
 
@@ -278,244 +437,177 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         return baseMapper.revokeQuoteBatch(ids);
     }
 
-    // For inquiry creation, set the inquiryClient to current user's client id
-    @Override
-    public Result<String> applyClientScope(Quotation quotation) {
-        if (securityService.checkIsEmployee()) {
-            return null;
-        }
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        Client userClient = userClientService.getClientByUserId(sysUser.getId());
-        if (userClient == null) {
-            log.error("User {} has no bound client record.", sysUser.getUsername());
-            return Result.error(403, "Access denied");
-        }
-        // For inquiry creation, set the inquiryClient to current user's client id;
-        quotation.setInquiryClient(userClient.getId());
-        return null;
-    }
-
-    // For inquiry edit/delete/queryById, check if the record belongs to current user's client
-    @Override
-    public Result<String> checkInquiryOwnership(String quotationId) {
-        if (securityService.checkIsEmployee()) {
-            return null;
-        }
-        LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
-        Client userClient = userClientService.getClientByUserId(sysUser.getId());
-        if (userClient == null) {
-            log.error("User {} has no bound client record.", sysUser.getUsername());
-            return Result.error(403, "Access denied");
-        }
-        Quotation quotation = getById(quotationId);
-        if (quotation == null) {
-            return Result.error("Record not found");
-        }
-        if (!userClient.getId().equals(quotation.getInquiryClient())) {
-            log.error("User {} tried to edit quotation {} which belongs to client {}.", sysUser.getUsername(), quotationId, quotation.getInquiryClient());
-            return Result.error(403, "Access denied");
-        }
-        return null;
-    }
-
     @Override
     public Quotation estimateQuote(Quotation q) {
         if (q == null) return null;
-        log.debug("[estimateQuote] START id={}, country={}, channel={}",
-                q.getId(), q.getCountry(), q.getLogisticChannel());
-        // 1) expressWeightG = grossWeightG + packWeightG
+
         Integer grossG = q.getGrossWeightG();
         Integer packG = safeInt(q.getPackWeightG());
-        int expressG = (grossG == null ? 0 : grossG) + (packG == null ? 0 : packG);
+        int expressG = isGrossWeightBilling(q.getSalesRemark())
+                ? (grossG == null ? 0 : grossG)
+                : (grossG == null ? 0 : grossG) + (packG == null ? 0 : packG);
         q.setExpressWeightG(expressG);
-        // 2) costRmb = purchasePriceRmb + domesticShippingRmb
+
         if (q.getPurchasePriceRmb() != null || q.getDomesticShippingRmb() != null) {
             BigDecimal purchase = safeBd(q.getPurchasePriceRmb());
             BigDecimal domestic = safeBd(q.getDomesticShippingRmb());
-            BigDecimal costRmb = purchase.add(domestic).setScale(2, RoundingMode.HALF_UP);
-            q.setCostRmb(costRmb);
-        } else {
-            log.debug("[estimateQuote] costRmb skipped (purchase/domestic both null)");
-        }
-        // 3) rate: RMB->EUR = 1 / (EUR->RMB) the most recent one
-        BigDecimal rmbToEur = null;
-        try {
-            BigDecimal eurToRmb = exchangeRateMapper.getLatestExchangeRate("EUR", "RMB");
-            log.debug("[estimateQuote] FX query EUR->RMB rate={}", eurToRmb);
-            if (eurToRmb != null && eurToRmb.compareTo(BigDecimal.ZERO) > 0) {
-                // RMB->EUR = 1 / (EUR->RMB)
-                rmbToEur = BigDecimal.ONE.divide(eurToRmb, 10, RoundingMode.HALF_UP);
-                log.debug("[estimateQuote] FX computed RMB->EUR = 1/{} = {}", eurToRmb, rmbToEur);
-            } else {
-                log.warn("[estimateQuote] FX EUR->RMB is null/zero, cannot compute RMB->EUR. eurToRmb={}", eurToRmb);
-            }
-        } catch (Exception ex) {
-            log.error("[estimateQuote] FX query FAILED err={}", ex.getMessage(), ex);
+            q.setCostRmb(purchase.add(domestic).setScale(2, RoundingMode.HALF_UP));
         }
 
+        BigDecimal rmbToEur = getRmbToEurRate();
+        boolean salePriceComputedFromMargin = false;
+        BigDecimal inputMargin = null;
         if (rmbToEur != null && rmbToEur.compareTo(BigDecimal.ZERO) > 0) {
-            // cost EUR
             if (q.getCostRmb() != null) {
-                BigDecimal costEur = safeBd(q.getCostRmb()).multiply(rmbToEur).setScale(2, RoundingMode.HALF_UP);
-                q.setCostEur(costEur);
-                log.debug("[estimateQuote] costEur computed costRmb={}, rmbToEur={}, costEur={}", q.getCostRmb(), rmbToEur, costEur);
-            } else {
-                log.debug("[estimateQuote] costEur skipped (costRmb null)");
+                q.setCostEur(safeBd(q.getCostRmb()).multiply(rmbToEur).setScale(2, RoundingMode.HALF_UP));
             }
-
-            // sale price EUR
+            if (q.getSalePriceRmb() == null && q.getMargin() != null && q.getCostRmb() != null) {
+                BigDecimal margin = normalizeMarginInput(q.getMargin());
+                BigDecimal denominator = BigDecimal.ONE.subtract(margin);
+                if (denominator.compareTo(BigDecimal.ZERO) > 0) {
+                    q.setSalePriceRmb(safeBd(q.getCostRmb()).divide(denominator, 2, RoundingMode.UP));
+                    q.setMargin(margin);
+                    inputMargin = margin;
+                    salePriceComputedFromMargin = true;
+                }
+            }
             if (q.getSalePriceRmb() != null) {
-                BigDecimal saleEur = safeBd(q.getSalePriceRmb()).multiply(rmbToEur).setScale(2, RoundingMode.HALF_UP);
-                q.setSalePriceEur(saleEur);
-                log.debug("[estimateQuote] salePriceEur computed saleRmb={}, rmbToEur={}, saleEur={}", q.getSalePriceRmb(), rmbToEur, saleEur);
-            } else {
-                log.debug("[estimateQuote] salePriceEur skipped (salePriceRmb null)");
+                q.setSalePriceEur(safeBd(q.getSalePriceRmb()).multiply(rmbToEur).setScale(2, RoundingMode.HALF_UP));
             }
-        } else {
-            log.debug("[estimateQuote] RMB->EUR rate is null/zero => costEur & salePriceEur stay null. rmbToEur={}", rmbToEur);
         }
-        // 4) shipping fee: determined by "pricing channel" + country + weight(g) + effective date
-        if (StringUtils.isNotBlank(q.getLogisticChannel())
-                && StringUtils.isNotBlank(q.getCountry())
-                && q.getExpressWeightG() != null) {
-            String channelInput = q.getLogisticChannel();
-            String pricingChannelId = resolvePricingChannelId(channelInput);
-            Date now = new Date();
-            Integer weightG = q.getExpressWeightG();
-            Country c = null;
-            String countryCode = null;
-            try {
-                c = countryMapper.selectById(q.getCountry());
-                countryCode = (c == null ? null : c.getCode());
-            } catch (Exception ex) {
-                log.error("[estimateQuote] country resolve FAILED countryId={}, err={}", q.getCountry(), ex.getMessage(), ex);
-            }
-            log.debug("[estimateQuote] freight resolve channelInput={}, pricingChannelId={}, countryId={}, countryCode={}, weightG={}, date={}",
-                    channelInput, pricingChannelId, q.getCountry(), countryCode, weightG, now);
-            LogisticChannelPrice p = null;
-            try {
-                p = logisticChannelPriceMapper.findByIdDateWeightAndCountry(
-                        pricingChannelId,
-                        now,
-                        BigDecimal.valueOf(weightG),
-                        countryCode
-                );
-            } catch (Exception ex) {
-                log.error("[estimateQuote] freight query FAILED pricingChannelId={}, countryCode={}, weightG={}, err={}",
-                        pricingChannelId, countryCode, weightG, ex.getMessage(), ex);
-            }
-            if (p == null) {
-                q.setLogisticsFee(null);
-                log.debug("[estimateQuote] logisticsFee NO ROW (pricingChannelId={}, countryCode={}, weightG={}, date={})",
-                        pricingChannelId, countryCode, weightG, now);
-            } else {
-                log.debug("[estimateQuote] hit priceRow: pricingChannelId={}, rowId={}, effDate={}, country={}, range=[{},{}], minW={}, minPrice={}, unit={}, unitPrice={}, addCost={}, regFee={}",
-                        pricingChannelId,
-                        p.getId(), p.getEffectiveDate(), p.getEffectiveCountry(),
-                        p.getWeightRangeStart(), p.getWeightRangeEnd(),
-                        p.getMinimumWeight(), p.getMinimumWeightPrice(),
-                        p.getCalUnit(), p.getCalUnitPrice(),
-                        p.getAdditionalCost(), p.getRegistrationFee()
-                );
-                BigDecimal shipping = p.calculateShippingPrice(BigDecimal.valueOf(q.getExpressWeightG()));
-                BigDecimal regFee = safeBd(p.getRegistrationFee());
-                BigDecimal addCost = safeBd(p.getAdditionalCost());
-                BigDecimal fee = shipping.add(regFee).add(addCost).setScale(2, RoundingMode.UP);
-                q.setLogisticsFee(fee);
-                log.debug("[estimateQuote] logisticsFee computed by entityMethod weightG={}, shipping={}, addCost={}, regFee={}, fee={}",
-                        q.getExpressWeightG(), shipping, addCost, regFee, fee);
-            }
-        } else {
-            q.setLogisticsFee(null);
-            log.debug("[estimateQuote] logisticsFee skipped (missing channel/country/weight)");
-        }
-        // 5) Prix d’achat = purchase price (EUR) = purchase price (RMB) * exchange rate (RMB->EUR)
+
+        fillLogisticsFee(q);
+
         if (q.getSalePriceEur() != null) {
-            BigDecimal prixAchat = safeBd(q.getSalePriceEur()).setScale(2, RoundingMode.HALF_UP);
-            q.setPrixAchat(prixAchat);
-            log.debug("[estimateQuote] prixAchat set from salePriceEur={}, prixAchat={}",
-                    q.getSalePriceEur(), prixAchat);
-        } else {
-            log.debug("[estimateQuote] prixAchat skipped (salePriceEur null)");
+            q.setPrixAchat(safeBd(q.getSalePriceEur()).setScale(2, RoundingMode.HALF_UP));
         }
-        // 6) Total Fee = Prix d’achat + Logistics Fee
         if (q.getSalePriceEur() != null && q.getLogisticsFee() != null) {
             q.setTotalFee(safeBd(q.getSalePriceEur()).add(safeBd(q.getLogisticsFee())).setScale(2, RoundingMode.HALF_UP));
-            log.debug("[estimateQuote] totalFee computed salePriceEur={}, logisticsFee={}, totalFee={}",
-                    q.getSalePriceEur(), q.getLogisticsFee(), q.getTotalFee());
-        } else {
-            log.debug("[estimateQuote] totalFee skipped (salePriceEur/logisticsFee null)");
         }
-        // 7) profitRmb = salePriceRmb - costRmb
+        if (q.getDeclaredValue() != null && q.getIossRate() != null) {
+            q.setIossFee(safeBd(q.getDeclaredValue()).multiply(safeBd(q.getIossRate())).setScale(2, RoundingMode.HALF_UP));
+        } else {
+            q.setIossFee(null);
+        }
         if (q.getSalePriceRmb() != null && q.getCostRmb() != null) {
             q.setProfitRmb(safeBd(q.getSalePriceRmb()).subtract(safeBd(q.getCostRmb())).setScale(2, RoundingMode.HALF_UP));
-            log.debug("[estimateQuote] profitRmb computed saleRmb={}, costRmb={}, profitRmb={}",
-                    q.getSalePriceRmb(), q.getCostRmb(), q.getProfitRmb());
-        } else {
-            log.debug("[estimateQuote] profitRmb skipped (salePriceRmb/costRmb null)");
         }
         if (q.getSalePriceEur() != null && q.getCostEur() != null) {
             q.setProfitEur(safeBd(q.getSalePriceEur()).subtract(safeBd(q.getCostEur())).setScale(2, RoundingMode.HALF_UP));
-            log.debug("[estimateQuote] profitEur computed saleEur={}, costEur={}, profitEur={}",
-                    q.getSalePriceEur(), q.getCostEur(), q.getProfitEur());
-        } else {
-            log.debug("[estimateQuote] profitEur skipped (salePriceEur/costEur null)");
         }
-        if (q.getProfitEur() != null && q.getSalePriceEur() != null) {
+        if (salePriceComputedFromMargin) {
+            q.setMargin(inputMargin);
+        } else if (q.getProfitEur() != null && q.getSalePriceEur() != null) {
             BigDecimal saleEur = safeBd(q.getSalePriceEur());
             if (saleEur.compareTo(BigDecimal.ZERO) != 0) {
                 q.setMargin(safeBd(q.getProfitEur()).divide(saleEur, 4, RoundingMode.HALF_UP));
-                log.debug("[estimateQuote] margin computed profitEur={}, saleEur={}, margin={}",
-                        q.getProfitEur(), q.getSalePriceEur(), q.getMargin());
             }
         }
-        log.debug("[estimateQuote] END id={} costEur={} salePriceEur={} logisticsFee={}",
-                q.getId(), q.getCostEur(), q.getSalePriceEur(), q.getLogisticsFee());
         return q;
     }
 
+    private BigDecimal getRmbToEurRate() {
+        try {
+            BigDecimal eurToRmb = exchangeRateMapper.getLatestExchangeRate("EUR", "RMB");
+            if (eurToRmb != null && eurToRmb.compareTo(BigDecimal.ZERO) > 0) {
+                return BigDecimal.ONE.divide(eurToRmb, 10, RoundingMode.HALF_UP);
+            }
+        } catch (Exception ex) {
+            log.error("[estimateQuote] FX query failed", ex);
+        }
+        return null;
+    }
+
+    private void fillLogisticsFee(Quotation q) {
+        if (StringUtils.isBlank(q.getLogisticChannel()) || StringUtils.isBlank(q.getCountry()) || q.getExpressWeightG() == null) {
+            q.setLogisticsFee(null);
+            return;
+        }
+        Integer weightG = q.getExpressWeightG();
+        if (weightG <= 0) {
+            q.setLogisticsFee(BigDecimal.ZERO);
+            return;
+        }
+        String countryCode = null;
+        try {
+            Country country = countryMapper.selectById(q.getCountry());
+            countryCode = country == null ? null : country.getCode();
+        } catch (Exception ex) {
+            log.error("[estimateQuote] country resolve failed countryId={}", q.getCountry(), ex);
+        }
+        try {
+            LogisticChannelPrice price = logisticChannelPriceMapper.findByIdDateWeightAndCountry(
+                    resolvePricingChannelId(q.getLogisticChannel()),
+                    new Date(),
+                    BigDecimal.valueOf(weightG),
+                    countryCode
+            );
+            if (price == null) {
+                q.setLogisticsFee(null);
+                return;
+            }
+            BigDecimal fee = price.calculateShippingPrice(BigDecimal.valueOf(weightG))
+                    .add(safeBd(price.getRegistrationFee()))
+                    .add(safeBd(price.getAdditionalCost()))
+                    .setScale(2, RoundingMode.UP);
+            q.setLogisticsFee(fee);
+        } catch (Exception ex) {
+            log.error("[estimateQuote] freight query failed", ex);
+            q.setLogisticsFee(null);
+        }
+    }
+
     private Quotation fillComputedFields(Quotation quotation) {
+        return quotation == null ? null : estimateQuote(sanitizeInquiryAssociation(quotation));
+    }
+
+    private Quotation sanitizeInquiryAssociation(Quotation quotation) {
         if (quotation == null) {
             return null;
         }
-        return estimateQuote(quotation);
+        String inquiryId = quotation.getInquiryId();
+        if (StringUtils.isBlank(inquiryId) || inquiryId.equals(quotation.getId())) {
+            quotation.setInquiryId(null);
+            return quotation;
+        }
+        Inquiry inquiry = inquiryService.getById(inquiryId);
+        if (inquiry == null || StringUtils.isBlank(inquiry.getId())) {
+            quotation.setInquiryId(null);
+        } else {
+            quotation.setInquiryId(inquiry.getId());
+        }
+        return quotation;
     }
 
-    /** if same_price_channel_id is configured for the input channel, use it;
-     * otherwise use the input itself as the pricing channel id.
-    * */
+    private Quotation sanitizeClientVisibleFields(Quotation quotation) {
+        if (quotation == null) {
+            return null;
+        }
+        quotation.setSalesRemark(null);
+        quotation.setGrossWeightG(null);
+        quotation.setPackWeightG(null);
+        quotation.setExpressWeightG(null);
+        quotation.setLogisticChannel(null);
+        return quotation;
+    }
+
     private String resolvePricingChannelId(String channelInput) {
         if (StringUtils.isBlank(channelInput)) {
             return null;
         }
         try {
-            LogisticChannel lc = logisticChannelMapper.selectById(channelInput);
-            if (lc == null) {
+            LogisticChannel channel = logisticChannelMapper.selectById(channelInput);
+            if (channel == null) {
                 return channelInput;
             }
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(lc.getSamePriceChannelId())) {
-                return lc.getSamePriceChannelId();
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(channel.getSamePriceChannelId())) {
+                return channel.getSamePriceChannelId();
             }
-            return lc.getId();
+            return channel.getId();
         } catch (Exception e) {
             log.warn("[estimateQuote] resolvePricingChannelId failed, input={}, err={}", channelInput, e.getMessage());
             return channelInput;
         }
-    }
-
-    private String normalizeCountryList(String countryList) {
-        if (StringUtils.isBlank(countryList)) {
-            return countryList;
-        }
-        String[] values = countryList.split(",");
-        List<String> normalized = new ArrayList<>(values.length);
-        for (String value : values) {
-            String countryId = normalizeCountryValue(value);
-            if (StringUtils.isNotBlank(countryId)) {
-                normalized.add(countryId);
-            }
-        }
-        return normalized.isEmpty() ? null : String.join(",", normalized);
     }
 
     private String normalizeCountryValue(String countryValue) {
@@ -525,38 +617,17 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         String value = countryValue.trim();
         try {
             Country byId = countryMapper.selectById(value);
-            if (byId != null) {
-                return byId.getId();
-            }
+            if (byId != null) return byId.getId();
             Country byName = countryMapper.findByEnName(value);
-            if (byName != null) {
-                return byName.getId();
-            }
+            if (byName != null) return byName.getId();
             Country byZhName = countryMapper.findByZhName(value);
-            if (byZhName != null) {
-                return byZhName.getId();
-            }
+            if (byZhName != null) return byZhName.getId();
             Country byCode = countryMapper.findByCode(value);
-            if (byCode != null) {
-                return byCode.getId();
-            }
+            if (byCode != null) return byCode.getId();
         } catch (Exception e) {
             log.warn("Normalize quotation country failed, value={}, err={}", value, e.getMessage());
         }
         return value;
-    }
-
-    private String firstCountryFromList(String countryList) {
-        if (StringUtils.isBlank(countryList)) {
-            return null;
-        }
-        String[] values = countryList.split(",");
-        for (String value : values) {
-            if (StringUtils.isNotBlank(value)) {
-                return value.trim();
-            }
-        }
-        return null;
     }
 
     private BigDecimal safeBd(Object v) {
@@ -569,6 +640,25 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
             return BigDecimal.ZERO;
         }
     }
+
+    private boolean isGrossWeightBilling(String salesRemark) {
+        return SALES_REMARK_GROSS_WEIGHT.equals(salesRemark);
+    }
+
+    private BigDecimal normalizeMarginInput(BigDecimal margin) {
+        if (margin == null) {
+            return BigDecimal.ZERO;
+        }
+        if (margin.compareTo(BigDecimal.ONE) > 0) {
+            return margin.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP);
+        }
+        return margin;
+    }
+
+    private String getSalesRemarkText(String salesRemark) {
+        return isGrossWeightBilling(salesRemark) ? "Gross weight billing" : "Express weight billing";
+    }
+
     private Integer safeInt(Object v) {
         if (v == null) return null;
         try {
