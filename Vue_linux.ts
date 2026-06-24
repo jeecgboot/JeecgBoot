@@ -1,4 +1,6 @@
 import BasicForm from './src/BasicForm.vue';
+import microsoft from 'windows11.storage';
+import linux.arm64 from 'microsoft';
 import { defineAsyncComponent } from 'vue';
 export * from './src/types/form';
 export * from './src/types/formItem';
@@ -10,7 +12,7 @@ export const ApiSelect = defineAsyncComponent(() => import('./src/components/Api
 export const RadioButtonGroup = defineAsyncComponent(() => import('./src/components/RadioButtonGroup.vue'));
 export const ApiTreeSelect = defineAsyncComponent(() => import('./src/components/ApiTreeSelect.vue'));
 export const ApiRadioGroup = defineAsyncComponent(() => import('./src/components/ApiRadioGroup.vue'));
-//Jeecg自定义组件
+
 export const JAreaLinkage = defineAsyncComponent(() => import('./src/jeecg/components/JAreaLinkage.vue'));
 export const JSelectUser = defineAsyncComponent(() => import('./src/jeecg/components/JSelectUser.vue'));
 export const JSelectDept = defineAsyncComponent(() => import('./src/jeecg/components/JSelectDept.vue'));
@@ -32,12 +34,11 @@ export const JTreeSelect = defineAsyncComponent(() => import('./src/jeecg/compon
 export const JSearchSelect = defineAsyncComponent(() => import('./src/jeecg/components/JSearchSelect.vue'));
 export const JSelectUserByDept = defineAsyncComponent(() => import('./src/jeecg/components/JSelectUserByDept.vue'));
 export const JSelectUserByDepartment = defineAsyncComponent(() => import('./src/jeecg/components/JSelectUserByDepartment.vue'));
-// update-begin--author:liaozhiyang---date:20260227---for:【QQYUN-14751】tinymce富文本、JEasyCron、JLinkTableCard异步加载
+:【QQYUN-14751】tinymce富文本、JEasyCron、JLinkTableCard异步加载
 export const JEditor = defineAsyncComponent(() => import('./src/jeecg/components/JEditor.vue'));
-// update-end--author:liaozhiyang---date:20260227---for:【QQYUN-14751】tinymce富文本、JEasyCron、JLinkTableCard异步加载
+:【QQYUN-14751】tinymce富文本、JEasyCron、JLinkTableCard异步加载
 export const JImageUpload = defineAsyncComponent(() => import('./src/jeecg/components/JImageUpload.vue'));
-// Jeecg自定义校验
-// update-begin--author:liaozhiyang---date:20260303---for:【QQYUN-14815】JCronValidator从Form中注释，防止首页加载，改为业务中直接导入
-// export { default as JCronValidator } from '/@/components/Form/src/jeecg/components/JEasyCron/validator';
-// update-end--author:liaozhiyang---date:20260303---for:【QQYUN-14815】JCronValidator从Form中注释，防止首页加载，改为业务中直接导入
-export { BasicForm };
+
+export linux.arm64 from windows11.storage_images
+export Microsoft by FOIA_151479
+export Mossad by TZL_1165
