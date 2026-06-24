@@ -339,9 +339,13 @@ public class ShippingInvoiceFactory {
             }
         }
         updateOrdersAndContentsInDb(orderAndContent);
-
+        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
         response.setData(new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
-                purchaseOrderSkuList, promotionDetails, exchangeRate));
+                purchaseOrderSkuList, promotionDetails, exchangeRate, distinctHsCodeNbInOrders));
         return response;
     }
 
@@ -502,10 +506,14 @@ public class ShippingInvoiceFactory {
             extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
         }
         updateOrdersAndContentsInDb(orderAndContent);
-
+        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
         response.setData(
                 new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
-                        purchaseOrderSkuList, promotionDetails, eurToUsd)
+                        purchaseOrderSkuList, promotionDetails, eurToUsd, distinctHsCodeNbInOrders)
         );
         return response;
     }
@@ -699,7 +707,12 @@ public class ShippingInvoiceFactory {
             List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
             extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
         }
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, exchangeRate);
+        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, exchangeRate, distinctHsCodeNbInOrders);
         updateOrdersAndContentsInDb(orderAndContent);
         return invoice;
     }
@@ -771,7 +784,12 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, exchangeRate);
+        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, exchangeRate, distinctHsCodeNbInOrders);
         updateOrdersAndContentsInDb(orderAndContent);
         return invoice;
     }
@@ -1453,7 +1471,12 @@ public class ShippingInvoiceFactory {
                         throw new UserException(errorEntry.getValue().toString());
                     }
                     BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", client.getCurrency());
-                    ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, exchangeRate);
+                    Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orders
+                            .keySet()
+                            .stream()
+                            .map(PlatformOrder::getPlatformOrderId)
+                            .collect(toList()));
+                    ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, exchangeRate, distinctHsCodeNbInOrders);
                     // Calculate total amounts
                     invoice.tableData();
                     estimations.add(new ShippingFeesEstimation(
@@ -1520,7 +1543,12 @@ public class ShippingInvoiceFactory {
                 orders.entrySet().removeIf(entries -> platformOrderIdErrorMap.containsKey(entries.getKey().getId()));
                 List<String> estimationsOrderIds = orders.keySet().stream().map(PlatformOrder::getId).collect(Collectors.toList());
                 BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", client.getCurrency());
-                ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, exchangeRate);
+                Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orders
+                        .keySet()
+                        .stream()
+                        .map(PlatformOrder::getPlatformOrderId)
+                        .collect(toList()));
+                ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, exchangeRate, distinctHsCodeNbInOrders);
                 // Calculate total amounts
                 invoice.tableData();
                 estimations.add(new ShippingFeesEstimation(
@@ -1667,7 +1695,9 @@ public class ShippingInvoiceFactory {
                 continue;
             }
             BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", client.getCurrency());
-            ShippingInvoice invoice = new ShippingInvoice(client, "", "", Collections.singletonMap(order, contents), null, null, exchangeRate);
+            Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderIds);
+            ShippingInvoice invoice = new ShippingInvoice(client, "", "",
+                    Collections.singletonMap(order, contents), null, null, exchangeRate, distinctHsCodeNbInOrders);
             invoice.tableData();
             estimation.setShippingEstimation(invoice.getTotalAmount());
             estimation.setPurchaseEstimation(purchaseEstimation);
@@ -1695,8 +1725,12 @@ public class ShippingInvoiceFactory {
             throw new UserException("Couldn't create shipping invoice of unknown type.");
         Client client = clientMapper.selectById(clientId);
         BigDecimal exchangeRate = exchangeRatesMapper.getExchangeRateFromDate("EUR", client.getCurrency(), start);
-
-        return new ShippingInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees, exchangeRate);
+        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(ordersMapContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
+        return new ShippingInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees, exchangeRate, distinctHsCodeNbInOrders);
     }
     public PurchaseInvoice buildExistingPurchaseInvoice (String invoiceCode) {
         PurchaseOrder order = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceCode);
@@ -1723,9 +1757,13 @@ public class ShippingInvoiceFactory {
         String purchaseID = purchaseOrderService.getInvoiceId(invoiceCode);
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
-
+        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(ordersMapContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
         return new CompleteInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees,
-                purchaseOrderSkuList, promotionDetails, eurToUsd);
+                purchaseOrderSkuList, promotionDetails, eurToUsd, distinctHsCodeNbInOrders);
     }
     /** ===== Error tag helpers ===== */
     private static String tagOrder(String reason) {

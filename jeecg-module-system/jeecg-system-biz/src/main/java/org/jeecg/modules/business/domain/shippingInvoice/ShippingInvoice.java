@@ -23,12 +23,14 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
 
     private final List<SavRefundWithDetail> savRefunds;
     private final List<ExtraFeeResult> extraFees;
+    protected final Integer distinctHsCodeNb;
     @Getter
     @Setter
     private BigDecimal totalAmount;
     @Getter
     @Setter
     private Boolean  paymentApprouved = false;
+    private final static BigDecimal SMALL_PARCEL_TAX_PER_HSCODE = BigDecimal.valueOf(3.0);
 
 
     public ShippingInvoice(Client targetClient, String code,
@@ -36,11 +38,12 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
                            Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent,
                            List<SavRefundWithDetail> savRefunds,
                            List<ExtraFeeResult> extraFees,
-                           BigDecimal exchangeRate) {
+                           BigDecimal exchangeRate, Integer distinctHsCodeNb) {
         super(targetClient, code, subject, exchangeRate);
         this.ordersToContent = ordersToContent;
         this.savRefunds = savRefunds;
         this.extraFees = extraFees;
+        this.distinctHsCodeNb = distinctHsCodeNb;
         totalAmount = BigDecimal.ZERO;
     }
 
@@ -66,6 +69,7 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
         BigDecimal totalPickingFees = BigDecimal.ZERO;
         BigDecimal totalPackageMatFeePerOrder = BigDecimal.ZERO;
         BigDecimal totalInsuranceFees = BigDecimal.ZERO;
+        BigDecimal totalSmallParcelTax = distinctHsCodeNb == 0 ? BigDecimal.ZERO : SMALL_PARCEL_TAX_PER_HSCODE.multiply(new BigDecimal(distinctHsCodeNb));
         for (Map.Entry<String, List<PlatformOrder>> entry : countryPackageMap.entrySet()) {
             String country = entry.getKey();
             List<PlatformOrder> orders = entry.getValue();
@@ -111,7 +115,8 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
                     .add(countryPickingFeesPerOrder)
                     .add(countryPickingFeesPerSKU)
                     .add(countryPackageMatFeePerOrder)
-                    .add(countryInsuranceFees);
+                    .add(countryInsuranceFees)
+                    .add(totalSmallParcelTax);
         }
         Row<String, Object, Integer, Object, BigDecimal> vatRow = new Row<>(
                 "Total VAT fee for EU",
@@ -153,6 +158,14 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
                 totalInsuranceFees
         );
         rows.add(insuranceFeeRow);
+        Row<String, Object, Integer, Object, BigDecimal> smallParcelTaxRow = new Row<>(
+                "Total small parcel tax",
+                null,
+                null,
+                null,
+                totalSmallParcelTax
+        );
+        rows.add(smallParcelTaxRow);
         if (savRefunds != null) {
             for (SavRefundWithDetail savRefund : savRefunds) {
                 BigDecimal refundForOrder = BigDecimal.ZERO
