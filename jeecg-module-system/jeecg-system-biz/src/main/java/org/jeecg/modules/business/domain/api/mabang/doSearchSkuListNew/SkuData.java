@@ -51,6 +51,8 @@ public class SkuData {
     private BigDecimal declareValue;
     @JSONField(name="declareName")
     private String declareNameZh;
+    @JSONField(name="declareCode")
+    private String hsCode;
     /**申报英文名称, yes yes declareEname not declareEnName*/
     @JSONField(name="declareEname")
     private String declareNameEn;

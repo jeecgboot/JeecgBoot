@@ -1068,7 +1068,7 @@ public class PlatformOrderShippingInvoiceService {
             ordersToContent.put(po, poc);
         }
 
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, exchangeRate);
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, exchangeRate, 2);
         Path src;
         src = Paths.get(SHIPPING_INVOICE_TEMPLATE_US);
 //        src = Paths.get(SHIPPING_INVOICE_TEMPLATE_EU);
@@ -1122,7 +1122,7 @@ public class PlatformOrderShippingInvoiceService {
             purchaseInvoiceEntries.add(entry);
         }
 
-        CompleteInvoice invoice = new CompleteInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, purchaseInvoiceEntries, promotionDetails, exchangeRate);
+        CompleteInvoice invoice = new CompleteInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, purchaseInvoiceEntries, promotionDetails, exchangeRate, 2);
         Path src;
         if(client.getCurrency().equals("USD")) {
             src = Paths.get(COMPLETE_INVOICE_TEMPLATE_US);

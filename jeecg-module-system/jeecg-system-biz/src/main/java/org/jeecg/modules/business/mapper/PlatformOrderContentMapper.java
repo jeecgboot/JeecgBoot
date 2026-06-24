@@ -90,4 +90,6 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
     List<PlatformOrderContent> fetchOrderContentByIdWithFees(@Param("orderIds") List<String> orderIds);
 
     List<SkuQuantity> listSkusToPurchaseForOrders(@Param("orderIds") List<String> orderIds);
+
+    Integer getDistinctHsCodeNbInOrders(List<String> orderIds);
 }

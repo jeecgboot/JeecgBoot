@@ -547,4 +547,14 @@
         -- only skus with qty to purchase >0
         WHERE (qty_not_allow_skip+CASE WHEN qty_allow_skip>virtual_stock THEN (qty_allow_skip-virtual_stock) ELSE 0 END)>0
     </select>
+
+    <select id="getDistinctHsCodeNbInOrders" resultType="java.lang.Integer">
+        SELECT count(distinct s.hs_code)
+        FROM platform_order_content poc join sku s on poc.sku_id = s.id
+        join platform_order po on poc.platform_order_id = po.id
+        WHERE po.platform_order_id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>;
+    </select>
 </mapper>

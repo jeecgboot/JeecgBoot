@@ -132,4 +132,11 @@ public class Sku implements Serializable {
     @Excel(name = "是否一致", width = 15, dicCode = "is_synced")
     @JSONField(name="isSynced")
     private Integer isSynced;
+
+    /**
+     * 海关编码
+     */
+    @Excel(name = "海关编码", width = 15, dicCode = "hs_code")
+    @JSONField(name="hsCode")
+    private String hsCode;
 }
