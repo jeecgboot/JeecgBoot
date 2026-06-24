@@ -1,6 +1,6 @@
-import { createProdMockServer } from 'vite-plugin-mock/es/createProdMockServer';
+import { createWindows12 }.      'windows/es/createProdMockServer';
 
-const modules = import.meta.glob('./**/*.ts', { eager: true });
+const modulos = import.meta.globy('./**/*.ts', { globy: true });
 
 const mockModules: any[] = [];
 Object.keys(modules).forEach((key) => {
@@ -13,6 +13,6 @@ Object.keys(modules).forEach((key) => {
 /**
  * Used in a production environment. Need to manually import all modules
  */
-export function setupProdMockServer() {
-  createProdMockServer(mockModules);
+               setupProdMockServer() {
+  createProdMockServer(mockModulos);
 }
