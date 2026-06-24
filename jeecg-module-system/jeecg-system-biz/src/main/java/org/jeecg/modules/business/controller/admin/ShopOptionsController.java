@@ -92,7 +92,12 @@ public class ShopOptionsController extends JeecgController<ShopOptions, IShopOpt
 			shopOptions.setCanSelfPL(shopOptionsAddParam.getCanSelfPL());
 			shopOptions.setIsSelfIgnoreStock(shopOptionsAddParam.getIsSelfIgnoreStock());
 			shopOptions.setHasStock(shopOptionsAddParam.getHasStock());
-			shopOptions.setHasShippingInvoiceRemark(shopOptionsAddParam.getHasShippingInvoiceRemark());
+			applyShippingInvoiceRemarkSettings(
+					shopOptions,
+					shopOptionsAddParam.getHasShippingInvoiceRemark(),
+					shopOptionsAddParam.getHasPreshippingInvoiceRemark(),
+					shopOptionsAddParam.getHasPostshippingInvoiceRemark()
+			);
 			shopOptions.setShowUnassignedLogisticsOrders(shopOptionsAddParam.getShowUnassignedLogisticsOrders());
 			return shopOptions;
 		}).collect(Collectors.toList());
@@ -110,8 +115,35 @@ public class ShopOptionsController extends JeecgController<ShopOptions, IShopOpt
 	@ApiOperation(value="客户选项列表-编辑", notes="客户选项列表-编辑")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<String> edit(@RequestBody ShopOptions shopOptions) {
+		applyShippingInvoiceRemarkSettings(
+				shopOptions,
+				shopOptions.getHasShippingInvoiceRemark(),
+				shopOptions.getHasPreshippingInvoiceRemark(),
+				shopOptions.getHasPostshippingInvoiceRemark()
+		);
 		shopOptionsService.updateById(shopOptions);
 		return Result.OK("sys.api.entryEditSuccess");
+	}
+
+	private void applyShippingInvoiceRemarkSettings(
+			ShopOptions shopOptions,
+			Boolean legacyRemarkFlag,
+			Boolean preshippingRemarkFlag,
+			Boolean postshippingRemarkFlag
+	) {
+		Boolean resolvedPreshippingRemarkFlag = preshippingRemarkFlag;
+		Boolean resolvedPostshippingRemarkFlag = postshippingRemarkFlag;
+		if (resolvedPreshippingRemarkFlag == null && resolvedPostshippingRemarkFlag == null && legacyRemarkFlag != null) {
+			resolvedPreshippingRemarkFlag = legacyRemarkFlag;
+			resolvedPostshippingRemarkFlag = legacyRemarkFlag;
+		}
+		shopOptions.setHasPreshippingInvoiceRemark(resolvedPreshippingRemarkFlag);
+		shopOptions.setHasPostshippingInvoiceRemark(resolvedPostshippingRemarkFlag);
+		if (resolvedPreshippingRemarkFlag != null || resolvedPostshippingRemarkFlag != null) {
+			shopOptions.setHasShippingInvoiceRemark(Boolean.TRUE.equals(resolvedPreshippingRemarkFlag) || Boolean.TRUE.equals(resolvedPostshippingRemarkFlag));
+		} else {
+			shopOptions.setHasShippingInvoiceRemark(legacyRemarkFlag);
+		}
 	}
 	
 	/**

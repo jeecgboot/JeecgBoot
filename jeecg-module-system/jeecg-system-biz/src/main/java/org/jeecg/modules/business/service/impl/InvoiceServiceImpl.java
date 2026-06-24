@@ -442,7 +442,14 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         List<PlatformOrderContent> orderContents = platformOrderContentMap.fetchOrderContent(param.orderIds());
         Set<String> skuIds = orderContents.stream()
                 .map(PlatformOrderContent::getSkuId)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(skuId -> !skuId.isEmpty())
                 .collect(Collectors.toSet());
+        if (skuIds.isEmpty()) {
+            log.warn("Skip SKU price check because no valid SKU ids were found for orders {}", param.orderIds());
+            return Result.OK("No valid SKU found for selected orders");
+        }
         List<String> skusWithoutPrice = platformOrderContentMap.searchSkuDetail(new ArrayList<>(skuIds))
                 .stream()
                 .filter(sku -> sku.getPrice() == null || sku.getPrice().getPrice() == null)

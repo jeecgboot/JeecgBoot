@@ -18,6 +18,8 @@ SELECT so.id as id,
        so.is_self_ignore_stock,
        so.has_stock,
        so.has_shipping_invoice_remark,
+       so.has_preshipping_invoice_remark,
+       so.has_postshipping_invoice_remark,
        IF(so.id IS NULL, 0, 1) AS has_options
 FROM shop s
 LEFT JOIN shop_options so ON s.id = so.shop_id

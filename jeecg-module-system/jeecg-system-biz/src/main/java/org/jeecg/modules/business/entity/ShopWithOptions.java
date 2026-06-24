@@ -84,10 +84,18 @@ public class ShopWithOptions {
     @Excel(name = "是否客户做库存", width = 15)
     @ApiModelProperty(value = "是否客户做库存")
     private java.lang.Boolean hasStock;
-    /**是否开物流票写备注*/
-    @Excel(name = "是否开物流票写备注", width = 15)
-    @ApiModelProperty(value = "是否开物流票写备注")
+    /**开预收物流票打备注*/
+    @Excel(name = "开预收物流票打备注", width = 15)
+    @ApiModelProperty(value = "开预收物流票打备注")
     private java.lang.Boolean hasShippingInvoiceRemark;
+    /**开预收物流票打备注*/
+    @Excel(name = "开预收物流票打备注", width = 15)
+    @ApiModelProperty(value = "开预收物流票打备注")
+    private java.lang.Boolean hasPreshippingInvoiceRemark;
+    /**开已发货物流票打备注*/
+    @Excel(name = "开已发货物流票打备注", width = 15)
+    @ApiModelProperty(value = "开已发货物流票打备注")
+    private java.lang.Boolean hasPostshippingInvoiceRemark;
     /**是否店铺有选项*/
     @Excel(name = "是否店铺有选项", width = 15)
     @ApiModelProperty(value = "是否店铺有选项")
