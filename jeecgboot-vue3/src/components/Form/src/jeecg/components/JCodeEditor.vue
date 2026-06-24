@@ -171,8 +171,15 @@
        */
       function setValue(value: string, trigger = true) {
         if (value && isJsonObjectString(value)) {
-          value = JSON.stringify(JSON.parse(value), null, 2);
+          // update-begin--author:liaozhiyang---date:20260617---for:【issues/9699】JS增强写错了之后页面报错
+          // isJsonObjectString 仅判断首尾字符，无法保证合法 JSON；解析失败时保留原值，避免非 JSON 内容（如 JS 增强代码）打开时报错卡死
+          try {
+            value = JSON.stringify(JSON.parse(value), null, 2);
+          } catch (e) {
+            // 非合法 JSON，按原文本展示
+          }
         }
+        // update-end--author:liaozhiyang---date:20260617---for:【issues/9699】JS增强写错了之后页面报错
         coder?.setValue(value ?? '');
         innerValue = value;
         trigger && emitChange(innerValue);
