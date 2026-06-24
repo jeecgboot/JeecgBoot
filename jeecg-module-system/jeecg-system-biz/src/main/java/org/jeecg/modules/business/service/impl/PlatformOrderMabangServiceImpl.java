@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -54,6 +56,9 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMabangMapper, Order> implements IPlatformOrderMabangService {
+    private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
+    private static final ZoneId SHANGHAI_ZONE = ZoneId.of("Asia/Shanghai");
+
     @Autowired
     private PlatformOrderMabangMapper platformOrderMabangMapper;
     @Autowired
@@ -74,6 +79,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         if (orders.isEmpty()) {
             return;
         }
+        normalizeOrderTimeForFranceBusinessClock(orders);
         // find orders that already exist in DB
         List<String> allPlatformOrderId = orders.stream()
                 .map(Order::getPlatformOrderId)
@@ -220,6 +226,22 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
             }
         } catch (RuntimeException e) {
             log.error(e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Keep the same France wall-clock value when the Date is later written to a DB session
+     * configured in Asia/Shanghai.
+     */
+    private void normalizeOrderTimeForFranceBusinessClock(List<Order> orders) {
+        for (Order order : orders) {
+            Date source = order.getOrderTime();
+            if (source == null) {
+                continue;
+            }
+            LocalDateTime franceWallClock = LocalDateTime.ofInstant(source.toInstant(), PARIS_ZONE);
+            Date dbLiteralDate = Date.from(franceWallClock.atZone(SHANGHAI_ZONE).toInstant());
+            order.setOrderTime(dbLiteralDate);
         }
     }
 
