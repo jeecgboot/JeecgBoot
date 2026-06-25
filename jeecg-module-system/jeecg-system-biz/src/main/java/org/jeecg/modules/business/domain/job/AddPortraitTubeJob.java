@@ -48,7 +48,8 @@ public class AddPortraitTubeJob implements Job {
     // 40cm 3-4 50*45
     private static final String TUBE_NEW_50_SKU_MULTIPLE = "PJ349500045-JCH";
     // 50cm 1-2 60*32
-    private static final String TUBE_NEW_60_SKU_SINGLE = "PJ349600032-JCH";
+    // todo 2026-06-25 temporarily changed PJ349600032-JCH -> PJ349600045-JCH, may revert one day
+    private static final String TUBE_NEW_60_SKU_SINGLE = "PJ349600045-JCH";
     // 50cm 1-2 60*45
     private static final String TUBE_NEW_60_SKU_DOUBLE = "PJ349600045-JCH";
     private static final String TUBE_NEW_60_SKU_TREBLE = "PJ349600048-JCH";
