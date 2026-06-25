@@ -235,7 +235,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                     assert s != null;
                     s.setUpdateBy("mabang api");
                     s.setUpdateTime(new Date());
-                    if (!skuData.getHsCode().equalsIgnoreCase(s.getHsCode())) {
+                    if (skuData.getHsCode() != null && !skuData.getHsCode().equalsIgnoreCase(s.getHsCode())) {
                         s.setHsCode(skuData.getHsCode());
                         isUpdated = true;
                     }
