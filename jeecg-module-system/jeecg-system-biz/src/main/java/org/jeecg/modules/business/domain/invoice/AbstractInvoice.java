@@ -334,7 +334,7 @@ public abstract class AbstractInvoice<E, F, G, H, I> {
             totalDueCell.setCellStyle(totalDueCellStyle);
         }
 
-        if (targetClient.getCurrency().equals("USD")) {
+        if (!targetClient.getCurrency().equals("EUR")) {
             org.apache.poi.ss.usermodel.Row dollarRow;
             dollarRow = sheet.getRow(TOTAL_ROW + 2);
             String formula = "H"+ (TOTAL_ROW + 2) +" *" + exchangeRate;

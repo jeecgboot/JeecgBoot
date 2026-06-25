@@ -6,10 +6,21 @@ import org.jeecg.modules.business.vo.CountryCodeAlias;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class CountryService {
+    private static final List<String> POPULAR_COUNTRY_CODES = Arrays.asList(
+            "FR", "US", "GB", "DE", "IT", "BE", "ES", "AT", "CH", "AU",
+            "CA", "LU", "IE", "NL", "PT", "SE", "NO", "GR", "RE", "HU",
+            "PL", "FI", "CZ", "DK", "MC", "HR", "GP", "LV", "RO", "SK",
+            "GF", "SI", "MQ", "BG", "UA", "EE", "RS", "MX", "LT", "JE",
+            "NZ", "PH", "IS", "GG", "ZA", "PF", "TH", "CY", "HK", "GI",
+            "MA", "IL", "MT", "JP", "UZ", "PE", "ML", "SA", "MK", "BR",
+            "AR", "AE", "IN"
+    );
+
     @Autowired
     private CountryMapper countryMapper;
 
@@ -23,20 +34,11 @@ public class CountryService {
     public List<Country> findAll() {
         return countryMapper.findAll();
     }
-
-    public Country findByCode(String code) {
-        /* check whether the code here is an alias */
-        CountryCodeAlias alias = countryMapper.findAlias(code);
-        if (alias == null) {
-            return countryMapper.findByCode(code);
-        }
-        return countryMapper.findByCode(alias.getRealName());
-    }
-
-    public Country findByZhName(String zh_name) {
-        return countryMapper.findByZhName(zh_name);
-    }
     public List<Country> getActiveCountries() {
         return countryMapper.findActiveCountries();
+    }
+
+    public List<Country> getPopularCountries() {
+        return countryMapper.findByCodes(POPULAR_COUNTRY_CODES);
     }
 }

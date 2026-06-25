@@ -93,49 +93,7 @@ public class OrderCreationRequestBody implements RequestBody {
     private String generateRemark(String baseRemark, String customizationData, List<ShoumanRegex> regexList,
                                   String shopErpCode, String platformOrderNumber, String customizationURL) {
         StringBuilder sb = new StringBuilder();
-        String[] baseRemarks = baseRemark.split(DEFAULT_SPLIT);
-        for (String remark : baseRemarks) {
-            sb.append(remark)
-                    .append(LINE_BREAK);
-        }
 
-        for (ShoumanRegex regex : regexList) {
-            String[] strings = customizationData.split(DEFAULT_SPLIT);
-            int customCounter = 1;
-            for (String s : strings) {
-                if (s.matches(regex.getContentRecRegex())) {
-                    String trimmed = s.trim();
-                    String[] split = trimmed.split(regex.getContentExtRegex());
-                    String content = split[split.length - 1];
-                    if (regex.getIsSizeRegex().equalsIgnoreCase("1")) {
-                        RingSize ringSize = RingSize.getBySize(content);
-                        if (ringSize != null) {
-                            sb.append(ringSize.getText());
-                        }
-                    } else {
-                        if (content.isEmpty()) continue;
-                        sb.append(regex.getPrefix())
-                                .append(customCounter++)
-                                .append(QUOTE);
-                        if (regex.getIsMonthRegex().equalsIgnoreCase("1")) {
-                            BirthStone birthStone = BirthStone.getByName(content);
-                            if (birthStone != null) {
-                                sb.append(birthStone.getChinese());
-                            }
-                        } else {
-                            sb.append(content);
-                        }
-                        sb.append(LINE_BREAK);
-                    }
-                }
-            }
-        }
-        if (customizationURL != null && !customizationURL.isEmpty()) {
-            sb.append(CUSTOM_PHOTO_URL)
-                    .append(QUOTE)
-                    .append(customizationURL)
-                    .append(LINE_BREAK);
-        }
         sb.append(SHOP_CODE)
                 .append(shopErpCode)
                 .append(LINE_BREAK);
@@ -154,7 +112,72 @@ public class OrderCreationRequestBody implements RequestBody {
         if (shopErpCode.contains("VA")) {
             sb.append(DROP_SHIPPING);
         }
+        sb.append(LINE_BREAK);
+
+        String[] baseRemarks = baseRemark.split(DEFAULT_SPLIT);
+        for (String remark : baseRemarks) {
+            sb.append(remark)
+                    .append(LINE_BREAK);
+        }
+
+        for (ShoumanRegex regex : regexList) {
+            String[] strings = customizationData.split(DEFAULT_SPLIT);
+            int customCounter = 1;
+            List<String> commaSeparatedContents = new ArrayList<>();
+            for (String s : strings) {
+                if (s.matches(regex.getContentRecRegex())) {
+                    String trimmed = s.trim();
+                    String[] split = trimmed.split(regex.getContentExtRegex());
+                    String content = split[split.length - 1];
+                    if (isEnabled(regex.getIsSizeRegex())) {
+                        RingSize ringSize = RingSize.getBySize(content);
+                        if (ringSize != null) {
+                            sb.append(ringSize.getText())
+                                    .append(LINE_BREAK);
+                        }
+                    } else {
+                        if (content.isEmpty()) continue;
+                        String remarkContent = convertRemarkContent(regex, content);
+                        if (isEnabled(regex.getIsCommaSeparated())) {
+                            commaSeparatedContents.add(remarkContent);
+                        } else {
+                            sb.append(regex.getPrefix())
+                                    .append(customCounter++)
+                                    .append(QUOTE)
+                                    .append(remarkContent)
+                                    .append(LINE_BREAK);
+                        }
+                    }
+                }
+            }
+            if (!commaSeparatedContents.isEmpty()) {
+                sb.append(regex.getPrefix())
+                        .append(QUOTE)
+                        .append(String.join(",", commaSeparatedContents))
+                        .append(LINE_BREAK);
+            }
+        }
+        if (customizationURL != null && !customizationURL.isEmpty()) {
+            sb.append(CUSTOM_PHOTO_URL)
+                    .append(QUOTE)
+                    .append(customizationURL);
+        }
         return sb.toString();
+    }
+
+    private String convertRemarkContent(ShoumanRegex regex, String content) {
+        if (isEnabled(regex.getIsMonthRegex())) {
+            BirthStone birthStone = BirthStone.getByName(content);
+            if (birthStone != null) {
+                return birthStone.getChinese();
+            }
+            return "";
+        }
+        return content;
+    }
+
+    private boolean isEnabled(String value) {
+        return "1".equals(value);
     }
 
     private <E> void putNonNull(JSONObject json, String key, E value) {

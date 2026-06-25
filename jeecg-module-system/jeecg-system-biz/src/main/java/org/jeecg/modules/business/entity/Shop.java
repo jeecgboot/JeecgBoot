@@ -122,4 +122,10 @@ public class Shop implements Serializable {
     @Excel(name = "默认商品中文名称", width = 15)
     @ApiModelProperty(value = "默认商品中文名称")
     private java.lang.String defaultSkuZhName;
+    /**
+     * 跳过平台已发货转待审核
+     */
+    @Excel(name = "跳过平台已发货转待审核", width = 15, dicCode = "yn")
+    @ApiModelProperty(value = "跳过平台已发货转待审核")
+    private java.lang.String skipPlatformFulfilledAbnormal;
 }

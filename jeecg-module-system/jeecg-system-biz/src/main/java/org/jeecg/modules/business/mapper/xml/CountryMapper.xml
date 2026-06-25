@@ -57,5 +57,19 @@
             ON po.country = c.name_en
             AND po.erp_status IN (1,2,3);
     </select>
+    <select id="findByCodes" resultType="org.jeecg.modules.business.entity.Country">
+        SELECT *
+        FROM country
+        WHERE code IN
+        <foreach collection="codes" item="code" open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+        ORDER BY FIELD(
+            code
+            <foreach collection="codes" item="code" separator="">
+                , #{code}
+            </foreach>
+        )
+    </select>
 
 </mapper>

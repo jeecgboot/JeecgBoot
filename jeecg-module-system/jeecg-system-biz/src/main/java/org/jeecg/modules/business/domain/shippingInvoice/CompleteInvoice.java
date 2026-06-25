@@ -27,8 +27,9 @@ public class CompleteInvoice extends ShippingInvoice {
                            Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent,
                            List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees,
                            List<PurchaseInvoiceEntry> purchaseInvoiceEntries,
-                           List<PromotionDetail> promotions, BigDecimal exchangeRate) {
-        super(targetClient, code, subject, ordersToContent, savRefunds, extraFees,exchangeRate);
+                           List<PromotionDetail> promotions, BigDecimal exchangeRate,
+                           Integer distinctHsCodeNb) {
+        super(targetClient, code, subject, ordersToContent, savRefunds, extraFees,exchangeRate, distinctHsCodeNb);
         this.purchaseInvoiceEntries = purchaseInvoiceEntries;
         this.promotions = promotions;
     }

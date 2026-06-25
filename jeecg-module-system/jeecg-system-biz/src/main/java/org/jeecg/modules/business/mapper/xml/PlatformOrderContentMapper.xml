@@ -401,7 +401,8 @@
                sr.content_ext_regex,
                sr.prefix,
                sr.is_size_regex,
-               sr.is_month_regex
+               sr.is_month_regex,
+               sr.is_comma_separated
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
                  left join logistic_channel lc on po.logistic_channel_name = lc.zh_name
@@ -411,10 +412,11 @@
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
                  join country c on po.country = c.name_en
-        where po.order_time > '2025-07-01'
+        where po.order_time > '2025-09-01'
           and poc.erp_status in (1)
           and sr.is_active = 1
-          and po.platform_order_id not in (select platform_order_id from shouman_order);
+          and po.platform_order_id not in (select platform_order_id from shouman_order)
+        order by sc.id, sr.priority;
     </select>
 
     <resultMap id="shoumanOrderBaseResultMap" type="org.jeecg.modules.business.entity.Shouman.ShoumanOrderBase">
@@ -448,6 +450,7 @@
                 <result property="prefix" column="prefix" javaType="string"/>
                 <result property="isSizeRegex" column="is_size_regex" javaType="string"/>
                 <result property="isMonthRegex" column="is_month_regex" javaType="string"/>
+                <result property="isCommaSeparated" column="is_comma_separated" javaType="string"/>
             </collection>
         </collection>
     </resultMap>
@@ -481,7 +484,8 @@
                sr.content_ext_regex,
                sr.prefix,
                sr.is_size_regex,
-               sr.is_month_regex
+               sr.is_month_regex,
+               sr.is_comma_separated
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
                  left join logistic_channel lc on po.logistic_channel_name = lc.zh_name
@@ -491,10 +495,11 @@
                  join shouman_category sc on ssr.shouman_category_id = sc.id
                  join shouman_regex sr on sc.id = sr.shouman_category_id
                  join country c on po.country = c.name_en
-        where po.order_time > '2025-07-01'
+        where po.order_time > '2025-09-01'
           and poc.erp_status in (1)
           and sr.is_active = 1
-          and po.platform_order_id = #{platformOrderId};
+          and po.platform_order_id = #{platformOrderId}
+        order by sc.id, sr.priority;
     </select>
     <select id="fetchOrderContentByIdWithFees" resultType="org.jeecg.modules.business.entity.PlatformOrderContent">
         SELECT *
@@ -541,5 +546,15 @@
         ) sku_purchase_qty
         -- only skus with qty to purchase >0
         WHERE (qty_not_allow_skip+CASE WHEN qty_allow_skip>virtual_stock THEN (qty_allow_skip-virtual_stock) ELSE 0 END)>0
+    </select>
+
+    <select id="getDistinctHsCodeNbInOrders" resultType="java.lang.Integer">
+        SELECT count(distinct s.hs_code)
+        FROM platform_order_content poc join sku s on poc.sku_id = s.id
+        join platform_order po on poc.platform_order_id = po.id
+        WHERE po.platform_order_id IN
+        <foreach collection="orderIds" separator="," open="(" close=")" index="index" item="orderId">
+            #{orderId}
+        </foreach>;
     </select>
 </mapper>

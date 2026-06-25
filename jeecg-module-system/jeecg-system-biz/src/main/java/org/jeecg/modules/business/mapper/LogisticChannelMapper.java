@@ -18,6 +18,8 @@ public interface LogisticChannelMapper extends BaseMapper<LogisticChannel> {
 
     List<LogisticChannel> getAll();
 
+    List<LogisticChannel> listAvailableByCountryCode(@Param("countryCode") String countryCode);
+
     List<LogisticChannel> listByIdAndZhName();
     List<LogisticChannel> getFromZhName(@Param("zhNames") List<String> zhNames);
 }

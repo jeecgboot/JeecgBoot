@@ -6,7 +6,19 @@
 		<artifactId>jeecg-module-system</artifactId>
 		<version>3.6.3</version>
 	</parent>
-	<modelVersion>4.0.0</modelVersion>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>15</source>
+                    <target>15</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <modelVersion>4.0.0</modelVersion>
 
 	<artifactId>jeecg-system-biz</artifactId>
 

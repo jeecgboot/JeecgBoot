@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.OrderArchiveMapper">
+
+    <!-- Null-safe equality fragments used by diff checks and refresh updates. -->
+    <sql id="poEqualCondition"><![CDATA[
+        ((p.create_by = d.create_by) OR (p.create_by IS NULL AND d.create_by IS NULL))
+        AND ((p.create_time = d.create_time) OR (p.create_time IS NULL AND d.create_time IS NULL))
+        AND ((p.update_by = d.update_by) OR (p.update_by IS NULL AND d.update_by IS NULL))
+        AND ((p.update_time = d.update_time) OR (p.update_time IS NULL AND d.update_time IS NULL))
+        AND ((p.shop_id = d.shop_id) OR (p.shop_id IS NULL AND d.shop_id IS NULL))
+        AND ((p.logistic_channel_name = d.logistic_channel_name) OR (p.logistic_channel_name IS NULL AND d.logistic_channel_name IS NULL))
+        AND ((p.platform_order_id = d.platform_order_id) OR (p.platform_order_id IS NULL AND d.platform_order_id IS NULL))
+        AND ((p.platform_order_number = d.platform_order_number) OR (p.platform_order_number IS NULL AND d.platform_order_number IS NULL))
+        AND ((p.tracking_number = d.tracking_number) OR (p.tracking_number IS NULL AND d.tracking_number IS NULL))
+        AND ((p.order_time = d.order_time) OR (p.order_time IS NULL AND d.order_time IS NULL))
+        AND ((p.shipping_time = d.shipping_time) OR (p.shipping_time IS NULL AND d.shipping_time IS NULL))
+        AND ((p.recipient = d.recipient) OR (p.recipient IS NULL AND d.recipient IS NULL))
+        AND ((p.country = d.country) OR (p.country IS NULL AND d.country IS NULL))
+        AND ((p.postcode = d.postcode) OR (p.postcode IS NULL AND d.postcode IS NULL))
+        AND ((p.fret_fee = d.fret_fee) OR (p.fret_fee IS NULL AND d.fret_fee IS NULL))
+        AND ((p.order_service_fee = d.order_service_fee) OR (p.order_service_fee IS NULL AND d.order_service_fee IS NULL))
+        AND ((p.shipping_invoice_number = d.shipping_invoice_number) OR (p.shipping_invoice_number IS NULL AND d.shipping_invoice_number IS NULL))
+        AND ((p.status = d.status) OR (p.status IS NULL AND d.status IS NULL))
+        AND ((p.target = d.target) OR (p.target IS NULL AND d.target IS NULL))
+        AND ((p.erp_order_id = d.erp_order_id) OR (p.erp_order_id IS NULL AND d.erp_order_id IS NULL))
+        AND ((p.erp_status = d.erp_status) OR (p.erp_status IS NULL AND d.erp_status IS NULL))
+        AND ((p.invoice_logistic_channel_name = d.invoice_logistic_channel_name) OR (p.invoice_logistic_channel_name IS NULL AND d.invoice_logistic_channel_name IS NULL))
+        AND ((p.internal_tracking_number = d.internal_tracking_number) OR (p.internal_tracking_number IS NULL AND d.internal_tracking_number IS NULL))
+        AND ((p.product_available = d.product_available) OR (p.product_available IS NULL AND d.product_available IS NULL))
+        AND ((p.ready_for_shopify_sync = d.ready_for_shopify_sync) OR (p.ready_for_shopify_sync IS NULL AND d.ready_for_shopify_sync IS NULL))
+        AND ((p.can_send = d.can_send) OR (p.can_send IS NULL AND d.can_send IS NULL))
+        AND ((p.picking_fee = d.picking_fee) OR (p.picking_fee IS NULL AND d.picking_fee IS NULL))
+        AND ((p.insurance_fee = d.insurance_fee) OR (p.insurance_fee IS NULL AND d.insurance_fee IS NULL))
+        AND ((p.packaging_material_fee = d.packaging_material_fee) OR (p.packaging_material_fee IS NULL AND d.packaging_material_fee IS NULL))
+        AND ((p.city = d.city) OR (p.city IS NULL AND d.city IS NULL))
+        AND ((p.purchase_invoice_number = d.purchase_invoice_number) OR (p.purchase_invoice_number IS NULL AND d.purchase_invoice_number IS NULL))
+        AND ((p.virtual_product_available = d.virtual_product_available) OR (p.virtual_product_available IS NULL AND d.virtual_product_available IS NULL))
+        AND ((p.tax_number = d.tax_number) OR (p.tax_number IS NULL AND d.tax_number IS NULL))
+        AND ((p.shopify_note = d.shopify_note) OR (p.shopify_note IS NULL AND d.shopify_note IS NULL))
+        AND ((p.shopify_synced = d.shopify_synced) OR (p.shopify_synced IS NULL AND d.shopify_synced IS NULL))
+        AND ((p.local_tracking_number = d.local_tracking_number) OR (p.local_tracking_number IS NULL AND d.local_tracking_number IS NULL))
+        AND ((p.has_phone_number = d.has_phone_number) OR (p.has_phone_number IS NULL AND d.has_phone_number IS NULL))
+        AND ((p.shipping_service = d.shipping_service) OR (p.shipping_service IS NULL AND d.shipping_service IS NULL))
+        AND ((p.already_set_abnormal = d.already_set_abnormal) OR (p.already_set_abnormal IS NULL AND d.already_set_abnormal IS NULL))
+    ]]></sql>
+
+    <sql id="pocEqualCondition"><![CDATA[
+        ((c.create_by = d.create_by) OR (c.create_by IS NULL AND d.create_by IS NULL))
+        AND ((c.create_time = d.create_time) OR (c.create_time IS NULL AND d.create_time IS NULL))
+        AND ((c.update_by = d.update_by) OR (c.update_by IS NULL AND d.update_by IS NULL))
+        AND ((c.update_time = d.update_time) OR (c.update_time IS NULL AND d.update_time IS NULL))
+        AND ((c.platform_order_id = d.platform_order_id) OR (c.platform_order_id IS NULL AND d.platform_order_id IS NULL))
+        AND ((c.sku_id = d.sku_id) OR (c.sku_id IS NULL AND d.sku_id IS NULL))
+        AND ((c.quantity = d.quantity) OR (c.quantity IS NULL AND d.quantity IS NULL))
+        AND ((c.purchase_fee = d.purchase_fee) OR (c.purchase_fee IS NULL AND d.purchase_fee IS NULL))
+        AND ((c.shipping_fee = d.shipping_fee) OR (c.shipping_fee IS NULL AND d.shipping_fee IS NULL))
+        AND ((c.service_fee = d.service_fee) OR (c.service_fee IS NULL AND d.service_fee IS NULL))
+        AND ((c.vat = d.vat) OR (c.vat IS NULL AND d.vat IS NULL))
+        AND ((c.status = d.status) OR (c.status IS NULL AND d.status IS NULL))
+        AND ((c.erp_status = d.erp_status) OR (c.erp_status IS NULL AND d.erp_status IS NULL))
+        AND ((c.product_available = d.product_available) OR (c.product_available IS NULL AND d.product_available IS NULL))
+        AND ((c.picking_fee = d.picking_fee) OR (c.picking_fee IS NULL AND d.picking_fee IS NULL))
+        AND ((c.customization_data = d.customization_data) OR (c.customization_data IS NULL AND d.customization_data IS NULL))
+        AND ((c.virtual_product_available = d.virtual_product_available) OR (c.virtual_product_available IS NULL AND d.virtual_product_available IS NULL))
+        AND ((c.warehouse_name = d.warehouse_name) OR (c.warehouse_name IS NULL AND d.warehouse_name IS NULL))
+        AND ((c.insurance_fee = d.insurance_fee) OR (c.insurance_fee IS NULL AND d.insurance_fee IS NULL))
+        AND ((c.platform_warehouse_name = d.platform_warehouse_name) OR (c.platform_warehouse_name IS NULL AND d.platform_warehouse_name IS NULL))
+    ]]></sql>
+
+    <sql id="poIdInClause">
+        <foreach collection="poIds" item="poId" open="(" separator="," close=")">
+            #{poId}
+        </foreach>
+    </sql>
+
+    <select id="countNeedArchivePo" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order p
+        WHERE p.order_time &lt; #{archiveBeforeDate}
+    </select>
+
+    <select id="countArchivedPo" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order_delete d
+        WHERE d.order_time &lt; #{archiveBeforeDate}
+    </select>
+
+    <select id="countMissingPo" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order p
+        WHERE p.order_time &lt; #{archiveBeforeDate}
+          AND NOT EXISTS (
+              SELECT 1
+              FROM platform_order_delete d
+              WHERE d.id = p.id
+          )
+    </select>
+
+    <select id="countDifferentPo" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order p
+        JOIN platform_order_delete d ON d.id = p.id
+        WHERE p.order_time &lt; #{archiveBeforeDate}
+          AND NOT (
+              <include refid="poEqualCondition"/>
+          )
+    </select>
+
+    <select id="fetchNextPoBatchIds" resultType="java.lang.String">
+        <!-- PO is the batch unit; all linked POC rows follow the selected PO ids. -->
+        SELECT p.id
+        FROM platform_order p
+        WHERE p.order_time &lt; #{archiveBeforeDate}
+          AND (
+              #{deleteSourceEnabled} = true
+              OR
+              NOT EXISTS (
+                  SELECT 1
+                  FROM platform_order_delete d
+                  WHERE d.id = p.id
+              )
+              OR EXISTS (
+                  SELECT 1
+                  FROM platform_order_delete d
+                  WHERE d.id = p.id
+                    AND NOT (
+                        <include refid="poEqualCondition"/>
+                    )
+              )
+              OR EXISTS (
+                  SELECT 1
+                  FROM platform_order_content c
+                  WHERE c.platform_order_id = p.id
+                    AND (
+                        NOT EXISTS (
+                            SELECT 1
+                            FROM platform_order_content_delete d
+                            WHERE d.id = c.id
+                        )
+                        OR EXISTS (
+                            SELECT 1
+                            FROM platform_order_content_delete d
+                            WHERE d.id = c.id
+                              AND NOT (
+                                  <include refid="pocEqualCondition"/>
+                              )
+                        )
+                    )
+              )
+          )
+        ORDER BY p.order_time, p.id
+        LIMIT #{batchSize}
+    </select>
+
+    <update id="updateDifferentPoByIds">
+        UPDATE platform_order_delete pod
+        JOIN (
+            SELECT p.*
+            FROM platform_order p
+            JOIN platform_order_delete d ON d.id = p.id
+            WHERE p.id IN
+            <include refid="poIdInClause"/>
+              AND NOT (
+                  <include refid="poEqualCondition"/>
+              )
+        ) src ON src.id = pod.id
+        SET
+            pod.create_by = src.create_by,
+            pod.create_time = src.create_time,
+            pod.update_by = src.update_by,
+            pod.update_time = src.update_time,
+            pod.shop_id = src.shop_id,
+            pod.logistic_channel_name = src.logistic_channel_name,
+            pod.platform_order_id = src.platform_order_id,
+            pod.platform_order_number = src.platform_order_number,
+            pod.tracking_number = src.tracking_number,
+            pod.order_time = src.order_time,
+            pod.shipping_time = src.shipping_time,
+            pod.recipient = src.recipient,
+            pod.country = src.country,
+            pod.postcode = src.postcode,
+            pod.fret_fee = src.fret_fee,
+            pod.order_service_fee = src.order_service_fee,
+            pod.shipping_invoice_number = src.shipping_invoice_number,
+            pod.status = src.status,
+            pod.target = src.target,
+            pod.erp_order_id = src.erp_order_id,
+            pod.erp_status = src.erp_status,
+            pod.invoice_logistic_channel_name = src.invoice_logistic_channel_name,
+            pod.internal_tracking_number = src.internal_tracking_number,
+            pod.product_available = src.product_available,
+            pod.ready_for_shopify_sync = src.ready_for_shopify_sync,
+            pod.can_send = src.can_send,
+            pod.picking_fee = src.picking_fee,
+            pod.insurance_fee = src.insurance_fee,
+            pod.packaging_material_fee = src.packaging_material_fee,
+            pod.city = src.city,
+            pod.purchase_invoice_number = src.purchase_invoice_number,
+            pod.virtual_product_available = src.virtual_product_available,
+            pod.tax_number = src.tax_number,
+            pod.shopify_note = src.shopify_note,
+            pod.shopify_synced = src.shopify_synced,
+            pod.local_tracking_number = src.local_tracking_number,
+            pod.has_phone_number = src.has_phone_number,
+            pod.shipping_service = src.shipping_service,
+            pod.already_set_abnormal = src.already_set_abnormal
+    </update>
+
+    <insert id="insertMissingPoByIds">
+        INSERT INTO platform_order_delete (
+            id, create_by, create_time, update_by, update_time,
+            shop_id, logistic_channel_name, platform_order_id,
+            platform_order_number, tracking_number, order_time,
+            shipping_time, recipient, country, postcode,
+            fret_fee, order_service_fee, shipping_invoice_number,
+            status, target, erp_order_id, erp_status,
+            invoice_logistic_channel_name, internal_tracking_number,
+            product_available, ready_for_shopify_sync, can_send,
+            picking_fee, insurance_fee, packaging_material_fee,
+            city, purchase_invoice_number, virtual_product_available,
+            tax_number, shopify_note, shopify_synced, local_tracking_number,
+            has_phone_number, shipping_service, already_set_abnormal
+        )
+        SELECT
+            p.id, p.create_by, p.create_time, p.update_by, p.update_time,
+            p.shop_id, p.logistic_channel_name, p.platform_order_id,
+            p.platform_order_number, p.tracking_number, p.order_time,
+            p.shipping_time, p.recipient, p.country, p.postcode,
+            p.fret_fee, p.order_service_fee, p.shipping_invoice_number,
+            p.status, p.target, p.erp_order_id, p.erp_status,
+            p.invoice_logistic_channel_name, p.internal_tracking_number,
+            p.product_available, p.ready_for_shopify_sync, p.can_send,
+            p.picking_fee, p.insurance_fee, p.packaging_material_fee,
+            p.city, p.purchase_invoice_number, p.virtual_product_available,
+            p.tax_number, p.shopify_note, p.shopify_synced, p.local_tracking_number,
+            p.has_phone_number, p.shipping_service, p.already_set_abnormal
+        FROM platform_order p
+        WHERE p.id IN
+        <include refid="poIdInClause"/>
+          AND NOT EXISTS (
+              SELECT 1
+              FROM platform_order_delete d
+              WHERE d.id = p.id
+          )
+    </insert>
+
+    <select id="countMissingPoByIds" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order p
+        WHERE p.id IN
+        <include refid="poIdInClause"/>
+          AND NOT EXISTS (
+              SELECT 1
+              FROM platform_order_delete d
+              WHERE d.id = p.id
+          )
+    </select>
+
+    <select id="countDifferentPoByIds" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order p
+        JOIN platform_order_delete d ON d.id = p.id
+        WHERE p.id IN
+        <include refid="poIdInClause"/>
+          AND NOT (
+              <include refid="poEqualCondition"/>
+          )
+    </select>
+
+    <delete id="deleteSourcePoByIds">
+        DELETE FROM platform_order
+        WHERE id IN
+        <include refid="poIdInClause"/>
+    </delete>
+
+    <select id="countSourcePoRemainingByIds" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order
+        WHERE id IN
+        <include refid="poIdInClause"/>
+    </select>
+
+    <select id="countNeedArchivePoc" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order_content c
+        WHERE EXISTS (
+            SELECT 1
+            FROM platform_order p
+            WHERE p.id = c.platform_order_id
+              AND p.order_time &lt; #{archiveBeforeDate}
+        )
+    </select>
+
+    <select id="countArchivedPoc" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order_content_delete d
+        WHERE EXISTS (
+            SELECT 1
+            FROM platform_order_delete p
+            WHERE p.id = d.platform_order_id
+              AND p.order_time &lt; #{archiveBeforeDate}
+        )
+    </select>
+
+    <select id="countMissingPoc" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order_content c
+        WHERE EXISTS (
+            SELECT 1
+            FROM platform_order p
+            WHERE p.id = c.platform_order_id
+              AND p.order_time &lt; #{archiveBeforeDate}
+        )
+          AND NOT EXISTS (
+              SELECT 1
+              FROM platform_order_content_delete d
+              WHERE d.id = c.id
+          )
+    </select>
+
+    <select id="countDifferentPoc" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order_content c
+        JOIN platform_order_content_delete d ON d.id = c.id
+        WHERE EXISTS (
+            SELECT 1
+            FROM platform_order p
+            WHERE p.id = c.platform_order_id
+              AND p.order_time &lt; #{archiveBeforeDate}
+        )
+          AND NOT (
+              <include refid="pocEqualCondition"/>
+          )
+    </select>
+
+    <update id="updateDifferentPocByPoIds">
+        UPDATE platform_order_content_delete pocd
+        JOIN (
+            SELECT c.*
+            FROM platform_order_content c
+            JOIN platform_order_content_delete d ON d.id = c.id
+            WHERE c.platform_order_id IN
+            <include refid="poIdInClause"/>
+              AND NOT (
+                  <include refid="pocEqualCondition"/>
+              )
+        ) src ON src.id = pocd.id
+        SET
+            pocd.create_by = src.create_by,
+            pocd.create_time = src.create_time,
+            pocd.update_by = src.update_by,
+            pocd.update_time = src.update_time,
+            pocd.platform_order_id = src.platform_order_id,
+            pocd.sku_id = src.sku_id,
+            pocd.quantity = src.quantity,
+            pocd.purchase_fee = src.purchase_fee,
+            pocd.shipping_fee = src.shipping_fee,
+            pocd.service_fee = src.service_fee,
+            pocd.vat = src.vat,
+            pocd.status = src.status,
+            pocd.erp_status = src.erp_status,
+            pocd.product_available = src.product_available,
+            pocd.picking_fee = src.picking_fee,
+            pocd.customization_data = src.customization_data,
+            pocd.virtual_product_available = src.virtual_product_available,
+            pocd.warehouse_name = src.warehouse_name,
+            pocd.insurance_fee = src.insurance_fee,
+            pocd.platform_warehouse_name = src.platform_warehouse_name
+    </update>
+
+    <insert id="insertMissingPocByPoIds">
+        INSERT INTO platform_order_content_delete (
+            id, create_by, create_time, update_by, update_time,
+            platform_order_id, sku_id, quantity, purchase_fee,
+            shipping_fee, service_fee, vat, status, erp_status,
+            product_available, picking_fee, customization_data,
+            virtual_product_available, warehouse_name, insurance_fee,
+            platform_warehouse_name
+        )
+        SELECT
+            c.id, c.create_by, c.create_time, c.update_by, c.update_time,
+            c.platform_order_id, c.sku_id, c.quantity, c.purchase_fee,
+            c.shipping_fee, c.service_fee, c.vat, c.status, c.erp_status,
+            c.product_available, c.picking_fee, c.customization_data,
+            c.virtual_product_available, c.warehouse_name, c.insurance_fee,
+            c.platform_warehouse_name
+        FROM platform_order_content c
+        WHERE c.platform_order_id IN
+        <include refid="poIdInClause"/>
+          AND NOT EXISTS (
+              SELECT 1
+              FROM platform_order_content_delete d
+              WHERE d.id = c.id
+          )
+    </insert>
+
+    <select id="countMissingPocByPoIds" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order_content c
+        WHERE c.platform_order_id IN
+        <include refid="poIdInClause"/>
+          AND NOT EXISTS (
+              SELECT 1
+              FROM platform_order_content_delete d
+              WHERE d.id = c.id
+          )
+    </select>
+
+    <select id="countDifferentPocByPoIds" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order_content c
+        JOIN platform_order_content_delete d ON d.id = c.id
+        WHERE c.platform_order_id IN
+        <include refid="poIdInClause"/>
+          AND NOT (
+              <include refid="pocEqualCondition"/>
+          )
+    </select>
+
+    <delete id="deleteSourcePocByPoIds">
+        DELETE FROM platform_order_content
+        WHERE platform_order_id IN
+        <include refid="poIdInClause"/>
+    </delete>
+
+    <select id="countSourcePocRemainingByPoIds" resultType="long">
+        SELECT COUNT(*)
+        FROM platform_order_content
+        WHERE platform_order_id IN
+        <include refid="poIdInClause"/>
+    </select>
+
+</mapper>

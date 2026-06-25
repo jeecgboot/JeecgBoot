@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.service;
 
+import org.jeecg.modules.business.entity.Invoice;
 import org.jeecg.modules.business.entity.ShopOptions;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.business.entity.ShopWithOptions;
@@ -29,4 +30,6 @@ public interface IShopOptionsService extends IService<ShopOptions> {
     List<OrderBypassStock> getStockBypassByOrder(List<String> orderIds);
 
     Boolean findCanSelfInvoiceByClientId(String clientId);
+
+    boolean shouldEditShippingInvoiceRemark(List<ShopOptions> options, Invoice.InvoicingMethod invoicingMethod);
 }

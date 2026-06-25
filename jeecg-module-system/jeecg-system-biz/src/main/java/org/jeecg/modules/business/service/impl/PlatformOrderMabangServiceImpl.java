@@ -19,9 +19,11 @@ import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.Ord
 import org.jeecg.modules.business.domain.api.mabang.orderUpdateOrderNewOrder.UpdateResult;
 import org.jeecg.modules.business.domain.job.ThrottlingExecutorService;
 import org.jeecg.modules.business.entity.PlatformOrder;
+import org.jeecg.modules.business.entity.Shop;
 import org.jeecg.modules.business.mapper.PlatformOrderMabangMapper;
 import org.jeecg.modules.business.service.IPlatformOrderMabangService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
+import org.jeecg.modules.business.service.IShopService;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
 import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.Responses;
@@ -30,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -52,12 +56,17 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMabangMapper, Order> implements IPlatformOrderMabangService {
+    private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
+    private static final ZoneId SHANGHAI_ZONE = ZoneId.of("Asia/Shanghai");
+
     @Autowired
     private PlatformOrderMabangMapper platformOrderMabangMapper;
     @Autowired
     private IPlatformOrderService orderservice;
     @Autowired
     private IPlatformOrderService platformOrderService;
+    @Autowired
+    private IShopService shopService;
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 2;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
@@ -70,6 +79,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         if (orders.isEmpty()) {
             return;
         }
+        normalizeOrderTimeForFranceBusinessClock(orders);
         // find orders that already exist in DB
         List<String> allPlatformOrderId = orders.stream()
                 .map(Order::getPlatformOrderId)
@@ -216,6 +226,22 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
             }
         } catch (RuntimeException e) {
             log.error(e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Keep the same France wall-clock value when the Date is later written to a DB session
+     * configured in Asia/Shanghai.
+     */
+    private void normalizeOrderTimeForFranceBusinessClock(List<Order> orders) {
+        for (Order order : orders) {
+            Date source = order.getOrderTime();
+            if (source == null) {
+                continue;
+            }
+            LocalDateTime franceWallClock = LocalDateTime.ofInstant(source.toInstant(), PARIS_ZONE);
+            Date dbLiteralDate = Date.from(franceWallClock.atZone(SHANGHAI_ZONE).toInstant());
+            order.setOrderTime(dbLiteralDate);
         }
     }
 
@@ -437,13 +463,14 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
         res.put("synced_order_number", syncedOrderNumber);
         res.put("synced_order_ids", syncedOrderIds);
 
+        List<String> orderIdsToSuspend = filterOrdersAllowedToSetAbnormal(fulfilledOrderIds);
         ExecutorService throttlingExecutorService = ThrottlingExecutorService.createExecutorService(
                 DEFAULT_NUMBER_OF_THREADS,
                 MABANG_API_RATE_LIMIT_PER_MINUTE,
                 TimeUnit.MINUTES);
         log.info("{} orders are at least partially fulfilled by third party, suspending those orders now.",
-                fulfilledOrderIds.size());
-        List<CompletableFuture<Boolean>> fulfilledFutures = fulfilledOrderIds.stream()
+                orderIdsToSuspend.size());
+        List<CompletableFuture<Boolean>> fulfilledFutures = orderIdsToSuspend.stream()
                 .map(id -> CompletableFuture.supplyAsync(() -> {
                     try {
                         OrderSuspendRequestBody body = new OrderSuspendRequestBody(
@@ -461,9 +488,63 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
                 .collect(toList());
         results = fulfilledFutures.stream().map(CompletableFuture::join).collect(Collectors.toList());
         nbSuccesses = results.stream().filter(b -> b).count();
-        log.info("{}/{} orders suspended successfully", nbSuccesses, fulfilledOrderIds.size());
+        log.info("{}/{} orders suspended successfully", nbSuccesses, orderIdsToSuspend.size());
         throttlingExecutorService.shutdown();
         return res;
+    }
+    private List<String> filterOrdersAllowedToSetAbnormal(List<String> fulfilledOrderIds) {
+        if (fulfilledOrderIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> distinctFulfilledOrderIds = new ArrayList<>(new LinkedHashSet<>(fulfilledOrderIds));
+        List<PlatformOrder> localOrders = platformOrderService.lambdaQuery()
+                .select(PlatformOrder::getPlatformOrderId, PlatformOrder::getAlreadySetAbnormal, PlatformOrder::getShopId)
+                .in(PlatformOrder::getPlatformOrderId, distinctFulfilledOrderIds)
+                .list();
+        Set<String> alreadySetAbnormalOrderIds = localOrders.stream()
+                .filter(order -> "1".equals(order.getAlreadySetAbnormal()))
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(Collectors.toSet());
+        Set<String> skipPlatformFulfilledAbnormalShopIds = getSkipPlatformFulfilledAbnormalShopIds(localOrders);
+        Set<String> shopSkippedOrderIds = localOrders.stream()
+                .filter(order -> skipPlatformFulfilledAbnormalShopIds.contains(order.getShopId()))
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(Collectors.toSet());
+
+        if (!alreadySetAbnormalOrderIds.isEmpty()) {
+            log.info("{} fulfilled orders already set abnormal, skipping suspension: {}",
+                    alreadySetAbnormalOrderIds.size(), alreadySetAbnormalOrderIds);
+        }
+        if (!shopSkippedOrderIds.isEmpty()) {
+            log.info("{} fulfilled orders belong to shops configured to skip platform fulfilled abnormal, skipping suspension: {}",
+                    shopSkippedOrderIds.size(), shopSkippedOrderIds);
+        }
+
+        return distinctFulfilledOrderIds.stream()
+                .filter(id -> !shopSkippedOrderIds.contains(id))
+                .filter(id -> !alreadySetAbnormalOrderIds.contains(id))
+                .collect(toList());
+    }
+
+    private Set<String> getSkipPlatformFulfilledAbnormalShopIds(List<PlatformOrder> localOrders) {
+        List<String> shopIds = localOrders.stream()
+                .map(PlatformOrder::getShopId)
+                .filter(id -> id != null && !id.trim().isEmpty())
+                .distinct()
+                .collect(toList());
+        if (shopIds.isEmpty()) {
+            return Collections.emptySet();
+        }
+
+        return shopService.lambdaQuery()
+                .select(Shop::getId, Shop::getSkipPlatformFulfilledAbnormal)
+                .in(Shop::getId, shopIds)
+                .eq(Shop::getSkipPlatformFulfilledAbnormal, "1")
+                .list()
+                .stream()
+                .map(Shop::getId)
+                .collect(Collectors.toSet());
     }
 
     @Override

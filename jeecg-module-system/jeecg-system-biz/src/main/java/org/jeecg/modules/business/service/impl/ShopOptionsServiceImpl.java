@@ -1,5 +1,7 @@
 package org.jeecg.modules.business.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.jeecg.modules.business.entity.Invoice;
 import org.jeecg.modules.business.entity.ShopOptions;
 import org.jeecg.modules.business.entity.ShopWithOptions;
 import org.jeecg.modules.business.mapper.ShopOptionsMapper;
@@ -7,8 +9,6 @@ import org.jeecg.modules.business.service.IShopOptionsService;
 import org.jeecg.modules.business.vo.OrderBypassStock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,5 +68,38 @@ public class ShopOptionsServiceImpl extends ServiceImpl<ShopOptionsMapper, ShopO
         List<Boolean> list = shopOptionsMapper.getCanSelfInvoiceByClientId(clientId);
         return list.stream()
                 .filter(b-> b == true).findFirst().orElse(false);
+    }
+
+    @Override
+    public boolean shouldEditShippingInvoiceRemark(List<ShopOptions> options, Invoice.InvoicingMethod invoicingMethod) {
+        if (options == null || options.isEmpty()) {
+            return false;
+        }
+        boolean hasLegacyRemarkEnabled = options.stream().anyMatch(option -> Boolean.TRUE.equals(option.getHasShippingInvoiceRemark()));
+        boolean hasPreshippingRemarkEnabled = options.stream().anyMatch(option -> isRemarkEnabledForMethod(option, Invoice.InvoicingMethod.PRESHIPPING));
+        boolean hasPostShippingRemarkEnabled = options.stream().anyMatch(option -> isRemarkEnabledForMethod(option, Invoice.InvoicingMethod.POSTSHIPPING));
+        if (invoicingMethod == null) {
+            return hasLegacyRemarkEnabled;
+        }
+        if (invoicingMethod == Invoice.InvoicingMethod.PRESHIPPING) {
+            return hasPreshippingRemarkEnabled;
+        }
+        if (invoicingMethod == Invoice.InvoicingMethod.POSTSHIPPING) {
+            return hasPostShippingRemarkEnabled;
+        }
+        if (invoicingMethod == Invoice.InvoicingMethod.ALL) {
+            return hasPreshippingRemarkEnabled || hasPostShippingRemarkEnabled;
+        }
+        return false;
+    }
+
+    private boolean isRemarkEnabledForMethod(ShopOptions option, Invoice.InvoicingMethod invoicingMethod) {
+        Boolean methodSpecificFlag = invoicingMethod == Invoice.InvoicingMethod.PRESHIPPING
+                ? option.getHasPreshippingInvoiceRemark()
+                : option.getHasPostshippingInvoiceRemark();
+        if (methodSpecificFlag != null) {
+            return methodSpecificFlag;
+        }
+        return Boolean.TRUE.equals(option.getHasShippingInvoiceRemark());
     }
 }

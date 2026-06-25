@@ -5,6 +5,58 @@
         SELECT * FROM logistic_channel
     </select>
 
+    <select id="listAvailableByCountryCode" resultType="org.jeecg.modules.business.entity.LogisticChannel">
+        SELECT
+            lc.id,
+            lc.internal_name,
+            lc.zh_name,
+            lc.en_name,
+            lc.use_volumetric_weight,
+            lc.volumetric_weight_factor,
+            lc.logistic_company_id,
+            lc.active,
+            lc.code,
+            lc.warehouse_in_china,
+            lc.same_price_channel_id,
+            CASE
+                WHEN SUM(CASE WHEN lcp.channel_id = lc.id THEN 1 ELSE 0 END) > 0 THEN FALSE
+                ELSE TRUE
+            END AS priceFromReference,
+            CASE
+                WHEN SUM(CASE WHEN lcp.channel_id = lc.id THEN 1 ELSE 0 END) > 0 THEN NULL
+                ELSE ref_lc.zh_name
+            END AS priceReferenceChannelName,
+            CASE
+                WHEN SUM(CASE WHEN lcp.channel_id = lc.id THEN 1 ELSE 0 END) > 0 THEN NULL
+                ELSE CONCAT('Uses reference price from ', ref_lc.zh_name)
+            END AS priceNote
+        FROM logistic_channel lc
+        LEFT JOIN logistic_channel ref_lc
+          ON ref_lc.id = lc.same_price_channel_id
+        JOIN logistic_channel_price lcp
+          ON (
+              lcp.channel_id = lc.id
+              OR lcp.channel_id = lc.same_price_channel_id
+          )
+        WHERE lc.active = '1'
+          AND lcp.effective_country = #{countryCode}
+          AND lcp.effective_date &lt;= NOW()
+        GROUP BY
+            lc.id,
+            lc.internal_name,
+            lc.zh_name,
+            lc.en_name,
+            lc.use_volumetric_weight,
+            lc.volumetric_weight_factor,
+            lc.logistic_company_id,
+            lc.active,
+            lc.code,
+            lc.warehouse_in_china,
+            lc.same_price_channel_id,
+            ref_lc.zh_name
+        ORDER BY lc.zh_name
+    </select>
+
     <select id="listByIdAndZhName" resultType="org.jeecg.modules.business.entity.LogisticChannel">
         SELECT id, zh_name
         FROM logistic_channel;

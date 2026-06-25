@@ -107,4 +107,9 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
         }
         return platformOrderContentMapper.listSkusToPurchaseForOrders(orderIds);
     }
+
+    @Override
+    public Integer getDistinctHsCodeNbInOrders(List<String> orderIds) {
+        return platformOrderContentMapper.getDistinctHsCodeNbInOrders(orderIds);
+    }
 }

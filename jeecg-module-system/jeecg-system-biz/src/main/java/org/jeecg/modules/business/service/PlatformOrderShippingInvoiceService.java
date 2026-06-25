@@ -86,9 +86,10 @@ public class PlatformOrderShippingInvoiceService {
     Environment env;
     @Value("${jeecg.path.shippingTemplatePath_EU}")
     private String SHIPPING_INVOICE_TEMPLATE_EU;
-
     @Value("${jeecg.path.shippingTemplatePath_US}")
     private String SHIPPING_INVOICE_TEMPLATE_US;
+    @Value("${jeecg.path.shippingTemplatePath_CA}")
+    private String SHIPPING_INVOICE_TEMPLATE_CA;
 
     @Value("${jeecg.path.completeTemplatePath_EU}")
     private String COMPLETE_INVOICE_TEMPLATE_EU;
@@ -171,6 +172,47 @@ public class PlatformOrderShippingInvoiceService {
             "Quantité",
             "Prix unitaire",
             "N° de facture"
+    };
+    private final static String[] DETAILS_TITLES_EN = {
+            "Shop",
+            "Mabang No.",
+            "Order No.",
+            "Tracking No.",
+            "Order Date",
+            "Shipping Date",
+            "Client Name",
+            "Country",
+            "Postal Code",
+            "SKU",
+            "Product Name",
+            "Quantity",
+            "Purchase Fee",
+            "Freight Fee",
+            "Shipping Fee",
+            "Service Fee",
+            "Picking Fee",
+            "Packaging Material Fee",
+            "Product Insurance Fee",
+            "VAT",
+            "Invoice No."
+    };
+    private final static String[] SAV_TITLES_EN = {
+            "Shop",
+            "Mabang No.",
+            "Order No.",
+            "Refund Date",
+            "Purchase Refund Amount",
+            "Shipping Refund Amount",
+            "Total Refund Amount",
+            "Invoice No."
+    };
+    private final static String[] EXTRA_FEE_TITLES_EN = {
+            "Shop",
+            "Type",
+            "Description",
+            "Quantity",
+            "Unit Price",
+            "Invoice No."
     };
     private final static String[] PURCHASE_INVENTORY_TITLES = {
             "SKU",
@@ -353,6 +395,8 @@ public class PlatformOrderShippingInvoiceService {
         } else {
             if (invoice.getTargetClient().getCurrency().equals("USD")) {
                 src = Paths.get(SHIPPING_INVOICE_TEMPLATE_US);
+            } else if (invoice.getTargetClient().getCurrency().equals("CAD")) {
+                src = Paths.get(SHIPPING_INVOICE_TEMPLATE_CA);
             } else {
                 src = Paths.get(SHIPPING_INVOICE_TEMPLATE_EU);
             }
@@ -440,9 +484,9 @@ public class PlatformOrderShippingInvoiceService {
     }
 
     public byte[] exportToExcel(List<FactureDetail> details, List<SavRefundWithDetail> refunds, List<ExtraFeeResult> extraFees, String fileNameInfo, String invoiceEntity, String internalCode) throws IOException {
-        SheetManager sheetManager = SheetManager.createXLSX();
+        SheetManager sheetManager = SheetManager.createXLSX("Details", "SAV", "Additional Fees");
         sheetManager.startDetailsSheet();
-        for (String title : DETAILS_TITLES) {
+        for (String title : DETAILS_TITLES_EN) {
             sheetManager.write(title);
             sheetManager.nextCol();
         }
@@ -495,7 +539,7 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.nextRow();
         }
         sheetManager.startSavSheet();
-        for (String title : SAV_TITLES) {
+        for (String title : SAV_TITLES_EN) {
             sheetManager.write(title);
             sheetManager.nextCol();
         }
@@ -527,7 +571,7 @@ public class PlatformOrderShippingInvoiceService {
         }
 
         sheetManager.startExtraFeeSheet();
-        for (String title: EXTRA_FEE_TITLES) {
+        for (String title: EXTRA_FEE_TITLES_EN) {
             sheetManager.write(title);
             sheetManager.nextCol();
         }
@@ -1024,7 +1068,7 @@ public class PlatformOrderShippingInvoiceService {
             ordersToContent.put(po, poc);
         }
 
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, exchangeRate);
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, exchangeRate, 2);
         Path src;
         src = Paths.get(SHIPPING_INVOICE_TEMPLATE_US);
 //        src = Paths.get(SHIPPING_INVOICE_TEMPLATE_EU);
@@ -1078,7 +1122,7 @@ public class PlatformOrderShippingInvoiceService {
             purchaseInvoiceEntries.add(entry);
         }
 
-        CompleteInvoice invoice = new CompleteInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, purchaseInvoiceEntries, promotionDetails, exchangeRate);
+        CompleteInvoice invoice = new CompleteInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, purchaseInvoiceEntries, promotionDetails, exchangeRate, 2);
         Path src;
         if(client.getCurrency().equals("USD")) {
             src = Paths.get(COMPLETE_INVOICE_TEMPLATE_US);

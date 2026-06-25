@@ -74,6 +74,7 @@ public class SkuClientCodeCheckJob implements Job {
             List<PlatformOrder> platformOrders = platformOrderService.lambdaQuery()
                     .eq(PlatformOrder::getShopId, shop.getId())
                     .eq(PlatformOrder::getErpStatus, ERP_STATUS_PENDING)
+                    .eq(PlatformOrder::getAlreadySetAbnormal, "0")
                     .eq(PlatformOrder::getCanSend, CAN_SEND_YES)
                     .list();
             Map<String, String> abnormalOrderReasons = new HashMap<>();
