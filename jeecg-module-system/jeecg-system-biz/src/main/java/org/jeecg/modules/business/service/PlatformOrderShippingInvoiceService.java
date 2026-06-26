@@ -152,6 +152,7 @@ public class PlatformOrderShippingInvoiceService {
             "Frais de préparation",
             "Frais de matériel d'emballage",
             "Frais d'assurance produits",
+            "Taxe petit colis",
             "TVA",
             "N° de facture"
     };
@@ -193,6 +194,7 @@ public class PlatformOrderShippingInvoiceService {
             "Picking Fee",
             "Packaging Material Fee",
             "Product Insurance Fee",
+            "Small parcel tax",
             "VAT",
             "Invoice No."
     };
@@ -531,6 +533,8 @@ public class PlatformOrderShippingInvoiceService {
             sheetManager.write(detail.getPackagingMaterialFee());
             sheetManager.nextCol();
             sheetManager.write(detail.getInsuranceFee());
+            sheetManager.nextCol();
+            sheetManager.write(detail.getSmallParcelTax());
             sheetManager.nextCol();
             sheetManager.write(detail.getTVA());
             sheetManager.nextCol();
@@ -1068,7 +1072,7 @@ public class PlatformOrderShippingInvoiceService {
             ordersToContent.put(po, poc);
         }
 
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, exchangeRate, 2);
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, exchangeRate);
         Path src;
         src = Paths.get(SHIPPING_INVOICE_TEMPLATE_US);
 //        src = Paths.get(SHIPPING_INVOICE_TEMPLATE_EU);
@@ -1122,7 +1126,7 @@ public class PlatformOrderShippingInvoiceService {
             purchaseInvoiceEntries.add(entry);
         }
 
-        CompleteInvoice invoice = new CompleteInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, purchaseInvoiceEntries, promotionDetails, exchangeRate, 2);
+        CompleteInvoice invoice = new CompleteInvoice(client, invoiceCode, "Test subject", ordersToContent, savRefunds, extraFees, purchaseInvoiceEntries, promotionDetails, exchangeRate);
         Path src;
         if(client.getCurrency().equals("USD")) {
             src = Paths.get(COMPLETE_INVOICE_TEMPLATE_US);

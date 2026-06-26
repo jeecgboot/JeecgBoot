@@ -23,27 +23,23 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
 
     private final List<SavRefundWithDetail> savRefunds;
     private final List<ExtraFeeResult> extraFees;
-    protected final Integer distinctHsCodeNb;
     @Getter
     @Setter
     private BigDecimal totalAmount;
     @Getter
     @Setter
     private Boolean  paymentApprouved = false;
-    private final static BigDecimal SMALL_PARCEL_TAX_PER_HSCODE = BigDecimal.valueOf(3.0);
-
 
     public ShippingInvoice(Client targetClient, String code,
                            String subject,
                            Map<PlatformOrder, List<PlatformOrderContent>> ordersToContent,
                            List<SavRefundWithDetail> savRefunds,
                            List<ExtraFeeResult> extraFees,
-                           BigDecimal exchangeRate, Integer distinctHsCodeNb) {
+                           BigDecimal exchangeRate) {
         super(targetClient, code, subject, exchangeRate);
         this.ordersToContent = ordersToContent;
         this.savRefunds = savRefunds;
         this.extraFees = extraFees;
-        this.distinctHsCodeNb = distinctHsCodeNb;
         totalAmount = BigDecimal.ZERO;
     }
 
@@ -69,7 +65,7 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
         BigDecimal totalPickingFees = BigDecimal.ZERO;
         BigDecimal totalPackageMatFeePerOrder = BigDecimal.ZERO;
         BigDecimal totalInsuranceFees = BigDecimal.ZERO;
-        BigDecimal totalSmallParcelTax = distinctHsCodeNb == 0 ? BigDecimal.ZERO : SMALL_PARCEL_TAX_PER_HSCODE.multiply(new BigDecimal(distinctHsCodeNb));
+        BigDecimal totalSmallParcelTax = BigDecimal.ZERO;
         for (Map.Entry<String, List<PlatformOrder>> entry : countryPackageMap.entrySet()) {
             String country = entry.getKey();
             List<PlatformOrder> orders = entry.getValue();
@@ -83,6 +79,7 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
             BigDecimal countryPackageMatFeePerOrder = BigDecimal.ZERO;
             BigDecimal countryInsuranceFees = BigDecimal.ZERO;
             for (PlatformOrder po : orders) {
+                totalSmallParcelTax = totalSmallParcelTax.add(po.getSmallParcelTax());
                 countryFretFees = countryFretFees.add(po.getFretFee());
                 countryServiceFeesPerOrder = countryServiceFeesPerOrder.add(po.getOrderServiceFee());
                 countryPickingFeesPerOrder = countryPickingFeesPerOrder.add(po.getPickingFee());
