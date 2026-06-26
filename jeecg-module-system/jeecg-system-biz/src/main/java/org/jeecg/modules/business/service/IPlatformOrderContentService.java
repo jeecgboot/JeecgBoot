@@ -77,5 +77,5 @@ public interface IPlatformOrderContentService extends IService<PlatformOrderCont
      */
     List<SkuQuantity> listSkusToPurchaseForOrders(List<String> orderIds);
 
-    Integer getDistinctHsCodeNbInOrders(List<String> orderIds);
+    Map<String, Integer> getDistinctHsCodeNbInOrders(List<String> orderIds);
 }

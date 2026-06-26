@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 平台订单内容
@@ -91,5 +92,5 @@ public interface PlatformOrderContentMapper extends BaseMapper<PlatformOrderCont
 
     List<SkuQuantity> listSkusToPurchaseForOrders(@Param("orderIds") List<String> orderIds);
 
-    Integer getDistinctHsCodeNbInOrders(List<String> orderIds);
+    List<Map<String, Object>> getDistinctHsCodeNbInOrders(List<String> orderIds);
 }
