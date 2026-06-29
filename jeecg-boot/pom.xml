@@ -55,8 +55,8 @@
 		<dm8.version>8.1.3.140</dm8.version>
 
 		<!-- 积木报表-->
-		<jimureport-spring-boot-starter.version>2.3.4</jimureport-spring-boot-starter.version>
-		<jimubi-spring-boot-starter.version>2.3.2</jimubi-spring-boot-starter.version>
+		<jimureport-spring-boot-starter.version>2.5.0</jimureport-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.5.0</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.20</minidao.version>
 		<autopoi-web.version>2.0.4</autopoi-web.version>
 		

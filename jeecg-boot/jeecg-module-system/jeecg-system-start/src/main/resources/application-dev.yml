@@ -327,7 +327,20 @@ jeecg:
   #大屏报表参数设置
   jmreport:
     #多租户模式，默认值为空(created:按照创建人隔离、tenant:按照租户隔离) (v1.6.2+ 新增)
-    saasMode: 
+    saasMode:
+    ai:
+      # OpenAI 兼容 base 地址（必填）
+      base-url: https://api.deepseek.com
+      # API Key（必填，留空则 AI 不可用）
+      api-key: 
+      # 模型名
+      model: deepseek-v4-pro
+      #确定性输出，默认temperature=0
+      temperature: 0
+      #单次输出最大 token 数，DeepSeek 合法范围[1,393216]
+      max-tokens: 16384
+      # AI自动建表（安全警告: 此功能会直接操作数据库DDL/DML，生产环境请勿启用）
+      autoTableEnabled: false
     # 平台上线安全配置(v1.6.2+ 新增)
     firewall:
       # 数据源安全 (开启后，不允许使用平台数据源、SQL解析加签并且不允许查询数据库)

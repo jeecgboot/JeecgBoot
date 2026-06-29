@@ -236,6 +236,12 @@ public class ShiroConfig {
         registration.addUrlPatterns("/drag/onlDragDatasetHead/generateChartSse");
         registration.addUrlPatterns("/drag/onlDragDatasetHead/updateChartOptSse");
         registration.addUrlPatterns("/drag/onlDragDatasetHead/generateSqlSse");
+        //大屏AI生成/修改/讨论 SSE 接口的异步支持
+        registration.addUrlPatterns("/drag/page/aiGenerateScreenSse");
+        registration.addUrlPatterns("/drag/page/aiModifyScreenSse");
+        registration.addUrlPatterns("/drag/page/aiDiscussScreenSse");
+        registration.addUrlPatterns("/jmreport/ai/assistant/*");
+        registration.addUrlPatterns("/jimu/chat2bi/table-meta/syncTables");
         //支持异步
         registration.setAsyncSupported(true);
         registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
