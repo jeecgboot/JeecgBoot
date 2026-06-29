@@ -18,6 +18,7 @@ SELECT s.name                                      AS 'Boutique',
        po.picking_fee + SUM(poc.picking_fee)       AS 'Frais de préparation',
        po.packaging_material_fee                   AS 'Frais de matériel d\'emballage',
        po.insurance_fee                            AS 'Frais d\'assurance produits',
+       po.small_parcel_tax                         AS 'Taxe petit colis',
        SUM(poc.vat)                                AS 'TVA',
        po.shipping_invoice_number                  AS 'N° de facture'
 FROM platform_order po

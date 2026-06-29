@@ -799,13 +799,24 @@ public class SkuServiceImpl extends ServiceImpl<SkuMapper, Sku> implements ISkuS
             for (SkuOrderPage sku : skuPages) {
                 Integer quantity = skuQuantityMap.get(sku.getErpCode());
                 if (quantity == null) continue;
+                BigDecimal originalSkuPrice = sku.getSkuPrice();
+                BigDecimal discountedPrice = sku.getDiscountedPrice();
+                Integer discountMoq = sku.getDiscountMoq();
+                boolean isDiscountApplied = discountedPrice != null
+                        && discountMoq != null
+                        && quantity >= discountMoq;
+                BigDecimal appliedSkuPrice = isDiscountApplied ? discountedPrice : originalSkuPrice;
                 Map<String, Object> skuData = new HashMap<>();
                 skuData.put("skuId", sku.getId());
                 skuData.put("erpCode", sku.getErpCode());
                 skuData.put("enName", sku.getEnName());
                 skuData.put("zhName", sku.getZhName());
                 skuData.put("stock", sku.getStock());
-                skuData.put("skuPrice", sku.getSkuPrice());
+                skuData.put("skuPrice", appliedSkuPrice);
+                skuData.put("originalSkuPrice", originalSkuPrice);
+                skuData.put("discountedPrice", discountedPrice);
+                skuData.put("discountMoq", discountMoq);
+                skuData.put("isDiscountApplied", isDiscountApplied);
                 skuData.put("sales7d", sku.getSalesLastWeek());
                 skuData.put("sales28d", sku.getSalesFourWeeks());
                 skuData.put("sales42d", sku.getSalesSixWeeks());

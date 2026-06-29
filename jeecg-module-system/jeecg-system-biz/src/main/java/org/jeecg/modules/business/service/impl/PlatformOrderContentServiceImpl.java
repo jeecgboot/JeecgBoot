@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -109,7 +110,12 @@ public class PlatformOrderContentServiceImpl extends ServiceImpl<PlatformOrderCo
     }
 
     @Override
-    public Integer getDistinctHsCodeNbInOrders(List<String> orderIds) {
-        return platformOrderContentMapper.getDistinctHsCodeNbInOrders(orderIds);
+    public Map<String, Integer> getDistinctHsCodeNbInOrders(List<String> orderIds) {
+        List<Map<String, Object>> distinctHsCodeNbInOrders = platformOrderContentMapper.getDistinctHsCodeNbInOrders(orderIds);
+        return distinctHsCodeNbInOrders
+                .stream()
+                .collect(Collectors.toMap(
+                        m -> m.get("platform_order_id").toString(),
+                        m -> Integer.valueOf(m.get("hs_code_count").toString())));
     }
 }

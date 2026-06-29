@@ -113,6 +113,7 @@ public class ShippingInvoiceFactory {
     private static final String TAG_ORDER = "ORDER|";
     private static final String TAG_SKU   = "SKU|";
     private static final String TAG_SKUS  = "SKUS|";
+    private static final BigDecimal SMALL_PARCEL_TAX_PER_HSCODE = BigDecimal.valueOf(3.0);
 
 
     /**
@@ -279,8 +280,13 @@ public class ShippingInvoiceFactory {
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
         String invoiceCode = invoiceNumberReservationService.getLatestInvoiceNumberByType(COMPLETE.getType());
         log.info("New invoice code: {}", invoiceCode);
+        Map<String, Integer> distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
         Map<String, List<String>> ordersWithPb = calculateFees(balance, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
-                latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
+                latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode, distinctHsCodeNbInOrders);
         List<Response<String, String>> responsesWithPb = new ArrayList<>();
         if (!ordersWithPb.isEmpty()) {
             // map of order DB ID to platform order ID
@@ -339,13 +345,9 @@ public class ShippingInvoiceFactory {
             }
         }
         updateOrdersAndContentsInDb(orderAndContent);
-        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
-                .keySet()
-                .stream()
-                .map(PlatformOrder::getPlatformOrderId)
-                .collect(toList()));
+
         response.setData(new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
-                purchaseOrderSkuList, promotionDetails, exchangeRate, distinctHsCodeNbInOrders));
+                purchaseOrderSkuList, promotionDetails, exchangeRate));
         return response;
     }
 
@@ -411,6 +413,11 @@ public class ShippingInvoiceFactory {
         log.info("New invoice code: {}", invoiceCode);
 
         boolean skip = false;// isChronologicalOrder = 1 && insufficient balance => skip = true
+        Map<String, Integer> distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
         for(Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry : orderAndContent.entrySet()) {
             if(skip) {
                 Response<String, String> orderToSkip = new Response<>();
@@ -423,7 +430,7 @@ public class ShippingInvoiceFactory {
             Response<BigDecimal, String> estimatedBalanceResponse;
             try {
                 estimatedBalanceResponse = calculateFeeForOrder(username, virtualBalance, logisticChannelMap, entry.getKey(), entry.getValue(), channelPriceMap, countryList, skuRealWeights, skuServiceFees,
-                        latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
+                        latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode, distinctHsCodeNbInOrders);
             } catch (UserException e) {
                 log.error("Couldn't calculate fee for order {} !", entry.getKey().getId());
                 Response<String, String> orderWithError = new Response<>();
@@ -506,14 +513,9 @@ public class ShippingInvoiceFactory {
             extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
         }
         updateOrdersAndContentsInDb(orderAndContent);
-        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
-                .keySet()
-                .stream()
-                .map(PlatformOrder::getPlatformOrderId)
-                .collect(toList()));
         response.setData(
                 new CompleteInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees,
-                        purchaseOrderSkuList, promotionDetails, eurToUsd, distinctHsCodeNbInOrders)
+                        purchaseOrderSkuList, promotionDetails, eurToUsd)
         );
         return response;
     }
@@ -694,8 +696,13 @@ public class ShippingInvoiceFactory {
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
         String invoiceCode = invoiceNumberReservationService.getLatestInvoiceNumberByType(SHIPPING.getType());
         log.info("New invoice code: {}", invoiceCode);
+        Map<String, Integer> distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
         Map<String, List<String>> errorMsg = calculateFees(null, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
-                latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
+                latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode, distinctHsCodeNbInOrders);
         if(!errorMsg.isEmpty()) {
             errorMsg.forEach((k, v) -> log.error("Couldn't invoice orders for reason : {} : {}", k, v));
         }
@@ -707,12 +714,7 @@ public class ShippingInvoiceFactory {
             List<String> extraFeesIds = extraFees.stream().map(ExtraFeeResult::getId).collect(toList());
             extraFeeService.updateInvoiceNumberByIds(extraFeesIds, invoiceCode);
         }
-        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
-                .keySet()
-                .stream()
-                .map(PlatformOrder::getPlatformOrderId)
-                .collect(toList()));
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, exchangeRate, distinctHsCodeNbInOrders);
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, exchangeRate);
         updateOrdersAndContentsInDb(orderAndContent);
         return invoice;
     }
@@ -773,8 +775,13 @@ public class ShippingInvoiceFactory {
         shops.forEach(shop -> shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee()));
         String invoiceCode = invoiceNumberReservationService.getLatestInvoiceNumberByType(SHIPPING.getType());
         log.info("New invoice code: {}", invoiceCode);
+        Map<String, Integer> distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
+                .keySet()
+                .stream()
+                .map(PlatformOrder::getPlatformOrderId)
+                .collect(toList()));
         Map<String, List<String>> ordersWithPB = calculateFees(balance, logisticChannelMap, orderAndContent, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
-                latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode);
+                latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, invoiceCode, distinctHsCodeNbInOrders);
         orderAndContent.entrySet().removeIf(entries -> ordersWithPB.containsKey(entries.getKey().getId()));
         if(orderAndContent.isEmpty()) {
             log.error("No order was invoiced for customer {} because : {}", client.getInternalCode(), ordersWithPB);
@@ -784,12 +791,7 @@ public class ShippingInvoiceFactory {
         if (savRefunds != null) {
             updateSavRefundsInDb(savRefunds, invoiceCode);
         }
-        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderAndContent
-                .keySet()
-                .stream()
-                .map(PlatformOrder::getPlatformOrderId)
-                .collect(toList()));
-        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, exchangeRate, distinctHsCodeNbInOrders);
+        ShippingInvoice invoice = new ShippingInvoice(client, invoiceCode, subject, orderAndContent, savRefunds, extraFees, exchangeRate);
         updateOrdersAndContentsInDb(orderAndContent);
         return invoice;
     }
@@ -850,15 +852,10 @@ public class ShippingInvoiceFactory {
 
     private Map<String, List<String>> calculateFees(BigDecimal balance, Map<String, LogisticChannel> logisticChannelMap, Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                Map<LogisticChannel, List<LogisticChannelPrice>> channelPriceMap,
-                               List<Country> countryList,
-                               Map<String, BigDecimal> skuRealWeights,
-                               Map<String, BigDecimal> skuServiceFees,
-                               List<SkuDeclaredValue> latestDeclaredValues,
-                               Client client,
-                               Map<String, BigDecimal> shopServiceFeeMap,
-                               Map<String, BigDecimal> shopPackageMatFeeMap,
-                               String invoiceCode
-    ) throws UserException {
+                               List<Country> countryList, Map<String, BigDecimal> skuRealWeights,
+                               Map<String, BigDecimal> skuServiceFees, List<SkuDeclaredValue> latestDeclaredValues,
+                               Client client, Map<String, BigDecimal> shopServiceFeeMap, Map<String, BigDecimal> shopPackageMatFeeMap,
+                               String invoiceCode, Map<String, Integer> distinctHsCodeNbInOrders) throws UserException {
         Map<String, List<String>> platformOrderIdsWithPb = new HashMap<>();
         // Virtual balance is only used for client type 1 in invoicing job
         BigDecimal virtualBalance = balance;
@@ -883,7 +880,7 @@ public class ShippingInvoiceFactory {
                 );
                 continue;
             }
-            if(skip) {
+            if (skip) {
                 platformOrderIdsWithPb.put(orderDbId, Collections.singletonList(tagOrder("Skipped")));
                 continue;
             }
@@ -926,8 +923,7 @@ public class ShippingInvoiceFactory {
             try {
                 logisticChannelPriceResponse = findAppropriatePrice(countryList, logisticChannelMap,
                         channelPriceMap, uninvoicedOrder, contentWeight);
-            }
-            catch ( UserException e ) {
+            } catch (UserException e) {
                 List<String> skuErpCodes = resolveSkuErpCodes(contentSkuQtyMap.keySet());
                 platformOrderIdsWithPb.put(
                         orderDbId,
@@ -935,7 +931,7 @@ public class ShippingInvoiceFactory {
                 );
                 continue;
             }
-            if(logisticChannelPriceResponse.getError() != null) {
+            if (logisticChannelPriceResponse.getError() != null) {
                 platformOrderIdsWithPb.put(orderDbId,
                         Collections.singletonList(tagOrder(logisticChannelPriceResponse.getError()))
                 );
@@ -949,23 +945,22 @@ public class ShippingInvoiceFactory {
             // fetch the ones not in memory
             List<String> skuIds = contentSkuQtyMap.keySet().stream().filter(skuId -> !skuIdsInMemory.contains(skuId)).collect(toList());
             List<LogisticInsurance> orderSkuInsuranceFees = logisticInsuranceService.getInsuranceFeesBySkuIds(skuIds, logisticChannelId);
-            for(LogisticInsurance insurance: orderSkuInsuranceFees) {
-                if(skuInsuranceFees.containsKey(insurance.getSkuId())) {
+            for (LogisticInsurance insurance : orderSkuInsuranceFees) {
+                if (skuInsuranceFees.containsKey(insurance.getSkuId())) {
                     skuInsuranceFees.get(insurance.getSkuId()).add(insurance);
-                }
-                else {
+                } else {
                     skuInsuranceFees.put(insurance.getSkuId(), new ArrayList<>(Collections.singletonList(insurance)));
                 }
             }
             BigDecimal orderInsuranceFee = BigDecimal.ZERO;
             // TODO refactor
-            for(Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry: orderContentMap.entrySet()) {
+            for (Map.Entry<PlatformOrder, List<PlatformOrderContent>> entry : orderContentMap.entrySet()) {
                 if (!entry.getKey().getId().equals(uninvoicedOrder.getId())) {
                     continue;
                 }
-                for(PlatformOrderContent content: entry.getValue()) {
-                    if(skuInsuranceFees.containsKey(content.getSkuId())) {
-                        for(LogisticInsurance insurance: skuInsuranceFees.get(content.getSkuId())) {
+                for (PlatformOrderContent content : entry.getValue()) {
+                    if (skuInsuranceFees.containsKey(content.getSkuId())) {
+                        for (LogisticInsurance insurance : skuInsuranceFees.get(content.getSkuId())) {
                             orderInsuranceFee = orderInsuranceFee.add(insurance.getPrice().multiply(BigDecimal.valueOf(content.getQuantity())));
                         }
                     }
@@ -1017,6 +1012,12 @@ public class ShippingInvoiceFactory {
             if(packageMatFee.compareTo(BigDecimal.ZERO) > 0 && logisticChannelPair.getLeft().getWarehouseInChina().equalsIgnoreCase("0")) {
                 uninvoicedOrder.setPackagingMaterialFee(packageMatFee);
             }
+            // Regardless whether we charge a client VAT, all parcels into the EU are subject to the small parcel tax
+            if(EU_COUNTRY_LIST.contains(uninvoicedOrder.getCountry())) {
+                BigDecimal smallParcelTaxForOrder = SMALL_PARCEL_TAX_PER_HSCODE.multiply(
+                        BigDecimal.valueOf(distinctHsCodeNbInOrders.get(uninvoicedOrder.getPlatformOrderId())));
+                uninvoicedOrder.setSmallParcelTax(smallParcelTaxForOrder);
+            }
             uninvoicedOrder.setFretFee(fretFee);
             uninvoicedOrder.setPickingFee(pickingFee);
             uninvoicedOrder.setOrderServiceFee(orderServiceFee);
@@ -1059,8 +1060,9 @@ public class ShippingInvoiceFactory {
      * Calculates shipping fees of an order, updates order and contents
      * and returns the estimated virtual balance
      * if invoice is complete invoice, we make sure we have enough balance
+     *
      * @param username
-     * @param balance virtual balance
+     * @param balance                  virtual balance
      * @param logisticChannelMap
      * @param order
      * @param contents
@@ -1073,6 +1075,7 @@ public class ShippingInvoiceFactory {
      * @param shopServiceFeeMap
      * @param shopPackageMatFeeMap
      * @param invoiceCode
+     * @param distinctHsCodeNbInOrders
      * @return
      * @throws UserException
      */
@@ -1089,8 +1092,8 @@ public class ShippingInvoiceFactory {
                                             Client client,
                                             Map<String, BigDecimal> shopServiceFeeMap,
                                             Map<String, BigDecimal> shopPackageMatFeeMap,
-                                            String invoiceCode
-    ) throws UserException {
+                                            String invoiceCode,
+                                                              Map<String, Integer> distinctHsCodeNbInOrders) throws UserException {
         Response<BigDecimal, String> response = new Response<>();
         // Virtual balance is only used for client type 1 in invoicing job
         BigDecimal virtualBalance = balance;
@@ -1208,6 +1211,12 @@ public class ShippingInvoiceFactory {
         // update attributes of orders and theirs content
         if(packageMatFee.compareTo(BigDecimal.ZERO) > 0 && logisticChannelPair.getLeft().getWarehouseInChina().equalsIgnoreCase("0")) {
             order.setPackagingMaterialFee(packageMatFee);
+        }
+        // Regardless whether we charge a client VAT, all parcels into the EU are subject to the small parcel tax
+        if(EU_COUNTRY_LIST.contains(order.getCountry())) {
+            BigDecimal smallParcelTaxForOrder = SMALL_PARCEL_TAX_PER_HSCODE.multiply(
+                    BigDecimal.valueOf(distinctHsCodeNbInOrders.get(order.getPlatformOrderId())));
+            order.setSmallParcelTax(BigDecimal.ZERO.equals(smallParcelTaxForOrder) ? SMALL_PARCEL_TAX_PER_HSCODE : smallParcelTaxForOrder);
         }
         order.setFretFee(fretFee);
         order.setPickingFee(pickingFee);
@@ -1462,21 +1471,21 @@ public class ShippingInvoiceFactory {
                 shopServiceFeeMap.put(shop.getId(), shop.getOrderServiceFee());
                 shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee());
                 Map<PlatformOrder, List<PlatformOrderContent>> orders = uninvoicedOrdersByShopId.get(shop.getId());
+                Map<String, Integer> distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orders
+                        .keySet()
+                        .stream()
+                        .map(PlatformOrder::getPlatformOrderId)
+                        .collect(toList()));
                 try {
                     List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(Collections.singletonList(shop.getId()));
                     Map<String, List<String>> orderIdErrorMap = calculateFees(null, logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
-                            latestDeclaredValues, client, shopServiceFeeMap,shopPackageMatFeeMap, null);
+                            latestDeclaredValues, client, shopServiceFeeMap,shopPackageMatFeeMap, null, distinctHsCodeNbInOrders);
                     if(!orderIdErrorMap.isEmpty()) {
                         Map.Entry<String, List<String>> errorEntry = orderIdErrorMap.entrySet().iterator().next();
                         throw new UserException(errorEntry.getValue().toString());
                     }
                     BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", client.getCurrency());
-                    Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orders
-                            .keySet()
-                            .stream()
-                            .map(PlatformOrder::getPlatformOrderId)
-                            .collect(toList()));
-                    ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, exchangeRate, distinctHsCodeNbInOrders);
+                    ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, exchangeRate);
                     // Calculate total amounts
                     invoice.tableData();
                     estimations.add(new ShippingFeesEstimation(
@@ -1535,20 +1544,20 @@ public class ShippingInvoiceFactory {
             shopServiceFeeMap.put(shop.getId(), shop.getOrderServiceFee());
             shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee());
             Map<PlatformOrder, List<PlatformOrderContent>> orders = uninvoicedOrdersByShopId.get(shop.getId());
+            Map<String, Integer> distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orders
+                    .keySet()
+                    .stream()
+                    .map(PlatformOrder::getPlatformOrderId)
+                    .collect(toList()));
             try {
                 List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(Collections.singletonList(shop.getId()));
                 Map<String, List<String>> platformOrderIdErrorMap = calculateFees(null, logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,
-                        latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, null);
+                        latestDeclaredValues, client, shopServiceFeeMap, shopPackageMatFeeMap, null, distinctHsCodeNbInOrders);
                 platformOrderIdErrorMap.forEach((key, value) -> errorMessages.addAll(value));
                 orders.entrySet().removeIf(entries -> platformOrderIdErrorMap.containsKey(entries.getKey().getId()));
                 List<String> estimationsOrderIds = orders.keySet().stream().map(PlatformOrder::getId).collect(Collectors.toList());
                 BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", client.getCurrency());
-                Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orders
-                        .keySet()
-                        .stream()
-                        .map(PlatformOrder::getPlatformOrderId)
-                        .collect(toList()));
-                ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, exchangeRate, distinctHsCodeNbInOrders);
+                ShippingInvoice invoice = new ShippingInvoice(client, "", "", orders, null, extraFees, exchangeRate);
                 // Calculate total amounts
                 invoice.tableData();
                 estimations.add(new ShippingFeesEstimation(
@@ -1695,9 +1704,8 @@ public class ShippingInvoiceFactory {
                 continue;
             }
             BigDecimal exchangeRate = exchangeRatesMapper.getLatestExchangeRate("EUR", client.getCurrency());
-            Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orderIds);
             ShippingInvoice invoice = new ShippingInvoice(client, "", "",
-                    Collections.singletonMap(order, contents), null, null, exchangeRate, distinctHsCodeNbInOrders);
+                    Collections.singletonMap(order, contents), null, null, exchangeRate);
             invoice.tableData();
             estimation.setShippingEstimation(invoice.getTotalAmount());
             estimation.setPurchaseEstimation(purchaseEstimation);
@@ -1725,12 +1733,7 @@ public class ShippingInvoiceFactory {
             throw new UserException("Couldn't create shipping invoice of unknown type.");
         Client client = clientMapper.selectById(clientId);
         BigDecimal exchangeRate = exchangeRatesMapper.getExchangeRateFromDate("EUR", client.getCurrency(), start);
-        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(ordersMapContent
-                .keySet()
-                .stream()
-                .map(PlatformOrder::getPlatformOrderId)
-                .collect(toList()));
-        return new ShippingInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees, exchangeRate, distinctHsCodeNbInOrders);
+        return new ShippingInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees, exchangeRate);
     }
     public PurchaseInvoice buildExistingPurchaseInvoice (String invoiceCode) {
         PurchaseOrder order = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceCode);
@@ -1757,13 +1760,8 @@ public class ShippingInvoiceFactory {
         String purchaseID = purchaseOrderService.getInvoiceId(invoiceCode);
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
-        Integer distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(ordersMapContent
-                .keySet()
-                .stream()
-                .map(PlatformOrder::getPlatformOrderId)
-                .collect(toList()));
         return new CompleteInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees,
-                purchaseOrderSkuList, promotionDetails, eurToUsd, distinctHsCodeNbInOrders);
+                purchaseOrderSkuList, promotionDetails, eurToUsd);
     }
     /** ===== Error tag helpers ===== */
     private static String tagOrder(String reason) {

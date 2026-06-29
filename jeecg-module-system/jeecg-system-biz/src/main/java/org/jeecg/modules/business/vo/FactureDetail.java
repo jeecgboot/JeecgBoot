@@ -69,6 +69,9 @@ public class FactureDetail {
     @TableField("`Frais d'assurance produits`")
     private final BigDecimal insuranceFee;
 
+    @TableField("`Taxe petit colis`")
+    private final BigDecimal smallParcelTax;
+
     @TableField("`TVA`")
     private final BigDecimal TVA;
 

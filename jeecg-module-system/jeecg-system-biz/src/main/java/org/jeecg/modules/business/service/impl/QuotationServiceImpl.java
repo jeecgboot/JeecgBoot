@@ -409,12 +409,14 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
         if (StringUtils.isBlank(q.getCountry())) {
             throw new IllegalArgumentException("country cannot be empty");
         }
+        estimateQuote(q);
         q.setStatus("0");
     }
 
     @Override
     public int updateQuoteFields(Quotation q) {
         normalizeCountryFields(q);
+        estimateQuote(q);
         return baseMapper.updateQuoteFields(q);
     }
 
@@ -461,7 +463,7 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
             if (q.getCostRmb() != null) {
                 q.setCostEur(safeBd(q.getCostRmb()).multiply(rmbToEur).setScale(2, RoundingMode.HALF_UP));
             }
-            if (q.getSalePriceRmb() == null && q.getMargin() != null && q.getCostRmb() != null) {
+            if (shouldComputeSalePriceFromMargin(q)) {
                 BigDecimal margin = normalizeMarginInput(q.getMargin());
                 BigDecimal denominator = BigDecimal.ONE.subtract(margin);
                 if (denominator.compareTo(BigDecimal.ZERO) > 0) {
@@ -653,6 +655,24 @@ public class QuotationServiceImpl extends ServiceImpl<QuotationMapper, Quotation
             return margin.divide(BigDecimal.valueOf(100), 6, RoundingMode.HALF_UP);
         }
         return margin;
+    }
+
+    private boolean shouldComputeSalePriceFromMargin(Quotation q) {
+        if (q == null || q.getMargin() == null || q.getCostRmb() == null) {
+            return false;
+        }
+        if (q.getSalePriceRmb() == null) {
+            return true;
+        }
+        BigDecimal salePriceRmb = safeBd(q.getSalePriceRmb());
+        if (salePriceRmb.compareTo(BigDecimal.ZERO) <= 0) {
+            return true;
+        }
+        BigDecimal normalizedMargin = normalizeMarginInput(q.getMargin());
+        BigDecimal impliedMargin = salePriceRmb
+                .subtract(safeBd(q.getCostRmb()))
+                .divide(salePriceRmb, 4, RoundingMode.HALF_UP);
+        return impliedMargin.compareTo(normalizedMargin.setScale(4, RoundingMode.HALF_UP)) != 0;
     }
 
     private String getSalesRemarkText(String salesRemark) {
