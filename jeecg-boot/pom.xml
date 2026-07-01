@@ -61,9 +61,9 @@
 		<autopoi-web.version>2.0.4</autopoi-web.version>
 		
 		<!-- 持久层 -->
-		<mybatis-plus.version>3.5.12</mybatis-plus.version>
+		<mybatis-plus.version>3.5.16</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.3.1</dynamic-datasource-spring-boot-starter.version>
-		<druid.version>1.2.24</druid.version>
+		<druid.version>1.2.28</druid.version>
 
 		<commons-io.version>2.20.0</commons-io.version>
 		<commons-fileupload.version>1.5</commons-fileupload.version>

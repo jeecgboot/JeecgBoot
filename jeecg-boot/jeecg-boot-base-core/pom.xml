@@ -109,7 +109,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+			<artifactId>mybatis-plus-jsqlparser-5.0</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
 		<!-- minidao -->
