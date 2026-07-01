@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.net.URI;
 import java.util.*;
 
 /**
@@ -58,6 +59,7 @@ public class PluginToolBuilder {
             if (isEmptyBaseUrl) {
                 if (currentHttpRequest != null) {
                     baseUrl = CommonUtils.getBaseUrl(currentHttpRequest);
+                    baseUrl = fixInternalBaseUrlPort(baseUrl, currentHttpRequest);
                     log.info("插件[{}]的BaseURL为空，使用系统地址: {}", airagMcp.getName(), baseUrl);
                 } else {
                     log.warn("插件[{}]的BaseURL为空且无法获取系统地址，跳过工具构建", airagMcp.getName());
@@ -95,6 +97,39 @@ public class PluginToolBuilder {
         }
 
         return tools;
+    }
+
+    /**
+     * Fixes the internal callback URL when a reverse proxy exposes the request on 80/443 but the app listens on another port.
+     */
+    private static String fixInternalBaseUrlPort(String baseUrl, HttpServletRequest request) {
+        if (oConvertUtils.isEmpty(baseUrl) || request == null) {
+            return baseUrl;
+        }
+
+        int localPort = request.getLocalPort();
+        if (isDefaultHttpPort(localPort)) {
+            return baseUrl;
+        }
+
+        try {
+            URI uri = URI.create(baseUrl);
+            if (uri.getPort() > 0 || !isDefaultHttpPort(request.getServerPort()) || !isSingleLabelHost(uri.getHost())) {
+                return baseUrl;
+            }
+            return new URI(uri.getScheme(), null, uri.getHost(), localPort, uri.getPath(), uri.getQuery(), uri.getFragment()).toString();
+        } catch (Exception e) {
+            log.debug("Fix plugin baseUrl port failed, baseUrl={}", baseUrl, e);
+            return baseUrl;
+        }
+    }
+
+    private static boolean isDefaultHttpPort(int port) {
+        return port == 80 || port == 443 || port <= 0;
+    }
+
+    private static boolean isSingleLabelHost(String host) {
+        return oConvertUtils.isNotEmpty(host) && host.indexOf('.') < 0;
     }
 
     /**
