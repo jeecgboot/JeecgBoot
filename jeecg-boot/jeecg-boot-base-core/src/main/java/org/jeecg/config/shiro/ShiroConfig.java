@@ -11,7 +11,6 @@ import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.spring.web.ShiroUrlPathHelper;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.crazycake.shiro.*;
 import org.jeecg.common.constant.CommonConstant;
@@ -380,7 +379,7 @@ public class ShiroConfig {
     @Bean
     public RequestMappingHandlerMapping overridedRequestMappingHandlerMapping() {
         RequestMappingHandlerMapping mapping = new RequestMappingHandlerMapping();
-        mapping.setUrlPathHelper(new ShiroUrlPathHelper());
+        mapping.setUrlPathHelper(new org.springframework.web.util.UrlPathHelper());
         return mapping;
     }
     

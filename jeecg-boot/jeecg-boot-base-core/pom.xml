@@ -192,64 +192,37 @@
 			<version>${java-jwt.version}</version>
 		</dependency>
 
-		<!--shiro-->
+		<!--shiro 3.0 原生 Jakarta EE，无需 jakarta classifier -->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring-boot-starter</artifactId>
-			<classifier>jakarta</classifier>
 			<version>${shiro.version}</version>
 			<exclusions>
+				<!-- Shiro 3.0 默认依赖 log4j2，项目使用 Logback，排除以免冲突 -->
 				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-spring</artifactId>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-log4j2</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-spring</artifactId>
-			<classifier>jakarta</classifier>
 			<version>${shiro.version}</version>
-			<!-- 排除仍使用了javax.servlet的依赖 -->
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-web</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
-		<!-- 引入适配jakarta的依赖包 -->
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-core</artifactId>
-			<classifier>jakarta</classifier>
 			<version>${shiro.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-beanutils</groupId>
-					<artifactId>commons-beanutils</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-web</artifactId>
-			<classifier>jakarta</classifier>
 			<version>${shiro.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.apache.shiro</groupId>
-					<artifactId>shiro-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
-		<!-- shiro-redis -->
+		<!-- shiro-redis（io.github.weir2010 是 org.crazycake 的延续版本，原生支持 Lettuce） -->
 		<dependency>
-			<groupId>org.crazycake</groupId>
+			<groupId>io.github.weir2010</groupId>
 			<artifactId>shiro-redis</artifactId>
 			<version>${shiro-redis.version}</version>
 			<exclusions>
@@ -257,11 +230,13 @@
 					<groupId>org.apache.shiro</groupId>
 					<artifactId>shiro-core</artifactId>
 				</exclusion>
-				<exclusion>
-					<artifactId>checkstyle</artifactId>
-					<groupId>com.puppycrawl.tools</groupId>
-				</exclusion>
 			</exclusions>
+		</dependency>
+		<!-- shiro-redis 4.x 将 Jedis 设为 optional，需显式声明 -->
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${jedis.version}</version>
 		</dependency>
 
 		<dependency>

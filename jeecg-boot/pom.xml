@@ -72,15 +72,15 @@
 		<aliyun.oss.version>3.17.3</aliyun.oss.version>
         <tencentcloud-sdk-java-sms.version>3.1.407</tencentcloud-sdk-java-sms.version>
 		<!-- shiro -->
-		<shiro.version>2.0.5</shiro.version>
-		<shiro-redis.version>3.2.3</shiro-redis.version>
+		<shiro.version>3.0.0</shiro.version>
+		<shiro-redis.version>4.1.0</shiro-redis.version>
 		<java-jwt.version>4.5.0</java-jwt.version>
 		<codegenerate.version>1.5.6</codegenerate.version>
 		<minio.version>8.5.7</minio.version>
 		<justauth-spring-boot-starter.version>1.4.0</justauth-spring-boot-starter.version>
 		<dom4j.version>1.6.1</dom4j.version>
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
-		<jedis.version>3.8.0</jedis.version>
+		<jedis.version>7.1.0</jedis.version>
 		<baidu-java-sdk.version>4.16.19</baidu-java-sdk.version>
 	</properties>
 
