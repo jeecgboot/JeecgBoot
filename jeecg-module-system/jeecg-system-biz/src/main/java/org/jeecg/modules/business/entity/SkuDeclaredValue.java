@@ -74,7 +74,7 @@ public class SkuDeclaredValue implements Serializable {
      * 生效日期
      */
     @Excel(name = "生效日期", width = 15, format = "yyyy-MM-dd")
-    @JsonFormat(timezone = "GMT+2", pattern = "yyyy-MM-dd")
+    @JsonFormat(timezone = "Asia/Shanghai", pattern = "yyyy-MM-dd")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty(value = "生效日期")
     private Date effectiveDate;

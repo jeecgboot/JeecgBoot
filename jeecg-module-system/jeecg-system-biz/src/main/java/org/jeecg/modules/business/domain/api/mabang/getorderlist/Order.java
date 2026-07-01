@@ -8,12 +8,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.jeecg.modules.business.util.DateUtils;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -27,9 +24,6 @@ import java.util.Objects;
 @Data
 @TableName("platform_order")
 public class Order {
-    private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
-    private static final DateTimeFormatter MABANG_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     /**
      * Primary key
      */
@@ -194,15 +188,7 @@ public class Order {
     }
 
     private Date parseMabangFranceTime(String rawTime) {
-        if (rawTime == null || rawTime.trim().isEmpty()) {
-            return null;
-        }
-        try {
-            LocalDateTime localDateTime = LocalDateTime.parse(rawTime.trim(), MABANG_TIME_FORMATTER);
-            return Date.from(localDateTime.atZone(PARIS_ZONE).toInstant());
-        } catch (DateTimeParseException ignored) {
-            return null;
-        }
+        return DateUtils.parseMabangFranceTime(rawTime);
     }
 
     public void setTrackingNumber(String trackingNumber) {

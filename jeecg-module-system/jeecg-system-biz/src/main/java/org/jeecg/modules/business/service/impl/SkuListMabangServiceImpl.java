@@ -29,6 +29,7 @@ import org.jeecg.modules.business.mapper.SkuListMabangMapper;
 import org.jeecg.modules.business.model.SkuDocument;
 import org.jeecg.modules.business.mongoService.SkuMongoService;
 import org.jeecg.modules.business.service.*;
+import org.jeecg.modules.business.util.DateUtils;
 import org.jeecg.modules.business.vo.ResponsesWithMsg;
 import org.jeecg.modules.business.vo.SkuOrderPage;
 import org.jeecg.modules.business.vo.UnpairedSku;
@@ -46,8 +47,7 @@ import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -92,8 +92,6 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
 
     private static final Integer DEFAULT_NUMBER_OF_THREADS = 1;
     private static final Integer MABANG_API_RATE_LIMIT_PER_MINUTE = 10;
-    private static final String SYNC_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
-    private static final String SYNC_TIME_ZONE = "Asia/Shanghai";
 
 
     private final static String DEFAULT_WAREHOUSE_NAME = "SZBA宝安仓";
@@ -457,10 +455,12 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             return new Date();
         }
         try {
-            SimpleDateFormat formatter = new SimpleDateFormat(SYNC_TIME_PATTERN);
-            formatter.setTimeZone(TimeZone.getTimeZone(SYNC_TIME_ZONE));
-            return formatter.parse(createdTime.trim());
-        } catch (ParseException e) {
+            Date franceDate = DateUtils.parseMabangFranceTime(createdTime);
+            if (franceDate == null) {
+                throw new DateTimeParseException("Failed to parse Mabang France time", createdTime, 0);
+            }
+            return DateUtils.normalizeFranceBusinessTimeForShanghaiDb(franceDate);
+        } catch (DateTimeParseException e) {
             log.warn("Mabang SKU sync [time] failed to parse createdTime={}, falling back to current time.", createdTime, e);
             return new Date();
         }
