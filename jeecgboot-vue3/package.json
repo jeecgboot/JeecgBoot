@@ -44,7 +44,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.18",
     "dom-align": "^1.12.4",
-    "echarts": "^5.6.0",
+    "echarts": "^6.1.0",
     "emoji-mart-vue-fast": "^15.0.5",
     "enquire.js": "^2.1.6",
     "intro.js": "^7.2.0",
