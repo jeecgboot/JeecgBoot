@@ -108,7 +108,7 @@ public class SystemApiController {
         }
         return loginUser;
     }
-    
+
     /**
      * 根据用户账号查询用户ID
      * @param username
@@ -146,7 +146,7 @@ public class SystemApiController {
     List<String> getRolesByUsername(@RequestParam("username") String username){
         return sysBaseApi.getRolesByUsername(username);
     }
-    
+
     /**
      * 通过用户账号查询角色集合
      * @param userId
@@ -166,7 +166,7 @@ public class SystemApiController {
     List<String> getDepartIdsByUsername(@RequestParam("username") String username){
         return sysBaseApi.getDepartIdsByUsername(username);
     }
-    
+
     /**
      * 通过用户账号查询部门集合
      * @param userId
@@ -431,7 +431,7 @@ public class SystemApiController {
     public Set<String> getUserRoleSet(@RequestParam("username")String username){
         return sysBaseApi.getUserRoleSet(username);
     }
-    
+
     /**
      * 获取用户的角色集合
      * @param userId
@@ -473,7 +473,7 @@ public class SystemApiController {
     public Set<String> queryUserRoles(@RequestParam("username") String username){
         return sysUserService.getUserRolesSet(username);
     }
-    
+
     /**
      * 查询用户角色信息
      * @param userId
@@ -552,7 +552,19 @@ public class SystemApiController {
      */
     @RequestMapping("/queryUsersByUsernames")
     List<JSONObject> queryUsersByUsernames(@RequestParam("usernames") String usernames){
-        return this.sysBaseApi.queryUsersByUsernames(usernames);
+        List<JSONObject> list = this.sysBaseApi.queryUsersByUsernames(usernames);
+        if (list != null && list.size() > 0) {
+            for (JSONObject jsonObject : list) {
+                try {
+                    LoginUser loginUser = jsonObject.toJavaObject(LoginUser.class);
+                    SensitiveInfoUtil.handlerObject(loginUser, true);
+                    jsonObject.putAll(com.alibaba.fastjson.JSONObject.parseObject(com.alibaba.fastjson.JSON.toJSONString(loginUser)));
+                } catch (Exception e) {
+                    log.error("用户敏感信息脱敏处理失败", e);
+                }
+            }
+        }
+        return list;
     }
 
     /**
@@ -671,7 +683,7 @@ public class SystemApiController {
     Map<String, String> copyLowAppDict(@RequestParam("originalAppId") String originalAppId, @RequestParam("appId") String appId, @RequestParam("tenantId") String tenantId) {
         return sysBaseApi.copyLowAppDict(originalAppId, appId, tenantId);
     }
-    
+
     /**
      * 根据字典code查询字典项
      *
@@ -862,7 +874,7 @@ public class SystemApiController {
     public String getRoleCode(@RequestParam("id") String id){
         return this.sysBaseApi.getRoleCodeById(id);
     }
-    
+
     /**
      * VUEN-2584【issue】平台sql注入漏洞几个问题
      * 部分特殊函数 可以将查询结果混夹在错误信息中，导致数据库的信息暴露
@@ -944,7 +956,7 @@ public class SystemApiController {
     public List<String> queryUserIdsByDeptIds(@RequestParam("deptIds") List<String> deptIds){
         return sysBaseApi.queryUserIdsByDeptIds(deptIds);
     }
-    
+
     /**
      * 根据部门岗位ID查询用户ID
      * @param deptPostIds
@@ -954,7 +966,7 @@ public class SystemApiController {
     public List<String> queryUserIdsByDeptPostIds(@RequestParam("deptPostIds") List<String> deptPostIds){
         return sysBaseApi.queryUserIdsByDeptPostIds(deptPostIds);
     }
-    
+
     /**
      * 根据部门ID查询用户ID
      * @param deptIds
@@ -994,7 +1006,7 @@ public class SystemApiController {
     public List<String> queryUsernameByDepartPositIds(@RequestParam("departPositIds") List<String> departPositIds){
         return sysBaseApi.queryUsernameByDepartPositIds(departPositIds);
     }
-    
+
     /**
      * 根据职务ID查询用户ID
      * @param positionIds
