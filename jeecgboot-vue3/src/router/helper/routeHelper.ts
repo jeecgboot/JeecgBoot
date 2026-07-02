@@ -83,6 +83,11 @@ function asyncImportRoute(routes: AppRouteRecordRaw[] | undefined) {
     if (!item.component && item.meta?.frameSrc) {
       item.component = 'IFRAME';
     }
+    if (item.path?.startsWith('/') && item.path.includes('?')) {
+      item.meta = item.meta || {};
+      item.meta.menuPath = item.path;
+      item.path = item.path.split('?')[0];
+    }
     let { component, name } = item;
     const { children } = item;
     if (component) {
