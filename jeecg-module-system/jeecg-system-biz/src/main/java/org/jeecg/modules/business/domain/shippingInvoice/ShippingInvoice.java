@@ -112,8 +112,7 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
                     .add(countryPickingFeesPerOrder)
                     .add(countryPickingFeesPerSKU)
                     .add(countryPackageMatFeePerOrder)
-                    .add(countryInsuranceFees)
-                    .add(totalSmallParcelTax);
+                    .add(countryInsuranceFees);
         }
         Row<String, Object, Integer, Object, BigDecimal> vatRow = new Row<>(
                 "Total VAT fee for EU",
@@ -192,6 +191,7 @@ public class ShippingInvoice extends AbstractInvoice<String, Object, Integer, Ob
                 totalAmount = totalAmount.add(extraFeeAmount);
             }
         }
+        totalAmount = totalAmount.add(totalSmallParcelTax);
         totalAmount = totalAmount.add(vatForEU);
         return rows;
     }

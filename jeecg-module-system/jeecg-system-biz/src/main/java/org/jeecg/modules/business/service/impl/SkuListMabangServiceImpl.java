@@ -386,6 +386,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
             s.setId(UUID.randomUUID().toString());
             s.setErpCode(skuData.getErpCode());
             s.setCreateBy("mabang api");
+            s.setHsCode(skuData.getHsCode());
             if (!skuData.getNameEN().isEmpty()) {
                 Matcher enNameMatcher = enNamePattern.matcher(skuData.getNameEN());
                 if (enNameMatcher.matches() && !enNameMatcher.group(2).isEmpty()) {
