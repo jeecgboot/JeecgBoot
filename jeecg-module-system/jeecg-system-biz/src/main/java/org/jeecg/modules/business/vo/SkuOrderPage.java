@@ -193,6 +193,7 @@ public class SkuOrderPage {
      */
     @Excel(name = "申报价格生效日期", width = 15)
     @ApiModelProperty(value = "申报价格生效日期")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Shanghai")
     private java.util.Date declaredValueEffectiveDate;
     /**
      * 申报中文名称

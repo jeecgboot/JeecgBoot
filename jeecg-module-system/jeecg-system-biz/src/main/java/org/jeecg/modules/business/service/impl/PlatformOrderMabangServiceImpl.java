@@ -24,6 +24,7 @@ import org.jeecg.modules.business.mapper.PlatformOrderMabangMapper;
 import org.jeecg.modules.business.service.IPlatformOrderMabangService;
 import org.jeecg.modules.business.service.IPlatformOrderService;
 import org.jeecg.modules.business.service.IShopService;
+import org.jeecg.modules.business.util.DateUtils;
 import org.jeecg.modules.business.vo.PlatformOrderOperation;
 import org.jeecg.modules.business.vo.Response;
 import org.jeecg.modules.business.vo.Responses;
@@ -32,8 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.text.Normalizer;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -56,9 +55,6 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMabangMapper, Order> implements IPlatformOrderMabangService {
-    private static final ZoneId PARIS_ZONE = ZoneId.of("Europe/Paris");
-    private static final ZoneId SHANGHAI_ZONE = ZoneId.of("Asia/Shanghai");
-
     @Autowired
     private PlatformOrderMabangMapper platformOrderMabangMapper;
     @Autowired
@@ -239,9 +235,7 @@ public class PlatformOrderMabangServiceImpl extends ServiceImpl<PlatformOrderMab
             if (source == null) {
                 continue;
             }
-            LocalDateTime franceWallClock = LocalDateTime.ofInstant(source.toInstant(), PARIS_ZONE);
-            Date dbLiteralDate = Date.from(franceWallClock.atZone(SHANGHAI_ZONE).toInstant());
-            order.setOrderTime(dbLiteralDate);
+            order.setOrderTime(DateUtils.normalizeFranceBusinessTimeForShanghaiDb(source));
         }
     }
 
