@@ -26,4 +26,9 @@ public class ShoumanOrderServiceImpl extends ServiceImpl<ShoumanOrderMapper, Sho
     public List<ShoumanOrder> findShoumanOrderToSend() {
         return shoumanOrderMapper.findShoumanOrderToSend();
     }
+
+    @Override
+    public List<ShoumanOrder> findShoumanOrderWithStatusLessThan6() {
+        return shoumanOrderMapper.findShoumanOrderWithStatusLessThan6();
+    }
 }

@@ -6,4 +6,12 @@
         FROM shouman_order
         WHERE success = 0;
     </select>
+
+    <select id="findShoumanOrderWithStatusLessThan6" resultType="org.jeecg.modules.business.entity.Shouman.ShoumanOrder">
+        SELECT *
+        FROM shouman_order
+        WHERE success = 1
+          AND (status IS NULL OR status &lt; 6)
+          AND create_time > '2026-06-01';
+    </select>
 </mapper>

@@ -22,8 +22,8 @@ import lombok.experimental.Accessors;
 /**
  * @Description: 首曼订单
  * @Author: jeecg-boot
- * @Date: 2023-12-05
- * @Version: V1.1
+ * @Date: 2026-04-23
+ * @Version: V1.2
  */
 @Data
 @TableName("shouman_order")
@@ -95,4 +95,11 @@ public class ShoumanOrder implements Serializable {
     @Excel(name = "签名MD5值", width = 15)
     @ApiModelProperty(value = "签名MD5值")
     private java.lang.String signatureMd5;
+
+    /**
+     * 首曼订单状态
+     */
+    @Excel(name = "首曼订单状态", width = 15)
+    @ApiModelProperty(value = "首曼订单状态")
+    private java.lang.Integer status;
 }

@@ -54,7 +54,11 @@ public class ThirdPartyStockUpdateJob implements Job {
                                 String warehouseName = object.getString("warehouseName");
                                 List<Sku> clientSkus = skuService.fetchAllClientActiveSku(clientCode);
                                 skus.addAll(clientSkus);
-                                skusByWarehouse.put(warehouseName, clientSkus);
+                                if (skusByWarehouse.get(warehouseName) == null) {
+                                    skusByWarehouse.put(warehouseName, clientSkus);
+                                } else {
+                                    skusByWarehouse.get(warehouseName).addAll(clientSkus);
+                                }
                             }
                         }
                     }

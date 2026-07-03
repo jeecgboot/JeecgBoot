@@ -96,6 +96,17 @@
             AND poc.platform_order_id = po.id;
     </update>
 
+    <update id="batchUpdateErpStatusByPlatformOrderIds">
+        UPDATE platform_order po
+        JOIN platform_order_content poc ON poc.platform_order_id = po.id
+        SET po.erp_status = #{erpStatus},
+            poc.erp_status = #{erpStatus}
+        WHERE po.platform_order_id IN
+        <foreach collection="platformOrderIds" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
     <update id="batchUpdateStatus">
         UPDATE platform_order
         SET status = #{status}
@@ -976,6 +987,14 @@
         <foreach collection="platformOrderIds" separator="," open="(" close=")" index="index" item="platformOrderId">
             #{platformOrderId}
         </foreach>;
+    </select>
+
+    <select id="findShoumanShippedButMabangUnshippedOrders" resultType="org.jeecg.modules.business.entity.PlatformOrder">
+        SELECT po.*
+        FROM platform_order po
+        JOIN shouman_order so ON so.platform_order_id = po.platform_order_id
+        WHERE so.status = 6
+          AND po.erp_status IN (1, 2)
     </select>
     <update id="removePurchaseInvoiceNumber">
         UPDATE platform_order

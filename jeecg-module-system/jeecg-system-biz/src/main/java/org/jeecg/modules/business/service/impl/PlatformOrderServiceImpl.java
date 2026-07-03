@@ -527,6 +527,19 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     }
 
     @Override
+    public List<PlatformOrder> findShoumanShippedButMabangUnshippedOrders() {
+        return platformOrderMap.findShoumanShippedButMabangUnshippedOrders();
+    }
+
+    @Override
+    public void batchUpdateErpStatusByPlatformOrderIds(List<String> platformOrderIds, int erpStatus) {
+        if (platformOrderIds == null || platformOrderIds.isEmpty()) {
+            return;
+        }
+        platformOrderMap.batchUpdateErpStatusByPlatformOrderIds(platformOrderIds, erpStatus);
+    }
+
+    @Override
     public void removePurchaseInvoiceNumber(String purchaseInvoiceNumber, String clientId) {
         platformOrderMap.removePurchaseInvoiceNumber(purchaseInvoiceNumber, clientId);
     }
