@@ -215,6 +215,10 @@ public interface PlatformOrderMapper extends BaseMapper<PlatformOrder> {
 
     List<PlatformOrder> selectByPlatformOrderIds(@Param("platformOrderIds") List<String> platformOrderIds);
 
+    List<PlatformOrder> findShoumanShippedButMabangUnshippedOrders();
+
+    void batchUpdateErpStatusByPlatformOrderIds(@Param("platformOrderIds") List<String> platformOrderIds, @Param("erpStatus") int erpStatus);
+
     void removePurchaseInvoiceNumber(@Param("invoiceNumber") String purchaseInvoiceNumber, @Param("clientId") String clientId);
 
     void removePurchaseInvoiceNumbers(@Param("invoiceNumbers") List<String> invoiceNumbers);

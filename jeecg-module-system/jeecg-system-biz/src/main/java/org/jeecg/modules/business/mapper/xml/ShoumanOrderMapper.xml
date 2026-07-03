@@ -11,6 +11,7 @@
         SELECT *
         FROM shouman_order
         WHERE success = 1
-          AND (status IS NULL OR status &lt; 6);
+          AND (status IS NULL OR status &lt; 6)
+          AND create_time > '2026-06-01';
     </select>
 </mapper>

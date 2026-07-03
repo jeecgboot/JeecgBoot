@@ -262,6 +262,10 @@ public interface IPlatformOrderService extends IService<PlatformOrder> {
 
     List<PlatformOrder> selectByPlatformOrderIds(List<String> platformOrderIds);
 
+    List<PlatformOrder> findShoumanShippedButMabangUnshippedOrders();
+
+    void batchUpdateErpStatusByPlatformOrderIds(List<String> platformOrderIds, int erpStatus);
+
     void removePurchaseInvoiceNumber(String purchaseInvoiceNumber, String clientId);
 
     void removePurchaseInvoiceNumbers(List<String> invoiceNumbers);
