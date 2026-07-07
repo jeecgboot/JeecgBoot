@@ -1,8 +1,8 @@
 
 package org.jeecg.modules.test.xxljob;
 
-import com.xxl.job.core.biz.model.ReturnT;
 import com.xxl.job.core.handler.annotation.XxlJob;
+import com.xxl.tool.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +24,9 @@ public class XxclJobTest {
      */
 
     @XxlJob(value = "xxclJobTest")
-    public ReturnT<String> demoJobHandler(String params) {
+    public Response<String> demoJobHandler(String params) {
         log.info("我是 jeecg-system 服务里的定时任务 xxclJobTest , 我执行了...............................");
-        return ReturnT.SUCCESS;
+        return Response.ofSuccess();
     }
 
     public void init() {

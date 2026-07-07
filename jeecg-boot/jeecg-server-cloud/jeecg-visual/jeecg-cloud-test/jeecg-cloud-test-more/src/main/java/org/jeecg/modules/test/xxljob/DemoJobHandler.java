@@ -2,9 +2,8 @@
 package org.jeecg.modules.test.xxljob;
 
 
-import com.xxl.job.core.biz.model.ReturnT;
+import com.xxl.tool.response.Response;
 import com.xxl.job.core.context.XxlJobHelper;
-import com.xxl.job.core.handler.IJobHandler;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import com.xxl.job.core.context.XxlJobHelper;
 
 /**
  * xxl-job定时任务测试
@@ -34,16 +32,16 @@ public class DemoJobHandler {
      * @return
      */
     @XxlJob(value = "demoJob")
-    public ReturnT<String> demoJobHandler(String params) {
+    public Response<String> demoJobHandler(String params) {
         log.info("我是 jeecg-system 服务里的定时任务 demoJob，我执行了...............................");
-        return ReturnT.SUCCESS;
+        return Response.ofSuccess();
     }
 
     /**
      * 2、分片广播任务
      */
     @XxlJob("shardingJobHandler")
-    public ReturnT<String> shardingJobHandler(String param) throws Exception {
+    public Response<String> shardingJobHandler(String param) throws Exception {
 
         // 获取分片序号和总分片数
         int shardIndex = XxlJobHelper.getShardIndex();
@@ -59,7 +57,7 @@ public class DemoJobHandler {
             }
         }
 
-        return ReturnT.SUCCESS;
+        return Response.ofSuccess();
     }
 
 
@@ -69,7 +67,7 @@ public class DemoJobHandler {
      * 输入参数：ipconfig /all
      */
     @XxlJob("commandJobHandler")
-    public ReturnT<String> commandJobHandler(String param) throws Exception {
+    public Response<String> commandJobHandler(String param) throws Exception {
         String command = param;
         int exitValue = -1;
 
@@ -98,9 +96,9 @@ public class DemoJobHandler {
         }
 
         if (exitValue == 0) {
-            return ReturnT.SUCCESS;
+            return Response.ofSuccess();
         } else {
-            return new ReturnT<String>(ReturnT.FAIL_CODE, "command exit value(" + exitValue + ") is failed");
+            return Response.ofFail("command exit value(" + exitValue + ") is failed");
         }
     }
 
@@ -114,13 +112,13 @@ public class DemoJobHandler {
      * data: content
      */
     @XxlJob("httpJobHandler")
-    public ReturnT<String> httpJobHandler(String param) throws Exception {
+    public Response<String> httpJobHandler(String param) throws Exception {
         String[] methodArray=new String[]{"GET","POST"};
         int okState=200;
         // param parse
         if (param == null || param.trim().length() == 0) {
             log.info("param[" + param + "] invalid.");
-            return ReturnT.FAIL;
+            return Response.ofFail();
         }
         String[] httpParams = param.split("\n");
         String url = null;
@@ -141,11 +139,11 @@ public class DemoJobHandler {
         // param valid
         if (url == null || url.trim().length() == 0) {
             log.info("url[" + url + "] invalid.");
-            return ReturnT.FAIL;
+            return Response.ofFail();
         }
         if (method == null || !Arrays.asList(methodArray).contains(method)) {
             log.info("method[" + method + "] invalid.");
-            return ReturnT.FAIL;
+            return Response.ofFail();
         }
 
         // request
@@ -194,10 +192,10 @@ public class DemoJobHandler {
             String responseMsg = result.toString();
 
             log.info(responseMsg);
-            return ReturnT.SUCCESS;
+            return Response.ofSuccess();
         } catch (Exception e) {
             log.info(e.getMessage(),e);
-            return ReturnT.FAIL;
+            return Response.ofFail();
         } finally {
             try {
                 if (bufferedReader != null) {
@@ -218,9 +216,9 @@ public class DemoJobHandler {
      * 5、生命周期任务示例：任务初始化与销毁时，支持自定义相关逻辑；
      */
     @XxlJob(value = "demoJobHandler2", init = "init", destroy = "destroy")
-    public ReturnT<String> demoJobHandler2(String param) throws Exception {
+    public Response<String> demoJobHandler2(String param) throws Exception {
         log.info("XXL-JOB, Hello World.");
-        return ReturnT.SUCCESS;
+        return Response.ofSuccess();
     }
 
     public void init() {

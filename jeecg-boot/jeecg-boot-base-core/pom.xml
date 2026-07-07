@@ -335,11 +335,14 @@
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>okhttp</artifactId>
 		</dependency>
+		<!-- 2026-07-06  for：【SpringBoot4】jackson-module-kotlin Jackson2不兼容Jackson3，spring-cloud-function 5.0 JsonMapper初始化时 ClassCastException: KotlinModule cannot be cast to tools.jackson.databind.JacksonModule，暂时注释 -->
 		<!-- 解决okhttp引用了kotlin,应用启动有警告日志问题 -->
+		<!--
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-kotlin</artifactId>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>

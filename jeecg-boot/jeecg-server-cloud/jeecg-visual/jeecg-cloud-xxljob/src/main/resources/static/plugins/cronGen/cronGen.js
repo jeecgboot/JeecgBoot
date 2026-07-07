@@ -258,24 +258,27 @@
 
             var weekly3 = $("<div/>",{"class":"line"});
             $("<input/>",{type : "radio", value : "3", name : "week"}).appendTo(weekly3);
-            $(weekly3).append("周期 从星期");
+            $(weekly3).append("周期 每周第");
             $("<input/>",{type : "text", id : "weekStart_0", value : "1", style:"width:35px; height:20px; text-align: center; margin: 0 3px;"}).appendTo(weekly3);
-            $(weekly3).append("-");
+            $(weekly3).append("天-第");
             $("<input/>",{type : "text", id : "weekEnd_0", value : "2", style:"width:35px; height:20px; text-align: center; margin: 0 3px;"}).appendTo(weekly3);
+            $(weekly3).append("天");
             $(weekly3).appendTo(weeklyTab);
 
             var weekly4 = $("<div/>",{"class":"line"});
             $("<input/>",{type : "radio", value : "4", name : "week"}).appendTo(weekly4);
-            $(weekly4).append("第");
+            $(weekly4).append("从第");
             $("<input/>",{type : "text", id : "weekStart_1", value : "1", style:"width:35px; height:20px; text-align: center; margin: 0 3px;"}).appendTo(weekly4);
-            $(weekly4).append("周的星期");
+            $(weekly4).append("天开始，间隔");
             $("<input/>",{type : "text", id : "weekEnd_1", value : "1", style:"width:35px; height:20px; text-align: center; margin: 0 3px;"}).appendTo(weekly4);
+            $(weekly4).append("天执行一次");
             $(weekly4).appendTo(weeklyTab);
 
             var weekly5 = $("<div/>",{"class":"line"});
             $("<input/>",{type : "radio", value : "5", name : "week"}).appendTo(weekly5);
-            $(weekly5).append("本月最后一个星期");
+            $(weekly5).append("本月最后一周的第");
             $("<input/>",{type : "text", id : "weekStart_2", value : "1", style:"width:35px; height:20px; text-align: center; margin: 0 3px;"}).appendTo(weekly5);
+            $(weekly5).append("天");
             $(weekly5).appendTo(weeklyTab);
 
             var weekly6 = $("<div/>",{"class":"line"});
@@ -283,7 +286,7 @@
             $(weekly6).append("指定");
             $(weekly6).appendTo(weeklyTab);
 
-            $(weeklyTab).append('<div class="imp weekList"><input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="1">1<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="2">2<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="3">3<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="4">4<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="5">5<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="6">6<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="7">7</div>');
+            $(weeklyTab).append('<div class="imp weekList"><input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="1">周日<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="2">周一<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="3">周二<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="4">周三<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="5">周四<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="6">周五<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="7">周六</div>');
 
             $("<input/>",{type : "hidden", id : "weekHidden"}).appendTo(weeklyTab);
             $(weeklyTab).appendTo(tabContent);
@@ -647,7 +650,7 @@
             dataType : "json",
             success : function(data){
                 if (data.code === 200) {
-                    $('#runTime').val(data.content.join("\n"));
+                    $('#runTime').val(data.data.join("\n"));
                 } else {
                     $('#runTime').val(data.msg);
                 }

@@ -1,0 +1,25 @@
+.scayt-lang-list > div
+{
+    padding-bottom: 6px !important;
+}
+
+.scayt-lang-list > div input
+{
+    margin-right: 4px;
+}
+
+#scayt_about_
+{
+    margin: 30px auto 0 auto;
+}
+
+#scayt_about_ p
+{
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.cke_dialog_contents_body div[name=dictionaries] .cke_dialog_ui_hbox_last > a.cke_dialog_ui_button
+{
+    margin-top: 0;
+}

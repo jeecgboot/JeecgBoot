@@ -1,0 +1,225 @@
+/* admin tab start */
+html,
+body {
+    height: 100% !important;
+    min-height: 0px !important;
+}
+
+body .wrapper{
+    height: 100% !important;
+    min-height: 0px !important;
+}
+
+body .content-wrapper{
+    /*for footer*/
+    height:calc(100% - 36px);
+}
+
+body .sidebar{
+    overflow: hidden;
+}
+
+.content-tabs {
+    position: relative;
+    height: 35px;
+    background: #fafafa;
+    line-height: 35px;
+}
+
+.content-tabs .roll-nav,
+.page-tabs-list {
+    position: absolute;
+    width: 40px;
+    height: 35px;
+    text-align: center;
+    color: #999;
+    z-index: 2;
+    top: 0;
+}
+
+.content-tabs .roll-left {
+    left: 0;
+    border-right: solid 1px #eee;
+}
+
+.content-tabs .roll-right {
+    right: 0;
+    border-left: solid 1px #eee;
+}
+
+.content-tabs button {
+    background: #fff;
+    border: 0;
+    height: 35px;
+    width: 40px;
+    outline: none;
+}
+
+.content-tabs button:hover {
+    background: #fafafa;
+}
+
+nav.page-tabs {
+    margin-left: 40px;
+    width: 100000px;
+    height: 35px;
+    overflow: hidden;
+}
+
+nav.page-tabs .page-tabs-content {
+    float: left;
+}
+
+.page-tabs a {
+    display: block;
+    float: left;
+    border-right: solid 1px #eee;
+    padding: 0 15px;
+}
+
+.page-tabs a i:hover {
+    color: #c00;
+}
+
+.page-tabs a:hover,
+.content-tabs .roll-nav:hover {
+    color: #777;
+    background: #f2f2f2;
+    cursor: pointer;
+}
+
+.roll-right.J_tabRight {
+    right: 200px;
+}
+
+.roll-right.btn-group {
+    right: 120px;
+    width: 80px;
+    padding: 0;
+}
+
+.roll-right.btn-group button {
+    width: 80px;
+}
+
+.roll-right.J_tabExit, .roll-right.tabReload {
+    right: 60px;
+    background: #fff;
+    height: 35px;
+    width: 60px;
+    outline: none;
+}
+
+.roll-right.J_tabExit, .roll-right.fullscreen {
+    background: #fff;
+    height: 35px;
+    width: 60px;
+    outline: none;
+}
+
+.dropdown-menu-right {
+    left: auto;
+}
+
+#content-main {
+    height: calc(100% - 50px);
+    overflow: hidden;
+}
+
+.fixed-nav #content-main {
+    height: calc(100% - 80px);
+    overflow: hidden;
+}
+
+.content-tabs {
+    height: 37px;
+    border-bottom: solid 2px #d2d6de;
+}
+
+.page-tabs a {
+    color: #999;
+}
+
+.page-tabs a i {
+    color: #ccc;
+}
+
+.page-tabs a.active {
+    background: #2f4050;
+    color: #ccc;
+}
+
+.page-tabs a.active:hover,
+.page-tabs a.active i:hover {
+    background: #2f4050;
+    color: #fff;
+}
+
+/** 遮罩层 **/
+.loaderbox {
+    display: inline-block;
+    min-width: 125px;
+    padding: 10px;
+    margin: 0 auto;
+    color: #000 !important;
+    font-size: 13px;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loaderbox .loading-activity {
+    float: left;
+    width: 18px;
+    height: 18px;
+    border: solid 2px transparent;
+    border-top-color: #000;
+    border-left-color: #000;
+    border-radius: 10px;
+    -webkit-animation: pace-spinner 400ms linear infinite;
+    -moz-animation: pace-spinner 400ms linear infinite;
+    -ms-animation: pace-spinner 400ms linear infinite;
+    -o-animation: pace-spinner 400ms linear infinite;
+    animation: pace-spinner 400ms linear infinite;
+}
+
+.dropdown-menu {
+    min-width: 100px;
+}
+
+.main-footer {
+    height: 37px;
+    border-top: solid 2px #d2d6de;
+    padding: 8px 20px 12px 20px;
+}
+/* admin tab end */
+
+/* nprogress start */
+#nprogress .bar {
+    background: #FFFFFF !important;
+}
+#nprogress .peg {
+    box-shadow: 0 0 10px #FFFFFF, 0 0 5px #FFFFFF !important;
+}
+#nprogress .spinner-icon {
+    border-top-color: #FFFFFF !important;
+    border-left-color: #FFFFFF !important;
+}
+/* nprogress end */
+
+/* menu start */
+.treeview-menu>li>a {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+/* menu end */

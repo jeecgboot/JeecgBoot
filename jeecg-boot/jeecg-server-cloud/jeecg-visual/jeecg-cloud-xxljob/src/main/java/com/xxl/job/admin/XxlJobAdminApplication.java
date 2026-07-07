@@ -17,10 +17,9 @@ public class XxlJobAdminApplication {
 		ConfigurableApplicationContext application = SpringApplication.run(XxlJobAdminApplication.class, args);
 		Environment env = application.getEnvironment();
 		String port = env.getProperty("server.port");
-		String path = env.getProperty("server.servlet.context-path");
 		log.info("\n----------------------------------------------------------\n\t" +
 				"Application XxlJobAdmin is running! Access URLs:\n\t" +
-				"Local: \t\thttp://localhost:" + port + path + "/\n\t" +
+				"Local: \t\thttp://localhost:" + port + "\n\t" +
 				"----------------------------------------------------------");
 	}
 

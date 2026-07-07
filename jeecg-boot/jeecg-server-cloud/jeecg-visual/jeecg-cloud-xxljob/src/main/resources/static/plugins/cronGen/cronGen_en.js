@@ -12,7 +12,7 @@
             var cronContainer = $("<div/>", { id: "CronContainer", style: "display:none;width:300px;height:300px;" });
             var mainDiv = $("<div/>", { id: "CronGenMainDiv", style: "width:410px;height:420px;" });
             var topMenu = $("<ul/>", { "class": "nav nav-tabs", id: "CronGenTabs" });
-            $('<li/>', { 'class': 'active' }).html($('<a id="SecondlyTab" href="#Secondly">秒</a>')).appendTo(topMenu);
+            $('<li/>', { 'class': 'active' }).html($('<a id="SecondlyTab" href="#Secondly">Second</a>')).appendTo(topMenu);
             $('<li/>').html($('<a id="MinutesTab" href="#Minutes">Minute</a>')).appendTo(topMenu);
             $('<li/>').html($('<a id="HourlyTab" href="#Hourly">Hour</a>')).appendTo(topMenu);
             $('<li/>').html($('<a id="DailyTab" href="#Daily">Day</a>')).appendTo(topMenu);
@@ -268,7 +268,7 @@
             $("<input/>",{type : "radio", value : "4", name : "week"}).appendTo(weekly4);
             $(weekly4).append("The");
             $("<input/>",{type : "text", id : "weekStart_1", value : "1", style:"width:35px; height:20px; text-align: center; margin: 0 3px;"}).appendTo(weekly4);
-            $(weekly4).append("th week, and day ");
+            $(weekly4).append("th week, once every ");
             $("<input/>",{type : "text", id : "weekEnd_1", value : "1", style:"width:35px; height:20px; text-align: center; margin: 0 3px;"}).appendTo(weekly4);
             $(weekly4).appendTo(weeklyTab);
 
@@ -283,7 +283,7 @@
             $(weekly6).append("specify");
             $(weekly6).appendTo(weeklyTab);
 
-            $(weeklyTab).append('<div class="imp weekList"><input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="1">1<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="2">2<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="3">3<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="4">4<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="5">5<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="6">6<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="7">7</div>');
+            $(weeklyTab).append('<div class="imp weekList"><input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="1">SUN<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="2">MON<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="3">TUE<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="4">WED<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="5">THU<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="6">FRI<input type="checkbox" disabled="disabled" style="margin-left: 5px"  value="7">SAT</div>');
 
             $("<input/>",{type : "hidden", id : "weekHidden"}).appendTo(weeklyTab);
             $(weeklyTab).appendTo(tabContent);
@@ -647,7 +647,7 @@
             dataType : "json",
             success : function(data){
                 if (data.code === 200) {
-                    $('#runTime').val(data.content.join("\n"));
+                    $('#runTime').val(data.data.join("\n"));
                 } else {
                     $('#runTime').val(data.msg);
                 }

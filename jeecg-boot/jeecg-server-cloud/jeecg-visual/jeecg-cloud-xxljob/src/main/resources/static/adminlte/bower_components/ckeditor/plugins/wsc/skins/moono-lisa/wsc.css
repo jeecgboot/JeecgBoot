@@ -1,0 +1,43 @@
+.cke_dialog_body #overlayBlock,
+.cke_dialog_body #no_check_over
+{
+    top: 39px !important;
+}
+
+div[name=SpellTab] .wsc-spelltab-bottom .cke_dialog_ui_vbox td > .cke_dialog_ui_button:first-child
+{
+    margin-top: 4px;
+}
+
+div[name=SpellTab] .wsc-spelltab-bottom .cke_dialog_ui_hbox_first .cke_dialog_ui_select > label
+{
+    margin-left: 0;
+}
+
+div[name=SpellTab] .wsc-spelltab-bottom .cke_dialog_ui_hbox_first .cke_dialog_ui_select div.cke_dialog_ui_input_select
+{
+    width: 140px !important;
+}
+
+div[name=SpellTab] .wsc-spelltab-bottom .cke_dialog_ui_hbox_first .cke_dialog_ui_select select.cke_dialog_ui_input_select,
+div[name=Thesaurus] div.cke_dialog_ui_input_select select.cke_dialog_ui_input_select
+{
+    margin-top: 1px;
+}
+
+div[name=SpellTab] .wsc-spelltab-bottom .cke_dialog_ui_hbox_first .cke_dialog_ui_select select.cke_dialog_ui_input_select:focus,
+div[name=Thesaurus] div.cke_dialog_ui_input_select select.cke_dialog_ui_input_select:focus
+{
+    margin-top: 0;
+}
+
+div[name=GrammTab] .cke_dialog_ui_vbox tbody > tr:first-child .cke_dialog_ui_button,
+div[name=Thesaurus] .cke_dialog_ui_vbox tbody > tr:first-child .cke_dialog_ui_button
+{
+    margin-top: 4px !important;
+}
+
+div[name=Thesaurus] div.cke_dialog_ui_input_select
+{
+    width: 180px !important;
+}

@@ -39,6 +39,12 @@
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-boot-starter-lock</artifactId>
         </dependency>
+        <!-- spring-cloud-function 5.0 需要 joda-time 但声明为 optional，显式引入 -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.12.7</version>
+        </dependency>
     </dependencies>
 
 </project>
