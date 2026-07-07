@@ -114,7 +114,7 @@ Response<String> execute(String param) { return Response.SUCCESS; }
 - application.yml → application.properties（解决 `xxl-sso.token.key` 等带点号/横线的 key 解析问题）
 
 **数据库**
-- 新数据库名 `xxl-job3`，表结构变化需重新导入 `db/tables_xxl_job.sql`
+- 新数据库名 `xxl_job`，表结构变化需重新导入 `db/tables_xxl_job.sql`
 
 ### 2.3 保留的 JeecgBoot 定制
 
