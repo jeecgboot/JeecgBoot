@@ -23,8 +23,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.CacheControl;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -108,11 +106,14 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
         return new CorsFilter(urlBasedCorsConfigurationSource);
     }
-    @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(objectMapper());
-        converters.add(jackson2HttpMessageConverter);
-    }
+
+	//update-begin---author:scott ---date:2026-07-07  for：【Spring Boot 4 升级】移除 configureMessageConverters 重写，该方法替换默认转换器导致 /v3/api-docs 返回 Base64，且 Spring Framework 7 已标记弃用+移除，改为依赖 @Primary ObjectMapper 自动装配-----------
+//    @Override
+//    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+//        MappingJackson2HttpMessageConverter jackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(objectMapper());
+//        converters.add(jackson2HttpMessageConverter);
+//    }
+	//update-end---author:scott ---date:2026-07-07  for：【Spring Boot 4 升级】移除 configureMessageConverters 重写-----------
 
     /**
      * 自定义ObjectMapper
@@ -141,16 +142,6 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         objectMapper.registerModule(javaTimeModule);
         return objectMapper;
     }
-
-//    /**
-//     * SpringBootAdmin的Httptrace不见了
-//     * https://blog.csdn.net/u013810234/article/details/110097201
-//     */
-//    @Bean
-//    public InMemoryHttpTraceRepository getInMemoryHttpTrace(){
-//        return new InMemoryHttpTraceRepository();
-//    }
-
 
     /**
      * 在Bean初始化完成后立即配置PrometheusMeterRegistry，避免在Meter注册后才配置MeterFilter
