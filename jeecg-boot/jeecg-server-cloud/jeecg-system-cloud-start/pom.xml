@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-server-cloud</artifactId>
         <groupId>org.jeecgframework.boot3</groupId>
-        <version>3.9.2</version>
+        <version>3.9.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>jeecg-system-cloud-start</artifactId>
@@ -42,22 +42,16 @@
             <artifactId>jeecg-boot-starter-job</artifactId>
         </dependency>
 
-        <!-- feign 熔断限流、分布式锁、xxljob示例 
+        <!-- feign 熔断限流、分布式锁、xxljob示例 -->
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-cloud-test-more</artifactId>
             <version>${jeecgboot.version}</version>
-        </dependency>-->
+        </dependency>
         <!-- rabbitmq例子
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-cloud-test-rabbitmq</artifactId>
-            <version>${jeecgboot.version}</version>
-        </dependency>-->
-        <!-- rocketmq例子-->
-        <!--<dependency>
-            <groupId>org.jeecgframework.boot3</groupId>
-            <artifactId>jeecg-cloud-test-rocketmq</artifactId>
             <version>${jeecgboot.version}</version>
         </dependency>-->
         <!-- 分布式事务例子

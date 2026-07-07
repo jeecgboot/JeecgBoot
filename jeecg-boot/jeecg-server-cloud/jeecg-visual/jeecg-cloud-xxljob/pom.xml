@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>jeecg-visual</artifactId>
 		<groupId>org.jeecgframework.boot3</groupId>
-		<version>3.9.2</version>
+		<version>3.9.3</version>
 	</parent>
 	<packaging>jar</packaging>
 	<artifactId>jeecg-cloud-xxljob</artifactId>

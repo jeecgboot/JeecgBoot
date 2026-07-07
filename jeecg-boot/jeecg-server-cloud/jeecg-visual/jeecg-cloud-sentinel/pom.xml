@@ -11,7 +11,7 @@
 	<artifactId>jeecg-cloud-sentinel</artifactId>
 	<name>jeecg-cloud-sentinel</name>
 	<description>Sentinel Dashboard 启动模块</description>
-	<version>3.9.2</version>
+	<version>3.9.3</version>
 
 	<dependencies>
 		<dependency>

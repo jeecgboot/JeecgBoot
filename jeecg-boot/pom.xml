@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot3</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.9.2</version>
+  <version>3.9.3</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.9.2</jeecgboot.version>
+		<jeecgboot.version>3.9.3</jeecgboot.version>
 		<!-- JDK版本支持17、21、24、25 -->
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -57,7 +57,7 @@
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>2.5.0</jimureport-spring-boot-starter.version>
 		<jimubi-spring-boot-starter.version>2.5.0</jimubi-spring-boot-starter.version>
-		<minidao.version>1.10.20</minidao.version>
+		<minidao.version>1.10.22</minidao.version>
 		<autopoi-web.version>2.0.4</autopoi-web.version>
 		
 		<!-- 持久层 -->
@@ -233,7 +233,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-job</artifactId>
-				<version>3.9.2</version>
+				<version>3.9.3</version>
 			</dependency>
 	
 			<!--redis分布式锁-->
@@ -254,6 +254,12 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			<!--rabbitmq消息队列-->
+			<dependency>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-sentinel</artifactId>
+				<version>${jeecgboot.version}</version>
+			</dependency>
 			<!--rocketmq-->
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
@@ -264,12 +270,12 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
-				<version>3.9.2</version>
+				<version>3.9.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere-nacos</artifactId>
-				<version>3.9.2</version>
+				<version>3.9.3</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -557,7 +563,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-ai</artifactId>
-                <version>3.9.2.4</version>
+                <version>3.9.3</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
 			<!--mysql5.6，需要把版本号改成5.2.1-->

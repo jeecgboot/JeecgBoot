@@ -21,9 +21,9 @@ WORKDIR /jeecg-boot
 EXPOSE 8080
 
 #ADD ./src/main/resources/jeecg ./config/jeecg
-ADD ./target/jeecg-system-start-3.9.2.jar ./
+ADD ./target/jeecg-system-start-3.9.3.jar ./
 
 RUN mkdir -p /jeecg-boot/config
 
 # 【PR#9345】编码已通过JAVA_TOOL_OPTIONS设置，CMD改用&&和exec
-CMD sleep 60 && exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-system-start-3.9.2.jar
+CMD sleep 60 && exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-system-start-3.9.3.jar
