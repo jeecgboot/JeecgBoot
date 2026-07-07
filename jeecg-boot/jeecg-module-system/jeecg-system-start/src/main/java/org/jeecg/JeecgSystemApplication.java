@@ -6,7 +6,6 @@ import org.jeecg.common.util.oConvertUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -22,7 +21,6 @@ import java.util.Map;
 * 报错提醒: 未集成mongo报错，可以打开启动类上面的注释 exclude={MongoAutoConfiguration.class}
 */
 @Slf4j
-@SpringBootApplication(exclude = MongoAutoConfiguration.class)
 @ImportAutoConfiguration(JustAuthAutoConfiguration.class)  // spring boot 3.x justauth 兼容性处理
 public class JeecgSystemApplication extends SpringBootServletInitializer {
 
@@ -38,7 +36,7 @@ public class JeecgSystemApplication extends SpringBootServletInitializer {
         app.setDefaultProperties(defaultProperties);
         log.info("[JEECG] Elasticsearch Health Check Enabled: false" );
         
-        ConfigurableApplicationContext application = app.run(args);;
+        ConfigurableApplicationContext application = app.run(args);
         Environment env = application.getEnvironment();
         String ip = InetAddress.getLocalHost().getHostAddress();
         String port = env.getProperty("server.port");

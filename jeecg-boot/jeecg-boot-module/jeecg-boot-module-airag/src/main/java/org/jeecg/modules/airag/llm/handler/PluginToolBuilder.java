@@ -326,7 +326,7 @@ public class PluginToolBuilder {
         }
 
         // 如果请求体不为空且没有设置Content-Type，默认设置为application/json
-        if (!httpHeaders.containsKey(HttpHeaders.CONTENT_TYPE)) {
+        if (!httpHeaders.containsHeader(HttpHeaders.CONTENT_TYPE)) {
             httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         }
 

@@ -65,10 +65,10 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
-		<dependency>
+	<!--	<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -104,7 +104,7 @@
 		<!-- mybatis-plus -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+			<artifactId>mybatis-plus-spring-boot4-starter</artifactId>
 			<version>${mybatis-plus.version}</version>
 		</dependency>
 		<dependency>
@@ -121,15 +121,19 @@
 		<!-- druid -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
-			<artifactId>druid-spring-boot-3-starter</artifactId>
-			<version>${druid.version}</version>
+			<artifactId>druid-spring-boot-4-starter</artifactId>
+			<version>1.2.28</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 
 		<!-- 动态数据源 -->
 		<dependency>
 			<groupId>com.baomidou</groupId>
-			<artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
-			<version>${dynamic-datasource-spring-boot-starter.version}</version>
+			<artifactId>dynamic-datasource-spring-boot4-starter</artifactId>
+			<version>4.5.0</version>
 		</dependency>
 
 		<!-- 数据库驱动 -->

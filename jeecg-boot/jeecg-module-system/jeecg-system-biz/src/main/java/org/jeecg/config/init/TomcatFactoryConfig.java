@@ -2,7 +2,7 @@ package org.jeecg.config.init;
 
 import org.apache.catalina.Context;
 import org.apache.tomcat.util.scan.StandardJarScanner;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

@@ -2,8 +2,8 @@ package org.jeecg.config;
 
 import java.io.IOException;
 
-import com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure;
-import com.alibaba.druid.spring.boot3.autoconfigure.properties.DruidStatProperties;
+import com.alibaba.druid.spring.boot4.autoconfigure.DruidDataSourceAutoConfigure;
+import com.alibaba.druid.spring.boot4.autoconfigure.properties.DruidStatProperties;
 import jakarta.servlet.*;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;

@@ -1,7 +1,7 @@
 package org.jeecg.modules.monitor.actuator;
 
 import org.jeecg.modules.monitor.actuator.httptrace.CustomInMemoryHttpTraceRepository;
-import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesProperties;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(HttpExchangesProperties.class)
-@AutoConfigureBefore(HttpExchangesAutoConfiguration.class)
+@AutoConfigureBefore(HttpExchangesEndpointAutoConfiguration.class)
 public class CustomActuatorConfig {
 
     /**

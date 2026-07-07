@@ -2,10 +2,6 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
-  error:
-    include-exception: true
-    include-stacktrace: ALWAYS
-    include-message: ALWAYS
   servlet:
     context-path: /jeecg-boot
   compression:
@@ -20,9 +16,14 @@ management:
         include: metrics,httpexchanges,jeecghttptrace
 
 spring:
-#  main:
-#    # 启动加速 (建议开发环境，开启后flyway自动升级失效)
-#    lazy-initialization: true
+  #  main:
+  #    # 启动加速 (建议开发环境，开启后flyway自动升级失效)
+  #    lazy-initialization: true
+  web:
+    error:
+      include-exception: true
+      include-stacktrace: ALWAYS
+      include-message: ALWAYS
   flyway:
     # 是否启用flyway
     enabled: false

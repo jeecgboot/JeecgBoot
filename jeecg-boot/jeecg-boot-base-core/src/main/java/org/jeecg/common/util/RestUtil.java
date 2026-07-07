@@ -61,7 +61,7 @@ public class RestUtil {
         // 解决[issues/8859]online表单java增强失效------------
         // 使用 Apache HttpClient 避免 JDK HttpURLConnection 的 too many bytes written 问题
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(30000);
+        requestFactory.setConnectionRequestTimeout(30000);
         requestFactory.setReadTimeout(30000);
         RT = new RestTemplate(requestFactory);
         // 解决乱码问题（替换 StringHttpMessageConverter 为 UTF-8）
@@ -271,7 +271,7 @@ public class RestUtil {
         if (timeout > 0) {
             // 代码逻辑说明: [issues/8859]online表单java增强失效------------
             HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-            requestFactory.setConnectTimeout(timeout);
+            requestFactory.setConnectionRequestTimeout(timeout);
             requestFactory.setReadTimeout(timeout);
             restTemplate = new RestTemplate(requestFactory);
             // 解决乱码问题（替换 StringHttpMessageConverter 为 UTF-8）
@@ -299,7 +299,7 @@ public class RestUtil {
         }
 
         // Content-Length 强制设置（解决可能出现的截断问题）
-        if (StringUtils.isNotEmpty(body) && !headers.containsKey(HttpHeaders.CONTENT_LENGTH)) {
+        if (StringUtils.isNotEmpty(body) && !headers.containsHeader(HttpHeaders.CONTENT_LENGTH)) {
             int contentLength = body.getBytes(StandardCharsets.UTF_8).length;
             String current = headers.getFirst(HttpHeaders.CONTENT_LENGTH);
             if (current == null || !current.equals(String.valueOf(contentLength))) {
@@ -317,7 +317,7 @@ public class RestUtil {
      * 获取JSON请求头
      */
     public static HttpHeaders getHeaderApplicationJson() {
-        return getHeader(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        return getHeader(MediaType.APPLICATION_JSON_VALUE);
     }
 
     /**

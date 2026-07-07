@@ -111,7 +111,7 @@ public class RestDesformUtil {
 
     private static HttpHeaders getHeaders(String token) {
         HttpHeaders headers = new HttpHeaders();
-        String mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE;
+        String mediaType = MediaType.APPLICATION_JSON_VALUE;
         headers.setContentType(MediaType.parseMediaType(mediaType));
         headers.set("Accept", mediaType);
         headers.set("X-Access-Token", token);

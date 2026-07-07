@@ -23,7 +23,7 @@
   	<parent>
 	    <groupId>org.springframework.boot</groupId>
 	    <artifactId>spring-boot-starter-parent</artifactId>
-	    <version>3.5.5</version>
+	    <version>4.1.0</version>
 	    <relativePath/>
 	</parent>
 
@@ -34,8 +34,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- 微服务 -->
-		<spring-cloud.version>2025.0.0</spring-cloud.version>
-        <spring-cloud-alibaba.version>2023.0.3.3</spring-cloud-alibaba.version>
+		<spring-cloud.version>2025.1.2</spring-cloud.version>
+        <spring-cloud-alibaba.version>2025.1.0.0</spring-cloud-alibaba.version>
 		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
 
 		<xxl-job-core.version>2.4.1</xxl-job-core.version>
@@ -111,6 +111,16 @@
 			<id>jeecg-snapshots</id>
 			<name>jeecg-snapshots Repository</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>github</id>
+			<url>https://maven.pkg.github.com/alibaba/spring-cloud-alibaba</url>
 			<releases>
 				<enabled>false</enabled>
 			</releases>
@@ -225,6 +235,7 @@
 				<artifactId>jeecg-boot-starter-job</artifactId>
 				<version>3.9.2</version>
 			</dependency>
+	
 			<!--redis分布式锁-->
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
