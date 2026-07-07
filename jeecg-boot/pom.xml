@@ -36,7 +36,7 @@
 		<!-- 微服务 -->
 		<spring-cloud.version>2025.1.2</spring-cloud.version>
         <spring-cloud-alibaba.version>2025.1.0.0</spring-cloud-alibaba.version>
-		<alibaba.nacos.version>2.0.4</alibaba.nacos.version>
+		<alibaba.nacos.version>3.2.2</alibaba.nacos.version>
 
 		<xxl-job-core.version>3.4.2</xxl-job-core.version>
         <fastjson.version>2.0.58</fastjson.version>
@@ -56,7 +56,7 @@
 
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>2.5.0</jimureport-spring-boot-starter.version>
-		<jimubi-spring-boot-starter.version>2.5.0</jimubi-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.5.0.1</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.22</minidao.version>
 		<autopoi-web.version>2.0.4</autopoi-web.version>
 		
