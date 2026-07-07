@@ -5,7 +5,7 @@
     <parent>
         <artifactId>jeecg-cloud-test</artifactId>
         <groupId>org.jeecgframework.boot3</groupId>
-        <version>3.9.2</version>
+        <version>3.9.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>公共测试模块</description>
@@ -33,6 +33,11 @@
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-boot-starter-rabbitmq</artifactId>
+        </dependency>
+        <!--rabbitmq消息队列-->
+        <dependency>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-sentinel</artifactId>
         </dependency>
         <!-- 分布式锁依赖 -->
         <dependency>

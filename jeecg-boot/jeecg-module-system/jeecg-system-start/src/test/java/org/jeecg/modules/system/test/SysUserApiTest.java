@@ -15,8 +15,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,43 +36,43 @@ public class SysUserApiTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ISysUserService sysUserService;
 
-    @MockBean
+    @MockitoBean
     private ISysDepartService sysDepartService;
 
-    @MockBean
+    @MockitoBean
     private ISysUserRoleService sysUserRoleService;
 
-    @MockBean
+    @MockitoBean
     private ISysUserDepartService sysUserDepartService;
 
-    @MockBean
+    @MockitoBean
     private ISysDepartRoleUserService departRoleUserService;
 
-    @MockBean
+    @MockitoBean
     private ISysDepartRoleService departRoleService;
 
-    @MockBean
+    @MockitoBean
     private RedisUtil redisUtil;
 
     @Value("${jeecg.path.upload}")
     private String upLoadPath;
 
-    @MockBean
+    @MockitoBean
     private BaseCommonService baseCommonService;
 
-    @MockBean
+    @MockitoBean
     private ISysPositionService sysPositionService;
 
-    @MockBean
+    @MockitoBean
     private ISysUserTenantService userTenantService;
 
-    @MockBean
+    @MockitoBean
     private JeecgRedisClient jeecgRedisClient;
 
-    @MockBean
+    @MockitoBean
     private JeecgBaseConfig jeecgBaseConfig;
     /**
      * 测试地址：实际使用时替换成你自己的地址
