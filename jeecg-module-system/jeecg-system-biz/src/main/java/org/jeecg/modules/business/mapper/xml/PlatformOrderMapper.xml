@@ -995,6 +995,7 @@
         JOIN shouman_order so ON so.platform_order_id = po.platform_order_id
         WHERE so.status = 6
           AND po.erp_status IN (1, 2)
+          AND po.shipping_label_url IS NOT NULL
     </select>
     <update id="removePurchaseInvoiceNumber">
         UPDATE platform_order
