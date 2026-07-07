@@ -229,10 +229,10 @@ jeecg-boot-starter-sentinel/
 
 | 数据库 | 说明 |
 |--------|------|
-| `xxl-job3` | XXL-JOB 3.4.2 新库，需导入 `db/tables_xxl_job.sql` |
-| `nacos` | Nacos 3.2.2 新库，建表脚本 `db/tables_nacos.sql`（附 Nacos 3.x `conf/mysql-schema.sql`） |
+| `xxl-job` | XXL-JOB 3.4.2 新库，需导入 `db/tables_xxl_job.sql` |
+| `nacos` | Nacos 3.2.2 新库，建表脚本 `db/tables_nacos.sql` |
 
-> ⚠️ Nacos 3.x 不会自动建表，需要手动执行建表脚本。
+> ⚠️ Nacos 3.x 和 XXL-JOB 3.x 不会自动建表，需手动执行 `db/tables_nacos.sql` 和 `db/tables_xxl_job.sql`。
 
 ---
 
