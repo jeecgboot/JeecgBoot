@@ -5,8 +5,8 @@ import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.demo.mock.MockController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -15,16 +15,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 /**
  * 单个controller测试
- * @date 2025/4/7 11:21
  */
 @WebMvcTest(value = MockController.class)
 public class MockControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private BaseCommonService baseCommonService;
-    @MockBean
+
+    @MockitoBean
     private JeecgBaseConfig jeecgBaseConfig;
 
     @Test
@@ -33,5 +34,4 @@ public class MockControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
-
 }
