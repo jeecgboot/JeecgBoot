@@ -12,7 +12,7 @@ spring:
     allow-circular-references: true
   config:
     import:
-      - optional:nacos:${spring.application.name}-@profile.name@.yaml
+      - optional:nacos:${spring.application.name}.yaml
   cloud:
     nacos:
       config:

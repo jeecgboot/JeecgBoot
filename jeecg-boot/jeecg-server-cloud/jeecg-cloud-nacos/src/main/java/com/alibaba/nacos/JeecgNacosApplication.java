@@ -1,50 +1,60 @@
 package com.alibaba.nacos;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import javax.servlet.http.HttpServletResponse;
+import com.alibaba.nacos.NacosServerBasicApplication;
+import com.alibaba.nacos.NacosServerWebApplication;
+import com.alibaba.nacos.console.NacosConsole;
+import com.alibaba.nacos.core.listener.startup.NacosStartUp;
+import com.alibaba.nacos.core.listener.startup.NacosStartUpManager;
+import com.alibaba.nacos.sys.env.Constants;
+import com.alibaba.nacos.sys.env.DeploymentType;
+import com.alibaba.nacos.sys.env.EnvUtil;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 
+import static org.springframework.boot.context.logging.LoggingApplicationListener.CONFIG_PROPERTY;
+import static org.springframework.core.io.ResourceLoader.CLASSPATH_URL_PREFIX;
 
 /**
- * Nacos 启动类
+ * Nacos 3.x 启动类（三阶段启动）
  *
- * @author zyf
+ * @author jeecg
  */
-@SpringBootApplication(scanBasePackages = "com.alibaba.nacos")
-@ServletComponentScan
-@EnableScheduling
 public class JeecgNacosApplication {
 
-    /** 是否单机模式启动 */
-    private static String standalone = "true";
-    /** 是否开启鉴权 */
-    private static String enabled = "false";
+	public static void main(String[] args) {
+		System.setProperty("nacos.standalone", "true");
+		System.setProperty(CONFIG_PROPERTY, CLASSPATH_URL_PREFIX + "logback-spring.xml");
 
-    public static void main(String[] args) {
-        System.setProperty("nacos.standalone", standalone);
-        System.setProperty("nacos.core.auth.enabled", enabled);
-//        //一旦Nacos初始化，用户名nacos将不能被修改，但你可以通过控制台或API来修改密码  https://nacos.io/en/blog/faq/nacos-user-question-history8420       
-//        System.setProperty("nacos.core.auth.default.username", "nacos");
-//        System.setProperty("nacos.core.auth.default.password", "nacos");
-        System.setProperty("server.tomcat.basedir","logs");
-        //自定义启动端口号
-        System.setProperty("server.port","8848");
-        SpringApplication.run(JeecgNacosApplication.class, args);
-    }
+		String type = System.getProperty(Constants.NACOS_DEPLOYMENT_TYPE, Constants.NACOS_DEPLOYMENT_TYPE_MERGED);
+		DeploymentType deploymentType = DeploymentType.getType(type);
+		EnvUtil.setDeploymentType(deploymentType);
 
-    /**
-     * 默认跳转首页
-     *
-     * @param model
-     * @return
-     */
-    @GetMapping("/")
-    public String index(Model model, HttpServletResponse response) {
-        // 视图重定向 - 跳转
-        return "/nacos";
-    }
+		// Start Core Context
+		NacosStartUpManager.start(NacosStartUp.CORE_START_UP_PHASE);
+		ConfigurableApplicationContext coreContext = new SpringApplicationBuilder(NacosServerBasicApplication.class)
+			.web(WebApplicationType.NONE)
+			.run(args);
+
+		// Start Server Web Context
+		NacosStartUpManager.start(NacosStartUp.WEB_START_UP_PHASE);
+		new SpringApplicationBuilder(NacosServerWebApplication.class)
+			.parent(coreContext)
+			.run(args);
+
+		// Start Console Context
+		NacosStartUpManager.start(NacosStartUp.CONSOLE_START_UP_PHASE);
+		ConfigurableApplicationContext consoleContext = new SpringApplicationBuilder(NacosConsole.class)
+			.parent(coreContext)
+			.run(args);
+
+		String consolePort = consoleContext.getEnvironment().getProperty("server.port", "18080");
+		String consolePath = consoleContext.getEnvironment().getProperty("server.servlet.context-path", "/nacos");
+		System.out.println(" ----------------------------------------------------------");
+		System.out.println("  Nacos 3.x 启动成功！");
+		System.out.println("  控制台地址：	http://localhost:" + consolePort + consolePath);
+		System.out.println("  服务器地址：	http://localhost:8848/nacos");
+		System.out.println("---------------------------------------------------------- ");
+	}
+
 }

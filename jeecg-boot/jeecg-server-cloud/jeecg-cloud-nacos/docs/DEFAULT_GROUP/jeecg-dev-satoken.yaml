@@ -1,3 +1,28 @@
+################ Sa-Token 配置 (文档: https://sa-token.cc) ################
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: X-Access-Token
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 2592000
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: false
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: false
+  # token 风格（使用jwt-simple保持与原JWT token格式一致）
+  token-style: jwt-simple
+  # 是否输出操作日志
+  is-log: false
+  # 是否从 cookie 中读取 token
+  is-read-cookie: false
+  # 是否从 head 中读取 token
+  is-read-header: true
+  # 是否从请求体（URL参数）里读取 token
+  is-read-body: true
+  # jwt秘钥（重要：请修改为你自己的秘钥，确保足够复杂）
+  jwt-secret-key: "dd05f1c54d63749eda95f9fa6d49v442a"
+  
 spring:
   datasource:
     druid:
@@ -22,14 +47,21 @@ spring:
         testOnReturn: false
         poolPreparedStatements: true
         maxPoolPreparedStatementPerConnectionSize: 20
-        filters: stat,wall,slf4j
-        connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+        filters: stat,slf4j
+        wall:
+          selectWhereAlwayTrueCheck: false
+        stat:
+          merge-sql: true
+          slow-sql-millis: 5000
       datasource:
         master:
           url: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?characterEncoding=UTF-8&useUnicode=true&useSSL=false&tinyInt1isBit=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
           password: root
           driver-class-name: com.mysql.cj.jdbc.Driver
+        # sharding-db:
+        #  driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+        #  url: jdbc:shardingsphere:nacos:sharding.yaml?serverAddr=${spring.cloud.nacos.config.server-addr}&namespace=${spring.cloud.nacos.config.namespace}&group=${spring.cloud.nacos.config.group}
   data:
     redis:
       database: 0
@@ -51,9 +83,16 @@ spring:
         max-concurrency: 1
         retry:
           enabled: true
+  flyway:
+    enabled: false
+    locations: classpath:flyway/sql/mysql
+    clean-disabled: true
 minidao:
   base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
 jeecg:
+  firewall:
+    dataSourceSafe: false
+    lowCodeMode: dev
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys
   uploadType: local
@@ -70,11 +109,7 @@ jeecg:
     accessKey: ??
     secretKey: ??
     bucketName: jeecgdev
-    staticDomain: ??
-  elasticsearch:
-    cluster-name: jeecg-ES
-    cluster-nodes: jeecg-boot-es:9200
-    check-enabled: false
+    staticDomain: ??  
   file-view-domain: 127.0.0.1:8012
   minio:
     minio_url: http://minio.jeecg.com
@@ -82,9 +117,10 @@ jeecg:
     minio_pass: ??
     bucketName: otatest
   jmreport:
-    mode: dev
-    is_verify_token: false
-    verify_methods: remove,delete,save,add,update
+    saasMode:
+    firewall:
+      dataSourceSafe: false
+      lowCodeMode: dev
   wps:
     domain: https://wwo.wps.cn/office/
     appid: ??
@@ -101,9 +137,19 @@ jeecg:
     password:
     type: STANDALONE
     enabled: true
-logging:
-  level:
-    org.jeecg.modules.system.mapper : info
+  ai-chat:
+    enabled: false
+    apiKey: "？？？？"
+    apiHost: "https://api.openai.com"
+    timeout: 60
+  ai-rag:
+    embed-store:
+      host: 127.0.0.1
+      port: 5432
+      database: postgres
+      user: postgres
+      password: postgres
+      table: embeddings
 cas:
   prefixUrl: http://localhost:8888/cas
 knife4j:

@@ -16,7 +16,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: metrics,httpexchanges,jeecghttptrace
     health:
       sensitive: true
   endpoint:
@@ -32,15 +32,15 @@ spring:
     username: jeecgos@163.com
     password: ??
     properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
+      mail.smtp.timeout: 10000
+      mail.smtp.connectiontimeout: 10000
+      mail.smtp.writetimeout: 10000
+      mail.smtp.auth: true
+      smtp.ssl.enable: true
   quartz:
     job-store-type: jdbc
-    initialize-schema: embedded
+    jdbc:
+      initialize-schema: embedded
     auto-startup: false
     startup-delay: 1s
     overwrite-existing-jobs: true
@@ -63,14 +63,10 @@ spring:
             threadPriority: 5
             threadsInheritContextClassLoaderOfInitializingThread: true
   jackson:
-    date-format:   yyyy-MM-dd HH:mm:ss
-    time-zone:   GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   aop:
     proxy-target-class: true
-  activiti:
-    check-process-definitions: false
-    async-executor-activate: false
-    job-executor-activate: false
   jpa:
     open-in-view: false
   freemarker:
@@ -88,9 +84,11 @@ spring:
   resource:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
-    exclude: com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
+    exclude:
+      - com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 mybatis-plus:
-  mapper-locations: classpath*:org/jeecg/modules/**/xml/*Mapper.xml
+  mapper-locations: classpath*:org/jeecg/**/xml/*Mapper.xml
   global-config:
     banner: false
     db-config:
@@ -98,3 +96,24 @@ mybatis-plus:
       table-underline: true
   configuration:
     call-setters-on-nulls: true
+logging:
+  level:
+    org.springframework.context.support.PostProcessorRegistrationDelegate: error
+    org.flywaydb: debug
+    org.jeecg.modules.system.mapper: info
+    org.jeecg.modules.demo.test.mapper: info
+liteflow:
+  print-banner: false
+  parse-mode: PARSE_ONE_ON_FIRST_EXEC
+  rule-source-ext-data-map:
+    applicationName: jeecg
+    #是否开启SQL日志
+    sqlLogEnabled: true
+    chainTableName: airag_flow
+    #编排规则表中应用名称存储字段名
+    chainApplicationNameField: application_name
+    #规则名称存储的字段名
+    chainNameField: id
+    #EL表达式的字段(只存EL)
+    elDataField: chain
+    chainCustomSql: select id, application_name, chain from airag_flow where status = 'enable' and chain is not null

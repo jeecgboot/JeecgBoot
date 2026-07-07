@@ -1,0 +1,37 @@
+databaseName: sharding-db
+
+dataSources:
+  db_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://jeecg-boot-mysql:3306/jeecg-boot?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    password: root
+    username: root
+
+rules:
+  - !SHARDING
+    tables:
+      sys_log:
+        actualDataNodes: db_0.sys_log$->{0..1}
+        databaseStrategy:
+          none:
+        tableStrategy:
+          standard:
+            shardingColumn: log_type
+            shardingAlgorithmName: user_inline
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worker-id: 123
+    shardingAlgorithms:
+      user_inline:
+        type: INLINE
+        props:
+          algorithm-expression: sys_log$->{log_type % 2}
+
+props:
+  sql-show: true

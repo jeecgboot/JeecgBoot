@@ -3,7 +3,6 @@ jeecg:
     config:
       #type:database nacos yml
       data-type: database
-      group: DEFAULT_GROUP
       data-id: jeecg-gateway-router
 spring:
   data:
@@ -12,3 +11,5 @@ spring:
       host: jeecg-boot-redis
       port: 6379
       password:
+knife4j:
+  production: false
