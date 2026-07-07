@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-JeecgBoot 3.9.3 — a Java low-code development platform built on **Spring Boot 3.5.5**, **Java 17** (also supports 21, 24). It runs as a monolithic app by default, with an optional Spring Cloud microservices mode. Uses `jakarta` namespace (not `javax`) throughout.
+JeecgBoot 3.9.3 — a Java low-code development platform built on **Spring Boot 4.1.0**, **Java 17** (also supports 21, 24). It runs as a monolithic app by default, with an optional Spring Cloud microservices mode. Uses `jakarta` namespace (not `javax`) throughout.
 
 ## Build & Run Commands
 
@@ -71,16 +71,16 @@ Optional microservices modules (activated via `-P SpringCloud`):
 
 | Layer | Technology |
 |-------|-----------|
-| ORM | MyBatis-Plus 3.5.12 (`BaseMapper<T>`, `ServiceImpl<M,T>`) |
-| Auth | Apache Shiro 2.0.5 + JWT 4.5.0, Redis-backed sessions |
-| DB Pool | Druid 1.2.24 with dynamic datasource support |
+| ORM | MyBatis-Plus 3.5.16 (`BaseMapper<T>`, `ServiceImpl<M,T>`) |
+| Auth | Apache Shiro 3.0.0 + JWT 4.5.0, Redis-backed sessions |
+| DB Pool | Druid 1.2.28 with dynamic datasource support |
 | DB Migration | Flyway (scripts in `jeecg-system-start/src/main/resources/flyway/sql/mysql/`) |
 | JSON | FastJSON 2 |
 | Excel | AutoPoi (`autopoi-spring-boot-3-starter`) |
 | API Docs | Knife4j 4.5.0 (OpenAPI v3, `@Schema` annotations) |
 | Scheduled Jobs | Quartz (JDBC store, clustered) |
 | File Storage | MinIO / Aliyun OSS / Qiniu (controlled by `jeecg.uploadType` config) |
-| Microservices | Spring Cloud 2025.0.0 + Alibaba (Nacos, Gateway, Sentinel) |
+| Microservices | Spring Cloud 2025.1.0.0 + Alibaba (Nacos, Gateway, Sentinel) |
 
 ## Code Conventions & Patterns
 

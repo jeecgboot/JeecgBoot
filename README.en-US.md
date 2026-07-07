@@ -7,15 +7,15 @@
 JEECG BOOT AI Low Code Platform
 ===============
 
-🚀 **Low-Code enters the v2.0 era — generate an entire system with a single natural-language sentence**
+🚀 **Low-Code enters the v2.0 era, AI Skills Natural Language Programming is now released** — generate an entire system with a single natural-language sentence, generate complete code, draw BPMN flows, design forms, create reports and dashboards with one sentence, covering all JeecgBoot low-code scenarios.
 
-Current version: 3.9.2 (2026-04-30)
+Current version: 3.9.3 (2026-07-07)
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)
 [![](https://img.shields.io/badge/Author-guojusoft-orange.svg)](http://www.jeecg.com)
 [![](https://img.shields.io/badge/blog-Tech%20Blog-orange.svg)](https://www.toutiao.com/c/user/token/CiZtC9Gn_yl2qDcTF9Kqhh9LV7tW1cJsdRn2rfFUU5lZy4RJaD4hdBpJCjwAAAAAAAAAAAAAUFvsvy4j57fg5tqwVmxukKxGEhbMl7pE14lY9_YSDq-A26V7xrG3hYuq_Z9y6F3W01oQkIKQDhjDxYPqBCIBA2iiHh0=)
-[![](https://img.shields.io/badge/version-3.9.2-brightgreen.svg)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/version-3.9.3-brightgreen.svg)](https://github.com/jeecgboot/JeecgBoot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
 [![Skills](https://img.shields.io/badge/AI%20Skills-Natural%20Language%20Coding-ff4d4f.svg)](https://jeecg.com/skills)
@@ -35,7 +35,7 @@ Project introduction
 
 <h3 align="center">Java AI Low Code Platform</h3>
 
-JeecgBoot is a `AI low code platform` based on code `generators`! Front and back end separation architecture SpringBoot2.x, SpringCloud, Ant Design&Vue, Mybatis plus, Shiro, JWT, support for microservices. The powerful code generator makes the front and back end of the code generation, low code development! JeecgBoot leads a new low-code development paradigm (OnlineCoding-> Code Generator -> Manual MERGE) that helps resolve 70% of the duplication in Java projects and makes development more business-focused. Not only can quickly improve efficiency, save research and development costs, but also do not lose flexibility!
+JeecgBoot is a `AI low code platform` based on code `generators`! Front and back end separation architecture SpringBoot4, SpringCloud, Ant Design&Vue, Mybatis plus, Shiro, JWT, support for microservices. The powerful code generator makes the front and back end of the code generation, low code development! JeecgBoot leads a new low-code development paradigm (OnlineCoding-> Code Generator -> Manual MERGE) that helps resolve 70% of the duplication in Java projects and makes development more business-focused. Not only can quickly improve efficiency, save research and development costs, but also do not lose flexibility!
 
 JeecgBoot provides a series of low code modules to make Online development truly zero code: Online form development, online reports, report configuration capabilities, online chart design, large screen design, mobile configuration capabilities, form designer, online design flow, process automation configuration, plug-in capabilities (pluggable) and more!
 
@@ -197,7 +197,7 @@ Technical Architecture:
 
 #### Development Environment
 
-- Language: Java Default Jdk17(support jdk8、jdk21)
+- Language: Java Default Jdk17(support jdk21、jdk24)
 
 - IDE(JAVA) : IDEA (lombok plug-in must be installed)
 
@@ -212,19 +212,19 @@ Technical Architecture:
 
 #### backend
 
-- Basic framework: Spring Boot 2.7.18
+- Basic framework: Spring Boot 4.1.0
 
-- Microservice framework: Spring Cloud Alibaba 2021.0.6.2
+- Microservice framework: Spring Cloud Alibaba 2025.1.0.0
 
-- Persistence layer framework: MybatisPlus 3.5.3.2
+- Persistence layer framework: MybatisPlus 3.5.16
 
-- Report tool: JimuReport 1.9.5
+- Report tool: JimuReport 2.1.5
 
-- Security framework: Apache Shiro 1.13.0, Jwt 4.5.0
+- Security framework: Apache Shiro 3.0.0, Jwt 4.5.0
 
 - Microservice technology stack: Spring Cloud Alibaba, Nacos, Gateway, Sentinel, Skywalking
 
-- Database connection pool: Alibaba Druid 1.1.24
+- Database connection pool: Alibaba Druid 1.2.28
 
 - Log printing: logback
 
@@ -233,7 +233,7 @@ Technical Architecture:
 
 #### The front end
 
-- TechnologyStack：`Vue3.0+TypeScript+Vite+AntDesignVue+pinia+echarts`
+- TechnologyStack：`Vue3.0+TypeScript+Vite6+AntDesignVue4+pinia+echarts`
 
 #### Front-end environment requirements
 
