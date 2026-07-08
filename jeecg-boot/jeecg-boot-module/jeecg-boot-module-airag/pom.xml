@@ -74,8 +74,8 @@
         <!-- aiflow依赖 -->
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
-            <artifactId>jeecg-aiflow</artifactId>
-            <version>3.9.2-beta</version>
+            <artifactId>jeecg-aiflow-boot4</artifactId>
+            <version>3.9.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-io</groupId>
