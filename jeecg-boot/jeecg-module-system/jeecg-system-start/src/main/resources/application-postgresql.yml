@@ -2,10 +2,7 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
-  error:
-    include-exception: true
-    include-stacktrace: ALWAYS
-    include-message: ALWAYS
+    basedir: ..
   servlet:
     context-path: /jeecg-boot
   compression:
@@ -109,7 +106,6 @@ spring:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
     exclude:
-      - com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
       - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:

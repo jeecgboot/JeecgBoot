@@ -2,6 +2,7 @@ server:
   port: 8080
   tomcat:
     max-swallow-size: -1
+    basedir: ..
   servlet:
     context-path: /jeecg-boot
   compression:
@@ -19,11 +20,6 @@ spring:
   #  main:
   #    # 启动加速 (建议开发环境，开启后flyway自动升级失效)
   #    lazy-initialization: true
-  web:
-    error:
-      include-exception: true
-      include-stacktrace: ALWAYS
-      include-message: ALWAYS
   flyway:
     # 是否启用flyway
     enabled: false
@@ -110,7 +106,6 @@ spring:
     static-locations: classpath:/static/,classpath:/public/
   autoconfigure:
     exclude:
-      - com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure
       - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
   datasource:
     druid:
