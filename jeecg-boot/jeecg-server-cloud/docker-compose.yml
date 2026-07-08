@@ -63,6 +63,7 @@ services:
       context: ./jeecg-cloud-nacos
     ports:
       - 8848:8848
+      - 18080:18080
     container_name: jeecg-boot-nacos
     hostname: jeecg-boot-nacos
     networks:

@@ -18,7 +18,7 @@ RUN mkdir -p /jeecg-cloud-nacos
 
 WORKDIR /jeecg-cloud-nacos
 
-EXPOSE 8848
+EXPOSE 8848 18080
 
 ADD ./target/jeecg-cloud-nacos-3.9.3.jar ./
 
