@@ -56,7 +56,7 @@
 
 		<!-- 积木报表-->
 		<jimureport-spring-boot-starter.version>2.5.0</jimureport-spring-boot-starter.version>
-		<jimubi-spring-boot-starter.version>2.5.0.1</jimubi-spring-boot-starter.version>
+		<jimubi-spring-boot-starter.version>2.5.0</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.22</minidao.version>
 		<autopoi-web.version>2.0.4</autopoi-web.version>
 		
@@ -460,7 +460,7 @@
 			<!-- 积木报表-->
 			<dependency>
 				<groupId>org.jeecgframework.jimureport</groupId>
-				<artifactId>jimureport-spring-boot3-starter</artifactId>
+				<artifactId>jimureport-spring-boot4-starter</artifactId>
 				<version>${jimureport-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>
@@ -550,7 +550,7 @@
             <!-- 积木BI大屏和仪表盘 -->
             <dependency>
                 <groupId>org.jeecgframework.jimureport</groupId>
-                <artifactId>jimubi-spring-boot3-starter</artifactId>
+                <artifactId>jimubi-spring-boot4-starter</artifactId>
                 <version>${jimubi-spring-boot-starter.version}</version>
 				<exclusions>
 					<exclusion>

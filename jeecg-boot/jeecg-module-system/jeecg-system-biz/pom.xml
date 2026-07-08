@@ -33,7 +33,7 @@
 		<!-- 积木报表 -->
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>
-			<artifactId>jimureport-spring-boot3-starter</artifactId>
+			<artifactId>jimureport-spring-boot4-starter</artifactId>
 		</dependency>
 		<!-- 积木报表 csv excel ES JSON mongodbSQL redis支持包
 		<dependency>
@@ -48,7 +48,7 @@
         <!-- 积木BI -->
         <dependency>
             <groupId>org.jeecgframework.jimureport</groupId>
-            <artifactId>jimubi-spring-boot3-starter</artifactId>
+            <artifactId>jimubi-spring-boot4-starter</artifactId>
         </dependency>
 		<!-- AI大模型管理 -->
 		<dependency>
