@@ -1,7 +1,7 @@
 package org.jeecg.common.util;
 
 import io.minio.*;
-import io.minio.http.Method;
+import io.minio.Http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.util.filter.SsrfFileTypeFilter;
@@ -95,7 +95,7 @@ public class MinioUtil {
             PutObjectArgs objectArgs = PutObjectArgs.builder().object(objectName)
                     .bucket(newBucket)
                     .contentType("application/octet-stream")
-                    .stream(stream,stream.available(),-1).build();
+                    .stream(stream, (long) stream.available(), -1L).build();
             minioClient.putObject(objectArgs);
             stream.close();
             fileUrl = minioUrl+newBucket+"/"+objectName;
@@ -217,7 +217,7 @@ public class MinioUtil {
         PutObjectArgs objectArgs = PutObjectArgs.builder().object(relativePath)
                 .bucket(bucketName)
                 .contentType("application/octet-stream")
-                .stream(stream,stream.available(),-1).build();
+                .stream(stream, (long) stream.available(), -1L).build();
         minioClient.putObject(objectArgs);
         stream.close();
         return minioUrl+bucketName+"/"+relativePath;
