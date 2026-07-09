@@ -71,9 +71,9 @@ export const formSchema: FormSchema[] = [
     component: 'InputPassword',
     ifShow: ({ values }) => {
       if(values.provider==='DEEPSEEK' || values.provider==="OLLAMA" || values.provider==="OPENAI"
-        || values.provider==="ZHIPU" || values.provider==="QWEN" || values.provider==="ANTHROPIC" 
+        || values.provider==="ZHIPU" || values.provider==="QWEN" || values.provider==="ANTHROPIC"
         || values.provider==="XINFERENCE" || values.provider==="VLLM" ||  values.provider === 'LMSTDIO'
-        || values.provider === "GOOGLE"){
+        || values.provider === "GOOGLE" || values.provider === "MINIMAX"){
         return false;
       }
       return true;

@@ -201,6 +201,16 @@
       "IMAGEDefaultValue": "gemini-2.5-flash-image"
     },
     {
+      "title": "MiniMax",
+      "value": "MINIMAX",
+      "LLM": [
+        {"label": "MiniMax-M3", "value": "MiniMax-M3", "descr": "MiniMax-M3 是 MiniMax 提供的大语言模型，支持 1M 上下文窗口。输入价格约 $0.6/百万 tokens，输出价格约 $2.4/百万 tokens，缓存读取约 $0.12/百万 tokens。", "type": "text"}
+      ],
+      "type": ["LLM"],
+      "baseUrl": "https://api.minimax.io/v1",
+      "LLMDefaultValue": "MiniMax-M3"
+    },
+    {
       "title": "vLLM",
       "value": "VLLM",
       "LLM": [],
