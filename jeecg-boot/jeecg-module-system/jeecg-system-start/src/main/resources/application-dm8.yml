@@ -160,7 +160,7 @@ jeecg:
   # AI集成
   ai-chat:
     enabled: true
-    model: deepseek-chat
+    model: deepseek-v4-pro
     apiKey: ??
     apiHost: https://api.deepseek.com/v1
     timeout: 60
