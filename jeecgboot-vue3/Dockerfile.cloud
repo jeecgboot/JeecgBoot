@@ -4,8 +4,12 @@ VOLUME /tmp
 ENV LANG en_US.UTF-8
 RUN echo "server {  \
                       listen       80; \
+                      #使用docker内嵌DNS运行时解析，避免gateway容器重启换IP后nginx缓存旧IP导致502 \
+                      resolver 127.0.0.11 valid=10s ipv6=off; \
                       location   /jeecgboot/ { \
-                      proxy_pass              http://jeecg-boot-gateway:9999/; \
+                      set \$jeecg_gateway jeecg-boot-gateway; \
+                      rewrite ^/jeecgboot/?(.*)\$ /\$1 break; \
+                      proxy_pass              http://\$jeecg_gateway:9999; \
                       proxy_redirect          off; \
                       proxy_set_header        Host jeecg-boot-system; \
                       proxy_set_header        X-Real-IP \$remote_addr; \
