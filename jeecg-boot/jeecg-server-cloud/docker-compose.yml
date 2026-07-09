@@ -106,6 +106,19 @@ services:
       - jeecg-boot-system
     container_name: jeecg-boot-gateway
     hostname: jeecg-boot-gateway
+    # 首次启动关键：主动轮询nacos，直到 jeecg-system 注册为健康实例再启动网关，
+    # 避免网关先于system注册而拿到空路由（swagger空、前端调不到后台，需手动重启网关）
+    # 注意：Nacos 3.x 已移除 v1/v2 open-api，实例查询需使用 v3 admin 接口
+    command:
+      - sh
+      - -c
+      - |
+        echo 'waiting for jeecg-system to register in nacos...';
+        until curl -s 'http://jeecg-boot-nacos:8848/nacos/v3/admin/ns/instance/list?serviceName=jeecg-system&groupName=DEFAULT_GROUP' | grep -q '"healthy":true'; do
+          sleep 5;
+        done;
+        echo 'jeecg-system is registered, starting gateway.';
+        exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-gateway-3.9.3.jar
     networks:
       - jeecg-boot
 
