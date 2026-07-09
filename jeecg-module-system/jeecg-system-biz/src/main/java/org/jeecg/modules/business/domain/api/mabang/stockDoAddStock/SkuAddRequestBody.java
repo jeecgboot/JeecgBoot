@@ -23,6 +23,7 @@ public class SkuAddRequestBody implements RequestBody {
     private BigDecimal declareValue;
     private String declareName;
     private String declareEname;
+    private String declareCode;
     private String warehouse;
     private String remark;
     private Label[] labelData;
@@ -54,6 +55,7 @@ public class SkuAddRequestBody implements RequestBody {
         putNonNull(json, "declareValue", declareValue);
         putNonNull(json, "declareName", declareName);
         putNonNull(json, "declareEname", declareEname);
+        putNonNull(json, "declareCode", declareCode);
         if(labelData != null) {
             JSONArray labelDataArray = new JSONArray();
             for(Label label : labelData) {
@@ -98,6 +100,7 @@ public class SkuAddRequestBody implements RequestBody {
         this.declareValue = data.getDeclareValue();
         this.declareName = data.getDeclareNameZh();
         this.declareEname = data.getDeclareNameEn();
+        this.declareCode = data.getHsCode();
         this.warehouse = data.getWarehouseName();
         this.remark = data.getSaleRemark();
         this.labelData = data.getLabelData();

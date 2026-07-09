@@ -1,5 +1,6 @@
 package org.jeecg.modules.business.vo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -207,6 +208,12 @@ public class SkuOrderPage {
     @Excel(name = "申报英文名称", width = 15)
     @ApiModelProperty(value = "申报英文名称")
     private String declareEname;
+    /**
+     * 海关编码
+     */
+    @Excel(name = "海关编码", width = 15)
+    @ApiModelProperty(value = "海关申报编码")
+    private String declareCode;
     /**
      * Sales last week
      */

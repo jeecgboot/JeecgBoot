@@ -584,6 +584,7 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
         skuData.setNameEN(skuOrderPage.getEnName());
         skuData.setDeclareNameZh(skuOrderPage.getDeclareName());
         skuData.setDeclareNameEn(skuOrderPage.getDeclareEname());
+        skuData.setHsCode(skuOrderPage.getDeclareCode());
         skuData.setSalePrice(skuOrderPage.getSkuPrice());
         skuData.setDeclareValue(skuOrderPage.getDeclaredValue());
         skuData.setWarehouseName(DEFAULT_WAREHOUSE_NAME);
