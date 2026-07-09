@@ -33,7 +33,8 @@
     <properties>
         <kotlin.version>2.2.0</kotlin.version>
         <liteflow.version>2.15.0</liteflow.version>
-        <apache-tika.version>3.2.3</apache-tika.version>
+        <apache-tika.version>3.3.1</apache-tika.version>
+        <langchain4j-community-bom.version>1.17.2-beta27</langchain4j-community-bom.version>
     </properties>
 
     <dependencyManagement>
@@ -41,14 +42,14 @@
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-bom</artifactId>
-                <version>1.12.2</version>
+                <version>1.17.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>dev.langchain4j</groupId>
                 <artifactId>langchain4j-community-bom</artifactId>
-                <version>1.12.1-beta21</version>
+                <version>1.17.2-beta27</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -187,6 +188,10 @@
             <artifactId>langchain4j-community-dashscope</artifactId>
             <exclusions>
                 <exclusion>
+                    <groupId>com.google.errorprone</groupId>
+                    <artifactId>error_prone_annotations</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-simple</artifactId>
                 </exclusion>
@@ -202,9 +207,8 @@
         </dependency>
         <!-- langChain4j vextor support -->
         <dependency>
-            <groupId>org.jeecgframework</groupId>
+            <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-pgvector</artifactId>
-            <version>1.3.0-beta9</version>
         </dependency>
         <!-- langChain4j Document Parser 适用于excel、ppt、word -->
         <dependency>
@@ -226,6 +230,12 @@
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parser-html-module</artifactId>
             <version>${apache-tika.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsoup</artifactId>
+                    <groupId>org.jsoup</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -246,19 +256,25 @@
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-experimental-skills-shell</artifactId>
-            <version>1.12.2-beta22</version>
+            <version>${langchain4j-community-bom.version}</version>
         </dependency>
         <!-- word模版引擎 -->
         <dependency>
             <groupId>com.deepoove</groupId>
             <artifactId>poi-tl</artifactId>
             <version>1.12.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>poi-ooxml</artifactId>
+                    <groupId>org.apache.poi</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- jsoup HTML parser library @ https://jsoup.org/ -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.22.1</version>
+            <version>1.22.2</version>
         </dependency>
     </dependencies>
 
