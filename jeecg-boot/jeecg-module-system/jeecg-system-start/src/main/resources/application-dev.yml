@@ -187,7 +187,7 @@ jeecg:
   # AI集成
   ai-chat:
     enabled: true
-    model: deepseek-chat
+    model: deepseek-v4-pro
     apiKey: ??
     apiHost: https://api.deepseek.com/v1
     timeout: 60
@@ -239,12 +239,12 @@ jeecg:
       timeout: 60
   # AIRag向量库
   ai-rag:
-    # AI流程敏感节点(stdio=命令行节点, sql=SQL节点)
-    allow-sensitive-nodes: sql,stdio
+    # AI流程敏感节点(stdio=命令行节点, sql=SQL节点, code=代码节点/脚本执行,高危存在RCE风险默认禁用)
+    allow-sensitive-nodes: sql,stdio,code
     embed-store:
       host: 127.0.0.1
       port: 5432
-      database: postgres
+      database: vector_db
       user: postgres
       password: postgres
       table: embeddings
