@@ -43,7 +43,7 @@
         <fastjson.version>2.0.58</fastjson.version>
         <aviator.version>5.2.6</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
-		<commonmark.version>0.17.0</commonmark.version>
+		<commonmark.version>0.28.0</commonmark.version>
 		<knife4j-spring-boot-starter.version>4.5.0</knife4j-spring-boot-starter.version>
 		<!-- 数据库驱动 -->
 		<postgresql.version>42.2.25</postgresql.version>
@@ -59,14 +59,14 @@
 		<jimureport-spring-boot-starter.version>2.5.0</jimureport-spring-boot-starter.version>
 		<jimubi-spring-boot-starter.version>2.5.0</jimubi-spring-boot-starter.version>
 		<minidao.version>1.10.22</minidao.version>
-		<autopoi-web.version>2.0.4</autopoi-web.version>
+		<autopoi-web.version>2.0.5</autopoi-web.version>
 		
 		<!-- 持久层 -->
 		<mybatis-plus.version>3.5.16</mybatis-plus.version>
 		<dynamic-datasource-spring-boot-starter.version>4.3.1</dynamic-datasource-spring-boot-starter.version>
 		<druid.version>1.2.28</druid.version>
 
-		<commons-io.version>2.20.0</commons-io.version>
+		<commons-io.version>2.21.0</commons-io.version>
 		<commons-fileupload.version>1.5</commons-fileupload.version>
 		<commons.version>2.6</commons.version>
 		<aliyun-java-sdk-dysmsapi.version>2.1.0</aliyun-java-sdk-dysmsapi.version>
