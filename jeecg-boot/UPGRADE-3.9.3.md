@@ -189,6 +189,45 @@ Nacos 3.x 多个依赖引入不同版本 Hessian（`com.caucho.hessian`、`com.a
 | Shiro | < 2.0 | **3.0.0** | 安全框架 |
 | shiro-redis | — | **4.1.0** | Shiro Redis 支持（切换到 `io.github.weir2010`） |
 | Sentinel Dashboard | 1.8.3 | **1.8.10** | 流量控制（支持 JDK17） |
+| MinIO | 8.5.7 | **9.0.3** | 对象存储客户端 |
+| commonmark | — | **0.28.0** | Markdown 解析库 |
+| AutoPoi | — | **2.0.5** | Excel/Word 工具类（Spring Boot 3/4 专版） |
+| commons-io | — | **2.21.0** | Apache Commons IO 工具库 |
+| LangChain4j | 1.12.2 | **1.17.2** | AI/LLM 集成框架（正式稳定版） |
+| LangChain4j Community BOM | 1.12.2-beta9 | **1.17.2-beta27** | 社区模型（通义/文心/智谱等） |
+| Apache Tika | — | **3.3.1** | 文档内容解析器（PDF/HTML/Office）|
+
+### 4.2 AI RAG 模块：LangChain4j 1.12.2 → 1.17.2
+
+**langchain4j-pgvector 切回官方版本**
+
+1.17.2 官方正式支持 pgvector 向量维度超过 1000（最高 2000），无需再依赖自定义 fork 版本。直接通过 `langchain4j-bom` 管理版本即可：
+
+```xml
+<!-- jeecg-boot-module-airag/pom.xml -->
+<dependency>
+    <groupId>dev.langchain4j</groupId>
+    <artifactId>langchain4j-bom</artifactId>
+    <version>1.17.2</version>
+    <type>pom</type>
+    <scope>import</scope>
+</dependency>
+
+<!-- pgvector 依赖直接从 BOM 继承官方 1.17.2 版本 -->
+<dependency>
+    <groupId>dev.langchain4j</groupId>
+    <artifactId>langchain4j-pgvector</artifactId>
+</dependency>
+```
+
+官方 pgvector 源码参考：https://github.com/langchain4j/langchain4j/tree/main/langchain4j-pgvector
+
+**主要升级亮点（1.12.2 → 1.17.2）**
+
+- `langchain4j-pgvector` 正式版（不再是 beta），支持 HNSW 索引（`IndexType.HNSW`），向量检索精度和性能优于 IVFFlat
+- 新增 `schemaName()` 支持自定义 PostgreSQL schema
+- 修复向量维度超过 1000（最高 2000）的限制问题
+- `EmbeddingStore` API 趋于稳定，`search(EmbeddingSearchRequest)` 完整支持 Filter 过滤
 
 ### 4.1 新增 jeecg-boot-starter-sentinel（按需引入）
 
@@ -265,6 +304,20 @@ jeecg-boot-starter-sentinel/
 4. **Spring Boot 4**：注意 `jakarta` 命名空间（无变化，3.x 已采用）；Jackson 3 替代 Jackson 2
 5. **线上部署**：微服务模块的 Dockerfile 中 jar 包名已更新为 `3.9.3`
 6. **IDE 编码**：项目使用 Tab 缩进，properties/YAML 文件使用 UTF-8 编码
+7. **jeecg-boot-starter 3.9.4 未上传至 Maven Central**：`jeecg-boot-starter` 3.9.4 版本**未上传至 Maven Central 官方仓库**，需在 `pom.xml` 中配置 jeecg 私有仓库方可下载：
+
+```xml
+<repositories>
+    <repository>
+        <id>jeecg</id>
+        <name>jeecg Repository</name>
+        <url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+</repositories>
+```
 
 ---
 
@@ -284,4 +337,11 @@ MyBatis-Starter:  3.0.3  → 4.0.1
 Druid:            —      → 1.2.28
 JSqlParser:       —      → 5.0
 Sentinel:         1.8.3  → 1.8.10
+MinIO:            8.5.7  → 9.0.3
+LangChain4j:      1.12.2 → 1.17.2
+LC4j Community:   1.12.2-beta9 → 1.17.2-beta27
+Apache Tika:      —      → 3.3.1
+commonmark:       —      → 0.28.0
+AutoPoi:          —      → 2.0.5
+commons-io:       —      → 2.21.0
 ```
