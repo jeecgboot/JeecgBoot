@@ -19,12 +19,10 @@
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-boot-starter-cloud</artifactId>
-            <version>${jeecgboot.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-boot-starter-seata</artifactId>
-            <version>${jeecgboot.version}</version>
         </dependency>
     </dependencies>
 </project>

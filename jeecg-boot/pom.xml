@@ -29,6 +29,7 @@
 
 	<properties>
 		<jeecgboot.version>3.9.3</jeecgboot.version>
+		<jeecg-starter.version>3.9.4</jeecg-starter.version>
 		<!-- JDK版本支持17、21、24、25 -->
 		<java.version>17</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -202,7 +203,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-common</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>${jeecg-starter.version}</version>
 			</dependency>
 			<!-- jeecg core -->
 			<dependency>
@@ -227,26 +228,26 @@
             <dependency>
                 <groupId>org.jeecgframework.boot3</groupId>
                 <artifactId>jeecg-boot-starter-cloud</artifactId>
-                <version>${jeecgboot.version}</version>
+                <version>${jeecg-starter.version}</version>
             </dependency>
 			<!--xxl-job定时任务-->
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-job</artifactId>
-				<version>3.9.3</version>
+				<version>${jeecg-starter.version}</version>
 			</dependency>
 	
 			<!--redis分布式锁-->
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-lock</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>${jeecg-starter.version}</version>
 			</dependency>
 			<!--rabbitmq消息队列-->
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-rabbitmq</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>${jeecg-starter.version}</version>
 				<exclusions>
 					<exclusion>
 						<groupId>joda-time</groupId>
@@ -258,24 +259,30 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-sentinel</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>${jeecg-starter.version}</version>
 			</dependency>
 			<!--rocketmq-->
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-rocketmq</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>${jeecg-starter.version}</version>
+			</dependency>
+			<!-- seata分布式事务 -->
+			<dependency>
+				<groupId>org.jeecgframework.boot3</groupId>
+				<artifactId>jeecg-boot-starter-seata</artifactId>
+				<version>${jeecg-starter.version}</version>
 			</dependency>
 			<!--分库分表shardingsphere-->
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere</artifactId>
-				<version>3.9.3</version>
+				<version>${jeecg-starter.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-shardingsphere-nacos</artifactId>
-				<version>3.9.3</version>
+				<version>${jeecg-starter.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -298,7 +305,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-mongon</artifactId>
-				<version>${jeecgboot.version}</version>
+				<version>${jeecg-starter.version}</version>
 			</dependency>
 			<!--人大金仓驱动 版本号V008R006C005B0013 -->
 			<dependency>
@@ -563,7 +570,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-ai</artifactId>
-                <version>3.9.3</version>
+                <version>${jeecg-starter.version}</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
 			<!--mysql5.6，需要把版本号改成5.2.1-->
