@@ -68,7 +68,7 @@
     "showdown": "^2.1.0",
     "sortablejs": "^1.15.6",
     "swagger-ui-dist": "^5.29.3",
-    "tinymce": "6.6.2",
+    "tinymce": "7.9.3",
     "vditor": "^3.11.2",
     "vue": "^3.5.22",
     "vue-cropper": "^0.6.5",
