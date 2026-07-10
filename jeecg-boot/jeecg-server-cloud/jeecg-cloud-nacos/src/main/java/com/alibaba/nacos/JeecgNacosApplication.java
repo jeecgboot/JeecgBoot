@@ -1,7 +1,5 @@
 package com.alibaba.nacos;
 
-import com.alibaba.nacos.NacosServerBasicApplication;
-import com.alibaba.nacos.NacosServerWebApplication;
 import com.alibaba.nacos.console.NacosConsole;
 import com.alibaba.nacos.core.listener.startup.NacosStartUp;
 import com.alibaba.nacos.core.listener.startup.NacosStartUpManager;
@@ -36,15 +34,16 @@ public class JeecgNacosApplication {
 			.web(WebApplicationType.NONE)
 			.run(args);
 
-		// Start Server Web Context
-		NacosStartUpManager.start(NacosStartUp.WEB_START_UP_PHASE);
-		new SpringApplicationBuilder(NacosServerWebApplication.class)
+		// Start Console Context 先启动：让 IDEA Spring Boot Services 面板识别到的端口是 18080（管理界面），
+		// 而不是 NacosServerWebApplication 的 8848（API 端口），与用户实际访问的管理界面地址保持一致
+		NacosStartUpManager.start(NacosStartUp.CONSOLE_START_UP_PHASE);
+		ConfigurableApplicationContext consoleContext = new SpringApplicationBuilder(NacosConsole.class)
 			.parent(coreContext)
 			.run(args);
 
-		// Start Console Context
-		NacosStartUpManager.start(NacosStartUp.CONSOLE_START_UP_PHASE);
-		ConfigurableApplicationContext consoleContext = new SpringApplicationBuilder(NacosConsole.class)
+		// Start Server Web Context 后启动：保持 NacosServerWebApplication 监听 8848 不变（接口不变）
+		NacosStartUpManager.start(NacosStartUp.WEB_START_UP_PHASE);
+		new SpringApplicationBuilder(NacosServerWebApplication.class)
 			.parent(coreContext)
 			.run(args);
 
