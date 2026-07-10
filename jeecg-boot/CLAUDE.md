@@ -65,7 +65,7 @@ jeecg-boot-parent (root pom)
 ```
 
 Optional microservices modules (activated via `-P SpringCloud`):
-- `jeecg-server-cloud/` — Gateway (port 9999), Nacos (8848), cloud service starters, monitoring (9111), XXL-Job (9080), Sentinel (9000)
+- `jeecg-server-cloud/` — Gateway (port 9999), Nacos (8848/18080), cloud service starters, monitoring (9111), XXL-Job (9080), Sentinel (9000)
 
 ## Key Technology Stack
 
