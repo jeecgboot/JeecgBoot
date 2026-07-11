@@ -131,11 +131,18 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
           chunkFileNames: 'js/[name]-[hash].js', // 引入文件名的名称
           entryFileNames: 'js/[name]-[hash].js', // 包的入口文件名称
           // manualChunks配置 (依赖包从大到小排列)
-          manualChunks: {
-            // vue vue-router合并打包
-            'vue-vendor': ['vue', 'vue-router'],
-            'emoji-mart-vue-fast': ['emoji-mart-vue-fast'],
+          // update-begin--author:copilot---date:20260711---for:【vite8升级】rolldown不再支持对象形式的manualChunks，改为函数形式
+          manualChunks(id: string) {
+            const normalizedId = id.replace(/\\/g, '/');
+            if (normalizedId.includes('/node_modules/vue/') || normalizedId.includes('/node_modules/vue-router/')) {
+              // vue vue-router合并打包
+              return 'vue-vendor';
+            }
+            if (normalizedId.includes('/node_modules/emoji-mart-vue-fast/')) {
+              return 'emoji-mart-vue-fast';
+            }
           },
+          // update-end--author:copilot---date:20260711---for:【vite8升级】rolldown不再支持对象形式的manualChunks，改为函数形式
         },
       },
       // 关闭brotliSize显示可以稍微减少打包时间

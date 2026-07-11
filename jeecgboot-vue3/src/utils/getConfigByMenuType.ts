@@ -1,5 +1,5 @@
-import { MenuTypeEnum, MenuModeEnum } from '/@/enums/menuEnum';
-import { APP_PRESET_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST, SIDE_BAR_BG_COLOR_LIST } from '/@/settings/designSetting';
+import { MenuTypeEnum, MenuModeEnum } from '../enums/menuEnum';
+import { APP_PRESET_COLOR_LIST, HEADER_PRESET_BG_COLOR_LIST, SIDE_BAR_BG_COLOR_LIST } from '../settings/designSetting';
 
 /**
  * 根据菜单类型和模式获取对应的主题色

@@ -631,7 +631,7 @@
     }
 
     /*VUEN-1087 【移动端】高级查询显示不全 */
-    @media only screen and(max-width: 1050px) {
+    @media only screen and (max-width: 1050px) {
         :deep(.jee-super-query-form){
             .ant-space{
                 flex-direction:column;

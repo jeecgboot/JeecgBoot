@@ -1,6 +1,6 @@
-import type { ProjectConfig } from '/#/config';
-import { MenuTypeEnum, MenuModeEnum, TriggerEnum, MixSidebarTriggerEnum } from '/@/enums/menuEnum';
-import { CacheTypeEnum } from '/@/enums/cacheEnum';
+import type { ProjectConfig } from '../../types/config';
+import { MenuTypeEnum, MenuModeEnum, TriggerEnum, MixSidebarTriggerEnum } from '../enums/menuEnum';
+import { CacheTypeEnum } from '../enums/cacheEnum';
 import {
   ContentEnum,
   PermissionModeEnum,
@@ -9,8 +9,8 @@ import {
   SettingButtonPositionEnum,
   SessionTimeoutProcessingEnum,
   TabsThemeEnum,
-} from '/@/enums/appEnum';
-import { darkMode } from '/@/settings/designSetting';
+} from '../enums/appEnum';
+import { darkMode } from '../settings/designSetting';
 import { getConfigByMenuType } from '../utils/getConfigByMenuType';
 // 修改此属性，实现默认的四个系统主题快速切换
 const menuType = MenuTypeEnum.SIDEBAR;
