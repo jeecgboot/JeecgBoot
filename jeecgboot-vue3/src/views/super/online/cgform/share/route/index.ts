@@ -65,7 +65,7 @@ export const SHARE_LOGIN_ROUTE: RouteRecordRaw = {
 // Online表单外部链接页面
 const ONLINE_CGFORM_SHARE = '/online/cgform/share';
 
-export async function routerBeforeEach(to: any, _from: any, next: any) {
+export async function routerBeforeEach(to: any, _from: any) {
   // 如果是登录路由
   if (to.path === PageEnum.BASE_LOGIN) {
     // 获取 redirect
@@ -86,14 +86,12 @@ export async function routerBeforeEach(to: any, _from: any, next: any) {
     // 如果是则跳转到 online表单 外部专属登录页面
     if (redirect) {
       redirect = redirect.split('?')[0];
-      next({
+      return {
         name: SHARE_LOGIN__ROUTER_NAME,
         query: {
           redirect: encodeURIComponent(redirect),
         }
-      });
-      return;
+      };
     }
   }
-  next();
 }

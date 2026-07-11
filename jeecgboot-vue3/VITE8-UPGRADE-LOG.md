@@ -33,6 +33,10 @@ package.json (vite / vite-plugin-pwa 版本升级)
 - Vite 官方迁移指南（v7→v8）：https://cn.vite.dev/guide/migration
 - Vite CHANGELOG：https://github.com/vitejs/vite/blob/main/packages/vite/CHANGELOG.md
 
+## 依赖版本更新（稳妥模式，pnpm update）
+
+在保持所有主版本号不变的前提下，用 `pnpm update` 把依赖升级到各自 semver 范围内的最新小版本/补丁版本（例如 vue 3.5.27→3.5.39、vue-router 4.5.1→4.6.4、axios 1.13.2→1.18.1、dayjs/qs/sortablejs 等补丁更新），未改动 pinia/vue-router/vue 的主版本。升级后 `pnpm build`、`pnpm dev` 均验证通过。
+
 ## 迁移说明要点（v7→v8）
 
 Vite8 底层由 Rollup+esbuild 切换为 Rolldown+Oxc，核心变化：
@@ -61,5 +65,47 @@ v6→v7 迁移内容项目此前已完成升级（升级 Vite8 前项目已在 v
 | 自定义主题插件（theme-plugin）钩子兼容性 | 否 | 仅用标准钩子（transform/writeBundle/closeBundle等），已验证构建通过 |
 | CJS 互操作变化 | 待观察 | crypto-js/md5/qs/mockjs/sortablejs 等已通过构建+dev联调验证可用，暂未发现异常 |
 | 格式嗅探移除 | 待观察 | 静态分析+构建通过未发现问题，需长期使用中留意 |
+
+-- author:zhangdaiscott ---date:20260711 ---
+
+-- author:zhangdaiscott ---date:20260711--for: pinia 升级到 3.x、vue-router 升级到 5.x ---
+
+## 修改内容
+
+- pinia: 2.1.7 → ^3.0.4
+- vue-router: ^4.6.4 → ^5.1.0
+- vue / @vue/compiler-sfc 已在此前的补丁更新中满足 vue-router5 所需的 `^3.5.34` peer 依赖，无需再单独升级
+
+## 解决的问题
+
+1. 解决了 pinia 3 移除 `defineStore({ id: 'xxx', ... })` 单对象写法后，项目中 11 个 store 文件在运行时抛出 `Cannot destructure property 'state' of 'options' as it is undefined` 报错、导致应用启动白屏的问题。已全部改为 `defineStore('xxx', { ... })` 新写法。
+
+## 验证结果
+
+- `pnpm build` 构建成功
+- `pnpm dev` + 无头浏览器（Playwright）实测：页面正常渲染登录页，无 pageerror/console.error
+- 涉及的 11 个 store 文件：user.ts、permission.ts、multipleTab.ts、lock.ts、locale.ts、errorLog.ts、defIndex.ts、app.ts、cgform/enhance.ts、cgform/cgformState.ts、cgform/share/shareStore.ts
+
+-- author:zhangdaiscott ---date:20260711 ---
+
+-- author:zhangdaiscott ---date:20260711--for: 修复 vue-router 导航守卫 next() 回调废弃警告 ---
+
+## 修改内容
+
+将以下文件的导航守卫从 `next()` 回调风格改为返回值风格（vue-router 5 推荐写法，`next()` 回调已废弃）：
+
+- src/router/index.ts
+- src/router/guard/permissionGuard.ts
+- src/router/guard/paramMenuGuard.ts
+- src/views/super/online/cgform/share/route/index.ts（routerBeforeEach）
+
+## 解决的问题
+
+解决了浏览器控制台反复出现的 `[Vue Router warn]: The next() callback in navigation guards is deprecated. Return the value instead of calling next(value)` 警告。逐条改写时保持了原有分支逻辑不变（next(x) → return x；next() → return true；next(redirectData) → return redirectData）。
+
+## 验证结果
+
+- `pnpm build` 构建成功
+- `pnpm dev` + 无头浏览器（Playwright）实测：登录页正常渲染，控制台无 next() 警告、无 pageerror/console.error
 
 -- author:zhangdaiscott ---date:20260711 ---

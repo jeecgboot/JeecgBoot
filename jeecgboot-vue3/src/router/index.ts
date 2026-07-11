@@ -28,13 +28,11 @@ export function createRouter() {
   )
 
   // TODO 【QQYUN-4517】【表单设计器】记录分享路由守卫测试
-  // @ts-ignore
-  router.beforeEach(async (to, from, next) => {
+  router.beforeEach(async (to, from) => {
     //console.group('【QQYUN-4517】beforeEach');
     //console.warn('from', from);
     //console.warn('to', to);
     //console.groupEnd();
-    next();
   });
 }
 

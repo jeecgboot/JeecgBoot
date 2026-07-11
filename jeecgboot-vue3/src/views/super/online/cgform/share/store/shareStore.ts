@@ -11,8 +11,7 @@ interface StateType {
 
 const userStore = useUserStoreWithOut()
 
-export const useShareStore = defineStore({
-  id: 'online-cgform-share',
+export const useShareStore = defineStore('online-cgform-share', {
   state: (): StateType => ({
     cgformRecord: null,
     dataRecord: null,

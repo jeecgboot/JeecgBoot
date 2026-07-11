@@ -6,8 +6,7 @@ interface CgformState {
   changedTables: string[];
 }
 
-export const useCgformStore = defineStore({
-  id: 'cgform-state',
+export const useCgformStore = defineStore('cgform-state', {
   state: (): CgformState => ({
     changedTables: [],
   }),

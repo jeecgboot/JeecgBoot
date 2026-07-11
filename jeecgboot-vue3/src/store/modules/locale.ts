@@ -20,8 +20,7 @@ interface LocaleState {
   appMainPth: string
 }
 
-export const useLocaleStore = defineStore({
-  id: 'app-locale',
+export const useLocaleStore = defineStore('app-locale', {
   state: (): LocaleState => ({
     localInfo: lsLocaleSetting,
     pathTitleMap: {},

@@ -36,7 +36,7 @@ export function createPermissionGuard(router: Router) {
   // 自定义首页跳转次数
   let homePathJumpCount = 0;
 
-  router.beforeEach(async (to, from, next) => {
+  router.beforeEach(async (to, from) => {
     if (
       // 【#6861】跳转到自定义首页的逻辑，只跳转一次即可
       homePathJumpCount < 1 &&
@@ -46,8 +46,7 @@ export function createPermissionGuard(router: Router) {
       userStore.getUserInfo.homePath !== PageEnum.BASE_HOME
     ) {
       homePathJumpCount++;
-      next(userStore.getUserInfo.homePath);
-      return;
+      return userStore.getUserInfo.homePath;
     }
 
     const token = userStore.getToken;
@@ -62,8 +61,7 @@ export function createPermissionGuard(router: Router) {
         
         try {
           if (!isSessionTimeout) {
-            next((to.query?.redirect as string) || '/');
-            return;
+            return (to.query?.redirect as string) || '/';
           }
         } catch {}
         // 代码逻辑说明: [issues/I5BG1I]vue3不支持auth2登录------------
@@ -74,19 +72,16 @@ export function createPermissionGuard(router: Router) {
         if(to.query.tenantId){
           setAuthCache(OAUTH2_THIRD_LOGIN_TENANT_ID,to.query.tenantId)
         }
-        next({ path: OAUTH2_LOGIN_PAGE_PATH });
-        return;
+        return { path: OAUTH2_LOGIN_PAGE_PATH };
       }
-      next();
-      return;
+      return true;
     }
 
     // token does not exist
     if (!token) {
       // You can access without permission. You need to set the routing meta.ignoreAuth to true
       if (to.meta.ignoreAuth) {
-        next();
-        return;
+        return true;
       }
 
       // 代码逻辑说明: [issues/I5BG1I]vue3 Auth2未实现------------
@@ -94,10 +89,10 @@ export function createPermissionGuard(router: Router) {
       if (whitePathList.includes(to.path as PageEnum)) {
         // 在免登录白名单，如果进入的页面是login页面并且当前是OAuth2app环境，就进入OAuth2登录页面
         if (to.path === LOGIN_PATH && isOAuth2AppEnv()) {
-          next({ path: OAUTH2_LOGIN_PAGE_PATH });
+          return { path: OAUTH2_LOGIN_PAGE_PATH };
         } else {
           //在免登录白名单，直接进入
-          next();
+          return true;
         }
       } else {
         //----------【首次登陆并且是企业微信或者钉钉的情况下才会调用】-----------------------------------------------
@@ -139,8 +134,7 @@ export function createPermissionGuard(router: Router) {
 
         };
       }
-      next(redirectData);
-      return;
+      return redirectData;
     }
 
     //==============================【首次登录并且是企业微信或者钉钉的情况下才会调用】==================
@@ -148,17 +142,15 @@ export function createPermissionGuard(router: Router) {
     if(isOAuth2AppEnv() && to.path.indexOf("/tenantId/") != -1){
       // 代码逻辑说明: 【TV360X-2958】钉钉登录后打开了敲敲云，换其他账号登录后，再打开敲敲云显示的是原来账号的应用---
       if (isOAuth2DingAppEnv()) {
-        next(OAUTH2_LOGIN_PAGE_PATH);
+        return OAUTH2_LOGIN_PAGE_PATH;
       } else {
-        next(userStore.getUserInfo.homePath || PageEnum.BASE_HOME);
+        return userStore.getUserInfo.homePath || PageEnum.BASE_HOME;
       }
-      return;
     }
     //==============================【首次登录并且是企业微信或者钉钉的情况下才会调用】==================
     // Jump to the 404 page after processing the login
     if (from.path === LOGIN_PATH && to.name === PAGE_NOT_FOUND_NAME_404 && to.fullPath !== (userStore.getUserInfo.homePath || PageEnum.BASE_HOME)) {
-      next(userStore.getUserInfo.homePath || PageEnum.BASE_HOME);
-      return;
+      return userStore.getUserInfo.homePath || PageEnum.BASE_HOME;
     }
 
     // // get userinfo while last fetch time is empty
@@ -176,8 +168,7 @@ export function createPermissionGuard(router: Router) {
       userStore.setAllDictItemsByLocal();
     }
     if (permissionStore.getIsDynamicAddedRoute) {
-      next();
-      return;
+      return true;
     }
 
     // 构建后台菜单路由
@@ -191,12 +182,12 @@ export function createPermissionGuard(router: Router) {
     // 代码逻辑说明: 【issues/7500】vue-router4.5.0版本路由name:PageNotFound同名导致登录进不去
     if (to.name === PAGE_NOT_FOUND_NAME_404) {
       // 动态添加路由后，此处应当重定向到fullPath，否则会加载404页面内容
-      next({ path: to.fullPath, replace: true, query: to.query });
+      return { path: to.fullPath, replace: true, query: to.query };
     } else {
       const redirectPath = (from.query.redirect || to.path) as string;
       const redirect = decodeURIComponent(redirectPath);
       const nextData = to.path === redirect ? { ...to, replace: true } : { path: redirect };
-      next(nextData);
+      return nextData;
     }
   });
 }

@@ -9,8 +9,7 @@ interface EnhanceStore {
   enhanceJs: Recordable;
 }
 
-export const useEnhanceStore = defineStore({
-  id: 'online-cgform-enhance',
+export const useEnhanceStore = defineStore('online-cgform-enhance', {
   state: (): EnhanceStore => ({
     enhanceJs: {},
   }),

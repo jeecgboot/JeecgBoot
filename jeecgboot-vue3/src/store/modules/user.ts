@@ -35,8 +35,7 @@ interface UserState {
   loginInfo?: Nullable<LoginInfo>;
 }
 
-export const useUserStore = defineStore({
-  id: 'app-user',
+export const useUserStore = defineStore('app-user', {
   state: (): UserState => ({
     // 用户信息
     userInfo: null,

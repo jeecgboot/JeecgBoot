@@ -9,8 +9,7 @@ interface DefIndexState {
   component: string
 }
 
-export const useDefIndexStore = defineStore({
-  id: 'defIndex',
+export const useDefIndexStore = defineStore('defIndex', {
   state: (): DefIndexState => ({
     url: '',
     component: '',

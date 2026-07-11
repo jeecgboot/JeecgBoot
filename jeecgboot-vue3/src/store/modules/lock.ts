@@ -10,8 +10,7 @@ interface LockState {
   lockInfo: Nullable<LockInfo>;
 }
 
-export const useLockStore = defineStore({
-  id: 'app-lock',
+export const useLockStore = defineStore('app-lock', {
   state: (): LockState => ({
     lockInfo: Persistent.getLocal(LOCK_INFO_KEY),
   }),

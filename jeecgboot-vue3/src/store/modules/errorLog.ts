@@ -13,8 +13,7 @@ export interface ErrorLogState {
   errorLogListCount: number;
 }
 
-export const useErrorLogStore = defineStore({
-  id: 'app-error-log',
+export const useErrorLogStore = defineStore('app-error-log', {
   state: (): ErrorLogState => ({
     errorLogInfoList: null,
     errorLogListCount: 0,
