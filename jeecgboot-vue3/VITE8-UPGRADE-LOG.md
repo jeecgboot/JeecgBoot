@@ -109,3 +109,65 @@ v6→v7 迁移内容项目此前已完成升级（升级 Vite8 前项目已在 v
 - `pnpm dev` + 无头浏览器（Playwright）实测：登录页正常渲染，控制台无 next() 警告、无 pageerror/console.error
 
 -- author:zhangdaiscott ---date:20260711 ---
+
+-- author:zhangdaiscott ---date:20260711--for: 依赖版本变更总表（本次 Vite8 + pinia3/vue-router5 升级全过程汇总）---
+
+## 主版本升级（breaking change）
+
+| 依赖 | 升级前 | 升级后 |
+|---|---|---|
+| vite | ^7.3.3 | ^8.1.4 |
+| vite-plugin-pwa | ^1.1.0 | ^1.3.0 |
+| pinia | 2.1.7 | ^3.0.4 |
+| vue-router | ^4.5.1 | ^5.1.0 |
+
+## 补丁/小版本升级（pnpm update 稳妥模式，未破坏依赖顺序）
+
+| 依赖 | 升级前 | 升级后 |
+|---|---|---|
+| vue | ^3.5.22 | ^3.5.39 |
+| @vue/compiler-sfc | ^3.5.22 | ^3.5.39 |
+| @vue/shared | ^3.5.22 | ^3.5.39 |
+| @logicflow/core | ^2.1.2 | ^2.2.4 |
+| @logicflow/extension | ^2.1.4 | ^2.3.0 |
+| @logicflow/vue-node-registry | ^1.1.3 | ^1.2.4 |
+| axios | ^1.12.2 | ^1.18.1 |
+| codemirror | ^5.65.20 | ^5.65.21 |
+| dayjs | ^1.11.18 | ^1.11.21 |
+| lodash-es | ^4.17.21 | ^4.18.1 |
+| markdown-it | ^14.1.0 | ^14.3.0 |
+| pinyin-pro | ^3.27.0 | ^3.28.1 |
+| qs | ^6.14.0 | ^6.15.3 |
+| sortablejs | ^1.15.6 | ^1.15.7 |
+| swagger-ui-dist | ^5.29.3 | ^5.32.8 |
+| lunar-javascript | ^1.7.5 | ^1.7.7 |
+| @iconify/json | ^2.2.394 | ^2.2.498 |
+| @types/codemirror | ^5.60.16 | ^5.60.17 |
+| @types/inquirer | ^9.0.9 | ^9.0.10 |
+| @types/node | ^20.19.20 | ^20.19.43 |
+| @types/qrcode | ^1.5.5 | ^1.5.6 |
+| @types/qs | ^6.14.0 | ^6.15.1 |
+| @types/sortablejs | ^1.15.8 | ^1.15.9 |
+| @vitejs/plugin-vue | ^6.0.6 | ^6.0.7 |
+| @vitejs/plugin-vue-jsx | ^5.1.5 | ^5.1.6 |
+| @vue/test-utils | ^2.4.6 | ^2.4.11 |
+| autoprefixer | ^10.4.21 | ^10.5.2 |
+| commitizen | ^4.3.1 | ^4.3.2 |
+| cz-git | ^1.12.0 | ^1.13.1 |
+| czg | ^1.12.0 | ^1.13.1 |
+| eslint-plugin-prettier | ^5.5.4 | ^5.5.6 |
+| fs-extra | ^11.3.2 | ^11.3.6 |
+| less | ^4.4.2 | ^4.6.7 |
+| postcss | ^8.5.6 | ^8.5.16 |
+| postcss-html | ^1.8.0 | ^1.8.1 |
+| prettier | ^3.6.2 | ^3.9.5 |
+| stylelint | ^16.25.0 | ^16.26.1 |
+| ts-jest | ^29.4.4 | ^29.4.11 |
+| vite-plugin-mkcert | ^1.17.9 | ^1.17.12 |
+| workbox-window | ^7.3.0 | ^7.4.1 |
+| unocss | ^66.6.8 | ^66.7.5 |
+| dingtalk-jsapi | ^3.2.0 | ^3.2.9 |
+
+未变化：ant-design-vue、@vueuse/core、echarts、xss、vxe-table、xe-utils、tinymce 等其余依赖版本保持不变，依赖顺序也未做调整。
+
+-- author:zhangdaiscott ---date:20260711 ---
