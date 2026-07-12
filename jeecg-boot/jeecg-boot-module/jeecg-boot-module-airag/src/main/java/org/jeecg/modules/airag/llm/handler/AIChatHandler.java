@@ -299,7 +299,7 @@ public class AIChatHandler implements IAIChatHandler {
 
         params.setProvider(resolveProvider(airagModel.getProvider()));
         params.setModelName(airagModel.getModelName());
-        params.setBaseUrl(airagModel.getBaseUrl());
+        params.setBaseUrl(resolveRequestBaseUrl(airagModel.getProvider(), airagModel.getBaseUrl()));
         if (oConvertUtils.isObjectNotEmpty(airagModel.getCredential())) {
             JSONObject modelCredential = JSONObject.parseObject(airagModel.getCredential());
             params.setApiKey(oConvertUtils.getString(modelCredential.getString("apiKey"), null));
@@ -390,6 +390,21 @@ public class AIChatHandler implements IAIChatHandler {
 
     static String resolveProvider(String provider) {
         return "MINIMAX".equalsIgnoreCase(provider) ? "OPENAI" : provider;
+    }
+
+    static String resolveRequestBaseUrl(String provider, String baseUrl) {
+        if (!"ANTHROPIC".equalsIgnoreCase(provider) || baseUrl == null) {
+            return baseUrl;
+        }
+        String normalizedBaseUrl = baseUrl.endsWith("/")
+                ? baseUrl.substring(0, baseUrl.length() - 1)
+                : baseUrl;
+        // LangChain4j appends "/messages"; MiniMax publishes a versionless Anthropic base URL.
+        if ("https://api.minimax.io/anthropic".equals(normalizedBaseUrl)
+                || "https://api.minimaxi.com/anthropic".equals(normalizedBaseUrl)) {
+            return normalizedBaseUrl + "/v1";
+        }
+        return baseUrl;
     }
 
     /**

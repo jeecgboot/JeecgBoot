@@ -204,7 +204,7 @@
       "title": "MiniMax",
       "value": "MINIMAX",
       "LLM": [
-        {"label": "MiniMax-M3", "value": "MiniMax-M3", "descr": "MiniMax-M3 支持文本、图像和视频输入、1,000,000 tokens 上下文，以及可关闭的自适应思考。标准服务按输入长度 ≤512k / >512k 分档：输入 $0.3 / $0.6、输出 $1.2 / $2.4、缓存读取 $0.06 / $0.12；Priority 服务对应为输入 $0.45 / $0.9、输出 $1.8 / $3.6、缓存读取 $0.09 / $0.18（均为每百万 tokens）。默认使用国际 OpenAI 兼容地址；中国区可改为 https://api.minimaxi.com/v1。Anthropic 兼容模式请使用 ANTHROPIC 供应商，并将地址设为 https://api.minimax.io/anthropic/v1（中国区为 https://api.minimaxi.com/anthropic/v1）。", "type": "text,image,video"},
+        {"label": "MiniMax-M3", "value": "MiniMax-M3", "descr": "MiniMax-M3 支持文本、图像和视频输入、1,000,000 tokens 上下文，以及可关闭的自适应思考。标准服务按输入长度 ≤512k / >512k 分档：输入 $0.3 / $0.6、输出 $1.2 / $2.4、缓存读取 $0.06 / $0.12；Priority 服务对应为输入 $0.45 / $0.9、输出 $1.8 / $3.6、缓存读取 $0.09 / $0.18（均为每百万 tokens）。默认使用国际 OpenAI 兼容地址；中国区可改为 https://api.minimaxi.com/v1。Anthropic 兼容模式请使用 ANTHROPIC 供应商，并将地址设为 https://api.minimax.io/anthropic（中国区为 https://api.minimaxi.com/anthropic）。", "type": "text,image,video"},
         {"label": "MiniMax-M2.7", "value": "MiniMax-M2.7", "descr": "MiniMax-M2.7 支持文本输入、204,800 tokens 上下文，思考模式始终开启。输入 $0.3、输出 $1.2、缓存读取 $0.06、缓存写入 $0.375（均为每百万 tokens）。", "type": "text"}
       ],
       "type": ["LLM"],
