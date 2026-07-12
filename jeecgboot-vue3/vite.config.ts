@@ -33,33 +33,23 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
 
   const serverOptions: Recordable = {}
 
-  // ----- [begin] 【JEECG作为乾坤子应用】 -----
+  // JEECG 作为乾坤子应用时，需要开启跨域并指定 origin
   const {VITE_GLOB_QIANKUN_MICRO_APP_NAME, VITE_GLOB_QIANKUN_MICRO_APP_ENTRY} = viteEnv;
   const isQiankunMicro = VITE_GLOB_QIANKUN_MICRO_APP_NAME != null && VITE_GLOB_QIANKUN_MICRO_APP_NAME !== '';
   if (isQiankunMicro && !isBuild) {
     serverOptions.cors = true;
     serverOptions.origin = VITE_GLOB_QIANKUN_MICRO_APP_ENTRY!.split('/').slice(0, 3).join('/');
   }
-  // ----- [end] 【JEECG作为乾坤子应用】 -----
-  
+
   console.log('[init] Start Port: ', VITE_PORT);
   console.debug('[init] Vite Proxy Config: ', VITE_PROXY);
-  
-  
+
   return {
     base: isQiankunMicro ? VITE_GLOB_QIANKUN_MICRO_APP_ENTRY : VITE_PUBLIC_PATH,
     root,
     resolve: {
       alias: [
-        // @logicflow/vue-node-registry 1.1.13 的 npm 包只发布了 src/，但 package.json
-        // main/module 指向 lib/、es/（不存在）。vite 6 esbuild 宽松能找到 src，rolldown 严格直接报错。
-        // 暂时直接把 import 重定向到 src/index.ts。
-        {
-          find: /^@logicflow\/vue-node-registry$/,
-          replacement: pathResolve('node_modules/@logicflow/vue-node-registry/src/index.ts'),
-        },
-        // 把 @rys-fe/vite-plugin-theme 的客户端运行时重定向到项目内置版本（vite 8 适配）
-        // 用 RegExp 精确匹配，避免被父级别名误吞；不写后缀让 vite 自动用 resolve.extensions 补全
+        // 将 @rys-fe/vite-plugin-theme 客户端运行时重定向到内置版本（vite 8 适配），用 RegExp 精确匹配避免被父级别名误吞
         {
           find: /^@rys-fe\/vite-plugin-theme\/es\/client$/,
           replacement: pathResolve('build/vite/plugin/theme-plugin/client/client'),
@@ -103,12 +93,9 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
       // @ts-ignore
       https: false,
       port: VITE_PORT,
-      // Load proxy configuration from .env
       proxy: createProxy(VITE_PROXY),
-      // 合并 server 配置
       ...serverOptions,
-      // update-begin--author:liaozhiyang---date:20260306---for:【QQYUN-14801】vite启动的时候，预构建一些入口页面，访问时快一些
-      // 启动时预构建
+      // update-begin--author:liaozhiyang---date:20260306---for:【QQYUN-14801】启动时预构建部分入口页面，访问时更快
       warmup: {
         clientFiles: [
           './src/main.ts',
@@ -117,7 +104,7 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
           'src/layouts/default/index.vue'
         ],
       },
-      // update-end--author:liaozhiyang---date:20260306---for:【QQYUN-14801】vite启动的时候，预构建一些入口页面，访问时快一些
+      // update-end--author:liaozhiyang---date:20260306---for:【QQYUN-14801】启动时预构建部分入口页面，访问时更快
     },
     build: {
       minify: 'esbuild',
@@ -125,22 +112,24 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
       cssTarget: 'chrome80',
       outDir: OUTPUT_DIR,
       rollupOptions: {
-        // 关闭除屑优化，防止删除重要代码，导致打包后功能出现异常
-        // treeshake: false,
         output: {
-          chunkFileNames: 'js/[name]-[hash].js', // 引入文件名的名称
-          entryFileNames: 'js/[name]-[hash].js', // 包的入口文件名称
-          // manualChunks配置 (依赖包从大到小排列)
+          chunkFileNames: 'js/[name]-[hash].js',
+          entryFileNames: 'js/[name]-[hash].js',
           // update-begin--author:copilot---date:20260711---for:【vite8升级】rolldown不再支持对象形式的manualChunks，改为函数形式
+          // 官方推荐写法：id.includes('node_modules') + split('node_modules/') 取出包名，再映射到 chunk 名（依赖包从大到小排列）
           manualChunks(id: string) {
             const normalizedId = id.replace(/\\/g, '/');
-            if (normalizedId.includes('/node_modules/vue/') || normalizedId.includes('/node_modules/vue-router/')) {
-              // vue vue-router合并打包
-              return 'vue-vendor';
+            if (!normalizedId.includes('node_modules/')) {
+              return;
             }
-            if (normalizedId.includes('/node_modules/emoji-mart-vue-fast/')) {
-              return 'emoji-mart-vue-fast';
-            }
+            const segments = normalizedId.split('node_modules/').pop()!.split('/');
+            const pkgName = segments[0].startsWith('@') ? `${segments[0]}/${segments[1]}` : segments[0];
+            const packageToChunk: Record<string, string> = {
+              vue: 'vue-vendor',
+              'vue-router': 'vue-vendor',
+              'emoji-mart-vue-fast': 'emoji-mart-vue-fast',
+            };
+            return packageToChunk[pkgName];
           },
           // update-end--author:copilot---date:20260711---for:【vite8升级】rolldown不再支持对象形式的manualChunks，改为函数形式
         },
