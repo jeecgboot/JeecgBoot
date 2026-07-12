@@ -217,7 +217,7 @@
        * @param name
        */
       const getImage = (name) => {
-        return imageList.value[name] || imageList.value.OPENAI;
+        return imageList.value[name];
       };
 
       /**

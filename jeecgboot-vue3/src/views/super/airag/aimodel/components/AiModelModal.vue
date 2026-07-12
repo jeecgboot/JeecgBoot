@@ -222,7 +222,7 @@
       }
 
       const getImage = (name) => {
-        return imageList.value[name] || imageList.value.OPENAI;
+        return imageList.value[name];
       };
       //自动填充文本搜索事件
       const filterOption = (input: string, option: any)=>{

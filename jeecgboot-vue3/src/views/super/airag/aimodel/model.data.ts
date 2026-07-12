@@ -11,6 +11,7 @@ import xinference from './icon/xinference.svg';
 import vllm from './icon/vllm.png';
 import imstdio from './icon/imstdio.png';
 import gemini from './icon/gemini.png';
+import minimax from './icon/minimax.svg';
 import { ref } from 'vue';
 
 /**
@@ -125,4 +126,5 @@ export const imageList = ref<any>({
   VLLM: vllm,
   LMSTDIO: imstdio,
   GOOGLE: gemini,
+  MINIMAX: minimax,
 });

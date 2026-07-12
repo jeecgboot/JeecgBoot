@@ -297,7 +297,7 @@ public class AIChatHandler implements IAIChatHandler {
             params = new AIChatParams();
         }
 
-        params.setProvider(airagModel.getProvider());
+        params.setProvider(resolveProvider(airagModel.getProvider()));
         params.setModelName(airagModel.getModelName());
         params.setBaseUrl(airagModel.getBaseUrl());
         if (oConvertUtils.isObjectNotEmpty(airagModel.getCredential())) {
@@ -386,6 +386,10 @@ public class AIChatHandler implements IAIChatHandler {
         //update-end---author:scott ---date:20260429  for：[issues/9585]DeepSeek大模型切换为新发布deepseek-v4-flash，流程中调用出现异常------------
 
         return params;
+    }
+
+    static String resolveProvider(String provider) {
+        return "MINIMAX".equalsIgnoreCase(provider) ? "OPENAI" : provider;
     }
 
     /**
