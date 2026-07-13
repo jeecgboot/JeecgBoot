@@ -107,7 +107,9 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
       // update-end--author:liaozhiyang---date:20260306---for:【QQYUN-14801】启动时预构建部分入口页面，访问时更快
     },
     build: {
-      minify: 'esbuild',
+      // Vite 8 默认使用 Oxc minifier；'esbuild' 已 deprecated。
+      // 这里保留 minify=true 显式启用，并对 console/debugger 做 drop。
+      minify: true,
       target: 'es2015',
       cssTarget: 'chrome80',
       outDir: OUTPUT_DIR,
@@ -132,16 +134,15 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
             return packageToChunk[pkgName];
           },
           // update-end--author:copilot---date:20260711---for:【vite8升级】rolldown不再支持对象形式的manualChunks，改为函数形式
+          // Vite 8 用 Oxc 替代 esbuild；原 esbuild.drop 迁移到这里。
+          // 详见 https://oxc.rs/docs/guide/usage/minifier/dead-code-elimination
+          minify: isBuild ? { compress: { drop: ['console', 'debugger'] } } : false,
         },
       },
       // 关闭brotliSize显示可以稍微减少打包时间
       reportCompressedSize: false,
       // 提高超大静态资源警告大小
       chunkSizeWarningLimit: 2000,
-    },
-    esbuild: {
-      //清除全局的console.log和debug
-      drop: isBuild ? ['console', 'debugger'] : [],
     },
     define: {
       // setting vue-i18-next
@@ -162,8 +163,12 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
     plugins: await createVitePlugins(viteEnv, isBuild, isQiankunMicro),
 
     optimizeDeps: {
-      esbuildOptions: {
-        target: 'es2020',
+      // Vite 8 uses Rolldown for dep optimization; esbuildOptions is deprecated.
+      // See https://rolldown.rs/ for the rolldownOptions shape.
+      rolldownOptions: {
+        transform: {
+          target: 'es2020',
+        },
       },
       // @iconify/iconify: The dependency is dynamically and virtually loaded by @purge-icons/generated, so it needs to be specified explicitly
       include: [
