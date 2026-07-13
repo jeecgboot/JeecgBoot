@@ -201,6 +201,17 @@
       "IMAGEDefaultValue": "gemini-2.5-flash-image"
     },
     {
+      "title": "MiniMax",
+      "value": "MINIMAX",
+      "LLM": [
+        {"label": "MiniMax-M3", "value": "MiniMax-M3", "descr": "MiniMax-M3 supports text, image, and video input, a 1,000,000-token context window, and adaptive thinking that can be enabled or disabled. Standard pricing per million tokens is $0.30 input, $1.20 output, and $0.06 cache read at up to 512k input tokens; above 512k it is $0.60, $2.40, and $0.12. Priority pricing is $0.45, $1.80, and $0.09 at up to 512k, or $0.90, $3.60, and $0.18 above 512k. Use https://api.minimax.io/v1 globally or https://api.minimaxi.com/v1 in China for OpenAI compatibility. For Anthropic compatibility, select the ANTHROPIC provider and use https://api.minimax.io/anthropic globally or https://api.minimaxi.com/anthropic in China.", "type": "text,image,video"},
+        {"label": "MiniMax-M2.7", "value": "MiniMax-M2.7", "descr": "MiniMax-M2.7 supports text input, a 204,800-token context window, and always-on thinking. Pricing per million tokens is $0.30 input, $1.20 output, $0.06 cache read, and $0.375 cache write. Use https://api.minimax.io/v1 globally or https://api.minimaxi.com/v1 in China for OpenAI compatibility. For Anthropic compatibility, select the ANTHROPIC provider and use https://api.minimax.io/anthropic globally or https://api.minimaxi.com/anthropic in China.", "type": "text"}
+      ],
+      "type": ["LLM"],
+      "baseUrl": "https://api.minimax.io/v1",
+      "LLMDefaultValue": "MiniMax-M3"
+    },
+    {
       "title": "vLLM",
       "value": "VLLM",
       "LLM": [],
