@@ -311,7 +311,7 @@ jeecg-boot-starter-sentinel/
     <repository>
         <id>jeecg</id>
         <name>jeecg Repository</name>
-        <url>https://maven.jeecg.org/nexus/content/repositories/jeecg</url>
+        <url>https://maven.jeecg.com/nexus/content/repositories/jeecg</url>
         <snapshots>
             <enabled>false</enabled>
         </snapshots>
