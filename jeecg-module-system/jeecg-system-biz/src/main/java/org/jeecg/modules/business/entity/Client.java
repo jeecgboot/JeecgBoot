@@ -82,6 +82,9 @@ public class Client implements Serializable {
     @Excel(name = "发票实体", width = 15)
     @ApiModelProperty(value = "发票实体")
     private String invoiceEntity;
+
+    @TableField(exist = false)
+    private String invoiceEntityId;
     /**
      * 邮箱
      */

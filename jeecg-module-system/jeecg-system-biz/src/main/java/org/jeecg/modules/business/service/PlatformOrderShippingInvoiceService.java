@@ -282,7 +282,8 @@ public class PlatformOrderShippingInvoiceService {
                 param.end(),
                 param.getErpStatuses(),
                 param.getWarehouses(),
-                param.getBalance()
+                param.getBalance(),
+                param.getInvoiceEntityId()
         );
         // Chooses invoice template based on client's preference on currency
         return getInvoiceMetaDataAndInsert(username, invoice);
@@ -302,7 +303,7 @@ public class PlatformOrderShippingInvoiceService {
     public InvoiceMetaData makeInvoice(ShippingInvoiceOrderParam param) throws UserException, ParseException, IOException {
         String username = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getUsername();
         // Creates invoice by factory
-        ShippingInvoice invoice = factory.createShippingInvoice(param.clientID(), param.orderIds(), param.getType(), param.getStart(), param.getEnd());
+        ShippingInvoice invoice = factory.createShippingInvoice(param.clientID(), param.orderIds(), param.getType(), param.getStart(), param.getEnd(), param.getInvoiceEntityId());
         return getInvoiceMetaDataAndInsert(username, invoice);
     }
 
@@ -322,7 +323,8 @@ public class PlatformOrderShippingInvoiceService {
                         param.getType(),
                         null,
                         null,
-                         null
+                         null,
+                        param.getInvoiceEntityId()
                 );
         // Creates invoice by factory
         CompleteInvoice invoice = invoiceResponse.getData();
@@ -360,7 +362,7 @@ public class PlatformOrderShippingInvoiceService {
             orderIds = platformOrderMapper.fetchUninvoicedOrderIDInShopsAndOrderTime(param.getStart(), param.getEnd(), param.shopIDs(), param.getErpStatuses(), param.getWarehouses());
         }
         // Creates invoice by factory
-        Response<CompleteInvoice, List<Response<String, String>>> invoiceResponse = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd(), null);
+        Response<CompleteInvoice, List<Response<String, String>>> invoiceResponse = factory.createCompleteShippingInvoice(username, param.clientID(), param.getBalance() ,orderIds, method, param.getStart(), param.getEnd(), null, param.getInvoiceEntityId());
         CompleteInvoice invoice = invoiceResponse.getData();
         if (invoiceResponse.getError() != null)
             response.setError(invoiceResponse.getError());
@@ -376,6 +378,7 @@ public class PlatformOrderShippingInvoiceService {
                 username,
                 invoice.getTargetClient().getId(),
                 invoice.getCode(),
+                invoice.getTargetClient().getInvoiceEntityId(),
                 invoice.getTotalAmount(),
                 invoice.reducedAmount(),
                 invoice.getPaymentApprouved(),
@@ -729,7 +732,7 @@ public class PlatformOrderShippingInvoiceService {
                     "\nclient : " + entry.getKey() +
                     "\nbetween dates : [" + start + "] --- [" + end + "]");
             try {
-                ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), null, entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
+                ShippingInvoiceParam param = new ShippingInvoiceParam(entry.getKey(), null, null, entry.getValue(), start, end, Collections.singletonList(3), Arrays.asList("0", "1"));
                 Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse;
                 InvoiceMetaData metaData;
                 if(invoiceType == 0) {
@@ -788,7 +791,7 @@ public class PlatformOrderShippingInvoiceService {
                     "\nclient : " + entry.getKey() +
                     "\nbetween dates : [" + start + "] --- [" + end + "]");
             try {
-                ShippingInvoiceParam param = new ShippingInvoiceParam(clientId, entry.getKey().getBalance(), entry.getValue(), start, end, Collections.singletonList(1), Arrays.asList("0", "1"));
+                ShippingInvoiceParam param = new ShippingInvoiceParam(clientId, null, entry.getKey().getBalance(), entry.getValue(), start, end, Collections.singletonList(1), Arrays.asList("0", "1"));
                 Response<InvoiceMetaData, List<Response<String, String>>> invoiceMetaDataResponse;
                 InvoiceMetaData metaData;
                 if(invoiceType == 0) {
@@ -906,14 +909,16 @@ public class PlatformOrderShippingInvoiceService {
 
             }
             else if(filetype.equals("detail")){
-                Client client = clientService.getClientFromInvoice(invoiceNumber);
+                org.jeecg.modules.business.entity.ShippingInvoice shippingInvoice = shippingInvoiceMapper.fetchShippingInvoice(invoiceNumber);
+                Client client = clientService.buildInvoiceClient(shippingInvoice.getClientId(), shippingInvoice.getInvoiceEntityId());
                 List<FactureDetail> details = getInvoiceDetail(invoiceNumber);
                 List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
                 List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);
                 exportToExcel(details, refunds, extraFees, invoiceNumber, client.getInvoiceEntity(), client.getInternalCode());
                 pathList = getPath(INVOICE_DETAIL_DIR, invoiceNumber);
             } else if (filetype.equals("completeDetail")) {
-                Client client = clientService.getClientFromInvoice(invoiceNumber);
+                org.jeecg.modules.business.entity.ShippingInvoice shippingInvoice = shippingInvoiceMapper.fetchShippingInvoice(invoiceNumber);
+                Client client = clientService.buildInvoiceClient(shippingInvoice.getClientId(), shippingInvoice.getInvoiceEntityId());
                 List<FactureDetail> details = getInvoiceDetailWithPurchaseFee(invoiceNumber);
                 List<SavRefundWithDetail> refunds = savRefundWithDetailService.getRefundsByInvoiceNumber(invoiceNumber);
                 List<ExtraFeeResult> extraFees = extraFeeService.findByInvoiceNumber(invoiceNumber);

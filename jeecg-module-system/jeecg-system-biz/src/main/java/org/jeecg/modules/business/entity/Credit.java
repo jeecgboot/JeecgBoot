@@ -64,6 +64,9 @@ public class Credit implements Serializable {
     @Excel(name = "invoice_number", width = 15)
     @ApiModelProperty(value = "invoice_number")
     private java.lang.String invoiceNumber;
+    /**发票实体id*/
+    @ApiModelProperty(value = "发票实体id")
+    private java.lang.String invoiceEntityId;
     /**amount*/
     @Excel(name = "amount", width = 15)
     @ApiModelProperty(value = "amount")

@@ -27,7 +27,8 @@
             c.update_by = #{username},
             c.description =#{credit.description},
             c.payment_proof = #{credit.paymentProofString},
-            c.show_balance = #{credit.showBalance}
+            c.show_balance = #{credit.showBalance},
+            c.invoice_entity_id = #{credit.invoiceEntityId}
         WHERE c.id = #{id};
     </update>
     <select id="countAllWithFilters" resultType="java.lang.Integer">

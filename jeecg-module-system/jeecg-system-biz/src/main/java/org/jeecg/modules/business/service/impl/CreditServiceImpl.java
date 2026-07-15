@@ -92,6 +92,10 @@ public class CreditServiceImpl extends ServiceImpl<CreditMapper, Credit> impleme
             res.setStatus(HttpStatus.SC_NOT_FOUND);
             return res;
         }
+        if (credit.getInvoiceEntityId() != null) {
+            // validates the entity exists and belongs to this client
+            clientService.buildInvoiceClient(credit.getClientId(), credit.getInvoiceEntityId());
+        }
         String invoiceNumber =  invoiceNumberReservationService.getLatestInvoiceNumberByType(CREDIT.getType());
         credit.setInvoiceNumber(invoiceNumber);
         save(credit);
@@ -113,7 +117,7 @@ public class CreditServiceImpl extends ServiceImpl<CreditMapper, Credit> impleme
             res.setStatus(HttpStatus.SC_NOT_FOUND);
             return res;
         }
-        Client client = clientService.getById(credit.getClientId());
+        Client client = clientService.buildInvoiceClient(credit.getClientId(), credit.getInvoiceEntityId());
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
         String currency = currencyService.getCodeById(credit.getCurrencyId());
         BigDecimal balance = balanceService.getBalanceByClientIdAndCurrency(client.getId(), currency);
@@ -148,7 +152,7 @@ public class CreditServiceImpl extends ServiceImpl<CreditMapper, Credit> impleme
     @Override
     public InvoiceMetaData generateInvoiceExcel(String invoiceNumber) throws IOException {
         Credit credit = getByInvoiceNumber(invoiceNumber);
-        Client client = clientService.getById(credit.getClientId());
+        Client client = clientService.buildInvoiceClient(credit.getClientId(), credit.getInvoiceEntityId());
         BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", CREATE_TIME_FORMAT.format(credit.getCreateTime()));
         String currency = currencyService.getCodeById(credit.getCurrencyId());
         BigDecimal balance = balanceService.getBalanceByClientIdAndCurrency(client.getId(), currency);

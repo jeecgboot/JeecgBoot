@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.jeecg.common.aspect.annotation.Dict;
 import org.jeecg.modules.business.entity.ClientSku;
+import org.jeecg.modules.business.entity.InvoiceEntity;
 import org.jeecg.modules.business.entity.Shop;
 import org.jeecgframework.poi.excel.annotation.Excel;
 import org.jeecgframework.poi.excel.annotation.ExcelCollection;
@@ -202,6 +203,10 @@ public class ClientPage {
     @ExcelCollection(name = "客户名下SKU")
     @ApiModelProperty(value = "客户名下SKU")
     private List<ClientSku> clientSkuList;
+
+    @ExcelCollection(name = "发票实体")
+    @ApiModelProperty(value = "发票实体")
+    private List<InvoiceEntity> invoiceEntityList;
 
     @ExcelCollection(name = "跟单销售IDs")
     @ApiModelProperty(value = "跟单销售IDs")

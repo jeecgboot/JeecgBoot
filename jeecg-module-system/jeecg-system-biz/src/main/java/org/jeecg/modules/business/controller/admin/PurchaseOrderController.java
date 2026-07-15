@@ -141,6 +141,10 @@ public class PurchaseOrderController {
     @PostMapping(value = "/addPurchaseAndOrder")
     public Result<?> addPurchaseAndOrder( @RequestBody PurchaseOrderPage purchaseOrderPage) {
         Client client = clientService.getById(purchaseOrderPage.getClientId());
+        if (purchaseOrderPage.getInvoiceEntityId() != null) {
+            // validates the entity exists and belongs to this client
+            clientService.buildInvoiceClient(purchaseOrderPage.getClientId(), purchaseOrderPage.getInvoiceEntityId());
+        }
         PurchaseOrder purchaseOrder = new PurchaseOrder();
         BeanUtils.copyProperties(purchaseOrderPage, purchaseOrder);
         purchaseOrder.setPaymentDocumentString(new String(purchaseOrderPage.getPaymentDocument()));

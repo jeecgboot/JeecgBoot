@@ -52,6 +52,9 @@ public class PurchaseOrderPage {
     @Dict(dictTable = "client", dicText = "internal_code", dicCode = "id")
 	@ApiModelProperty(value = "客户ID")
     private String clientId;
+	/**发票实体id*/
+	@ApiModelProperty(value = "发票实体id")
+	private String invoiceEntityId;
 	/**货币*/
 	@Excel(name = "货币ID", width = 15, dictTable = "currency", dicText = "code", dicCode = "id")
 	@Dict(dictTable = "currency", dicText = "code", dicCode = "id")

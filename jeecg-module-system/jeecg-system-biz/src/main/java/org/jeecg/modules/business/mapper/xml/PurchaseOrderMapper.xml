@@ -4,10 +4,10 @@
     <insert id="addPurchase">
         INSERT INTO purchase_order(id, create_by, create_time, update_by,
                                    update_time, client_id, currency_id, total_amount,
-                                   discount_amount, final_amount, invoice_number)
+                                   discount_amount, final_amount, invoice_number, invoice_entity_id)
         VALUES (#{ID}, #{creator}, NOW(), #{creator}, NOW(), #{clientID}, #{currencyID},
                 #{totalAmount}, #{discount}, #{finalAmount},
-                #{invoiceNumber});
+                #{invoiceNumber}, #{invoiceEntityId});
     </insert>
 
     <update id="updatePaymentDocument">

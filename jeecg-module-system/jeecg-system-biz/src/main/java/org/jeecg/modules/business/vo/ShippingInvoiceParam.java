@@ -12,6 +12,7 @@ import java.util.List;
 public class ShippingInvoiceParam {
 
     private final String clientID;
+    private final String invoiceEntityId;
     private final BigDecimal balance;
     private final List<String> shopIDs;
     private final String start;
@@ -21,6 +22,7 @@ public class ShippingInvoiceParam {
     private final static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     public ShippingInvoiceParam(@JsonProperty("clientID") String clientID,
+                                @JsonProperty("invoiceEntityId") String invoiceEntityId,
                                 @JsonProperty("balance") BigDecimal balance,
                                 @JsonProperty("shopIDs") List<String> shopIDs,
                                 @JsonProperty("start") String start,
@@ -28,6 +30,7 @@ public class ShippingInvoiceParam {
                                 @JsonProperty("erpStatuses") List<Integer> erpStatuses,
                                 @JsonProperty("warehouses") List<String> warehouses) {
         this.clientID = clientID;
+        this.invoiceEntityId = invoiceEntityId;
         this.balance = balance;
         this.shopIDs = shopIDs;
         this.start = start;
@@ -42,6 +45,10 @@ public class ShippingInvoiceParam {
 
     public List<String> shopIDs() {
         return shopIDs;
+    }
+
+    public String getInvoiceEntityId() {
+        return invoiceEntityId;
     }
 
     public Date start() throws ParseException {

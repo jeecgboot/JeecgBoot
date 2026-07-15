@@ -42,7 +42,8 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
             @Param("totalAmount") BigDecimal totalAmount,
             @Param("discount") BigDecimal discount,
             @Param("finalAmount") BigDecimal finalAmount,
-            @Param("invoiceNumber") String invoiceNumber
+            @Param("invoiceNumber") String invoiceNumber,
+            @Param("invoiceEntityId") String invoiceEntityId
     );
 
     /**

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.business.mapper.InvoiceEntityMapper">
+
+    <delete id="deleteByMainId" parameterType="java.lang.String">
+        DELETE
+        FROM invoice_entity
+        WHERE client_id = #{mainId}
+    </delete>
+
+    <select id="selectByMainId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.InvoiceEntity">
+        SELECT *
+        FROM invoice_entity
+        WHERE client_id = #{mainId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectActiveByClientId" parameterType="java.lang.String" resultType="org.jeecg.modules.business.entity.InvoiceEntity">
+        SELECT *
+        FROM invoice_entity
+        WHERE client_id = #{clientId}
+          AND active = '1'
+        ORDER BY create_time DESC
+    </select>
+
+    <update id="clearDefaultByClientId" parameterType="java.lang.String">
+        UPDATE invoice_entity
+        SET is_default = '0'
+        WHERE client_id = #{clientId}
+          AND is_default = '1'
+    </update>
+</mapper>

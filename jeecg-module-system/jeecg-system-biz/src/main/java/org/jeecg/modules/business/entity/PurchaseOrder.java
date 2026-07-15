@@ -98,6 +98,8 @@ public class PurchaseOrder implements Serializable {
     @ApiModelProperty(value = "订单发票号")
     private String invoiceNumber;
 
+    private String invoiceEntityId;
+
     /**
      * 订单是否下了单
      */

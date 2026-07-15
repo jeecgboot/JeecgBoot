@@ -53,7 +53,7 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      */
     void setPageForCurrentClient(IPage<PurchaseOrder> page);
 
-    String addPurchase(List<SkuQuantity> skuQuantities) throws UserException;
+    String addPurchase(List<SkuQuantity> skuQuantities, String invoiceEntityId) throws UserException;
 
     /**
      * Add a new purchase. The purchase contains sku and its quantity indicated by
@@ -69,10 +69,10 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * @return the new purchase order identifier
      */
     @Transactional
-    String addPurchase(List<SkuQuantity> SkuQuantity, List<String> orderIDs) throws UserException;
+    String addPurchase(List<SkuQuantity> SkuQuantity, List<String> orderIDs, String invoiceEntityId) throws UserException;
 
     @Transactional
-    String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities, Map<PlatformOrder, List<PlatformOrderContent>> orderContentMap, List<String> ordersWithStock) throws UserException;
+    String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities, Map<PlatformOrder, List<PlatformOrderContent>> orderContentMap, List<String> ordersWithStock, String invoiceEntityId) throws UserException;
 
     void savePaymentDocumentForPurchase(String purchaseID, MultipartFile in) throws IOException;
 

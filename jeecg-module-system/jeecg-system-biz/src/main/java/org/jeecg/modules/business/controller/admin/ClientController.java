@@ -14,6 +14,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.business.entity.Balance;
 import org.jeecg.modules.business.entity.Client;
 import org.jeecg.modules.business.entity.ClientSku;
+import org.jeecg.modules.business.entity.InvoiceEntity;
 import org.jeecg.modules.business.entity.Shop;
 import org.jeecg.modules.business.mapper.ClientSalespersonMapper;
 import org.jeecg.modules.business.service.*;
@@ -56,6 +57,8 @@ public class ClientController {
 
     private final IClientSkuService clientSkuService;
 
+    private final IInvoiceEntityService invoiceEntityService;
+
     private final IBalanceService balanceService;
 
     private final IPlatformOrderService platformOrderService;
@@ -65,10 +68,11 @@ public class ClientController {
     private final ISysUserService sysUserService;
 
     @Autowired
-    public ClientController(IClientService clientService, IShopService shopService, IClientSkuService clientSkuService, IBalanceService balanceService, IPlatformOrderService platformOrderService, ClientSalespersonMapper clientSalespersonMapper, ISysUserService sysUserService) {
+    public ClientController(IClientService clientService, IShopService shopService, IClientSkuService clientSkuService, IInvoiceEntityService invoiceEntityService, IBalanceService balanceService, IPlatformOrderService platformOrderService, ClientSalespersonMapper clientSalespersonMapper, ISysUserService sysUserService) {
         this.clientService = clientService;
         this.shopService = shopService;
         this.clientSkuService = clientSkuService;
+        this.invoiceEntityService = invoiceEntityService;
         this.balanceService = balanceService;
         this.platformOrderService = platformOrderService;
         this.clientSalespersonMapper = clientSalespersonMapper;
@@ -148,7 +152,7 @@ public class ClientController {
     public Result<?> add(@RequestBody ClientPage clientPage) {
         Client client = new Client();
         BeanUtils.copyProperties(clientPage, client);
-        clientService.saveMain(client, clientPage.getShopList(), clientPage.getClientSkuList());
+        clientService.saveMain(client, clientPage.getShopList(), clientPage.getClientSkuList(), clientPage.getInvoiceEntityList());
         clientService.saveClientSalespersons(
                 client.getId(),
                 clientPage.getSalespersonIds()
@@ -192,7 +196,7 @@ public class ClientController {
             // If useBalance is set to 1, initialize balance for the client
             balanceService.initBalance(client.getId());
         }
-        clientService.updateMain(client, clientPage.getShopList());
+        clientService.updateMain(client, clientPage.getShopList(), clientPage.getInvoiceEntityList());
         clientService.saveClientSalespersons(
                 client.getId(),
                 clientPage.getSalespersonIds()
@@ -314,6 +318,9 @@ public class ClientController {
         page.setClientSkuList(
                 clientSkuService.selectByMainId(id)
         );
+        page.setInvoiceEntityList(
+                invoiceEntityService.selectByMainId(id)
+        );
         page.setSalespersonIds(
                 clientSalespersonMapper.getSalespersonIdsByClientId(id)
         );
@@ -352,6 +359,15 @@ public class ClientController {
         return Result.OK(page);
     }
 
+    @GetMapping(value = "/queryInvoiceEntityByMainId")
+    public Result<?> queryInvoiceEntityListByMainId(@RequestParam(name = "id", required = true) String id) {
+        List<InvoiceEntity> invoiceEntityList = invoiceEntityService.selectByMainId(id);
+        IPage<InvoiceEntity> page = new Page<>();
+        page.setRecords(invoiceEntityList);
+        page.setTotal(invoiceEntityList.size());
+        return Result.OK(page);
+    }
+
     /**
      * 导出excel
      *
@@ -385,6 +401,8 @@ public class ClientController {
             vo.setShopList(shopList);
             List<ClientSku> clientSkuList = clientSkuService.selectByMainId(main.getId());
             vo.setClientSkuList(clientSkuList);
+            List<InvoiceEntity> invoiceEntityList = invoiceEntityService.selectByMainId(main.getId());
+            vo.setInvoiceEntityList(invoiceEntityList);
             pageList.add(vo);
         }
 
@@ -419,7 +437,7 @@ public class ClientController {
                 for (ClientPage page : list) {
                     Client po = new Client();
                     BeanUtils.copyProperties(page, po);
-                    clientService.saveMain(po, page.getShopList(), page.getClientSkuList());
+                    clientService.saveMain(po, page.getShopList(), page.getClientSkuList(), page.getInvoiceEntityList());
                 }
                 return Result.OK("文件导入成功！数据行数:" + list.size());
             } catch (Exception e) {

@@ -68,7 +68,8 @@ public class ClientPurchaseController {
     public Result<String> addPurchaseOrder(@RequestBody PurchaseRequest purchaseRequest) throws UserException {
         String id = purchaseOrderService.addPurchase(
                 purchaseRequest.getSkuQuantity(),
-                purchaseRequest.getPlatformOrderIDList()
+                purchaseRequest.getPlatformOrderIDList(),
+                purchaseRequest.getInvoiceEntityId()
         );
         log.info("Order list: {}", purchaseRequest.getPlatformOrderIDList());
         return Result.OK(id);
