@@ -124,6 +124,7 @@ public class SqlInjectionUtil {
 		checkSqlAnnotation(value);
 		// 转为小写进行后续比较
 		value = value.toLowerCase().trim();
+		value = value.replaceAll("\\s+", " ");
 		
 		// 二、SQL注入检测存在绕过风险 (普通文本校验)
 		//https://gitee.com/jeecg/jeecg-boot/issues/I4NZGE
@@ -149,8 +150,7 @@ public class SqlInjectionUtil {
 
 		// 四、SQL注入检测存在绕过风险 (正则校验)
 		for (String regularOriginal : XSS_REGULAR_STR_ARRAY) {
-			String regular = ".*" + regularOriginal + ".*";
-			if (Pattern.matches(regular, value)) {
+			if (Pattern.compile(regularOriginal, Pattern.CASE_INSENSITIVE | Pattern.DOTALL).matcher(value).find()) {
 				log.error(SqlInjectionUtil.SQL_INJECTION_KEYWORD_TIP, regularOriginal);
 				log.error(SqlInjectionUtil.SQL_INJECTION_TIP_VARIABLE, value);
 				throw new JeecgSqlInjectionException(SqlInjectionUtil.SQL_INJECTION_TIP + value);
@@ -274,6 +274,7 @@ public class SqlInjectionUtil {
 		// 一、校验sql注释 不允许有sql注释
 		checkSqlAnnotation(value);
 		value = value.toLowerCase().trim();
+		value = value.replaceAll("\\s+", " ");
 		
 		// 二、SQL注入检测存在绕过风险 (普通文本校验)
 		for (int i = 0; i < xssArr.length; i++) {
@@ -294,8 +295,7 @@ public class SqlInjectionUtil {
 
 		// 三、SQL注入检测存在绕过风险 (正则校验)
 		for (String regularOriginal : XSS_REGULAR_STR_ARRAY) {
-			String regular = ".*" + regularOriginal + ".*";
-			if (Pattern.matches(regular, value)) {
+			if (Pattern.compile(regularOriginal, Pattern.CASE_INSENSITIVE | Pattern.DOTALL).matcher(value).find()) {
 				log.error(SqlInjectionUtil.SQL_INJECTION_KEYWORD_TIP, regularOriginal);
 				log.error(SqlInjectionUtil.SQL_INJECTION_TIP_VARIABLE, value);
 				throw new JeecgSqlInjectionException(SqlInjectionUtil.SQL_INJECTION_TIP + value);
@@ -318,6 +318,7 @@ public class SqlInjectionUtil {
 		// 一、校验sql注释 不允许有sql注释
 		checkSqlAnnotation(value);
 		value = value.toLowerCase().trim();
+		value = value.replaceAll("\\s+", " ");
 		
 		// 二、SQL注入检测存在绕过风险 (普通文本校验)
 		for (int i = 0; i < xssArr.length; i++) {
@@ -338,8 +339,7 @@ public class SqlInjectionUtil {
 
 		// 三、SQL注入检测存在绕过风险 (正则校验)
 		for (String regularOriginal : XSS_REGULAR_STR_ARRAY) {
-			String regular = ".*" + regularOriginal + ".*";
-			if (Pattern.matches(regular, value)) {
+			if (Pattern.compile(regularOriginal, Pattern.CASE_INSENSITIVE | Pattern.DOTALL).matcher(value).find()) {
 				log.error(SqlInjectionUtil.SQL_INJECTION_KEYWORD_TIP, regularOriginal);
 				log.error(SqlInjectionUtil.SQL_INJECTION_TIP_VARIABLE, value);
 				throw new JeecgSqlInjectionException(SqlInjectionUtil.SQL_INJECTION_TIP + value);
