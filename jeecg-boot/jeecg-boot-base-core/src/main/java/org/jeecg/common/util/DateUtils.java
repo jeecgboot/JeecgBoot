@@ -249,12 +249,8 @@ public class DateUtils extends PropertyEditorSupport {
      * @return 字符串
      */
     public static String getDate(String format) {
-        Date date = new Date();
-        if (null == date) {
-            return null;
-        }
         SimpleDateFormat sdf = new SimpleDateFormat(format);
-        return sdf.format(date);
+        return sdf.format(new Date());
     }
 
     /**
