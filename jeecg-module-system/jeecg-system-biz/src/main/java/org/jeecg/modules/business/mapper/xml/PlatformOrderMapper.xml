@@ -1377,9 +1377,10 @@
         </foreach>
     </select>
     <select id="countListByClientAndShops" resultType="java.lang.Integer">
-        SELECT count(po.id)
+        SELECT COUNT(DISTINCT po.id)
         FROM platform_order po
         LEFT JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
+        LEFT JOIN shop_options so ON so.shop_id = po.shop_id
         WHERE po.erp_status IN
                 <foreach collection="erpStatuses" separator="," open="(" close=")" index="index" item="erpStatus">
                     #{erpStatus}
@@ -1393,8 +1394,10 @@
                     <foreach collection="warehouses" separator="," open="(" close=")" index="index" item="warehouse">
                         #{warehouse}
                     </foreach>
-                OR po.logistic_channel_name = ''
-                OR po.logistic_channel_name IS NULL
+                OR (
+                    (po.logistic_channel_name = '' OR po.logistic_channel_name IS NULL)
+                    AND COALESCE(so.show_unassigned_logistics_orders, 0) = 1
+                )
             )
             <if test="erpStatuses.size == 1">
                 AND po.shipping_time BETWEEN #{start} AND #{end}
@@ -1422,6 +1425,7 @@
         po.product_available                        as product_available
         FROM platform_order po
         LEFT JOIN logistic_channel lc ON po.logistic_channel_name = lc.zh_name
+        LEFT JOIN shop_options so ON so.shop_id = po.shop_id
         WHERE po.erp_status IN
                 <foreach collection="erpStatuses" separator="," open="(" close=")" index="index" item="erpStatus">
                     #{erpStatus}
@@ -1435,8 +1439,10 @@
                     <foreach collection="warehouses" separator="," open="(" close=")" index="index" item="warehouse">
                         #{warehouse}
                     </foreach>
-                OR po.logistic_channel_name = ''
-                OR po.logistic_channel_name IS NULL
+                OR (
+                    (po.logistic_channel_name = '' OR po.logistic_channel_name IS NULL)
+                    AND COALESCE(so.show_unassigned_logistics_orders, 0) = 1
+                )
             )
             <if test="erpStatuses.size == 1">
                 AND po.shipping_time BETWEEN #{start} AND #{end}

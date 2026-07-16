@@ -69,9 +69,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
     private ISkuPriceService skuPriceService;
     @Autowired
     private IShopService shopService;
-    @Autowired
-    private IShopOptionsService shopOptionsService;
-
     @Override
     @Transactional
     public void saveMain(PlatformOrder platformOrder, List<PlatformOrderContent> platformOrderContentList) {
@@ -647,12 +644,6 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
             default:
                 throw new IllegalArgumentException("The specified invoicing method is not supported : " + invoicingMethod);
         }
-        List<ShopOptions> shopOptions = shopOptionsService.getByShopIds(shopIds);
-        Map<String, Boolean> allowShowUnassigned =
-                shopOptions.stream().collect(Collectors.toMap(
-                        ShopOptions::getShopId,
-                        s -> Boolean.TRUE.equals(s.getShowUnassignedLogisticsOrders())
-                ));
         int offset = (pageNo - 1) * pageSize;
         List<PlatformOrderFront> platformOrders = platformOrderMap.listByClientAndShops(clientId, shopIds, erpStatuses, warehouses, startDate, endDate, order, column, offset, pageSize);
         if (platformOrders == null || platformOrders.isEmpty()) {
@@ -671,26 +662,10 @@ public class PlatformOrderServiceImpl extends ServiceImpl<PlatformOrderMapper, P
             }
             String message = "There are " + ordersWithInvalidLC.size() + " orders with invalid logistic channel: " + String.join(", ", logisticChannels) + ". Order IDs: " + String.join(", ", orderIds);
             log.error(message);
-            response.setError(message);
-            return response;
+                response.setError(message);
+                return response;
         }
-        List<PlatformOrderFront> filtered =
-                platformOrders.stream()
-                        .filter(orderPO -> {
-                            Boolean allow = allowShowUnassigned.get(orderPO.getShopId());
-                            //shop not found, default to false
-                            if (allow == null) allow = false;
-                            if (allow) return true; // shop choose to allow show unassigned
-                            // shop not allow, filter those unassigned
-                            return orderPO.getLogisticChannelName() != null
-                                    && !orderPO.getLogisticChannelName().trim().isEmpty();
-                        })
-                        .collect(Collectors.toList());
-        if (filtered.isEmpty()) {
-            response.setError("All orders are unassigned for selected shops");
-            return response;
-        }
-        response.setData(filtered);
+        response.setData(platformOrders);
         return response;
     }
 
