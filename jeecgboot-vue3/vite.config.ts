@@ -86,6 +86,8 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
           replacement: pathResolve('types') + '/',
         },
       ],
+      // 避免vue生态多份实例被重复解析/预构建，减少依赖发现和转换的开销
+      dedupe: ['vue', 'vue-router', 'pinia', '@vue/shared'],
     },
     server: {
       // Listening on all local IPs
@@ -178,8 +180,12 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
         '@iconify/iconify',
         'ant-design-vue/es/locale/zh_CN',
         'ant-design-vue/es/locale/en_US',
-        // update-begin--author:scott---date:20260427---for: 集成 @jeecg/aiflow（预编译 lib 在 node_modules）时，
-        // Vite 默认不扫描 node_modules 里已打包的 mjs，导致 ant-design-vue/es/vc-picker/generate/dayjs.js
+        'tinymce',
+        '@tinymce/tinymce-vue',
+        'echarts',
+        'vxe-table',
+        'vxe-pc-ui',
+        'vxe-table-plugin-antd',
         // 引入的 dayjs 插件子路径（UMD/CJS）未被预打包，运行时报 "does not provide an export named 'default'"。
         // 显式列出 vc-picker 用到的全部 dayjs 插件，强制 esbuild 预打包成 ESM。
         'dayjs/plugin/advancedFormat',
@@ -188,8 +194,7 @@ export default async ({ command, mode }: ConfigEnv): Promise<UserConfig> => {
         'dayjs/plugin/localeData',
         'dayjs/plugin/weekOfYear',
         'dayjs/plugin/weekYear',
-        'dayjs/plugin/quarterOfYear',
-        // update-end--author:scott---date:20260427---for: 集成 @jeecg/aiflow 时 dayjs 插件 default 导出报错
+        'dayjs/plugin/quarterOfYear'
       ],
       exclude: [
         //升级vite4后，需要排除online和aiflow依赖
