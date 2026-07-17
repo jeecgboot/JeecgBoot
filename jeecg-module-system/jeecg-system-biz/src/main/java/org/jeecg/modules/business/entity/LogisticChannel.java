@@ -121,6 +121,13 @@ public class LogisticChannel implements Serializable {
     @ApiModelProperty(value = "对标物流渠道ID")
     private java.lang.String samePriceChannelId;
 
+    /**
+     * 是否免除小包税
+     */
+    @Excel(name = "是否免除小包税", width = 15)
+    @ApiModelProperty(value = "是否免除小包税")
+    private java.lang.String smallParcelTaxExempted;
+
     @TableField(exist = false)
     private Boolean priceFromReference;
 
