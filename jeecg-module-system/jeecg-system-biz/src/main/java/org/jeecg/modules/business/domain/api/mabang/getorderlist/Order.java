@@ -130,6 +130,10 @@ public class Order {
     @JSONField(name = "isResend")
     private String isResend;
 
+    // 是否虚拟发货 (1=是, 2=否)
+    @JSONField(name = "isVirtual")
+    private String isVirtual;
+
     /**
      * 订单备注
      */
@@ -262,7 +266,9 @@ public class Order {
     }
 
     public boolean isFulfilled() {
-        return platformStatus !=null && platformStatus.equalsIgnoreCase("fulfilled");
+        // 虚拟发货不算平台已发货
+        return platformStatus !=null && platformStatus.equalsIgnoreCase("fulfilled") &&
+                isVirtual != null && isVirtual.equalsIgnoreCase("2");
     }
 
     public boolean isResend() {
