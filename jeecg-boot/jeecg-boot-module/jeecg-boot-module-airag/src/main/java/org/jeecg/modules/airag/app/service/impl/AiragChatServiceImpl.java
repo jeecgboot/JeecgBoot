@@ -387,7 +387,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
                 }
                 // 合并文件
                 if (CollectionUtils.isNotEmpty(currMsg.getFiles())) {
-                    List<MessageHistory.FileHistory> files = CollectionUtils.isEmpty(cacheMsg.getImages()) ? new ArrayList<>() : cacheMsg.getFiles();
+                    List<MessageHistory.FileHistory> files = CollectionUtils.isEmpty(cacheMsg.getFiles()) ? new ArrayList<>() : cacheMsg.getFiles();
                     files.addAll(currMsg.getFiles());
                     cacheMsg.setFiles(files);
                 }
@@ -415,8 +415,8 @@ public class AiragChatServiceImpl implements IAiragChatService {
                             .topicId(message.getTopicId())
                             .role(message.getRole())
                             .content("")
-                            .images(message.getImages())
-                            .files(message.getFiles())
+                            .images(new ArrayList<>())
+                            .files(new ArrayList<>())
                             .datetime(message.getDatetime())
                             .build();
                 }
