@@ -83,6 +83,8 @@
 		<qiniu-java-sdk.version>7.4.0</qiniu-java-sdk.version>
 		<jedis.version>7.1.0</jedis.version>
 		<baidu-java-sdk.version>4.16.19</baidu-java-sdk.version>
+		<!-- jackson CVE-2026-54513: security bypass allows arbitrary code execution -->
+		<jackson-databind.version>2.18.8</jackson-databind.version>
 	</properties>
 
 	<modules>
@@ -583,6 +585,12 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-compress</artifactId>
 				<version>1.27.1</version>
+			</dependency>
+			<!-- CVE-2026-54513: override jackson-databind to fix security bypass -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson-databind.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
