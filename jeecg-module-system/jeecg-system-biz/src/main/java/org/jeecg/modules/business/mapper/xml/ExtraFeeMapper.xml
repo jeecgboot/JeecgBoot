@@ -16,16 +16,16 @@
     JOIN extra_fee_option efo ON efo.id = ef.option_id
     JOIN shop s ON s.id = ef.shop_id
     WHERE
-    <if test="status == 0">
+    <if test="status == '0'">
         ef.invoice_number IS NULL
     </if>
-    <if test="status == 1">
+    <if test="status == '1'">
       ef.invoice_number IS NOT NULL
     </if>
-    <if test="status == null">
-        ef.invoice_number IS NULL OR ef.invoice_number IS NOT NULL
+    <if test="status == null or status == ''">
+        1 = 1
     </if>
-    <if test="shop != null">
+    <if test="shop != null and shop != ''">
         AND s.erp_code = #{shop}
     </if>
     ORDER BY ${column} ${order}
@@ -38,14 +38,17 @@
     JOIN shop s ON s.id = ef.shop_id
     WHERE
     <choose>
-        <when test="status == 0">
+        <when test="status == '0'">
             ef.invoice_number IS NULL
         </when>
-        <otherwise>
+        <when test="status == '1'">
             ef.invoice_number IS NOT NULL
+        </when>
+        <otherwise>
+            1 = 1
         </otherwise>
     </choose>
-    <if test="shop != null">
+    <if test="shop != null and shop != ''">
         AND s.erp_code = #{shop}
     </if>
 </select>

@@ -68,7 +68,9 @@ public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeServi
 												 @RequestParam(name = "column", defaultValue = "create_time") String column,
 												 @RequestParam(name = "order", defaultValue = "DESC") String order,
 												 @RequestParam(name = "shop", required = false) String shop,
-												 @RequestParam(name = "status", required = false) String statuses
+                                                 @RequestParam(name = "shopId", required = false) String shopId,
+                                                 @RequestParam(name = "status", required = false) String statuses,
+											 HttpServletRequest request
 	) {
 		String parsedColumn = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, column.replace("_dictText", ""));
 		String parsedOrder = order.toUpperCase();
@@ -80,15 +82,17 @@ public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeServi
 		} catch (RuntimeException e) {
 			return Result.error("Error 400 Bad Request");
 		}
-		List<String> statusList = new ArrayList<>();
-		if(statuses != null)
+		String normalizedShop = resolveShopFilter(request, shop, shopId);
+        statuses = normalizeParam(statuses);
+        List<String> statusList = new ArrayList<>();
+        if(statuses != null)
 			statusList = Arrays.asList(statuses.split(","));
 		String status = null;
 		if(statusList.size() == 1) {
 			status = statusList.get(0);
 		}
-		int total = extraFeeService.countAllFees(shop, status);
-		List<ExtraFeeResult> extraFeeResults = extraFeeService.listWithFilters(shop, status, pageNo, pageSize, parsedColumn, parsedOrder);
+		int total = extraFeeService.countAllFees(normalizedShop, status);
+		List<ExtraFeeResult> extraFeeResults = extraFeeService.listWithFilters(normalizedShop, status, pageNo, pageSize, parsedColumn, parsedOrder);
 
 		IPage<ExtraFeeResult> page = new Page<>();
 		page.setRecords(extraFeeResults);
@@ -98,6 +102,33 @@ public class ExtraFeeController extends JeecgController<ExtraFee, IExtraFeeServi
 
 		return Result.OK(page);
 	}
+
+    private String resolveShopFilter(HttpServletRequest request, String shop, String shopId) {
+        String normalizedShop = normalizeParam(shop);
+        if(normalizedShop != null) {
+            return normalizedShop;
+        }
+        normalizedShop = normalizeParam(shopId);
+        if(normalizedShop != null) {
+            return normalizedShop;
+        }
+        String[] candidateKeys = new String[]{"shop", "shopId", "shopCode", "store", "storeId", "merchant"};
+        for(String key : candidateKeys) {
+            normalizedShop = normalizeParam(request.getParameter(key));
+            if(normalizedShop != null) {
+                return normalizedShop;
+            }
+        }
+        return null;
+    }
+
+    private String normalizeParam(String value) {
+        if(value == null) {
+            return null;
+        }
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
 	
 	/**
 	 *   添加
