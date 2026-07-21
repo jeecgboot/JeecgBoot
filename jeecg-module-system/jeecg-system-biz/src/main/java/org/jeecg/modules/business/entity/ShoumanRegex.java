@@ -108,4 +108,10 @@ public class ShoumanRegex implements Serializable {
     @Excel(name = "是否合并为逗号分隔单行", width = 15, dicCode = "yn")
     @ApiModelProperty(value = "是否合并为逗号分隔单行")
     private String isCommaSeparated;
+    /**
+     * 是否将英寸尺寸转换为厘米
+     */
+    @Excel(name = "是否将英寸尺寸转换为厘米", width = 15, dicCode = "yn")
+    @ApiModelProperty(value = "是否将英寸尺寸转换为厘米")
+    private String isInInches;
 }

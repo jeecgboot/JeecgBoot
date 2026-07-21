@@ -8,9 +8,12 @@ import org.jeecg.modules.business.entity.Shouman.ShoumanOrderContent;
 import org.jeecg.modules.business.entity.ShoumanRegex;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Data
@@ -28,6 +31,8 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String CUSTOM_PHOTO_URL = "定制照片链接";
     private final static String PRODUCT_GROUP_KEY = "_gpo_product_group";
     private final static String PARENT_PRODUCT_GROUP_KEY = "_gpo_parent_product_group";
+    private final static Pattern INCH_RANGE_PATTERN = Pattern.compile(
+            "(\\d+(?:\\.\\d+)?)\\s*-\\s*(\\d+(?:\\.\\d+)?)\\s*\"");
 
     public OrderCreationRequestBody(ShoumanOrderBase shoumanOrderBase) {
         this.shoumanOrderBase = shoumanOrderBase;
@@ -173,7 +178,28 @@ public class OrderCreationRequestBody implements RequestBody {
             }
             return "";
         }
+        if (isEnabled(regex.getIsInInches())) {
+            return convertInchRangeToCentimeters(content);
+        }
         return content;
+    }
+
+    private String convertInchRangeToCentimeters(String content) {
+        Matcher matcher = INCH_RANGE_PATTERN.matcher(content);
+        if (!matcher.find()) {
+            return content;
+        }
+
+        String lowerBound = inchesToCentimeters(matcher.group(1));
+        String upperBound = inchesToCentimeters(matcher.group(2));
+        return matcher.replaceFirst(Matcher.quoteReplacement(lowerBound + "-" + upperBound + "cm"));
+    }
+
+    private String inchesToCentimeters(String inches) {
+        return new BigDecimal(inches)
+                .multiply(new BigDecimal("2.54"))
+                .setScale(0, RoundingMode.DOWN)
+                .toPlainString();
     }
 
     private boolean isEnabled(String value) {
