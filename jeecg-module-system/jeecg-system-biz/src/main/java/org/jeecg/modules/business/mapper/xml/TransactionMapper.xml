@@ -12,35 +12,18 @@
     </select>
     <select id="listByClientIdAndCurrency" resultType="org.jeecg.modules.business.entity.Transaction">
         SELECT *
-            FROM transaction
+        FROM transaction
         WHERE client_id = #{clientId}
             AND currency = #{currency}
-            AND YEAR(create_time) = #{year}
+            AND create_time &gt;= STR_TO_DATE(CONCAT(#{year}, '-01-01'), '%Y-%m-%d')
+            AND create_time &lt; DATE_ADD(STR_TO_DATE(CONCAT(#{year}, '-01-01'), '%Y-%m-%d'), INTERVAL 1 YEAR)
         ORDER BY create_time DESC;
     </select>
     <select id="getAllCurrenciesByClient" resultType="org.jeecg.modules.business.entity.Currency">
-        SELECT 'EUR' AS code
-        WHERE EXISTS (
-            SELECT 1
-            FROM transaction t
-            WHERE t.client_id = #{clientId}
-              AND t.currency = 'EUR'
-        )
-        UNION
-        SELECT 'USD' AS code
-        WHERE EXISTS (
-            SELECT 1
-            FROM transaction t
-            WHERE t.client_id = #{clientId}
-              AND t.currency = 'USD'
-        )
-        UNION
-        SELECT 'GBP' AS code
-        WHERE EXISTS (
-            SELECT 1
-            FROM transaction t
-            WHERE t.client_id = #{clientId}
-              AND t.currency = 'GBP'
-        );
+        SELECT DISTINCT t.currency AS code
+        FROM transaction t
+        WHERE t.client_id = #{clientId}
+          AND t.currency IS NOT NULL
+        ORDER BY t.currency;
     </select>
 </mapper>

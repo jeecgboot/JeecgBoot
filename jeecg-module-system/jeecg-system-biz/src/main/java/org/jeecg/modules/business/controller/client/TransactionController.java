@@ -33,6 +33,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Api(tags = "Transaction")
@@ -135,18 +136,26 @@ public class TransactionController {
 
             List<String> purchaseOrderIds = purchaseOrders.stream().map(PlatformOrder::getId).collect(Collectors.toList());
             List<PlatformOrderContent> orderContents = platformOrderContentMapper.fetchOrderContent(purchaseOrderIds);
-            List<String> skuIds = orderContents.stream().map(PlatformOrderContent::getSkuId).collect(Collectors.toList());
+            List<String> skuIds = orderContents.stream()
+                    .map(PlatformOrderContent::getSkuId)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .collect(Collectors.toList());
             List<SkuPrice> skuPrices = platformOrderContentMapper.searchSkuPrice(skuIds);
+            Map<String, SkuPrice> skuPriceMap = skuPrices.stream()
+                    .filter(skuPrice -> skuPrice.getSkuId() != null)
+                    .collect(Collectors.toMap(SkuPrice::getSkuId, Function.identity(), (left, right) -> left));
             BigDecimal exchangeRateEurToRmb = exchangeRatesMapper.getLatestExchangeRate("EUR", "RMB");
             if (skuPrices.size() != skuIds.size()) {
                 isCompleteInvoiceReady = false;
                 errorMessages.add("Some sku prices are missing.");
             }
             for (PlatformOrderContent content : orderContents) {
-                for (SkuPrice skuPrice : skuPrices) {
-                    if (content.getSkuId().equals(skuPrice.getSkuId())) {
-                        purchaseEstimation = purchaseEstimation.add(skuPriceService.getPrice(skuPrice, content.getQuantity(), exchangeRateEurToRmb));
-                    }
+                SkuPrice skuPrice = skuPriceMap.get(content.getSkuId());
+                if (skuPrice != null) {
+                    purchaseEstimation = purchaseEstimation.add(
+                            skuPriceService.getPrice(skuPrice, content.getQuantity(), exchangeRateEurToRmb)
+                    );
                 }
             }
         }
@@ -193,10 +202,8 @@ public class TransactionController {
     }
     @PostMapping("/uploadPaymentProofAndNotify")
     public Result<?> uploadPaymentProofAndNotify(@RequestBody Map<String, String> params) {
-        log.info("Received request to upload payment proof and notify - params: {}", params);
         String invoiceNumber = params.get("invoiceNumber");
         String paymentProofString = params.get("paymentProofString");
-        log.info("Start uploading payment proof - Invoice Number: {}, Image Path: {}", invoiceNumber, paymentProofString);
         if (StringUtils.isBlank(invoiceNumber) ||StringUtils.isBlank(paymentProofString)) {
             return Result.error("Invoice number and image cannot be empty");
         }
@@ -221,7 +228,6 @@ public class TransactionController {
                 if (!purchaseOrderService.updateById(po)) {
                     return Result.error("Failed to update purchase order for invoice number: " + invoiceNumber);
                 }
-                log.info("Purchase order updated successfully, payment proof set to: {}", paymentProofString);
                 break;
             }
             case SHIPPING_INVOICE: { // Invoice 2XXX:update shipping invoice
@@ -232,7 +238,6 @@ public class TransactionController {
                 if (!shippingInvoiceService.updateById(si)) {
                     return Result.error("Failed to update shipping invoice for invoice number: " + invoiceNumber);
                 }
-                log.info("Shipping invoice updated successfully, payment proof set to: {}", paymentProofString);
                 break;
             }
             case COMPLETE_INVOICE: { // Invoice 7XXX:update shipping invoice and  purchase order
@@ -247,13 +252,9 @@ public class TransactionController {
                 PurchaseOrder po = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
                 if (po != null) {
                     po.setPaymentDocumentString(paymentProofString);
-                    if (purchaseOrderService.updateById(po)) {
-                        log.info("Type-7: synced payment proof to purchase order for {}", invoiceNumber);
-                    } else {
-                        log.warn("Type-7: failed to sync payment proof to purchase order for {}", invoiceNumber);
+                    if (!purchaseOrderService.updateById(po)) {
+                        return Result.error("Failed to update purchase order for invoice number: " + invoiceNumber);
                     }
-                } else {
-                    log.info("Type-7: no related purchase order for {}, skip PO sync", invoiceNumber);
                 }
                 break;
             }
@@ -263,29 +264,36 @@ public class TransactionController {
         }
         // email
         try {
-            String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
-            SysUser user = sysUserService.getById(userId);
-            log.info("Current operation user: {}({})", user.getUsername(), userId);
+            LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+            SysUser user = loginUser == null ? null : sysUserService.getById(loginUser.getId());
+            String operatorName = user == null ? "Unknown" : user.getUsername();
             String emailSubject = String.format("客户 %s 上传了付款截图，请及时审核", user.getUsername());
             String templateName = "admin/paymentProofNotification.ftl";
             Map<String, Object> templateModel = new HashMap<>();
-            templateModel.put("client", user.getUsername());
+            templateModel.put("client", operatorName);
             templateModel.put("invoiceNumber", invoiceNumber);
             templateModel.put("uploadTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             templateModel.put("reviewLink", "https://app.wia-sourcing.com/business/admin/purchasing/PaymentProofReview");
             List<SysUser> accountantUsers = sysUserService.getUsersByRoleCode("accountant");
-
+            List<String> failedRecipients = new ArrayList<>();
             for (SysUser accountant : accountantUsers) {
                 String email = accountant.getEmail();
-                if (StringUtils.isNotBlank(email)) {
+                if (StringUtils.isBlank(email)) {
+                    failedRecipients.add(accountant.getUsername() + "(no email)");
+                    continue;
+                }
+                try {
                     emailService.newSendSimpleMessage(email, emailSubject, templateName, templateModel);
-                    log.info("Email sent to accountant {} at {}", accountant.getUsername(), email);
-                } else {
-                    log.warn("Accountant {} has no email, skipping notification", accountant.getUsername());
+                } catch (Exception ex) {
+                    failedRecipients.add(accountant.getUsername() + "(" + email + ")");
                 }
             }
+
+            if (!failedRecipients.isEmpty()) {
+                return Result.error("Payment proof saved, but failed to notify accountants: " + String.join(", ", failedRecipients));
+            }
         } catch (Exception e) {
-            log.error("Failed to send email notification for payment proof upload", e);
+            return Result.error("Payment proof saved, but failed to notify accountants: " + e.getMessage());
         }
         return Result.ok("Your payment proof has been submitted and will be reviewed soon.");
     }

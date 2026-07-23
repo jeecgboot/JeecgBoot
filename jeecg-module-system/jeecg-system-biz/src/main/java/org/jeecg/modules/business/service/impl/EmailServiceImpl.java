@@ -60,7 +60,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Transactional
-    public void newSendSimpleMessage(String recipient, String subject, String templateName, Map<String, Object> templateModel) {
+    public void newSendSimpleMessage(String recipient, String subject, String templateName, Map<String, Object> templateModel) throws MessagingException {
         Properties prop = getMailSender();
         Session session = Session.getInstance(prop, new Authenticator() {
             @Override
@@ -86,9 +86,12 @@ public class EmailServiceImpl implements EmailService {
             Transport.send(message);
 
             log.info("Mail sent successfully");
+        } catch (MessagingException e) {
+            log.error("Error while sending mail in VipInvoicingJob", e);
+            throw e;
         } catch (Exception e) {
             log.error("Error while sending mail in VipInvoicingJob", e);
-            e.printStackTrace();
+            throw new MessagingException("Failed to send templated email", e);
         }
 
     }

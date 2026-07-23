@@ -15,6 +15,7 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -93,6 +94,38 @@ public class Invoice implements Serializable {
     @Excel(name = "是否通过付款审核", width = 15)
     @ApiModelProperty(value = "是否通过付款审核")
     private Boolean paymentApproved;
+    @Excel(name = "payment document", width = 15)
+    private transient String paymentDocumentString;
+
+    private byte[] paymentDocument;
+
+    public byte[] getPaymentDocument() {
+        if (paymentDocumentString == null) {
+            return null;
+        }
+        try {
+            return paymentDocumentString.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Unable to encode paymentDocumentString", e);
+        }
+    }
+
+    public String getPaymentDocumentString() {
+        if (paymentDocument == null || paymentDocument.length == 0) {
+            return "";
+        }
+        try {
+            return new String(paymentDocument, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Unable to decode paymentDocument", e);
+        }
+    }
+    @Excel(name = "paid", width = 15)
+    @ApiModelProperty(value = "paid")
+    private Boolean paid;
+    @Excel(name = "paymentStatus", width = 15)
+    @ApiModelProperty(value = "paymentStatus")
+    private String paymentStatus;
 
     @Excel(name = "type", width = 15)
     @ApiModelProperty(value = "type")
