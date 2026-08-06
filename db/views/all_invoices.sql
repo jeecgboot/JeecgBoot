@@ -1,4 +1,4 @@
-﻿CREATE OR REPLACE VIEW all_invoices AS
+CREATE OR REPLACE VIEW all_invoices AS
 WITH shipping AS (
     SELECT
         s.id AS id,
