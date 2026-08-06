@@ -1542,6 +1542,9 @@ public class ShippingInvoiceFactory {
         Map<String, LogisticChannel> logisticChannelMap = logisticChannelMapper.getAll().stream()
                 .collect(toMap(LogisticChannel::getId, Function.identity()));
         Map<LogisticChannel, List<LogisticChannelPrice>> channelPriceMap = getChannelPriceMap(logisticChannelMap, ordersMap, true);
+        Map<String, Integer> distinctHsCodeNbByPlatformOrderId = platformOrderContentService.getDistinctHsCodeNbInOrders(
+                orderSet.stream().map(PlatformOrder::getPlatformOrderId).collect(toList())
+        );
 
         for (Shop shop : shops) {
             Map<String, BigDecimal> shopServiceFeeMap = new HashMap<>();
@@ -1549,11 +1552,14 @@ public class ShippingInvoiceFactory {
             shopServiceFeeMap.put(shop.getId(), shop.getOrderServiceFee());
             shopPackageMatFeeMap.put(shop.getId(), shop.getPackagingMaterialFee());
             Map<PlatformOrder, List<PlatformOrderContent>> orders = uninvoicedOrdersByShopId.get(shop.getId());
-            Map<String, Integer> distinctHsCodeNbInOrders = platformOrderContentService.getDistinctHsCodeNbInOrders(orders
-                    .keySet()
-                    .stream()
-                    .map(PlatformOrder::getPlatformOrderId)
-                    .collect(toList()));
+            if (orders == null || orders.isEmpty()) {
+                continue;
+            }
+            Map<String, Integer> distinctHsCodeNbInOrders = orders.keySet().stream()
+                    .collect(toMap(
+                            PlatformOrder::getPlatformOrderId,
+                            order -> distinctHsCodeNbByPlatformOrderId.getOrDefault(order.getPlatformOrderId(), 0)
+                    ));
             try {
                 List<ExtraFeeResult> extraFees = extraFeeService.findNotInvoicedByShops(Collections.singletonList(shop.getId()));
                 Map<String, List<String>> platformOrderIdErrorMap = calculateFees(null, logisticChannelMap, orders, channelPriceMap, countryList, skuRealWeights, skuServiceFees,

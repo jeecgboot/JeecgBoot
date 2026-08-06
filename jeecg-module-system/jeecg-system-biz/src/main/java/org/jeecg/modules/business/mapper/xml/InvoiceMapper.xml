@@ -2,15 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.jeecg.modules.business.mapper.InvoiceMapper">
 <select id="findEarliestInvoiceYear" resultType="java.lang.Integer">
-    SELECT COALESCE((
-        SELECT YEAR(ai.create_time)
-        FROM all_invoices ai
-                 JOIN currency c ON ai.currency_id = c.id
-        WHERE ai.client_id = #{clientId}
-          AND c.code = #{currency}
-        ORDER BY ai.create_time
-        LIMIT 1
-    ), YEAR(CURDATE()));
+    SELECT COALESCE(YEAR(MIN(ai.create_time)), YEAR(CURDATE()))
+    FROM all_invoices ai
+             JOIN currency c ON ai.currency_id = c.id
+    WHERE ai.client_id = #{clientId}
+      AND c.code = #{currency};
 </select>
     <select id="getInvoiceAmounts" resultType="org.jeecg.modules.business.vo.InvoiceAmountDTO">
         SELECT
