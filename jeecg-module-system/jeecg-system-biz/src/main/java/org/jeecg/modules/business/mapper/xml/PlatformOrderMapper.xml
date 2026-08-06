@@ -1580,7 +1580,7 @@
                 #{shopCode}
             </foreach>
           AND p.create_time > #{startDateTime}
-          AND poc.erp_status in (1, 2);
+           AND poc.erp_status in (1);
     </select>
     <select id="searchOrdersSkus" resultType="org.jeecg.modules.business.vo.SkuOrderPage">
     WITH orders_skus AS (
