@@ -113,7 +113,7 @@ public class ShippingInvoiceFactory {
     private static final String TAG_ORDER = "ORDER|";
     private static final String TAG_SKU   = "SKU|";
     private static final String TAG_SKUS  = "SKUS|";
-    private static final BigDecimal SMALL_PARCEL_TAX_PER_HSCODE = BigDecimal.valueOf(3.0);
+    private static final BigDecimal SMALL_PARCEL_TAX_PER_HSCODE = BigDecimal.valueOf(3.05);
 
     private boolean shouldCalculateSmallParcelTax(LogisticChannel logisticChannel) {
         return logisticChannel == null || !"1".equals(logisticChannel.getSmallParcelTaxExempted());
