@@ -35,6 +35,12 @@
 			<groupId>org.jeecgframework.jimureport</groupId>
 			<artifactId>jimureport-spring-boot4-starter</artifactId>
 		</dependency>
+		<!-- 积木chat2bi -->
+		<dependency>
+			<groupId>org.jeecgframework.jimureport</groupId>
+			<artifactId>jimuchatbi-spring-boot4-starter</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<!-- 积木报表 csv excel ES JSON mongodbSQL redis支持包
 		<dependency>
 			<groupId>org.jeecgframework.jimureport</groupId>

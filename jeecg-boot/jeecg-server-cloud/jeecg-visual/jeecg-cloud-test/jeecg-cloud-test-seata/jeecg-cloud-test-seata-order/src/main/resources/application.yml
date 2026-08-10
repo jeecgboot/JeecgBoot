@@ -41,4 +41,4 @@ seata:
 
 # 无用配置，为了避免扫码全代码导致启动慢
 minidao:
-  base-package: org.jeecg.modules.jmreport.*
+  base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.chat2bi.*

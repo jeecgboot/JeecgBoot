@@ -88,7 +88,7 @@ spring:
     locations: classpath:flyway/sql/mysql
     clean-disabled: true
 minidao:
-  base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*
+  base-package: org.jeecg.modules.jmreport.*,org.jeecg.modules.drag.*,org.jeecg.modules.chat2bi.*
 jeecg:
   firewall:
     dataSourceSafe: false
