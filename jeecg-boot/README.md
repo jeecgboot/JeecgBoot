@@ -109,7 +109,7 @@ JeecgBoot低代码平台兼容所有J2EE项目开发，支持信创国产化，�
 - 在线演示：  [平台演示](https://boot3.jeecg.com) | [APP演示](https://jeecg.com/appIndex)
 - 入门指南：  [快速入门](http://www.jeecg.com/doc/quickstart)  | [代码生成使用](https://help.jeecg.com/java/codegen/online) | [开发文档](https://help.jeecg.com)  | [AI应用手册](https://help.jeecg.com/aigc) | [视频教程](http://jeecg.com/doc/video)
 - 技术支持：  [反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)    | [低代码体验一分钟](https://jeecg.blog.csdn.net/article/details/106079007)
-- QQ交流群 ： 964611995、⑩716488839(满)、⑨808791225(满)、其他(满)
+- QQ交流群 ： 716913034、964611995(满)、⑩716488839(满)、⑨808791225(满)、其他(满)
 
 
 AI 应用平台介绍

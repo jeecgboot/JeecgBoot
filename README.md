@@ -111,7 +111,7 @@ JeecgBoot低代码平台兼容所有J2EE项目开发，支持信创国产化，�
 - 官方网站：  [http://www.jeecg.com](http://www.jeecg.com)
 - 入门指南：  [快速入门](http://www.jeecg.com/doc/quickstart)  | [开发文档](https://help.jeecg.com)  | [AI应用手册](https://help.jeecg.com/aigc) | [视频教程](http://jeecg.com/doc/video)
 - 技术支持：  [反馈问题](https://github.com/jeecgboot/JeecgBoot/issues/new?template=bug_report.md)    | [低代码体验一分钟](https://jeecg.blog.csdn.net/article/details/106079007) 
-- QQ交流群 ： 964611995、⑩716488839(满)、⑨808791225(满)、其他(满)
+- QQ交流群 ： 716913034、964611995(满)、⑩716488839(满)、⑨808791225(满)、其他(满)
 
 
 AI 应用平台介绍
@@ -203,12 +203,12 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 - 依赖管理：Maven
 - 基础框架：Spring Boot 4.1.0
 - 微服务框架： Spring Cloud Alibaba 2025.1.0.0
+- AI框架：langchain4j 1.17.2，AI模型支持 `ChatGPT` `DeepSeek` `千问` `智普` `minimax`、`本地模型`等
 - 持久层框架：MybatisPlus 3.5.16
 - 报表工具： JimuReport 2.1.5
 - 安全框架：Apache Shiro 3.0.0，Jwt 4.5.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.2.28
-- AI大模型：支持 `ChatGPT` `DeepSeek` `千问`等各种常规模式
 - 日志打印：logback
 - 缓存：Redis
 - 其他：autopoi, fastjson，poi，Swagger-ui，quartz, lombok（简化代码）等。

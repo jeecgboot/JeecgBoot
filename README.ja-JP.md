@@ -97,7 +97,7 @@ JeecgBoot AIローコードプラットフォームは、あらゆるJ2EEプロ�
 - デモ：[オンラインデモ](http://boot3.jeecg.com) | [APP](http://jeecg.com/appIndex)
 - ドキュメント：[ドキュメントセンター](http://help.jeecg.com) | [AI設定](https://help.jeecg.com/java/ai/aichat)
 - 初心者ガイド：[クイックスタート](http://www.jeecg.com/doc/quickstart) | [Q&A](http://www.jeecg.com/doc/qa) | [1分間体験](https://my.oschina.net/jeecg/blog/3083313)
-- QQグループ：964611995、⑩716488839(満)、⑨808791225(満)
+- QQグループ：716913034、964611995(满)、⑩716488839(満)、⑨808791225(満)
 
 
 
