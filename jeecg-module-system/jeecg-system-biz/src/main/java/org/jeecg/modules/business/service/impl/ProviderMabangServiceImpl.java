@@ -131,6 +131,7 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         for(SkuData skuData : skuDataList) {
             skuDataMap.put(skuData.getErpCode(), skuData);
         }
+        Map<String, String> erpCodeMismatchNotes = logSkuCodeMismatchDiagnostics(skuQuantities, skuDataMap);
         List<SkuStockData> skuStockData = new ArrayList<>();
         for(Map.Entry<String, SkuData> entry : skuDataMap.entrySet()) {
             SkuStockData stockData = new SkuStockData();
@@ -188,7 +189,16 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
                     log.info("Mabang Add purchase API response | Invoice : {} - Provider : {} - Message : {}", metaData.getInvoiceCode(), providerName,response.toString());
                     if(response.getGroupId() == null) {
                         log.error("Failed to create purchase order to Mabang for Invoice : {} - Provider : {} - Skus : {} - Reason : {}", metaData.getInvoiceCode(), providerName, stockDataList.stream().map(SkuStockData::getStockSku).collect(Collectors.joining(",")), response.getMessage());
-                        errors.add("Failed to create purchase order to Mabang for Invoice : " + metaData.getInvoiceCode() + " - Provider : " + providerName + " - Skus : " + stockDataList.stream().map(SkuStockData::getStockSku).collect(Collectors.joining(",")) + " - Reason : " + response.getMessage());
+                        String failureMessage = "Failed to create purchase order to Mabang for Invoice : " + metaData.getInvoiceCode() + " - Provider : " + providerName + " - Skus : " + stockDataList.stream().map(SkuStockData::getStockSku).collect(Collectors.joining(",")) + " - Reason : " + response.getMessage();
+                        List<String> mismatchExplanations = stockDataList.stream()
+                                .map(SkuStockData::getStockSku)
+                                .map(erpCodeMismatchNotes::get)
+                                .filter(Objects::nonNull)
+                                .collect(Collectors.toList());
+                        if (!mismatchExplanations.isEmpty()) {
+                            failureMessage += " | " + String.join(" ", mismatchExplanations);
+                        }
+                        errors.add(failureMessage);
                         return false;
                     }
                     groupIds.add(response.getGroupId());
@@ -245,5 +255,40 @@ public class ProviderMabangServiceImpl extends ServiceImpl<ProviderMabangMapper,
         long nbSuccesses = results.stream().filter(b -> b).count();
         log.info("{}/{} purchase orders deleted successfully from Mabang. GroupIds : {}", nbSuccesses, groupIds.size(), groupIds);
         return groupIdsDeleteResult;
+    }
+
+    private Map<String, String> logSkuCodeMismatchDiagnostics(Map<String, Integer> skuQuantities, Map<String, SkuData> skuDataMap) {
+        Map<String, String> mismatchNotes = new HashMap<>();
+        Set<String> unmatched = new HashSet<>(skuDataMap.keySet());
+        unmatched.removeAll(skuQuantities.keySet());
+        if (unmatched.isEmpty()) {
+            return mismatchNotes;
+        }
+        log.warn("{} erpCode(s) returned by Mabang do NOT exactly match any key in our DB-side quantity map (DB keys: {}) :", unmatched.size(), skuQuantities.keySet());
+        for (String mabangCode : unmatched) {
+            String mabangNormalized = stripAccents(mabangCode);
+            String likelyDbMatch = skuQuantities.keySet().stream()
+                    .filter(dbCode -> stripAccents(dbCode).equals(mabangNormalized))
+                    .findFirst()
+                    .orElse(null);
+            if (likelyDbMatch != null) {
+                log.error("  -> ACCENT/CASE MISMATCH : Mabang = '{}' vs DB = '{}' - identical once accents/case stripped, purchaseNum lookup will fail.",
+                        mabangCode, likelyDbMatch);
+                mismatchNotes.put(mabangCode, String.format("此 SKU 在数据库和马帮的编码大小写/重音符号不一致（数据库：'%s'，马帮：'%s'），导致采购数量匹配失败，请核对并修正数据库中的 SKU 编码。", likelyDbMatch, mabangCode));
+            } else {
+                log.error("  -> UNEXPLAINED MISMATCH : Mabang = '{}' has no DB equivalent even after stripping accents - check whitespace/casing/missing SKU.",
+                        mabangCode);
+                mismatchNotes.put(mabangCode, String.format("此 SKU（马帮编码：'%s'）在数据库中找不到对应记录（即使忽略大小写和重音符号也匹配不上），可能是空格差异或数据库缺少该 SKU，请人工核实。", mabangCode));
+            }
+        }
+        return mismatchNotes;
+    }
+
+    private static String stripAccents(String s) {
+        if (s == null) {
+            return null;
+        }
+        String normalized = java.text.Normalizer.normalize(s, java.text.Normalizer.Form.NFD);
+        return normalized.replaceAll("\\p{M}", "").toLowerCase();
     }
 }
