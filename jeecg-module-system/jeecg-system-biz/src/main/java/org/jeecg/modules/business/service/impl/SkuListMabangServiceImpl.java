@@ -121,20 +121,23 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                 .collect(toList());
         // find Skus that already exist in DB
         List<Sku> existingSkuList = skuListMabangMapper.searchExistence(allSkuErpCode);
-        // We map all existing Skus in DB with erpCode as key
-        Map<String, Sku> existingSkusIDMap = existingSkuList.stream()
+        // Match by normalized erpCode (accent/case-insensitive) - a raw match would miss drifted erpCodes and create duplicates.
+        Map<String, Sku> existingSkusByNormalizedErpCode = existingSkuList.stream()
                 .collect(
                         Collectors.toMap(
-                                Sku::getErpCode, Function.identity()
+                                sku -> normalizeErpCode(sku.getErpCode()), Function.identity(), (a, b) -> a
                         )
                 );
 
         ArrayList<SkuData> newSkuDatas = new ArrayList<>();
         for (SkuData retrievedSkuData : skuDataList) {
-            Sku skuInDatabase = existingSkusIDMap.get(retrievedSkuData.getErpCode());
-            // the current SkuData's erpCode is not in DB, so we add it to the list of newSkuDatas
+            Sku skuInDatabase = existingSkusByNormalizedErpCode.get(normalizeErpCode(retrievedSkuData.getErpCode()));
             if (skuInDatabase == null) {
+                // truly not in DB yet
                 newSkuDatas.add(retrievedSkuData);
+            } else {
+                // already in DB - keep its erpCode text in sync with Mabang's if it has drifted
+                correctErpCodeIfDrifted(skuInDatabase, retrievedSkuData.getErpCode());
             }
         }
 
@@ -200,39 +203,43 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
                 .collect(toList());
         // find Skus that already exist in DB
         List<Sku> existingSkuList = skuListMabangMapper.searchExistence(allSkuErpCode);
-        // We map all existing Skus in DB with erpCode as key
-        Map<String, Sku> existingSkusIDMap = existingSkuList.stream()
+        // Match by diacritics-normalized erpCode
+        Map<String, Sku> existingSkusByNormalizedErpCode = existingSkuList.stream()
                 .collect(
                         Collectors.toMap(
-                                Sku::getErpCode, Function.identity()
+                                sku -> normalizeErpCode(sku.getErpCode()), Function.identity(), (a, b) -> a
                         )
                 );
-
-        ArrayList<SkuData> existingSkuDatas = new ArrayList<>();
+        Map<SkuData, Sku> existingSkuDataToSku = new LinkedHashMap<>();
         for (SkuData retrievedSkuData : skuDataList) {
-            Sku skuInDatabase = existingSkusIDMap.get(retrievedSkuData.getErpCode());
-            // the current SkuData's erpCode is in DB, so we add it to the list of existingSkuDatas
+            Sku skuInDatabase = existingSkusByNormalizedErpCode.get(normalizeErpCode(retrievedSkuData.getErpCode()));
             if (skuInDatabase != null) {
-                existingSkuDatas.add(retrievedSkuData);
+                existingSkuDataToSku.put(retrievedSkuData, skuInDatabase);
             }
         }
 
         /* for skuDatas to update, update product names and sku status them to DB */
         try {
-            if (!existingSkuDatas.isEmpty()) {
-                log.info("{} skus to be updated.", existingSkuDatas.size());
+            if (!existingSkuDataToSku.isEmpty()) {
+                log.info("{} skus to be updated.", existingSkuDataToSku.size());
 
                 //update status, en_name, zh_name, weight of existing skus
                 List<Sku> skusToUpdate = new ArrayList<>();
-                for(SkuData skuData: existingSkuDatas) {
+                for (Map.Entry<SkuData, Sku> matchedEntry : existingSkuDataToSku.entrySet()) {
+                    SkuData skuData = matchedEntry.getKey();
+                    Sku s = matchedEntry.getValue();
                     boolean isUpdated = false;
-                    Sku s = existingSkuList.stream()
-                            .filter(sku -> sku.getErpCode().equals(skuData.getErpCode()))
-                            .findFirst()
-                            .orElse(null);
-                    assert s != null;
+                    String remark = "";
                     s.setUpdateBy("mabang api");
                     s.setUpdateTime(new Date());
+                    if (!s.getErpCode().equals(skuData.getErpCode())) {
+                        String previousErpCode = s.getErpCode();
+                        s.setErpCode(skuData.getErpCode());
+                        isUpdated = true;
+                        remark = String.format("erpCode corrected: '%s' -> '%s' (matched via accent-insensitive comparison, raw text had drifted from Mabang's)",
+                                previousErpCode, skuData.getErpCode());
+                        log.warn("Correcting drifted erpCode for Sku {} : '{}' -> '{}'.", s.getId(), previousErpCode, skuData.getErpCode());
+                    }
                     if (skuData.getHsCode() != null && !skuData.getHsCode().equalsIgnoreCase(s.getHsCode())) {
                         s.setHsCode(skuData.getHsCode());
                         isUpdated = true;
@@ -287,16 +294,38 @@ public class SkuListMabangServiceImpl extends ServiceImpl<SkuListMabangMapper, S
 //                    if(!remark.isEmpty())
 //                        updatedSkusRemarkMap.put(s, remark);
 //                    else
-                    updatedSkusRemarkMap.put(s, "");
+                    updatedSkusRemarkMap.put(s, remark);
                 }
                 if(!skusToUpdate.isEmpty())
                     skuService.updateBatchById(skusToUpdate);
-                log.info("Updated {} skus : {}.", skusToUpdate.size(), existingSkuDatas.stream().map(SkuData::getErpCode).collect(toList()));
+                log.info("Updated {} skus : {}.", skusToUpdate.size(), existingSkuDataToSku.keySet().stream().map(SkuData::getErpCode).collect(toList()));
             }
         } catch (RuntimeException e) {
             log.error(e.getLocalizedMessage());
         }
         return updatedSkusRemarkMap;
+    }
+
+    private void correctErpCodeIfDrifted(Sku existingSku, String mabangErpCode) {
+        if (existingSku.getErpCode().equals(mabangErpCode)) {
+            return;
+        }
+        String previousErpCode = existingSku.getErpCode();
+        existingSku.setErpCode(mabangErpCode);
+        existingSku.setUpdateBy("mabang api");
+        existingSku.setUpdateTime(new Date());
+        skuService.updateById(existingSku);
+        log.warn("Corrected drifted erpCode for Sku {} : '{}' -> '{}' (matched Mabang's SKU via accent-insensitive comparison, raw text differed).",
+                existingSku.getId(), previousErpCode, mabangErpCode);
+    }
+
+    private static String normalizeErpCode(String erpCode) {
+        if (erpCode == null) {
+            return null;
+        }
+        String stripped = java.text.Normalizer.normalize(erpCode.trim(), java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+        return stripped.toLowerCase();
     }
 
     public void saveSkuPrices(List<SkuData> newSkus) {

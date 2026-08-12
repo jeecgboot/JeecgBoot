@@ -169,6 +169,7 @@ public class CreatePurchaseOrderAsyncServiceImpl implements ICreatePurchaseOrder
                 } else {
                     invoiceResult.put("effectiveCount", 0);
                     invoiceResult.put("groupIds", Collections.emptyList());
+                    invoiceResult.put("failures", origin != null ? origin.getFailures() : Collections.emptyList());
                 }
                 finalResult.put(invoice, invoiceResult);
             }
