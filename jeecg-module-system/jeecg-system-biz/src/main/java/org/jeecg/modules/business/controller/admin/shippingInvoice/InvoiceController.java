@@ -347,7 +347,7 @@ public class InvoiceController {
             if(skuQuantities.isEmpty()) {
                 return Result.error(404, "Nothing to invoice.");
             }
-            String purchaseId = purchaseOrderService.addPurchase(skuQuantities ,param.orderIds());
+            String purchaseId = purchaseOrderService.addPurchase(skuQuantities, param.orderIds(), param.getInvoiceEntityId());
             metaData = purchaseOrderService.makeInvoice(purchaseId);
             platformOrderService.updatePurchaseInvoiceNumber(param.orderIds(), metaData.getInvoiceCode());
 
@@ -442,7 +442,7 @@ public class InvoiceController {
         }
     }
     @PostMapping("/makeManualSkuPurchaseInvoice")
-    public Result<?> createOrder(@RequestBody Map<String, Integer> payload) {
+    public Result<?> createOrder(@RequestBody Map<String, Object> payload) {
         boolean isEmployee = securityService.checkIsEmployee();
         Client client = null;
         if(!isEmployee) {
@@ -450,19 +450,21 @@ public class InvoiceController {
             if(client == null)
                 return Result.error(HttpStatus.SC_NOT_FOUND, "Client not found");
         }
+        Object invoiceEntityIdRaw = payload.remove("invoiceEntityId");
+        String invoiceEntityId = invoiceEntityIdRaw == null ? null : invoiceEntityIdRaw.toString();
         InvoiceMetaData metaData;
         List<SkuQuantity> skuQuantities = new ArrayList<>();
-        for(Map.Entry<String, Integer> entry : payload.entrySet()) {
+        for(Map.Entry<String, Object> entry : payload.entrySet()) {
             String skuId = skuService.getIdFromErpCode(entry.getKey());
             if(client != null) {
                 String skuClientId = clientSkuService.getClientIdFromSkuId(skuId);
                 if (!skuClientId.equals(client.getId()))
                     return Result.error(HttpStatus.SC_NOT_FOUND, "Sku " + entry.getKey() + " for client " + client.getInternalCode() + " not found.");
             }
-            skuQuantities.add(new SkuQuantity(skuId, entry.getKey(), entry.getValue()));
+            skuQuantities.add(new SkuQuantity(skuId, entry.getKey(), ((Number) entry.getValue()).intValue()));
         }
         try {
-            String purchaseId = purchaseOrderService.addPurchase(skuQuantities);
+            String purchaseId = purchaseOrderService.addPurchase(skuQuantities, invoiceEntityId);
             PurchaseOrder purchaseOrder = purchaseOrderService.getById(purchaseId);
             String clientId = purchaseOrder.getClientId();
             if(client == null)
@@ -544,7 +546,7 @@ public class InvoiceController {
         List<PlatformOrder> orderID = platformOrderMapper.selectList(lambdaQueryWrapper);
         // on récupère seulement les ID des commandes
         List<String> orderIds = orderID.stream().map(PlatformOrder::getId).collect(Collectors.toList());
-        ShippingInvoiceOrderParam args = new ShippingInvoiceOrderParam(param.clientID(), orderIds, "pre-shipping");
+        ShippingInvoiceOrderParam args = new ShippingInvoiceOrderParam(param.clientID(), param.getInvoiceEntityId(), orderIds, "pre-shipping");
         // on check s'il y a des SKU sans prix
         return checkSkuPrices(args);
     }
@@ -641,7 +643,7 @@ public class InvoiceController {
         }
         // on récupère seulement les ID des commandes
         List<String> orderIds = platformOrderIds.stream().map(PlatformOrder::getId).collect(Collectors.toList());
-        ShippingInvoiceOrderParam args = new ShippingInvoiceOrderParam(param.clientID(), orderIds, "postShipping");
+        ShippingInvoiceOrderParam args = new ShippingInvoiceOrderParam(param.clientID(), param.getInvoiceEntityId(), orderIds, "postShipping");
         // on check s'il y a des SKU sans prix
         return checkSkuPrices(args);
     }
@@ -937,7 +939,7 @@ public class InvoiceController {
             else
                 shop = shopService.getCodeById(shopId);
             List<String> orderIds = entry.getValue().stream().map(PlatformOrder::getId).collect(Collectors.toList());
-            ShippingInvoiceOrderParam finalParam = new ShippingInvoiceOrderParam(param.clientID(), orderIds, param.getType());
+            ShippingInvoiceOrderParam finalParam = new ShippingInvoiceOrderParam(param.clientID(), param.getInvoiceEntityId(), orderIds, param.getType());
             List<String> errorMessages = new ArrayList<>();
             List<ShippingFeesEstimation> shippingFeesEstimations = shippingInvoiceService.getShippingFeesEstimation(finalParam.clientID(),
                     finalParam.orderIds(), errorMessages);
@@ -1000,23 +1002,27 @@ public class InvoiceController {
         String customerFullName;
         String invoiceType = Invoice.getType(invoiceNumber);
         String invoiceCurrencyId, invoiceCurrency, clientId;
+        String invoiceEntityId = null;
         if(invoiceType.equals(SHIPPING.name()) || invoiceType.equals(COMPLETE.name())) {
             ShippingInvoice invoice = iShippingInvoiceService.getShippingInvoice(invoiceNumber);
             invoiceID = invoice.getId();
             invoiceCurrencyId = invoice.getCurrencyId();
             clientId = invoice.getClientId();
+            invoiceEntityId = invoice.getInvoiceEntityId();
         }
         else if(invoiceType.equals(PURCHASE.name())) {
             PurchaseOrder purchase = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
             invoiceID = purchase.getId();
             invoiceCurrencyId = purchase.getCurrencyId();
             clientId = purchase.getClientId();
+            invoiceEntityId = purchase.getInvoiceEntityId();
         }
         else if(invoiceType.equals(CREDIT.name())) {
             Credit credit = creditService.getByInvoiceNumber(invoiceNumber);
             invoiceID = credit.getInvoiceNumber();
             invoiceCurrencyId = credit.getCurrencyId();
             clientId = credit.getClientId();
+            invoiceEntityId = credit.getInvoiceEntityId();
         }
         else {
             return Result.error(404,"Error 404 page not found.");
@@ -1026,7 +1032,7 @@ public class InvoiceController {
             return Result.error(404,"Error 404 page not found.");
         }
         // if user is a customer, we check if he's the owner of the shops
-        Client client = clientService.getById(clientId);
+        Client client = clientService.buildInvoiceClient(clientId, invoiceEntityId);
         invoiceCurrency = currencyService.getCodeById(invoiceCurrencyId);
         customerFullName = client.fullName();
         String destEmail;

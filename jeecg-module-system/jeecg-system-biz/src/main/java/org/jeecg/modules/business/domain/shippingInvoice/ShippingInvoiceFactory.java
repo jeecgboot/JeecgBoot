@@ -89,6 +89,8 @@ public class ShippingInvoiceFactory {
     @Autowired
     private ISkuPriceService skuPriceService;
     @Autowired
+    private ShippingInvoiceMapper shippingInvoiceMapper;
+    @Autowired
     private Environment env;
 
     private final SimpleDateFormat SUBJECT_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -139,7 +141,7 @@ public class ShippingInvoiceFactory {
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public ShippingInvoice createShippingInvoice(String customerId, List<String> orderIds, String type, String start, String end) throws UserException {
+    public ShippingInvoice createShippingInvoice(String customerId, List<String> orderIds, String type, String start, String end, String invoiceEntityId) throws UserException {
         log.info("Creating an invoice with arguments:\n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
         Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchUninvoicedOrderDataForUpdate(orderIds);
@@ -163,7 +165,7 @@ public class ShippingInvoiceFactory {
             subject = String.format("Shipping fees, order time from %s to %s", start, end);
         else
             throw new UserException("Couldn't create shipping invoice of unknown type.");
-        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, true);
+        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, true, invoiceEntityId);
     }
 
     /**
@@ -190,7 +192,7 @@ public class ShippingInvoiceFactory {
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public Response<CompleteInvoice, List<Response<String, String>>> createCompleteShippingInvoice(String username, String customerId, BigDecimal balance, List<String> orderIds, String shippingMethod, String start, String end, List<String> ordersWithStock) throws UserException, MessagingException, InterruptedException {
+    public Response<CompleteInvoice, List<Response<String, String>>> createCompleteShippingInvoice(String username, String customerId, BigDecimal balance, List<String> orderIds, String shippingMethod, String start, String end, List<String> ordersWithStock, String invoiceEntityId) throws UserException, MessagingException, InterruptedException {
         log.info("Creating a complete invoice for \n client ID: {}, order IDs: {}]", customerId, orderIds);
         // find orders and their contents of the invoice
         Map<PlatformOrder, List<PlatformOrderContent>> uninvoicedOrderToContent = platformOrderService.fetchUninvoicedOrderDataForUpdate(orderIds);
@@ -229,8 +231,8 @@ public class ShippingInvoiceFactory {
         }
         else throw new UserException("Couldn't create complete invoice for unknown shipping method");
         if(balance != null)
-            return createCompleteInvoiceWithBalance(username, customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject.toString());
-        return createInvoice(username, customerId, null, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject.toString(), ordersWithStock);
+            return createCompleteInvoiceWithBalance(username, customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject.toString(), invoiceEntityId);
+        return createInvoice(username, customerId, null, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject.toString(), ordersWithStock, invoiceEntityId);
     }
 
 
@@ -259,9 +261,9 @@ public class ShippingInvoiceFactory {
     @Transactional
     public Response<CompleteInvoice, List<Response<String, String>>> createInvoice(String username, String customerId, BigDecimal balance, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
-                                         List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject, List<String> ordersWithStock) throws UserException {
+                                         List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject, List<String> ordersWithStock, String invoiceEntityId) throws UserException {
         Response<CompleteInvoice, List<Response<String, String>>> response = new Response<>();
-        Client client = clientMapper.selectById(customerId);
+        Client client = clientService.buildInvoiceClient(customerId, invoiceEntityId);
         log.info("User {} is creating a complete invoice for customer {}", username, client.getInternalCode());
         log.info("Orders to be invoiced: {}", orderAndContent);
         if (orderAndContent == null || orderAndContent.isEmpty()) {
@@ -333,7 +335,8 @@ public class ShippingInvoiceFactory {
                         invoiceCode,
                         skuQuantities,
                         orderAndContent,
-                        null
+                        null,
+                        invoiceEntityId
                 );
 
                 purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
@@ -380,14 +383,14 @@ public class ShippingInvoiceFactory {
     @Transactional
     public Response<CompleteInvoice, List<Response<String, String>>> createCompleteInvoiceWithBalance(String username, String customerId, BigDecimal balance, List<String> shopIds,
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
-                                         List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject) throws UserException, MessagingException {
+                                         List<SavRefundWithDetail> savRefunds, List<ExtraFeeResult> extraFees, String subject, String invoiceEntityId) throws UserException, MessagingException {
         Response<CompleteInvoice, List<Response<String, String>>> response = new Response<>();
         // sorting by order time
         orderAndContent = orderAndContent.entrySet().stream().sorted(
                 Map.Entry.comparingByKey(Comparator.comparing(PlatformOrder::getOrderTime))
         ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-        Client client = clientMapper.selectById(customerId);
+        Client client = clientService.buildInvoiceClient(customerId, invoiceEntityId);
         BigDecimal virtualBalance = balance;
         List<Response<String, String>> ordersWithError = new ArrayList<>();
         List<Response<String, String>> ordersToSkip = new ArrayList<>();
@@ -502,7 +505,7 @@ public class ShippingInvoiceFactory {
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = new ArrayList<>();
         List<PromotionDetail> promotionDetails = new ArrayList<>();
         if (skuQuantities != null && !skuQuantities.isEmpty()) {
-            String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent, null);
+            String purchaseID = purchaseOrderService.addPurchase(username, client, invoiceCode, skuQuantities, orderAndContent, null, invoiceEntityId);
             purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
             promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
         } else {
@@ -601,7 +604,7 @@ public class ShippingInvoiceFactory {
      *                       channel price, this exception will be thrown.
      */
     @Transactional
-    public ShippingInvoice createInvoice(String customerId, List<String> shopIds, Date begin, Date end, List<Integer> erpStatuses, List<String> warehouses, BigDecimal balance) throws UserException {
+    public ShippingInvoice createInvoice(String customerId, List<String> shopIds, Date begin, Date end, List<Integer> erpStatuses, List<String> warehouses, BigDecimal balance, String invoiceEntityId) throws UserException {
         log.info(
                 "Creating an invoice with arguments:\n client ID: {}, shop IDs: {}, period:[{} - {}]",
                 customerId, shopIds.toString(), begin, end
@@ -638,9 +641,9 @@ public class ShippingInvoiceFactory {
             uninvoicedOrderToContent = platformOrderService.findUninvoicedOrderContentsForShopsAndStatus(shopIds, begin, end, erpStatuses, warehouses);
         }
         if(balance != null) {
-            return createInvoiceWithBalance(customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, false);
+            return createInvoiceWithBalance(customerId, balance, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, false, invoiceEntityId);
         }
-        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, false);
+        return createInvoice(customerId, shopIds, uninvoicedOrderToContent, savRefunds, extraFees, subject, false, invoiceEntityId);
     }
 
     /**
@@ -671,7 +674,7 @@ public class ShippingInvoiceFactory {
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                          List<SavRefundWithDetail> savRefunds,
                                          List<ExtraFeeResult> extraFees,
-                                         String subject, boolean skipShippingTimeComparing) throws UserException {
+                                         String subject, boolean skipShippingTimeComparing, String invoiceEntityId) throws UserException {
         log.info("Orders to be invoiced: {}", orderAndContent);
         if (orderAndContent == null || orderAndContent.isEmpty()) {
             throw new UserException("No platform order in the selected period!");
@@ -691,7 +694,7 @@ public class ShippingInvoiceFactory {
         }
         List<SkuDeclaredValue> latestDeclaredValues = skuDeclaredValueService.getLatestDeclaredValues();
 
-        Client client = clientMapper.selectById(customerId);
+        Client client = clientService.buildInvoiceClient(customerId, invoiceEntityId);
         List<Shop> shops = shopMapper.selectBatchIds(shopIds);
         Map<String, BigDecimal> shopServiceFeeMap = new HashMap<>();
         Map<String, BigDecimal> shopPackageMatFeeMap = new HashMap<>();
@@ -750,7 +753,7 @@ public class ShippingInvoiceFactory {
                                          Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent,
                                          List<SavRefundWithDetail> savRefunds,
                                          List<ExtraFeeResult> extraFees,
-                                         String subject, boolean skipShippingTimeComparing) throws UserException {
+                                         String subject, boolean skipShippingTimeComparing, String invoiceEntityId) throws UserException {
         log.info("Orders to be invoiced: {}", orderAndContent);
         if (orderAndContent == null || orderAndContent.isEmpty()) {
             throw new UserException("No platform order in the selected period!");
@@ -770,7 +773,7 @@ public class ShippingInvoiceFactory {
         }
         List<SkuDeclaredValue> latestDeclaredValues = skuDeclaredValueService.getLatestDeclaredValues();
 
-        Client client = clientMapper.selectById(customerId);
+        Client client = clientService.buildInvoiceClient(customerId, invoiceEntityId);
         List<Shop> shops = shopMapper.selectBatchIds(shopIds);
         Map<String, BigDecimal> shopServiceFeeMap = new HashMap<>();
         Map<String, BigDecimal> shopPackageMatFeeMap = new HashMap<>();
@@ -1742,14 +1745,15 @@ public class ShippingInvoiceFactory {
         }
         else
             throw new UserException("Couldn't create shipping invoice of unknown type.");
-        Client client = clientMapper.selectById(clientId);
+        org.jeecg.modules.business.entity.ShippingInvoice shippingInvoice = shippingInvoiceMapper.fetchShippingInvoice(invoiceCode);
+        Client client = clientService.buildInvoiceClient(clientId, shippingInvoice == null ? null : shippingInvoice.getInvoiceEntityId());
         BigDecimal exchangeRate = exchangeRatesMapper.getExchangeRateFromDate("EUR", client.getCurrency(), start);
         return new ShippingInvoice(client, invoiceCode, subject, ordersMapContent, savRefunds, extraFees, exchangeRate);
     }
     public PurchaseInvoice buildExistingPurchaseInvoice (String invoiceCode) {
         PurchaseOrder order = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceCode);
         String purchaseId = order.getId();
-        Client client = clientMapper.getClientFromPurchase(purchaseId);
+        Client client = clientService.buildInvoiceClient(order.getClientId(), order.getInvoiceEntityId());
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseId);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseId);
         BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", CREATE_TIME_FORMAT.format(order.getCreateTime()));
@@ -1766,7 +1770,8 @@ public class ShippingInvoiceFactory {
         else if(shippingMethod.equals("pre-shipping"))
             subject = String.format("Purchase and Pre-Shipping fees, order time from %s to %s", start, end);
         else throw new UserException("Couldn't create complete invoice for unknown shipping method");
-        Client client = clientMapper.selectById(clientId);
+        org.jeecg.modules.business.entity.ShippingInvoice shippingInvoice = shippingInvoiceMapper.fetchShippingInvoice(invoiceCode);
+        Client client = clientService.buildInvoiceClient(clientId, shippingInvoice == null ? null : shippingInvoice.getInvoiceEntityId());
         BigDecimal eurToUsd = exchangeRatesMapper.getExchangeRateFromDate("EUR", "USD", start);
         String purchaseID = purchaseOrderService.getInvoiceId(invoiceCode);
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);

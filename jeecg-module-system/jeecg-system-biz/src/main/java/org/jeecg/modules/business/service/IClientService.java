@@ -3,6 +3,7 @@ package org.jeecg.modules.business.service;
 import org.jeecg.modules.business.entity.Shop;
 import org.jeecg.modules.business.entity.ClientSku;
 import org.jeecg.modules.business.entity.Client;
+import org.jeecg.modules.business.entity.InvoiceEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.io.Serializable;
 import java.util.Collection;
@@ -21,13 +22,13 @@ public interface IClientService extends IService<Client> {
 	 * 添加一对多
 	 *
 	 */
-	void saveMain(Client client,List<Shop> shopList,List<ClientSku> clientSkuList) ;
+	void saveMain(Client client,List<Shop> shopList,List<ClientSku> clientSkuList, List<InvoiceEntity> invoiceEntityList) ;
 
 	/**
 	 * 修改一对多
 	 *
 	 */
-    void updateMain(Client client, List<Shop> shopList);
+    void updateMain(Client client, List<Shop> shopList, List<InvoiceEntity> invoiceEntityList);
 
 	/**
 	 * 删除一对多
@@ -65,6 +66,8 @@ public interface IClientService extends IService<Client> {
 	Client getByShopId(String shopId);
 
 	Client getClientFromCredit(String invoiceNumber);
+
+	Client buildInvoiceClient(String clientId, String invoiceEntityId);
 
     List<String> getClientsByCode(List<String> clientCodes);
 

@@ -105,7 +105,6 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	 * @param credit
 	 * @return
 	 */
-	@AutoLog(value = "credit-添加")
 	@ApiOperation(value="credit-添加", notes="credit-添加")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody Credit credit) throws RuntimeException {
@@ -136,7 +135,6 @@ public class CreditController extends JeecgController<Credit, ICreditService> {
 	 * @param credit
 	 * @return
 	 */
-	@AutoLog(value = "credit-编辑")
 	@ApiOperation(value="credit-编辑", notes="credit-编辑")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<?> edit(@RequestBody Credit credit) throws Exception {

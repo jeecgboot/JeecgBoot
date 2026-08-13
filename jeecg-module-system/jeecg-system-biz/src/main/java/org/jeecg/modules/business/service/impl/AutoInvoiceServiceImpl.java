@@ -117,6 +117,7 @@ public class AutoInvoiceServiceImpl implements IAutoInvoiceService {
         }
         ManualInvoiceOrderParam manualParam = new ManualInvoiceOrderParam(
                 client.getId(),
+                null,
                 orderIds,
                 PRESHIPPING.getMethod(),
                 Collections.emptyList()

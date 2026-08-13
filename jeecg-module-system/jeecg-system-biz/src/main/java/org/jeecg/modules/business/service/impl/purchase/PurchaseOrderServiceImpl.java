@@ -224,7 +224,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
      */
     @Override
     @Transactional
-    public String addPurchase(List<SkuQuantity> skuQuantities, List<String> platformOrderIDs) throws UserException {
+    public String addPurchase(List<SkuQuantity> skuQuantities, List<String> platformOrderIDs, String invoiceEntityId) throws UserException {
         Objects.requireNonNull(platformOrderIDs);
 
         Client client = clientService.getCurrentClient();
@@ -236,6 +236,10 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
             }
             else
                 throw new UserException("User is not a client");
+        }
+        if (invoiceEntityId != null) {
+            // validates the entity exists and belongs to this client
+            clientService.buildInvoiceClient(client.getId(), invoiceEntityId);
         }
         String currencyId = currencyService.getIdByCode(client.getCurrency());
         List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuQuantities);
@@ -253,7 +257,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
                 data.getEstimatedTotalPrice(),
                 data.getReducedAmount(),
                 data.finalAmount(),
-                invoiceNumber
+                invoiceNumber,
+                invoiceEntityId
         );
 
         // 2. save purchase's content
@@ -310,7 +315,7 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
      */
     @Override
     @Transactional
-    public String addPurchase(List<SkuQuantity> skuQuantities) throws UserException {
+    public String addPurchase(List<SkuQuantity> skuQuantities, String invoiceEntityId) throws UserException {
 
         Client client = clientService.getCurrentClient();
         if(client == null) {
@@ -320,6 +325,10 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
             }
             else
                 throw new UserException("User is not a client");
+        }
+        if (invoiceEntityId != null) {
+            // validates the entity exists and belongs to this client
+            clientService.buildInvoiceClient(client.getId(), invoiceEntityId);
         }
         String currencyId = currencyService.getIdByCode(client.getCurrency());
         List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuQuantities);
@@ -337,7 +346,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
                 data.getEstimatedTotalPrice(),
                 data.getReducedAmount(),
                 data.finalAmount(),
-                invoiceNumber
+                invoiceNumber,
+                invoiceEntityId
         );
 
         // 2. save purchase's content
@@ -406,7 +416,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     @Transactional
     public String addPurchase(String username, Client client, String invoiceNumber, List<SkuQuantity> skuQuantities,
-                              Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent, List<String> ordersWithStock) throws UserException {
+                              Map<PlatformOrder, List<PlatformOrderContent>> orderAndContent, List<String> ordersWithStock,
+                              String invoiceEntityId) throws UserException {
         Objects.requireNonNull(orderAndContent);
 
         List<OrderContentDetail> details = platformOrderService.searchPurchaseOrderDetail(skuQuantities);
@@ -423,7 +434,8 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
                 data.getEstimatedTotalPrice(),
                 data.getReducedAmount(),
                 data.finalAmount(),
-                invoiceNumber
+                invoiceNumber,
+                invoiceEntityId
         );
 
         // 2. save purchase's content
@@ -567,15 +579,19 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     public InvoiceMetaData makeInvoice(String purchaseID) throws IOException, UserException {
         boolean isEmployee = securityService.checkIsEmployee();
         Client client;
+        PurchaseOrder purchaseOrder = purchaseOrderMapper.selectById(purchaseID);
         if(!isEmployee) {
             client = clientService.getCurrentClient();
             if (client == null)
                 throw new UserException("User is not a client");
-        } else
-            client = clientService.getClientFromPurchase(purchaseID);
+            if (!purchaseOrder.getClientId().equals(client.getId())) {
+                throw new UserException("Purchase order does not belong to current client");
+            }
+        }
+        client = clientService.buildInvoiceClient(purchaseOrder.getClientId(), purchaseOrder.getInvoiceEntityId());
         List<PurchaseInvoiceEntry> purchaseOrderSkuList = purchaseOrderContentMapper.selectInvoiceDataByID(purchaseID);
         List<PromotionDetail> promotionDetails = skuPromotionHistoryMapper.selectPromotionByPurchase(purchaseID);
-        String invoiceCode = purchaseOrderMapper.selectById(purchaseID).getInvoiceNumber();
+        String invoiceCode = purchaseOrder.getInvoiceNumber();
         BigDecimal eurToUsd = exchangeRatesMapper.getLatestExchangeRate("EUR", "USD");
 
         String filename = "Invoice N°" + invoiceCode + " (" + client.getInvoiceEntity() + ").xlsx";
@@ -662,7 +678,15 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
     @Override
     public InvoiceMetaData getMetaDataFromInvoiceNumbers(String invoiceNumber) {
-        return purchaseOrderMapper.getMetaDataFromInvoiceNumbers(invoiceNumber);
+        InvoiceMetaData metaData = purchaseOrderMapper.getMetaDataFromInvoiceNumbers(invoiceNumber);
+        PurchaseOrder purchaseOrder = purchaseOrderMapper.getPurchaseByInvoiceNumber(invoiceNumber);
+        if (purchaseOrder == null) {
+            return metaData;
+        }
+        Client client = clientService.buildInvoiceClient(purchaseOrder.getClientId(), purchaseOrder.getInvoiceEntityId());
+        String invoiceEntity = client.getInvoiceEntity();
+        String filename = "Invoice N°" + invoiceNumber + " (" + invoiceEntity + ")";
+        return new InvoiceMetaData(filename, invoiceNumber, client.getInternalCode(), invoiceEntity, null);
     }
 
     @Override

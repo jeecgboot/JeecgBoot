@@ -12,4 +12,6 @@ public class PurchaseRequest {
     private final List<SkuQuantity> skuQuantity;
 
     private final List<String> platformOrderIDList;
+
+    private final String invoiceEntityId;
 }

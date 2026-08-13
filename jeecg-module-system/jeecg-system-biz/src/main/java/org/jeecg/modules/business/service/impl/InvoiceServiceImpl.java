@@ -88,8 +88,8 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         BigDecimal amount = BigDecimal.ZERO;
         String currencyId;
 
-        String invoiceEntity = clientService.getById(clientId).getInvoiceEntity();
         String invoiceType = Invoice.getType(invoiceNumber);
+        String invoiceEntity;
         extraFeeService.cancelInvoice(invoiceNumber, clientId);
         savRefundService.cancelInvoice(invoiceNumber, clientId);
         if(invoiceType.equalsIgnoreCase(PURCHASE.name())) {
@@ -120,6 +120,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             platformOrderMabangService.deleteOrderRemark(invoiceNumber);
             platformOrderService.removePurchaseInvoiceNumber(invoiceNumber, clientId);
             purchaseOrderService.cancelInvoice(id);
+            invoiceEntity = clientService.buildInvoiceClient(clientId, po.getInvoiceEntityId()).getInvoiceEntity();
         }
         else if(invoiceType.equalsIgnoreCase(SHIPPING.name())) {
             ShippingInvoice si = shippingInvoiceService.getById(id);
@@ -144,6 +145,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
 
             amount = si.getFinalAmount();
             currencyId = si.getCurrencyId();
+            invoiceEntity = clientService.buildInvoiceClient(clientId, si.getInvoiceEntityId()).getInvoiceEntity();
         }
         else if(invoiceType.equalsIgnoreCase(COMPLETE.name())) {
             ShippingInvoice shippingInvoice = shippingInvoiceService.getById(id);
@@ -187,6 +189,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             if(purchase != null)
                 amount = amount.add(purchase.getFinalAmount());
             currencyId = shippingInvoice.getCurrencyId();
+            invoiceEntity = clientService.buildInvoiceClient(clientId, shippingInvoice.getInvoiceEntityId()).getInvoiceEntity();
         }
         else if(invoiceType.equalsIgnoreCase(CREDIT.name())) {
             Credit credit = creditService.getById(id);
@@ -206,6 +209,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
             operationType = Balance.OperationType.CreditCancellation.name();
             amount = credit.getAmount();
             currencyId = credit.getCurrencyId();
+            invoiceEntity = clientService.buildInvoiceClient(clientId, credit.getInvoiceEntityId()).getInvoiceEntity();
         } else {
             log.error("Invalid invoice type : {}", invoiceType);
             return false;
@@ -375,7 +379,20 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
         for(Invoice invoice : invoices) {
             String invoiceNumber = invoice.getInvoiceNumber();
             String clientId = invoice.getClientId();
-            String invoiceEntity = clientService.getClientEntity(clientId);
+            String invoiceEntity;
+            String invoiceType = Invoice.getType(invoiceNumber);
+            if(invoiceType.equalsIgnoreCase(PURCHASE.name())) {
+                PurchaseOrder purchaseOrder = purchaseOrderService.getPurchaseByInvoiceNumber(invoiceNumber);
+                invoiceEntity = purchaseOrder == null ? clientService.getClientEntity(clientId) : clientService.buildInvoiceClient(clientId, purchaseOrder.getInvoiceEntityId()).getInvoiceEntity();
+            } else if(invoiceType.equalsIgnoreCase(SHIPPING.name()) || invoiceType.equalsIgnoreCase(COMPLETE.name())) {
+                ShippingInvoice shippingInvoice = shippingInvoiceService.getShippingInvoice(invoiceNumber);
+                invoiceEntity = shippingInvoice == null ? clientService.getClientEntity(clientId) : clientService.buildInvoiceClient(clientId, shippingInvoice.getInvoiceEntityId()).getInvoiceEntity();
+            } else if(invoiceType.equalsIgnoreCase(CREDIT.name())) {
+                Credit credit = creditService.getByInvoiceNumber(invoiceNumber);
+                invoiceEntity = credit == null ? clientService.getClientEntity(clientId) : clientService.buildInvoiceClient(clientId, credit.getInvoiceEntityId()).getInvoiceEntity();
+            } else {
+                invoiceEntity = clientService.getClientEntity(clientId);
+            }
             log.info("Deleting invoice files ...");
             invoicesDeleted &= deleteInvoice(invoiceNumber, invoiceEntity);
             log.info("Invoice files deleted.");
@@ -423,7 +440,7 @@ public class InvoiceServiceImpl extends ServiceImpl<InvoiceMapper, Invoice> impl
                                 calendar.get(Calendar.MONTH) + 1,
                                 calendar.get(Calendar.DAY_OF_MONTH));
                         List<String> orderIds = platformOrderShippingInvoiceService.getShippingOrderIdBetweenDate(shopIds, start, end, Arrays.asList("0", "1"));
-                        ShippingInvoiceOrderParam param = new ShippingInvoiceOrderParam(clientId, orderIds, "post");
+                        ShippingInvoiceOrderParam param = new ShippingInvoiceOrderParam(clientId, null, orderIds, "post");
                         Result<?> checkSkuPrices = checkSkuPrices(param);
                         estimation.setErrorMessage(checkSkuPrices.getCode() == 200 ? "" : checkSkuPrices.getMessage());
                     }

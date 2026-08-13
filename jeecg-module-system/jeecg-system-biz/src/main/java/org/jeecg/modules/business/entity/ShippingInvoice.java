@@ -72,6 +72,9 @@ public class ShippingInvoice implements Serializable {
     @Excel(name = "发票号码", width = 15)
     @ApiModelProperty(value = "发票号码")
     private String invoiceNumber;
+
+    private String invoiceEntityId;
+
     /**
      * 应付金额
      */
@@ -162,6 +165,7 @@ public class ShippingInvoice implements Serializable {
                                  Date updateTime,
                                  String clientId,
                                  String invoiceNumber,
+                                 String invoiceEntityId,
                                  BigDecimal totalAmount,
                                  BigDecimal discountAmount,
                                  BigDecimal finalAmount,
@@ -174,6 +178,7 @@ public class ShippingInvoice implements Serializable {
         this.updateTime = updateTime;
         this.clientId = clientId;
         this.invoiceNumber = invoiceNumber;
+        this.invoiceEntityId = invoiceEntityId;
         this.totalAmount = totalAmount;
         this.discountAmount = discountAmount;
         this.finalAmount = finalAmount;
@@ -184,13 +189,14 @@ public class ShippingInvoice implements Serializable {
             String username,
             String clientId,
             String invoiceNumber,
+            String invoiceEntityId,
             BigDecimal totalAmount,
             BigDecimal discountAmount,
             Boolean paymentApproved,
             String currencyId
     ) {
         return new ShippingInvoice(null, username, new Date(), username, new Date(), clientId,
-                invoiceNumber, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paymentApproved, currencyId);
+                invoiceNumber, invoiceEntityId, totalAmount, discountAmount, totalAmount.subtract(discountAmount), paymentApproved, currencyId);
     }
     @Getter
     public enum Status {
