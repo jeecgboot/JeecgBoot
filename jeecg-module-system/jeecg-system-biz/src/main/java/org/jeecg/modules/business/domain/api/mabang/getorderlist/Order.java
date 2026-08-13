@@ -181,6 +181,12 @@ public class Order {
     @JSONField(name = "platformFulfillmentStatus")
     private String platformStatus;
 
+    /**
+     * 买家备注/平台留言
+     */
+    @JSONField(name = "buyerMessage")
+    private String buyerMessage;
+
     @JSONField(name = "paidTime")
     public void setPaidTimeRaw(String paidTime) {
         this.orderTime = parseMabangFranceTime(paidTime);
