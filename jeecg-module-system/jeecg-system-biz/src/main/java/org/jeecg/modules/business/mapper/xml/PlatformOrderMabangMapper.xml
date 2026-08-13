@@ -131,6 +131,11 @@
             when #{item.id} then #{item.shippingService}
         </foreach>
         end
+        buyer_message = case id
+        <foreach collection="orders" item="item" index="index" open="" close="" separator=" ">
+            when #{item.id} then #{item.buyerMessage}
+        </foreach>
+        end
 
         where id in
         <foreach collection="orders" separator="," open="(" close=")" index="index" item="item">
