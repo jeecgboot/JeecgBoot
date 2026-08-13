@@ -17,8 +17,8 @@ import java.util.Date;
 /**
  * @Description: 平台订单表
  * @Author: jeecg-boot
- * @Date: 2026-02-05
- * @Version: V1.12
+ * @Date: 2026-08-12
+ * @Version: V1.13
  */
 @ApiModel(value = "platform_order对象", description = "平台订单表")
 @Data
@@ -308,4 +308,10 @@ public class PlatformOrder implements Serializable {
     @Excel(name = "欧盟小包税", width = 15)
     @ApiModelProperty(value = "欧盟小包税")
     private java.math.BigDecimal smallParcelTax;
+     /**
+     * 买家备注/平台留言
+     */
+    @Excel(name = "买家备注/平台留言", width = 15)
+    @ApiModelProperty(value = "买家备注/平台留言")
+    private java.lang.String buyerMessage;
 }
