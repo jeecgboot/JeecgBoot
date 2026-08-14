@@ -74,20 +74,16 @@ JeecgBoot低代码平台兼容所有J2EE项目开发，支持信创国产化，�
 - 数据库：达梦、人大金仓、TiDB
 - 中间件：东方通 TongWeb、TongRDS，宝兰德 AppServer、CacheDB, [信创配置文档](https://help.jeecg.com/java/tongweb-deploy/)
 
-
-版本说明
+项目说明
 -----------------------------------
 
-|下载 | SpringBoot4 + Shiro                                   |SpringBoot3+ SpringAuthorizationServer | SpringBoot3 + Sa-Token |
-|------|---------------------------------------------------------|----------------------------|-------------------|
-| Github | [`main`](https://github.com/jeecgboot/JeecgBoot)        | [`springboot3_sas`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3_sas) 分支  |  [`springboot3-satoken`](https://github.com/jeecgboot/JeecgBoot/tree/springboot3-satoken) 分支|
-| Gitee | [`main`](https://github.com/jeecgboot/JeecgBoot) | [`springboot3_sas`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3_sas) 分支|  [`springboot3-satoken`](https://gitee.com/jeecg/JeecgBoot/tree/springboot3-satoken) 分支|
+| 项目 | 说明 |
+|------|------|
+| `jeecg-boot` | 后端 SpringBoot4 源码（Shiro+Mybatis+SpringCloudAlibaba，支持单体/微服务切换） |
+| `jeecgboot-vue3` | 前端 Vue3+TS 源码（vue3+vite6+ts 最新技术栈） |
+| `jeecg-uniapp` | [APP 开发框架，一套代码多端适配，支持 APP、小程序、H5、鸿蒙](https://github.com/jeecgboot/JeecgUniapp) |
+| `jeecg-boot-starter` | [jeecg-boot 对应的底层封装 starter](https://github.com/jeecgboot/jeecg-boot-starter)：微服务启动、xxljob、分布式锁、RabbitMQ、分布式事务、ShardingSphere 分库分表等 |
 
-
-- `jeecg-boot` 是后端JAVA源码项目Springboot4+Shiro+Mybatis+SpringCloudAlibaba（支持单体和微服务切换）.
-- `jeecgboot-vue3` 是前端VUE3源码项目（vue3+vite6+ts最新技术栈）.
-- `JeecgUniapp`  是[配套APP框架](https://github.com/jeecgboot/JeecgUniapp) 适配多个终端，支持APP、小程序、H5、鸿蒙、鸿蒙Next.
-- `jeecg-boot-starter`  是[jeecg-boot对应的底层封装starter](https://github.com/jeecgboot/jeecg-boot-starter) ：微服务启动、xxljob、分布式锁starter、rabbitmq、分布式事务、分库分表shardingsphere等.
 - 参考 [文档](https://help.jeecg.com/ui/2dev/mini) 可以删除不需要的demo，制作一个精简版本
 
 
