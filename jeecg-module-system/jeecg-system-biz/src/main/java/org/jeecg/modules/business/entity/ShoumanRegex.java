@@ -11,107 +11,118 @@ import org.jeecgframework.poi.excel.annotation.Excel;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
- * @Description: 首曼订单内容正则式
+ * @Description: shouman_regex
  * @Author: jeecg-boot
- * @Date: 2026-02-04
- * @Version: V1.1
+ * @Date: 2026-08-19
+ * @Version: V1.0
  */
-@ApiModel(value = "shouman_regex对象", description = "首曼订单内容正则式")
+@ApiModel(value = "shouman_regex对象", description = "shouman_regex")
 @Data
 @TableName("shouman_regex")
 public class ShoumanRegex implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * id
      */
     @TableId(type = IdType.ASSIGN_ID)
-    @ApiModelProperty(value = "主键")
-    private String id;
+    @ApiModelProperty(value = "id")
+    private java.lang.String id;
     /**
      * 创建人
      */
     @ApiModelProperty(value = "创建人")
-    private String createBy;
+    private java.lang.String createBy;
     /**
      * 创建日期
      */
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "创建日期")
-    private Date createTime;
+    private java.util.Date createTime;
     /**
      * 更新人
      */
     @ApiModelProperty(value = "更新人")
-    private String updateBy;
+    private java.lang.String updateBy;
     /**
      * 更新日期
      */
     @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "更新日期")
-    private Date updateTime;
+    private java.util.Date updateTime;
     /**
      * 首曼产品类别ID
      */
     @ApiModelProperty(value = "首曼产品类别ID")
-    private String shoumanCategoryId;
+    private java.lang.String shoumanCategoryId;
     /**
      * 定制内容识别正则式
      */
     @Excel(name = "定制内容识别正则式", width = 15)
     @ApiModelProperty(value = "定制内容识别正则式")
-    private String contentRecRegex;
+    private java.lang.String contentRecRegex;
     /**
      * 定制内容提取正则式
      */
     @Excel(name = "定制内容提取正则式", width = 15)
     @ApiModelProperty(value = "定制内容提取正则式")
-    private String contentExtRegex;
+    private java.lang.String contentExtRegex;
     /**
      * 备注
      */
     @Excel(name = "备注", width = 15)
     @ApiModelProperty(value = "备注")
-    private String comment;
+    private java.lang.String comment;
     /**
      * 是否启用
      */
     @Excel(name = "是否启用", width = 15, dicCode = "yn")
     @ApiModelProperty(value = "是否启用")
-    private String isActive;
+    private java.lang.String isActive;
     /**
      * 解析后内容前缀
      */
     @Excel(name = "解析后内容前缀", width = 15)
     @ApiModelProperty(value = "解析后内容前缀")
-    private String prefix;
+    private java.lang.String prefix;
     /**
      * 是否为解析尺寸正则式
      */
     @Excel(name = "是否为解析尺寸正则式", width = 15, dicCode = "yn")
     @ApiModelProperty(value = "是否为解析尺寸正则式")
-    private String isSizeRegex;
+    private java.lang.String isSizeRegex;
     /**
-     * 是否为解析月份正则式
+     * 是否为月份解析正则式
      */
-    @Excel(name = "是否为解析月份正则式", width = 15, dicCode = "yn")
-    @ApiModelProperty(value = "是否为解析月份正则式")
-    private String isMonthRegex;
+    @Excel(name = "是否为月份解析正则式", width = 15, dicCode = "yn")
+    @ApiModelProperty(value = "是否为月份解析正则式")
+    private java.lang.String isMonthRegex;
     /**
-     * 是否合并为逗号分隔单行
+     * 是否将定制内容转换为单行逗号分隔文字
      */
-    @Excel(name = "是否合并为逗号分隔单行", width = 15, dicCode = "yn")
-    @ApiModelProperty(value = "是否合并为逗号分隔单行")
-    private String isCommaSeparated;
+    @Excel(name = "是否将定制内容转换为单行逗号分隔文字", width = 15, dicCode = "yn")
+    @ApiModelProperty(value = "是否将定制内容转换为单行逗号分隔文字")
+    private java.lang.String isCommaSeparated;
+    /**
+     * 同类正则式之间优先级，越小越优先
+     */
+    @Excel(name = "同类正则式之间优先级，越小越优先", width = 15)
+    @ApiModelProperty(value = "同类正则式之间优先级，越小越优先")
+    private java.lang.Integer priority;
     /**
      * 是否将英寸尺寸转换为厘米
      */
     @Excel(name = "是否将英寸尺寸转换为厘米", width = 15, dicCode = "yn")
     @ApiModelProperty(value = "是否将英寸尺寸转换为厘米")
-    private String isInInches;
+    private java.lang.String isInInches;
+    /**
+     * 是否用于解析买家留言
+     */
+    @Excel(name = "是否用于解析买家留言", width = 15, dicCode = "yn")
+    @ApiModelProperty(value = "是否用于解析买家留言")
+    private java.lang.String useOnBuyerMessage;
 }
