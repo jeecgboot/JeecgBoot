@@ -20,6 +20,7 @@ public class ShoumanOrderBase {
     private String logisticChannelName;
     private String logisticChannelCode;
     private String shippingLabelUrl;
+    private String buyerMessage;
     private List<ShoumanOrderContent> contentList;
 
     public ShoumanOrderBase() {
@@ -39,6 +40,7 @@ public class ShoumanOrderBase {
                 ", logisticChannelName='" + logisticChannelName + '\'' +
                 ", logisticChannelCode='" + logisticChannelCode + '\'' +
                 ", shippingLabelUrl='" + shippingLabelUrl + '\'' +
+                ", buyerMessage='" + buyerMessage + '\'' +
                 ", contentList='" + contentList + '\'' +
                 '}';
     }
