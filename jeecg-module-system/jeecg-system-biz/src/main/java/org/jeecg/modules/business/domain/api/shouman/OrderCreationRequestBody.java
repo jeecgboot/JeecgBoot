@@ -11,7 +11,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,6 +31,10 @@ public class OrderCreationRequestBody implements RequestBody {
     private final static String TRANSACTION_NUMBER = "交易号";
     private final static String SHOP_CODE = "店铺名称";
     private final static String CUSTOM_PHOTO_URL = "定制照片链接";
+    private final static Pattern DESIGN_ID_PATTERN = Pattern.compile("[?&]d=([^&\\s]+)");
+    private final static Pattern PRINT_4K_PATTERN = Pattern.compile("^\\s*Print 4K:\\s*(\\S+)\\s*$", Pattern.MULTILINE);
+    private final static Pattern DESIGN_ID_IN_CUSTOMIZATION_PATTERN = Pattern.compile("(?:^|;)\\s*_designId:([^;]+)");
+    private final static Pattern URL_PATTERN = Pattern.compile("https?://\\S+");
     private final static String PRODUCT_GROUP_KEY = "_gpo_product_group";
     private final static String PARENT_PRODUCT_GROUP_KEY = "_gpo_parent_product_group";
     private final static Pattern INCH_RANGE_PATTERN = Pattern.compile(
@@ -58,8 +64,9 @@ public class OrderCreationRequestBody implements RequestBody {
         BigDecimal totalPrice = BigDecimal.ZERO;
         StringBuilder memo = new StringBuilder();
         // Merge contents in case of necklaces with gems
-        List<ShoumanOrderContent> reducedContents = mergeContentsForNecklaceWithGems(shoumanOrderBase.getContentList());
-        for (ShoumanOrderContent content : reducedContents.isEmpty() ? shoumanOrderBase.getContentList() : reducedContents) {
+        List<ShoumanOrderContent> allContents = shoumanOrderBase.getContentList();
+        List<ShoumanOrderContent> reducedContents = mergeContentsForNecklaceWithGems(allContents);
+        for (ShoumanOrderContent content : reducedContents.isEmpty() ? allContents : reducedContents) {
             if (content.getIsMemo()) {
                 if (!memo.isEmpty()) memo.append(LINE_BREAK);
                 memo.append(content.getRemark());
@@ -75,6 +82,11 @@ public class OrderCreationRequestBody implements RequestBody {
             putNonNull(contentJson, "comment", generateRemark(content.getRemark(), content.getCustomizationData(),
                     content.getRegexList(), shoumanOrderBase.getShopErpCode(), shoumanOrderBase.getPlatformOrderNumber(),
                     content.getCustomizationUrl()));
+            if (shoumanOrderBase.getBuyerMessage() != null) {
+                String manuscriptCustomizationData = resolveManuscriptCustomizationData(content, allContents);
+                addManuscripts(contentJson, manuscriptCustomizationData, content.getRegexList(),
+                    shoumanOrderBase.getBuyerMessage());
+            }
             putNonNull(contentJson, "sku", content.getSku());
             putNonNull(contentJson, "outboundNumder", content.getQuantity()); // Typo intended
             outboundInfos.add(contentJson);
@@ -95,9 +107,108 @@ public class OrderCreationRequestBody implements RequestBody {
         return json;
     }
 
+    private String resolveManuscriptCustomizationData(ShoumanOrderContent content,
+                                                       List<ShoumanOrderContent> allContents) {
+        if (content.getCustomizationData() != null && !content.getCustomizationData().trim().isEmpty()) {
+            return content.getCustomizationData();
+        }
+        if (content.getSkuId() == null || allContents == null) {
+            return null;
+        }
+        return allContents.stream()
+                .filter(candidate -> content.getSkuId().equals(candidate.getSkuId()))
+                .map(ShoumanOrderContent::getCustomizationData)
+                .filter(customizationData -> customizationData != null && !customizationData.trim().isEmpty())
+                .findFirst()
+                .orElse(null);
+    }
+    private void addManuscripts(JSONObject contentJson, String customizationData, List<ShoumanRegex> regexList,
+                                String buyerMessage) {
+        if (buyerMessage == null || buyerMessage.trim().isEmpty()
+                || customizationData == null || customizationData.trim().isEmpty()) {
+            return;
+        }
+
+        JSONArray manuscripts = new JSONArray();
+        Set<String> manuscriptUrls = new LinkedHashSet<>();
+        addBuyerMessageManuscripts(manuscriptUrls, customizationData, regexList, buyerMessage);
+        for (String manuscriptUrl : manuscriptUrls) {
+            JSONObject manuscript = new JSONObject();
+            manuscript.put("manuscriptUrl", manuscriptUrl);
+            manuscript.put("thumbnailUrl", manuscriptUrl);
+            manuscripts.add(manuscript);
+        }
+
+        // Keep supporting the original design-id based Print 4K format.
+        if (manuscripts.isEmpty()) {
+            addPrint4kManuscript(manuscripts, customizationData, buyerMessage);
+        }
+        if (!manuscripts.isEmpty()) {
+            contentJson.put("manuscripts", manuscripts);
+        }
+    }
+
+    private void addBuyerMessageManuscripts(Set<String> manuscriptUrls, String customizationData,
+                                             List<ShoumanRegex> regexList, String buyerMessage) {
+        if (regexList == null) {
+            return;
+        }
+        for (ShoumanRegex regex : regexList) {
+            if (!isEnabled(regex.getUseOnBuyerMessage())) {
+                continue;
+            }
+            for (String customizationPart : customizationData.split(DEFAULT_SPLIT)) {
+                if (!customizationPart.matches(regex.getContentRecRegex())) {
+                    continue;
+                }
+                String extractedContent = extractCustomizationContent(customizationPart, regex.getContentExtRegex());
+                if (extractedContent == null || extractedContent.trim().isEmpty()) {
+                    continue;
+                }
+                String normalizedContent = extractedContent.trim().toLowerCase();
+                Matcher urlMatcher = URL_PATTERN.matcher(buyerMessage);
+                while (urlMatcher.find()) {
+                    String url = urlMatcher.group();
+                    if (url.toLowerCase().contains(normalizedContent)) {
+                        manuscriptUrls.add(url);
+                    }
+                }
+            }
+        }
+    }
+
+    private String extractCustomizationContent(String customizationPart, String contentExtRegex) {
+        String[] extractedParts = customizationPart.trim().split(contentExtRegex);
+        return extractedParts.length == 0 ? null : extractedParts[extractedParts.length - 1].trim();
+    }
+
+    private void addPrint4kManuscript(JSONArray manuscripts, String customizationData, String buyerMessage) {
+        Matcher designIdMatcher = DESIGN_ID_IN_CUSTOMIZATION_PATTERN.matcher(customizationData);
+        if (!designIdMatcher.find()) {
+            return;
+        }
+        String designId = designIdMatcher.group(1).trim();
+
+        Matcher printMatcher = PRINT_4K_PATTERN.matcher(buyerMessage);
+        while (printMatcher.find()) {
+            String printUrl = printMatcher.group(1).trim();
+            Matcher urlDesignIdMatcher = DESIGN_ID_PATTERN.matcher(printUrl);
+            if (!urlDesignIdMatcher.find() || !designId.equals(urlDesignIdMatcher.group(1))) {
+                continue;
+            }
+            JSONObject manuscript = new JSONObject();
+            manuscript.put("manuscriptUrl", printUrl);
+            manuscript.put("thumbnailUrl", printUrl);
+            manuscripts.add(manuscript);
+            break;
+        }
+    }
     private String generateRemark(String baseRemark, String customizationData, List<ShoumanRegex> regexList,
                                   String shopErpCode, String platformOrderNumber, String customizationURL) {
         StringBuilder sb = new StringBuilder();
+        if (customizationData == null) {
+            customizationData = "";
+        }
 
         sb.append(SHOP_CODE)
                 .append(shopErpCode)
@@ -125,6 +236,9 @@ public class OrderCreationRequestBody implements RequestBody {
                     .append(LINE_BREAK);
         }
 
+        if (shoumanOrderBase.getBuyerMessage() != null && !shoumanOrderBase.getBuyerMessage().trim().isEmpty()) {
+            return sb.toString();
+        }
         for (ShoumanRegex regex : regexList) {
             String[] strings = customizationData.split(DEFAULT_SPLIT);
             int customCounter = 1;
