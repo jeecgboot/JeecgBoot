@@ -10,6 +10,7 @@ import java.util.List;
 public class ShoumanOrderContent {
 
     private String platformOrderContentId;
+    private String skuId;
     private String customizationData;
     private String customizationUrl;
     private Integer quantity;
@@ -20,7 +21,7 @@ public class ShoumanOrderContent {
     private String sku;
     private Boolean isNecklace;
     private Boolean isGem;
-     private Boolean isMemo;
+    private Boolean isMemo;
     private List<ShoumanRegex> regexList;
 
     public ShoumanOrderContent() {
