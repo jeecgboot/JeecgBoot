@@ -382,10 +382,12 @@
                po.city,
                c.name_zh,
                po.shipping_label_url,
+               po.buyer_message,
                po.tracking_number,
                lc.zh_name as logistic_channel_name,
                lc.code as logistic_channel_code,
                poc.id as platform_order_content_id,
+               poc.sku_id,
                poc.customization_data,
                poc.customization_url,
                poc.quantity,
@@ -403,7 +405,8 @@
                sr.is_size_regex,
                sr.is_month_regex,
                sr.is_comma_separated,
-               sr.is_in_inches
+               sr.is_in_inches,
+               sr.use_on_buyer_message
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
                  left join logistic_channel lc on po.logistic_channel_name = lc.zh_name
@@ -432,8 +435,10 @@
         <result property="logisticChannelName" column="logistic_channel_name" javaType="string"/>
         <result property="logisticChannelCode" column="logistic_channel_code" javaType="string"/>
         <result property="shippingLabelUrl" column="shipping_label_url" javaType="string"/>
+        <result property="buyerMessage" column="buyer_message" javaType="string"/>
         <collection property="contentList" ofType="org.jeecg.modules.business.entity.Shouman.ShoumanOrderContent">
             <id property="platformOrderContentId" column="platform_order_content_id" javaType="string"/>
+            <result property="skuId" column="sku_id" javaType="string"/>
             <result property="customizationData" column="customization_data" javaType="string"/>
             <result property="customizationUrl" column="customization_url" javaType="string"/>
             <result property="quantity" column="quantity"/>
@@ -453,6 +458,7 @@
                 <result property="isMonthRegex" column="is_month_regex" javaType="string"/>
                 <result property="isCommaSeparated" column="is_comma_separated" javaType="string"/>
                 <result property="isInInches" column="is_in_inches" javaType="string"/>
+                <result property="useOnBuyerMessage" column="use_on_buyer_message" javaType="string"/>
             </collection>
         </collection>
     </resultMap>
@@ -467,10 +473,12 @@
                po.city,
                c.name_zh,
                po.shipping_label_url,
+               po.buyer_message,
                po.tracking_number,
                lc.zh_name as logistic_channel_name,
                lc.code as logistic_channel_code,
                poc.id as platform_order_content_id,
+               poc.sku_id,
                poc.customization_data,
                poc.customization_url,
                poc.quantity,
@@ -488,7 +496,8 @@
                sr.is_size_regex,
                sr.is_month_regex,
                sr.is_comma_separated,
-               sr.is_in_inches
+               sr.is_in_inches,
+               sr.use_on_buyer_message
         from platform_order_content poc
                  join platform_order po on poc.platform_order_id = po.id
                  left join logistic_channel lc on po.logistic_channel_name = lc.zh_name
