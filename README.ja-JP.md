@@ -9,7 +9,7 @@ JEECG BOOT AI ローコードプラットフォーム
 
 🚀 **ローコードは v2.0 時代へ、AI Skills 自然言語プログラミングが新登場** — 自然言語の一文だけでシステム全体を生成、コード生成・フロー作成・フォーム設計・レポートと大画面作成まで、JeecgBoot ローコードの全シーンをカバー。
 
-現在のバージョン：3.9.3（2026-07-07）
+現在のバージョン：3.9.3（2026-08-20）
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)

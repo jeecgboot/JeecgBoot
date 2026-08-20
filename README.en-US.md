@@ -9,7 +9,7 @@ JEECG BOOT AI Low Code Platform
 
 🚀 **Low-Code enters the v2.0 era, AI Skills Natural Language Programming is now released** — generate an entire system with a single natural-language sentence, generate complete code, draw BPMN flows, design forms, create reports and dashboards with one sentence, covering all JeecgBoot low-code scenarios.
 
-Current version: 3.9.3 (2026-07-07)
+Current version: 3.9.3 (2026-08-20)
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/zhangdaiscott/jeecg-boot/blob/master/LICENSE)

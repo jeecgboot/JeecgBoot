@@ -5,7 +5,7 @@ JeecgBoot AI低代码平台
 
 🚀 **低代码迈入 v2.0 时代，AI Skills 自然语言编程全新发布** — 一句自然语言即可生成整个系统，一句话生成完整代码、一句话画流程、一句话设计表单、一句话出报表与大屏，覆盖 JeecgBoot 低代码全场景。
 
-当前最新版本： 3.9.3（2026-07-07） 
+当前最新版本： 3.9.3（2026-08-20） 
 
 
 [![AUR](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)
