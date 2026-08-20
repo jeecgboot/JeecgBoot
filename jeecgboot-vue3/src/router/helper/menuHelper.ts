@@ -31,7 +31,7 @@ function findMenuPath<T = Recordable>(treeData: T[], path: string, matchHide: bo
     if(!matchHide && n.hideMenu) {
       return false;
     }
-    return n.path === path
+    return n.path.split('?')[0] === path.split('?')[0]
   }) as Menu[];
 }
 
@@ -95,7 +95,7 @@ export function transformRouteToMenu(routeModList: AppRouteModule[], routerMappi
         name: title,
         hideMenu,
         alwaysShow:node.alwaysShow||false,
-        path: node.path,
+        path: node.meta?.menuPath || node.path,
         originComponent: node.originComponent,
         ...(node.redirect ? { redirect: node.redirect } : {}),
       };
