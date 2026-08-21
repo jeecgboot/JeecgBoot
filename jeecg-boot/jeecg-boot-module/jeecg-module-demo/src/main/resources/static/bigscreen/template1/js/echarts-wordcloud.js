@@ -8930,7 +8930,7 @@ function enableClassExtend(RootClass, mandatoryMethods) {
 // class A has method f,
 // class B inherits class A, overrides method f, f call superApply('f'),
 // class C inherits class B, do not overrides method f,
-// then when method of class C is called, dead loop occured.
+// then when method of class C is called, dead loop occurred.
 
 
 function superCall(context, methodName) {

@@ -149,7 +149,7 @@ document.webL10n = (function(window, document, undefined) {
    *    triggered when the l10n resource has been successully parsed.
    *
    * @param {Function} failureCallback
-   *    triggered when the an error has occured.
+   *    triggered when the an error has occurred.
    *
    * @return {void}
    *    uses the following global variables: gL10nData, gTextData, gTextProp.
