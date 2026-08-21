@@ -602,6 +602,9 @@ public class AIChatHandler implements IAIChatHandler {
                     byte[] fileContent;
                     if (matcher.matches()) {
                         // 来源于网络
+                        //update-begin---author:Rangsh ---date:2026-08-21  for：【issues/9670】图生图读取网络图片前增加SSRF校验-----------
+                        SsrfFileTypeFilter.checkSsrfHttpUrl(imageUrl);
+                        //update-end---author:Rangsh ---date:2026-08-21  for：【issues/9670】图生图读取网络图片前增加SSRF校验-----------
                         java.net.URL url = new java.net.URL(imageUrl);
                         java.net.URLConnection conn = url.openConnection();
                         conn.setConnectTimeout(5000);

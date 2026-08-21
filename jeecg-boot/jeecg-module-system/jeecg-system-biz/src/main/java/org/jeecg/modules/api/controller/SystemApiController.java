@@ -552,7 +552,11 @@ public class SystemApiController {
      */
     @RequestMapping("/queryUsersByUsernames")
     List<JSONObject> queryUsersByUsernames(@RequestParam("usernames") String usernames){
-        return this.sysBaseApi.queryUsersByUsernames(usernames);
+        List<JSONObject> list = this.sysBaseApi.queryUsersByUsernames(usernames);
+        //update-begin---author:Rangsh ---date:2026-08-21  for：【issues/9670】批量查询用户接口补充敏感信息脱敏-----------
+        desensitizeUserJsonList(list);
+        //update-end---author:Rangsh ---date:2026-08-21  for：【issues/9670】批量查询用户接口补充敏感信息脱敏-----------
+        return list;
     }
 
     /**
@@ -562,8 +566,32 @@ public class SystemApiController {
      */
     @RequestMapping("/queryUsersByIds")
     List<JSONObject> queryUsersByIds(@RequestParam("ids") String ids){
-        return this.sysBaseApi.queryUsersByIds(ids);
+        List<JSONObject> list = this.sysBaseApi.queryUsersByIds(ids);
+        //update-begin---author:Rangsh ---date:2026-08-21  for：【issues/9670】批量查询用户接口补充敏感信息脱敏-----------
+        desensitizeUserJsonList(list);
+        //update-end---author:Rangsh ---date:2026-08-21  for：【issues/9670】批量查询用户接口补充敏感信息脱敏-----------
+        return list;
     }
+
+    //update-begin---author:Rangsh ---date:2026-08-21  for：【issues/9670】批量查询用户接口补充敏感信息脱敏-----------
+    /**
+     * 对批量查询返回的用户 JSON 做敏感信息脱敏（与 getUserByName 一致）
+     */
+    private void desensitizeUserJsonList(List<JSONObject> list) {
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        for (JSONObject jsonObject : list) {
+            try {
+                LoginUser loginUser = jsonObject.toJavaObject(LoginUser.class);
+                SensitiveInfoUtil.handlerObject(loginUser, true);
+                jsonObject.putAll(JSONObject.parseObject(JSONObject.toJSONString(loginUser)));
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+            }
+        }
+    }
+    //update-end---author:Rangsh ---date:2026-08-21  for：【issues/9670】批量查询用户接口补充敏感信息脱敏-----------
 
     /**
      * 38根据多个部门编码(逗号分隔)，查询返回多个部门信息
