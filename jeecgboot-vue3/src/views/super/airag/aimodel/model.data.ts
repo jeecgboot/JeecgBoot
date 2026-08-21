@@ -11,6 +11,7 @@ import xinference from './icon/xinference.svg';
 import vllm from './icon/vllm.png';
 import imstdio from './icon/imstdio.png';
 import gemini from './icon/gemini.png';
+import minimax from './icon/minimax.svg';
 import { ref } from 'vue';
 
 /**
@@ -73,7 +74,7 @@ export const formSchema: FormSchema[] = [
       if(values.provider==='DEEPSEEK' || values.provider==="OLLAMA" || values.provider==="OPENAI"
         || values.provider==="ZHIPU" || values.provider==="QWEN" || values.provider==="ANTHROPIC" 
         || values.provider==="XINFERENCE" || values.provider==="VLLM" ||  values.provider === 'LMSTDIO'
-        || values.provider === "GOOGLE"){
+        || values.provider === "GOOGLE" || values.provider === "MINIMAX"){
         return false;
       }
       return true;
@@ -125,4 +126,5 @@ export const imageList = ref<any>({
   VLLM: vllm,
   LMSTDIO: imstdio,
   GOOGLE: gemini,
+  MINIMAX: minimax,
 });

@@ -297,9 +297,9 @@ public class AIChatHandler implements IAIChatHandler {
             params = new AIChatParams();
         }
 
-        params.setProvider(airagModel.getProvider());
+        params.setProvider(resolveProvider(airagModel.getProvider()));
         params.setModelName(airagModel.getModelName());
-        params.setBaseUrl(airagModel.getBaseUrl());
+        params.setBaseUrl(resolveRequestBaseUrl(airagModel.getProvider(), airagModel.getBaseUrl()));
         if (oConvertUtils.isObjectNotEmpty(airagModel.getCredential())) {
             JSONObject modelCredential = JSONObject.parseObject(airagModel.getCredential());
             params.setApiKey(oConvertUtils.getString(modelCredential.getString("apiKey"), null));
@@ -386,6 +386,25 @@ public class AIChatHandler implements IAIChatHandler {
         //update-end---author:scott ---date:20260429  for：[issues/9585]DeepSeek大模型切换为新发布deepseek-v4-flash，流程中调用出现异常------------
 
         return params;
+    }
+
+    static String resolveProvider(String provider) {
+        return "MINIMAX".equalsIgnoreCase(provider) ? "OPENAI" : provider;
+    }
+
+    static String resolveRequestBaseUrl(String provider, String baseUrl) {
+        if (!"ANTHROPIC".equalsIgnoreCase(provider) || baseUrl == null) {
+            return baseUrl;
+        }
+        String normalizedBaseUrl = baseUrl.endsWith("/")
+                ? baseUrl.substring(0, baseUrl.length() - 1)
+                : baseUrl;
+        // LangChain4j appends "/messages" to the configured Anthropic base URL.
+        if ("https://api.minimax.io/anthropic".equals(normalizedBaseUrl)
+                || "https://api.minimaxi.com/anthropic".equals(normalizedBaseUrl)) {
+            return normalizedBaseUrl + "/v1";
+        }
+        return baseUrl;
     }
 
     /**
