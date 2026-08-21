@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -56,6 +57,10 @@ public class VoiceApiHelper {
      */
     public void generateAudio(String text, Path audioPath, String voice, double speed) throws IOException, InterruptedException {
         AiChatConfig.VoiceModelConfig config = aiChatConfig.getAiModelVoice();
+        if (MiniMaxVoiceApi.isProvider(config.getProvider())) {
+            generateAudioByMiniMax(text, audioPath, voice, speed, config);
+            return;
+        }
         String apiHost = config.getApiHost();
         String url = apiHost.endsWith("/") ? apiHost + "audio/speech" : apiHost + "/audio/speech";
 
@@ -87,5 +92,47 @@ public class VoiceApiHelper {
             Files.copy(is, audioPath, StandardCopyOption.REPLACE_EXISTING);
         }
         log.info("TTS语音已生成: {}", audioPath);
+    }
+
+    /**
+     * Generate a speech file with the MiniMax text to audio operation, which answers with a json
+     * body carrying the audio as a hex string instead of streaming the audio bytes
+     *
+     * @param text      text to convert
+     * @param audioPath audio output path
+     * @param voice     voice id
+     * @param speed     speech speed
+     * @param config    speech model configuration
+     */
+    private void generateAudioByMiniMax(String text, Path audioPath, String voice, double speed,
+                                        AiChatConfig.VoiceModelConfig config) throws IOException, InterruptedException {
+        String url = MiniMaxVoiceApi.resolveEndpoint(config.getApiHost());
+        String model = MiniMaxVoiceApi.resolveModel(config.getModel());
+        if (!MiniMaxVoiceApi.isSupportedModel(model)) {
+            log.warn("Unknown speech model {}, supported models are: {}", model,
+                    MiniMaxVoiceApi.supportedModelsDescription());
+        }
+        JSONObject body = MiniMaxVoiceApi.buildRequestBody(model, text, voice, speed, config.getVolume(), null);
+
+        log.info("Speech request: url={}, model={}, voice={}, speed={}, textLength={}", url, model, voice, speed,
+                text.length());
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", "Bearer " + config.getApiKey())
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body.toJSONString(), StandardCharsets.UTF_8))
+                .timeout(Duration.ofSeconds(config.getTimeout()))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (response.statusCode() != 200) {
+            log.error("Speech api call failed: status={}, body={}", response.statusCode(), response.body());
+            throw new RuntimeException("Speech api call failed, status code: " + response.statusCode() + ", "
+                    + response.body());
+        }
+
+        Files.write(audioPath, MiniMaxVoiceApi.extractAudio(response.body()));
+        log.info("Speech file generated: {}", audioPath);
     }
 }
