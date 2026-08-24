@@ -31,8 +31,10 @@
 <script lang="ts" setup>
   // 监听流程流转信息
   import {inject, ref, watchEffect} from 'vue';
-  import { taskTransInfo } from '@/views/super/bpm/process/personalOffice/myHandleTask/task.handle.api';
   import dayjs from 'dayjs';
+  // 开源仓库不含 BPM 模块。静态 import 会在打包期解析失败（#9845）。
+  // 使用 import.meta.glob 按需加载：有 BPM 源码时功能保持不变，没有时跳过请求。
+  const bpmApiModules = import.meta.glob('../../../../bpm/process/personalOffice/myHandleTask/task.handle.api.ts');
   // 参数
   const props = defineProps({
     taskId: {
@@ -59,6 +61,11 @@
   });
   // 获取流程流转信息
   async function getTaskTransInfo() {
+    const loader = Object.values(bpmApiModules)[0];
+    if (!loader) {
+      return;
+    }
+    const { taskTransInfo } = (await loader()) as { taskTransInfo: Function };
     let taskType = props.processTabType || 'history';
     //查询条件-run只需要taskId， history只需要procInstId
     let params = { taskId: props.taskId, procInstId: props.procInsId };
