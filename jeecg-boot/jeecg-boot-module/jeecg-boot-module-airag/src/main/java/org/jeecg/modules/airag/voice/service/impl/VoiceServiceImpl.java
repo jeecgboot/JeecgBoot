@@ -160,8 +160,12 @@ public class VoiceServiceImpl implements IVoiceService {
     //update-end---author:wangshuai ---date:2026-04-15  for：【QQYUN-14568】语音生成改为异步，支持切换菜单后重新获取结果-----------
 
     @Override
-    public List<JSONObject> getVoiceRecords(String userId) {
-        String redisKey = REDIS_KEY_PREFIX + userId;
+    public List<JSONObject> getVoiceRecords() {
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (loginUser == null) {
+            return Collections.emptyList();
+        }
+        String redisKey = REDIS_KEY_PREFIX + loginUser.getId();
         List<Object> list = redisUtil.lGet(redisKey, 0, -1);
         if (list == null || list.isEmpty()) {
             return Collections.emptyList();
@@ -172,8 +176,12 @@ public class VoiceServiceImpl implements IVoiceService {
     }
 
     @Override
-    public boolean deleteVoiceRecord(String userId, String recordId) {
-        String redisKey = REDIS_KEY_PREFIX + userId;
+    public boolean deleteVoiceRecord(String recordId) {
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (loginUser == null) {
+            return false;
+        }
+        String redisKey = REDIS_KEY_PREFIX + loginUser.getId();
         List<Object> list = redisUtil.lGet(redisKey, 0, -1);
         if (list == null || list.isEmpty()) {
             return false;

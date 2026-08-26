@@ -84,7 +84,7 @@
 
 
 	<!-- 查询一条消息 -->
-	<select id="getOne" parameterType="String" resultMap="AnnouncementSendModel">
+	<select id="getOne" parameterType="map" resultMap="AnnouncementSendModel">
 		select
 		sas.id,
 		sas.annt_id,
@@ -105,6 +105,7 @@
 		where sa.send_status = '1'
 		and sa.del_flag = '0'
 		and sas.id = #{sendId}
+		and sas.user_id = #{userId}
 	</select>
 
 

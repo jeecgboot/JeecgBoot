@@ -691,14 +691,16 @@ public class SysAnnouncementController {
 	}
 
 
-    /**
-     * 根据用户id获取最新一条消息发送时间(创建时间)
-     * @param userId
-     * @return
-     */
+	/**
+	 * 根据用户id获取最新一条消息发送时间(创建时间)
+	 * @param noticeType 通知类型
+	 * @return 最新消息发送时间
+	 */
 	@GetMapping("/getLastAnnountTime")
-	public Result<Page<SysAnnouncementSend>> getLastAnnountTime(@RequestParam(name = "userId") String userId,@RequestParam(name="noticeType",required = false) String noticeType){
+	public Result<Page<SysAnnouncementSend>> getLastAnnountTime(@RequestParam(name="noticeType",required = false) String noticeType){
 		Result<Page<SysAnnouncementSend>> result = new Result<>();
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		String userId = sysUser.getId();
 		//----------------------------------------------------------------------------------------
 		// step.1 此接口过慢，可以采用缓存一小时方案
 		String keyString = String.format(CommonConstant.CACHE_KEY_USER_LAST_ANNOUNT_TIME_1HOUR, userId) + "_" + noticeType;

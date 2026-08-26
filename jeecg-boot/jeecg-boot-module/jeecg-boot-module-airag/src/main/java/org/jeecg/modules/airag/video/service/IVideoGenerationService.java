@@ -39,10 +39,10 @@ public interface IVideoGenerationService {
     /**
      * 查询用户视频生成记录列表
      */
-    List<JSONObject> getVideoRecords(String userId);
+    List<JSONObject> getVideoRecords();
 
     /**
      * 删除用户视频生成记录
      */
-    boolean deleteVideoRecord(String userId, String recordId);
+    boolean deleteVideoRecord(String recordId);
 }
