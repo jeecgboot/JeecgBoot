@@ -246,7 +246,10 @@ public class PluginToolBuilder {
                 HttpMethod httpMethod = parseHttpMethod(method);
 
                 // 构建请求头
-                HttpHeaders httpHeaders = buildHttpHeaders(parameters, args, defaultHeaders);
+                //update-begin---author:kriptoburak---date:20260824---for:【issues/9846】插件请求头支持环境变量---
+                Map<String, String> resolvedHeaders = PluginHeaderValueResolver.resolve(defaultHeaders);
+                HttpHeaders httpHeaders = buildHttpHeaders(parameters, args, resolvedHeaders);
+                //update-end---author:kriptoburak---date:20260824---for:【issues/9846】插件请求头支持环境变量---
 
                 // 构建请求参数
                 JSONObject urlVariables = buildUrlVariables(parameters, args);
@@ -535,7 +538,9 @@ public class PluginToolBuilder {
                 });
             }
         } catch (Exception e) {
-            log.warn("解析headers失败: {}", headersStr);
+            //update-begin---author:kriptoburak---date:20260824---for:【issues/9846】禁止日志输出请求头原文---
+            log.warn("解析插件请求头失败，请检查JSON格式");
+            //update-end---author:kriptoburak---date:20260824---for:【issues/9846】禁止日志输出请求头原文---
         }
 
         return headersMap;
@@ -579,8 +584,9 @@ public class PluginToolBuilder {
                     }
                     if (oConvertUtils.isNotEmpty(currentToken)) {
                         tokenParamValue = currentToken;
-                        log.debug("从TokenUtils获取Token并添加到请求头: {} = {}", tokenParamName, 
-                            currentToken.length() > 10 ? currentToken.substring(0, 10) + "..." : currentToken);
+                        //update-begin---author:kriptoburak---date:20260824---for:【issues/9846】禁止日志输出令牌片段---
+                        log.debug("从TokenUtils获取Token并添加到请求头: {}", tokenParamName);
+                        //update-end---author:kriptoburak---date:20260824---for:【issues/9846】禁止日志输出令牌片段---
                     } else {
                         log.warn("Token授权配置中tokenParamValue为空，且无法从TokenUtils获取当前请求的token");
                     }
@@ -592,17 +598,16 @@ public class PluginToolBuilder {
             if (oConvertUtils.isNotEmpty(tokenParamName) && oConvertUtils.isNotEmpty(tokenParamValue)) {
                 // 如果headers中已存在同名header，优先使用metadata中的配置（覆盖）
                 headersMap.put(tokenParamName, tokenParamValue);
-                // 日志中只显示token的前几个字符，避免泄露完整token
-                String tokenPreview = tokenParamValue.length() > 10 
-                    ? tokenParamValue.substring(0, 10) + "..." 
-                    : tokenParamValue;
-                log.debug("添加Token授权到请求头: {} = {}", tokenParamName, tokenPreview);
+                //update-begin---author:kriptoburak---date:20260824---for:【issues/9846】禁止日志输出令牌片段---
+                log.debug("添加Token授权到请求头: {}", tokenParamName);
+                //update-end---author:kriptoburak---date:20260824---for:【issues/9846】禁止日志输出令牌片段---
             } else {
                 log.warn("Token授权配置不完整: tokenParamName={}, tokenParamValue={}", tokenParamName, tokenParamValue != null ? "***" : null);
             }
         } catch (Exception e) {
-            log.warn("解析授权配置失败: {}", metadataStr, e);
+            //update-begin---author:kriptoburak---date:20260824---for:【issues/9846】禁止日志输出授权配置---
+            log.warn("解析插件授权配置失败，请检查metadata格式: {}", e.getClass().getSimpleName());
+            //update-end---author:kriptoburak---date:20260824---for:【issues/9846】禁止日志输出授权配置---
         }
     }
 }
-
