@@ -14,7 +14,7 @@
     <ScrollContainer :style="getScrollContentStyle" v-loading="getLoading" :loading-tip="loadingText || t('common.loadingText')">
       <slot></slot>
     </ScrollContainer>
-    <DrawerFooter v-bind="getProps" @close="onClose" @ok="handleOk" :height="getFooterHeight">
+    <DrawerFooter v-bind="getProps" :showFooter="hasFooterContent" @close="onClose" @ok="handleOk" :height="getFooterHeight">
       <template #[item]="data" v-for="item in Object.keys($slots)">
         <slot :name="item" v-bind="data || {}"></slot>
       </template>
@@ -42,7 +42,7 @@
     inheritAttrs: false,
     props: basicProps,
     emits: ['visible-change', 'open-change', 'ok', 'close', 'register'],
-    setup(props, { emit }) {
+    setup(props, { emit, slots }) {
       const visibleRef = ref(false);
       const attrs = useAttrs();
       const propsRef = ref<Partial<Nullable<DrawerProps>>>(null);
@@ -97,10 +97,16 @@
         };
       });
 
-      // Custom implementation of the bottom button,
+      // Footer is visible when showFooter is set OR any footer slot is provided.
+      // insertFooter/centerFooter/appendFooter previously did not reserve height or even render.
+      const hasFooterContent = computed(() => {
+        const { showFooter } = unref(getProps);
+        return !!(showFooter || slots.footer || slots.insertFooter || slots.centerFooter || slots.appendFooter);
+      });
+
       const getFooterHeight = computed(() => {
-        const { footerHeight, showFooter } = unref(getProps);
-        if (showFooter && footerHeight) {
+        const { footerHeight } = unref(getProps);
+        if (unref(hasFooterContent) && footerHeight) {
           return isNumber(footerHeight) ? `${footerHeight}px` : `${footerHeight.replace('px', '')}px`;
         }
         return `0px`;
@@ -183,6 +189,7 @@
         getLoading,
         getBindValues,
         getFooterHeight,
+        hasFooterContent,
         handleOk,
       };
     },

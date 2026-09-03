@@ -1,5 +1,5 @@
 <template>
-  <div :class="prefixCls" :style="getStyle" v-if="showFooter || $slots.footer">
+  <div :class="prefixCls" :style="getStyle" v-if="showFooter || $slots.footer || $slots.insertFooter || $slots.centerFooter || $slots.appendFooter">
     <template v-if="!$slots.footer">
       <slot name="insertFooter"></slot>
       <a-button v-bind="cancelButtonProps" @click="handleClose" class="mr-2" v-if="showCancelBtn">
