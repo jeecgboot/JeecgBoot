@@ -1376,7 +1376,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
         
         //流程不为空，构建插件（携带应用上下文参数，供变量/记忆节点使用）
         if(oConvertUtils.isNotEmpty(flowId)){
-            Map<String, Object> result = airagFlowPluginService.getFlowsToPlugin(flowId, aiApp.getId(), memoryId);
+            Map<String, Object> result = airagFlowPluginService.getFlowsToPlugin(flowId, aiApp.getId(), memoryId, sendParams.getImages());
             this.addPluginToParams(aiChatParams, result);
         }
 

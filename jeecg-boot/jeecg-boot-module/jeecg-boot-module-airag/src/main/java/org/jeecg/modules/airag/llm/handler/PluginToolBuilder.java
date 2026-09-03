@@ -14,6 +14,7 @@ import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.common.consts.AiragConsts;
 import org.jeecg.modules.airag.flow.component.ToolsNode;
+import org.jeecg.modules.airag.llm.consts.FlowPluginContent;
 import org.jeecg.modules.airag.llm.entity.AiragMcp;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -463,8 +464,8 @@ public class PluginToolBuilder {
                     }
                 } else {
                     // 检查是否有默认值
-                    String defaultValue = param.getString("defaultValue");
-                    if (oConvertUtils.isNotEmpty(defaultValue)) {
+                    Object defaultValue = param.get(FlowPluginContent.DEFAULT_VALUE);
+                    if (defaultValue != null && (!(defaultValue instanceof String) || oConvertUtils.isNotEmpty(defaultValue))) {
                         body.put(paramName, defaultValue);
                     }
                 }

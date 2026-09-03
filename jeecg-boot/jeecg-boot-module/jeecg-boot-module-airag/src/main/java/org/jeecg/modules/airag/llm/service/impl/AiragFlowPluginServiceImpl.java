@@ -43,15 +43,20 @@ public class AiragFlowPluginServiceImpl implements IAiragFlowPluginService {
 
     @Override
     public Map<String, Object> getFlowsToPlugin(String flowIds, String appId, String memoryId) {
-        return doGetFlowsToPlugin(flowIds, appId, memoryId);
+        return doGetFlowsToPlugin(flowIds, appId, memoryId, null);
+    }
+
+    @Override
+    public Map<String, Object> getFlowsToPlugin(String flowIds, String appId, String memoryId, List<String> images) {
+        return doGetFlowsToPlugin(flowIds, appId, memoryId, images);
     }
 
     @Override
     public Map<String, Object> getFlowsToPlugin(String flowIds) {
-        return doGetFlowsToPlugin(flowIds, null, null);
+        return doGetFlowsToPlugin(flowIds, null, null, null);
     }
 
-    private Map<String, Object> doGetFlowsToPlugin(String flowIds, String appId, String memoryId) {
+    private Map<String, Object> doGetFlowsToPlugin(String flowIds, String appId, String memoryId, List<String> images) {
         log.info("开始构建流程插件");
         // 1. 查询所有启用的流程
         LambdaQueryWrapper<AiragFlow> queryWrapper = new LambdaQueryWrapper<>();
@@ -86,7 +91,7 @@ public class AiragFlowPluginServiceImpl implements IAiragFlowPluginService {
 
                 SubFlowResult flowVo = new SubFlowResult(flow);
                 // 获取入参参数
-                JSONArray parameter = getInputParameter(flow, flowVo);
+                JSONArray parameter = getInputParameter(flow, flowVo, images);
                 // 获取出参参数
                 JSONArray outParams = getOutputParameter(flow, flowVo);
                 // name必须符合 ^[a-zA-Z0-9_-]+$
@@ -197,7 +202,7 @@ public class AiragFlowPluginServiceImpl implements IAiragFlowPluginService {
      * @param flow
      * @param flowVo
      */
-    private JSONArray getInputParameter(AiragFlow flow, SubFlowResult flowVo) {
+    private JSONArray getInputParameter(AiragFlow flow, SubFlowResult flowVo, List<String> images) {
         JSONArray parameters = new JSONArray();
 /*
         String metadata = flow.getMetadata();
@@ -222,13 +227,18 @@ public class AiragFlowPluginServiceImpl implements IAiragFlowPluginService {
         if (inputParams != null) {
             for (FlowNodeConfig.NodeParam param : inputParams) {
                 String field = param.getField();
-                // 历史记录、图片由聊天服务在直连流程时自动注入,作为工具入参暴露给模型只会成为噪音且无法被有效填写
-                if (FlowConsts.FLOW_INPUT_PARAM_HISTORY.equals(field) || FlowConsts.FLOW_INPUT_PARAM_IMAGES.equals(field)) {
+                // 历史记录由聊天服务在直连流程时自动注入,作为工具入参暴露给模型只会成为噪音且无法被有效填写
+                if (FlowConsts.FLOW_INPUT_PARAM_HISTORY.equals(field)) {
                     continue;
                 }
                 JSONObject p = new JSONObject();
                 // 参数名
                 p.put(FlowPluginContent.NAME, param.getField());
+                if (FlowConsts.FLOW_INPUT_PARAM_IMAGES.equals(field)) {
+                    // 图片由服务端从当前聊天消息注入，避免模型自行编造或遗漏图片地址。
+                    p.put("hidden", true);
+                    p.put(FlowPluginContent.DEFAULT_VALUE, images);
+                }
                 // 参数描述
                 String paramDesc = oConvertUtils.getString(param.getName(), param.getField());
                 p.put(FlowPluginContent.DESCRIPTION, paramDesc);
