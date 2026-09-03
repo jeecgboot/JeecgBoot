@@ -195,9 +195,18 @@
       function loadData({ callBack }) {
         loading.value = true;
         let url = `${configUrl.getData}${unref(cgRpConfigId)}`;
+        const forceValue = props.value || props.defaultValue;
+        const forceValues = forceValue ? String(forceValue).split(props.spliter).filter(Boolean) : [];
         defHttp
           .get(
-            { url, params: { ['force_' + valueFiled]: props.value || props.defaultValue } },
+            {
+              url,
+              params: {
+                ['force_' + valueFiled]: forceValue,
+                // 报表接口默认只返回10条，按已选值数量请求，确保全部值都能回显。
+                pageSize: Math.max(forceValues.length, 10),
+              },
+            },
             { isTransformResponse: false, successMessageMode: 'none' }
           )
           .then((res) => {
