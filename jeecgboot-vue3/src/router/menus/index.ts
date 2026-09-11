@@ -104,18 +104,19 @@ export async function getChildrenMenus(parentPath: string) {
 
 function basicFilter(routes: RouteRecordNormalized[]) {
   return (menu: Menu) => {
+    const menuBasePath = menu.path.split('?')[0];
     const matchRoute = routes.find((route) => {
       if (isUrl(menu.path)) return true;
 
       if (route.meta?.carryParam) {
-        return pathToRegexp(route.path).test(menu.path);
+        return pathToRegexp(route.path).test(menuBasePath);
       }
-      const isSame = route.path === menu.path;
+      const isSame = route.path === menuBasePath;
       if (!isSame) return false;
 
       if (route.meta?.ignoreAuth) return true;
 
-      return isSame || pathToRegexp(route.path).test(menu.path);
+      return isSame || pathToRegexp(route.path).test(menuBasePath);
     });
 
     if (!matchRoute) return false;
