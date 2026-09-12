@@ -59,6 +59,29 @@ JeecgBoot平台的AIGC功能模块，是一套类似`Dify`的`AIGC应用开发�
 - [AIGC开发文档](https://help.jeecg.com/aigc)
 - [安装向量库 pgvector](https://help.jeecg.com/aigc/config)
 
+### 接入远程 MCP：Parallel Search 示例
+
+AI 应用可以通过现有 MCP 功能调用外部工具。以 [Parallel Search MCP](https://docs.parallel.ai/integrations/mcp/search-mcp) 为例，可以搜索公开网页并提取网页内容，无需 Parallel 账号或 API Key，免费访问有速率限制。
+
+1. 在 MCP 管理页面点击「新增MCP」，填写以下内容：
+
+   | 字段 | 值 |
+   | --- | --- |
+   | 名称 | `Parallel Search` |
+   | 类型 | `MCP` |
+   | MCP类型 | `HTTP` |
+   | URL | `https://search.parallel.ai/mcp` |
+   | 请求头 | 留空，无需添加认证信息 |
+
+   这里的 `HTTP` 对应 Streamable HTTP。新增表单默认选择 `SSE`，需要手动改为 `HTTP`。
+
+2. 点击「保存并同步」。同步成功后，点击该服务查看工具列表，应包含 `web_search`（网页搜索）和 `web_fetch`（网页内容提取）。如果同步失败，检查后端能否访问上述 URL，并确认 MCP类型为 `HTTP`。
+3. 打开需要使用工具的普通 AI 应用配置，在「关联MCP&插件」中添加 `Parallel Search` 并保存。可以在对话中尝试「搜索 JeecgBoot 的官方文档，给出来源链接」，再让应用读取其中一个公开网页。需要使用支持工具调用的对话模型。
+
+新建 MCP 服务默认启用，但仍需关联到应用才会供该应用使用。关联后，应用可能根据对话自行调用工具；搜索词、请求的 URL 以及工具调用中提供的目标和上下文会发送给 Parallel。请勿将敏感内容放入这些参数。
+
+不再使用时，从应用的「关联MCP&插件」中移除该服务并保存；也可以在 MCP 管理页面禁用它，后续对话将不再加载该服务。此示例只说明手动配置步骤，不会自动添加服务或修改现有应用配置。
+
 
 
 ## 功能特点
