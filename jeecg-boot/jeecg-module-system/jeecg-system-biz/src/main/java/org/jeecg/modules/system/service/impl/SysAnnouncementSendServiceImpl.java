@@ -50,7 +50,11 @@ public class SysAnnouncementSendServiceImpl extends ServiceImpl<SysAnnouncementS
 
 	@Override
 	public AnnouncementSendModel getOne(String sendId) {
-		return sysAnnouncementSendMapper.getOne(sendId);
+		LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		if (sysUser == null) {
+			return null;
+		}
+		return sysAnnouncementSendMapper.getOne(sendId, sysUser.getId());
 	}
 
     /**

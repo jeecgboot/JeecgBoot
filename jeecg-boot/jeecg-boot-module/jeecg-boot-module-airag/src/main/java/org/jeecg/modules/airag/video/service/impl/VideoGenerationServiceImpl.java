@@ -392,8 +392,12 @@ public class VideoGenerationServiceImpl implements IVideoGenerationService {
     }
 
     @Override
-    public List<JSONObject> getVideoRecords(String userId) {
-        String redisKey = REDIS_KEY_PREFIX + userId;
+    public List<JSONObject> getVideoRecords() {
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (loginUser == null) {
+            return Collections.emptyList();
+        }
+        String redisKey = REDIS_KEY_PREFIX + loginUser.getId();
         List<Object> list = redisUtil.lGet(redisKey, 0, -1);
         if (list == null || list.isEmpty()) {
             return Collections.emptyList();
@@ -404,8 +408,12 @@ public class VideoGenerationServiceImpl implements IVideoGenerationService {
     }
 
     @Override
-    public boolean deleteVideoRecord(String userId, String recordId) {
-        String redisKey = REDIS_KEY_PREFIX + userId;
+    public boolean deleteVideoRecord(String recordId) {
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (loginUser == null) {
+            return false;
+        }
+        String redisKey = REDIS_KEY_PREFIX + loginUser.getId();
         List<Object> list = redisUtil.lGet(redisKey, 0, -1);
         if (list == null || list.isEmpty()) {
             return false;

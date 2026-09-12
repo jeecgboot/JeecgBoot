@@ -29,9 +29,10 @@ public interface SysAnnouncementSendMapper extends BaseMapper<SysAnnouncementSen
 	/**
 	 * 获取一条记录
 	 * @param sendId
+	 * @param userId 当前用户ID
 	 * @return
 	 */
-	AnnouncementSendModel getOne(@Param("sendId") String sendId);
+	AnnouncementSendModel getOne(@Param("sendId") String sendId, @Param("userId") String userId);
 
 
 	/**

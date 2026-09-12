@@ -75,8 +75,8 @@ public class VoiceController {
      * 查询当前用户的语音生成记录
      */
     @GetMapping("/listByUser")
-    public Result<List<JSONObject>> getVoiceRecords(@RequestParam String userId) {
-        List<JSONObject> records = voiceService.getVoiceRecords(userId);
+    public Result<List<JSONObject>> getVoiceRecords() {
+        List<JSONObject> records = voiceService.getVoiceRecords();
         return Result.OK(records);
     }
 
@@ -84,8 +84,8 @@ public class VoiceController {
      * 删除语音生成记录
      */
     @DeleteMapping("/deleteVoiceRecord")
-    public Result<String> deleteVoiceRecord(@RequestParam String userId, @RequestParam String recordId) {
-        boolean deleted = voiceService.deleteVoiceRecord(userId, recordId);
+    public Result<String> deleteVoiceRecord(@RequestParam String recordId) {
+        boolean deleted = voiceService.deleteVoiceRecord(recordId);
         return deleted ? Result.OK("删除成功") : Result.error("记录不存在");
     }
 }

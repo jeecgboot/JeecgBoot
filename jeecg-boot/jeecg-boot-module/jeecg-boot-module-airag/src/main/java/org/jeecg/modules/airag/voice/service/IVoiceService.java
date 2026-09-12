@@ -38,13 +38,12 @@ public interface IVoiceService {
      * 查询用户语音生成记录列表
      * @return 记录列表
      */
-    List<JSONObject> getVoiceRecords(String userId);
+    List<JSONObject> getVoiceRecords();
 
     /**
      * 删除用户语音生成记录
-     * @param userId 用户ID
      * @param recordId 记录ID
      * @return 是否删除成功
      */
-    boolean deleteVoiceRecord(String userId, String recordId);
+    boolean deleteVoiceRecord(String recordId);
 }

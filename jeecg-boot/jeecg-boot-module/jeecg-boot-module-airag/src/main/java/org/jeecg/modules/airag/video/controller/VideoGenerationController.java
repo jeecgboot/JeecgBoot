@@ -75,8 +75,8 @@ public class VideoGenerationController {
      * 查询当前用户的视频生成记录
      */
     @GetMapping("/listByUser")
-    public Result<List<JSONObject>> getVideoRecords(@RequestParam String userId) {
-        List<JSONObject> records = videoGenerationService.getVideoRecords(userId);
+    public Result<List<JSONObject>> getVideoRecords() {
+        List<JSONObject> records = videoGenerationService.getVideoRecords();
         return Result.OK(records);
     }
 
@@ -84,8 +84,8 @@ public class VideoGenerationController {
      * 删除视频生成记录
      */
     @DeleteMapping("/deleteVideoRecord")
-    public Result<String> deleteVideoRecord(@RequestParam String userId, @RequestParam String recordId) {
-        boolean deleted = videoGenerationService.deleteVideoRecord(userId, recordId);
+    public Result<String> deleteVideoRecord(@RequestParam String recordId) {
+        boolean deleted = videoGenerationService.deleteVideoRecord(recordId);
         return deleted ? Result.OK("删除成功") : Result.error("记录不存在");
     }
 }
