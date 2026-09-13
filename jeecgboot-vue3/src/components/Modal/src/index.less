@@ -27,6 +27,26 @@
   }
 }
 
+// 代码逻辑说明: 【issues/9850】BasicModal 非全屏时用视口高度封顶，内容滚动、footer 保持可见
+.ant-modal-root .jeecg-basic-modal-wrap:not(.fullscreen-modal) {
+  .ant-modal {
+    max-height: calc(100vh - 24px);
+  }
+
+  .ant-modal-content {
+    max-height: inherit;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .ant-modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+}
+
 .ant-modal {
   width: 520px;
   padding-bottom: 0;

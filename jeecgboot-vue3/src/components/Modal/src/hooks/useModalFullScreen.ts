@@ -12,7 +12,8 @@ export function useFullScreen(context: UseFullScreenContext) {
 
   const getWrapClassName = computed(() => {
     const clsName = unref(context.wrapClassName) || '';
-    return unref(fullScreenRef) ? `fullscreen-modal ${clsName} ` : unref(clsName);
+    const base = `jeecg-basic-modal-wrap ${clsName}`.trim();
+    return unref(fullScreenRef) ? `fullscreen-modal ${base} ` : base;
   });
 
   function handleFullScreen(e: Event) {

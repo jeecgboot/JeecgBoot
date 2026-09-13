@@ -1,5 +1,5 @@
 <template>
-  <Modal v-bind="getBindValue" @cancel="handleCancel">
+  <Modal v-bind="getBindValue" @cancel="handleCancel" @afterOpenChange="handleAfterOpenChange">
     <template #closeIcon v-if="!$slots.closeIcon">
       <ModalClose :canFullscreen="getProps.canFullscreen" :fullScreen="fullScreenRef" :commentSpan="commentSpan" :enableComment="getProps.enableComment" @comment="handleComment" @cancel="handleCancel" @fullscreen="handleFullScreen" />
     </template>
@@ -182,6 +182,9 @@
           emit('update:open', v);
           instance && modalMethods.emitVisible?.(v, instance.uid);
           nextTick(() => {
+            if (v && unref(modalWrapperRef)) {
+              (unref(modalWrapperRef) as any).setModalHeight?.();
+            }
             if (props.scrollTop && v && unref(modalWrapperRef)) {
               (unref(modalWrapperRef) as any).scrollTop();
             }
@@ -246,6 +249,15 @@
         handleFullScreen(e);
       }
 
+      // Recalc after enter animation so getBoundingClientRect is stable (antd 4).
+      function handleAfterOpenChange(open: boolean) {
+        if (open) {
+          nextTick(() => {
+            modalMethods.redoModalHeight();
+          });
+        }
+      }
+
       // 代码逻辑说明: modal支持评论 slot
       const commentSpan = ref(0);
       watch(()=>props.enableComment, (flag)=>{
@@ -287,6 +299,7 @@
         handleExtHeight,
         handleHeightChange,
         handleTitleDbClick,
+        handleAfterOpenChange,
         getWrapperHeight,
         commentSpan,
         handleComment,

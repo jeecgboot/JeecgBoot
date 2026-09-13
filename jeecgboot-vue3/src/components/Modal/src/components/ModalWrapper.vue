@@ -12,6 +12,7 @@
   import { ScrollContainer } from '/@/components/Container';
   import { createModalContext } from '../hooks/useModalContext';
   import { useMutationObserver } from '@vueuse/core';
+  import { computeModalBodyMaxHeight, resolveModalTop } from '../utils/modalHeight';
 
   const props = {
     loading: { type: Boolean },
@@ -77,6 +78,7 @@
               },
               {
                 attributes: true,
+                childList: true,
                 subtree: true,
               }
             );
@@ -114,10 +116,15 @@
               };
             }
           } else {
+            const minH = props.minHeight === null ? defaultMiniHeight : props.minHeight;
+            const available = unref(availableHeightRef) || unref(realHeightRef) || minH;
+            const cap = props.maxHeight
+              ? Math.min(props.maxHeight, available || props.maxHeight)
+              : (unref(realHeightRef) || available);
             return {
-              minHeight: `${props.minHeight === null ? defaultMiniHeight : props.minHeight}px`,
-              // 代码逻辑说明: 【QQYUN-7641】basicModal组件添加MaxHeight属性
-              maxHeight: `${props.maxHeight ? Math.min(props.maxHeight, unref(availableHeightRef) || props.maxHeight) : unref(realHeightRef)}px`,
+              minHeight: `${minH}px`,
+              // 代码逻辑说明: 【QQYUN-7641】basicModal组件添加MaxHeight属性 / 【issues/9850】未设置 height 时用视口可用高度封顶
+              maxHeight: `${Math.max(cap, minH)}px`,
             };
           }
         }
@@ -157,7 +164,6 @@
       }
 
       async function setModalHeight(option?) {
-        console.log("---------性能监控--------setModalHeight----------")
         const options = option || {};
         const source = options.source;
         const callBack = options.callBack;
@@ -166,38 +172,35 @@
         if (!props.visible) return;
         const wrapperRefDom = unref(wrapperRef);
         if (!wrapperRefDom) return;
-        // 代码逻辑说明: 【QQYUN-8573】BasicModal组件在非全屏的情况下最大高度获取异常，不论内容高度是否超出屏幕高度，都等于内容高度
-        const bodyDom = wrapperRefDom.$el.parentElement?.parentElement?.parentElement;
-        if (!bodyDom) return;
-        // bodyDom.style.padding = '0';
+        const spinEl = unref(spinRef);
+        if (!spinEl) return;
         await nextTick();
 
         try {
-          const modalDom = bodyDom.closest('.ant-modal');
+          const modalDom = (spinEl as HTMLElement).closest('.ant-modal') as HTMLElement | null;
           if (!modalDom) return;
-          //update-begin---author:scott ---date:20260814  for:修复弹窗内容高度自适应及底部操作按钮遮挡问题-----------
-          const spinEl = unref(spinRef);
-          if (!spinEl) return;
 
-          // 使用 CSS 布局位置计算可用高度，避免打开动画导致位置读取不稳定
-          const modalTop = Number.parseFloat(getComputedStyle(modalDom).top) || 0;
-          const modalExtHeight = (modalDom as HTMLElement).offsetHeight - spinEl.clientHeight;
-          let maxHeight = window.innerHeight - modalTop + (props.footerOffset! || 0) - modalExtHeight;
-          //update-end---author:scott ---date:20260814  for:修复弹窗内容高度自适应及底部操作按钮遮挡问题-----------
+          const headerEl = modalDom.querySelector('.ant-modal-header') as HTMLElement | null;
+          const footerEl = modalDom.querySelector('.ant-modal-footer') as HTMLElement | null;
+          const headerHeight = headerEl?.offsetHeight || (props.modalHeaderHeight ?? 0);
+          const footerHeight = footerEl?.offsetHeight || (props.modalFooterHeight ?? 0);
 
-          // 距离顶部过进会出现滚动条
-          if (modalTop < 40) {
-            maxHeight -= 26;
-          }
+          // CSS top in px is stable during enter animation; painted rect is the fallback (antd 4 inner wrap / centered)
+          const modalTop = resolveModalTop(getComputedStyle(modalDom).top, modalDom.getBoundingClientRect().top);
+          let maxHeight = computeModalBodyMaxHeight({
+            viewportHeight: window.innerHeight,
+            modalTop,
+            headerHeight,
+            footerHeight,
+            footerOffset: props.footerOffset || 0,
+          });
+
           availableHeightRef.value = maxHeight;
           await nextTick();
-          await nextTick();
-          // if (!realHeight) {
           realHeight = spinEl.scrollHeight;
-          // }
 
           if (props.fullScreen) {
-            realHeightRef.value = window.innerHeight - props.modalFooterHeight - props.modalHeaderHeight - 28;
+            realHeightRef.value = window.innerHeight - footerHeight - headerHeight - 28;
           } else {
             realHeightRef.value = props.height ? props.height : realHeight > maxHeight ? maxHeight : realHeight;
           }
@@ -205,7 +208,7 @@
           if (source == 'muob') {
             callBack(realHeightRef.value);
           }
-          
+
           emit('height-change', unref(realHeightRef));
         } catch (error) {
           console.log(error);
