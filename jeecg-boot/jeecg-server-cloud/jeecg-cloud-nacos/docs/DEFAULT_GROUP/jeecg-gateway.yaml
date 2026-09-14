@@ -5,6 +5,12 @@ jeecg:
       data-type: database
       data-id: jeecg-gateway-router
 spring:
+  cloud:
+    loadbalancer:
+      cache:
+        enabled: false
+      nacos:
+        enabled: true
   data:
     redis:
       database: 0

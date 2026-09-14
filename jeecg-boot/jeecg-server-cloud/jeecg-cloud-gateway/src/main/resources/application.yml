@@ -27,6 +27,14 @@ spring:
         namespace: @config.namespace@
         username: @config.username@
         password: @config.password@
+        watch:
+          enabled: true
+    # 默认 LoadBalancer 实例缓存会让已下线节点在网关侧残留
+    loadbalancer:
+      cache:
+        enabled: false
+      nacos:
+        enabled: true
     gateway:
       server:
         webflux:
