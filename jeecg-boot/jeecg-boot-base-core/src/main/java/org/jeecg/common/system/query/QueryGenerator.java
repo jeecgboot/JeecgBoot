@@ -405,13 +405,16 @@ public class QueryGenerator {
                     return;
                 }
 				// 代码逻辑说明: 【JTC-573】 过滤空条件查询，防止 sql 拼接多余的 and
+				// update-begin--author:claude--date:20260930--for:【issues/9885】高级查询不为空规则无效，not_empty 规则值为空也需要保留
 				List<QueryCondition> filterConditions = conditions.stream().filter(
 						rule -> (oConvertUtils.isNotEmpty(rule.getField())
 													&& oConvertUtils.isNotEmpty(rule.getRule())
 													&& oConvertUtils.isNotEmpty(rule.getVal())
 												 )
 												|| "empty".equals(rule.getRule())
+												|| "not_empty".equals(rule.getRule())
 				).collect(Collectors.toList());
+				// update-end--author:claude--date:20260930--for:【issues/9885】高级查询不为空规则无效
 				if (filterConditions.size() == 0) {
 					return;
 				}
@@ -425,6 +428,7 @@ public class QueryGenerator {
 								    oConvertUtils.isNotEmpty(rule.getField()) && oConvertUtils.isNotEmpty(rule.getRule()) && oConvertUtils.isNotEmpty(rule.getVal())
 								)
 							    || "empty".equals(rule.getRule())
+							    || "not_empty".equals(rule.getRule())
 						) {
 
                             log.debug("SuperQuery ==> " + rule.toString());
@@ -704,13 +708,15 @@ public class QueryGenerator {
 	 * @param value        查询条件值
 	 */
 	public static void addEasyQuery(QueryWrapper<?> queryWrapper, String name, QueryRuleEnum rule, Object value) {
+		// update-begin--author:claude--date:20260930--for:【issues/9885】高级查询不为空规则无效，NOT_EMPTY 与 EMPTY 一样允许 value 为空
 		if (
 				(
 				   name==null || value == null || rule == null || oConvertUtils.isEmpty(value)
-				) 
-				  && !QueryRuleEnum.EMPTY.equals(rule)) {
+				)
+				  && !QueryRuleEnum.EMPTY.equals(rule) && !QueryRuleEnum.NOT_EMPTY.equals(rule)) {
 			return;
 		}
+		// update-end--author:claude--date:20260930--for:【issues/9885】高级查询不为空规则无效
 		name = oConvertUtils.camelToUnderline(name);
 		log.debug("---高级查询 Query规则---field:{} , rule:{} , value:{}",name,rule.getValue(),value);
 		switch (rule) {
@@ -723,6 +729,11 @@ public class QueryGenerator {
 		case EMPTY:
 			queryWrapper.isNull(name);
 			break;
+		// update-begin--author:claude--date:20260930--for:【issues/9885】高级查询不为空规则无效，补全 NOT_EMPTY 的 SQL 生成
+		case NOT_EMPTY:
+			queryWrapper.isNotNull(name);
+			break;
+		// update-end--author:claude--date:20260930--for:【issues/9885】高级查询不为空规则无效
 		case LT:
 			queryWrapper.lt(name, value);
 			break;
