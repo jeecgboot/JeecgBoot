@@ -12,7 +12,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 <#assign pidFieldName = "">
@@ -114,18 +116,23 @@ public class ${entityName}ServiceImpl extends ServiceImpl<${entityName}Mapper, $
     public List<${entityName}> queryTreeListNoPage(QueryWrapper<${entityName}> queryWrapper) {
         List<${entityName}> dataList = baseMapper.selectList(queryWrapper);
         List<${entityName}> mapList = new ArrayList<>();
-        for(${entityName} data : dataList){
+        if (dataList == null || dataList.isEmpty()) {
+            return mapList;
+        }
+        // 条件查询时应返回命中节点本身（父节点不在结果集中的作为顶层），而不是一律回溯到全局根节点
+        Set<String> idSet = new HashSet<>();
+        for (${entityName} data : dataList) {
+            if (data.getId() != null) {
+                idSet.add(data.getId());
+            }
+        }
+        for (${entityName} data : dataList) {
             String pidVal = data.get${pidFieldName?cap_first}();
-            //递归查询子节点的根节点
-            if(pidVal != null && !I${entityName}Service.NOCHILD.equals(pidVal)){
-                ${entityName} rootVal = this.getTreeRoot(pidVal);
-                if(rootVal != null && !mapList.contains(rootVal)){
-                    mapList.add(rootVal);
-                }
-            }else{
-                if(!mapList.contains(data)){
-                    mapList.add(data);
-                }
+            boolean parentMissing = pidVal == null
+                    || I${entityName}Service.ROOT_PID_VALUE.equals(pidVal)
+                    || !idSet.contains(pidVal);
+            if (parentMissing && !mapList.contains(data)) {
+                mapList.add(data);
             }
         }
         return mapList;

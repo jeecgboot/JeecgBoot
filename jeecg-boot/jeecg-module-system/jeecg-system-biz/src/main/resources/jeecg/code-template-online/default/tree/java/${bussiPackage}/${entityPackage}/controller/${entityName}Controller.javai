@@ -90,7 +90,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
         if(hasQuery != null && "true".equals(hasQuery)){
             QueryWrapper<${entityName}> queryWrapper =  QueryGenerator.initQueryWrapper(${entityName?uncap_first}, req.getParameterMap());
             List<${entityName}> list = ${entityName?uncap_first}Service.queryTreeListNoPage(queryWrapper);
-            IPage<${entityName}> pageList = new Page<>(1, 10, list.size());
+            IPage<${entityName}> pageList = new Page<>(1, Math.max(list.size(), 1), list.size());
             pageList.setRecords(list);
             return Result.OK(pageList);
         }else{
