@@ -11,7 +11,8 @@ RUN echo "server {  \
                       rewrite ^/jeecgboot/?(.*)\$ /jeecg-boot/\$1 break; \
                       proxy_pass              http://\$jeecg_system:8080; \
                       proxy_redirect          off; \
-                      proxy_set_header        Host jeecg-boot-system; \
+                      #Host需带端口，否则后端getBaseUrl拿到默认80端口，AI插件等自调用失败 issues/9358 \
+                      proxy_set_header        Host jeecg-boot-system:8080; \
                       proxy_set_header        X-Real-IP \$remote_addr; \
                       proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for; \
                   } \
