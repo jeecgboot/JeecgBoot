@@ -410,19 +410,17 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	public List<DictModel> queryTableDictTextByKeys(String table, String text, String code, List<String> codeValues, String dataSource) {
 		SensitiveTableCheckUtil.checkForbiddenFields(table, text, code);
 		String str = table+","+text+","+code;
-		//update-begin---author:chenrui ---date:20231221  for：[issues/#5643]解决分布式下表字典跨库无法查询问题------------
 		// 是否自定义数据源
 		boolean isCustomDataSource = oConvertUtils.isNotEmpty(dataSource);
-		// 如果是自定义数据源就不检查表字典白名单
-		if (!isCustomDataSource) {
-			// 【QQYUN-6533】表字典白名单check
-			sysBaseAPI.dictTableWhiteListCheckByDict(table, text, code);
-			// 1.表字典黑名单check
-			if (!dictQueryBlackListHandler.isPass(str)) {
-				log.error(dictQueryBlackListHandler.getError());
-				return null;
-			}
+		//update-begin---author:scott ---date:20261013  for：【安全 GHSA-8j27-4v3v-m7xf/GHSA-x8p6-4wjm-5gg2】表字典白名单/黑名单校验不再因传入自定义数据源(如ds=master)而跳过，防止绕过校验越权读取任意表任意列(含sys_user.password)-----------
+		// 【QQYUN-6533】表字典白名单check（无论是否自定义数据源都要校验表名/字段）
+		sysBaseAPI.dictTableWhiteListCheckByDict(table, text, code);
+		// 1.表字典黑名单check
+		if (!dictQueryBlackListHandler.isPass(str)) {
+			log.error(dictQueryBlackListHandler.getError());
+			return null;
 		}
+		//update-end---author:scott ---date:20261013  for：【安全 GHSA-8j27-4v3v-m7xf/GHSA-x8p6-4wjm-5gg2】表字典白名单/黑名单校验不再因传入自定义数据源而跳过-----------
 
 		// 2.分割SQL获取表名和条件
 		String filterSql = null;
