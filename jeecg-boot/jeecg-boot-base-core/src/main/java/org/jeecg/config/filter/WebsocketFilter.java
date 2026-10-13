@@ -3,6 +3,8 @@ package org.jeecg.config.filter;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.system.util.JwtUtil;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -46,6 +48,20 @@ public class WebsocketFilter implements Filter {
             log.debug("Websocket连接 Token安全校验失败，IP:{}, Token:{}, Path = {}，异常：{}", oConvertUtils.getIpAddrByRequest(request), token, request.getRequestURI(), exception.getMessage());
             return;
         }
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-5j5w-pm5g-5wr8】系统通知websocket(/websocket/{userId})绑定token身份，禁止订阅他人的实时消息-----------
+        String uri = request.getRequestURI();
+        int idx = uri.indexOf("/websocket/");
+        if (idx >= 0) {
+            String rest = uri.substring(idx + "/websocket/".length());
+            int slash = rest.indexOf('/');
+            String pathUserId = slash >= 0 ? rest.substring(0, slash) : rest;
+            LoginUser loginUser = commonApi.getUserByName(JwtUtil.getUsername(token));
+            if (loginUser == null || !loginUser.getId().equals(pathUserId)) {
+                log.warn("Websocket连接 用户身份与路径userId不一致，已拒绝。Path = {}", uri);
+                return;
+            }
+        }
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-5j5w-pm5g-5wr8】系统通知websocket(/websocket/{userId})绑定token身份，禁止订阅他人的实时消息-----------
         HttpServletResponse response = (HttpServletResponse)servletResponse;
         response.setHeader(TOKEN_KEY, token);
         filterChain.doFilter(servletRequest, servletResponse);

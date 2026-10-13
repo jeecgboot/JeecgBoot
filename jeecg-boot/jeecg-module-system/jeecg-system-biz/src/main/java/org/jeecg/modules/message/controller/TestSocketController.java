@@ -1,5 +1,6 @@
 package org.jeecg.modules.message.controller;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.WebsocketConst;
 import org.jeecg.modules.message.websocket.WebSocket;
@@ -16,6 +17,7 @@ import com.alibaba.fastjson.JSONObject;
  * @author: jeecg-boot
  */
 @RestController
+@RequiresRoles("admin")
 @RequestMapping("/sys/socketTest")
 public class TestSocketController {
 

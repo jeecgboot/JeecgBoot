@@ -71,8 +71,9 @@ public class WebSocket {
     public void pushMessage(String userId, String message) {
         for (Map.Entry<String, Session> item : sessionPool.entrySet()) {
             //userId key值= {用户id + "_"+ 登录token的md5串}
-            //TODO vue2未改key新规则，暂时不影响逻辑
-            if (item.getKey().contains(userId)) {
+            //update-begin---author:scott ---date:20261013  for：【安全 GHSA-5j5w-pm5g-5wr8】由contains子串匹配改为精确匹配，防止userId互为子串时错发给他人(如"1"命中"11")-----------
+            if (item.getKey().equals(userId) || item.getKey().startsWith(userId + "_")) {
+            //update-end---author:scott ---date:20261013  for：【安全 GHSA-5j5w-pm5g-5wr8】由contains子串匹配改为精确匹配，防止userId互为子串时错发给他人(如"1"命中"11")-----------
                 Session session = item.getValue();
                 try {
                     // 代码逻辑说明: websocket报错 https://gitee.com/jeecg/jeecg-boot/issues/I4C0MU
