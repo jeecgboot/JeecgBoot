@@ -1957,8 +1957,9 @@ public class SysUserController {
      */
     @PutMapping("/batchEditUsers")
     public Result<SysUser> batchEditUsers(@RequestBody JSONObject jsonObject) {
-        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-pjwf-2w2c-xc23/GHSA-4w9p-7gw3-q7v4】批量修改用户部门职位须为用户管理员或当前租户管理员，且租户管理员只能修改本租户用户-----------
-        if (!SecurityUtils.getSubject().hasRole("admin") && !SecurityUtils.getSubject().isPermitted("system:user:edit")) {
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-pjwf-2w2c-xc23/GHSA-4w9p-7gw3-q7v4】批量修改用户部门职位须为admin或当前租户管理员，且租户管理员只能修改本租户用户-----------
+        // 敲敲云SaaS模式下所有用户默认拥有test角色权限，不能用权限码放行，只放行admin
+        if (!SecurityUtils.getSubject().hasRole("admin")) {
             String tenantId = TenantContext.getTenant();
             if (oConvertUtils.isEmpty(tenantId)) {
                 return Result.error("无权限执行此操作");
@@ -1971,7 +1972,7 @@ public class SysUserController {
                 return Result.error("只能修改当前租户下的用户");
             }
         }
-        //update-end---author:scott ---date:20261013  for：【安全 GHSA-pjwf-2w2c-xc23/GHSA-4w9p-7gw3-q7v4】批量修改用户部门职位须为用户管理员或当前租户管理员，且租户管理员只能修改本租户用户-----------
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-pjwf-2w2c-xc23/GHSA-4w9p-7gw3-q7v4】批量修改用户部门职位须为admin或当前租户管理员，且租户管理员只能修改本租户用户-----------
         Result<SysUser> result = new Result<SysUser>();
         try {
             sysUserService.batchEditUsers(jsonObject);
@@ -2024,6 +2025,24 @@ public class SysUserController {
      */
     @PutMapping("/changeDepartChargePerson")
     public Result<?> changeDepartChargePerson(@RequestBody JSONObject json) {
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-9xxr-rh33-qr3f】设置部门负责人须为admin或当前租户管理员，且租户管理员只能设置本租户的部门和用户-----------
+        // 敲敲云SaaS模式下所有用户默认拥有test角色权限(含system:depart:edit)，不能用权限码放行，只放行admin
+        if (!SecurityUtils.getSubject().hasRole("admin")) {
+            String tenantId = TenantContext.getTenant();
+            if (oConvertUtils.isEmpty(tenantId)) {
+                return Result.error("无权限执行此操作");
+            }
+            // 非当前租户的组织账户管理员或超级管理员时抛出异常
+            sysTenantPackService.izHaveManageUserAuth(tenantId);
+            SysDepart depart = sysDepartService.getById(json.getString("departId"));
+            // 开启系统租户隔离时，部门须属于当前租户（未开启时部门不区分租户）
+            boolean departInTenant = depart != null && (!MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL || tenantId.equals(String.valueOf(depart.getTenantId())));
+            List<String> tenantUserIds = userTenantService.getUserIdsByTenantId(Integer.valueOf(tenantId));
+            if (!departInTenant || !tenantUserIds.contains(json.getString("userId"))) {
+                return Result.error("只能设置当前租户下的部门负责人");
+            }
+        }
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-9xxr-rh33-qr3f】设置部门负责人须为admin或当前租户管理员，且租户管理员只能设置本租户的部门和用户-----------
         sysUserService.changeDepartChargePerson(json);
         return Result.ok();
     }
