@@ -116,9 +116,11 @@
 
       content.value = data.record;
       if(content.value.sender){
-        const userInfo = await defHttp.get({ url: '/sys/user/queryUserComponentData?isMultiTranslate=true', params: { username: content.value.sender } });
-        content.value.sender = userInfo && userInfo?.records && userInfo?.records.length>0
-            ?userInfo.records.find((item) => item.username === content.value.sender)?.realname : content.value.sender;
+        // 发送人账号转姓名改用只读轻接口 queryByNames（仅返回 username/realname，无需 system:user:select 权限）
+        const userList = await defHttp.get({ url: '/sys/user/queryByNames', params: { userNames: content.value.sender } });
+        content.value.sender = userList && userList.length > 0
+            ? userList.find((item) => item.username === content.value.sender)?.realname || content.value.sender
+            : content.value.sender;
       }
       console.log('data---------->>>', data);
       if (data.record?.files && data.record?.files.length > 0) {
