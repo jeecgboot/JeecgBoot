@@ -20,6 +20,7 @@ import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.enums.SysRoleEnum;
 import org.jeecg.common.constant.PasswordConstant;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.modules.redis.client.JeecgRedisClient;
@@ -1971,7 +1972,7 @@ public class SysUserController {
     public Result<SysUser> batchEditUsers(@RequestBody JSONObject jsonObject) {
         //update-begin---author:scott ---date:20261013  for：【安全 GHSA-pjwf-2w2c-xc23/GHSA-4w9p-7gw3-q7v4】批量修改用户部门职位须为admin或当前租户管理员，且租户管理员只能修改本租户用户-----------
         // 敲敲云SaaS模式下所有用户默认拥有test角色权限，不能用权限码放行，只放行admin
-        if (!SecurityUtils.getSubject().hasRole("admin")) {
+        if (!SysRoleEnum.hasAnyRole(SysRoleEnum.ADMIN, SysRoleEnum.TENANT_ADMIN)) {
             String tenantId = TenantContext.getTenant();
             if (oConvertUtils.isEmpty(tenantId)) {
                 return Result.error("无权限执行此操作");
@@ -2039,7 +2040,7 @@ public class SysUserController {
     public Result<?> changeDepartChargePerson(@RequestBody JSONObject json) {
         //update-begin---author:scott ---date:20261013  for：【安全 GHSA-9xxr-rh33-qr3f】设置部门负责人须为admin或当前租户管理员，且租户管理员只能设置本租户的部门和用户-----------
         // 敲敲云SaaS模式下所有用户默认拥有test角色权限(含system:depart:edit)，不能用权限码放行，只放行admin
-        if (!SecurityUtils.getSubject().hasRole("admin")) {
+        if (!SysRoleEnum.hasAnyRole(SysRoleEnum.ADMIN, SysRoleEnum.TENANT_ADMIN)) {
             String tenantId = TenantContext.getTenant();
             if (oConvertUtils.isEmpty(tenantId)) {
                 return Result.error("无权限执行此操作");

@@ -14,6 +14,7 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.PermissionData;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.enums.SysRoleEnum;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.system.vo.LoginUser;
@@ -785,6 +786,9 @@ public class SysTenantController {
      */
     @PostMapping("/addTenantPackUser")
     public Result<?> addTenantPackUser(@RequestBody SysTenantPackUser sysTenantPackUser){
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】产品包成员管理须为admin或本租户管理员，防止越权把自己加入超管产品包-----------
+        assertTenantPackManager(String.valueOf(sysTenantPackUser.getTenantId()));
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】产品包成员管理须为admin或本租户管理员，防止越权把自己加入超管产品包-----------
         sysTenantService.addBatchTenantPackUser(sysTenantPackUser);
         return Result.ok("操作成功！");
     }
@@ -796,6 +800,9 @@ public class SysTenantController {
      */
     @PutMapping("/deleteTenantPackUser")
     public Result<?> deleteTenantPackUser(@RequestBody SysTenantPackUser sysTenantPackUser){
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】产品包成员管理须为admin或本租户管理员-----------
+        assertTenantPackManager(String.valueOf(sysTenantPackUser.getTenantId()));
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】产品包成员管理须为admin或本租户管理员-----------
         sysTenantService.deleteTenantPackUser(sysTenantPackUser);
         return Result.ok("操作成功！");
     }
@@ -808,6 +815,9 @@ public class SysTenantController {
      */
     @PutMapping("/updateApplyStatus")
     public Result<?> updateApplyStatus(@RequestBody SysTenant sysTenant){
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】修改产品包申请开关须为admin或本租户管理员-----------
+        assertTenantPackManager(String.valueOf(sysTenant.getId()));
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】修改产品包申请开关须为admin或本租户管理员-----------
         SysTenant entity = this.sysTenantService.getById(sysTenant.getId());
         if(entity==null){
             return Result.error("租户不存在!");
@@ -847,6 +857,9 @@ public class SysTenantController {
      */
     @PutMapping("/passApply")
     public Result<?> passApply(@RequestBody SysTenantPackUser sysTenantPackUser){
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】审批产品包申请须为admin或本租户管理员-----------
+        assertTenantPackManager(String.valueOf(sysTenantPackUser.getTenantId()));
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】审批产品包申请须为admin或本租户管理员-----------
         sysTenantService.passApply(sysTenantPackUser);
         return Result.ok("操作成功！");
     }
@@ -858,8 +871,27 @@ public class SysTenantController {
      */
     @PutMapping("/deleteApply")
     public Result<?> deleteApply(@RequestBody SysTenantPackUser sysTenantPackUser){
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】拒绝产品包申请须为admin或本租户管理员-----------
+        assertTenantPackManager(String.valueOf(sysTenantPackUser.getTenantId()));
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-g5c8-qx87-hqcf】拒绝产品包申请须为admin或本租户管理员-----------
         sysTenantService.deleteApply(sysTenantPackUser);
         return Result.ok("");
+    }
+
+    /**
+     * 校验当前用户能否管理指定租户的产品包成员（添加/删除/审批）：admin放行，否则须为该租户的组织账户管理员或超级管理员。
+     *
+     * @param tenantId 租户ID
+     * @author scott
+     * @since 2026-10-13 【安全 GHSA-g5c8-qx87-hqcf】防止低权限用户越权把自己加入租户超管产品包
+     */
+    private void assertTenantPackManager(String tenantId) {
+        // admin或系统租户管理员(zuhuadmin,后台授予)直接放行；SaaS注册用户默认不含这两个系统角色
+        if (SysRoleEnum.hasAnyRole(SysRoleEnum.ADMIN, SysRoleEnum.TENANT_ADMIN)) {
+            return;
+        }
+        // 非该租户的组织账户管理员或超级管理员时抛出异常
+        sysTenantPackService.izHaveManageUserAuth(tenantId);
     }
 
     /**
