@@ -183,6 +183,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param response
      * @return
      */
+    @RequiresPermissions("system:roleindex:add")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, SysRoleIndex.class);

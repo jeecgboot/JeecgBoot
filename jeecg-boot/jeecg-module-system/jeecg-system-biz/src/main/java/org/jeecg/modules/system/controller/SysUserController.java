@@ -110,6 +110,9 @@ public class SysUserController {
     private ISysUserTenantService userTenantService;
 
     @Autowired
+    private ISysTenantPackService sysTenantPackService;
+
+    @Autowired
     private JeecgRedisClient jeecgRedisClient;
     @Autowired
     private JeecgBaseConfig jeecgBaseConfig;
@@ -1954,6 +1957,21 @@ public class SysUserController {
      */
     @PutMapping("/batchEditUsers")
     public Result<SysUser> batchEditUsers(@RequestBody JSONObject jsonObject) {
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-pjwf-2w2c-xc23/GHSA-4w9p-7gw3-q7v4】批量修改用户部门职位须为用户管理员或当前租户管理员，且租户管理员只能修改本租户用户-----------
+        if (!SecurityUtils.getSubject().hasRole("admin") && !SecurityUtils.getSubject().isPermitted("system:user:edit")) {
+            String tenantId = TenantContext.getTenant();
+            if (oConvertUtils.isEmpty(tenantId)) {
+                return Result.error("无权限执行此操作");
+            }
+            // 非当前租户的组织账户管理员或超级管理员时抛出异常
+            sysTenantPackService.izHaveManageUserAuth(tenantId);
+            List<String> idList = JSONArray.parseArray(jsonObject.getString("userIds"), String.class);
+            List<String> tenantUserIds = userTenantService.getUserIdsByTenantId(Integer.valueOf(tenantId));
+            if (idList == null || !tenantUserIds.containsAll(idList)) {
+                return Result.error("只能修改当前租户下的用户");
+            }
+        }
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-pjwf-2w2c-xc23/GHSA-4w9p-7gw3-q7v4】批量修改用户部门职位须为用户管理员或当前租户管理员，且租户管理员只能修改本租户用户-----------
         Result<SysUser> result = new Result<SysUser>();
         try {
             sysUserService.batchEditUsers(jsonObject);
