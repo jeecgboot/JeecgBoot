@@ -487,6 +487,16 @@ public class SysTenantController {
         if(sysTenant==null) {
             return result.error500("未找到对应实体");
         }
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-23w8-29xc-fpfh/GHSA-xpvg-j72w-356p】只有租户拥有者、租户管理员或admin才能编辑，且不允许修改拥有者、状态、删除标记-----------
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (!loginUser.getUsername().equals(sysTenant.getCreateBy()) && !SecurityUtils.getSubject().hasRole("admin")) {
+            // 非当前租户的组织账户管理员或超级管理员时抛出异常
+            sysTenantPackService.izHaveManageUserAuth(tenant.getId().toString());
+        }
+        tenant.setCreateBy(null);
+        tenant.setStatus(null);
+        tenant.setDelFlag(null);
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-23w8-29xc-fpfh/GHSA-xpvg-j72w-356p】只有租户拥有者、租户管理员或admin才能编辑，且不允许修改拥有者、状态、删除标记-----------
         if(oConvertUtils.isEmpty(sysTenant.getHouseNumber())){
             tenant.setHouseNumber(RandomUtil.randomStringUpper(6));
         }

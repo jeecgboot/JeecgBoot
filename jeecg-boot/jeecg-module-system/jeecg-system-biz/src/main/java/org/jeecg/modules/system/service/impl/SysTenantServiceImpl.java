@@ -367,6 +367,12 @@ public class SysTenantServiceImpl extends ServiceImpl<SysTenantMapper, SysTenant
         if(null == sysTenant){
             throw new JeecgBootException("退出租户失败，不存在此租户");
         }
+        //update-begin---author:scott ---date:20261013  for：【安全 GHSA-8v96-whwg-rf92/GHSA-xpvg-j72w-356p/GHSA-3f75-3wg8-c663】只有租户拥有者或admin才能变更拥有者，防止任意成员接管租户-----------
+        LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        if (!loginUser.getUsername().equals(sysTenant.getCreateBy()) && !SecurityUtils.getSubject().hasRole("admin")) {
+            throw new JeecgBootException("只有租户拥有者才能变更拥有者");
+        }
+        //update-end---author:scott ---date:20261013  for：【安全 GHSA-8v96-whwg-rf92/GHSA-xpvg-j72w-356p/GHSA-3f75-3wg8-c663】只有租户拥有者或admin才能变更拥有者，防止任意成员接管租户-----------
         String createBy = sysTenant.getCreateBy();
         Integer count = userTenantMapper.userTenantIzExist(userId, tenantId);
         if (count == 0) {
