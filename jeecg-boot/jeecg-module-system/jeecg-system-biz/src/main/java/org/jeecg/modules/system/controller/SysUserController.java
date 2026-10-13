@@ -1380,7 +1380,19 @@ public class SysUserController {
         }
         
         if(!smscode.equals(object.toString())) {
-        	result.setMessage("短信验证码不匹配！");
+            //update-begin---author:scott ---date:20261013  for：【安全 GHSA-wv6f-p5mv-2g6f】验证码错误满5次即作废，防止暴力枚举验证码重置他人密码-----------
+            String errKey = redisKey + ":err";
+            long errCount = redisUtil.incr(errKey, 1);
+            if (errCount == 1) {
+                redisUtil.expire(errKey, 600);
+            }
+            if (errCount >= 5) {
+                redisUtil.del(redisKey, errKey);
+                result.setMessage("短信验证码错误次数过多，请重新获取！");
+            } else {
+                result.setMessage("短信验证码不匹配！");
+            }
+            //update-end---author:scott ---date:20261013  for：【安全 GHSA-wv6f-p5mv-2g6f】验证码错误满5次即作废，防止暴力枚举验证码重置他人密码-----------
             result.setSuccess(false);
             return result;
         }

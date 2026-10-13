@@ -983,6 +983,9 @@ public class LoginController {
             result.setCode(HttpStatus.PRECONDITION_FAILED.value());
             return null;
         }
+        //update-begin---author:scott ---date:20261013  for：【安全】图形验证码校验通过后立即作废（一次一用），防止同一验证码被反复用于尝试登录-----------
+        redisUtil.del(realKey);
+        //update-end---author:scott ---date:20261013  for：【安全】图形验证码校验通过后立即作废（一次一用），防止同一验证码被反复用于尝试登录-----------
         return realKey;
     }
 }
