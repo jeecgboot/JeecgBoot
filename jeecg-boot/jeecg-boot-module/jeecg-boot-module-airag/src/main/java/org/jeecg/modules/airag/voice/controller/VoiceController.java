@@ -1,7 +1,9 @@
 package org.jeecg.modules.airag.voice.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.airag.voice.service.IVoiceService;
 import org.jeecg.modules.airag.voice.vo.VoiceGenerateVo;
 import org.jeecg.modules.airag.voice.vo.VoiceResultVo;
@@ -75,7 +77,8 @@ public class VoiceController {
      * 查询当前用户的语音生成记录
      */
     @GetMapping("/listByUser")
-    public Result<List<JSONObject>> getVoiceRecords(@RequestParam String userId) {
+    public Result<List<JSONObject>> getVoiceRecords() {
+        String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
         List<JSONObject> records = voiceService.getVoiceRecords(userId);
         return Result.OK(records);
     }
@@ -84,7 +87,8 @@ public class VoiceController {
      * 删除语音生成记录
      */
     @DeleteMapping("/deleteVoiceRecord")
-    public Result<String> deleteVoiceRecord(@RequestParam String userId, @RequestParam String recordId) {
+    public Result<String> deleteVoiceRecord(@RequestParam String recordId) {
+        String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
         boolean deleted = voiceService.deleteVoiceRecord(userId, recordId);
         return deleted ? Result.OK("删除成功") : Result.error("记录不存在");
     }

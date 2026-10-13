@@ -2,7 +2,9 @@ package org.jeecg.modules.airag.video.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.modules.airag.video.service.IVideoGenerationService;
 import org.jeecg.modules.airag.video.vo.VideoGenerateVo;
 import org.jeecg.modules.airag.video.vo.VideoTaskResultVo;
@@ -75,7 +77,8 @@ public class VideoGenerationController {
      * 查询当前用户的视频生成记录
      */
     @GetMapping("/listByUser")
-    public Result<List<JSONObject>> getVideoRecords(@RequestParam String userId) {
+    public Result<List<JSONObject>> getVideoRecords() {
+        String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
         List<JSONObject> records = videoGenerationService.getVideoRecords(userId);
         return Result.OK(records);
     }
@@ -84,7 +87,8 @@ public class VideoGenerationController {
      * 删除视频生成记录
      */
     @DeleteMapping("/deleteVideoRecord")
-    public Result<String> deleteVideoRecord(@RequestParam String userId, @RequestParam String recordId) {
+    public Result<String> deleteVideoRecord(@RequestParam String recordId) {
+        String userId = ((LoginUser) SecurityUtils.getSubject().getPrincipal()).getId();
         boolean deleted = videoGenerationService.deleteVideoRecord(userId, recordId);
         return deleted ? Result.OK("删除成功") : Result.error("记录不存在");
     }
