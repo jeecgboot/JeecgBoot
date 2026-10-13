@@ -61,52 +61,51 @@ public class SysAnnouncementSendController {
 	 * @param req
 	 * @return
 	 */
-	@GetMapping(value = "/list")
-	public Result<IPage<SysAnnouncementSend>> queryPageList(SysAnnouncementSend sysAnnouncementSend,
-									  @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
-									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
-									  HttpServletRequest req) {
-		Result<IPage<SysAnnouncementSend>> result = new Result<IPage<SysAnnouncementSend>>();
-		QueryWrapper<SysAnnouncementSend> queryWrapper = new QueryWrapper<SysAnnouncementSend>(sysAnnouncementSend);
-		Page<SysAnnouncementSend> page = new Page<SysAnnouncementSend>(pageNo,pageSize);
-		//排序逻辑 处理
-		String column = req.getParameter("column");
-		String order = req.getParameter("order");
+	// update---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】该接口前端与服务端均未使用，整体注释停用，避免越权列出全部用户的消息发送记录
+	// @GetMapping(value = "/list")
+	// public Result<IPage<SysAnnouncementSend>> queryPageList(SysAnnouncementSend sysAnnouncementSend,
+									  // @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
+									  // @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
+									  // HttpServletRequest req) {
+		// Result<IPage<SysAnnouncementSend>> result = new Result<IPage<SysAnnouncementSend>>();
+		// QueryWrapper<SysAnnouncementSend> queryWrapper = new QueryWrapper<SysAnnouncementSend>(sysAnnouncementSend);
+		// Page<SysAnnouncementSend> page = new Page<SysAnnouncementSend>(pageNo,pageSize);
+		// //排序逻辑 处理
+		// String column = req.getParameter("column");
+		// String order = req.getParameter("order");
+//
+		// if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
+			// if(DataBaseConstant.SQL_ASC.equals(order)) {
+				// queryWrapper.orderByAsc(SqlInjectionUtil.getSqlInjectSortField(column));
+			// }else {
+				// queryWrapper.orderByDesc(SqlInjectionUtil.getSqlInjectSortField(column));
+			// }
+		// }
+		// IPage<SysAnnouncementSend> pageList = sysAnnouncementSendService.page(page, queryWrapper);
+		// //log.info("查询当前页："+pageList.getCurrent());
+		// //log.info("查询当前页数量："+pageList.getSize());
+		// //log.info("查询结果数量："+pageList.getRecords().size());
+		// //log.info("数据总数："+pageList.getTotal());
+		// result.setSuccess(true);
+		// result.setResult(pageList);
+		// return result;
+	// }
+	// update-end---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】未使用接口注释停用
 
-		if(oConvertUtils.isNotEmpty(column) && oConvertUtils.isNotEmpty(order)) {
-			if(DataBaseConstant.SQL_ASC.equals(order)) {
-				queryWrapper.orderByAsc(SqlInjectionUtil.getSqlInjectSortField(column));
-			}else {
-				queryWrapper.orderByDesc(SqlInjectionUtil.getSqlInjectSortField(column));
-			}
-		}
-		IPage<SysAnnouncementSend> pageList = sysAnnouncementSendService.page(page, queryWrapper);
-		//log.info("查询当前页："+pageList.getCurrent());
-		//log.info("查询当前页数量："+pageList.getSize());
-		//log.info("查询结果数量："+pageList.getRecords().size());
-		//log.info("数据总数："+pageList.getTotal());
-		result.setSuccess(true);
-		result.setResult(pageList);
-		return result;
-	}
-	
-	/**
-	  *   添加
-	 * @param sysAnnouncementSend
-	 * @return
-	 */
-	@PostMapping(value = "/add")
-	public Result<SysAnnouncementSend> add(@RequestBody SysAnnouncementSend sysAnnouncementSend) {
-		Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
-		try {
-			sysAnnouncementSendService.save(sysAnnouncementSend);
-			result.success("添加成功！");
-		} catch (Exception e) {
-			log.error(e.getMessage(),e);
-			result.error500("操作失败");
-		}
-		return result;
-	}
+	// update---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】该接口前端与服务端均未使用，整体注释停用，避免为他人伪造消息记录
+	// @PostMapping(value = "/add")
+	// public Result<SysAnnouncementSend> add(@RequestBody SysAnnouncementSend sysAnnouncementSend) {
+		// Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
+		// try {
+			// sysAnnouncementSendService.save(sysAnnouncementSend);
+			// result.success("添加成功！");
+		// } catch (Exception e) {
+			// log.error(e.getMessage(),e);
+			// result.error500("操作失败");
+		// }
+		// return result;
+	// }
+	// update-end---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】未使用接口注释停用
 	
 	/**
 	  *  编辑
@@ -120,6 +119,12 @@ public class SysAnnouncementSendController {
 		if(sysAnnouncementSendEntity==null) {
 			result.error500("未找到对应实体");
 		}else {
+			//update-begin---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】只能修改本人的消息发送记录，防止越权篡改他人记录-----------
+			LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+			if(!loginUser.getId().equals(sysAnnouncementSendEntity.getUserId())){
+				return result.error500("无权修改他人的消息记录");
+			}
+			//update-end---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】只能修改本人的消息发送记录，防止越权篡改他人记录-----------
 			boolean ok = sysAnnouncementSendService.updateById(sysAnnouncementSend);
 			//TODO 返回false说明什么？
 			if(ok) {
@@ -174,18 +179,20 @@ public class SysAnnouncementSendController {
 	 * @param id
 	 * @return
 	 */
-	@GetMapping(value = "/queryById")
-	public Result<SysAnnouncementSend> queryById(@RequestParam(name="id",required=true) String id) {
-		Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
-		SysAnnouncementSend sysAnnouncementSend = sysAnnouncementSendService.getById(id);
-		if(sysAnnouncementSend==null) {
-			result.error500("未找到对应实体");
-		}else {
-			result.setResult(sysAnnouncementSend);
-			result.setSuccess(true);
-		}
-		return result;
-	}
+	// update---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】该接口前端与服务端均未使用，整体注释停用，避免越权查看他人的消息发送记录
+	// @GetMapping(value = "/queryById")
+	// public Result<SysAnnouncementSend> queryById(@RequestParam(name="id",required=true) String id) {
+		// Result<SysAnnouncementSend> result = new Result<SysAnnouncementSend>();
+		// SysAnnouncementSend sysAnnouncementSend = sysAnnouncementSendService.getById(id);
+		// if(sysAnnouncementSend==null) {
+			// result.error500("未找到对应实体");
+		// }else {
+			// result.setResult(sysAnnouncementSend);
+			// result.setSuccess(true);
+		// }
+		// return result;
+	// }
+	// update-end---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】未使用接口注释停用
 	
 	/**
 	 * @功能：更新用户系统消息阅读状态
@@ -271,6 +278,13 @@ public class SysAnnouncementSendController {
 	  */
 	 @GetMapping(value = "/getOne")
 	 public Result<AnnouncementSendModel> getOne(@RequestParam(name="sendId",required=true) String sendId) {
+		 //update-begin---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】按sendId获取消息正文前校验归属，只能查看本人收到的消息-----------
+		 LoginUser loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 SysAnnouncementSend sendEntity = sysAnnouncementSendService.getById(sendId);
+		 if(sendEntity==null || !loginUser.getId().equals(sendEntity.getUserId())){
+			 return Result.error("无权查看该消息");
+		 }
+		 //update-end---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】按sendId获取消息正文前校验归属，只能查看本人收到的消息-----------
 		 AnnouncementSendModel model = sysAnnouncementSendService.getOne(sendId);
 		 return Result.ok(model);
 	 }
