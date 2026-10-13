@@ -53,6 +53,9 @@ public class JdbcSecurityUtil {
             "sslpasswordcallback",        // SSL 密码回调类加载
             "authenticationpluginclassname", // 认证插件类加载
             "jaasapplicationname",        // JAAS 认证攻击
+            // 【安全 GHSA-jq87-2rf2-wvm3】pgjdbc 日志参数会初始化 FileHandler 向指定路径写文件（连接失败也写），需拦截
+            "loggerlevel",                // 日志级别（触发 FileHandler 初始化）
+            "loggerfile",                 // 日志文件路径（任意文件写入）
 
             // === H2 ===
             "init=",                      // 连接初始化 SQL (带 '=' 防止匹配到正常单词 'init')
