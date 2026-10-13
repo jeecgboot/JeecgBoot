@@ -18,6 +18,7 @@ import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDictItem;
 import org.jeecg.modules.system.service.ISysDictItemService;
+import org.jeecg.modules.system.service.ISysDictService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +49,8 @@ public class SysDictItemController {
 
 	@Autowired
 	private ISysDictItemService sysDictItemService;
+	@Autowired
+	private ISysDictService sysDictService;
 	
 	/**
 	 * @功能：查询字典数据
@@ -82,6 +85,7 @@ public class SysDictItemController {
 		try {
 			sysDictItem.setCreateTime(new Date());
 			sysDictItemService.save(sysDictItem);
+			sysDictService.refreshDictVersion();
 			result.success("保存成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
@@ -108,6 +112,7 @@ public class SysDictItemController {
 			boolean ok = sysDictItemService.updateById(sysDictItem);
 			//TODO 返回false说明什么？
 			if(ok) {
+				sysDictService.refreshDictVersion();
 				result.success("编辑成功!");
 			}
 		}
@@ -130,6 +135,7 @@ public class SysDictItemController {
 		}else {
 			boolean ok = sysDictItemService.removeById(id);
 			if(ok) {
+				sysDictService.refreshDictVersion();
 				result.success("删除成功!");
 			}
 		}
@@ -150,6 +156,7 @@ public class SysDictItemController {
 			result.error500("参数不识别！");
 		}else {
 			this.sysDictItemService.removeByIds(Arrays.asList(ids.split(",")));
+			sysDictService.refreshDictVersion();
 			result.success("删除成功!");
 		}
 		return result;

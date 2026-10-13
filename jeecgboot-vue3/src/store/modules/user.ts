@@ -4,10 +4,11 @@ import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
-import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY, LOGIN_INFO_KEY, DB_DICT_DATA_KEY, TENANT_ID, OAUTH2_THIRD_LOGIN_TENANT_ID } from '/@/enums/cacheEnum';
+import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY, LOGIN_INFO_KEY, DB_DICT_DATA_KEY, DB_DICT_VERSION_KEY, TENANT_ID, OAUTH2_THIRD_LOGIN_TENANT_ID } from '/@/enums/cacheEnum';
 import { getAuthCache, setAuthCache, removeAuthCache } from '/@/utils/auth';
 import { GetUserInfoModel, LoginParams, ThirdLoginParams } from '/@/api/sys/model/userModel';
 import { doLogout, getUserInfo, loginApi, phoneLoginApi, thirdLogin } from '/@/api/sys/user';
+import { queryAllDictItems } from '/@/views/system/dict/dict.api';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { router } from '/@/router';
@@ -116,9 +117,30 @@ export const useUserStore = defineStore('app-user', {
       this.loginInfo = info;
       setAuthCache(LOGIN_INFO_KEY, info);
     },
-    setAllDictItems(dictItems) {
+    /**
+     * 设置全量字典缓存
+     * @param dictItems 字典数据
+     * @param dictVersion 字典版本号，与字典数据成对存储；不传则清空，下次刷新页面会重新拉取一次字典
+     */
+    setAllDictItems(dictItems, dictVersion?: string | null) {
       this.dictItems = dictItems;
       setAuthCache(DB_DICT_DATA_KEY, dictItems);
+      setAuthCache(DB_DICT_VERSION_KEY, dictVersion ?? null);
+    },
+    /**
+     * 后端字典版本号与本地不一致时，后台重新拉取全量字典
+     * @param dictVersion 后端返回的字典版本号
+     * @author scott
+     * @since 2026-10-13 【issues/9838】管理员修改字典后，其他用户刷新页面即可同步最新字典
+     */
+    async refreshDictItemsIfChanged(dictVersion?: string) {
+      if (!dictVersion || dictVersion === getAuthCache<string>(DB_DICT_VERSION_KEY)) {
+        return;
+      }
+      const res = await queryAllDictItems();
+      if (res?.success && res.result) {
+        this.setAllDictItems(res.result, dictVersion);
+      }
     },
     setAllDictItemsByLocal() {
       // 代码逻辑说明: 【QQYUN-8572】表格行选择卡顿问题（customRender中字典引起的）
@@ -260,7 +282,7 @@ export const useUserStore = defineStore('app-user', {
       if (!this.getToken) {
         return null;
       }
-      const { userInfo, sysAllDictItems, enableStrongPwd } = await getUserInfo();
+      const { userInfo, sysAllDictItems, dictVersion, enableStrongPwd } = await getUserInfo();
       if (userInfo) {
         const { roles = [] } = userInfo;
         if (isArray(roles)) {
@@ -278,7 +300,7 @@ export const useUserStore = defineStore('app-user', {
        * @updateDate:2021-09-08
        */
       if (sysAllDictItems) {
-        this.setAllDictItems(sysAllDictItems);
+        this.setAllDictItems(sysAllDictItems, dictVersion);
       }
       this.enableStrongPwd = enableStrongPwd ?? false;
       return userInfo;

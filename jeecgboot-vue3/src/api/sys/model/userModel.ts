@@ -45,6 +45,8 @@ export interface GetUserInfoModel {
   userInfo?: any;
   // 缓存字典项
   sysAllDictItems?: any;
+  // 字典版本号
+  dictVersion?: string;
   // 三级等保强密码开关
   enableStrongPwd?: boolean;
 }

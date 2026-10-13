@@ -11,6 +11,8 @@ export const ROLES_KEY = 'ROLES__KEY__';
 
 // dict info key
 export const DB_DICT_DATA_KEY = 'UI_CACHE_DB_DICT_DATA';
+// dict version key（与字典数据成对存储，用于判断本地字典是否过期）
+export const DB_DICT_VERSION_KEY = 'UI_CACHE_DB_DICT_VERSION';
 
 // project config key
 export const PROJ_CFG_KEY = 'PROJ__CFG__KEY__';

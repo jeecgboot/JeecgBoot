@@ -60,6 +60,21 @@ public interface ISysDictService extends IService<SysDict> {
     public Map<String,List<DictModel>> queryAllDictItems();
 
     /**
+     * 获取系统字典版本号（前端据此判断本地字典缓存是否过期）
+     * @return
+     * @author scott
+     * @since 2026-10-13 【issues/9838】管理员修改字典后，其他用户刷新页面自动同步最新字典
+     */
+    String getDictVersion();
+
+    /**
+     * 刷新系统字典版本号（字典或字典项变更后调用）
+     * @author scott
+     * @since 2026-10-13 【issues/9838】管理员修改字典后，其他用户刷新页面自动同步最新字典
+     */
+    void refreshDictVersion();
+
+    /**
      * 查通过查询指定table的 text code 获取字典
      * @param tableFilterSql
      * @param text

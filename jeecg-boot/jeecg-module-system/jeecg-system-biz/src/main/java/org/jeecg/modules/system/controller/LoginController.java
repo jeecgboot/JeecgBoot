@@ -164,6 +164,9 @@ public class LoginController {
 			log.debug("2 获取用户信息耗时 (首页面配置)" + (System.currentTimeMillis() - start) + "毫秒");
 			
 			obj.put("userInfo",sysUser);
+			//update-begin---author:scott ---date:20261013  for：【issues/9838】返回字典版本号；先取版本号再查字典，避免期间字典变更导致前端拿到新版本号+旧数据-----------
+			obj.put("dictVersion", sysDictService.getDictVersion());
+			//update-end---author:scott ---date:20261013  for：【issues/9838】返回字典版本号；先取版本号再查字典，避免期间字典变更导致前端拿到新版本号+旧数据-----------
 			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 			log.debug("3 获取用户信息耗时 (字典数据)" + (System.currentTimeMillis() - start) + "毫秒");
 
@@ -561,6 +564,9 @@ public class LoginController {
 		// 5.vue3版本不加载字典数据，vue2下加载字典
 		String vue3Version = request.getHeader(CommonConstant.VERSION);
 		if(oConvertUtils.isEmpty(vue3Version)){
+			//update-begin---author:scott ---date:20261013  for：【issues/9838】返回字典版本号；先取版本号再查字典，避免期间字典变更导致前端拿到新版本号+旧数据-----------
+			obj.put("dictVersion", sysDictService.getDictVersion());
+			//update-end---author:scott ---date:20261013  for：【issues/9838】返回字典版本号；先取版本号再查字典，避免期间字典变更导致前端拿到新版本号+旧数据-----------
 			obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 		}
 		

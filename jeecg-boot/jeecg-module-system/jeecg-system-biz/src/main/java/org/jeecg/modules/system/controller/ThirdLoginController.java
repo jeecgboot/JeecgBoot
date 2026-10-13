@@ -370,6 +370,9 @@ public class ThirdLoginController {
 		//用户登录信息
 		obj.put("userInfo", sysUser);
 		//获取字典缓存【解决 #jeecg-boot/issues/3998】
+		//update-begin---author:scott ---date:20261013  for：【issues/9838】返回字典版本号；先取版本号再查字典，避免期间字典变更导致前端拿到新版本号+旧数据-----------
+		obj.put("dictVersion", sysDictService.getDictVersion());
+		//update-end---author:scott ---date:20261013  for：【issues/9838】返回字典版本号；先取版本号再查字典，避免期间字典变更导致前端拿到新版本号+旧数据-----------
 		obj.put("sysAllDictItems", sysDictService.queryAllDictItems());
 		//token 信息
 		obj.put("token", token);

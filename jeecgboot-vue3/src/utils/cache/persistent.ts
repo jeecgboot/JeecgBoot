@@ -14,6 +14,7 @@ import {
   APP_SESSION_CACHE_KEY,
   MULTIPLE_TABS_KEY,
   DB_DICT_DATA_KEY,
+  DB_DICT_VERSION_KEY,
   TENANT_ID,
   LOGIN_INFO_KEY,
   OAUTH2_THIRD_LOGIN_TENANT_ID,
@@ -32,6 +33,7 @@ interface BasicStore {
   [PROJ_CFG_KEY]: ProjectConfig;
   [MULTIPLE_TABS_KEY]: RouteLocationNormalized[];
   [DB_DICT_DATA_KEY]: string;
+  [DB_DICT_VERSION_KEY]: string;
   [TENANT_ID]: string;
   [LOGIN_INFO_KEY]: LoginInfo;
   [OAUTH2_THIRD_LOGIN_TENANT_ID]: string

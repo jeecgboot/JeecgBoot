@@ -120,7 +120,10 @@
    * 删除事件
    */
   async function handleDelete(record) {
-    await deleteDict({ id: record.id }, reload);
+    await deleteDict({ id: record.id }, () => {
+      reload();
+      handlerRefreshCache(false);
+    });
   }
   /**
    * 批量删除事件
@@ -131,6 +134,7 @@
       reload();
       selectedRowKeys.value = [];
       selectedRows.value = [];
+      handlerRefreshCache(false);
     });
   }
   /**
@@ -141,9 +145,9 @@
       updateTableDataRecord(values.id, values);
     } else {
       reload();
-      // 代码逻辑说明: 新增字典后同步刷新字典缓存，避免新增字典后页面引用不到
-      await handlerRefreshCache(false);
     }
+    // 代码逻辑说明: 新增/编辑字典后同步刷新字典缓存，避免页面引用不到或显示旧值
+    await handlerRefreshCache(false);
   }
   /**
    * 刷新缓存

@@ -237,6 +237,32 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 	}
 
 	/**
+	 * 获取系统字典版本号，Redis 中不存在时初始化
+	 * @author scott
+	 * @since 2026-10-13 【issues/9838】管理员修改字典后，其他用户刷新页面自动同步最新字典
+	 */
+	@Override
+	public String getDictVersion() {
+		Object version = redisUtil.get(CommonConstant.SYS_DICT_VERSION);
+		if (oConvertUtils.isEmpty(version)) {
+			// Redis 中不存在（首次或被清理）时初始化，前端会因版本不一致重新拉取一次字典
+			version = String.valueOf(System.currentTimeMillis());
+			redisUtil.set(CommonConstant.SYS_DICT_VERSION, version);
+		}
+		return version.toString();
+	}
+
+	/**
+	 * 刷新系统字典版本号（写入当前时间戳）
+	 * @author scott
+	 * @since 2026-10-13 【issues/9838】管理员修改字典后，其他用户刷新页面自动同步最新字典
+	 */
+	@Override
+	public void refreshDictVersion() {
+		redisUtil.set(CommonConstant.SYS_DICT_VERSION, String.valueOf(System.currentTimeMillis()));
+	}
+
+	/**
 	 * 通过查询指定code 获取字典值text
 	 * @param code
 	 * @param key

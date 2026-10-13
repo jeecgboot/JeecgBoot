@@ -71,6 +71,9 @@ public class SysPermissionController {
 	@Autowired
 	private ShiroRealm shiroRealm;
 
+	@Autowired
+	private ISysDictService sysDictService;
+
     /**
      * 子菜单
      */
@@ -337,6 +340,9 @@ public class SysPermissionController {
 			json.put("allAuth", allauthjsonArray);
 			//数据源安全模式
 			json.put("sysSafeMode", jeecgBaseConfig.getFirewall()!=null? jeecgBaseConfig.getFirewall().getDataSourceSafe(): false);
+			//update-begin---author:scott ---date:20261013  for：【issues/9838】返回字典版本号，前端刷新页面时比对，变化才重新拉取字典缓存-----------
+			json.put("dictVersion", sysDictService.getDictVersion());
+			//update-end---author:scott ---date:20261013  for：【issues/9838】返回字典版本号，前端刷新页面时比对，变化才重新拉取字典缓存-----------
 			result.setResult(json);
 		} catch (Exception e) {
 			result.error500("查询失败:" + e.getMessage());  

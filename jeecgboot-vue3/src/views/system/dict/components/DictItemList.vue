@@ -110,7 +110,10 @@
    * 删除
    */
   async function handleDelete(record) {
-    await deleteItem({ id: record.id }, reload);
+    await deleteItem({ id: record.id }, () => {
+      reload();
+      doRefreshDictCache();
+    });
   }
 
   /**

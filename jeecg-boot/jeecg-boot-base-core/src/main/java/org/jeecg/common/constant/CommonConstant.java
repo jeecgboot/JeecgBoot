@@ -746,4 +746,9 @@ public interface CommonConstant {
      * 发送短信方式：阿里云
      */
     String SMS_SEND_TYPE_ALI_YUN = "aliyun";
+
+    /**
+     * 系统字典版本号（Redis key），字典变更时更新，前端据此判断是否需要重新拉取字典缓存
+     */
+    String SYS_DICT_VERSION = "sys:cache:dict:version";
 }

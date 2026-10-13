@@ -399,6 +399,7 @@ public class SysDictController {
 			sysDict.setCreateTime(new Date());
 			sysDict.setDelFlag(CommonConstant.DEL_FLAG_0);
 			sysDictService.save(sysDict);
+			sysDictService.refreshDictVersion();
 			result.success("保存成功！");
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
@@ -472,6 +473,9 @@ public class SysDictController {
 				log.error("第 {} 个字典[{}]处理异常: {}", i + 1, sysDictPage.getDictCode(), e.getMessage(), e);
 			}
 		}
+		if (successCount > 0) {
+			sysDictService.refreshDictVersion();
+		}
 		Map<String, Object> returnMap = new HashMap<>();
 		returnMap.put("successCount", successCount);
 		returnMap.put("failCount", failCount);
@@ -511,6 +515,7 @@ public class SysDictController {
 			sysDict.setUpdateTime(new Date());
 			boolean ok = sysDictService.updateById(sysDict);
 			if(ok) {
+				sysDictService.refreshDictVersion();
 				result.success("编辑成功!");
 			}
 		}
@@ -529,6 +534,7 @@ public class SysDictController {
 		Result<SysDict> result = new Result<SysDict>();
 		boolean ok = sysDictService.removeById(id);
 		if(ok) {
+			sysDictService.refreshDictVersion();
 			result.success("删除成功!");
 		}else{
 			result.error500("删除失败!");
@@ -550,6 +556,7 @@ public class SysDictController {
 			result.error500("参数不识别！");
 		}else {
 			sysDictService.removeByIds(Arrays.asList(ids.split(",")));
+			sysDictService.refreshDictVersion();
 			result.success("删除成功!");
 		}
 		return result;
@@ -589,7 +596,9 @@ public class SysDictController {
 		redisUtil.removeAll(CacheConstant.SYS_DEPART_IDS_CACHE);
 		redisUtil.removeAll("jmreport:cache:dict");
 		redisUtil.removeAll("jmreport:cache:dictTable");
-		
+		// 刷新字典版本号（兜底：直接改库后手动刷新缓存，其他用户刷新页面也能同步）
+		sysDictService.refreshDictVersion();
+
 		// 清除当前用户的授权缓存信息
 		Subject currentUser = SecurityUtils.getSubject();
 		if (currentUser.isAuthenticated()) {
@@ -704,6 +713,9 @@ public class SysDictController {
 						errorMessage.add("第 " + lineNumber + " 行：字典编码已经存在，忽略导入。");
 					}
 				}
+				if (successLines > 0) {
+					sysDictService.refreshDictVersion();
+				}
 				return ImportExcelUtil.imporReturnRes(errorLines,successLines,errorMessage);
 			} catch (Exception e) {
 				log.error(e.getMessage(),e);
@@ -743,6 +755,7 @@ public class SysDictController {
 	public Result<?> deletePhysic(@PathVariable("id") String id) {
 		try {
 			sysDictService.deleteOneDictPhysically(id);
+			sysDictService.refreshDictVersion();
 			return Result.ok("删除成功!");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -760,6 +773,7 @@ public class SysDictController {
 	public Result<?> back(@PathVariable("id") String id) {
 		try {
 			sysDictService.updateDictDelFlag(0,id);
+			sysDictService.refreshDictVersion();
 			return Result.ok("操作成功!");
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -779,6 +793,7 @@ public class SysDictController {
 			String ids = jsonObject.getString("ids");
 			if (StringUtils.isNotBlank(ids)) {
 				sysDictService.revertLogicDeleted(Arrays.asList(ids.split(",")));
+				sysDictService.refreshDictVersion();
 				return Result.ok("操作成功!");
 			}
 		} catch (Exception e) {
@@ -848,6 +863,7 @@ public class SysDictController {
 		sysDictVo.setLowAppId(lowAppId);
 		sysDictVo.setTenantId(oConvertUtils.getInteger(tenantId, null));
 		sysDictService.addDictByLowAppId(sysDictVo);
+		sysDictService.refreshDictVersion();
 		return Result.ok("添加成功");
 	}
 
@@ -856,6 +872,7 @@ public class SysDictController {
 		String lowAppId = oConvertUtils.getString(TokenUtils.getLowAppIdByRequest(request));
 		sysDictVo.setLowAppId(lowAppId);
 		sysDictService.editDictByLowAppId(sysDictVo);
+		sysDictService.refreshDictVersion();
 		return Result.ok("编辑成功");
 	}
 

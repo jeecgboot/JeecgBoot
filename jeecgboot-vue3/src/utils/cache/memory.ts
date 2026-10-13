@@ -1,4 +1,4 @@
-import { TOKEN_KEY, ROLES_KEY, USER_INFO_KEY, DB_DICT_DATA_KEY, TENANT_ID, LOGIN_INFO_KEY, PROJ_CFG_KEY } from '/@/enums/cacheEnum';
+import { TOKEN_KEY, ROLES_KEY, USER_INFO_KEY, DB_DICT_DATA_KEY, DB_DICT_VERSION_KEY, TENANT_ID, LOGIN_INFO_KEY, PROJ_CFG_KEY } from '/@/enums/cacheEnum';
 import { omit } from 'lodash-es';
 
 export interface Cache<V = any> {
@@ -103,7 +103,7 @@ export class Memory<T = any, V = any> {
     });
     // 代码逻辑说明: 不删除登录用户的租户id，其他缓存信息都清除----
     this.cache = {
-      ...omit(this.cache, [TOKEN_KEY, USER_INFO_KEY, ROLES_KEY, DB_DICT_DATA_KEY, TENANT_ID, LOGIN_INFO_KEY, PROJ_CFG_KEY]),
+      ...omit(this.cache, [TOKEN_KEY, USER_INFO_KEY, ROLES_KEY, DB_DICT_DATA_KEY, DB_DICT_VERSION_KEY, TENANT_ID, LOGIN_INFO_KEY, PROJ_CFG_KEY]),
     };
   }
 }
