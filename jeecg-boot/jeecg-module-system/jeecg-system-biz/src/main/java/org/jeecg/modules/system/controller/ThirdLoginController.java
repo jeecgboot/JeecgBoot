@@ -38,11 +38,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
+import org.jeecg.config.JeecgBaseConfig;
+import org.jeecg.config.vo.DomainUrl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
@@ -87,6 +92,9 @@ public class ThirdLoginController {
 	@Autowired
 	public ISysBaseAPI sysBaseAPI;
 
+	@Autowired
+	private JeecgBaseConfig jeecgBaseConfig;
+
 	@RequestMapping("/render/{source}")
     public void render(@PathVariable("source") String source, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("第三方登录进入render：" + source);
@@ -119,7 +127,9 @@ public class ThirdLoginController {
             log.warn("第三方登录方式[{}]未配置（justauth.type 中不存在），已拦截 render 请求", source);
             response.setContentType("text/html;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
-            response.getWriter().write("第三方登录方式[" + source + "]尚未配置，请联系管理员");
+            //update-begin---author:scott ---date:20261013  for：【安全 GHSA-4c5v-rq3g-j3pc】回显source前做HTML转义，防止反射型XSS-----------
+            response.getWriter().write("第三方登录方式[" + HtmlUtils.htmlEscape(source) + "]尚未配置，请联系管理员");
+            //update-end---author:scott ---date:20261013  for：【安全 GHSA-4c5v-rq3g-j3pc】回显source前做HTML转义，防止反射型XSS-----------
             return;
         }
         //update-end---author:scott ---date:2026-06-04  for：【第三方登录NPE加固】source未在justauth.type中配置时直接拦截，避免JustAuth-starter1.4.0的get()未判空getExtend()抛出空指针-----------
@@ -546,6 +556,11 @@ public class ThirdLoginController {
 					redirect = arr[1];
 				}
 			}
+			//update-begin---author:scott ---date:20261013  for：【安全 GHSA-2x3m-cj6f-5894/GHSA-ffqp-583g-3c3w/GHSA-jj4x-xwpm-5vx8】跳转地址须在白名单内，防止登录token被带到外部站点-----------
+			if (!isSafeRedirect(state, request)) {
+				return "非法的跳转地址";
+			}
+			//update-end---author:scott ---date:20261013  for：【安全 GHSA-2x3m-cj6f-5894/GHSA-ffqp-583g-3c3w/GHSA-jj4x-xwpm-5vx8】跳转地址须在白名单内，防止登录token被带到外部站点-----------
 
 			String token = saveToken(loginUser);
 			state += "/oauth2-app/login?oauth2LoginToken=" + URLEncoder.encode(token, "UTF-8") + "&tenantId=" + URLEncoder.encode(tenantId, "UTF-8");
@@ -569,6 +584,35 @@ public class ThirdLoginController {
             return "解码失败";
         }
     }
+
+	/**
+	 * 校验OAuth2登录成功后的跳转地址(state)：只允许相对路径，或域名为当前后端、jeecg.domainUrl.pc/app/back 中配置的域名
+	 *
+	 * @author scott
+	 * @since 2026-10-13 【安全 GHSA-2x3m-cj6f-5894/GHSA-ffqp-583g-3c3w/GHSA-jj4x-xwpm-5vx8】防止登录token被带到外部站点
+	 */
+	private boolean isSafeRedirect(String state, HttpServletRequest request) {
+		if (state.startsWith("/")) {
+			return !state.startsWith("//") && !state.startsWith("/\\");
+		}
+		DomainUrl domainUrl = jeecgBaseConfig.getDomainUrl();
+		String[] allowUrls = domainUrl == null ? new String[]{CommonUtils.getBaseUrl(request)}
+				: new String[]{CommonUtils.getBaseUrl(request), domainUrl.getPc(), domainUrl.getApp(), domainUrl.getBack()};
+		try {
+			URI uri = new URI(state);
+			if (uri.getHost() == null || !uri.getScheme().matches("(?i)https?")) {
+				return false;
+			}
+			for (String url : allowUrls) {
+				if (oConvertUtils.isNotEmpty(url) && uri.getHost().equalsIgnoreCase(new URI(url).getHost())) {
+					return true;
+				}
+			}
+		} catch (URISyntaxException e) {
+			log.warn("OAuth2登录跳转地址非法: {}", state);
+		}
+		return false;
+	}
 
 	/**
 	 * 注册账号并绑定第三方账号 【低代码应用专用接口】
@@ -684,6 +728,7 @@ public class ThirdLoginController {
 	public String OauthDingDingLogin(@RequestParam(value = "authCode", required = false) String authCode,
 									 @RequestParam("state") String state,
 									 @RequestParam(name = "tenantId",defaultValue = "0") String tenantId,
+									 HttpServletRequest request,
 									 HttpServletResponse response) {
 		SysUser loginUser = thirdAppDingtalkService.oauthDingDingLogin(authCode,Integer.valueOf(tenantId));
 		try {
@@ -695,6 +740,11 @@ public class ThirdLoginController {
 					redirect = arr[1];
 				}
 			}
+			//update-begin---author:scott ---date:20261013  for：【安全 GHSA-2x3m-cj6f-5894/GHSA-jj4x-xwpm-5vx8】跳转地址须在白名单内，防止登录token被带到外部站点-----------
+			if (!isSafeRedirect(state, request)) {
+				return "非法的跳转地址";
+			}
+			//update-end---author:scott ---date:20261013  for：【安全 GHSA-2x3m-cj6f-5894/GHSA-jj4x-xwpm-5vx8】跳转地址须在白名单内，防止登录token被带到外部站点-----------
 			String token = saveToken(loginUser);
 			state += "/oauth2-app/login?oauth2LoginToken=" + URLEncoder.encode(token, "UTF-8") + "&tenantId=" + URLEncoder.encode(tenantId, "UTF-8");
 			state += "&thirdType=DINGTALK";
