@@ -475,6 +475,7 @@ public class SysRoleController {
 	/**
 	 * 保存数据规则至角色菜单关联表
 	 */
+	@RequiresPermissions("system:permission:saveRole")
 	@PostMapping(value = "/datarule")
 	public Result<?> saveDatarule(@RequestBody JSONObject jsonObject) {
 		try {

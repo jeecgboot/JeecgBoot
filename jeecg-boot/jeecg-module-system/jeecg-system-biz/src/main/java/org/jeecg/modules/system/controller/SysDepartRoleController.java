@@ -260,6 +260,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
 	 /**
 	  * 保存数据规则至角色菜单关联表
 	  */
+	 @RequiresPermissions("system:depart:role:edit")
 	 @PostMapping(value = "/datarule")
 	 public Result<?> saveDatarule(@RequestBody JSONObject jsonObject) {
 		 try {
