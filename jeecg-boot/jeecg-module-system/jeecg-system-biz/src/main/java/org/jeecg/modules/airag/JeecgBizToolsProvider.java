@@ -11,10 +11,13 @@ import dev.langchain4j.service.tool.ToolExecutor;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.PasswordUtil;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
+import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.llm.handler.JeecgToolsProvider;
 import org.jeecg.modules.base.service.BaseCommonService;
@@ -22,6 +25,7 @@ import org.jeecg.modules.system.entity.SysRole;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -50,6 +54,13 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
 
     @Autowired
     private org.jeecg.modules.system.service.ISysUserService sysUserService;
+
+    @Lazy
+    @Autowired
+    private CommonAPI commonApi;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     public Map<ToolSpecification, ToolExecutor> getDefaultTools() {
        log.info("--------【AI工具】创建用户和查询用户工具扩展------------------");
@@ -112,11 +123,15 @@ public class JeecgBizToolsProvider implements JeecgToolsProvider {
                 log.info("【AI工具】未获取到当前 HTTP 请求上下文，按匿名处理（无业务工具权限）");
                 return Collections.emptySet();
             }
-            String token = req.getHeader("X-Access-Token");
+            //update-begin---author:scott ---date:20261013  for：【安全 GHSA-9qp4-7428-wvm7/GHSA-44fq-8xcf-3m3h】与入口鉴权取同一个token并验签，防止伪造header中的JWT冒充admin-----------
+            String token = TokenUtils.getTokenByRequest(req);
             if (StringUtils.isBlank(token)) {
-                log.info("【AI工具】请求头缺少 X-Access-Token，按匿名处理（无业务工具权限）");
+                log.info("【AI工具】请求缺少 token，按匿名处理（无业务工具权限）");
                 return Collections.emptySet();
             }
+            // 校验签名、有效期与redis会话，失败抛异常走下方catch按匿名处理
+            TokenUtils.verifyToken(token, commonApi, redisUtil);
+            //update-end---author:scott ---date:20261013  for：【安全 GHSA-9qp4-7428-wvm7/GHSA-44fq-8xcf-3m3h】与入口鉴权取同一个token并验签，防止伪造header中的JWT冒充admin-----------
             String username = JwtUtil.getUsername(token);
             if (StringUtils.isBlank(username)) {
                 log.info("【AI工具】X-Access-Token 解析不到 username，按匿名处理（无业务工具权限）");
