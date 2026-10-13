@@ -379,6 +379,14 @@ public class LoginController {
 			result.setSuccess(false);
 			return result;
 		}
+		//update-begin---author:scott ---date:20261013  for：【安全 GHSA-5qr3-c98m-9767】增加按手机号限流，不依赖客户端IP-----------
+		if(!DySmsLimit.canSendSmsToPhone(mobile)){
+			result.setMessage("短信发送过于频繁，请稍后再试！");
+			result.setCode(CommonConstant.PHONE_SMS_FAIL_CODE);
+			result.setSuccess(false);
+			return result;
+		}
+		//update-end---author:scott ---date:20261013  for：【安全 GHSA-5qr3-c98m-9767】增加按手机号限流，不依赖客户端IP-----------
 		//-------------------------------------------------------------------------------------
 
 		//随机数
@@ -898,6 +906,13 @@ public class LoginController {
 			result.setSuccess(false);
 			return result;
 		}
+		//update-begin---author:scott ---date:20261013  for：【安全 GHSA-5qr3-c98m-9767】增加按手机号限流-----------
+		if (!DySmsLimit.canSendSmsToPhone(mobile)) {
+			result.setMessage("短信发送过于频繁，请稍后再试！");
+			result.setSuccess(false);
+			return result;
+		}
+		//update-end---author:scott ---date:20261013  for：【安全 GHSA-5qr3-c98m-9767】增加按手机号限流-----------
 		//随机数
 		String captcha = RandomUtil.randomNumbers(6);
 		JSONObject obj = new JSONObject();

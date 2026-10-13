@@ -30,6 +30,46 @@ public class DySmsLimit {
     private static ConcurrentHashMap<String, Integer> ipRequestCount = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, Boolean> ipBlacklist = new ConcurrentHashMap<>();
 
+    // 同一手机号限流：60秒内最多1条，1小时内最多10条（基于Redis，集群共享）
+    private static final String PHONE_LIMIT_KEY_PRE = "sys:sms:limit:phone:";
+    private static final int PHONE_MINUTE_SECONDS = 60;
+    private static final int PHONE_HOUR_SECONDS = 3600;
+    private static final int MAX_MESSAGE_PER_HOUR_PER_PHONE = 10;
+
+    /**
+     * 按接收短信的手机号限流（不依赖客户端IP）：同一手机号60秒内最多1条，1小时内最多10条
+     *
+     * @param phone 接收短信的手机号
+     * @return 允许发送返回true
+     * @author scott
+     * @since 2026-10-13 【安全 GHSA-5qr3-c98m-9767】增加按手机号限流
+     */
+    public static boolean canSendSmsToPhone(String phone) {
+        if (oConvertUtils.isEmpty(phone)) {
+            return true;
+        }
+        RedisUtil redisUtil = SpringContextUtils.getBean(RedisUtil.class);
+        String minuteKey = PHONE_LIMIT_KEY_PRE + "min:" + phone;
+        long minuteCount = redisUtil.incr(minuteKey, 1);
+        if (minuteCount == 1) {
+            redisUtil.expire(minuteKey, PHONE_MINUTE_SECONDS);
+        }
+        if (minuteCount > 1) {
+            log.warn("手机号：{}，{}秒内已发送过短信，请稍后再试", phone, PHONE_MINUTE_SECONDS);
+            return false;
+        }
+        String hourKey = PHONE_LIMIT_KEY_PRE + "hour:" + phone;
+        long hourCount = redisUtil.incr(hourKey, 1);
+        if (hourCount == 1) {
+            redisUtil.expire(hourKey, PHONE_HOUR_SECONDS);
+        }
+        if (hourCount > MAX_MESSAGE_PER_HOUR_PER_PHONE) {
+            log.warn("手机号：{}，1小时内短信发送超过{}条", phone, MAX_MESSAGE_PER_HOUR_PER_PHONE);
+            return false;
+        }
+        return true;
+    }
+
     /**
      * @param ip 请求发短信的IP地址
      * @return

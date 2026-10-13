@@ -2258,6 +2258,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			log.warn("--------[警告] IP地址:{}, 短信接口请求太多-------", clientIp);
 			throw new JeecgBootException("短信接口请求太多，请稍后再试！", CommonConstant.PHONE_SMS_FAIL_CODE);
 		}
+		//update-begin---author:scott ---date:20261013  for：【安全 GHSA-5qr3-c98m-9767】增加按手机号限流-----------
+		if(!DySmsLimit.canSendSmsToPhone(phone)){
+			throw new JeecgBootException("短信发送过于频繁，请稍后再试！", CommonConstant.PHONE_SMS_FAIL_CODE);
+		}
+		//update-end---author:scott ---date:20261013  for：【安全 GHSA-5qr3-c98m-9767】增加按手机号限流-----------
 		
 		//随机数
 		String captcha = RandomUtil.randomNumbers(6);
