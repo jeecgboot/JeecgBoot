@@ -216,10 +216,10 @@ public class EmailSendMsgHandle implements ISendMsgHandle {
      * @return
      */
     private String replaceContent(SysUser user,String content){
-        if (content.indexOf(realNameExp) > 0) {
+        if (content.indexOf(realNameExp) > -1) {
             content = content.replace("$"+realNameExp,user.getRealname()).replace(realNameExp, user.getRealname());
         }
-        if (content.indexOf(CommonConstant.LOGIN_TOKEN) > 0) {
+        if (content.indexOf(CommonConstant.LOGIN_TOKEN) > -1) {
             String token = getToken(user);
             try {
                 content = content.replace(CommonConstant.LOGIN_TOKEN, URLEncoder.encode(token, "UTF-8"));
