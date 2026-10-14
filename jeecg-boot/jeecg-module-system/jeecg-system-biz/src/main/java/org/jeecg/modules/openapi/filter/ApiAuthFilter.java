@@ -341,6 +341,12 @@ public class ApiAuthFilter implements Filter {
             throw new JeecgBootException("不存在认证信息");
         }
 
+        //update-begin---author:scott ---date:20261014  for：SK为空时签名退化为md5(appKey+timestamp)，知道AK即可伪造，空SK一律拒绝-----------
+        if (!StringUtils.hasText(openApiAuth.getSk())) {
+            throw new JeecgBootException("该凭据未配置SK，请在【OpenAPI-授权管理】重新生成AK/SK");
+        }
+        //update-end---author:scott ---date:20261014  for：SK为空时签名退化为md5(appKey+timestamp)，知道AK即可伪造，空SK一律拒绝-----------
+
         if(!appKey.equals(openApiAuth.getAk())){
             throw new JeecgBootException("appkey错误");
         }
