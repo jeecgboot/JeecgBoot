@@ -118,7 +118,7 @@
               popConfirm.overlayClassName = `${overlayClassName ? overlayClassName : ''} ${prefixCls}-popconfirm`;
             }
             return {
-              getPopupContainer: () => unref((table as any)?.wrapRef.value) ?? document.body,
+              getPopupContainer: () => unref((table as any)?.wrapRef?.value) ?? document.body,
               type: 'link',
               size: 'small',
               ...action,
@@ -209,7 +209,7 @@
 
       function getTooltip(data: string | TooltipProps): TooltipProps {
         return {
-          getPopupContainer: () => unref((table as any)?.wrapRef.value) ?? document.body,
+          getPopupContainer: () => unref((table as any)?.wrapRef?.value) ?? document.body,
           placement: 'bottom',
           ...(isString(data) ? { title: data } : data),
         };
