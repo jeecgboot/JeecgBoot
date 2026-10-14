@@ -15,6 +15,7 @@ import org.jeecg.common.system.vo.*;
 import org.jeecg.modules.system.service.ISysUserService;
 import org.jeecg.modules.system.service.impl.SysBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -26,11 +27,15 @@ import java.util.Set;
 
 /**
  * 服务化 system模块 对外接口请求类
+ * <p>
+ * 仅供微服务 Feign 内部调用。单体模式下 ISysBaseAPI 为进程内调用，无需对外暴露，
+ * 故只在类路径存在 jeecg-boot-starter-cloud（微服务模式）时加载，防止 /sys/api/** 被普通登录用户直接调用（2026-10-14）
  * @author: jeecg-boot
  */
 @Slf4j
 @RestController
 @RequestMapping("/sys/api")
+@ConditionalOnClass(name = "org.jeecg.config.JeecgCloudBaseConfig")
 public class SystemApiController {
 
     @Autowired

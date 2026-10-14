@@ -3,17 +3,22 @@ package org.jeecg.modules.airag.llm.controller;
 import org.jeecg.common.airag.api.IAiragBaseApi;
 import org.jeecg.modules.airag.api.AiragBaseApiImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
  * airag baseAPI Controller
+ * <p>
+ * 仅供微服务 Feign 内部调用。单体模式下为进程内调用，无需对外暴露，
+ * 故只在类路径存在 jeecg-boot-starter-cloud（微服务模式）时加载（2026-10-14）
  *
  * @author sjlei
  * @date 2025-12-30
  */
 @RestController("airagBaseApiController")
+@ConditionalOnClass(name = "org.jeecg.config.JeecgCloudBaseConfig")
 public class AiragBaseApiController implements IAiragBaseApi {
 
     @Autowired
