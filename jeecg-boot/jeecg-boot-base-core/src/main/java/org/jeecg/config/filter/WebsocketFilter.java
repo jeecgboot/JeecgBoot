@@ -55,8 +55,11 @@ public class WebsocketFilter implements Filter {
             String rest = uri.substring(idx + "/websocket/".length());
             int slash = rest.indexOf('/');
             String pathUserId = slash >= 0 ? rest.substring(0, slash) : rest;
+            // 前端路径userId格式为 {真实userId}_{wsClientId}(md5(token))，取下划线前的真实userId比对；同时兼容无后缀的纯userId
+            int underline = pathUserId.indexOf('_');
+            String realPathUserId = underline >= 0 ? pathUserId.substring(0, underline) : pathUserId;
             LoginUser loginUser = commonApi.getUserByName(JwtUtil.getUsername(token));
-            if (loginUser == null || !loginUser.getId().equals(pathUserId)) {
+            if (loginUser == null || !loginUser.getId().equals(realPathUserId)) {
                 log.warn("Websocket连接 用户身份与路径userId不一致，已拒绝。Path = {}", uri);
                 return;
             }
