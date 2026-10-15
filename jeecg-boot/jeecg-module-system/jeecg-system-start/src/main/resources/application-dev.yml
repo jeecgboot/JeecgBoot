@@ -271,7 +271,7 @@ jeecg:
     # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
     is-concurrent: true
     # 登录是否启用验证码
-    enableLoginCaptcha: false
+    enableLoginCaptcha: true
     # 是否开启三级等保强密码校验（true 开启强密码模式，false 使用简单密码规则）
     enableStrongPwd: false
   # 签名密钥串(前后端要一致，正式发布请自行修改)

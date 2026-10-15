@@ -260,7 +260,7 @@ jeecg:
     # 低代码模式（dev:开发模式，prod:发布模式——关闭所有在线开发配置能力）
     lowCodeMode: dev
     # 登录是否启用验证码
-    enableLoginCaptcha: false
+    enableLoginCaptcha: true
     # 是否开启三级等保强密码校验（true 开启强密码模式，false 使用简单密码规则）
     enableStrongPwd: false
   # 签名密钥串(前后端要一致，正式发布请自行修改)

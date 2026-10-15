@@ -40,7 +40,6 @@ import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.message.handle.impl.SystemSendMsgHandle;
 import org.jeecg.modules.system.entity.*;
 import org.jeecg.modules.system.mapper.*;
-import org.jeecg.modules.system.model.SysLoginModel;
 import org.jeecg.modules.system.model.SysUserSysDepPostModel;
 import org.jeecg.modules.system.model.SysUserSysDepartModel;
 import org.jeecg.modules.system.service.*;
@@ -773,6 +772,38 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		}
 		return result;
 	}
+
+	//update-begin---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】登录失败计数与密码校验统一，用户不存在也计入失败次数，防止用户枚举-----------
+	@Override
+	public boolean verifyLoginPassword(SysUser sysUser, String username, String password) {
+		if (sysUser == null) {
+			baseCommonService.addLog("用户登录失败，用户不存在！", CommonConstant.LOG_TYPE_1, null);
+			addLoginFailOvertimes(username);
+			return false;
+		}
+		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
+		if (!userpassword.equals(sysUser.getPassword())) {
+			addLoginFailOvertimes(username);
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean isLoginFailOvertimes(String key) {
+		Object failTime = redisUtil.get(CommonConstant.LOGIN_FAIL + key);
+		return failTime != null && Integer.parseInt(failTime.toString()) > 5;
+	}
+
+	@Override
+	public void addLoginFailOvertimes(String key) {
+		String redisKey = CommonConstant.LOGIN_FAIL + key;
+		Object failTime = redisUtil.get(redisKey);
+		int val = failTime != null ? Integer.parseInt(failTime.toString()) : 0;
+		// 10分钟，一分钟为60s
+		redisUtil.set(redisKey, ++val, 600);
+	}
+	//update-end---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】登录失败计数与密码校验统一，用户不存在也计入失败次数，防止用户枚举-----------
 
 	@Override
 	public List<SysUser> queryLogicDeleted() {
@@ -3055,70 +3086,83 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		String loginType = jsonObject.getString("loginType");
 		String username = jsonObject.getString("username");
 		String source = oConvertUtils.getString(jsonObject.getString("source"),"PC");
+		//update-begin---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】登录前查部门接口可匿名调用：增加失败计数与锁定，用户不存在与密码/验证码错误统一提示，防止无限次猜密码和爆破短信验证码；APP端（无图形验证码）保留跳过验证码，手机分支兼容captcha参数名-----------
 		// 手机号登录校验
 		if("phone".equalsIgnoreCase(loginType)){
 			String phone = jsonObject.getString("mobile");
-			//1.校验用户有效性
+			if (oConvertUtils.isEmpty(phone)) {
+				return Result.error("手机验证码错误");
+			}
+			if (isLoginFailOvertimes(phone)) {
+				return Result.error("该用户登录失败次数过多，请于10分钟后再次登录！");
+			}
+			//1.校验验证码（APP端短信验证码参数名为captcha）
 			SysUser sysUser = baseMapper.getUserByPhone(phone);
+			String smscode = oConvertUtils.getString(jsonObject.getString("smscode"), jsonObject.getString("captcha"));
+			Object code = redisUtil.get(CommonConstant.PHONE_REDIS_KEY_PRE + phone);
+			if (sysUser == null || oConvertUtils.isEmpty(smscode) || !smscode.equals(code)) {
+				addLoginFailOvertimes(phone);
+				return Result.error("手机验证码错误");
+			}
+			//2.校验用户有效性
 			result = this.checkUserIsEffective(sysUser);
 			if(!result.isSuccess()) {
 				return result;
-			}
-			//2.校验验证码
-			String smscode = jsonObject.getString("smscode");
-			String redisKey = CommonConstant.PHONE_REDIS_KEY_PRE+phone;
-			Object code = redisUtil.get(redisKey);
-			if (!smscode.equals(code)) {
-				return Result.error("手机验证码错误");
 			}
 			//3.当前登录账号
 			username = sysUser.getUsername();
 			String orgCode = sysUser.getOrgCode();
 			obj.put("currentOrgCode", orgCode);
 		}else{
+			if (oConvertUtils.isEmpty(username)) {
+				return Result.error("用户名或密码错误");
+			}
+			if (isLoginFailOvertimes(username)) {
+				return Result.error("该用户登录失败次数过多，请于10分钟后再次登录！");
+			}
 			String password  = AesEncryptUtil.resolvePassword(jsonObject.getString("password"));
 			log.debug("登录密码，原始密码:{}，解密密码:{}" , jsonObject.getString("password"), password);
-            // 手机端没有验证码，不做校验
+			String realKey = null;
+			// 手机端没有验证码，不做校验（靠失败计数与锁定防暴力破解，与/sys/mLogin一致）
 			if(!"APP".equalsIgnoreCase(source)){
 				// step.1 验证码check
-				SysLoginModel sysLoginModel = new SysLoginModel();
 				String inputCode = jsonObject.getString("inputCode");
 				String checkKey = jsonObject.getString("checkKey");
-				sysLoginModel.setCaptcha(inputCode);
-				sysLoginModel.setCheckKey(checkKey);
 				if (inputCode == null) {
 					result.error500("验证码无效");
 					return result;
 				}
 				String lowerCaseCaptcha = inputCode.toLowerCase();
-				String keyPrefix = Md5Util.md5Encode(sysLoginModel.getCheckKey() + jeecgBaseConfig.getSignatureSecret(), "utf-8");
-				String realKey = keyPrefix + lowerCaseCaptcha;
+				String keyPrefix = Md5Util.md5Encode(checkKey + jeecgBaseConfig.getSignatureSecret(), "utf-8");
+				realKey = keyPrefix + lowerCaseCaptcha;
 				Object checkCode = redisUtil.get(realKey);
 				if (checkCode == null || !checkCode.toString().equals(lowerCaseCaptcha)) {
-					log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", sysLoginModel.getCheckKey(), lowerCaseCaptcha, checkCode);
+					log.warn("验证码错误，key= {} , Ui checkCode= {}, Redis checkCode = {}", checkKey, lowerCaseCaptcha, checkCode);
 					result.error500("验证码错误");
 					result.setCode(HttpStatus.PRECONDITION_FAILED.value());
 					return result;
 				}
 			}
 
-			// step.2 校验用户是否存在且有效
+			// step.2 校验用户名或密码是否正确（密码错误时作废验证码；密码正确时保留，随后的登录接口还要用）
 			SysUser sysUser = baseMapper.getUserByName(username);
-			result = this.checkUserIsEffective(sysUser);
-			if(!result.isSuccess()) {
+			if (!verifyLoginPassword(sysUser, username, password)) {
+				if (realKey != null) {
+					redisUtil.del(realKey);
+				}
+				result.error500("用户名或密码错误");
 				return result;
 			}
 
-			// step.3 校验用户名或密码是否正确
-			String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
-			String syspassword = sysUser.getPassword();
-			if (!syspassword.equals(userpassword)) {
-				result.error500("用户名或密码错误");
+			// step.3 校验用户是否有效
+			result = this.checkUserIsEffective(sysUser);
+			if(!result.isSuccess()) {
 				return result;
 			}
 			String orgCode = sysUser.getOrgCode();
 			obj.put("currentOrgCode", orgCode);
 		}
+		//update-end---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】登录前查部门接口可匿名调用：增加失败计数与锁定，用户不存在与密码/验证码错误统一提示，防止无限次猜密码和爆破短信验证码；APP端（无图形验证码）保留跳过验证码，手机分支兼容captcha参数名-----------
 		//  step.4 获取用户部门信息，仅限部门
 		List<SysDepart> departList = sysDepartMapper.queryDeptByUserAndCategory(username,DepartCategoryEnum.DEPART_CATEGORY_DEPART.getValue());
 		if (CollectionUtil.isNotEmpty(departList)) {

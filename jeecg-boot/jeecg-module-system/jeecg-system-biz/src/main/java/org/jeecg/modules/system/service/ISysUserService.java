@@ -248,6 +248,30 @@ public interface ISysUserService extends IService<SysUser> {
 	 */
 	Result checkUserIsEffective(SysUser sysUser);
 
+	//update-begin---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】登录失败计数与密码校验统一，用户不存在也计入失败次数，防止用户枚举-----------
+	/**
+	 * 校验登录密码，用户不存在与密码错误统一视为失败并计入失败次数
+	 * @param sysUser 按用户名查到的用户，可为空
+	 * @param username 登录账号
+	 * @param password 明文密码
+	 * @return 密码正确返回true
+	 */
+	boolean verifyLoginPassword(SysUser sysUser, String username, String password);
+
+	/**
+	 * 登录失败次数是否超限（超限锁定10分钟）
+	 * @param key 用户名或手机号
+	 * @return
+	 */
+	boolean isLoginFailOvertimes(String key);
+
+	/**
+	 * 记录登录失败次数
+	 * @param key 用户名或手机号
+	 */
+	void addLoginFailOvertimes(String key);
+	//update-end---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】登录失败计数与密码校验统一，用户不存在也计入失败次数，防止用户枚举-----------
+
 	/**
 	 * 查询被逻辑删除的用户
      * @return List<SysUser>

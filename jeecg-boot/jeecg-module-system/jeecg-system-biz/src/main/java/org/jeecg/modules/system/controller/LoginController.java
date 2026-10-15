@@ -102,23 +102,22 @@ public class LoginController {
             return result;
         }
 		
-		// step.3 校验用户是否存在且有效
+		//update-begin---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】先校验密码再校验用户状态，用户不存在与密码错误统一提示并计入失败次数，防止用户枚举-----------
+		// step.3 校验用户名或密码是否正确
 		LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
 		queryWrapper.eq(SysUser::getUsername,username);
 		SysUser sysUser = sysUserService.getOne(queryWrapper);
+		if (!sysUserService.verifyLoginPassword(sysUser, username, password)) {
+			result.error500("用户名或密码错误");
+			return result;
+		}
+
+		// step.4 校验用户是否有效
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
 		}
-
-		// step.4 校验用户名或密码是否正确
-		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
-		String syspassword = sysUser.getPassword();
-		if (!syspassword.equals(userpassword)) {
-			addLoginFailOvertimes(username);
-			result.error500("用户名或密码错误");
-			return result;
-		}
+		//update-end---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】先校验密码再校验用户状态，用户不存在与密码错误统一提示并计入失败次数，防止用户枚举-----------
 
 		// step.5 登录成功获取用户信息
 		String loginOrgCode = sysLoginModel.getLoginOrgCode();
@@ -705,21 +704,21 @@ public class LoginController {
 		if(isLoginFailOvertimes(username)){
 			return result.error500("该用户登录失败次数过多，请于10分钟后再次登录！");
 		}
-		// 2.校验用户是否有效
+		//update-begin---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】先校验密码再校验用户状态，用户不存在与密码错误统一提示并计入失败次数，防止用户枚举-----------
+		// 2.校验用户名或密码是否正确
 		SysUser sysUser = sysUserService.getUserByName(username);
+		if (!sysUserService.verifyLoginPassword(sysUser, username, password)) {
+			result.error500("用户名或密码错误");
+			return result;
+		}
+		String syspassword = sysUser.getPassword();
+
+		// 3.校验用户是否有效
 		result = sysUserService.checkUserIsEffective(sysUser);
 		if(!result.isSuccess()) {
 			return result;
 		}
-		
-		// 3.校验用户名或密码是否正确
-		String userpassword = PasswordUtil.encrypt(username, password, sysUser.getSalt());
-		String syspassword = sysUser.getPassword();
-		if (!syspassword.equals(userpassword)) {
-			addLoginFailOvertimes(username);
-			result.error500("用户名或密码错误");
-			return result;
-		}
+		//update-end---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】先校验密码再校验用户状态，用户不存在与密码错误统一提示并计入失败次数，防止用户枚举-----------
 		
 		//4.设置登录部门
 		String orgCode = sysUser.getOrgCode();
@@ -849,16 +848,9 @@ public class LoginController {
 	 * @param username
 	 * @return
 	 */
+	//update-begin---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】失败计数逻辑移到service，与登录前查部门接口共用-----------
 	private boolean isLoginFailOvertimes(String username){
-		String key = CommonConstant.LOGIN_FAIL + username;
-		Object failTime = redisUtil.get(key);
-		if(failTime!=null){
-			Integer val = Integer.parseInt(failTime.toString());
-			if(val>5){
-				return true;
-			}
-		}
-		return false;
+		return sysUserService.isLoginFailOvertimes(username);
 	}
 
 	/**
@@ -866,15 +858,9 @@ public class LoginController {
 	 * @param username
 	 */
 	private void addLoginFailOvertimes(String username){
-		String key = CommonConstant.LOGIN_FAIL + username;
-		Object failTime = redisUtil.get(key);
-		Integer val = 0;
-		if(failTime!=null){
-			val = Integer.parseInt(failTime.toString());
-		}
-		// 10分钟，一分钟为60s
-		redisUtil.set(key, ++val, 600);
+		sysUserService.addLoginFailOvertimes(username);
 	}
+	//update-end---author:scott ---date:20261014  for：【安全 GHSA-6mmg-j26w-hxfx】失败计数逻辑移到service，与登录前查部门接口共用-----------
 
 	/**
 	 * 发送短信验证码接口(修改密码)
