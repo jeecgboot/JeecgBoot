@@ -795,9 +795,11 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		String table = SqlInjectionUtil.getSqlInjectTableName(query.getTable());
 		String text = SqlInjectionUtil.getSqlInjectTableName(query.getText());
 		String code = SqlInjectionUtil.getSqlInjectTableName(query.getCode());
-		query.setCode(table);
-		query.setTable(text);
-		query.setText(code);
+		//update-begin---author:scott ---date:20261022  for：【issues/9914】queryDictTablePageList 回填 table/text/code 时字段错位-----------
+		query.setTable(table);
+		query.setText(text);
+		query.setCode(code);
+		//update-end---author:scott ---date:20261022  for：【issues/9914】queryDictTablePageList 回填 table/text/code 时字段错位-----------
 		
 		String dictCode = table+","+text+","+code;
 		// 【QQYUN-6533】表字典白名单check
