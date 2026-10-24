@@ -158,7 +158,9 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
      * @param path
      * @return
      */
-    @RequestMapping(value = "/call/{path}", method = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.PUT,RequestMethod.PATCH,RequestMethod.HEAD,RequestMethod.OPTIONS,RequestMethod.TRACE})
+    //update-begin---author:scott ---date:20261024  for：/call 不再接受 OPTIONS、TRACE，OPTIONS 不能再作为转发入口绕过认证-----------
+    @RequestMapping(value = "/call/{path}", method = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.PUT,RequestMethod.PATCH,RequestMethod.HEAD})
+    //update-end---author:scott ---date:20261024  for：/call 不再接受 OPTIONS、TRACE-----------
     public Result<?> call(@PathVariable String path, @RequestBody(required = false) String json, HttpServletRequest request) {
         OpenApi openApi = service.findByPath(path);
         if (Objects.isNull(openApi)) {
