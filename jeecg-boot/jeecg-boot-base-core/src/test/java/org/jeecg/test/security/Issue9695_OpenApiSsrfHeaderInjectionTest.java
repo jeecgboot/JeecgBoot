@@ -165,6 +165,50 @@ public class Issue9695_OpenApiSsrfHeaderInjectionTest {
     }
 
     // ==================================================================
+    // 二·补：网关头只接受纯路径 —— 拒绝查询串/片段/路径穿越
+    //   漏洞：validateGatewayBasePath 原用 uri.getPath()（解码后）重建基址，未拒绝
+    //   解码后出现的 ? / #，攻击者传 X_GATEWAY_BASE_PATH: http://127.0.0.1:8080/jeecg-boot%3f
+    //   （%3f 解码为 ?）即可篡改转发目标。修复：拒绝 rawQuery/rawFragment，且 path 走字符白名单、禁止 ..
+    // ==================================================================
+
+    @Nested
+    @DisplayName("网关头纯路径校验 —— 拒绝查询串/片段/路径穿越")
+    class GatewayHeaderPathOnly {
+
+        @Test
+        @DisplayName("【漏洞复现】编码问号 %3f 篡改转发目标 → 被拒绝返回 null")
+        void encodedQuestionMarkRejected() {
+            // 实测利用载荷：%3f 解码为 ?，原逻辑会把基址变为 http://127.0.0.1:8080/jeecg-boot? 打到上下文根
+            assertNull(CommonUtils.validateGatewayBasePathForDomain("http://127.0.0.1:8080/jeecg-boot%3f"),
+                    "解码后路径含 ? 必须被拒绝");
+            assertNull(CommonUtils.validateGatewayBasePathForDomain("http://127.0.0.1:8080/jeecg-boot%23frag"),
+                    "解码后路径含 # 必须被拒绝");
+        }
+
+        @Test
+        @DisplayName("字面量查询串 ? 与片段 # 被拒绝 → 返回 null")
+        void rawQueryAndFragmentRejected() {
+            assertNull(CommonUtils.validateGatewayBasePathForDomain("http://127.0.0.1:8080/jeecg-boot?x=1"));
+            assertNull(CommonUtils.validateGatewayBasePathForDomain("http://127.0.0.1:8080/jeecg-boot#frag"));
+        }
+
+        @Test
+        @DisplayName("路径穿越 .. 被拒绝 → 返回 null")
+        void pathTraversalRejected() {
+            assertNull(CommonUtils.validateGatewayBasePathForDomain("http://127.0.0.1:8080/jeecg-boot/../actuator"));
+        }
+
+        @Test
+        @DisplayName("正常纯路径基址仍被采纳（不误伤合法网关头）")
+        void plainPathStillAccepted() {
+            assertEquals("http://127.0.0.1:8080/jeecg-boot",
+                    CommonUtils.validateGatewayBasePathForDomain("http://127.0.0.1:8080/jeecg-boot"));
+            assertEquals("http://10.0.0.5:9999/jeecg-boot",
+                    CommonUtils.validateGatewayBasePathForDomain("http://10.0.0.5:9999/jeecg-boot"));
+        }
+    }
+
+    // ==================================================================
     // 三、SSRF 兜底：checkInternalUrl 仅放行内网地址
     // ==================================================================
 

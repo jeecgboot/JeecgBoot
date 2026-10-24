@@ -431,15 +431,25 @@ public class CommonUtils {
             if (oConvertUtils.isEmpty(host)) {
                 return null;
             }
+            //update-begin---author:jeecg---for：网关基址头只接受纯路径，拒绝查询串/片段/路径穿越，防止篡改转发目标---
+            if (uri.getRawQuery() != null || uri.getRawFragment() != null) {
+                return null;
+            }
             StringBuilder sb = new StringBuilder();
             sb.append(scheme.toLowerCase()).append("://").append(host);
             if (uri.getPort() != -1) {
                 sb.append(":").append(uri.getPort());
             }
-            if (uri.getPath() != null && !uri.getPath().isEmpty()) {
-                sb.append(uri.getPath());
+            String path = uri.getPath();
+            if (path != null && !path.isEmpty()) {
+                // 仅允许常规路径字符，拒绝解码后出现的 ? # 及路径穿越 ..
+                if (!path.matches("[A-Za-z0-9/_.\\-]*") || path.contains("..")) {
+                    return null;
+                }
+                sb.append(path);
             }
             return sb.toString();
+            //update-end---author:jeecg---for：网关基址头只接受纯路径---
         } catch (Exception e) {
             return null;
         }
