@@ -1,5 +1,6 @@
 package org.jeecg.modules.monitor.controller;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import com.alibaba.fastjson.JSONArray;
 import lombok.extern.slf4j.Slf4j;
 import org.jeecg.common.api.vo.Result;
@@ -36,6 +37,7 @@ public class ActuatorRedisController {
      * @return
      * @throws Exception
      */
+    @RequiresRoles("admin")
     @GetMapping("/info")
     public Result<?> getRedisInfo() throws Exception {
         List<RedisInfo> infoList = this.redisService.getRedisInfo();
@@ -50,12 +52,14 @@ public class ActuatorRedisController {
 	 * @author chenrui
 	 * @date 2024/5/14 14:56
 	 */
+	@RequiresRoles("admin")
 	@GetMapping(value = "/metrics/history")
 	public Result<?> getMetricsHistory() throws Exception {
 		Map<String,List<Map<String,Object>>> metricsHistory = this.redisService.getMetricsHistory();
 	    return Result.OK(metricsHistory);
 	}
 
+    @RequiresRoles("admin")
     @GetMapping("/keysSize")
     public Map<String, Object> getKeysSize() throws Exception {
         return redisService.getKeysSize();
@@ -66,6 +70,7 @@ public class ActuatorRedisController {
      * @return
      * @throws Exception
      */
+    @RequiresRoles("admin")
     @GetMapping("/keysSizeForReport")
     public Map<String, JSONArray> getKeysSizeReport() throws Exception {
 		return redisService.getMapForReport("1");
@@ -76,6 +81,7 @@ public class ActuatorRedisController {
      * @return
      * @throws Exception
      */
+    @RequiresRoles("admin")
     @GetMapping("/memoryForReport")
     public Map<String, JSONArray> memoryForReport() throws Exception {
 		return redisService.getMapForReport("2");
@@ -85,11 +91,13 @@ public class ActuatorRedisController {
      * @return
      * @throws Exception
      */
+    @RequiresRoles("admin")
     @GetMapping("/infoForReport")
     public Map<String, JSONArray> infoForReport() throws Exception {
 		return redisService.getMapForReport("3");
     }
 
+    @RequiresRoles("admin")
     @GetMapping("/memoryInfo")
     public Map<String, Object> getMemoryInfo() throws Exception {
         return redisService.getMemoryInfo();
@@ -101,6 +109,7 @@ public class ActuatorRedisController {
   	 * @param response
   	 * @return
   	 */
+  	@RequiresRoles("admin")
   	@GetMapping("/queryDiskInfo")
   	public Result<List<Map<String,Object>>> queryDiskInfo(HttpServletRequest request, HttpServletResponse response){
   		Result<List<Map<String,Object>>> res = new Result<>();

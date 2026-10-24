@@ -180,7 +180,11 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/sys/version/app3version", "anon");
 
         //性能监控——安全隐患泄露TOEKN（durid连接池也有）
-        //filterChainDefinitionMap.put("/actuator/**", "anon");
+        //update-begin---author:scott ---date:20261024  for：actuator端点限admin角色访问，避免普通用户通过请求追踪获取他人token------------
+        filterChainDefinitionMap.put("/actuator/health", "anon");
+        filterChainDefinitionMap.put("/actuator/health/**", "anon");
+        filterChainDefinitionMap.put("/actuator/**", "jwt,roles[admin]");
+        //update-end---author:scott ---date:20261024  for：actuator端点限admin角色访问------------
         //测试模块排除
         filterChainDefinitionMap.put("/test/seata/**", "anon");
 

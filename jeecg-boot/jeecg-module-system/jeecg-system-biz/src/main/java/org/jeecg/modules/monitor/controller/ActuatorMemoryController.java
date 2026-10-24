@@ -1,5 +1,6 @@
 package org.jeecg.modules.monitor.controller;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class ActuatorMemoryController {
      * 内存详情
      * @return
      */
+    @RequiresRoles("admin")
     @GetMapping("/info")
     public Result<?> getRedisInfo() {
 		Runtime runtime = Runtime.getRuntime();
