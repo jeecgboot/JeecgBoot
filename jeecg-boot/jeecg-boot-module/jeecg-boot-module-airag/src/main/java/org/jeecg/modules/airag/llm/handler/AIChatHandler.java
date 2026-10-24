@@ -13,6 +13,7 @@ import org.jeecg.ai.handler.LLMHandler;
 import org.jeecg.common.exception.JeecgBootBizTipException;
 import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.AssertUtils;
+import org.jeecg.common.util.FileDownloadUtils;
 import org.jeecg.common.util.filter.SsrfFileTypeFilter;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.AiChatConfig;
@@ -654,20 +655,11 @@ public class AIChatHandler implements IAIChatHandler {
                         //update-begin---author:zhangdaihao ---date:2026-08-06  for：【issues/9805】AI图生图imageUrl未校验导致SSRF，增加URL安全校验-----------
                         SsrfFileTypeFilter.checkSsrfHttpUrl(imageUrl);
                         //update-end---author:zhangdaihao ---date:2026-08-06  for：【issues/9805】AI图生图imageUrl未校验导致SSRF，增加URL安全校验-----------
-                        java.net.URL url = new java.net.URL(imageUrl);
-                        java.net.URLConnection conn = url.openConnection();
-                        conn.setConnectTimeout(5000);
-                        conn.setReadTimeout(10000);
-                        try (java.io.InputStream in = conn.getInputStream()) {
-                            java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
-                            int nRead;
-                            byte[] data = new byte[1024];
-                            while ((nRead = in.read(data, 0, data.length)) != -1) {
-                                buffer.write(data, 0, nRead);
-                            }
-                            buffer.flush();
-                            fileContent = buffer.toByteArray();
-                        }
+                        //update-begin---author:wangshuai ---date:20261015  for：只校验初始URL、openConnection默认跟随302导致SSRF重定向绕过，改用禁止自动跳转且逐跳SSRF校验的安全下载-----------
+                        // 原裸 openConnection 默认自动跟随 3xx 且跳转目标不复检，攻击者用跳板 302 跳到 127.0.0.1、169.254.169.254(云元数据) 即可绕过上面的初始校验；
+                        // download2BytesFromNet 内部禁止自动跳转，并对初始URL及每一跳重定向目标都做SSRF校验（与 #9681 同口径）。
+                        fileContent = FileDownloadUtils.download2BytesFromNet(imageUrl);
+                        //update-end---author:wangshuai ---date:20261015  for：只校验初始URL、openConnection默认跟随302导致SSRF重定向绕过，改用禁止自动跳转且逐跳SSRF校验的安全下载-----------
                     } else {
                         //update-begin---author:liusq ---date:2026-03-30  for：【issues/9431】修复getFirstImageBase64路径遍历漏洞(CWE-22)-----------
                         // 本地文件
