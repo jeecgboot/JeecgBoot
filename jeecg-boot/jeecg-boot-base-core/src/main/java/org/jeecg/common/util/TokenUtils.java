@@ -2,6 +2,7 @@ package org.jeecg.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.jeecg.common.api.CommonAPI;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
@@ -10,6 +11,7 @@ import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.exception.JeecgBoot401Exception;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -69,8 +71,39 @@ public class TokenUtils {
         if (oConvertUtils.isNotEmpty(tenantId) && "undefined".equals(tenantId)) {
             return null;
         }
+        //update-begin---author:scott ---date:20261015  for：URL参数tenantId未经登录校验，多租户模式下须属于当前登录用户，否则忽略参数改用请求头（请求头已由ShiroRealm校验），防止传参冒充其他租户-----------
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && oConvertUtils.isNotEmpty(tenantId)) {
+            String headerTenantId = oConvertUtils.getString(request.getHeader(CommonConstant.TENANT_ID));
+            if (!tenantId.equals(headerTenantId) && !"0".equals(tenantId) && !isLoginUserTenant(tenantId)) {
+                log.warn("请求参数租户ID不属于当前登录用户，已忽略参数，使用请求头租户ID。参数租户：{}，请求头租户：{}，请求：{}", tenantId, headerTenantId, request.getRequestURI());
+                return oConvertUtils.isNotEmpty(headerTenantId) && !"undefined".equals(headerTenantId) ? headerTenantId : null;
+            }
+        }
+        //update-end---author:scott ---date:20261015  for：URL参数tenantId未经登录校验，多租户模式下须属于当前登录用户，否则忽略参数改用请求头（请求头已由ShiroRealm校验），防止传参冒充其他租户-----------
         return tenantId;
     }
+
+    //update-begin---author:scott ---date:20261015  for：校验租户是否属于当前登录用户-----------
+    /**
+     * 租户是否属于当前登录用户（未登录时返回true，保持原逻辑，由各接口自身鉴权）
+     *
+     * @param tenantId 租户ID
+     * @return
+     */
+    private static boolean isLoginUserTenant(String tenantId) {
+        LoginUser loginUser;
+        try {
+            loginUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+        } catch (Exception e) {
+            return true;
+        }
+        if (loginUser == null) {
+            return true;
+        }
+        String relTenantIds = loginUser.getRelTenantIds();
+        return oConvertUtils.isNotEmpty(relTenantIds) && oConvertUtils.isIn(tenantId, relTenantIds.split(","));
+    }
+    //update-end---author:scott ---date:20261015  for：校验租户是否属于当前登录用户-----------
 
     /**
      * 获取 request 里传递的 lowAppId (低代码应用ID)

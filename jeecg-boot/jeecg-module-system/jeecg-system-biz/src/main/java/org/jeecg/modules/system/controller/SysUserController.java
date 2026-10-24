@@ -1036,8 +1036,17 @@ public class SysUserController {
      * @return
      */
     @GetMapping("/getUserDetailByUserId")
-    public Result<SysUserSysDepPostModel> getUserDetailByUserId(@RequestParam(name = "userId") String userId) {
+    public Result<SysUserSysDepPostModel> getUserDetailByUserId(@RequestParam(name = "userId") String userId, HttpServletRequest request) {
         Result<SysUserSysDepPostModel> result = new Result<SysUserSysDepPostModel>();
+        //update-begin---author:scott ---date:20261014  for：多租户模式下只能查看当前租户的用户详情，防止按userId跨租户读取用户信息-----------
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+            Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request), 0);
+            Integer count = userTenantService.userTenantIzExist(userId, tenantId);
+            if (count == null || count == 0) {
+                return Result.error("未找到对应用户");
+            }
+        }
+        //update-end---author:scott ---date:20261014  for：多租户模式下只能查看当前租户的用户详情，防止按userId跨租户读取用户信息-----------
         try {
             SysUserSysDepPostModel sysDepPostModel = sysUserService.getUserDetailByUserId(userId);
             result.setSuccess(true);
@@ -1682,6 +1691,12 @@ public class SysUserController {
     @GetMapping("/appQueryByDepartId")
     public Result<List<SysUser>> appQueryByDepartId(@RequestParam(name="departId", required = false) String departId) {
         Result<List<SysUser>> result = new Result<List<SysUser>>();
+        //update-begin---author:scott ---date:20261014  for：多租户模式下部门须属于当前租户（sys_depart已做租户隔离，查不到即非本租户），防止跨租户读取用户信息-----------
+        if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && (oConvertUtils.isEmpty(departId) || sysDepartService.getById(departId) == null)) {
+            result.setResult(new ArrayList<>());
+            return result;
+        }
+        //update-end---author:scott ---date:20261014  for：多租户模式下部门须属于当前租户（sys_depart已做租户隔离，查不到即非本租户），防止跨租户读取用户信息-----------
         List<String> list=new ArrayList<String> ();
         list.add(departId);
         List<SysUser> childrenUser = sysUserService.queryByDepIds(list,null);
@@ -1721,6 +1736,11 @@ public class SysUserController {
             if (oConvertUtils.listIsNotEmpty(userIds)) {
                 queryWrapper.in(SysUser::getId, userIds);
             }
+            //update-begin---author:scott ---date:20261014  for：租户下查不到用户时不再放开过滤，防止跨租户读取用户信息-----------
+            else {
+                queryWrapper.eq(SysUser::getId, "通过租户查询不到任何用户");
+            }
+            //update-end---author:scott ---date:20261014  for：租户下查不到用户时不再放开过滤，防止跨租户读取用户信息-----------
         }
         //------------------------------------------------------------------------------------------------
         Page<SysUser> page = new Page<>(pageNo, pageSize);

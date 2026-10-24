@@ -213,6 +213,11 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
 				if(null!=userIdList && userIdList.size()>0){
                     query.in(SysUser::getId,userIdList);
                 }
+				//update-begin---author:scott ---date:20261014  for：租户下查不到用户时不再放开过滤，防止跨租户读取用户信息-----------
+				else {
+					query.eq(SysUser::getId, "通过租户ID查不到用户");
+				}
+				//update-end---author:scott ---date:20261014  for：租户下查不到用户时不再放开过滤，防止跨租户读取用户信息-----------
 			}
 			//------------------------------------------------------------------------------------------------
 			pageList = sysUserMapper.selectPage(page, query);
@@ -432,9 +437,17 @@ public class SysUserDepartServiceImpl extends ServiceImpl<SysUserDepartMapper, S
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
             String tenantId = oConvertUtils.getString(TenantContext.getTenant(), "0");
             List<String> userIdsList = userTenantMapper.getUserIdsByTenantId(Integer.valueOf(tenantId));
-            if (null != userIdsList && !userIdsList.isEmpty()) {
-                userIdList.addAll(userIdsList);
+            //update-begin---author:scott ---date:20261014  for：传入的用户id与本租户用户取交集（原为并集，可查到其他租户用户）；租户下查不到用户时返回空-----------
+            List<String> tenantUserIds = null != userIdsList ? userIdsList : new ArrayList<>();
+            if (userIdList.isEmpty()) {
+                userIdList.addAll(tenantUserIds);
+            } else {
+                userIdList.retainAll(tenantUserIds);
             }
+            if (userIdList.isEmpty()) {
+                userIdList.add("通过租户ID查不到用户");
+            }
+            //update-end---author:scott ---date:20261014  for：传入的用户id与本租户用户取交集（原为并集，可查到其他租户用户）；租户下查不到用户时返回空-----------
         }
         //------------------------------------------------------------------------------------------------
         return sysUserMapper.getDepPostListByIdUserName(page,userIdList,userId,userName,userNameList);

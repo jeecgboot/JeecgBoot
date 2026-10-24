@@ -17,6 +17,7 @@ import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.ImportExcelUtil;
 import org.jeecg.common.util.RedisUtil;
+import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysDepart;
@@ -27,6 +28,7 @@ import org.jeecg.modules.system.model.SysDepartTreeModel;
 import org.jeecg.modules.system.service.ISysDepartService;
 import org.jeecg.modules.system.service.ISysUserDepartService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.service.ISysUserTenantService;
 import org.jeecg.modules.system.vo.SysChangeDepartVo;
 import org.jeecg.modules.system.vo.SysDepartExportVo;
 import org.jeecg.modules.system.vo.SysPositionSelectTreeVo;
@@ -72,6 +74,8 @@ public class SysDepartController {
 	private ISysUserDepartService sysUserDepartService;
 	@Autowired
 	private RedisUtil redisUtil;
+	@Autowired
+	private ISysUserTenantService userTenantService;
 	/**
 	 * 查询数据 查出我的部门,并以树结构数据格式响应给前端
 	 *
@@ -542,7 +546,7 @@ public class SysDepartController {
 	 * @return
 	 */
 	@RequestMapping(value = "/queryTreeByKeyWord", method = RequestMethod.GET)
-	public Result<Map<String,Object>> queryTreeByKeyWord(@RequestParam(name = "keyWord", required = false) String keyWord) {
+	public Result<Map<String,Object>> queryTreeByKeyWord(@RequestParam(name = "keyWord", required = false) String keyWord, HttpServletRequest request) {
 		Result<Map<String,Object>> result = new Result<>();
 		try {
 			Map<String,Object> map=new HashMap(5);
@@ -551,6 +555,17 @@ public class SysDepartController {
 			LambdaQueryWrapper<SysUser> queryUser = new LambdaQueryWrapper<SysUser>();
 			queryUser.eq(SysUser::getDelFlag,CommonConstant.DEL_FLAG_0);
 			queryUser.and(i -> i.like(SysUser::getUsername, keyWord).or().like(SysUser::getRealname, keyWord));
+			//update-begin---author:scott ---date:20261014  for：多租户模式下只查当前租户的用户，防止按关键字跨租户搜索用户信息-----------
+			if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+				Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request), 0);
+				List<String> userIds = userTenantService.getUserIdsByTenantId(tenantId);
+				if (oConvertUtils.listIsNotEmpty(userIds)) {
+					queryUser.in(SysUser::getId, userIds);
+				} else {
+					queryUser.eq(SysUser::getId, "通过租户查询不到任何用户");
+				}
+			}
+			//update-end---author:scott ---date:20261014  for：多租户模式下只查当前租户的用户，防止按关键字跨租户搜索用户信息-----------
 			List<SysUser> sysUsers = this.sysUserService.list(queryUser);
 			map.put("userList",sysUsers);
 			map.put("departList",list);

@@ -13,6 +13,9 @@ import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
+import org.jeecg.common.util.TokenUtils;
+import org.jeecg.common.util.oConvertUtils;
+import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysUgroup;
 import org.jeecg.modules.system.service.ISysUgroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +58,11 @@ public class SysUgroupController extends JeecgController<SysUgroup, ISysUgroupSe
 
 
         QueryWrapper<SysUgroup> queryWrapper = QueryGenerator.initQueryWrapper(sysUgroup, req.getParameterMap());
+		//update-begin---author:scott ---date:20261014  for：多租户模式下只查当前租户的用户组，防止跨租户读取-----------
+		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
+			queryWrapper.eq("tenant_id", oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(req), 0));
+		}
+		//update-end---author:scott ---date:20261014  for：多租户模式下只查当前租户的用户组，防止跨租户读取-----------
 		Page<SysUgroup> page = new Page<SysUgroup>(pageNo, pageSize);
 		IPage<SysUgroup> pageList = sysUgroupService.page(page, queryWrapper);
 		return Result.OK(pageList);
@@ -137,11 +145,16 @@ public class SysUgroupController extends JeecgController<SysUgroup, ISysUgroupSe
 	//@AutoLog(value = "用户组表-通过id查询")
 	@Operation(summary="用户组表-通过id查询")
 	@GetMapping(value = "/queryById")
-	public Result<SysUgroup> queryById(@RequestParam(name="id",required=true) String id) {
+	public Result<SysUgroup> queryById(@RequestParam(name="id",required=true) String id, HttpServletRequest req) {
 		SysUgroup sysUgroup = sysUgroupService.getById(id);
 		if(sysUgroup==null) {
 			return Result.error("未找到对应数据");
 		}
+		//update-begin---author:scott ---date:20261014  for：多租户模式下只能查看当前租户的用户组，防止按id跨租户读取-----------
+		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && !java.util.Objects.equals(oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(req), 0), sysUgroup.getTenantId())) {
+			return Result.error("未找到对应数据");
+		}
+		//update-end---author:scott ---date:20261014  for：多租户模式下只能查看当前租户的用户组，防止按id跨租户读取-----------
 		return Result.OK(sysUgroup);
 	}
 
