@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -50,6 +51,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	//@AutoLog(value = "airag_ext_data-分页列表查询")
 	@Operation(summary="airag_ext_data-分页列表查询")
 	@GetMapping(value = "/list")
+	@RequiresPermissions("airag:extData:list")
 	public Result<IPage<AiragExtData>> queryPageList(AiragExtData airagExtData,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
@@ -71,6 +73,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	 */
 	@Operation(summary="airag_ext_data-分页列表查询")
 	@GetMapping(value = "/getTrackList")
+	@RequiresPermissions("airag:extData:getTrackList")
 	public Result<IPage<AiragExtData>> getTrackList(AiragExtData airagExtData,
 								   @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 								   @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,
@@ -95,6 +98,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	@AutoLog(value = "airag_ext_data-添加")
 	@Operation(summary="airag_ext_data-添加")
 	@PostMapping(value = "/add")
+	@RequiresPermissions("airag:extData:add")
 	public Result<String> add(@RequestBody AiragExtData airagExtData) {
 		airagExtData.setBizType(AiPromptsConsts.BIZ_TYPE_EVALUATOR);
 		airagExtDataService.save(airagExtData);
@@ -110,6 +114,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	@AutoLog(value = "airag_ext_data-编辑")
 	@Operation(summary="airag_ext_data-编辑")
 	@RequestMapping(value = "/edit", method = {RequestMethod.PUT,RequestMethod.POST})
+	@RequiresPermissions("airag:extData:edit")
 	public Result<String> edit(@RequestBody AiragExtData airagExtData) {
 		airagExtDataService.updateById(airagExtData);
 		return Result.OK("编辑成功!");
@@ -124,6 +129,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	@AutoLog(value = "airag_ext_data-通过id删除")
 	@Operation(summary="airag_ext_data-通过id删除")
 	@DeleteMapping(value = "/delete")
+	@RequiresPermissions("airag:extData:delete")
 	public Result<String> delete(@RequestParam(name="id",required=true) String id) {
 		airagExtDataService.removeById(id);
 		return Result.OK("删除成功!");
@@ -138,6 +144,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	@AutoLog(value = "airag_ext_data-批量删除")
 	@Operation(summary="airag_ext_data-批量删除")
 	@DeleteMapping(value = "/deleteBatch")
+	@RequiresPermissions("airag:extData:deleteBatch")
 	public Result<String> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		this.airagExtDataService.removeByIds(Arrays.asList(ids.split(",")));
 		return Result.OK("批量删除成功!");
@@ -152,6 +159,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	//@AutoLog(value = "airag_ext_data-通过id查询")
 	@Operation(summary="airag_ext_data-通过id查询")
 	@GetMapping(value = "/queryById")
+	@RequiresPermissions("airag:extData:queryById")
 	public Result<AiragExtData> queryById(@RequestParam(name="id",required=true) String id) {
 		AiragExtData airagExtData = airagExtDataService.getById(id);
 		if(airagExtData==null) {
@@ -168,6 +176,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	//@AutoLog(value = "airag_ext_data-通过id查询")
 	@Operation(summary="airag_ext_data-通过id查询")
 	@GetMapping(value = "/queryTrackById")
+	@RequiresPermissions("airag:extData:queryTrackById")
 	public Result<List<AiragExtData>> queryTrackById(@RequestParam(name="id",required=true) String id) {
 		AiragExtData airagExtData = airagExtDataService.getById(id);
 		String status = airagExtData.getStatus();
@@ -184,6 +193,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
 	  * @return
 	  */
 	 @PostMapping(value = "/evaluator/debug")
+	 @RequiresPermissions("airag:extData:debug")
 	 public Result<?> debugEvaluator(@RequestBody AiragDebugVo debugVo) {
 		 return airagExtDataService.debugEvaluator(debugVo);
 	 }
@@ -194,6 +204,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
     * @param airagExtData
     */
     @RequestMapping(value = "/exportXls")
+    @RequiresPermissions("airag:extData:exportXls")
     public ModelAndView exportXls(HttpServletRequest request, AiragExtData airagExtData) {
         return super.exportXls(request, airagExtData, AiragExtData.class, "airag_ext_data");
     }
@@ -206,6 +217,7 @@ public class AiragExtDataController extends JeecgController<AiragExtData, IAirag
     * @return
     */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
+    @RequiresPermissions("airag:extData:importExcel")
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, AiragExtData.class);
     }

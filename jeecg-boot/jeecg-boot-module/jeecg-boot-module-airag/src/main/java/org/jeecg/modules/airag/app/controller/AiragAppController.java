@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -73,6 +74,7 @@ public class AiragAppController extends JeecgController<AiragApp, IAiragAppServi
      * @return 应用字典列表
      */
     @GetMapping(value = "/listDict")
+    @RequiresPermissions(value = {"airag:app:listDict", "airag:flow:debug"}, logical = Logical.OR)
     public Result<List<DictModel>> listDict(AiragApp airagApp, HttpServletRequest req) {
         QueryWrapper<AiragApp> queryWrapper = QueryGenerator.initQueryWrapper(airagApp, req.getParameterMap());
         queryWrapper.select("id", "name");
@@ -138,6 +140,7 @@ public class AiragAppController extends JeecgController<AiragApp, IAiragAppServi
      * @return
      */
     @RequestMapping(value = "/release", method = RequestMethod.POST)
+    @RequiresPermissions("airag:app:release")
     public Result<String> release(@RequestParam(name = "id") String id,
                                   @RequestParam(name = "release") Boolean release,
                                   HttpServletRequest request) {
@@ -194,6 +197,7 @@ public class AiragAppController extends JeecgController<AiragApp, IAiragAppServi
      * @return
      */
     @GetMapping(value = "/queryById")
+    @RequiresPermissions("airag:app:queryById")
     public Result<AiragApp> queryById(@RequestParam(name = "id", required = true) String id) {
         AiragApp airagApp = airagAppService.getById(id);
         if (airagApp == null) {
