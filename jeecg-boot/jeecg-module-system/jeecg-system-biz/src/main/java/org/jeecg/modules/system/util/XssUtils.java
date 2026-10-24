@@ -42,8 +42,11 @@ public class XssUtils {
         Pattern.compile("<script[^>]*>[\\s\\S]*?</script>", Pattern.CASE_INSENSITIVE),
         // 自闭合 <script/>
         Pattern.compile("<script[^>]*/>", Pattern.CASE_INSENSITIVE),
+        //update-begin---author:wangshuai ---date:2026-10-21  for：事件属性前不一定是空白（"/"分隔、紧跟引号），属性名里可能夹带实体编码-----------
         // 所有内联事件处理器属性，如 onerror= onclick= onmouseover= 等
-        Pattern.compile("\\s+on\\w+\\s*=\\s*(?:\"[^\"]*\"|'[^']*'|[^\\s>]*)", Pattern.CASE_INSENSITIVE),
+        // 前面可以是空白，也可以紧跟在 "/" 或引号后面（<img/src="x"/onerror=…>、<img src="x"onerror=…>）；名称里允许 & # ; 以匹配 on&#101;rror=
+        Pattern.compile("(?:\\s+|(?<=[/\"']))on[\\w&#;-]+\\s*=\\s*(?:\"[^\"]*\"|'[^']*'|(?:[^\\s>]*[^\\s>\"'])?)", Pattern.CASE_INSENSITIVE),
+        //update-end---author:wangshuai ---date:2026-10-21  for：事件属性前不一定是空白（"/"分隔、紧跟引号），属性名里可能夹带实体编码-----------
         // javascript: 协议
         Pattern.compile("javascript\\s*:", Pattern.CASE_INSENSITIVE),
         // vbscript: 协议
