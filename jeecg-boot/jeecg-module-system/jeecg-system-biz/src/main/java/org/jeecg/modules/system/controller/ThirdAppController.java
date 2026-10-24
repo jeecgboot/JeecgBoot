@@ -11,8 +11,10 @@ import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.exception.JeecgBootBizTipException;
 import org.jeecg.common.constant.SymbolConstant;
 import org.jeecg.common.constant.enums.MessageTypeEnum;
+import org.jeecg.common.constant.enums.SysRoleEnum;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.TokenUtils;
@@ -20,6 +22,7 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.modules.system.entity.SysThirdAccount;
 import org.jeecg.modules.system.entity.SysThirdAppConfig;
+import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.jeecg.modules.system.service.ISysThirdAccountService;
 import org.jeecg.modules.system.service.ISysThirdAppConfigService;
 import org.jeecg.modules.system.service.impl.ThirdAppDingtalkServiceImpl;
@@ -58,6 +61,11 @@ public class ThirdAppController {
 
     @Autowired
     private ISysThirdAccountService sysThirdAccountService;
+
+    //update-begin---author:scott ---date:20261020  for：新增第三方集成配置管理权限校验（本租户组织账户管理员分支用）-----------
+    @Autowired
+    private ISysTenantPackService sysTenantPackService;
+    //update-end---author:scott ---date:20261020  for：-----------
 
     /**
      * 获取启用的系统
@@ -380,6 +388,9 @@ public class ThirdAppController {
         Result<String> result = new Result<>();
         //根据当前登录租户id和第三方类别判断是否已经创建
         Integer tenantId = oConvertUtils.isNotEmpty(appConfig.getTenantId()) ? appConfig.getTenantId() : oConvertUtils.getInt(TenantContext.getTenant(), 0);
+        //update-begin---author:scott ---date:20261020  for：权限+对象级双重校验：admin/system:third:config:add权限码/本租户组织账户管理员三选一放行，防止任意登录用户新建其他租户的第三方配置-----------
+        assertThirdConfigManager(tenantId, "system:third:config:add");
+        //update-end---author:scott ---date:20261020  for：-----------
         SysThirdAppConfig config = appConfigService.getThirdConfigByThirdType(tenantId, appConfig.getThirdType());
         if (null != config) {
             result.error500("操作失败,同一个租户下只允许绑定一个钉钉或者企业微信");
@@ -417,6 +428,9 @@ public class ThirdAppController {
             result.error500("数据不存在");
             return result;
         }
+        //update-begin---author:wangshuai ---date:20261021  for：校验当前用户能否管理指定租户的第三方集成配置-----------
+        assertThirdConfigManager(config.getTenantId(), "system:third:config:edit");
+        //update-end---author:wangshuai ---date:20261021  for：校验当前用户能否管理指定租户的第三方集成配置-----------
         String clientId = appConfig.getClientId();
         //如果编辑的应用key,和数据库中的不一致，需要判断应用key是否已存在
         if(!clientId.equals(config.getClientId())){
@@ -427,8 +441,17 @@ public class ThirdAppController {
                 return result;
             }
         }
+        //update-begin---author:wangshuai ---date:20261021  for：校验当前用户能否管理指定租户的第三方集成配置-----------
+        config.setAgentId(appConfig.getAgentId());
+        config.setClientId(clientId);
+        if (oConvertUtils.isNotEmpty(appConfig.getClientSecret())) {
+            config.setClientSecret(appConfig.getClientSecret());
+        }
+        config.setCorpId(appConfig.getCorpId());
+        config.setStatus(appConfig.getStatus());
+        //update-end---author:wangshuai ---date:20261021  for：校验当前用户能否管理指定租户的第三方集成配置-----------
         try {
-            appConfigService.updateById(appConfig);
+            appConfigService.updateById(config);
             result.success("修改成功！");
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -482,6 +505,9 @@ public class ThirdAppController {
                 tenantId = oConvertUtils.getInt(TenantContext.getTenant(), 0);
             }
         }
+        //update-begin---author:wangshuai ---date:20261021  for：校验当前用户能否管理指定租户的第三方集成配置-----------
+        assertThirdConfigManager(tenantId, "system:third:config:query");
+        //update-end---author:wangshuai ---date:20261021  for：校验当前用户能否管理指定租户的第三方集成配置-----------
         Result<SysThirdAppConfig> result = new Result<>();
         LambdaQueryWrapper<SysThirdAppConfig> query = new LambdaQueryWrapper<>();
         query.eq(SysThirdAppConfig::getThirdType,thirdType);
@@ -629,4 +655,30 @@ public class ThirdAppController {
         List<JwUserDepartVo> jwSysUserDepartVos = wechatEnterpriseService.getThirdUserBindByWechat(tenantId);
         return Result.ok(jwSysUserDepartVos);
     }
+
+    //update-begin---author:wangshuai ---date:2026101  for：校验当前用户能否管理指定租户的第三方集成配置 ---
+    /*
+     * 校验当前用户能否管理指定租户的第三方集成配置：admin/系统租户管理员放行，持有 permCodes 中任一权限码放行，
+     * 否则须为该租户的组织账户管理员或超级管理员（敲敲云组织页自助配置用，对应 sys_tenant_pack_user）。
+     *
+     * @param tenantId  租户ID
+     * @param permCodes 允许放行的按钮权限码（新增/编辑/查询各自独立的权限码，调用方按自己的动作传对应的码）
+     * @author wangshuai
+     */
+    private void assertThirdConfigManager(Integer tenantId, String... permCodes) {
+        if (SysRoleEnum.hasAnyRole(SysRoleEnum.ADMIN, SysRoleEnum.TENANT_ADMIN)) {
+            return;
+        }
+        for (String permCode : permCodes) {
+            if (SecurityUtils.getSubject().isPermitted(permCode)) {
+                return;
+            }
+        }
+        try {
+            sysTenantPackService.izHaveManageUserAuth(String.valueOf(tenantId));
+        } catch (Exception e) {
+            throw new JeecgBootBizTipException("无权限，请联系管理员");
+        }
+    }
+    //update-end---author:wangshuai ---date:20261021  for：校验当前用户能否管理指定租户的第三方集成配置-----------
 }
