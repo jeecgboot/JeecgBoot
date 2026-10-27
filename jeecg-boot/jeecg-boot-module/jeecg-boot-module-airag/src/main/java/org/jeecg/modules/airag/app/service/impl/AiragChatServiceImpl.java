@@ -26,7 +26,6 @@ import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.util.JwtUtil;
 import org.jeecg.common.util.*;
 import org.jeecg.common.util.filter.SsrfFileTypeFilter;
-import org.jeecg.common.util.oss.OssBootUtil;
 import org.jeecg.config.AiChatConfig;
 import org.jeecg.config.AiRagConfigBean;
 import org.jeecg.config.JeecgBaseConfig;
@@ -2546,46 +2545,14 @@ public class AiragChatServiceImpl implements IAiragChatService {
      */
     private void checkAnonymousFileRef(String fileRef) {
         String airag = "airag/";
-        String relativePath = extractStorageRelativePath(fileRef);
+        //update-begin---author:scott ---date:20261027  for：【GHSA-hw5p-65q6-qcxr】存储地址识别逻辑下沉到 CommonUtils.extractStorageRelativePath（按主机名+端口精确比对），删除本类私有方法-----------
+        String relativePath = CommonUtils.extractStorageRelativePath(fileRef);
+        //update-end---author:scott ---date:20261027  for：【GHSA-hw5p-65q6-qcxr】存储地址识别逻辑下沉到 CommonUtils.extractStorageRelativePath（按主机名+端口精确比对），删除本类私有方法-----------
         if (relativePath == null || !relativePath.startsWith(airag)) {
             log.warn("匿名请求文件路径不在允许范围内: {}", fileRef);
             throw new JeecgBootException("匿名聊天不支持远程文件引用，请直接上传文件");
         }
     }
 
-    /**
-     * 从完整URL中提取存储服务的相对路径，非已配置存储的URL返回null
-     */
-    private String extractStorageRelativePath(String url) {
-        if (oConvertUtils.isEmpty(url)) {
-            return null;
-        }
-        // 匹配 OSS staticDomain（如 https://jeecgdev.oss-cn-beijing.aliyuncs.com）
-        String ossDomain = OssBootUtil.getStaticDomain();
-        if (oConvertUtils.isNotEmpty(ossDomain) && url.toLowerCase().startsWith(ossDomain.toLowerCase())) {
-            String path = url.substring(ossDomain.length());
-            return path.startsWith("/") ? path.substring(1) : path;
-        }
-        // 匹配 OSS endpoint（如 oss-cn-beijing.aliyuncs.com）
-        String ossEndpoint = OssBootUtil.getEndPoint();
-        if (oConvertUtils.isNotEmpty(ossEndpoint) && url.toLowerCase().contains(ossEndpoint.toLowerCase())) {
-            int idx = url.indexOf(ossEndpoint);
-            String afterEndpoint = url.substring(idx + ossEndpoint.length());
-            int slashIdx = afterEndpoint.indexOf('/');
-            return slashIdx >= 0 ? afterEndpoint.substring(slashIdx + 1) : null;
-        }
-        // 匹配 MinIO URL（如 http://192.168.1.100:9000/）
-        String minioUrl = MinioUtil.getMinioUrl();
-        if (oConvertUtils.isNotEmpty(minioUrl) && url.toLowerCase().startsWith(minioUrl.toLowerCase())) {
-            String path = url.substring(minioUrl.length());
-            if (path.startsWith("/")) {
-                path = path.substring(1);
-            }
-            // 跳过 bucket 名称
-            int slashIdx = path.indexOf('/');
-            return slashIdx >= 0 ? path.substring(slashIdx + 1) : null;
-        }
-        return null;
-    }
     //update-end---author:wangshuai ---date:2026-06-16  for：【issues/9672】匿名请求文件引用安全校验-----------
 }

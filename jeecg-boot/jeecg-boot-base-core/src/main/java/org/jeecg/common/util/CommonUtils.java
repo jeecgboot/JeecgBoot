@@ -606,4 +606,116 @@ public class CommonUtils {
         }
     }
 
+
+    /**
+     * 从完整 URL 中提取本系统存储服务（OSS staticDomain/endpoint、MinIO）里的相对路径，非已配置存储的地址返回 null。
+     * 按主机名 + 端口精确比对（不区分大小写），带用户信息（user@host）或路径含 .. 的地址一律不认，
+     * 防止 http://存储地址@内网IP/、在查询串里拼存储地址等前缀匹配绕过；可用于"只允许引用本系统存储文件"的场景（如匿名附件）
+     *
+     * @param url 完整地址
+     * @return 存储内相对路径（不带开头 /，MinIO 已去掉 bucket），非本系统存储返回 null
+     * @author scott
+     * @since 2026-10-27 【GHSA-hw5p-65q6-qcxr】由 AiragChatServiceImpl 下沉，供其他模块复用
+     */
+    public static String extractStorageRelativePath(String url) {
+        if (oConvertUtils.isEmpty(url)) {
+            return null;
+        }
+        java.net.URI target = parseUri(url);
+        // 带用户信息（user@host）的地址一律不认，防止 http://存储地址@内网IP/ 这类写法
+        if (target == null || target.getHost() == null || target.getRawUserInfo() != null) {
+            return null;
+        }
+        String targetPath = oConvertUtils.getString(target.getPath(), "");
+        if (targetPath.contains("..")) {
+            return null;
+        }
+        // 匹配 OSS staticDomain（如 https://jeecgdev.oss-cn-beijing.aliyuncs.com）
+        java.net.URI ossDomain = parseUri(OssBootUtil.getStaticDomain());
+        if (isSameServer(ossDomain, target)) {
+            return stripBasePath(ossDomain, targetPath);
+        }
+        // 匹配 OSS endpoint（如 oss-cn-beijing.aliyuncs.com，访问地址为 bucket.endpoint）
+        String ossEndpoint = OssBootUtil.getEndPoint();
+        if (oConvertUtils.isNotEmpty(ossEndpoint)) {
+            String endpointHost = ossEndpoint.replaceFirst("(?i)^https?://", "").replaceAll("/.*$", "").toLowerCase();
+            String host = target.getHost().toLowerCase();
+            if (host.equals(endpointHost) || host.endsWith("." + endpointHost)) {
+                return targetPath.startsWith("/") ? targetPath.substring(1) : targetPath;
+            }
+        }
+        // 匹配 MinIO URL（如 http://192.168.1.100:9000/）
+        java.net.URI minioUrl = parseUri(MinioUtil.getMinioUrl());
+        if (isSameServer(minioUrl, target)) {
+            String path = stripBasePath(minioUrl, targetPath);
+            if (path == null) {
+                return null;
+            }
+            // 跳过 bucket 名称
+            int slashIdx = path.indexOf('/');
+            return slashIdx >= 0 ? path.substring(slashIdx + 1) : null;
+        }
+        return null;
+    }
+
+    /**
+     * 解析地址，格式错误返回 null
+     *
+     * @author scott
+     * @since 2026-10-27 【GHSA-hw5p-65q6-qcxr】存储地址按主机名比对
+     */
+    private static java.net.URI parseUri(String url) {
+        if (oConvertUtils.isEmpty(url)) {
+            return null;
+        }
+        try {
+            return new java.net.URI(url.trim());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 两个地址是否指向同一服务：主机名相同（不区分大小写）且端口相同（未写端口按协议默认端口）
+     *
+     * @author scott
+     * @since 2026-10-27 【GHSA-hw5p-65q6-qcxr】存储地址按主机名比对
+     */
+    private static boolean isSameServer(java.net.URI base, java.net.URI target) {
+        if (base == null || base.getHost() == null) {
+            return false;
+        }
+        return base.getHost().equalsIgnoreCase(target.getHost()) && effectivePort(base) == effectivePort(target);
+    }
+
+    /**
+     * 地址的实际端口，未写端口时按协议取默认值
+     *
+     * @author scott
+     * @since 2026-10-27 【GHSA-hw5p-65q6-qcxr】存储地址按主机名比对
+     */
+    private static int effectivePort(java.net.URI uri) {
+        if (uri.getPort() != -1) {
+            return uri.getPort();
+        }
+        return "https".equalsIgnoreCase(uri.getScheme()) ? 443 : 80;
+    }
+
+    /**
+     * 去掉存储地址自身的路径前缀，返回不带开头 / 的相对路径；不在该前缀下返回 null
+     *
+     * @author scott
+     * @since 2026-10-27 【GHSA-hw5p-65q6-qcxr】存储地址按主机名比对
+     */
+    private static String stripBasePath(java.net.URI base, String targetPath) {
+        String basePath = oConvertUtils.getString(base.getPath(), "");
+        if (basePath.endsWith("/")) {
+            basePath = basePath.substring(0, basePath.length() - 1);
+        }
+        if (!basePath.isEmpty() && !(targetPath.equals(basePath) || targetPath.startsWith(basePath + "/"))) {
+            return null;
+        }
+        String path = targetPath.substring(basePath.length());
+        return path.startsWith("/") ? path.substring(1) : path;
+    }
 }

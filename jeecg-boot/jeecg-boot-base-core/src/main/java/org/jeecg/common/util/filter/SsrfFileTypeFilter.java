@@ -7,10 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -321,49 +317,17 @@ public class SsrfFileTypeFilter {
         }
     }
 
-    //update-begin---author:zhangdaihao ---date:2026-04-15  for：【issues/9553】修复二次SSRF漏洞，对HTTP下载URL进行安全校验-----------
-    /**
-     * 校验HTTP(S) URL，防止SSRF攻击（最小化拦截，只挡真正危险的目标）。
-     * 规则：
-     * 1. 仅允许 http / https 协议；
-     * 2. 解析主机IP，拒绝 loopback（127.x / ::1）和 link-local（169.254.x，含云元数据 169.254.169.254 / fe80:）；
-     * 注意：RFC1918 私网段（10/172.16/192.168）允许通过，兼容企业内网 MinIO/OSS/文件服务等合法用途。
+    /** 
+     * 【issues/9553】修复二次SSRF漏洞，对HTTP下载URL进行安全校验
+     * 2026-04-15
+     * 
+     * 校验HTTP(S) URL，防止SSRF攻击，规则见 {@link LocalAddressCheckUtils#checkUrl(String)}
      *
      * @param fileUrl HTTP(S) URL
      */
     public static void checkSsrfHttpUrl(String fileUrl) {
-        if (StringUtils.isBlank(fileUrl)) {
-            throw new JeecgBootException("非法URL：地址为空");
-        }
-        URI uri;
-        try {
-            uri = new URI(fileUrl);
-        } catch (URISyntaxException e) {
-            throw new JeecgBootException("非法URL：格式错误");
-        }
-        String scheme = uri.getScheme();
-        if (scheme == null || !(scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))) {
-            throw new JeecgBootException("非法URL：仅允许 http / https 协议");
-        }
-        String host = uri.getHost();
-        if (StringUtils.isBlank(host)) {
-            throw new JeecgBootException("非法URL：主机名为空");
-        }
-        // 去掉 IPv6 的中括号
-        if (host.startsWith("[") && host.endsWith("]")) {
-            host = host.substring(1, host.length() - 1);
-        }
-        try {
-            for (InetAddress addr : InetAddress.getAllByName(host)) {
-                if (addr.isLoopbackAddress() || addr.isLinkLocalAddress()) {
-                    throw new JeecgBootException("非法URL：禁止访问本机或链路本地地址 " + addr.getHostAddress());
-                }
-            }
-        } catch (UnknownHostException e) {
-            throw new JeecgBootException("非法URL：主机名无法解析");
-        }
+        LocalAddressCheckUtils.checkUrl(fileUrl);
     }
-    //update-end---author:zhangdaihao ---date:2026-04-15  for：【issues/9553】修复二次SSRF漏洞，对HTTP下载URL进行安全校验-----------
 
     /**
      * 批量校验文件路径安全性（逗号分隔的多个文件路径）
