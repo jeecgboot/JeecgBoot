@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -41,6 +42,8 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
         return Result.ok("操作成功！");
     }
 
+	//查看路由：拥有任一路由管理按钮权限即可
+	@RequiresPermissions(value = {"system:gateway:updateAll", "system:getway:delete", "system:gateway:putRecycleBin", "system:gateway:deleteRecycleBin", "system:gateway:copyRoute"}, logical = Logical.OR)
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(SysGatewayRoute sysGatewayRoute) {
 		LambdaQueryWrapper<SysGatewayRoute> query = new LambdaQueryWrapper<>();
@@ -59,6 +62,7 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
 		return Result.ok(array);
 	}
 
+	@RequiresPermissions("system:gateway:updateAll")
 	@GetMapping(value = "/clearRedis")
 	public Result<?> clearRedis() {
 		sysGatewayRouteService.clearRedis();
@@ -82,6 +86,7 @@ public class SysGatewayRouteController extends JeecgController<SysGatewayRoute, 
 	 * 查询被删除的列表
 	 * @return
 	 */
+	@RequiresPermissions(value = {"system:gateway:updateAll", "system:getway:delete", "system:gateway:putRecycleBin", "system:gateway:deleteRecycleBin", "system:gateway:copyRoute"}, logical = Logical.OR)
 	@RequestMapping(value = "/deleteList", method = RequestMethod.GET)
 	public Result<List<SysGatewayRoute>> deleteList(HttpServletRequest request) {
 		Result<List<SysGatewayRoute>> result = new Result<>();

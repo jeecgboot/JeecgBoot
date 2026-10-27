@@ -3,6 +3,7 @@ package org.jeecg.modules.system.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,6 +12,7 @@ import org.jeecg.common.base.BaseMap;
 import org.jeecg.common.constant.CacheConstant;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.constant.GlobalConstants;
+import org.jeecg.common.exception.JeecgBootException;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysGatewayRoute;
 import org.jeecg.modules.system.mapper.SysGatewayRouteMapper;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @Description: gateway路由管理
@@ -40,6 +43,14 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
 
     private static final String STRING_STATUS = "status";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMdd");
+    /**
+     * 路由 uri 允许的协议
+     */
+    private static final List<String> ROUTE_URI_SCHEMES = List.of("lb://", "lb:ws://", "lb:wss://", "http://", "https://", "ws://", "wss://", "forward:", "no://op");
+    /**
+     * 允许的 SpEL 写法：仅 Bean 引用，如限流过滤器的 #{@ipKeyResolver}
+     */
+    private static final Pattern SPEL_BEAN_REF = Pattern.compile("#\\{@[A-Za-z_$][\\w$]*}");
     @Override
     public void addRoute2Redis(String key) {
         List<SysGatewayRoute> ls = this.list(new LambdaQueryWrapper<SysGatewayRoute>());
@@ -62,6 +73,12 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
     @Transactional(rollbackFor = Exception.class)
     public void updateAll(JSONObject json) {
         log.info("--gateway 路由配置修改--");
+        //update-begin---author:scott ---date:20261026  for：【GHSA-9h56-m6g6-7g8r】路由配置保存前校验：禁止在断言/过滤器参数中写 SpEL 表达式（仅放行 #{@beanName} 引用），uri 限定协议-----------
+        JSONObject router = json.getJSONObject("router");
+        if (router != null) {
+            checkRouteConfig(router.getString("uri"), router.getString("predicates"), router.getString("filters"));
+        }
+        //update-end---author:scott ---date:20261026  for：【GHSA-9h56-m6g6-7g8r】路由配置保存前校验：禁止在断言/过滤器参数中写 SpEL 表达式（仅放行 #{@beanName} 引用），uri 限定协议-----------
         try {
             json = json.getJSONObject("router");
             String id = json.getString("id");
@@ -183,5 +200,49 @@ public class SysGatewayRouteServiceImpl extends ServiceImpl<SysGatewayRouteMappe
     @Override
     public List<SysGatewayRoute> getDeletelist() {
         return baseMapper.queryDeleteList();
+    }
+
+    /**
+     * 校验路由配置：Spring Cloud Gateway 会把 #{...} 形式的参数当作 SpEL 执行，uri 决定转发目标
+     *
+     * @param uri        路由地址
+     * @param predicates 路由断言（JSON 数组字符串）
+     * @param filters    过滤器（JSON 数组字符串）
+     * @author scott
+     * @since 2026-10-26 【GHSA-9h56-m6g6-7g8r】路由配置 SpEL 注入防护
+     */
+    private static void checkRouteConfig(String uri, String predicates, String filters) {
+        if (oConvertUtils.isNotEmpty(uri)) {
+            String lowerUri = uri.trim().toLowerCase();
+            if (ROUTE_URI_SCHEMES.stream().noneMatch(lowerUri::startsWith)) {
+                throw new JeecgBootException("路由地址只支持 lb://、http(s)://、ws(s)://、forward: 协议");
+            }
+        }
+        checkNoSpel(predicates, "路由条件");
+        checkNoSpel(filters, "过滤器");
+    }
+
+    /**
+     * 断言/过滤器参数中禁止出现 SpEL 表达式（仅放行 #{@beanName} 引用）。
+     * 先按 JSON 解析再序列化，避免用 Unicode 转义写法绕过
+     *
+     * @param text  JSON 数组字符串
+     * @param label 提示名称
+     * @author scott
+     * @since 2026-10-26 【GHSA-9h56-m6g6-7g8r】路由配置 SpEL 注入防护
+     */
+    private static void checkNoSpel(String text, String label) {
+        if (oConvertUtils.isEmpty(text)) {
+            return;
+        }
+        String normalized;
+        try {
+            normalized = JSONArray.parseArray(text).toJSONString();
+        } catch (Exception e) {
+            throw new JeecgBootException(label + "格式错误");
+        }
+        if (SPEL_BEAN_REF.matcher(normalized).replaceAll("").contains("#{")) {
+            throw new JeecgBootException(label + "参数不允许使用表达式 #{...}（仅支持 #{@beanName} 引用）");
+        }
     }
 }
