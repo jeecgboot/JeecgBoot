@@ -222,16 +222,12 @@
       "value": "MINIMAX",
       "sort": 60,
       "LLM": [
-        {"label": "MiniMax-M2.7", "value": "MiniMax-M2.7","descr": "MiniMax最新文本模型，支持204.8K上下文，适合复杂任务、代码生成和Agent工作流。","type": "text"},
-        {"label": "MiniMax-M2.7-highspeed", "value": "MiniMax-M2.7-highspeed","descr": "MiniMax M2.7高速版本，模型效果不变，适合低延迟和高并发场景。","type": "text"},
-        {"label": "MiniMax-M2.5", "value": "MiniMax-M2.5","descr": "兼顾性能与性价比的文本模型，适合编程、工具调用、搜索和办公场景。","type": "text"},
-        {"label": "MiniMax-M2.5-highspeed", "value": "MiniMax-M2.5-highspeed","descr": "MiniMax M2.5高速版本，适合对响应速度要求较高的生产场景。","type": "text"},
-        {"label": "MiniMax-M2.1", "value": "MiniMax-M2.1","descr": "具备多语言编程能力的文本模型，适合代码生成及复杂任务处理。","type": "text"},
-        {"label": "MiniMax-M2", "value": "MiniMax-M2","descr": "面向高效编码与Agent工作流的文本模型。","type": "text"}
+        {"label": "MiniMax-M3.1-Flash", "value": "MiniMax-M3.1-Flash","descr": "Multimodal coding model with a 1,000,000-token context window, adaptive thinking, and tunable reasoning effort.","type": "text,image,video"},
+        {"label": "MiniMax-M3", "value": "MiniMax-M3","descr": "Multimodal coding model with a 1,000,000-token context window and adaptive or disabled thinking.","type": "text,image,video"}
       ],
       "type": ["LLM"],
       "baseUrl": "https://api.minimaxi.com/v1",
-      "LLMDefaultValue": "MiniMax-M2.7"
+      "LLMDefaultValue": "MiniMax-M3.1-Flash"
     },
     {
       "title": "Google Gemini",
