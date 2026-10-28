@@ -200,20 +200,33 @@ public interface SysDictMapper extends BaseMapper<SysDict> {
 	 * @param page      分页参数
 	 * @param table     表名（已转义）
 	 * @param fields    SELECT 字段列表（已转义，逗号分隔）
-	 * @param filterSql WHERE 子句内容（不含 WHERE 关键字，已注入校验）
+	 * @param valueField  回显字段（已转义）
+	 * @param keyValues   回显值，参数绑定
+	 * @param likeFields  模糊搜索字段（已转义）
+	 * @param likeKeyword 模糊搜索关键词（含%），参数绑定
 	 */
 	IPage<Map<String, Object>> queryPageTableWithFields(Page<Map<String, Object>> page,
 		@Param("table") String table,
 		@Param("fields") String fields,
-		@Param("filterSql") String filterSql);
+		@Param("valueField") String valueField,
+		@Param("keyValues") List<String> keyValues,
+		@Param("likeFields") List<String> likeFields,
+		@Param("likeKeyword") String likeKeyword);
 
 	/**
 	 * 关联记录专用：统计满足条件的记录总数
 	 *
 	 * @param table     表名（已转义）
-	 * @param filterSql WHERE 子句内容（不含 WHERE 关键字，已注入校验）
+	 * @param valueField  回显字段（已转义）
+	 * @param keyValues   回显值，参数绑定
+	 * @param likeFields  模糊搜索字段（已转义）
+	 * @param likeKeyword 模糊搜索关键词（含%），参数绑定
 	 */
-	Long countTableWithFields(@Param("table") String table, @Param("filterSql") String filterSql);
+	Long countTableWithFields(@Param("table") String table,
+		@Param("valueField") String valueField,
+		@Param("keyValues") List<String> keyValues,
+		@Param("likeFields") List<String> likeFields,
+		@Param("likeKeyword") String likeKeyword);
 
 	/**
 	 * 根据应用id获取字典列表和详情

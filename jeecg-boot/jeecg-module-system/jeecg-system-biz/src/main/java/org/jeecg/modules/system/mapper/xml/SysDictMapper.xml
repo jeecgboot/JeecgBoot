@@ -209,21 +209,37 @@
 		</if>
 	</select>
 
-	<!-- 关联记录专用：多字段分页查询任意表数据【已加入SQL注入check】 -->
+	<!-- update-begin author:scott date:20261027 for：【GHSA-jgwm-2xxm-mmm4】回显值和关键词改为参数绑定，不再拼接 filterSql -->
+	<!-- 关联记录专用：多字段分页查询任意表数据（表名、字段已在 Service 层转义，值走参数绑定） -->
 	<select id="queryPageTableWithFields" resultType="java.util.Map">
 		SELECT ${fields} FROM ${table}
-		<if test="filterSql != null and filterSql != ''">
-			WHERE ${filterSql}
-		</if>
+		<where>
+			<if test="keyValues != null and keyValues.size() > 0">
+				${valueField} IN
+				<foreach collection="keyValues" item="kv" open="(" separator="," close=")">#{kv}</foreach>
+			</if>
+			<if test="likeKeyword != null and likeFields != null and likeFields.size() > 0">
+				AND
+				<foreach collection="likeFields" item="lf" open="(" separator=" OR " close=")">${lf} LIKE #{likeKeyword}</foreach>
+			</if>
+		</where>
 	</select>
 
 	<!-- 关联记录专用：统计满足条件的记录总数 -->
 	<select id="countTableWithFields" resultType="long">
 		SELECT COUNT(*) FROM ${table}
-		<if test="filterSql != null and filterSql != ''">
-			WHERE ${filterSql}
-		</if>
+		<where>
+			<if test="keyValues != null and keyValues.size() > 0">
+				${valueField} IN
+				<foreach collection="keyValues" item="kv" open="(" separator="," close=")">#{kv}</foreach>
+			</if>
+			<if test="likeKeyword != null and likeFields != null and likeFields.size() > 0">
+				AND
+				<foreach collection="likeFields" item="lf" open="(" separator=" OR " close=")">${lf} LIKE #{likeKeyword}</foreach>
+			</if>
+		</where>
 	</select>
+	<!-- update-end author:scott date:20261027 for：【GHSA-jgwm-2xxm-mmm4】回显值和关键词改为参数绑定，不再拼接 filterSql -->
 
 	<!-- *****************以上方法写法存在SQL注入风险***************** -->
 	

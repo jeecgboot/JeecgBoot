@@ -9,6 +9,7 @@
         <a-tab-pane key="ImgTurnPage" tab="图片翻页"></a-tab-pane>
         <a-tab-pane key="JeecgPdfView" tab="PDF预览"></a-tab-pane>
         <a-tab-pane key="JUploadDemo" tab="文件上传"></a-tab-pane>
+        <a-tab-pane key="DictConditionDemo" tab="字典条件示例"></a-tab-pane>
       </a-tabs>
       <component :is="currentComponent"></component>
     </a-card>
@@ -23,6 +24,7 @@
   import ImgTurnPage from './ImgTurnPage.vue';
   import JeecgPdfView from './JeecgPdfView.vue';
   import JUploadDemo from './JUploadDemo.vue';
+  import DictConditionDemo from './DictConditionDemo.vue';
   export default defineComponent({
     name: 'comp-jeecg-basic',
     setup() {
@@ -36,6 +38,7 @@
           ImgTurnPage: ImgTurnPage,
           JeecgPdfView: JeecgPdfView,
           JUploadDemo: JUploadDemo,
+          DictConditionDemo: DictConditionDemo,
         };
         return componentType[activeKey.value];
       });

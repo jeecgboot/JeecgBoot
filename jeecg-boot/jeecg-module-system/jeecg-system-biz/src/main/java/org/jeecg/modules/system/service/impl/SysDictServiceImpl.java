@@ -939,38 +939,22 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		}
 		String selectFields = String.join(", ", fieldSet);
 
-		// ---------- 3. 构造 WHERE 条件 ----------
-		List<String> conditionParts = new ArrayList<>();
+		// ---------- 3. 构造 WHERE 条件（参数绑定） ----------
+		//update-begin---author:scott ---date:20261027  for：【GHSA-jgwm-2xxm-mmm4】keyValues/keyword改为参数绑定，不再拼接SQL字符串（原写法只转义单引号，MySQL下可用反斜杠闭合引号注入）-----------
+		// 3.1 按 keyValues 精确查询（回显用），-1 保留空项，避免 keyValues="," 时列表为空导致不加条件查出全表
+		List<String> keyValueList = oConvertUtils.isNotEmpty(keyValues) ? Arrays.asList(keyValues.split(",", -1)) : null;
 
-		//update-begin---author:liusq ---date:2026-05-27  for：【优化】去掉无用参数searchFields、condition-----------
-		// 3.1 按 keyValues 精确查询（回显用）
-		if (oConvertUtils.isNotEmpty(keyValues)) {
-			keyValues = keyValues.replace("'", "''");
-			String inValues = "'" + String.join("','", keyValues.split(",")) + "'";
-			conditionParts.add(safeValueField + " IN (" + inValues + ")");
-		}
-		//update-end---author:liusq ---date:2026-05-27  for：【优化】去掉无用参数searchFields、condition-----------
-
-		// 3.2 关键词模糊搜索
+		// 3.2 关键词模糊搜索字段
+		List<String> likeFields = new ArrayList<>();
+		String likeKeyword = null;
 		if (oConvertUtils.isNotEmpty(keyword)) {
-			keyword = keyword.replace("'", "''");
-			String[] searchArr = showFields.split(",");
-			List<String> likeParts = new ArrayList<>();
-			for (String sf : searchArr) {
+			for (String sf : showFields.split(",")) {
 				sf = sf.trim();
 				if (oConvertUtils.isNotEmpty(sf)) {
-					String safeSf = SqlInjectionUtil.getSqlInjectField(sf);
-					likeParts.add(safeSf + " like '%" + keyword + "%'");
+					likeFields.add(SqlInjectionUtil.getSqlInjectField(sf));
 				}
 			}
-			if (!likeParts.isEmpty()) {
-				conditionParts.add("(" + String.join(" or ", likeParts) + ")");
-			}
-		}
-
-		String filterSql = conditionParts.isEmpty() ? "" : String.join(" and ", conditionParts);
-		if (oConvertUtils.isNotEmpty(filterSql)) {
-			SqlInjectionUtil.filterDictConditionSqlFromRequest(tableName, filterSql);
+			likeKeyword = likeFields.isEmpty() ? null : "%" + keyword + "%";
 		}
 
 		// ---------- 4. 分页查询 ----------
@@ -979,8 +963,10 @@ public class SysDictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impl
 		Page<Map<String, Object>> page = new Page<>(current, size);
 		page.setSearchCount(false); // 手动 count，避免 MyBatis Plus 自动 count 与 ${} 语法冲突
 
-		IPage<Map<String, Object>> pageResult = baseMapper.queryPageTableWithFields(page, safeTable, selectFields, filterSql);
-		long total = baseMapper.countTableWithFields(safeTable, filterSql);
+		IPage<Map<String, Object>> pageResult = baseMapper.queryPageTableWithFields(page, safeTable, selectFields,
+				safeValueField, keyValueList, likeFields, likeKeyword);
+		long total = baseMapper.countTableWithFields(safeTable, safeValueField, keyValueList, likeFields, likeKeyword);
+		//update-end---author:scott ---date:20261027  for：【GHSA-jgwm-2xxm-mmm4】keyValues/keyword改为参数绑定，不再拼接SQL字符串（原写法只转义单引号，MySQL下可用反斜杠闭合引号注入）-----------
 
 		// ---------- 5. 组装返回值 ----------
 		Map<String, Object> result = new HashMap<>(4);

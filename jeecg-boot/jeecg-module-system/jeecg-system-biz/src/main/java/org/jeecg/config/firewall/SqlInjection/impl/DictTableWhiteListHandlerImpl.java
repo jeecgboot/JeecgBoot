@@ -118,6 +118,11 @@ public class DictTableWhiteListHandlerImpl implements IDictTableWhiteListHandler
 
     @Override
     public boolean isPassByDict(String tableName, String... fields) {
+        //update-begin---author:scott ---date:20261027  for：【GHSA-g87f-mgx5-wj9c】字面量null表名不能当空表名放行-----------
+        if (tableName != null && "null".equalsIgnoreCase(tableName.trim())) {
+            return false;
+        }
+        //update-end---author:scott ---date:20261027  for：【GHSA-g87f-mgx5-wj9c】字面量null表名不能当空表名放行-----------
         if (oConvertUtils.isEmpty(tableName)) {
             return true;
         }

@@ -27,6 +27,7 @@ import net.sf.jsqlparser.schema.Column;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * 前端字典条件 SQL 结构校验工具。
@@ -35,6 +36,12 @@ import java.util.Set;
  * @since 2026-08-25 issues/9840 字典过滤条件 SQL 注入防护
  */
 public final class DictSqlConditionCheckUtil {
+
+	/**
+	 * 条件字段名：字母/数字/下划线组成的标识符，可带反引号或双引号，可带表别名前缀
+	 */
+	private static final Pattern COLUMN_NAME_PATTERN = Pattern.compile(
+			"[`\"]?[\\p{L}_][\\p{L}\\p{N}_]*[`\"]?(\\.[`\"]?[\\p{L}_][\\p{L}\\p{N}_]*[`\"]?)*");
 
 	private DictSqlConditionCheckUtil() {
 	}
@@ -53,6 +60,11 @@ public final class DictSqlConditionCheckUtil {
 		String trimmed = value.trim();
 		Set<String> conditionFields = new LinkedHashSet<>();
 		try {
+			//update-begin---author:scott ---date:20261027  for：【GHSA-jgwm-2xxm-mmm4/GHSA-xmw4-rx44-4jcp】禁止反斜杠，JSqlParser不把\当转义符而MySQL会，两者对字符串边界理解不一致可绕过校验-----------
+			if (trimmed.indexOf('\\') >= 0) {
+				throw new IllegalArgumentException("字典过滤条件不允许包含反斜杠");
+			}
+			//update-end---author:scott ---date:20261027  for：【GHSA-jgwm-2xxm-mmm4/GHSA-xmw4-rx44-4jcp】禁止反斜杠，JSqlParser不把\当转义符而MySQL会，两者对字符串边界理解不一致可绕过校验-----------
 			if (containsSqlComment(trimmed)) {
 				throw new IllegalArgumentException("字典过滤条件不允许包含SQL注释");
 			}
@@ -172,6 +184,11 @@ public final class DictSqlConditionCheckUtil {
 				quote = current;
 				continue;
 			}
+			//update-begin---author:scott ---date:20261027  for：【GHSA-xmw4-rx44-4jcp】MySQL的#也是行注释-----------
+			if (current == '#') {
+				return true;
+			}
+			//update-end---author:scott ---date:20261027  for：【GHSA-xmw4-rx44-4jcp】MySQL的#也是行注释-----------
 			if (i + 1 < value.length()
 					&& ((current == '-' && value.charAt(i + 1) == '-')
 					|| (current == '/' && value.charAt(i + 1) == '*'))) {
@@ -228,6 +245,11 @@ public final class DictSqlConditionCheckUtil {
 		if (!(expression instanceof Column column)) {
 			return false;
 		}
+		//update-begin---author:scott ---date:20261027  for：【GHSA-xmw4-rx44-4jcp】字段名只允许普通标识符，防止password#之类绕过敏感字段检查-----------
+		if (!COLUMN_NAME_PATTERN.matcher(column.getFullyQualifiedName()).matches()) {
+			return false;
+		}
+		//update-end---author:scott ---date:20261027  for：【GHSA-xmw4-rx44-4jcp】字段名只允许普通标识符，防止password#之类绕过敏感字段检查-----------
 		conditionFields.add(column.getFullyQualifiedName());
 		return true;
 	}

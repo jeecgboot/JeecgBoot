@@ -34,6 +34,12 @@ public final class SensitiveTableCheckUtil {
 	 * @param fields 查询字段
 	 */
 	public static void checkForbiddenFields(String table, String... fields) {
+		//update-begin---author:scott ---date:20261027  for：【GHSA-g87f-mgx5-wj9c】isEmpty会把字面量null当空直接放行，改为拒绝-----------
+		if (table != null && "null".equalsIgnoreCase(table.trim())) {
+			log.error("字典查询表名非法：{}", table);
+			throw new JeecgSqlInjectionException(SQL_INJECTION_TIP + table);
+		}
+		//update-end---author:scott ---date:20261027  for：【GHSA-g87f-mgx5-wj9c】isEmpty会把字面量null当空直接放行，改为拒绝-----------
 		if (oConvertUtils.isEmpty(table) || fields == null || fields.length == 0) {
 			return;
 		}
