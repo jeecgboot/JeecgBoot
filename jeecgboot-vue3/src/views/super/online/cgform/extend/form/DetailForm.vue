@@ -8,7 +8,9 @@
           <div class="item-content" v-if="item.view === 'markdown'">
              <MarkdownViewer v-model:value="detailFormData[item.field]" placeholder="" />
           </div>
-          <div class="item-content" :class="item.view" v-else-if="item.isHtml" v-html="detailFormData[item.field]"></div>
+          <!-- update-begin--author:scott---date:20261031---for：【GHSA-867f-2922-wj26】详情直接 v-html 字段值导致存储型XSS，富文本先净化 -->
+          <div class="item-content" :class="item.view" v-else-if="item.isHtml" v-html="sanitizeRichText(detailFormData[item.field])"></div>
+          <!-- update-end--author:scott---date:20261031---for：【GHSA-867f-2922-wj26】详情直接 v-html 字段值导致存储型XSS，富文本先净化 -->
           <div class="item-content" v-else-if="item.view == 'textarea'" v-html="textareaLineBreak(detailFormData[item.field])"></div>
           <div class="item-content" style="display: block;padding-top:10px" v-else-if="item.isCard">
             <span v-if="!detailFormData[item.field]"></span>
@@ -74,6 +76,7 @@
   import LinkTableCard from '../linkTable/LinkTableCard.vue'
   import { MarkdownViewer } from '/@/components/Markdown';
   import { getWeekMonthQuarterYear } from '/@/utils';
+  import { sanitizeRichText, escapeHtml } from '/@/utils/htmlSanitizer';
 
   export default defineComponent({
     name: 'DetailForm',
@@ -107,6 +110,12 @@
       // update-end--author:liaozhiyang---date:20230925---for：【QQYUN-6647】页面配置中高级配置中设置的label长度，在列表与详情界面无效
       // update-begin--author:liusq---date:20240527---for：【TV360X-464】多行文本换行显示
       const textareaLineBreak = (content) => {
+        // update-begin--author:scott---date:20261031---for：【GHSA-867f-2922-wj26】多行文本只换行不转义，v-html 渲染导致存储型XSS，先转义再换行
+        if (content == null || content === '') {
+          return content;
+        }
+        content = escapeHtml(content);
+        // update-end--author:scott---date:20261031---for：【GHSA-867f-2922-wj26】多行文本只换行不转义，v-html 渲染导致存储型XSS，先转义再换行
         if (content && content.includes('\n')) {
           content = content.replace(/\n/g, '<br>');
         }
@@ -147,7 +156,8 @@
         getLabelWidthClass,
         filterLable,
         filter,
-        textareaLineBreak
+        textareaLineBreak,
+        sanitizeRichText,
       };
     },
   });

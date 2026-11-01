@@ -117,6 +117,20 @@ export function sanitizeRichText(value: unknown): string {
   return xss(normalizeHtml(value), richTextOptions);
 }
 
+/**
+ * 转义 HTML 特殊字符，用于把纯文本安全地拼进 v-html
+ * @author scott
+ * @since 2026-10-31 【GHSA-867f-2922-wj26】Online 表单详情多行文本存储型 XSS
+ */
+export function escapeHtml(value: unknown): string {
+  return normalizeHtml(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 /** 净化评论预览和评论列表，只允许换行及系统生成的 emoji 标签。 */
 export function sanitizeCommentHtml(value: unknown): string {
   //console.log("xss filter value:", value);
