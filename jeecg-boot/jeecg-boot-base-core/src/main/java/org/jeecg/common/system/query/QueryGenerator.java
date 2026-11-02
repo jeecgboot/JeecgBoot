@@ -411,6 +411,9 @@ public class QueryGenerator {
 													&& oConvertUtils.isNotEmpty(rule.getVal())
 												 )
 												|| "empty".equals(rule.getRule())
+												//update-begin---author:scott ---date:20261012  for：【issues/9885】高级查询不为空规则无效-----------
+												|| "not_empty".equals(rule.getRule())
+												//update-end---author:scott ---date:20261012  for：【issues/9885】高级查询不为空规则无效-----------
 				).collect(Collectors.toList());
 				if (filterConditions.size() == 0) {
 					return;
@@ -425,6 +428,9 @@ public class QueryGenerator {
 								    oConvertUtils.isNotEmpty(rule.getField()) && oConvertUtils.isNotEmpty(rule.getRule()) && oConvertUtils.isNotEmpty(rule.getVal())
 								)
 							    || "empty".equals(rule.getRule())
+							    //update-begin---author:scott ---date:20261012  for：【issues/9885】高级查询不为空规则无效-----------
+							    || "not_empty".equals(rule.getRule())
+							    //update-end---author:scott ---date:20261012  for：【issues/9885】高级查询不为空规则无效-----------
 						) {
 
                             log.debug("SuperQuery ==> " + rule.toString());
@@ -708,7 +714,11 @@ public class QueryGenerator {
 				(
 				   name==null || value == null || rule == null || oConvertUtils.isEmpty(value)
 				) 
-				  && !QueryRuleEnum.EMPTY.equals(rule)) {
+				  && !QueryRuleEnum.EMPTY.equals(rule)
+				  //update-begin---author:scott ---date:20261012  for：【issues/9885】高级查询不为空规则无效-----------
+				  && !QueryRuleEnum.NOT_EMPTY.equals(rule)
+				  //update-end---author:scott ---date:20261012  for：【issues/9885】高级查询不为空规则无效-----------
+				  ) {
 			return;
 		}
 		name = oConvertUtils.camelToUnderline(name);
@@ -723,6 +733,11 @@ public class QueryGenerator {
 		case EMPTY:
 			queryWrapper.isNull(name);
 			break;
+		//update-begin---author:scott ---date:20261012  for：【issues/9885】高级查询不为空规则无效-----------
+		case NOT_EMPTY:
+			queryWrapper.isNotNull(name);
+			break;
+		//update-end---author:scott ---date:20261012  for：【issues/9885】高级查询不为空规则无效-----------
 		case LT:
 			queryWrapper.lt(name, value);
 			break;

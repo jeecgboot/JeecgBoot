@@ -64,12 +64,12 @@
         </a-button>
         <!-- update-begin--author:liaozhiyang---date:20250403---for：【QQYUN-11801】生成测试数据 -->
         <a-tooltip
-          v-if="!isConfigCurRoute && (tableType == 1 || tableType == 2) && buttonSwitch.aigc_mock_data && cgBIBtnMap['aigc_mock_data']?.enabled && dataSource.length == 0 && !loading"
+          v-if="!isConfigCurRoute && (tableType == 1 || tableType == 2) && buttonSwitch.aigc_mock_data && cgBIBtnMap['aigc_mock_data']?.enabled && dataSource.length == 0 && !hasQueryCondition && !loading"
           :open="false"
           placement="bottom"
         >
           <template #title>
-            <span>当有数据时或生成测试数据后该按钮会隐藏</span>
+            <span>当有数据、有查询条件或生成测试数据后该按钮会隐藏</span>
           </template>
           <a-button preIcon="mdi:robot-love-outline" :loading="testDataLoading" @click="handleAddTestData(currentTableName, reload)">
             {{ cgBIBtnMap['aigc_mock_data'].buttonName }}
@@ -237,6 +237,7 @@
         loading,
         reload,
         dataSource,
+        hasQueryCondition,
         pagination,
         handleSpecialConfig,
         getColumnList,
@@ -441,6 +442,7 @@
         loading,
         columns,
         dataSource,
+        hasQueryCondition,
         pagination,
         actionColumn,
         rowSelection,

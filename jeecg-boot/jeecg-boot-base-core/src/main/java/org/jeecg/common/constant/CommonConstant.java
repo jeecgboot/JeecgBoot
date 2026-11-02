@@ -367,6 +367,7 @@ public interface CommonConstant {
 
     String TOKEN_IS_INVALID_MSG = "Token失效，请重新登录!";
     String X_FORWARDED_SCHEME = "X-Forwarded-Scheme";
+    String X_FORWARDED_PROTO = "X-Forwarded-Proto";
 
 
     /**

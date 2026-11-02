@@ -73,7 +73,7 @@ export const columns: BasicColumn[] = [
   {
     title: '创建时间',
     dataIndex: 'createTime',
-    width: 120,
+    width: 180,
     sorter: true,
   },
 ];
@@ -100,9 +100,12 @@ export const searchFormSchema: FormSchema[] = [
   {
     field: 'createBy',
     label: '创建人',
-    component: 'JInput',
+    component: 'JSelectUserByDepartment',
     componentProps: {
-      placeholder: '请输入创建人',
+      rowKey: 'username',
+      labelKey: 'realname',
+      showButton: false,
+      isRadioSelection: true,
     },
     colProps: { span: 6 },
   },

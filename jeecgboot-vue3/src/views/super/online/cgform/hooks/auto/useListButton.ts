@@ -31,6 +31,7 @@ export function useListButton(onlineTableContext, extConfigJson: Ref<ExtConfigTy
     batch_delete: true,
     import: true,
     export: true,
+    print: true,
     detail: true,
     query: true,
     reset: true,
@@ -276,7 +277,7 @@ export function useListButton(onlineTableContext, extConfigJson: Ref<ExtConfigTy
     // 对接积木报表打印
     if (extConfigJson.value) {
       let { reportPrintShow, reportPrintUrl } = extConfigJson.value;
-      if (reportPrintShow && reportPrintUrl) {
+      if (reportPrintShow && reportPrintUrl && toRaw(buttonSwitch.print) === true && cgBIBtnMap['print']?.enabled !== false) {
         arr.push({
           label: '打印',
           onClick() {
@@ -424,7 +425,7 @@ export function useListButton(onlineTableContext, extConfigJson: Ref<ExtConfigTy
   }
 
   // 批量删除事件
-  function handleBatchDelete() {
+  async function handleBatchDelete() {
     let arr = onlineTableContext['selectedRowKeys'];
     if (arr.length <= 0) {
       $message.warning('请选择一条记录！');
@@ -473,6 +474,39 @@ export function useListButton(onlineTableContext, extConfigJson: Ref<ExtConfigTy
         $message.warning(`有 ${skippedCount} 条流程已发起的数据不可删除，将跳过`);
       }
       // update-end--author:liaozhiyang---date:20260804---for：【LHZP-839】批量删除与「更多-删除」一致，流程已发起的记录不可删
+      // update-begin--author:liaozhiyang---date:20261028---for：【LHZP-226】批量删除也执行JS增强的删除前置事件beforeDelete
+      const beforeDelete = onlineTableContext['beforeDelete'];
+      if (typeof beforeDelete === 'function') {
+        const results = await Promise.allSettled(
+          idSet.map((id) => {
+            // 跨页选中时当前页可能没有完整行数据，仅传id
+            const record = rowMap.get(String(id)) || { id };
+            return Promise.resolve().then(() => beforeDelete(record));
+          })
+        );
+        const rejectMsgs: string[] = [];
+        idSet = idSet.filter((_id, index) => {
+          const result = results[index];
+          if (result.status === 'rejected') {
+            if (result.reason && rejectMsgs.indexOf(String(result.reason)) < 0) {
+              rejectMsgs.push(String(result.reason));
+            }
+            return false;
+          }
+          return true;
+        });
+        const enhanceSkippedCount = results.filter((item) => item.status === 'rejected').length;
+        if (enhanceSkippedCount > 0) {
+          const reason = rejectMsgs.length > 0 ? `：${rejectMsgs.join('；')}` : '';
+          if (idSet.length <= 0) {
+            $message.warning(`选中数据均不可删除${reason}`);
+            return false;
+          }
+          $message.warning(`有 ${enhanceSkippedCount} 条数据不可删除，将跳过${reason}`);
+          skippedCount += enhanceSkippedCount;
+        }
+      }
+      // update-end--author:liaozhiyang---date:20261028---for：【LHZP-226】批量删除也执行JS增强的删除前置事件beforeDelete
       let ids = idSet.join(',');
       Modal.confirm({
         title: '确认删除',

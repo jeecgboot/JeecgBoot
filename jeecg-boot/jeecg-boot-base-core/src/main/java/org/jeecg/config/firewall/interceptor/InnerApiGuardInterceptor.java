@@ -15,23 +15,23 @@ import java.util.Set;
 /**
  * 单体模式下禁止外部调用微服务内部接口
  * <p>
- * /sys/api、/airag/api、/online/api、/drag/api 等是提供给其它微服务 Feign 调用的内部接口，
- * 单体模式下各模块为进程内调用，不需要对外暴露。其中部分接口位于依赖 jar 中无法直接修改，
- * 因此按 Spring 实际匹配到的接口路径模板统一拦截（不受 URL 编码、大小写、重复斜杠等写法影响）。
+ * /sys/api、/airag/api、/online/api、/drag/api、/airag/flow/api、/eoa/api 等是提供给其它微服务 Feign 调用的内部接口，
+ * 单体模式下各模块为进程内调用，不需要对外暴露。按 Spring 实际匹配到的接口路径模板统一拦截
+ * （不受 URL 编码、大小写、重复斜杠等写法影响），作为控制器加载条件之外的兜底。
  *
  * @author scott
- * @since 2026-10-14 单体模式下内部接口可被任意登录用户直接调用（读写任意数据、读取数据源口令等）
+ * @since 2026-10-14 单体模式下内部接口可被任意登录用户直接调用（GHSA-vrqv-3gwg-423j / GHSA-v952-qq2h-377j / GHSA-qj27-82m3-9q8q / GHSA-2xf5-w883-78m9）
  */
 @Slf4j
 public class InnerApiGuardInterceptor implements HandlerInterceptor {
 
     /**
-     * 微服务内部接口路径前缀
+     * 微服务内部接口路径前缀（/airag/flow/api：按 id 执行任意租户的 AI 流程；/eoa/api：文件、公文模板、考勤补卡）
      */
-    private static final String[] INNER_API_PREFIXES = {"/sys/api/", "/airag/api/", "/online/api/", "/drag/api/"};
+    private static final String[] INNER_API_PREFIXES = {"/sys/api/", "/airag/api/", "/online/api/", "/drag/api/", "/airag/flow/api/", "/eoa/api/"};
 
     /**
-     * 前端在用、需要放行的接口（Online 报表字典翻译）
+     * 放行的接口：前端字典翻译在用的 Online 报表字典；旧版 PC 端、移动端 EOA 协同催办在用的过渡接口（下个版本删除）
      */
     private static final Set<String> ALLOW_PATTERNS = Set.of("/online/api/cgreportGetDataPackage");
 

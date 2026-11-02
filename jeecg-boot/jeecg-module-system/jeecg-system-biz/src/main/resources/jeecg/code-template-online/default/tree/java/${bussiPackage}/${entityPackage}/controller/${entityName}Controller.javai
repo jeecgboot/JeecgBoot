@@ -10,6 +10,7 @@ import java.net.URLDecoder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.jeecg.common.api.vo.Result;
+import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.common.system.vo.SelectTreeModel;
@@ -51,6 +52,12 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 </#if>
 </#list>
 <#assign enhanceJavaList=[]>
+<#assign has_popup_dict=false>
+<#list originalColumns as po>
+<#if po.classType=='popup_dict'>
+  <#assign has_popup_dict=true>
+</#if>
+</#list>
 <#if tableVo.extendParams?? && tableVo.extendParams.enhanceJavaList??>
   <#assign enhanceJavaList = tableVo.extendParams.enhanceJavaList?filter(enhance -> enhance??)>
 </#if>
@@ -61,6 +68,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 public class ${entityName}Controller extends JeecgController<${entityName}, I${entityName}Service>{
 	@Autowired
 	private I${entityName}Service ${entityName?uncap_first}Service;
+<#if has_popup_dict>
+	@Autowired
+	private ISysBaseAPI sysBaseApi;
+</#if>
 
 	/**
 	 * 分页列表查询
@@ -345,8 +356,100 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
  </#if>
  </#list>
 </#if>
+<#if has_popup_dict>
+		ModelAndView mv = super.exportXls(request, ${entityName?uncap_first}, ${entityName}.class, "${tableVo.ftlDescription}");
+		List<${entityName}> exportList = (List<${entityName}>) mv.getModel().get(NormalExcelConstants.DATA_LIST);
+  <#list originalColumns as po>
+    <#if po.classType=='popup_dict'>
+		translatePopupDict(exportList, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", false);
+    </#if>
+</#list>
+		return mv;
+<#else>
 		return super.exportXls(request, ${entityName?uncap_first}, ${entityName}.class, "${tableVo.ftlDescription}");
+</#if>
     }
+
+<#if has_popup_dict>
+	/**
+	 * 翻译 Excel 导入、导出中的 Popup 字典值。
+	 */
+	private void translatePopupDict(List<${entityName}> exportList, String fieldName,
+								String reportCode, String dictCode, String dictText, boolean strict) {
+		if (exportList == null || exportList.isEmpty()) {
+			return;
+		}
+		try {
+			java.util.LinkedHashSet<String> keys = new java.util.LinkedHashSet<>();
+			for (${entityName} item : exportList) {
+				Object value = cn.hutool.core.util.ReflectUtil.getFieldValue(item, fieldName);
+				if (value != null) {
+					for (String key : value.toString().split(",")) {
+						if (org.jeecg.common.util.oConvertUtils.isNotEmpty(key)) {
+							keys.add(key);
+						}
+					}
+				}
+			}
+			if (keys.isEmpty()) {
+				return;
+			}
+			List<org.jeecg.common.system.vo.DictModel> options = sysBaseApi.queryPopupDictItems(
+					reportCode, dictCode, dictText, strict ? "" : String.join(",", keys));
+			if ((options == null || options.isEmpty()) && !strict) {
+				return;
+			}
+			Map<String, String> textMap = new java.util.HashMap<>();
+			if (options != null) {
+				for (org.jeecg.common.system.vo.DictModel option : options) {
+					if (strict) {
+						if (keys.contains(option.getText())) {
+							textMap.putIfAbsent(option.getText(), option.getValue());
+						}
+						if (keys.contains(option.getValue())) {
+							textMap.putIfAbsent(option.getValue(), option.getValue());
+						}
+					} else {
+						textMap.put(option.getValue(), option.getText());
+					}
+				}
+			}
+			for (${entityName} item : exportList) {
+				Object value = cn.hutool.core.util.ReflectUtil.getFieldValue(item, fieldName);
+				if (value == null) {
+					continue;
+				}
+				String translated = Arrays.stream(value.toString().split(","))
+						.map(key -> {
+							String text = textMap.get(key);
+							if (strict && text == null) {
+								throw new org.jeecg.common.exception.JeecgBootException("Popup字典值不存在，字段：" + fieldName + "，值：" + key);
+							}
+							return text == null ? key : text;
+						})
+						.collect(Collectors.joining(","));
+				cn.hutool.core.util.ReflectUtil.setFieldValue(item, fieldName, translated);
+			}
+		} catch (org.jeecg.common.exception.JeecgBootException e) {
+			throw e;
+		} catch (Exception e) {
+			if (strict) {
+				throw new org.jeecg.common.exception.JeecgBootException("Popup字典导入翻译失败，字段：" + fieldName, e);
+			}
+			log.warn("popup字典翻译失败, 字段: {}", fieldName, e);
+		}
+	}
+
+	@Override
+	protected void beforeImport(List<${entityName}> importList) {
+  <#list originalColumns as po>
+    <#if po.classType=='popup_dict'>
+		translatePopupDict(importList, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", true);
+    </#if>
+  </#list>
+	}
+
+</#if>
 
     /**
       * 通过excel导入数据

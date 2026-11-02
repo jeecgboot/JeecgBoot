@@ -114,6 +114,8 @@ export function usePopBiz(ob, tableRef?) {
    * @param selectRow
    */
   function onSelectChange(selectedRowKeys: (string | number)[]) {
+    // 修复单选编辑选中的值在第二页，在第一页保存时保存不上
+    const prevRows = [...selectRows.value];
     // 代码逻辑说明: 【QQYUN-7514】popup单选显示radio
     if (!props.multi) {
       selectRows.value = [];
@@ -140,7 +142,9 @@ export function usePopBiz(ob, tableRef?) {
         selectedRowKeys.forEach((key) => {
           if (!beforeRowKeys.find((item) => item === key)) {
             // 那就是新增选中的行
-            const row = getRowByKey(key);
+            // update-begin--author:liaozhiyang---date:20261029---for：【LHZP-3】popup编辑时弹窗勾选回显
+            const row = getRowByKey(key) || prevRows.find((item) => combineRowKey(item) === key);
+            // update-end--author:liaozhiyang---date:20261029---for：【LHZP-3】popup编辑时弹窗勾选回显
             row && append.push(row);
           }
         });

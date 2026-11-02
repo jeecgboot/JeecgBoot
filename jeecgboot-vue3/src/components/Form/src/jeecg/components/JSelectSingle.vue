@@ -129,7 +129,7 @@
       return {
         key: `${item.value}_${text}_${index}`,
         text,
-        value: item.value,
+        value: typeof innerValue.value === 'number' ? Number(item.value) : item.value,
         class: [props.useDicColor && item.color ? 'colorText' : ''],
         style: { backgroundColor: props.useDicColor && item.color ? String(item.color) : '' },
       };

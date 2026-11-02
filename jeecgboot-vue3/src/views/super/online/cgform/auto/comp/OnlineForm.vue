@@ -21,7 +21,7 @@
             :table="sub.key"
             :id="sub.id"
             :disabled="onlineFormDisabled"
-            :form-template="formTemplate"
+            :form-template="sub.formTemplate"
             :main-id="getSubTableForeignKeyValue(sub.foreignKey)"
             :properties="sub.properties"
             :required-fields="sub.requiredFields"
@@ -888,7 +888,7 @@
 
       //提交数据前 先走一下自定义的JS校验
       function handleApplyRequest(formData) {
-        // 【issues/9873】ERP列表子表是分页数据，由子表接口独立维护，禁止随主表全量提交
+        // 【issues/7190】【issues/9873】ERP列表子表是分页数据，由子表接口独立维护，禁止随主表全量提交
         customBeforeSubmit(context, formData)
           .then(() => {
             doApplyRequest(formData);

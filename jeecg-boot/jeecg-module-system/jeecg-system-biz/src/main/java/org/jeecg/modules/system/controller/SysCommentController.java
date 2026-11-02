@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.dto.DataLogDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
@@ -167,6 +168,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      */
     //@AutoLog(value = "系统评论回复表-分页列表查询")
     @Operation(summary = "系统评论回复表-分页列表查询")
+    @RequiresPermissions("system:comment:list")
     @GetMapping(value = "/list")
     public Result<IPage<SysComment>> queryPageList(SysComment sysComment,
                                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -326,6 +328,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param request
      * @param sysComment
      */
+    @RequiresPermissions("system:comment:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, SysComment sysComment) {
         return super.exportXls(request, sysComment, SysComment.class, "系统评论回复表");
@@ -338,6 +341,7 @@ public class SysCommentController extends JeecgController<SysComment, ISysCommen
      * @param response
      * @return
      */
+    @RequiresPermissions("system:comment:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, SysComment.class);

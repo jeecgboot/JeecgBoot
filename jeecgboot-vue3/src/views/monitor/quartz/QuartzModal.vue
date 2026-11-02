@@ -1,6 +1,8 @@
 <template>
   <BasicModal v-bind="$attrs" @register="registerModal" :title="title" @ok="handleSubmit" width="40%">
-    <BasicForm @register="registerForm" />
+    <div class="quartz-modal">
+      <BasicForm @register="registerForm" />
+    </div>
   </BasicModal>
 </template>
 <script lang="ts" setup>
@@ -59,3 +61,11 @@
     }
   }
 </script>
+<style lang="less" scoped>
+  .quartz-modal :deep(.dynamic-delete-button) {
+    position: static;
+    align-self: center;
+    margin-bottom: 5px;
+    margin-left: 5px;
+  }
+</style>

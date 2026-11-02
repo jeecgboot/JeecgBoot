@@ -41,7 +41,7 @@
       </template>
     </a-alert>
     <a-spin :spinning="loading">
-      <a-input-search placeholder="按部门名称搜索…" style="margin-bottom: 10px" @search="onSearch" />
+      <a-input-search v-model:value="searchKeyword" placeholder="按部门名称搜索…" style="margin-bottom: 10px" @search="onSearch" />
       <!--组织机构树-->
       <template v-if="treeData.length > 0">
         <a-tree
@@ -50,7 +50,7 @@
           :treeData="treeData"
           :selectedKeys="selectedKeys"
           :checkStrictly="checkStrictly"
-          :load-data="loadChildrenTreeData"
+          :load-data="isSearchResult ? undefined : loadChildrenTreeData"
           :checkedKeys="checkedKeys"
           v-model:expandedKeys="expandedKeys"
           @check="onCheck"
@@ -112,7 +112,7 @@
   import { useModal } from '/@/components/Modal';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useMethods } from '/@/hooks/system/useMethods';
-  import { Api, deleteBatchDepart, queryDepartAndPostTreeSync, searchByDepartManage, updateChangeDepart } from '../depart.api';
+  import { Api, deleteBatchDepart, queryAllParentId, queryDepartAndPostTreeSync, searchByDepartManage, updateChangeDepart } from '../depart.api';
   import { initDictOptions } from '/@/utils/dict/JDictSelectUtil';
   import DepartFormModal from '/@/views/system/depart/components/DepartFormModal.vue';
   import { Modal, Popconfirm } from 'ant-design-vue';
@@ -146,6 +146,8 @@
   const visibleTreeKey = ref<any>(null);
   // 搜索关键字
   const searchKeyword = ref('');
+  // 是否正在展示搜索结果，搜索结果仅展示命中节点及其上级
+  const isSearchResult = ref<boolean>(false);
   // 提示弹窗是否显示
   const tipShow = ref<boolean>(false);
   // 职务级别名称，页面加载时一次性获取，避免按岗位查询
@@ -294,21 +296,93 @@
     if (value) {
       try {
         loading.value = true;
+        isSearchResult.value = true;
         treeData.value = [];
         // update-begin--author:wangshuai---date:20260813---for:【LHZP-1075】【系统管理】部门 搜索后 如果是公司或部门 不能展开下级
         let result = await searchByDepartManage({ keyWord: value, orgCategory: "1,2,3,4" });
         // update-end--author:wangshuai---date:20260813---for:【LHZP-1075】【系统管理】部门 搜索后 如果是公司或部门 不能展开下级
         if (Array.isArray(result)) {
-          treeData.value = result;
+          treeData.value = await buildSearchTreeWithParents(result);
         }
-        autoExpandParentNode();
+        expandSearchResult();
       } finally {
         loading.value = false;
       }
     } else {
-      loadRootTreeData();
+      isSearchResult.value = false;
+      expandedKeys.value = [];
+      await loadRootTreeData();
     }
     searchKeyword.value = value;
+  }
+
+  // 使用现有祖先查询接口补齐命中节点的上级，并在前端组装树
+  async function buildSearchTreeWithParents(searchResult: any[]) {
+    const departIds = searchResult.map((item) => item.id).filter(Boolean);
+    if (departIds.length === 0) {
+      return [];
+    }
+    const parentResult = await queryAllParentId({ departId: departIds.join(',') });
+    const nodeMap = new Map<string, any>();
+    Object.values(parentResult ?? {}).forEach((parentData: any) => {
+      Object.values(parentData?.parentMap ?? {}).forEach((depart: any) => {
+        nodeMap.set(depart.id, createSearchTreeNode(depart));
+      });
+    });
+    searchResult.forEach((depart) => nodeMap.set(depart.id, createSearchTreeNode(depart)));
+    const result: any[] = [];
+    nodeMap.forEach((node) => {
+      const parent = nodeMap.get(node.parentId);
+      if (parent) {
+        parent.children.push(node);
+        parent.isLeaf = false;
+      } else {
+        result.push(node);
+      }
+    });
+    sortSearchTree(result);
+    return result;
+  }
+
+  // 将部门实体转换为树节点
+  function createSearchTreeNode(depart: any) {
+    return {
+      ...depart,
+      key: depart.key ?? depart.id,
+      value: depart.value ?? depart.id,
+      title: depart.title ?? depart.departName,
+      isLeaf: depart.isLeaf ?? depart.izLeaf !== 0,
+      children: [],
+    };
+  }
+
+  // 搜索结果沿用部门排序
+  function sortSearchTree(nodes: any[]) {
+    nodes.sort((first, second) => (first.departOrder ?? 0) - (second.departOrder ?? 0));
+    nodes.forEach((node) => {
+      sortSearchTree(node.children);
+      node.isLeaf = node.children.length === 0;
+    });
+  }
+
+  // 展开搜索结果中的完整祖先路径，不触发下级懒加载
+  function expandSearchResult() {
+    const keys: string[] = [];
+    const stack = [...treeData.value];
+    while (stack.length > 0) {
+      const node = stack.pop();
+      if (node?.children?.length > 0) {
+        keys.push(node.key);
+        stack.push(...node.children);
+      }
+    }
+    expandedKeys.value = keys;
+    const item = treeData.value[0];
+    if (item) {
+      setSelectedKey(item.id, item);
+    } else {
+      emit('select', null);
+    }
   }
 
   // 树复选框选择事件

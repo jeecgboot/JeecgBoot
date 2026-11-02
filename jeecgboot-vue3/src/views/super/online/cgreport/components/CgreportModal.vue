@@ -9,6 +9,14 @@
     :confirmLoading="confirmLoading"
     @ok="handleSubmit"
   >
+    <!-- update-begin--author:liaozhiyang---date:20260824---for：【LHZP-984】online报表新增定位功能 -->
+    <template #insertFooter>
+      <div class="positioning-area">
+        <a-input v-model:value="positioning" placeholder="搜索字段或备注" allowClear @pressEnter="handlePositioning" />
+        <a-button type="primary" ghost @click="handlePositioning">定位</a-button>
+      </div>
+    </template>
+    <!-- update-end--author:liaozhiyang---date:20260824---for：【LHZP-984】online报表新增定位功能 -->
     <BasicForm @register="registerForm" ref="formRef">
       <template #analyseButton>
         <div style="flex: 1; text-align: left">
@@ -91,6 +99,7 @@
   const confirmLoading = ref(true);
   const refKeys = ref(['onlCgreportItem', 'onlCgreportParam']);
   const activeKey = ref('onlCgreportItem');
+  const positioning = ref('');
   const onlCgreportParam = ref();
   const onlCgreportItem = ref();
   const tableRefs = { onlCgreportItem, onlCgreportParam };
@@ -166,9 +175,40 @@
   async function reset() {
     await resetFields();
     activeKey.value = 'onlCgreportItem';
+    positioning.value = '';
     onlCgreportParamTable.dataSource = [];
     onlCgreportItemTable.dataSource = [];
   }
+
+  // update-begin--author:liaozhiyang---date:20260824---for：【LHZP-984】online报表新增定位功能
+  /** 根据字段名或字段文本定位报表字段 */
+  async function handlePositioning() {
+    const value = positioning.value.trim();
+    if (!value) {
+      createMessage.warning('请输入字段或备注');
+      return;
+    }
+    const xTable = onlCgreportItem.value?.getXTable?.();
+    const fullData = xTable?.getTableData?.().fullData || [];
+    const matches = (item, exact = false) => {
+      const fieldName = String(item.fieldName || '');
+      const fieldTxt = String(item.fieldTxt || '');
+      return exact ? fieldName === value || fieldTxt === value : fieldName.includes(value) || fieldTxt.includes(value);
+    };
+    const row = fullData.find((item) => matches(item, true)) || fullData.find((item) => matches(item));
+    if (!row) {
+      createMessage.warning('未找到匹配字段');
+      return;
+    }
+    await xTable.scrollToRow(row);
+    const tableBody = xTable.getRefMaps?.().refTableBody?.value;
+    const rowElement = tableBody?.$el?.querySelector(`[rowid="${xTable.getRowid(row)}"]`);
+    if (rowElement) {
+      rowElement.classList.add('customHighlight');
+      setTimeout(() => rowElement.classList.remove('customHighlight'), 1000);
+    }
+  }
+  // update-end--author:liaozhiyang---date:20260824---for：【LHZP-984】online报表新增定位功能
 
   /** 等待懒加载的行编辑表格实例初始化完成 */
   async function waitForTableReady() {
@@ -354,9 +394,19 @@
   
   // 优化表格容器，确保内容不会溢出
   :deep(.vxe-table) {
+    .vxe-body--row.customHighlight {
+      background-color: var(--vxe-ui-table-row-hover-background-color);
+    }
     .vxe-table--body-wrapper {
       overflow: auto;
     }
+  }
+
+  .positioning-area {
+    width: 280px;
+    display: flex;
+    gap: 8px;
+    float: left;
   }
   // ==================== 滚动条优化 - 结束 ====================
 </style>

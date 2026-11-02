@@ -23,7 +23,7 @@
         <div class="article-title">{{ content.titile }}</div>
         <div class="article-meta">
           <span v-if="priorityLabel" class="priority-tag article-meta-item" :class="`priority-tag--${content.priority}`">{{ priorityLabel }}</span>
-          <span v-if="content.sender" class="meta-name article-meta-item">{{ content.sender }}</span>
+          <span v-if="content.sender" class="meta-name article-meta-item">{{ getSenderText(content.sender, content.sender) }}</span>
           <span v-if="content.sendTime" class="meta-date article-meta-item">{{ formatSendDate(content.sendTime) }}</span>
           <span v-if="content.visitsNum" class="meta-visits article-meta-item">
             <a-tooltip placement="top" title="访问次数" :autoAdjustOverflow="true">
@@ -84,6 +84,7 @@
   import {defHttp} from "@/utils/http/axios";
   import {$electron} from "@/electron";
   import { decodeHtmlEntities, removeSpecialTags } from '@/utils/index';
+  import { getSenderText, isSystemSender } from './mynews.data';
   const router = useRouter();
   const glob = useGlobSetting();
   const isUpdate = ref(true);
@@ -115,7 +116,8 @@
       }
 
       content.value = data.record;
-      if(content.value.sender){
+      // system 不是用户账号，不查姓名，模板里由 getSenderText 显示「系统」；sender 不改，列表那一行还要按 system 判断
+      if(content.value.sender && !isSystemSender(content.value.sender)){
         // 发送人账号转姓名改用只读轻接口 queryByNames（仅返回 username/realname，无需 system:user:select 权限）
         const userList = await defHttp.get({ url: '/sys/user/queryByNames', params: { userNames: content.value.sender } });
         content.value.sender = userList && userList.length > 0

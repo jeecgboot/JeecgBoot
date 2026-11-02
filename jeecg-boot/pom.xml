@@ -29,7 +29,7 @@
 
 	<properties>
 		<jeecgboot.version>3.9.5</jeecgboot.version>
-		<jeecg-starter.version>3.9.5</jeecg-starter.version>
+		<jeecg-starter.version>3.9.6</jeecg-starter.version>
 		<skipTests>true</skipTests>
 		<!-- JDK版本支持17、21、24、25 -->
 		<java.version>17</java.version>
@@ -42,7 +42,7 @@
 
 		<xxl-job-core.version>3.4.2</xxl-job-core.version>
         <fastjson.version>2.0.66</fastjson.version>
-        <aviator.version>5.2.6</aviator.version>
+        <aviator.version>5.4.4</aviator.version>
 		<pegdown.version>1.6.0</pegdown.version>
 		<commonmark.version>0.28.0</commonmark.version>
 		<knife4j-spring-boot-starter.version>4.5.0</knife4j-spring-boot-starter.version>
@@ -299,7 +299,7 @@
             <dependency>
                 <groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-online</artifactId>
-				<version>3.9.5-beta</version>
+				<version>3.9.6-beta</version>
             </dependency>
 			<!--mongon db-->
 			<dependency>
@@ -605,7 +605,7 @@
 			<dependency>
 				<groupId>org.jeecgframework.boot3</groupId>
 				<artifactId>jeecg-boot-starter-ai</artifactId>
-				<version>3.9.5.1</version>
+                <version>${jeecg-starter.version}</version>
 			</dependency>
 			<!--flyway 支持 mysql5.7+、MariaDB10.3.16-->
 			<!--mysql5.6，需要把版本号改成5.2.1-->

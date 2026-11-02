@@ -71,6 +71,9 @@ interface FieldExtends {
   //popup是否支持多选
   popupMulti?: boolean;
 
+  //下拉搜索是否支持多选
+  multiple?: boolean;
+
   //部门、用户组件 用于存储的字段名
   store?: string;
 

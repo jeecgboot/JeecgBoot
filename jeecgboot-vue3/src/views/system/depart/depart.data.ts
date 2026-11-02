@@ -78,7 +78,7 @@ export function useBasicFormSchema(treeData) {
       component: 'JDictSelectTag',
       componentProps: ({ formModel, formActionType }) => {
         return {
-          dictCode: "sys_position,name,id, 1=1 order by post_level asc",
+          dictCode: "sys_position,name,id,id is not null order by post_level asc",
           getPopupContainer: ()=> document.body,
           onChange: (value) => {
             formModel.depPostParentId = "";

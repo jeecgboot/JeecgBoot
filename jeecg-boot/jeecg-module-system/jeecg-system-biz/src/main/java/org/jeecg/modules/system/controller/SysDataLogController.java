@@ -5,6 +5,8 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -34,6 +36,7 @@ public class SysDataLogController {
 	@Autowired
 	private ISysDataLogService service;
 	
+	@RequiresPermissions("system:dataLog:list")
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysDataLog>> queryPageList(SysDataLog dataLog,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
@@ -56,6 +59,7 @@ public class SysDataLogController {
 	 * @param req
 	 * @return
 	 */
+	@RequiresPermissions("system:dataLog:queryCompareList")
 	@RequestMapping(value = "/queryCompareList", method = RequestMethod.GET)
 	public Result<List<SysDataLog>> queryCompareList(HttpServletRequest req) {
 		Result<List<SysDataLog>> result = new Result<>();
@@ -81,6 +85,11 @@ public class SysDataLogController {
 	 */
 	@RequestMapping(value = "/queryDataVerList", method = RequestMethod.GET)
 	public Result<List<SysDataLog>> queryDataVerList(HttpServletRequest req) {
+		//update-begin---author:wangshuai ---date:2026-10-25  for：【GHSA-p4f8-h832-99pw】数据日志含业务数据快照，除评论组件查询的评论日志(type=comment)外需 system:dataLog:queryDataVerList 按钮权限-----------
+		if (!CommonConstant.DATA_LOG_TYPE_COMMENT.equals(req.getParameter("type")) && !SecurityUtils.getSubject().isPermitted("system:dataLog:queryDataVerList")) {
+			return Result.noauth("没有权限，请联系管理员分配权限！");
+		}
+		//update-end---author:wangshuai ---date:2026-10-25  for：【GHSA-p4f8-h832-99pw】数据日志含业务数据快照，除评论组件查询的评论日志(type=comment)外需 system:dataLog:queryDataVerList 按钮权限-----------
 		Result<List<SysDataLog>> result = new Result<>();
 		String dataTable = req.getParameter("dataTable");
 		String dataId = req.getParameter("dataId");

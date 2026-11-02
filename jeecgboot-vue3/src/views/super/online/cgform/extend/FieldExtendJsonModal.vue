@@ -44,6 +44,7 @@
         extendConfig.uploadnum = 0;
         extendConfig.showLength = '';
         extendConfig.popupMulti = true;
+        extendConfig.multiple = false;
         extendConfig.multiSelect = true;
         extendConfig.store = '';
         extendConfig.text = '';
@@ -59,6 +60,7 @@
         uploadnum: 0,
         showLength: '',
         popupMulti: true,
+        multiple: false,
         store: '',
         text: '',
         multiSelect: true,
@@ -110,6 +112,23 @@
             return fieldShowType.value === 'popup' || fieldShowType.value === 'popup_dict';
           },
         },
+        // update-begin--author:liaozhiyang---date:20260826---for:【LHZP-261】online下拉搜索支持多选
+        {
+          label: '是否多选',
+          field: 'multiple',
+          component: 'RadioGroup',
+          defaultValue: false,
+          componentProps: {
+            options: [
+              { label: '否', value: false },
+              { label: '是', value: true },
+            ],
+          },
+          ifShow: () => {
+            return fieldShowType.value === 'sel_search';
+          },
+        },
+        // update-end--author:liaozhiyang---date:20260826---for:【LHZP-261】online下拉搜索支持多选
         {
           label: '是否多选',
           field: 'multiSelect',
@@ -293,6 +312,11 @@
         initExtendConfig();
         if (data.jsonStr) {
           let json = JSON.parse(data.jsonStr);
+          // update-begin--author:liaozhiyang---date:20260826---for:【LHZP-261】online下拉搜索支持多选
+          if (data.fieldShowType === 'sel_search' && json.multiple == null) {
+            extendConfig.multiple = false;
+          }
+          // update-end--author:liaozhiyang---date:20260826---for:【LHZP-261】online下拉搜索支持多选
           // update-begin--author:liaozhiyang---date:20240524---for：【TV360X-519】开关设置默认值及兼容数组写法
           if (data.fieldShowType === 'switch') {
             // 兼容[0,1]写法
@@ -343,6 +367,8 @@
           obj = pick(data, 'store', 'text', 'multiSelect');
         } else if (type === 'popup'||type === 'popup_dict') {
           obj.popupMulti = data.popupMulti;
+        } else if (type === 'sel_search') {
+          obj.multiple = data.multiple;
         }
         // update-begin--author:liaozhiyang---date:20240523---for：【TV360X-308】Datetime、string、Date,int、BigDecimal、double类型默认展示排序功能
         if (data.orderRule) {
@@ -366,9 +392,11 @@
         }
         //update-end---author:liusq ---date:20260519  for：【QQYUN-13645】online表单允许设置某个字段是标题字段
         // update-begin--author:liaozhiyang---date:20230105---for：【QQYUN-7499】多列风格富文本、markdown增加独占一行功能
-        if (data.isOneRow) {
+        // update-begin--author:liaozhiyang---date:20260827---for：【LHZP-371】富文本和Markdown独占一行选择否后正确保存
+        if ((type === 'markdown' || type === 'umeditor') && typeof data.isOneRow === 'boolean') {
           obj.isOneRow = data.isOneRow;
         }
+        // update-end--author:liaozhiyang---date:20260827---for：【LHZP-371】富文本和Markdown独占一行选择否后正确保存
         // update-end--author:liaozhiyang---date:20230105---for：【QQYUN-7499】多列风格富文本、markdown增加独占一行功能
         if (data.picker) {
           obj.picker = data.picker;

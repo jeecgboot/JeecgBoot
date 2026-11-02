@@ -756,13 +756,15 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
         //设置用户id,让前台显示
         this.setUserIdsByDepList(list);
 		List<SysDepartTreeModel> records = new ArrayList<>();
+		//update-begin---author:scott ---date:20261030  for：【LHZP-1974】部门树每个节点单独查一次子部门数量，SQL Server下办理页加载慢，改为一次查出有子部门的节点-----------
+		Set<String> hasChildIds = getHasNoPostChildParentIds(list.stream().map(SysDepart::getId).collect(Collectors.toList()));
 		for (int i = 0; i < list.size(); i++) {
 			SysDepart depart = list.get(i);
             // 代码逻辑说明: 【QQYUN-13427】部门选择组件修改:需要过滤掉岗位 只保留 公司 子公司 部门---
-            long count = getNoDepartPostCount(depart.getId());
-            if(count == 0){
+            if(!hasChildIds.contains(depart.getId())){
                 depart.setIzLeaf(CommonConstant.IS_LEAF);
             }
+		//update-end---author:scott ---date:20261030  for：【LHZP-1974】部门树每个节点单独查一次子部门数量，SQL Server下办理页加载慢，改为一次查出有子部门的节点-----------
             SysDepartTreeModel treeModel = new SysDepartTreeModel(depart);
             //TODO 异步树加载key拼接__+时间戳,以便于每次展开节点会刷新数据
 			//treeModel.setKey(treeModel.getKey()+"__"+System.currentTimeMillis());
@@ -772,15 +774,23 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 	}
 
     /**
-     * 获取部门数量
-     * @param departId
-     * @return
+     * 一次查出哪些部门下有子部门（不含岗位），用于判断树节点是否叶子，替代逐个部门 count
+     * @param departIds 部门ID
+     * @return 有子部门的部门ID
+     * @author scott
+     * @since 2026-10-30 【LHZP-1974】部门树每个节点单独查一次子部门数量，SQL Server下办理页加载慢
      */
-    private long getNoDepartPostCount(String departId) {
-        LambdaQueryWrapper<SysDepart> queryNoPosition = new LambdaQueryWrapper<>();
-        queryNoPosition.ne(SysDepart::getOrgCategory,DepartCategoryEnum.DEPART_CATEGORY_POST.getValue());
-        queryNoPosition.eq(SysDepart::getParentId,departId);
-        return this.count(queryNoPosition);
+    private Set<String> getHasNoPostChildParentIds(List<String> departIds) {
+        Set<String> parentIds = new HashSet<>();
+        // 分批查询，避免 SQL Server 等数据库 IN 参数个数超限
+        for (int i = 0; i < departIds.size(); i += 1000) {
+            LambdaQueryWrapper<SysDepart> queryNoPosition = new LambdaQueryWrapper<>();
+            queryNoPosition.select(SysDepart::getParentId);
+            queryNoPosition.ne(SysDepart::getOrgCategory,DepartCategoryEnum.DEPART_CATEGORY_POST.getValue());
+            queryNoPosition.in(SysDepart::getParentId,departIds.subList(i, Math.min(i + 1000, departIds.size())));
+            this.list(queryNoPosition).forEach(d -> parentIds.add(d.getParentId()));
+        }
+        return parentIds;
     }
 
     /**
@@ -1550,6 +1560,9 @@ public class SysDepartServiceImpl extends ServiceImpl<SysDepartMapper, SysDepart
 				sysDepart.setDelFlag(CommonConstant.DEL_FLAG_0.toString());
 				sysDepart.setIzLeaf(CommonConstant.IS_LEAF);
 				sysDepart.setDepartNameEn(departExportVo.getDepartNameEn());
+				//update-begin---author:wangshuai ---date:20261029  for：【LHZP-1199】部门管理 导出导入支持机构简称------------
+				sysDepart.setDepartNameAbbr(departExportVo.getDepartNameAbbr());
+				//update-end---author:wangshuai ---date:20261029  for：【LHZP-1199】部门管理 导出导入支持机构简称------------
 				sysDepart.setDepartOrder(departExportVo.getDepartOrder());
 				sysDepart.setOrgCategory(oConvertUtils.getString(departExportVo.getOrgCategory(),"1"));
 				sysDepart.setMobile(departExportVo.getMobile());

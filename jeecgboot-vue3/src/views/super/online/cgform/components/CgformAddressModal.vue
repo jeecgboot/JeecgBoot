@@ -24,7 +24,7 @@
           <a-button class="copy-sql" type="primary" size="small" @click="copySqlClick">复制菜单SQL</a-button>
         </a-collapse-panel>
         <a-collapse-panel v-if="enableExternalLink" key="external" header="外部链接">
-          <a-row style="margin-bottom: 8px">
+          <a-row v-if="hasExtAction('add')" style="margin-bottom: 8px">
             <a-col :span="24">
               <a-input :readOnly="true" addonBefore="外部新增地址" :value="getAddress.extLink.add">
                 <template #addonAfter>
@@ -34,7 +34,7 @@
             </a-col>
           </a-row>
 
-          <a-row style="margin-bottom: 8px">
+          <a-row v-if="hasExtAction('edit')" style="margin-bottom: 8px">
             <a-col :span="24">
               <a-input :readOnly="true" addonBefore="外部修改地址" :value="getAddress.extLink.edit">
                 <template #addonAfter>
@@ -44,7 +44,7 @@
             </a-col>
           </a-row>
 
-          <a-row style="margin-bottom: 8px">
+          <a-row v-if="hasExtAction('detail')" style="margin-bottom: 8px">
             <a-col :span="24">
               <a-input :readOnly="true" addonBefore="外部详情地址" :value="getAddress.extLink.detail">
                 <template #addonAfter>
@@ -53,7 +53,8 @@
               </a-input>
             </a-col>
           </a-row>
-          <div style="text-align: right; color: red">注意：<span style="font-weight: bold">{dataId}</span> 为数据id</div>
+          <div v-if="externalLinkActions.length === 0" style="color: rgba(0, 0, 0, 0.45)">未勾选允许的操作，请在表单配置【允许的操作】中勾选新增/编辑/详情</div>
+          <div v-if="hasExtAction('edit') || hasExtAction('detail')" style="text-align: right; color: red">注意：<span style="font-weight: bold">{dataId}</span> 为数据id</div>
         </a-collapse-panel>
       </a-collapse>
     </div>
@@ -85,6 +86,8 @@ const accessToken = computed(() => getToken());
 
 const collapseKey = ref(['def'])
 const enableExternalLink = ref(false);
+// 外部链接允许的操作：add、edit、detail
+const externalLinkActions = ref<string[]>([]);
 const themeTemplate = ref('normal');
 const isTree = ref(false);
 const model = reactive({
@@ -103,6 +106,9 @@ const [registerModal] = useModalInner((data: Recordable) => {
   const extConfigJson = parseExtConfigJson(data.record);
 
   enableExternalLink.value = extConfigJson.enableExternalLink === 1;
+  // update-begin--author:liaozhiyang---date:20261026---for：【LHZP-29】按钮根据详情/编辑/新增权限显示
+  externalLinkActions.value = (extConfigJson.externalLinkActions || '').split(',').filter((item) => !!item);
+  // update-end--author:liaozhiyang---date:20261026---for：【LHZP-29】按钮根据详情/编辑/新增权限显示
   themeTemplate.value = data.record.themeTemplate;
   isTree.value = data.record.isTree === 'Y';
   if (enableExternalLink.value) {
@@ -111,6 +117,11 @@ const [registerModal] = useModalInner((data: Recordable) => {
     collapseKey.value = ['def'];
   }
 });
+
+// 是否允许某个外部链接操作
+function hasExtAction(action: string) {
+  return externalLinkActions.value.includes(action);
+}
 
 const getAddress = computed(() => {
 

@@ -286,6 +286,12 @@ public class SysAnnouncementSendController {
 		 }
 		 //update-end---author:scott ---date:20261013  for：【安全 GHSA-63v7-3c98-c3mj】按sendId获取消息正文前校验归属，只能查看本人收到的消息-----------
 		 AnnouncementSendModel model = sysAnnouncementSendService.getOne(sendId);
+		 //update-begin---author:jeecg---for：【安全 GHSA-fp4f-qhf5-hqj8】校验消息归属，只能查看本人站内信---
+		 LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
+		 if (model != null && !sysUser.getId().equals(model.getUserId())) {
+			 return Result.error("无权查看该消息");
+		 }
+		 //update-end---author:jeecg---for：【安全 GHSA-fp4f-qhf5-hqj8】校验消息归属---
 		 return Result.ok(model);
 	 }
 

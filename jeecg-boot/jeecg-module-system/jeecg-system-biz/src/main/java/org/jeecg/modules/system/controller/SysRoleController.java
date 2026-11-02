@@ -381,6 +381,7 @@ public class SysRoleController {
 	 * 导出excel
 	 * @param request
 	 */
+	@RequiresPermissions("system:role:exportXls")
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(SysRole sysRole,HttpServletRequest request) {
 		//------------------------------------------------------------------------------------------------
@@ -416,6 +417,7 @@ public class SysRoleController {
 	 * @param response
 	 * @return
 	 */
+	@RequiresPermissions("system:role:importExcel")
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

@@ -42,6 +42,7 @@
           <!-- 部门用户 -->
           <a-tab-pane key="2" tab="按部门" forceRender>
             <depart-user-list
+              :multi="multi"
               :searchText="searchText"
               :selectedIdList="selectedIdList"
               :excludeUserIdList="excludeUserIdList"
@@ -53,7 +54,7 @@
 
           <!-- 角色用户 -->
           <a-tab-pane key="3" tab="按角色" forceRender>
-            <role-user-list :excludeUserIdList="excludeUserIdList" :searchText="searchText" :selectedIdList="selectedIdList" @selected="onSelectUser" @unSelect="unSelectUser" />
+            <role-user-list :multi="multi" :excludeUserIdList="excludeUserIdList" :searchText="searchText" :selectedIdList="selectedIdList" @selected="onSelectUser" @unSelect="unSelectUser" />
           </a-tab-pane>
         </a-tabs>
       </div>

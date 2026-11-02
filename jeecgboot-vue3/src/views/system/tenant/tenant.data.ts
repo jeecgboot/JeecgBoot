@@ -277,7 +277,7 @@ export const packColumns: BasicColumn[] = [
   {
     title: '是否自动分配用户',
     dataIndex: 'izSysn',
-    width: 100,
+    width: 120,
     customRender: ( { text }) => {
       if(text === '1') {
         return '是';

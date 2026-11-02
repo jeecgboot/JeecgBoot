@@ -49,6 +49,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.jeecg.common.system.api.ISysBaseAPI;
+<#assign has_popup_dict=false>
+<#list originalColumns as po>
+<#if po.classType=='popup_dict'><#assign has_popup_dict=true></#if>
+</#list>
+<#list subTables as sub><#list sub.originalColumns as po>
+<#if po.classType=='popup_dict'><#assign has_popup_dict=true></#if>
+</#list></#list>
 <#assign has_multi_query_field=false>
 <#list originalColumns as po>
 <#if po.isQuery=='Y' && (po.classType=='list' || po.classType=='list_multi' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='popup_dict' || po.classType=='sel_user' || po.classType=='sel_depart')>
@@ -70,6 +78,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 @RequestMapping("/${entityPackagePath}/${entityName?uncap_first}")
 @Slf4j
 public class ${entityName}Controller {
+	<#if has_popup_dict>
+	@Autowired
+	private ISysBaseAPI sysBaseApi;
+	</#if>
 	@Autowired
 	private I${entityName}Service ${entityName?uncap_first}Service;
 	<#list subTables as sub>
@@ -291,6 +303,9 @@ public class ${entityName}Controller {
        }
        //Step.2 获取导出数据
        List<${entityName}> ${entityName?uncap_first}List = ${entityName?uncap_first}Service.list(queryWrapper);
+       <#list originalColumns as po><#if po.classType=='popup_dict'>
+       translatePopupDict(${entityName?uncap_first}List, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", false);
+       </#if></#list>
 
       // Step.3 组装pageList
       List<${entityName}Page> pageList = new ArrayList<${entityName}Page>();
@@ -299,6 +314,9 @@ public class ${entityName}Controller {
           BeanUtils.copyProperties(main, vo);
           <#list subTables as sub>
           List<${sub.entityName}> ${sub.entityName?uncap_first}List = ${sub.entityName?uncap_first}Service.selectByMainId(main.getId());
+          <#list sub.originalColumns as po><#if po.classType=='popup_dict'>
+          translatePopupDict(${sub.entityName?uncap_first}List, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", false);
+          </#if></#list>
           vo.set${sub.entityName}List(${sub.entityName?uncap_first}List);
           </#list>
           pageList.add(vo);
@@ -342,6 +360,20 @@ public class ${entityName}Controller {
           params.setNeedSave(true);
           try {
               List<${entityName}Page> list = ExcelImportUtil.importExcel(file.getInputStream(), ${entityName}Page.class, params);
+              <#list originalColumns as po><#if po.classType=='popup_dict'>
+              translatePopupDict(list, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", true);
+              </#if></#list>
+              <#list subTables as sub>
+              List<${sub.entityName}> ${sub.entityName?uncap_first}ImportList = new ArrayList<>();
+              for (${entityName}Page page : list) {
+                  if (page.get${sub.entityName}List() != null) {
+                      ${sub.entityName?uncap_first}ImportList.addAll(page.get${sub.entityName}List());
+                  }
+              }
+              <#list sub.originalColumns as po><#if po.classType=='popup_dict'>
+              translatePopupDict(${sub.entityName?uncap_first}ImportList, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", true);
+              </#if></#list>
+              </#list>
               for (${entityName}Page page : list) {
                   ${entityName} po = new ${entityName}();
                   BeanUtils.copyProperties(page, po);
@@ -362,4 +394,66 @@ public class ${entityName}Controller {
       return Result.OK("文件导入失败！");
     }
 
+<#if has_popup_dict>
+	/**
+	 * 翻译 Excel 导入、导出中的 Popup 字典值。
+	 */
+	private <T> void translatePopupDict(List<T> dataList, String fieldName,
+			String reportCode, String dictCode, String dictText, boolean strict) {
+		if (dataList == null || dataList.isEmpty()) {
+			return;
+		}
+		try {
+			java.util.LinkedHashSet<String> keys = new java.util.LinkedHashSet<>();
+			for (T item : dataList) {
+				Object value = cn.hutool.core.util.ReflectUtil.getFieldValue(item, fieldName);
+				if (value != null) {
+					Arrays.stream(value.toString().split(",")).filter(oConvertUtils::isNotEmpty).forEach(keys::add);
+				}
+			}
+			if (keys.isEmpty()) {
+				return;
+			}
+			List<org.jeecg.common.system.vo.DictModel> options = sysBaseApi.queryPopupDictItems(
+					reportCode, dictCode, dictText, strict ? "" : String.join(",", keys));
+			Map<String, String> textMap = new HashMap<>();
+			if (options != null) {
+				for (org.jeecg.common.system.vo.DictModel option : options) {
+					if (strict) {
+						if (keys.contains(option.getText())) {
+							textMap.putIfAbsent(option.getText(), option.getValue());
+						}
+						if (keys.contains(option.getValue())) {
+							textMap.putIfAbsent(option.getValue(), option.getValue());
+						}
+					} else {
+						textMap.put(option.getValue(), option.getText());
+					}
+				}
+			}
+			for (T item : dataList) {
+				Object value = cn.hutool.core.util.ReflectUtil.getFieldValue(item, fieldName);
+				if (value == null) {
+					continue;
+				}
+				String translated = Arrays.stream(value.toString().split(",")).map(key -> {
+					String text = textMap.get(key);
+					if (strict && text == null) {
+						throw new org.jeecg.common.exception.JeecgBootException(
+								"Popup字典值不存在，字段：" + fieldName + "，值：" + key);
+					}
+					return text == null ? key : text;
+				}).collect(Collectors.joining(","));
+				cn.hutool.core.util.ReflectUtil.setFieldValue(item, fieldName, translated);
+			}
+		} catch (org.jeecg.common.exception.JeecgBootException e) {
+			throw e;
+		} catch (Exception e) {
+			if (strict) {
+				throw new org.jeecg.common.exception.JeecgBootException("Popup字典导入翻译失败，字段：" + fieldName, e);
+			}
+			log.warn("Popup字典导出翻译失败，字段：{}", fieldName, e);
+		}
+	}
+</#if>
 }

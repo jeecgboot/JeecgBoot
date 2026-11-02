@@ -362,11 +362,6 @@
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-crypto</artifactId>
 		</dependency>
-		<!-- chatgpt -->
-		<dependency>
-			<groupId>org.jeecgframework.boot3</groupId>
-			<artifactId>jeecg-boot-starter-ai</artifactId>
-		</dependency>
         <!-- 腾讯云 -->
         <dependency>
             <groupId>com.tencentcloudapi</groupId>

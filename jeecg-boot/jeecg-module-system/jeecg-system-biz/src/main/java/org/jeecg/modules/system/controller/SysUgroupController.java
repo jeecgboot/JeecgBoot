@@ -58,11 +58,11 @@ public class SysUgroupController extends JeecgController<SysUgroup, ISysUgroupSe
 
 
         QueryWrapper<SysUgroup> queryWrapper = QueryGenerator.initQueryWrapper(sysUgroup, req.getParameterMap());
-		//update-begin---author:scott ---date:20261014  for：多租户模式下只查当前租户的用户组，防止跨租户读取-----------
+		//update-begin---author:scott ---date:20261014  for：【安全 GHSA-2h34-xh29-7w95】多租户模式下只查当前租户的用户组，防止跨租户读取-----------
 		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
 			queryWrapper.eq("tenant_id", oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(req), 0));
 		}
-		//update-end---author:scott ---date:20261014  for：多租户模式下只查当前租户的用户组，防止跨租户读取-----------
+		//update-end---author:scott ---date:20261014  for：【安全 GHSA-2h34-xh29-7w95】多租户模式下只查当前租户的用户组，防止跨租户读取-----------
 		Page<SysUgroup> page = new Page<SysUgroup>(pageNo, pageSize);
 		IPage<SysUgroup> pageList = sysUgroupService.page(page, queryWrapper);
 		return Result.OK(pageList);
@@ -150,11 +150,11 @@ public class SysUgroupController extends JeecgController<SysUgroup, ISysUgroupSe
 		if(sysUgroup==null) {
 			return Result.error("未找到对应数据");
 		}
-		//update-begin---author:scott ---date:20261014  for：多租户模式下只能查看当前租户的用户组，防止按id跨租户读取-----------
+		//update-begin---author:scott ---date:20261014  for：【安全 GHSA-2h34-xh29-7w95】多租户模式下只能查看当前租户的用户组，防止按id跨租户读取-----------
 		if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && !java.util.Objects.equals(oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(req), 0), sysUgroup.getTenantId())) {
 			return Result.error("未找到对应数据");
 		}
-		//update-end---author:scott ---date:20261014  for：多租户模式下只能查看当前租户的用户组，防止按id跨租户读取-----------
+		//update-end---author:scott ---date:20261014  for：【安全 GHSA-2h34-xh29-7w95】多租户模式下只能查看当前租户的用户组，防止按id跨租户读取-----------
 		return Result.OK(sysUgroup);
 	}
 

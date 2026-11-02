@@ -18,7 +18,7 @@ management:
 spring:
   flyway:
     # 是否启用flyway
-    enabled: true
+    enabled: false
     # 迁移sql脚本存放路径
     locations: classpath:flyway/sql/mysql
     # 是否关闭要清除已有库下的表功能,生产环境必须为true,否则会删库，非常重要！！！
@@ -184,13 +184,14 @@ jeecg:
   # AI集成
   ai-chat:
     enabled: true
-    model: deepseek-v4-pro
+    model: deepseek-v4-flash
     apiKey: ??
     apiHost: https://api.deepseek.com/v1
     timeout: 60
     skills-dir:
     skills-shell-dir:
     # AI聊天助手访问限流配置
+    # 单项为空或小于等于 0 时，不限制对应访问频次
     rate-limit:
       # 单 session 每分钟上限
       send-per-session-per-minute: 10
@@ -226,15 +227,24 @@ jeecg:
       voice: tongtong
       speed: 1.0
       volume: 0.0
-    # AI视频目前只支持智普 支持模型 cogvideox-3（支持自动生成语音）;viduq1-text、vidu2-reference(不支持自动生成语音，还贵)
+    # AI视频：支持 智普(ZHIPU) 和 MiniMax(MINIMAX)，二选一。切换时启用对应一段、注释另一段
+    # ===== 智普 ZHIPU（当前启用）=====
     ai-model-video:
       provider: ZHIPU
+      # 智普可选模型：cogvideox-3、cogvideox-2、viduq1-text、vidu2-reference
       model: cogvideox-3
       apiKey: sk-??
       apiHost: https://open.bigmodel.cn/api/paas/v4
       timeout: 60
       ffmpeg-path:
       edge-tts-path:
+    # ===== MiniMax MINIMAX（备用，启用时取消下面注释并注释掉上面智普那段）=====
+    #ai-model-video:
+    #  provider: MINIMAX
+    #  model: MiniMax-H3
+    #  apiKey: 填写MiniMax的apiKey
+    #  apiHost: https://api.minimax.cn
+    #  timeout: 60
     # 默认向量模型
     ai-model-embed:
       provider: QWEN
@@ -278,12 +288,17 @@ jeecg:
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   #签名拦截接口
   signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys,/sys/sendChangePwdSms,/sys/user/sendChangePhoneSms,/sys/sms,/desform/api/sendVerifyCode
+  # LibreOffice安装目录，非默认安装路径时按实际路径配置
+  libre-office-home:
   # 上传类型：local（本地存储）| minio（MinIO对象存储）| alioss（阿里云OSS）
   uploadType: local
   # 前端访问地址
   domainUrl:
     pc: http://localhost:3100
     app: http://localhost:8051
+    # 解决 Docker / K8s NodePort / 反向代理入站端口与监听端口不一致问题。
+    # 未配置时默认使用 CommonUtils.getBaseUrl(request)。
+    # back: http://127.0.0.1:8080/jeecg-boot
   path:
     #文件上传根目录 设置
     upload: /opt/upFiles

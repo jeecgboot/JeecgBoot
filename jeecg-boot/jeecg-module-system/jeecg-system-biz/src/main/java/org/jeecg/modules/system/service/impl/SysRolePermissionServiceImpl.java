@@ -3,19 +3,25 @@ package org.jeecg.modules.system.service.impl;
 import java.util.*;
 
 import org.jeecg.common.util.IpUtils;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysRolePermission;
+import org.jeecg.modules.system.entity.SysUserRole;
 import org.jeecg.modules.system.mapper.SysRolePermissionMapper;
+import org.jeecg.modules.system.mapper.SysUserRoleMapper;
 import org.jeecg.modules.system.service.ISysRolePermissionService;
+import org.jeecg.modules.system.util.ShiroAuthCacheUtil;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -27,6 +33,11 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 @Service
 public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionMapper, SysRolePermission> implements ISysRolePermissionService {
+
+	@Autowired
+	private SysUserRoleMapper sysUserRoleMapper;
+	@Autowired
+	private RedisUtil redisUtil;
 
 	@Override
 	public void saveRolePermission(String roleId, String permissionIds) {
@@ -52,6 +63,9 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 			}
 		}
 		this.saveBatch(list);
+		//update-begin---author:scott ---date:20261029  for：【LHZP-1129】角色授权后清理该角色下用户Shiro权限缓存，无需重新登录即生效-----------
+		clearRoleUserAuthCache(roleId);
+		//update-end---author:scott ---date:20261029  for：【LHZP-1129】角色授权后清理该角色下用户Shiro权限缓存，无需重新登录即生效-----------
 	}
 
 	@Override
@@ -85,6 +99,23 @@ public class SysRolePermissionServiceImpl extends ServiceImpl<SysRolePermissionM
 				this.remove(new QueryWrapper<SysRolePermission>().lambda().eq(SysRolePermission::getRoleId, roleId).eq(SysRolePermission::getPermissionId, permissionId));
 			}
 		}
+		//update-begin---author:scott ---date:20261029  for：【LHZP-1129】角色授权后清理该角色下用户Shiro权限缓存，无需重新登录即生效-----------
+		clearRoleUserAuthCache(roleId);
+		//update-end---author:scott ---date:20261029  for：【LHZP-1129】角色授权后清理该角色下用户Shiro权限缓存，无需重新登录即生效-----------
+	}
+
+	/**
+	 * 清理角色下所有用户的Shiro权限缓存
+	 * @param roleId 角色id
+	 * @author scott
+	 * @since 2026-10-29 【LHZP-1129】角色授权后清理该角色下用户权限缓存，无需重新登录即生效
+	 */
+	private void clearRoleUserAuthCache(String roleId) {
+		if (oConvertUtils.isEmpty(roleId)) {
+			return;
+		}
+		List<SysUserRole> userRoles = sysUserRoleMapper.selectList(new QueryWrapper<SysUserRole>().lambda().select(SysUserRole::getUserId).eq(SysUserRole::getRoleId, roleId));
+		ShiroAuthCacheUtil.clearUserAuthCache(redisUtil, userRoles.stream().map(SysUserRole::getUserId).collect(Collectors.toSet()));
 	}
 	
 	/**

@@ -44,7 +44,7 @@ public class ApiAuthFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        //update-begin---author:jeecg---for：OPTIONS 预检只应答 CORS，不得进入后续业务链路，否则可绕过签名/AK/授权校验---
+        //update-begin---author:jeecg---for：【GHSA-3c5r-mgw9-jq74】OPTIONS 预检只应答 CORS，不得进入后续业务链路，否则可绕过签名/AK/授权校验---
         // OPTIONS 预检请求：仅回写 CORS 响应头并结束，绝不放行到 filterChain（防止 OPTIONS 绕过 OpenApi 签名鉴权）
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             String origin = request.getHeader("Origin");
@@ -60,7 +60,7 @@ public class ApiAuthFilter implements Filter {
             response.setStatus(HttpServletResponse.SC_OK);
             return;
         }
-        //update-end---author:jeecg---for：OPTIONS 预检只应答 CORS，不得进入后续业务链路---
+        //update-end---author:jeecg---for：【GHSA-3c5r-mgw9-jq74】OPTIONS 预检只应答 CORS，不得进入后续业务链路---
 
         String ip = IpUtils.getIpAddr(request);
 
@@ -353,11 +353,11 @@ public class ApiAuthFilter implements Filter {
             throw new JeecgBootException("不存在认证信息");
         }
 
-        //update-begin---author:scott ---date:20261014  for：SK为空时签名退化为md5(appKey+timestamp)，知道AK即可伪造，空SK一律拒绝-----------
+        //update-begin---author:scott ---date:20261014  for：【GHSA-qv87-c4w6-699m/GHSA-5jhm-3x8j-wwhr】SK为空时签名退化为md5(appKey+timestamp)，知道AK即可伪造，空SK一律拒绝-----------
         if (!StringUtils.hasText(openApiAuth.getSk())) {
             throw new JeecgBootException("该凭据未配置SK，请在【OpenAPI-授权管理】重新生成AK/SK");
         }
-        //update-end---author:scott ---date:20261014  for：SK为空时签名退化为md5(appKey+timestamp)，知道AK即可伪造，空SK一律拒绝-----------
+        //update-end---author:scott ---date:20261014  for：【GHSA-qv87-c4w6-699m/GHSA-5jhm-3x8j-wwhr】SK为空时签名退化为md5(appKey+timestamp)，知道AK即可伪造，空SK一律拒绝-----------
 
         if(!appKey.equals(openApiAuth.getAk())){
             throw new JeecgBootException("appkey错误");

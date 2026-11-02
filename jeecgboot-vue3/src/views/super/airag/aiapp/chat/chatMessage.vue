@@ -1,5 +1,5 @@
 <template>
-  <div class="chat" :class="[inversion === 'user' ? 'self' : 'chatgpt']" v-if="getText || props.error || (props.presetQuestion && props.presetQuestion.length>0)">
+  <div class="chat" :class="[inversion === 'user' ? 'self' : 'chatgpt']" v-if="getText || hasFlowOutputSegments || (images && images.length > 0) || props.error || (props.presetQuestion && props.presetQuestion.length>0)">
     <div class="avatar" v-if="showAvatar !== 'no'">
       <img v-if="inversion === 'user'" :src="avatar()" />
       <img v-else :src="getAiImg()" />
@@ -9,11 +9,38 @@
         <span v-if="inversion === 'ai'" style="margin-right: 10px">{{appData.name || 'AI助手'}}</span>
         <span>{{ dateTime }}</span>
       </p>
-      <div v-if="inversion === 'user' && images && images.length>0" class="images">
+      <div v-if="images && images.length>0" class="images">
           <div v-for="(item,index) in images" :key="index" class="image" @click="handlePreview(item)">
             <img :src="getImageUrl(item)"/>
           </div>
       </div>     
+      <div v-if="hasFlowOutputSegments" class="flow-output-segments">
+        <div class="flow-image-actions">
+          <a-tooltip :title="flowCopied ? '已复制' : '复制 Markdown'">
+            <a-button type="text" size="small" :preIcon="flowCopied ? 'ant-design:check-outlined' : 'ant-design:copy-outlined'" @click="copyFlowMarkdown" />
+          </a-tooltip>
+          <a-button v-if="flowImageUrls.length > 1" size="small" preIcon="ant-design:download-outlined" @click="downloadAllFlowImages">全部下载</a-button>
+        </div>
+        <template v-for="(segment, index) in flowOutputSegments" :key="index">
+          <div v-if="segment.type === 'image'" class="flow-image-item">
+            <div class="image" @click="handleFlowPreview(segment.value)">
+              <img :src="getImageUrl(segment.value)" />
+            </div>
+            <a-button size="small" preIcon="ant-design:download-outlined" @click="downloadFlowImage(segment.value)">下载</a-button>
+          </div>
+          <chatText
+            v-else-if="segment.value"
+            :text="segment.value"
+            :inversion="inversion"
+            :error="error"
+            :errorMsg="errorMsg"
+            :currentToolTag="currentToolTag"
+            :loading="false"
+            :referenceKnowledge="[]"
+            :isLast="isLast"
+          />
+        </template>
+      </div>
       <div v-if="inversion === 'user' && files && files.length>0" class="file-list">
           <div v-for="(item,index) in files" :key="index" class="file-item" @click="handleFilePreview(item?.filePath || item)">
             <div class="file-icon">
@@ -45,14 +72,25 @@
           </a-col>
         </a-row>
       </div>
-      <div class="thinkArea" style="margin-bottom: 10px" v-if="!isCard && !isCardConfig && isThinkingEvent">
+      <div class="thinkArea" style="margin-bottom: 10px" v-if="!hasFlowOutputSegments && !isCard && !isCardConfig && isThinkingEvent">
         <a-collapse v-model:activeKey="activeKey" ghost>
           <a-collapse-panel :key="uuid" :header="loading?'正在思考中':'思考结束'">
             <ThinkText :text="thinkingText" :inversion="inversion" :error="error" :loading="loading"></ThinkText>
+            <!--update-begin---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用-->
+            <chatText
+              v-if="thinkingToolTags || (isLast && currentToolTag)"
+              :text="thinkingToolTags"
+              :inversion="inversion"
+              :currentToolTag="currentToolTag"
+              :loading="loading"
+              :isLast="isLast"
+              :hideCopyButton="true"
+            />
+            <!--update-end---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用-->
           </a-collapse-panel>
         </a-collapse>
       </div>
-      <div class="msgArea" v-else-if="!isCard && !isCardConfig" :class="showAvatar == 'no' ? 'hidden-avatar' : ''">
+      <div class="msgArea" v-else-if="!hasFlowOutputSegments && !isCard && !isCardConfig" :class="showAvatar == 'no' ? 'hidden-avatar' : ''">
         <chatText :text="text" :inversion="inversion" :error="error" :errorMsg="errorMsg" :currentToolTag="currentToolTag" :loading="loading" :referenceKnowledge="referenceKnowledge" :isLast="isLast"></chatText>
       </div>
       <div v-if="presetQuestion" v-for="item in presetQuestion" class="question" @click="presetQuestionClick(item.descr)">
@@ -76,13 +114,25 @@
   import CardTemplate from '/@/views/super/airag/aiapp/chat/components/CardTemplate.vue';
   import { useGlobSetting } from "@/hooks/setting";
   import {encryptByBase64} from "@/utils/cipher";
+  import { downloadByUrl } from '/@/utils/file/download';
+  import { copyTextToClipboard } from '/@/hooks/web/useCopyToClipboard';
 
   const { domainUrl, viewUrl } = useGlobSetting();
-  const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'loading','errorMsg', 'currentToolTag', 'appData','presetQuestion','images','retrievalText', 'referenceKnowledge', 'eventType', 'showAvatar',"files", 'isLast']);
+  //update-begin---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用---
+  const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'loading','errorMsg', 'currentToolTag', 'thinkingToolTags', 'appData','presetQuestion','images','retrievalText', 'referenceKnowledge', 'eventType', 'showAvatar',"files", 'isLast', 'flowOutputSegments']);
+  //update-end---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用---
 
   const uuid = ref<any>(buildUUID());
   const activeKey = ref<any>(uuid.value);
+  // update-begin--author:liaozhiyang---date:20260831---for:【LHZP-2020】新增图像生成节点（维护流程图文结果和复制状态）
+  const flowCopied = ref(false);
+  let flowCopyTimer: ReturnType<typeof setTimeout> | undefined;
   const isThinkingEvent = computed(() => props.eventType === 'thinking' || props.eventType === 'thinking_end');
+  const hasFlowOutputSegments = computed(() => Array.isArray(props.flowOutputSegments) && props.flowOutputSegments.length > 0);
+  const flowImageUrls = computed(() =>
+    (props.flowOutputSegments || []).filter((segment) => segment.type === 'image').map((segment) => getImageUrl(segment.value))
+  );
+  // update-end--author:liaozhiyang---date:20260831---for:【LHZP-2020】新增图像生成节点（维护流程图文结果和复制状态）
   const thinkingText = computed(() => {
     const text = props.text ?? '';
     // update-begin--author:wangshuai---date:20260813---for：【LHZP-1615】这种程序底层语言不应该不返回显示把？
@@ -172,10 +222,13 @@
    */
   function getImageUrl(item) {
     let url = item;
-    if(item.hasOwnProperty('url')){
+    if (typeof item === 'string' && /^(data:|blob:)/i.test(item)) {
+      return item;
+    }
+    if(item && typeof item === 'object' && item.hasOwnProperty('url')){
       url = item.url;
     }
-    if(item.hasOwnProperty('base64Data') && item.base64Data){
+    if(item && typeof item === 'object' && item.hasOwnProperty('base64Data') && item.base64Data){
       let mimeType = item.mimeType ? item.mimeType:'image/png';
       return "data:"+ mimeType +";base64,"+ item.base64Data;
     }
@@ -193,6 +246,35 @@
     let imageList = [getImageUrl(url)];
     createImgPreview({ imageList: imageList, defaultWidth: 700, rememberState: true, onImgLoad });
   }
+
+  // update-begin--author:liaozhiyang---date:20260831---for:【LHZP-2020】新增图像生成节点（支持图片整组预览、单张下载、全部下载和整体复制）
+  function handleFlowPreview(url) {
+    const imageUrl = getImageUrl(url);
+    createImgPreview({ imageList: flowImageUrls.value, index: Math.max(flowImageUrls.value.indexOf(imageUrl), 0), defaultWidth: 700, rememberState: true });
+  }
+
+  function downloadFlowImage(url) {
+    const imageUrl = getImageUrl(url);
+    downloadByUrl({ url: imageUrl, fileName: getImageDownloadName(imageUrl) });
+  }
+
+  function downloadAllFlowImages() {
+    flowImageUrls.value.forEach((url) => downloadByUrl({ url, fileName: getImageDownloadName(url) }));
+  }
+
+  function copyFlowMarkdown() {
+    copyTextToClipboard((props.flowOutputSegments || []).map((segment) => segment.value).join(''));
+    flowCopied.value = true;
+    clearTimeout(flowCopyTimer);
+    flowCopyTimer = setTimeout(() => {
+      flowCopied.value = false;
+    }, 1500);
+  }
+
+  function getImageDownloadName(url) {
+    return url.split('?')[0].split('/').pop() || '生成图片.png';
+  }
+  // update-end--author:liaozhiyang---date:20260831---for:【LHZP-2020】新增图像生成节点（支持图片整组预览、单张下载、全部下载和整体复制）
 
   /**
    * 获取卡片列表
@@ -365,6 +447,60 @@
     }
   }
 
+  .flow-output-segments {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+    width: fit-content;
+    max-width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #f4f6f8;
+
+    .flow-image-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 4px;
+      width: 100%;
+    }
+
+    .flow-image-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 180px;
+    }
+
+    .image {
+      width: 180px;
+      height: 180px;
+      cursor: pointer;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+    }
+
+    :deep(.textWrap) {
+      padding: 0;
+      background-color: transparent;
+    }
+
+    :deep(.textWrap .copyMarkdownBtn) {
+      display: none;
+    }
+
+    :deep(.textWrap .markdown-body) {
+      padding-right: 0;
+      background-color: transparent;
+    }
+  }
+
   /*begin文件列表的样式*/
   .file-list {
     margin-bottom: 10px;
@@ -411,6 +547,11 @@
     padding-bottom: 0.5rem;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
+  }
+  .retrieval {
+    display: inline-block;
+    width: fit-content;
+    max-width: 100%;
   }
   .retrieval:after{
     animation: ai-chat-cursor-blink 1s step-end infinite;

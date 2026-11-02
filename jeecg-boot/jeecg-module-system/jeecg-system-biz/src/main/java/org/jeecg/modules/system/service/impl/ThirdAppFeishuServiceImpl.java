@@ -30,6 +30,7 @@ import org.jeecg.modules.system.mapper.SysAnnouncementSendMapper;
 import org.jeecg.modules.system.mapper.SysThirdAppConfigMapper;
 import org.jeecg.modules.system.mapper.SysTenantMapper;
 import org.jeecg.modules.system.mapper.SysUserMapper;
+import org.jeecg.modules.system.mapper.SysUserTenantMapper;
 import org.jeecg.modules.system.model.ThirdLoginModel;
 import org.jeecg.modules.system.service.*;
 import org.jeecg.modules.system.vo.thirdapp.SyncInfoVo;
@@ -103,6 +104,8 @@ public class ThirdAppFeishuServiceImpl implements IThirdAppService {
     @Autowired(required = false)
     private JustAuthProperties justAuthProperties;
     //update-end---author:jeecg ---date:2026-05-18  for：【QQYUN-12767】飞书集成，注入justauth配置用于yml fallback-----------
+    @Autowired
+    private SysUserTenantMapper userTenantMapper;
 
     // ==================== IThirdAppService 接口实现 ====================
 
@@ -182,15 +185,22 @@ public class ThirdAppFeishuServiceImpl implements IThirdAppService {
                 query.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
                 query.eq(SysThirdAccount::getTenantId, tenantId);
                 query.eq(SysThirdAccount::getSysUserId, sysUser.getId());
-                SysThirdAccount thirdAccount = sysThirdAccountService.getOne(query);
+                //update-begin---author:liusq ---date:2026-10-19  for：【QQYUN-12767】存在重复的飞书第三方账号时不再抛 TooManyResultsException，取第一条发送-----------
+                SysThirdAccount thirdAccount = sysThirdAccountService.getOne(query, false);
+                //update-end---author:liusq ---date:2026-10-19  for：【QQYUN-12767】存在重复的飞书第三方账号时不再抛 TooManyResultsException，取第一条发送-----------
                 if (thirdAccount == null || StringUtils.isEmpty(thirdAccount.getThirdUserUuid())) {
                     log.warn("飞书消息发送：用户[{}]未绑定飞书账号", username);
                     allSuccess = false;
                     continue;
                 }
-                if (!doSendTextMessage(appToken, thirdAccount.getThirdUserUuid(), message.getContent())) {
+                //update-begin---author:scott ---date:2026-10-09  for：【敲敲云】简流 通知 对接飞书，Markdown 内容改发卡片消息，避免飞书里显示 Markdown 原文-----------
+                boolean sent = message.isMarkdown()
+                        ? doSendMarkdownCardMessage(appToken, thirdAccount.getThirdUserUuid(), message.getTitle(), message.getContent())
+                        : doSendTextMessage(appToken, thirdAccount.getThirdUserUuid(), message.getContent());
+                if (!sent) {
                     allSuccess = false;
                 }
+                //update-end---author:scott ---date:2026-10-09  for：【敲敲云】简流 通知 对接飞书，Markdown 内容改发卡片消息，避免飞书里显示 Markdown 原文-----------
             }
             return allSuccess;
         } catch (Exception e) {
@@ -674,100 +684,119 @@ public class ThirdAppFeishuServiceImpl implements IThirdAppService {
                     }
                     //update-end---author:liusq ---date:2026-06-02  for：【QQYUN-12767】手机号为空时打印warn，引导用户检查飞书应用权限
 
-                    LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
-                    query.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
-                    query.eq(SysThirdAccount::getTenantId, tenantId);
-                    query.and(w -> w.eq(SysThirdAccount::getThirdUserUuid, openId)
-                            .or().eq(SysThirdAccount::getThirdUserId, openId));
-                    SysThirdAccount thirdAccount = sysThirdAccountService.getOne(query);
-
-                    //update-begin---author:jeecg ---date:2026-05-15  for：【QQYUN-12767】飞书集成，已绑定用户执行信息更新（姓名/手机/邮箱/头像），修复同步时已存在用户被跳过不更新的问题-----------
-                    if (thirdAccount != null && StringUtils.isNotEmpty(thirdAccount.getSysUserId())) {
-                        // 已有绑定关系，更新用户基本信息
-                        SysUser existUser = sysUserService.getById(thirdAccount.getSysUserId());
-                        if (existUser != null) {
-                            existUser.setRealname(name);
-                            if (StringUtils.isNotEmpty(email)) {
-                                existUser.setEmail(email);
-                            }
-                            if (StringUtils.isNotEmpty(mobile)) {
-                                existUser.setPhone(mobile.replaceAll("^\\+86\\s*", "").trim());
-                            }
-                            if (StringUtils.isNotEmpty(avatarUrl)) {
-                                existUser.setAvatar(avatarUrl);
-                            }
-                            sysUserService.updateById(existUser);
+                    //update-begin---author:liusq ---date:2026-10-18  for：【QQYUN-12767】飞书同步单个用户异常时记录失败信息并继续，避免一条脏数据中断整次同步-----------
+                    try {
+                        LambdaQueryWrapper<SysThirdAccount> query = new LambdaQueryWrapper<>();
+                        query.eq(SysThirdAccount::getThirdType, THIRD_TYPE);
+                        query.eq(SysThirdAccount::getTenantId, tenantId);
+                        query.and(w -> w.eq(SysThirdAccount::getThirdUserUuid, openId)
+                                .or().eq(SysThirdAccount::getThirdUserId, openId));
+                        //update-begin---author:liusq ---date:2026-10-18  for：【QQYUN-12767】存在重复的飞书第三方账号时不再抛 TooManyResultsException，优先取已绑定系统用户的记录-----------
+                        List<SysThirdAccount> thirdAccounts = sysThirdAccountService.list(query);
+                        if (thirdAccounts.size() > 1) {
+                            log.warn("飞书用户[{}]存在 {} 条重复的第三方账号记录，请清理 sys_third_account 重复数据，openId={}", name, thirdAccounts.size(), openId);
                         }
-                        syncInfo.addSuccessInfo("更新已存在用户：" + name);
-                        if (localDepart != null) {
-                            linkUserToDepart(openId, tenantId, localDepart.getId());
-                        }
-                        continue;
-                    }
-                    //update-end---author:jeecg ---date:2026-05-15  for：【QQYUN-12767】飞书集成，已绑定用户执行信息更新（姓名/手机/邮箱/头像），修复同步时已存在用户被跳过不更新的问题-----------
+                        SysThirdAccount thirdAccount = thirdAccounts.stream()
+                                .filter(a -> StringUtils.isNotEmpty(a.getSysUserId()))
+                                .findFirst()
+                                .orElse(thirdAccounts.isEmpty() ? null : thirdAccounts.get(0));
+                        //update-end---author:liusq ---date:2026-10-18  for：【QQYUN-12767】存在重复的飞书第三方账号时不再抛 TooManyResultsException，优先取已绑定系统用户的记录-----------
 
-                    //update-begin---author:jeecg ---date:2026-08-04  for：【QQYUN-12767】飞书同步按手机号查重：手机号已存在的本地用户直接绑定，不新增用户-----------
-                    // 兜底逻辑：未通过 thirdUserUuid/thirdUserId 找到绑定记录时，先按手机号匹配本地用户
-                    // 命中则直接将飞书 openId 绑定到该现有用户，避免重复创建账号（对齐钉钉 addDepartUser 行为）
-                    String strippedMobile = StringUtils.isNotEmpty(mobile) ? mobile.replaceAll("^\\+86\\s*", "").trim() : null;
-                    SysUser userByPhone = StringUtils.isNotEmpty(strippedMobile) ? userMapper.getUserByPhone(strippedMobile) : null;
-                    if (userByPhone != null) {
-                        try {
-                            // 1. 用飞书最新信息更新本地已有用户（仅更新邮箱/头像；姓名由业务自行维护，飞书姓名可能与系统姓名不一致，不覆盖）
-                            boolean userChanged = false;
-                            if (StringUtils.isNotEmpty(email) && !email.equals(userByPhone.getEmail())) {
-                                userByPhone.setEmail(email);
-                                userChanged = true;
-                            }
-                            if (StringUtils.isNotEmpty(avatarUrl) && !avatarUrl.equals(userByPhone.getAvatar())) {
-                                userByPhone.setAvatar(avatarUrl);
-                                userChanged = true;
-                            }
-                            if (userChanged) {
-                                sysUserService.updateById(userByPhone);
-                            }
-                            // 2. 复用或创建第三方账号记录，并将 sysUserId 绑定到该现有用户
-                            SysThirdAccount accountToBind;
-                            if (thirdAccount == null) {
-                                ThirdLoginModel tlm = new ThirdLoginModel(THIRD_TYPE, openId, name, avatarUrl);
-                                accountToBind = sysThirdAccountService.saveThirdUser(tlm, tenantId);
-                            } else {
-                                accountToBind = thirdAccount;
-                                accountToBind.setThirdUserUuid(openId);
-                                accountToBind.setThirdUserId(openId);
-                                accountToBind.setRealname(name);
-                                if (StringUtils.isNotEmpty(avatarUrl)) {
-                                    accountToBind.setAvatar(avatarUrl);
+                        //update-begin---author:jeecg ---date:2026-05-15  for：【QQYUN-12767】飞书集成，已绑定用户执行信息更新（姓名/手机/邮箱/头像），修复同步时已存在用户被跳过不更新的问题-----------
+                        if (thirdAccount != null && StringUtils.isNotEmpty(thirdAccount.getSysUserId())) {
+                            // 已有绑定关系，更新用户基本信息
+                            SysUser existUser = sysUserService.getById(thirdAccount.getSysUserId());
+                            if (existUser != null) {
+                                existUser.setRealname(name);
+                                if (StringUtils.isNotEmpty(email)) {
+                                    existUser.setEmail(email);
                                 }
-                                sysThirdAccountService.updateById(accountToBind);
+                                if (StringUtils.isNotEmpty(mobile)) {
+                                    existUser.setPhone(mobile.replaceAll("^\\+86\\s*", "").trim());
+                                }
+                                if (StringUtils.isNotEmpty(avatarUrl)) {
+                                    existUser.setAvatar(avatarUrl);
+                                }
+                                sysUserService.updateById(existUser);
+                                //update-begin---author:liusq ---date:2026-10-19  for：【QQYUN-12767】飞书同步用户未关联当前租户，补齐历史同步缺失的租户关系-----------
+                                createUserTenant(existUser.getId(), false, tenantId);
+                                //update-end---author:liusq ---date:2026-10-19  for：【QQYUN-12767】飞书同步用户未关联当前租户，补齐历史同步缺失的租户关系-----------
                             }
-                            if (StringUtils.isEmpty(accountToBind.getSysUserId())
-                                    || !accountToBind.getSysUserId().equals(userByPhone.getId())) {
-                                accountToBind.setSysUserId(userByPhone.getId());
-                                sysThirdAccountService.updateById(accountToBind);
-                            }
-                            // 3. 关联部门
+                            syncInfo.addSuccessInfo("更新已存在用户：" + name);
                             if (localDepart != null) {
                                 linkUserToDepart(openId, tenantId, localDepart.getId());
                             }
-                            syncInfo.addSuccessInfo("按手机号绑定已有用户：" + name + "（" + strippedMobile + "）");
-                            log.info("飞书同步按手机号绑定已有用户：openId={}, phone={}, sysUserId={}",
-                                    openId, strippedMobile, userByPhone.getId());
-                        } catch (Exception e) {
-                            log.error("飞书同步按手机号绑定用户异常，name={}", name, e);
-                            syncInfo.addFailInfo("按手机号绑定用户[" + name + "]异常：" + e.getMessage());
+                            continue;
                         }
-                        continue;
-                    }
-                    //update-end---author:jeecg ---date:2026-08-04  for：【QQYUN-12767】飞书同步按手机号查重：手机号已存在的本地用户直接绑定，不新增用户-----------
+                        //update-end---author:jeecg ---date:2026-05-15  for：【QQYUN-12767】飞书集成，已绑定用户执行信息更新（姓名/手机/邮箱/头像），修复同步时已存在用户被跳过不更新的问题-----------
 
-                    try {
+                        //update-begin---author:jeecg ---date:2026-08-04  for：【QQYUN-12767】飞书同步按手机号查重：手机号已存在的本地用户直接绑定，不新增用户-----------
+                        // 兜底逻辑：未通过 thirdUserUuid/thirdUserId 找到绑定记录时，先按手机号匹配本地用户
+                        // 命中则直接将飞书 openId 绑定到该现有用户，避免重复创建账号（对齐钉钉 addDepartUser 行为）
+                        String strippedMobile = StringUtils.isNotEmpty(mobile) ? mobile.replaceAll("^\\+86\\s*", "").trim() : null;
+                        SysUser userByPhone = StringUtils.isNotEmpty(strippedMobile) ? userMapper.getUserByPhone(strippedMobile) : null;
+                        if (userByPhone != null) {
+                            try {
+                                // 1. 用飞书最新信息更新本地已有用户（仅更新邮箱/头像；姓名由业务自行维护，飞书姓名可能与系统姓名不一致，不覆盖）
+                                boolean userChanged = false;
+                                if (StringUtils.isNotEmpty(email) && !email.equals(userByPhone.getEmail())) {
+                                    userByPhone.setEmail(email);
+                                    userChanged = true;
+                                }
+                                if (StringUtils.isNotEmpty(avatarUrl) && !avatarUrl.equals(userByPhone.getAvatar())) {
+                                    userByPhone.setAvatar(avatarUrl);
+                                    userChanged = true;
+                                }
+                                if (userChanged) {
+                                    sysUserService.updateById(userByPhone);
+                                }
+                                // 2. 复用或创建第三方账号记录，并将 sysUserId 绑定到该现有用户
+                                SysThirdAccount accountToBind;
+                                if (thirdAccount == null) {
+                                    ThirdLoginModel tlm = new ThirdLoginModel(THIRD_TYPE, openId, name, avatarUrl);
+                                    accountToBind = sysThirdAccountService.saveThirdUser(tlm, tenantId);
+                                } else {
+                                    accountToBind = thirdAccount;
+                                    accountToBind.setThirdUserUuid(openId);
+                                    accountToBind.setThirdUserId(openId);
+                                    accountToBind.setRealname(name);
+                                    if (StringUtils.isNotEmpty(avatarUrl)) {
+                                        accountToBind.setAvatar(avatarUrl);
+                                    }
+                                    sysThirdAccountService.updateById(accountToBind);
+                                }
+                                if (StringUtils.isEmpty(accountToBind.getSysUserId())
+                                        || !accountToBind.getSysUserId().equals(userByPhone.getId())) {
+                                    accountToBind.setSysUserId(userByPhone.getId());
+                                    sysThirdAccountService.updateById(accountToBind);
+                                }
+                                //update-begin---author:jeecg ---date:2026-10-19  for：【QQYUN-12767】飞书同步用户未关联当前租户，按手机号匹配的已有用户加入租户（审核中，对齐钉钉）-----------
+                                createUserTenant(userByPhone.getId(), true, tenantId);
+                                //update-end---author:jeecg ---date:2026-10-19  for：【QQYUN-12767】飞书同步用户未关联当前租户，按手机号匹配的已有用户加入租户（审核中，对齐钉钉）-----------
+                                // 3. 关联部门
+                                if (localDepart != null) {
+                                    linkUserToDepart(openId, tenantId, localDepart.getId());
+                                }
+                                syncInfo.addSuccessInfo("按手机号绑定已有用户：" + name + "（" + strippedMobile + "）");
+                                log.info("飞书同步按手机号绑定已有用户：openId={}, phone={}, sysUserId={}",
+                                        openId, strippedMobile, userByPhone.getId());
+                            } catch (Exception e) {
+                                log.error("飞书同步按手机号绑定用户异常，name={}", name, e);
+                                syncInfo.addFailInfo("按手机号绑定用户[" + name + "]异常：" + e.getMessage());
+                            }
+                            continue;
+                        }
+                        //update-end---author:jeecg ---date:2026-08-04  for：【QQYUN-12767】飞书同步按手机号查重：手机号已存在的本地用户直接绑定，不新增用户-----------
+
                         SysUser newUser = createLocalUser(name, email, mobile, openId, unionId, avatarUrl, tenantId);
                         if (newUser != null) {
                             ThirdLoginModel tlm = new ThirdLoginModel(THIRD_TYPE, openId, name, avatarUrl);
                             SysThirdAccount saved = sysThirdAccountService.saveThirdUser(tlm, tenantId);
                             saved.setSysUserId(newUser.getId());
                             sysThirdAccountService.updateById(saved);
+                            //update-begin---author:liusq ---date:2026-10-19  for：【QQYUN-12767】飞书同步用户未关联当前租户，新建用户加入当前租户-----------
+                            createUserTenant(newUser.getId(), false, tenantId);
+                            //update-end---author:liusq ---date:2026-10-19  for：【QQYUN-12767】飞书同步用户未关联当前租户，新建用户加入当前租户-----------
                             if (localDepart != null) {
                                 SysUserDepart userDepart = new SysUserDepart(newUser.getId(), localDepart.getId());
                                 sysUserDepartService.save(userDepart);
@@ -778,9 +807,10 @@ public class ThirdAppFeishuServiceImpl implements IThirdAppService {
                             syncInfo.addFailInfo("创建用户失败：" + name);
                         }
                     } catch (Exception e) {
-                        log.error("飞书用户同步异常，name={}", name, e);
+                        log.error("飞书用户同步异常，name={}, openId={}", name, openId, e);
                         syncInfo.addFailInfo("同步用户[" + name + "]异常：" + e.getMessage());
                     }
+                    //update-end---author:liusq ---date:2026-10-19  for：【QQYUN-12767】飞书同步单个用户异常时记录失败信息并继续，避免一条脏数据中断整次同步-----------
                 }
             }
             boolean hasMore = Boolean.TRUE.equals(data.getBoolean("has_more"));
@@ -882,6 +912,30 @@ public class ThirdAppFeishuServiceImpl implements IThirdAppService {
         }
     }
 
+    //update-begin---author:jeecg ---date:2026-10-16  for：【QQYUN-12767】飞书同步用户未关联当前租户，补充写入 sys_user_tenant-----------
+    /**
+     * 将用户加入租户（sys_user_tenant），已存在关系则跳过；未开启多租户时不处理。
+     * <p>对齐钉钉 / 企业微信同步中的 createUserTenant 逻辑。</p>
+     *
+     * @param userId      系统用户 ID
+     * @param underReview true=审核中（按手机号匹配到的已有用户，需租户管理员审核，对齐钉钉）；false=正常
+     * @param tenantId    租户 ID
+     */
+    private void createUserTenant(String userId, boolean underReview, Integer tenantId) {
+        if (!MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL || StringUtils.isEmpty(userId)) {
+            return;
+        }
+        Integer count = userTenantMapper.userTenantIzExist(userId, tenantId);
+        if (count == null || count == 0) {
+            SysUserTenant userTenant = new SysUserTenant();
+            userTenant.setTenantId(tenantId);
+            userTenant.setUserId(userId);
+            userTenant.setStatus(underReview ? CommonConstant.USER_TENANT_UNDER_REVIEW : CommonConstant.USER_TENANT_NORMAL);
+            userTenantMapper.insert(userTenant);
+        }
+    }
+    //update-end---author:jeecg ---date:2026-10-16  for：【QQYUN-12767】飞书同步用户未关联当前租户，补充写入 sys_user_tenant-----------
+
     private SysUser createLocalUser(String name, String email, String mobile,
                                      String openId, String unionId, String avatar, Integer tenantId) {
         String username = "feishu_" + (openId.length() > 8 ? openId.substring(openId.length() - 8) : openId);
@@ -901,6 +955,7 @@ public class ThirdAppFeishuServiceImpl implements IThirdAppService {
         user.setStatus(1);
         user.setDelFlag(0);
         user.setActivitiSync(1);
+        user.setSort(CommonConstant.DEFAULT_USER_SORT);
         try {
             sysUserService.addUserWithRole(user, "");
             return user;
@@ -1140,6 +1195,47 @@ public class ThirdAppFeishuServiceImpl implements IThirdAppService {
         log.error("飞书消息发送失败: openId={}, result={}", openId, result);
         return false;
     }
+
+    //update-begin---author:scott ---date:2026-10-09  for：【敲敲云】简流 通知 对接飞书，Markdown 内容改发卡片消息，避免飞书里显示 Markdown 原文-----------
+    /**
+     * 单发 Markdown 卡片消息（msg_type=interactive，卡片内 markdown 组件渲染内容）
+     *
+     * @param title 卡片标题，为空时不显示标题栏
+     */
+    private boolean doSendMarkdownCardMessage(String appToken, String openId, String title, String content) {
+        String url = SEND_MSG_URL + "?receive_id_type=open_id";
+        JSONObject card = new JSONObject();
+        JSONObject cardConfig = new JSONObject();
+        cardConfig.put("wide_screen_mode", true);
+        card.put("config", cardConfig);
+        if (StringUtils.isNotEmpty(title)) {
+            JSONObject titleObj = new JSONObject();
+            titleObj.put("tag", "plain_text");
+            titleObj.put("content", title);
+            JSONObject header = new JSONObject();
+            header.put("title", titleObj);
+            header.put("template", "blue");
+            card.put("header", header);
+        }
+        JSONObject markdown = new JSONObject();
+        markdown.put("tag", "markdown");
+        markdown.put("content", content);
+        JSONArray elements = new JSONArray();
+        elements.add(markdown);
+        card.put("elements", elements);
+        JSONObject body = new JSONObject();
+        body.put("receive_id", openId);
+        body.put("msg_type", "interactive");
+        body.put("content", card.toJSONString());
+        JSONObject result = doPost(url, appToken, body.toJSONString());
+        if (result != null && result.getIntValue("code") == 0) {
+            log.info("飞书卡片消息发送成功: openId={}", openId);
+            return true;
+        }
+        log.error("飞书卡片消息发送失败: openId={}, result={}", openId, result);
+        return false;
+    }
+    //update-end---author:scott ---date:2026-10-09  for：【敲敲云】简流 通知 对接飞书，Markdown 内容改发卡片消息，避免飞书里显示 Markdown 原文-----------
 
     // ==================== HTTP 工具方法（供同步/消息使用）====================
 

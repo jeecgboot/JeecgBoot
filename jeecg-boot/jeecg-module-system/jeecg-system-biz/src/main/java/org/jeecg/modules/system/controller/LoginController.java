@@ -795,7 +795,9 @@ public class LoginController {
 	@Operation(summary = "登录二维码")
 	@GetMapping("/getLoginQrcode")
 	public Result<?>  getLoginQrcode() {
-		String qrcodeId = CommonConstant.LOGIN_QRCODE_PRE+IdWorker.getIdStr();
+		//update-begin---author:jeecg---for：【GHSA-gm36-7vvp-c5jh】qrcodeId 改用不可预测的随机串（原雪花ID可被枚举窃取他人token）---
+		String qrcodeId = CommonConstant.LOGIN_QRCODE_PRE + java.util.UUID.randomUUID().toString().replace("-", "");
+		//update-end---author:jeecg---for：【GHSA-gm36-7vvp-c5jh】qrcodeId 改用不可预测的随机串---
 		//定义二维码参数
 		Map params = new HashMap(5);
 		params.put("qrcodeId", qrcodeId);
@@ -835,6 +837,10 @@ public class LoginController {
 			return Result.OK(result);
 		}
 		if (oConvertUtils.isNotEmpty(token)) {
+			//update-begin---author:jeecg---for：【GHSA-gm36-7vvp-c5jh】token 一次性读取，读到即删，防止被重复轮询窃取---
+			redisUtil.del(CommonConstant.LOGIN_QRCODE_TOKEN + qrcodeId);
+			redisUtil.del(CommonConstant.LOGIN_QRCODE + qrcodeId);
+			//update-end---author:jeecg---for：【GHSA-gm36-7vvp-c5jh】token 一次性读取---
 			result.put("success", true);
 			result.put("token", token);
 		} else {

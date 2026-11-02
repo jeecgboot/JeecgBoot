@@ -12,9 +12,9 @@
     <BasicTable @register="registerTable" :rowSelection="rowSelection" :searchInfo="searchInfo">
       <!--插槽:table标题-->
        <template #tableTitle>
-           <a-button type="primary" @click="handleCreate" preIcon="ant-design:plus-outlined" v-if="mainId!=''"> 新增</a-button>
-           <a-button  type="primary" preIcon="ant-design:export-outlined" @click="onExportXls" v-if="mainId!=''"> 导出</a-button>
-           <j-upload-button  type="primary" preIcon="ant-design:import-outlined" @click="onImportXls" v-if="mainId!=''">导入</j-upload-button>
+           <a-button type="primary" v-auth="'${entityPackage}:${tableName}:add'" @click="handleCreate" preIcon="ant-design:plus-outlined" v-if="mainId!=''"> 新增</a-button>
+           <a-button  type="primary" v-auth="'${entityPackage}:${tableName}:exportXls'" preIcon="ant-design:export-outlined" @click="onExportXls" v-if="mainId!=''"> 导出</a-button>
+           <j-upload-button  type="primary" v-auth="'${entityPackage}:${tableName}:importExcel'" preIcon="ant-design:import-outlined" @click="onImportXls" v-if="mainId!=''">导入</j-upload-button>
            <a-dropdown v-if="selectedRowKeys.length > 0">
                <template #overlay>
                  <a-menu>
@@ -24,7 +24,7 @@
                    </a-menu-item>
                  </a-menu>
                </template>
-               <a-button>批量操作
+               <a-button v-auth="'${entityPackage}:${tableName}:deleteBatch'">批量操作
                  <Icon icon="mdi:chevron-down"></Icon>
                </a-button>
          </a-dropdown>
@@ -208,6 +208,7 @@
             {
                 label: '编辑',
                 onClick: handleEdit.bind(null, record),
+                auth: '${entityPackage}:${tableName}:edit',
             }, {
                 label: '删除',
                 popConfirm: {
@@ -215,6 +216,7 @@
                     confirm: handleDelete.bind(null, record),
                     placement: 'topLeft',
                 },
+                auth: '${entityPackage}:${tableName}:delete',
             }
         ]
     }

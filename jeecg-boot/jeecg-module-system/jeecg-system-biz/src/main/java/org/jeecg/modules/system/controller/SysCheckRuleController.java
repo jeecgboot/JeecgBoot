@@ -177,6 +177,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @param request
      * @param sysCheckRule
      */
+    @RequiresPermissions("system:checkRule:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, SysCheckRule sysCheckRule) {
         return super.exportXls(request, sysCheckRule, SysCheckRule.class, "编码校验规则");
@@ -189,6 +190,7 @@ public class SysCheckRuleController extends JeecgController<SysCheckRule, ISysCh
      * @param response
      * @return
      */
+    @RequiresPermissions("system:checkRule:add")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result importExcel(HttpServletRequest request, HttpServletResponse response) {
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

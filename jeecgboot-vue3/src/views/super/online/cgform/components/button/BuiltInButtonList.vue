@@ -98,6 +98,11 @@ const schemas = [
     return {
       ...schema,
       ifShow: () => true,
+      componentProps: ({formModel}) => ({
+        clearSelect: true,
+        iconPrefixSave: false,
+        iconPrefix: formModel.buttonCode === 'aigc_mock_data' ? 'mdi' : 'ant-design',
+      }),
       // 以下按钮不允许设置图标
       dynamicDisabled: ({values}) => ['bpm', 'edit', 'detail', 'delete'].includes(values.buttonCode),
     }

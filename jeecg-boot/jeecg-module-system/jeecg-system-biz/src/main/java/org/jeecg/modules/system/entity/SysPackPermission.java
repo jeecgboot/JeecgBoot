@@ -40,6 +40,9 @@ public class SysPackPermission implements Serializable {
 	@Excel(name = "菜单id", width = 15)
     @Schema(description = "菜单id")
     private String permissionId;
+	/**数据权限ids（【issues/9820】租户套餐包菜单支持分配数据规则）*/
+    @Schema(description = "数据权限ids")
+    private String dataRuleIds;
 	/**创建人*/
     @Schema(description = "创建人")
     private String createBy;

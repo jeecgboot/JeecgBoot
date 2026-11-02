@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
@@ -126,6 +127,7 @@ public class SysCategoryController {
 	 * @param sysCategory
 	 * @return
 	 */
+	@RequiresPermissions("system:category:add")
 	@PostMapping(value = "/add")
 	public Result<SysCategory> add(@RequestBody SysCategory sysCategory) {
 		Result<SysCategory> result = new Result<SysCategory>();
@@ -144,6 +146,7 @@ public class SysCategoryController {
 	 * @param sysCategory
 	 * @return
 	 */
+	@RequiresPermissions("system:category:edit")
 	@RequestMapping(value = "/edit", method = { RequestMethod.PUT,RequestMethod.POST })
 	public Result<SysCategory> edit(@RequestBody SysCategory sysCategory) {
 		Result<SysCategory> result = new Result<SysCategory>();
@@ -162,6 +165,7 @@ public class SysCategoryController {
 	 * @param id
 	 * @return
 	 */
+	@RequiresPermissions("system:category:delete")
 	@DeleteMapping(value = "/delete")
 	public Result<SysCategory> delete(@RequestParam(name="id",required=true) String id) {
 		Result<SysCategory> result = new Result<SysCategory>();
@@ -181,6 +185,7 @@ public class SysCategoryController {
 	 * @param ids
 	 * @return
 	 */
+	@RequiresPermissions("system:category:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<SysCategory> deleteBatch(@RequestParam(name="ids",required=true) String ids) {
 		Result<SysCategory> result = new Result<SysCategory>();
@@ -216,6 +221,7 @@ public class SysCategoryController {
    *
    * @param request
    */
+  @RequiresPermissions("system:category:exportXls")
   @RequestMapping(value = "/exportXls")
   public ModelAndView exportXls(HttpServletRequest request, SysCategory sysCategory) {
 	  //------------------------------------------------------------------------------------------------
@@ -262,6 +268,7 @@ public class SysCategoryController {
    * @param response
    * @return
    */
+  @RequiresPermissions("system:category:importExcel")
   @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
   public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) throws IOException{
       MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

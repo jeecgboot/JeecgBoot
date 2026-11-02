@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import org.jeecg.common.aspect.annotation.Dict;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
@@ -30,7 +31,8 @@ public class AnnouncementSendModel implements Serializable {
 	private java.lang.String titile;
 	/**内容*/
 	private java.lang.String msgContent;
-	/**发布人*/
+	/**发布人（账号翻译为姓名，非账号的值如 system、流程通知 原样返回）*/
+	@Dict(dictTable = "sys_user",dicCode = "username",dicText = "realname")
 	private java.lang.String sender;
 	/**优先级（L低，M中，H高）*/
 	private java.lang.String priority;

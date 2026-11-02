@@ -3,6 +3,8 @@ package org.jeecg.modules.system.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.jeecg.modules.system.entity.SysRoleIndex;
 
+import java.util.List;
+
 /**
  * @Description: 角色首页配置
  * @Author: jeecg-boot
@@ -54,4 +56,11 @@ public interface ISysRoleIndexService extends IService<SysRoleIndex> {
      * @param id
      */
     void updateOtherDefaultStatus(String roleCode, String status, String id);
+
+    /**
+     * 翻译关联的用户/角色名称，写入relationName（roleCode保持原编码不变）
+     *
+     * @param records 首页配置列表
+     */
+    void fillRelationName(List<SysRoleIndex> records);
 }

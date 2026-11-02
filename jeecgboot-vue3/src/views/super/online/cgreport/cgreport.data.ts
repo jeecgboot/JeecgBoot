@@ -322,6 +322,7 @@ export const onlCgreportItemColumns: JVxeColumn[] = [
     key: 'dictCode',
     type: JVxeTypes.input,
     width: '120px',
+    titleSuffix: { content: '填写字典编码，或SQL：SELECT 字段 AS value, 字段 AS text FROM 表。人大金仓、PostgreSQL 下 text 是关键字，别名必须写 AS' },
     placeholder: '请输入${title}',
     defaultValue: '',
   },

@@ -36,7 +36,8 @@
                 :inversion="item.inversion || item.role"
                 :error="item.error"
                 :errorMsg="item.errorMsg"
-                :currentToolTag="currentToolTag"
+                :currentToolTag="item.currentToolTag || currentToolTag"
+                :thinkingToolTags="item.thinkingToolTags"
                 :loading="item.loading"
                 :appData="appData"
                 :presetQuestion="item.presetQuestion"
@@ -45,6 +46,7 @@
                 :retrievalText="item.retrievalText"
                 :referenceKnowledge="item.referenceKnowledge"
                 :eventType="item.eventType"
+                :flowOutputSegments="item.flowOutputSegments"
                 :showAvatar="item.showAvatar"
                 :isLast="index === chatData.length -1"
                 @send="handleOutQuestion"
@@ -325,6 +327,7 @@
   import { useGlobSetting } from "@/hooks/setting";
   import { Icon } from '/@/components/Icon';
   import { getChatErrorMessage } from './chatError';
+  import { buildFlowOutputSegments } from '@jeecg/aiflow';
 
   message.config({
     prefixCls: 'ai-chat-message',
@@ -332,7 +335,8 @@
 
   const props = defineProps(['uuid', 'prologue', 'formState', 'url', 'type','historyData','chatTitle','presetQuestion','quickCommandData','showAdvertising','hasExtraFlowInputs','conversationSettings','sessionType']);
   const emit = defineEmits(['save','reload-message-title','edit-settings']);
-  const { scrollRef, scrollToBottom } = useScroll();
+  //【LHZP-1351】AI生成过程中用户向上滚动时不再强制滚动到底部
+  const { scrollRef, scrollToBottom, scrollToBottomIfAuto } = useScroll();
   const prompt = ref<string>('');
   const loading = ref<boolean>(false);
   const inputRef = ref<Ref | null>(null);
@@ -406,6 +410,12 @@
 
   // 当前正在调用的工具
   const currentToolTag = ref<string>('');
+  //update-begin---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考中的工具名称翻译为流程名并显示工具调用---
+  // 当前一轮思考中已识别的工具展示名称
+  const thinkingToolDisplayNames = new Map<string, string>();
+  // 当前一轮思考消息位置
+  const activeThinkingIndex = ref<number>(-1);
+  //update-end---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考中的工具名称翻译为流程名并显示工具调用---
 
   function handleEnter(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -502,7 +512,7 @@
       data.showAvatar = lastChatData.showAvatar;
     }
     chatData.value.splice(index, 1, data);
-    await scrollToBottom();
+    await scrollToBottomIfAuto();
   };
   /**
    * 顶置开场白
@@ -544,7 +554,7 @@
       requestOptions: null,
       eventType: "message",
     });
-    scrollToBottom();
+    scrollToBottomIfAuto();
   };
 
   /**
@@ -616,6 +626,9 @@
    * @param options
    */
   async function sendMessage(message, options) {
+    currentToolTag.value = '';
+    thinkingToolDisplayNames.clear();
+    activeThinkingIndex.value = -1;
     let param = {};
     if (!props.type && props.type != 'view') {
       param = {
@@ -772,6 +785,9 @@
         messageText = message;
       } else {
         text = text + message;
+        if (item.event == 'THINKING') {
+          text = replaceThinkingToolNames(text);
+        }
         messageText = text;
         returnText = text;
       }
@@ -804,7 +820,9 @@
         return { returnText, conversationId };
       }
       //更新聊天信息
-      updateChat(uuid.value, chatData.value.length - 1, {
+      const chatIndex = chatData.value.length - 1;
+      const currentChat = chatData.value[chatIndex];
+      updateChat(uuid.value, chatIndex, {
         dateTime: new Date().toLocaleString(),
         content: messageText,
         inversion: 'ai',
@@ -814,7 +832,14 @@
         requestOptions: { prompt: message, options: { ...options } },
         referenceKnowledge: knowList.value,
         eventType: item.event.toLowerCase(),
+        //update-begin---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用---
+        currentToolTag: currentChat?.currentToolTag,
+        thinkingToolTags: currentChat?.thinkingToolTags,
+        //update-end---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用---
       });
+      if (item.event == 'THINKING') {
+        activeThinkingIndex.value = chatIndex;
+      }
     }
     if(item.event == 'INIT_REQUEST_ID'){
       if (item.requestId && props.url != "/airag/app/debug") {
@@ -838,6 +863,30 @@
         return "";
       }
       //update-end---author:wangshuai---date:2025-03-07---for:【QQYUN-11457】聊天调用流程，执行失败了但是没提示---
+      // update-begin--author:liaozhiyang---date:20260831---for:【LHZP-2020】新增图像生成节点（流程结束后按 outputTypes 和 outputValues 渲染图片）
+      const flowOutputSegments = buildFlowOutputSegments(item.data);
+      if (flowOutputSegments.some((segment) => segment.type === 'image')) {
+        updateChatSome(uuid.value, chatData.value.length - 1, {
+          content: item.data?.outputs ?? '',
+          flowOutputSegments,
+          images: [],
+          retrievalText: '',
+          loading: false,
+        });
+        await scrollToBottomIfAuto();
+      } else if (item.data?.type === 'Image') {
+        const imageUrl = item.data.outputs;
+        if (imageUrl) {
+          updateChatSome(uuid.value, chatData.value.length - 1, {
+            content: '',
+            images: [imageUrl],
+            retrievalText: '',
+            loading: false,
+          });
+          await scrollToBottomIfAuto();
+        }
+      }
+      // update-end--author:liaozhiyang---date:20260831---for:【LHZP-2020】新增图像生成节点（流程结束后按 outputTypes 和 outputValues 渲染图片）
       topicId.value = item.topicId;
       conversationId = item.conversationId;
       uuid.value = item.conversationId;
@@ -852,18 +901,26 @@
       return "";
     }
 
+    //update-begin---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用---
     // 工具调用开始
     if (item.event == 'TOOL_EXEC_BEFORE') {
-      currentToolTag.value = item.data?.message ?? '';
+      const toolTag = item.data?.message ?? '';
+      if (!updateThinkingTool(toolTag, false)) {
+        currentToolTag.value = toolTag;
+      }
     }
 
     // 工具调用结束
     if (item.event == 'TOOL_EXEC_DONE') {
-      currentToolTag.value = '';
+      const toolTag = item.data?.message ?? '';
+      if (!updateThinkingTool(toolTag, true)) {
+        currentToolTag.value = '';
+      }
     }
+    //update-end---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用---
 
     //update-begin---author:wangshuai---date:2025-03-21---for:【QQYUN-11495】【AI】实时展示当前思考进度---
-    if(item.event === "NODE_STARTED"){
+    if(item.event === "NODE_STARTED"){   
       if(!item.data || item.data.type !== 'end'){
         let aiText = "";
         if(item.data.type === 'llm' || item.data.type === 'reply'){
@@ -886,6 +943,9 @@
         }
         if(item.data.type === 'http'){
           aiText = "正在发送http请求";
+        }
+        if (item.data.type === 'imageGen') {
+          aiText = "正在生成图片中";
         }
         if(!text){
           //更新聊天信息
@@ -1376,7 +1436,85 @@
   }
   
   //================================================== end 【QQYUN-14261】AI助手，支持多模态能力- 文档 ====================================
-  
+
+  //update-begin---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考中的工具名称翻译为流程名并显示工具调用---
+  /**
+   * 从工具标签中读取工具名称和展示名称。
+   */
+  function parseToolDisplayName(toolTag: string) {
+    if (!toolTag || !toolTag.includes('<jeecg-tool-exec')) {
+      return null;
+    }
+    try {
+      const box = document.createElement('div');
+      box.innerHTML = toolTag;
+      const content = box.querySelector('jeecg-tool-exec > data')?.textContent?.trim();
+      const record = content ? JSON.parse(content) : null;
+      console.log(record);
+      if (record?.name && record?.displayName) {
+        return { name: record.name, displayName: record.displayName };
+      }
+    } catch (error) {
+      return null;
+    }
+    return null;
+  }
+
+  /**
+   * 隐藏思考文本中的工具技术名称。
+   */
+  function replaceThinkingToolNames(content: string) {
+    let displayContent = content;
+    thinkingToolDisplayNames.forEach((displayName, name) => {
+      displayContent = displayContent
+          .split(`${name} "${displayName}"`).join(displayName)
+          .split(`${name} “${displayName}”`).join(displayName)
+          .split(name).join(displayName);
+    });
+    return displayContent;
+  }
+
+  /**
+   * 查找本轮最近一条思考消息。
+   */
+  function findThinkingMessageIndex() {
+    const activeIndex = activeThinkingIndex.value;
+    const activeMessage = chatData.value[activeIndex];
+    if (activeMessage && (activeMessage.eventType === 'thinking' || activeMessage.eventType === 'thinking_end')) {
+      return activeIndex;
+    }
+    return -1;
+  }
+
+  /**
+   * 将工具状态保存到当前思考消息，避免回答生成后工具卡片消失。
+   */
+  function updateThinkingTool(toolTag: string, completed: boolean) {
+    // 工具事件需要挂载到对应的思考消息上，不能直接使用最后一条聊天消息
+    const index = findThinkingMessageIndex();
+    const thinkingMessage = chatData.value[index];
+    if (!thinkingMessage) {
+      return false;
+    }
+    // 执行中保存当前工具标签；执行完成后清空运行状态
+    const changes: Record<string, string> = {
+      currentToolTag: completed ? '' : toolTag,
+    };
+    if (completed) {
+      // 保存已完成的工具标签，保证回复结束后工具调用记录仍然显示
+      changes.thinkingToolTags = `${thinkingMessage.thinkingToolTags || ''}${toolTag}\n\n`;
+    }
+    // 缓存后端返回的展示名，并将思考文本中的 flow_xxx 替换为流程名称
+    const toolName = parseToolDisplayName(toolTag);
+    if (toolName && typeof thinkingMessage.content === 'string') {
+      thinkingToolDisplayNames.set(toolName.name, toolName.displayName);
+      changes.content = replaceThinkingToolNames(thinkingMessage.content);
+    }
+    updateChatSome(uuid.value, index, changes);
+    return true;
+  }
+  //update-end---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考中的工具名称翻译为流程名并显示工具调用---
+
   //监听历史信息
   watch(
     () => props.historyData,
@@ -1384,7 +1522,12 @@
       try {
         //update-begin---author:wangshuai---date:2025-03-06---for:【QQYUN-11384】浏览器打开应用开场白丢了---
         if (val && val.length > 0) {
-          chatData.value = cloneDeep(val);
+          // update-begin--author:liaozhiyang---date:20260831---for:【LHZP-2020】新增图像生成节点（历史消息根据 content、outputTypes 和 outputValues 恢复图文结果）
+          chatData.value = cloneDeep(val).map((item) => {
+            const flowOutputSegments = buildFlowOutputSegments(item);
+            return flowOutputSegments.some((segment) => segment.type === 'image') ? { ...item, flowOutputSegments } : item;
+          });
+          // update-end--author:liaozhiyang---date:20260831---for:【LHZP-2020】新增图像生成节点（历史消息根据 content、outputTypes 和 outputValues 恢复图文结果）
           if(chatData.value[0]){
             topicId.value = chatData.value[0].topicId
           }

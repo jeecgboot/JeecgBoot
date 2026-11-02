@@ -43,15 +43,22 @@ public class AiragFlowPluginServiceImpl implements IAiragFlowPluginService {
 
     @Override
     public Map<String, Object> getFlowsToPlugin(String flowIds, String appId, String memoryId) {
-        return doGetFlowsToPlugin(flowIds, appId, memoryId);
+    // update-begin--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
+        return doGetFlowsToPlugin(flowIds, appId, memoryId, null);
+    }
+
+    @Override
+    public Map<String, Object> getFlowsToPlugin(String flowIds, String appId, String memoryId, List<String> images) {
+        return doGetFlowsToPlugin(flowIds, appId, memoryId, images);
     }
 
     @Override
     public Map<String, Object> getFlowsToPlugin(String flowIds) {
-        return doGetFlowsToPlugin(flowIds, null, null);
+        return doGetFlowsToPlugin(flowIds, null, null, null);
     }
 
-    private Map<String, Object> doGetFlowsToPlugin(String flowIds, String appId, String memoryId) {
+    private Map<String, Object> doGetFlowsToPlugin(String flowIds, String appId, String memoryId, List<String> images) {
+    // update-end--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
         log.info("开始构建流程插件");
         // 1. 查询所有启用的流程
         LambdaQueryWrapper<AiragFlow> queryWrapper = new LambdaQueryWrapper<>();
@@ -86,7 +93,9 @@ public class AiragFlowPluginServiceImpl implements IAiragFlowPluginService {
 
                 SubFlowResult flowVo = new SubFlowResult(flow);
                 // 获取入参参数
-                JSONArray parameter = getInputParameter(flow, flowVo);
+                // update-begin--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
+                JSONArray parameter = getInputParameter(flow, flowVo, images);
+                // update-end--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
                 // 获取出参参数
                 JSONArray outParams = getOutputParameter(flow, flowVo);
                 // name必须符合 ^[a-zA-Z0-9_-]+$
@@ -196,8 +205,11 @@ public class AiragFlowPluginServiceImpl implements IAiragFlowPluginService {
      *
      * @param flow
      * @param flowVo
+     * @param images 当前消息上传的图片
      */
-    private JSONArray getInputParameter(AiragFlow flow, SubFlowResult flowVo) {
+    // update-begin--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
+    private JSONArray getInputParameter(AiragFlow flow, SubFlowResult flowVo, List<String> images) {
+    // update-end--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
         JSONArray parameters = new JSONArray();
 /*
         String metadata = flow.getMetadata();
@@ -222,13 +234,22 @@ public class AiragFlowPluginServiceImpl implements IAiragFlowPluginService {
         if (inputParams != null) {
             for (FlowNodeConfig.NodeParam param : inputParams) {
                 String field = param.getField();
-                // 历史记录、图片由聊天服务在直连流程时自动注入,作为工具入参暴露给模型只会成为噪音且无法被有效填写
-                if (FlowConsts.FLOW_INPUT_PARAM_HISTORY.equals(field) || FlowConsts.FLOW_INPUT_PARAM_IMAGES.equals(field)) {
+                // update-begin--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
+                // 历史记录由聊天服务在直连流程时自动注入,作为工具入参暴露给模型只会成为噪音且无法被有效填写
+                if (FlowConsts.FLOW_INPUT_PARAM_HISTORY.equals(field)) {
                     continue;
                 }
                 JSONObject p = new JSONObject();
                 // 参数名
                 p.put(FlowPluginContent.NAME, param.getField());
+                // 智能体的关联流程是作为工具让模型调用的，不会像“高级编排”直连流程那样自动注入图片。
+                // 原来这里直接跳过 images，流程永远拿不到图片，例如「示例_OCR」会直接返回“请提供图片”。
+                // 改为隐藏参数：不暴露给模型（避免模型编造或遗漏图片地址），由服务端把当前消息上传的图片作为默认值传给流程，如 ["temp/ocr_1760252400000.png"]
+                if (FlowConsts.FLOW_INPUT_PARAM_IMAGES.equals(field)) {
+                    p.put("hidden", true);
+                    p.put(FlowPluginContent.DEFAULT_VALUE, images);
+                }
+                // update-end--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
                 // 参数描述
                 String paramDesc = oConvertUtils.getString(param.getName(), param.getField());
                 p.put(FlowPluginContent.DESCRIPTION, paramDesc);

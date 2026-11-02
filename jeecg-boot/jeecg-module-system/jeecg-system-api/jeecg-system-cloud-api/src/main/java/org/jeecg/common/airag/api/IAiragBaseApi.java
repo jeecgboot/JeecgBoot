@@ -94,4 +94,10 @@ public interface IAiragBaseApi {
     @PostMapping("/airag/api/getPromptContent")
     String getPromptContent(@RequestParam("promptId") String promptId);
 
+    /**
+     * 解析本地、MinIO或OSS文件内容。
+     */
+    @PostMapping("/airag/api/parseFileContent")
+    String parseFileContent(@RequestParam("filePath") String filePath);
+
 }

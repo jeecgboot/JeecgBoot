@@ -6,7 +6,7 @@
       </a-tab-pane>
       <template v-if="hasDataAuth">
         <a-tab-pane tab="按钮权限" key="button" forceRender>
-          <AuthButtonConfig :headId="headId" :tableType="curTableType" />
+          <AuthButtonConfig :headId="headId" :tableType="curTableType" :isTree="curIsTree" />
         </a-tab-pane>
         <a-tab-pane tab="数据权限" key="data" forceRender>
           <!-- 数据权限不需要实时刷新 故而此处传原表单ID -->
@@ -46,6 +46,7 @@
       const authFields = ref([]);
       const activeKey = ref('field');
       const curTableType = ref(1);
+      const curIsTree = ref('N');
       const hasDataAuth = computed(() => props.tableType == 1 || props.tableType == 2);
 
       const [registerDrawer, { closeDrawer }] = useDrawerInner((data) => {
@@ -54,6 +55,7 @@
         activeKey.value = 'field';
         // update-begin--author:liaozhiyang---date:20240520---for：【TV360X-187】去掉子表权限管理中按钮权限的高级查询
         curTableType.value = data.tableType;
+        curIsTree.value = data.isTree || 'N';
         // update-end--author:liaozhiyang---date:20240520---for：【TV360X-187】去掉子表权限管理中按钮权限的高级查询
       });
 
@@ -70,6 +72,7 @@
         onClose,
         registerDrawer,
         curTableType,
+        curIsTree,
       };
     },
   });

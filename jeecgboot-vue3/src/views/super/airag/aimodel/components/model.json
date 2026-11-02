@@ -116,10 +116,12 @@
         {"label": "text-embedding-v2", "value": "text-embedding-v2","descr": "是一种将文本数据转换为向量的技术，通过深度学习模型将文本的语义信息嵌入到高维向量空间中。这些向量不仅能表达文本内容，还能捕捉文本之间的相似性和关系，从而让计算机高效地进行文本检索、分类、聚类等任务。","type": "vector"}
       ],
       "IMAGE": [
+        { "label": "qwen-image-3.0-pro", "value": "qwen-image-3.0-pro","descr": "千问图像3.0专业版，生成与编辑合一：可文生图，也可上传1~3张参考图进行编辑，效果更好，最高2K输出","type": "imageGen,imageEdit"},
+        { "label": "qwen-image-3.0", "value": "qwen-image-3.0","descr": "千问图像3.0，生成与编辑合一：可文生图，也可上传1~3张参考图进行编辑，性价比更高，最高2K输出","type": "imageGen,imageEdit"},
         { "label": "wan2.2-t2i-plus", "value": "wan2.2-t2i-plus","descr": "全新升级的通义万相2.2文生图，更快的生成速度。在生成图像创意性、稳定性、写实质感方面全面升级，指令遵循更强，原生支持多种风格。支持最大200万像素生成，支持智能提示词改写等。","type": "imageGen"},
         { "label": "wan2.2-t2i-flash", "value": "wan2.2-t2i-flash","descr": "全新升级的通义万相2.2文生图，更快的生成速度。在生成图像创意性、稳定性、写实质感方面全面升级，指令遵循更强，原生支持多种风格。支持最大200万像素生成，支持智能提示词改写等。","type": "imageGen"},
-        { "label": "wan2.5-i2i-preview", "value": "wan2.5-i2i-preview","descr": "是万相2.5系列中的图像编辑模型，专注于通用图像编辑任务，支持单图编辑和多图融合功能","type": "imageGen"},
-        { "label": "wanx2.1-imageedit", "value": "wanx2.1-imageedit","descr": "是阿里云百炼平台提供的通用图像编辑模型，适用于多种图像处理任务，如风格迁移、内容编辑、尺寸优化等","type": "imageGen"},
+        { "label": "wan2.5-i2i-preview", "value": "wan2.5-i2i-preview","descr": "是万相2.5系列中的图像编辑模型，专注于通用图像编辑任务，支持单图编辑和多图融合功能","type": "imageEdit"},
+        { "label": "wanx2.1-imageedit", "value": "wanx2.1-imageedit","descr": "是阿里云百炼平台提供的通用图像编辑模型，适用于多种图像处理任务，如风格迁移、内容编辑、尺寸优化等","type": "imageEdit"},
         { "label": "wanx-v1", "value": "wanx-v1","descr": "是通义万相系列中的文本生成图像模型，支持中英文双语输入和多种图像风格生成","type": "imageGen"}
       ],
       "type": ["LLM", "EMBED","IMAGE"],

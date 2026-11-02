@@ -218,7 +218,7 @@
     
     <!--系统后台导出，根据父级id和租户id查询部门数据-->
     <select id="getSysDepartList" resultType="org.jeecg.modules.system.vo.SysDepartExportVo">
-        SELECT id,depart_name,parent_id,depart_name_en,depart_order,description,org_category,org_code,mobile,fax,address,memo, position_id FROM sys_depart
+        SELECT id,depart_name,parent_id,depart_name_en,depart_name_abbr,depart_order,description,org_category,org_code,mobile,fax,address,memo, position_id FROM sys_depart
         WHERE
         1=1
         <if test="null != tenantId and 0 != tenantId">

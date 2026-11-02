@@ -370,13 +370,16 @@ function getStatusIcon(item: any) {
       padding-bottom: 12px;
       overflow-y: auto;
       overflow-x: hidden;
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(270px, 100%), 1fr));
+      grid-auto-rows: 152px;
       align-content: flex-start;
-      align-items: flex-start;
       gap: 20px;
-      :deep(.ant-col) { flex: 0 0 270px; max-width: 270px; }
-      .mcp-card, .add-mcp-card { width: 270px; }
+      :deep(.ant-col) {
+        width: auto;
+        max-width: none;
+      }
+      .mcp-card, .add-mcp-card { width: 100%; }
       .mcp-header {
         position: relative;
         font-size: 14px;

@@ -167,4 +167,9 @@ public class SysUserSysDepPostModel {
      * 工号
      */
     private String workNo;
+
+    /**
+     * 是否为当前部门/岗位下的用户，不含下级部门、岗位的用户（部门：所属部门是当前部门；岗位：主岗位或兼职岗位是当前岗位）
+     */
+    private Boolean izCurrentDepartPost;
 }

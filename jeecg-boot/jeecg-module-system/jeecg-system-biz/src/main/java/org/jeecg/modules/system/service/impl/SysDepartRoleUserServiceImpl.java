@@ -1,12 +1,14 @@
 package org.jeecg.modules.system.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.jeecg.common.util.RedisUtil;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepartRole;
 import org.jeecg.modules.system.entity.SysDepartRoleUser;
 import org.jeecg.modules.system.mapper.SysDepartRoleMapper;
 import org.jeecg.modules.system.mapper.SysDepartRoleUserMapper;
 import org.jeecg.modules.system.service.ISysDepartRoleUserService;
+import org.jeecg.modules.system.util.ShiroAuthCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,8 @@ import java.util.stream.Collectors;
 public class SysDepartRoleUserServiceImpl extends ServiceImpl<SysDepartRoleUserMapper, SysDepartRoleUser> implements ISysDepartRoleUserService {
     @Autowired
     private SysDepartRoleMapper sysDepartRoleMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public void deptRoleUserAdd(String userId, String newRoleId, String oldRoleId) {
@@ -46,6 +50,9 @@ public class SysDepartRoleUserServiceImpl extends ServiceImpl<SysDepartRoleUserM
                 this.remove(new QueryWrapper<SysDepartRoleUser>().lambda().eq(SysDepartRoleUser::getUserId, userId).eq(SysDepartRoleUser::getDroleId, roleId));
             }
         }
+        //update-begin---author:scott ---date:20261029  for：【LHZP-1129】部门角色授权后清理相关用户Shiro权限缓存，无需重新登录即生效-----------
+        ShiroAuthCacheUtil.clearUserAuthCache(redisUtil, Collections.singletonList(userId));
+        //update-end---author:scott ---date:20261029  for：【LHZP-1129】部门角色授权后清理相关用户Shiro权限缓存，无需重新登录即生效-----------
     }
 
     @Override
@@ -60,6 +67,24 @@ public class SysDepartRoleUserServiceImpl extends ServiceImpl<SysDepartRoleUserM
                 this.remove(query);
             }
         }
+        //update-begin---author:scott ---date:20261029  for：【LHZP-1129】部门角色授权后清理相关用户Shiro权限缓存，无需重新登录即生效-----------
+        ShiroAuthCacheUtil.clearUserAuthCache(redisUtil, userIds);
+        //update-end---author:scott ---date:20261029  for：【LHZP-1129】部门角色授权后清理相关用户Shiro权限缓存，无需重新登录即生效-----------
+    }
+
+    /**
+     * 清理部门角色下所有用户的Shiro权限缓存
+     * @param roleId 部门角色id
+     * @author scott
+     * @since 2026-10-29 【LHZP-1129】部门角色授权后清理相关用户权限缓存，无需重新登录即生效
+     */
+    @Override
+    public void clearDeptRoleUserAuthCache(String roleId) {
+        if (oConvertUtils.isEmpty(roleId)) {
+            return;
+        }
+        List<SysDepartRoleUser> roleUsers = this.list(new QueryWrapper<SysDepartRoleUser>().lambda().select(SysDepartRoleUser::getUserId).eq(SysDepartRoleUser::getDroleId, roleId));
+        ShiroAuthCacheUtil.clearUserAuthCache(redisUtil, roleUsers.stream().map(SysDepartRoleUser::getUserId).collect(Collectors.toSet()));
     }
 
     /**

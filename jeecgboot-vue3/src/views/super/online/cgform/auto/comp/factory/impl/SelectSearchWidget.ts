@@ -37,6 +37,9 @@ export default class SelectSearchWidget extends IFormSchema {
   getItem(): FormSchema {
     let item = super.getItem();
     let popContainer = this.getPopContainer();
+    // update-begin--author:liaozhiyang---date:20260826---for:【LHZP-261】online下拉搜索支持多选
+    const extendData = this.getExtendData();
+    // update-end--author:liaozhiyang---date:20260826---for:【LHZP-261】online下拉搜索支持多选
     return Object.assign({}, item, {
       component: 'JSearchSelect',
       componentProps: {
@@ -47,6 +50,9 @@ export default class SelectSearchWidget extends IFormSchema {
         // update-end--author:liaozhiyang---date:20240628---for：【issues/6336】online下拉搜索框设置数据字典编辑弹窗报错
         useDicColor: true,
         popContainer: popContainer,
+        // update-begin--author:liaozhiyang---date:20260826---for:【LHZP-261】online下拉搜索支持多选
+        multiple: extendData.multiple ?? false,
+        // update-end--author:liaozhiyang---date:20260826---for:【LHZP-261】online下拉搜索支持多选
       },
     });
   }

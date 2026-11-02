@@ -27,4 +27,12 @@ public interface ISysDepartRoleUserService extends IService<SysDepartRoleUser> {
      * @param depId
      */
     void removeDeptRoleUser(List<String> userIds,String depId);
+
+    /**
+     * 清理部门角色下所有用户的Shiro权限缓存
+     * @param roleId 部门角色id
+     * @author scott
+     * @since 2026-10-29 【LHZP-1129】部门角色授权后清理相关用户权限缓存，无需重新登录即生效
+     */
+    void clearDeptRoleUserAuthCache(String roleId);
 }

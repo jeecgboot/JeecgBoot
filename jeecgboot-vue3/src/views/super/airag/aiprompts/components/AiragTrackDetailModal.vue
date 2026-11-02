@@ -9,21 +9,16 @@
       wrapClassName="track-detail-modal"
   >
     <div class="track-detail-container">
-      <!-- 顶部工具栏 -->
-      <div class="toolbar">
-        <a-button
-            type="primary"
-            size="small"
-            @click="toggleFormat"
-            class="format-btn"
-        >
-          <Icon :icon="isFormatted ? 'ant-design:compress-outlined' : 'ant-design:expand-outlined'" />
-          {{ isFormatted ? '收起' : '展开' }}
-        </a-button>
-      </div>
-
       <!-- JSON内容显示区域 -->
       <div class="json-content-wrapper">
+        <div class="content-header">
+          <span class="content-status">{{ isFormatted ? '格式化内容' : '原始数据' }}</span>
+          <a-button type="link" size="small" @click="toggleFormat" class="format-btn" :aria-pressed="isFormatted">
+            <Icon :icon="isFormatted ? 'ant-design:compress-outlined' : 'ant-design:expand-outlined'" />
+            {{ isFormatted ? '收起' : '展开' }}
+          </a-button>
+        </div>
+
         <div v-if="!trackContent" class="empty-state">
           <Icon icon="ant-design:inbox-outlined" style="font-size: 48px; color: #d9d9d9;" />
           <p>暂无轨迹数据</p>
@@ -33,18 +28,6 @@
           <pre v-if="isFormatted" >{{ formattedJson }}</pre>
           <pre v-else class="raw-json">{{ trackContent }}</pre>
         </div>
-      </div>
-
-      <!-- 底部信息栏 -->
-      <div v-if="trackContent" class="info-bar">
-        <span class="info-item">
-          <Icon icon="ant-design:info-circle-outlined" />
-          {{ isFormatted ? '已格式化' : '原始数据' }}
-        </span>
-<!--        <span class="info-item">-->
-<!--          <Icon icon="ant-design:file-text-outlined" />-->
-<!--          字符数: {{ trackContent.length }}-->
-<!--        </span>-->
       </div>
     </div>
   </BasicModal>
@@ -99,7 +82,6 @@ const [registerModal] = useModalInner(async (data) => {
 <style lang="less" scoped>
 @primary-color: #1890ff;
 @border-color: #e8e8e8;
-@background-color: #f5f7fa;
 @text-color: #262626;
 @text-secondary: #8c8c8c;
 
@@ -110,30 +92,6 @@ const [registerModal] = useModalInner(async (data) => {
   min-height: 400px;
 }
 
-// 顶部工具栏
-.toolbar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  background: @background-color;
-  border-radius: 8px;
-  border: 1px solid @border-color;
-
-  .format-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14px;
-    transition: all 0.3s;
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(24, 144, 255, 0.2);
-    }
-  }
-}
-
 // JSON内容显示区域
 .json-content-wrapper {
   flex: 1;
@@ -141,8 +99,34 @@ const [registerModal] = useModalInner(async (data) => {
   background: white;
   border: 1px solid @border-color;
   border-radius: 8px;
-  padding: 16px;
   position: relative;
+
+  .content-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 42px;
+    padding: 0 12px 0 16px;
+    border-bottom: 1px solid @border-color;
+  }
+
+  .content-status {
+    color: @text-secondary;
+    font-size: 13px;
+  }
+
+  .format-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 4px;
+    font-size: 13px;
+
+    &:focus-visible {
+      outline: 2px solid fade(@primary-color, 25%);
+      outline-offset: 2px;
+    }
+  }
 
   .empty-state {
     display: flex;
@@ -159,6 +143,8 @@ const [registerModal] = useModalInner(async (data) => {
   }
 
   .json-display {
+    padding: 16px;
+
     pre {
       margin: 0;
       padding: 0;
@@ -196,30 +182,6 @@ const [registerModal] = useModalInner(async (data) => {
   }
 }
 
-// 底部信息栏
-.info-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-  padding: 12px 16px;
-  background: @background-color;
-  border-radius: 8px;
-  border: 1px solid @border-color;
-  font-size: 14px;
-  color: @text-secondary;
-
-  .info-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    svg {
-      font-size: 16px;
-    }
-  }
-}
-
 // 滚动条样式
 .json-content-wrapper::-webkit-scrollbar,
 .json-display pre::-webkit-scrollbar {
@@ -245,22 +207,10 @@ const [registerModal] = useModalInner(async (data) => {
 
 // 响应式设计
 @media (max-width: 768px) {
-  .toolbar {
-    padding: 10px 12px;
-  }
-
   .json-content-wrapper {
-    padding: 12px;
-
     .json-display pre {
       font-size: 12px;
     }
-  }
-
-  .info-bar {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
   }
 }
 </style>

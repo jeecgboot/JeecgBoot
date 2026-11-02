@@ -25,7 +25,7 @@
         <span>{{ record.roleCode == 'DEF_INDEX_ALL' ? '全局默认' : text }}</span>
       </template>
       <template #roleCode="{ text, record }">
-        <span>{{ record.roleCode == 'DEF_INDEX_ALL' ? '菜单默认首页' : text }}</span>
+        <span>{{ record.roleCode == 'DEF_INDEX_ALL' ? '菜单默认首页' : text || record.roleCode }}</span>
       </template>
     </BasicTable>
     <!--角色首页配置-->

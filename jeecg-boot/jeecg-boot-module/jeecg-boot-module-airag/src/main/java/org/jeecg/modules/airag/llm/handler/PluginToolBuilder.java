@@ -14,6 +14,7 @@ import org.jeecg.common.util.TokenUtils;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.airag.common.consts.AiragConsts;
 import org.jeecg.modules.airag.flow.component.ToolsNode;
+import org.jeecg.modules.airag.llm.consts.FlowPluginContent;
 import org.jeecg.modules.airag.llm.entity.AiragMcp;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -463,7 +464,11 @@ public class PluginToolBuilder {
                     }
                 } else {
                     // 检查是否有默认值
-                    String defaultValue = param.getString("defaultValue");
+                    // update-begin--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
+                    // 默认值按原类型取：流程插件 images 的默认值是图片数组，如 ["temp/a.png","temp/b.png"]，
+                    // 用 getString 会变成字符串 "[\"temp/a.png\",\"temp/b.png\"]"，流程 LLM 节点会按逗号拆成错误的图片路径
+                    Object defaultValue = param.get(FlowPluginContent.DEFAULT_VALUE);
+                    // update-end--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
                     if (oConvertUtils.isNotEmpty(defaultValue)) {
                         body.put(paramName, defaultValue);
                     }

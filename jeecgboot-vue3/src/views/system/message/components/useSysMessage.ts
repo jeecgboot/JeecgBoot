@@ -254,7 +254,10 @@ export function useMessageHref(emit, props){
         break;
       case 'cgform':
         //Online表单
-        currentModal.value = 'OnlineAutoModal';
+        // update-begin--author:liusq---date:20261102---for：【online表单评论】系统消息查看详情改用新版详情弹窗
+        // 与列表页「详情」一致，用 OnlineDetailModal，不再用 OnlineAutoModal 的禁用表单
+        currentModal.value = 'OnlineDetailModal';
+        // update-end--author:liusq---date:20261102---for：【online表单评论】系统消息查看详情改用新版详情弹窗
         bindParams.value = {
           id: params.formId,
         }

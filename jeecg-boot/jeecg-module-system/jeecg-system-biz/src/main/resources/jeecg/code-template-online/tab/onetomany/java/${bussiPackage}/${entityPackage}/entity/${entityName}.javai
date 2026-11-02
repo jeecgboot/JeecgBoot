@@ -73,7 +73,7 @@ public class ${entityName} implements Serializable {
 	@Excel(name = "${po.filedComment}", width = 15${list_field_dictCode})
 	</#if>
 		</#if>
-      <#if list_field_dictCode?length gt 1>
+      <#if po.classType!='popup_dict' && list_field_dictCode?length gt 1>
     @Dict(${list_field_dictCode?substring(2)})
       </#if>
 	</#if>

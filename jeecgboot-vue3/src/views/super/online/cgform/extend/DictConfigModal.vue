@@ -18,6 +18,8 @@
       <p>· <b>Popup 字典</b>：Table=报表 code，Code/Text 各一个字段</p>
       <p>· <b>自定义树</b>：Text=<code>id,pid,显示字段,有子节点字段</code></p>
       <p>· <b>联动下拉</b>：Table 填 JSON 串，Code/Text 留空</p>
+      <p>· <b>关联记录</b>：Table=关联表名，Code=存值字段（一般为 <code>id</code>），Text=标题字段,其他显示字段（如 <code>name,age,sex</code>，第一个为标题字段）</p>
+      <p>· <b>他表字段</b>：Table=本表关联记录字段名，Code 留空，Text=关联表中要显示的字段（如 <code>name</code>）</p>
     </div>
   </BasicModal>
 </template>
@@ -45,7 +47,8 @@
           component: 'InputTextArea',
           componentProps: {
             placeholder: '',
-            autoSize: { minRows: 1, maxRows: 3 },
+            rows: 3,
+            class: 'dict-config-table-input',
             allowClear: true,
           },
         },
@@ -130,6 +133,12 @@
 </script>
 
 <style lang="less" scoped>
+  :deep(.dict-config-table-input) {
+    min-height: 64px;
+    max-height: 240px !important;
+    resize: vertical;
+  }
+
   .dict-config-tip {
     margin-top: 4px;
     padding: 8px 12px;

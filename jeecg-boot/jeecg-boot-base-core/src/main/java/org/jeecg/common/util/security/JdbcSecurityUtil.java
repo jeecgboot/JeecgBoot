@@ -61,41 +61,19 @@ public class JdbcSecurityUtil {
             "init=",                      // 连接初始化 SQL (带 '=' 防止匹配到正常单词 'init')
             "runscript",                  // 远程/本地 SQL 脚本加载
             "trace_level_system_out",     // 系统信息泄露
+
+            // === Apache Calcite ===
+            "jdbc:calcite:",              // Calcite 连接协议：可经 model=inline 的 functions 注册任意类 UDF 实现 RCE
     };
 
     /**
-     * 允许的 JDBC 驱动类名白名单
+     * 危险 JDBC 驱动黑名单（小写比较）。仅拦截已知可被用于任意代码执行的驱动，
+     * 其余驱动（含各类国产/大数据数据库自定义驱动）一律放行，避免误伤正常业务。
      */
-    private static final String[] ALLOWED_DRIVERS = {
-            // MySQL 数据库
-            "com.mysql.jdbc.Driver",
-            // MySQL5.7+ 数据库
-            "com.mysql.cj.jdbc.Driver",
-            // Oracle
-            "oracle.jdbc.OracleDriver",
-            "oracle.jdbc.driver.OracleDriver",
-            // SQLServer 数据库
-            "com.microsoft.sqlserver.jdbc.SQLServerDriver",
-            // marialDB 数据库
-            "org.mariadb.jdbc.Driver",
-            // postgresql 数据库
-            "org.postgresql.Driver",
-            // 达梦 数据库
-            "dm.jdbc.driver.DmDriver",
-            // 人大金仓 数据库
-            "com.kingbase8.Driver",
-            // 神通 数据库
-            "com.oscar.Driver",
-            // SQLite 数据库
-            "org.sqlite.JDBC",
-            // DB2 数据库
-            "com.ibm.db2.jcc.DB2Driver",
-            // Hsqldb 数据库
-            "org.hsqldb.jdbc.JDBCDriver",
-            // Derby 数据库
-            "org.apache.derby.jdbc.ClientDriver",
-            // H2 数据库
-            "org.h2.Driver",
+    private static final String[] FORBIDDEN_DRIVERS = {
+            // Apache Calcite：可经 model=inline 的 functions 注册任意类为 UDF 实现 RCE
+            "org.apache.calcite.jdbc.driver",
+            "org.apache.calcite.jdbc.calcitedriver",
     };
 
     /**
@@ -119,20 +97,22 @@ public class JdbcSecurityUtil {
     }
 
     /**
-     * 校验驱动类名是否在白名单中
+     * 校验驱动类名是否为已知危险驱动（黑名单）。
+     * 驱动为空时放行（由 DriverManager 按 URL 自动识别，URL 已由 {@link #validate(String)} 拦掉危险协议）；
+     * 命中黑名单（如 Calcite）时抛出异常。
      *
      * @param driverClassName JDBC 驱动类名
-     * @throws JeecgBootException 驱动不在白名单时抛出
+     * @throws JeecgBootException 命中危险驱动黑名单时抛出
      */
     public static void validateDriver(String driverClassName) {
         if (oConvertUtils.isEmpty(driverClassName)) {
-            throw new JeecgBootException("数据库驱动类名不能为空");
+            return;
         }
-        for (String allowed : ALLOWED_DRIVERS) {
-            if (allowed.equals(driverClassName)) {
-                return;
+        String lower = driverClassName.trim().toLowerCase();
+        for (String forbidden : FORBIDDEN_DRIVERS) {
+            if (forbidden.equals(lower)) {
+                throw new JeecgBootException("不支持的数据库驱动【" + driverClassName + "】，存在安全风险，已拒绝");
             }
         }
-        throw new JeecgBootException("不支持的数据库驱动【" + driverClassName + "】，如需支持请联系管理员");
     }
 }

@@ -19,6 +19,7 @@ import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.config.AiRagConfigBean;
 import org.jeecg.modules.airag.llm.entity.AiragMcp;
+import org.jeecg.modules.airag.llm.handler.CommandExecUtil;
 import org.jeecg.modules.airag.llm.mapper.AiragMcpMapper;
 import org.jeecg.modules.airag.llm.service.IAiragMcpService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,6 +159,9 @@ public class AiragMcpServiceImpl extends ServiceImpl<AiragMcpMapper, AiragMcp> i
                 String openSafe = aiRagConfigBean.getAllowSensitiveNodes();
                 if(oConvertUtils.isNotEmpty(openSafe) && openSafe.toLowerCase().contains("stdio")) {
                     log.info("[MCP]使用STDIO协议(StdioMcpTransport), endpoint:{}", endpoint);
+                    //update-begin---author:wangshuai---date:2026-10-21---for:【GHSA-p3r5-xh32-m66j】/【GHSA-vj3m-vf8p-cvgc】stdio命令注入加固：endpoint 会被 sh -c/cmd.exe /c 执行，执行前先校验拒绝 & | ; < > ` $ 等 shell 元字符，防命令注入(CWE-78) ---
+                    CommandExecUtil.validateArg(endpoint.trim());
+                    //update-end---author:wangshuai---date:2026-10-21---for:【GHSA-p3r5-xh32-m66j】/【GHSA-vj3m-vf8p-cvgc】stdio命令注入加固：endpoint 会被 sh -c/cmd.exe /c 执行，执行前先校验拒绝 & | ; < > ` $ 等 shell 元字符，防命令注入(CWE-78)---
                     // stdio 类型：endpoint 可能是一个命令行
                     // Windows 下需要通过 cmd.exe /c 来执行命令，否则找不到 npx 等程序
                     List<String> cmdParts;

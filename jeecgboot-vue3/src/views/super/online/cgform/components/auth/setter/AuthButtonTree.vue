@@ -125,6 +125,8 @@
         if (item.code && item.code.includes('form_sub')) {
           // 【TV360X-2711】当 code 以 form_sub 开头时，说明是附表
           str += '表单可见（附表）'
+        } else if (item.code === 'form_confirm') {
+          str += '表单可见';
         } else if (item.page == 3) {
           str += '列表可见';
         } else if (item.page == 5) {

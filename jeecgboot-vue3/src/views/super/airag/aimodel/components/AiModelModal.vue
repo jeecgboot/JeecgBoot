@@ -67,6 +67,9 @@
                   按厂家不同支持以下参数（其它键忽略）：<br/>
                   • Qwen：<code>"image_url":"图片地址"</code>（qwen-vl-ocr 等视觉模型）、<code>"incremental_output":true</code>（qwen3.5-plus 等需流式增量）、<code>"enable_thinking":true</code>（思考开关）<br/>
                   • DeepSeek：<code>"thinking":{"type":"enabled"}</code>（deepseek-v4-pro 等混合推理模型开关）、<code>"reasoning_effort":"high"</code>（思考强度，"high"/"max"）
+                  <!--update-begin---author:wangshuai---date:20261012---for：【issues/9884】火山方舟模型使用问题，关闭不了思考模式，响应时间太慢，每个模型好像参数不太一样？-->
+                  <br/>• 火山方舟：<code>"thinking":{"type":"disabled"}</code>（doubao-seed 系列默认开启深度思考，disabled 关闭后响应更快）、<code>"reasoning_effort":"minimal"</code>（思考强度，"minimal"/"low"/"medium"/"high"，minimal 为不思考）
+                  <!--update-end---author:wangshuai---date:20261012---for：【issues/9884】火山方舟模型使用问题，关闭不了思考模式，响应时间太慢，每个模型好像参数不太一样？-->
                 </div>
                 <a-modal v-model:open="extraParamsVisible" title="编辑额外参数" width="600px" @ok="saveExtraParams" destroyOnClose>
                   <JCodeEditor v-model:value="extraParamsTemp"  language="javascript" fullScreen height="500px" />
@@ -84,7 +87,10 @@
                         <span>{{label}}</span>
                         <div>
                           <a-tag v-if="type && type.split(',').includes('text')" color="#E8D7C3">文本</a-tag>
-                          <a-tag v-if="type && type.split(',').includes('imageGen')" color="#FFEBD3">图像生成</a-tag>
+                          <!--update-begin---author:wangshuai---date:20261013---for：【issues/9879】基础模型下拉区分文生图模型和图生图模型-->
+                          <a-tag v-if="type && type.split(',').includes('imageGen')" color="#FFEBD3">文生图</a-tag>
+                          <a-tag v-if="type && type.split(',').includes('imageEdit')" color="#D9CCF2">图生图</a-tag>
+                          <!--update-end---author:wangshuai---date:20261013---for：【issues/9879】基础模型下拉区分文生图模型和图生图模型-->
                           <a-tag v-if="type && type.split(',').includes('image')" color="#C3D9DC">图像分析</a-tag>
                           <a-tag v-if="type && type.split(',').includes('vector')" color="#D4E0D8">向量</a-tag>
                           <a-tag v-if="type && type.split(',').includes('embeddings')" color="#FFEBD3">文本嵌入</a-tag>
@@ -189,6 +195,10 @@
       //特殊参数
       const extraParamsVisible = ref<boolean>(false);
       const extraParamsTemp = ref<string>('');
+      //update-begin---author:wangshuai---date:20261012---for：【issues/9884】清空额外参数保存不生效-----------
+      //编辑的模型原来是否配置了额外参数，清空额外参数保存时要用
+      const hadExtraParams = ref<boolean>(false);
+      //update-end---author:wangshuai---date:20261012---for：【issues/9884】清空额外参数保存不生效-----------
 
       /**
        * 打开特殊参数编辑弹窗
@@ -245,6 +255,9 @@
         modelParamsShow.value = false;
         // 【LHZP-1487】打开新弹窗时重置测试连接 loading，避免上一个慢请求关闭后残留状态
         testLoading.value = false;
+        //update-begin---author:wangshuai---date:20261012---for：【issues/9884】清空额外参数保存不生效-----------
+        hadExtraParams.value = false;
+        //update-end---author:wangshuai---date:20261012---for：【issues/9884】清空额外参数保存不生效-----------
         if(dataIndex.value !== 'list') {
           //重置表单
           await resetFields();
@@ -287,6 +300,9 @@
               if (allParams.extraParams) {
                 values.result.extraParams = JSON.stringify(allParams.extraParams, null, 2);
                 delete allParams.extraParams;
+                //update-begin---author:wangshuai---date:20261012---for：【issues/9884】清空额外参数保存不生效-----------
+                hadExtraParams.value = true;
+                //update-end---author:wangshuai---date:20261012---for：【issues/9884】清空额外参数保存不生效-----------
               }
               modelParams.value = allParams;
             }
@@ -300,6 +316,7 @@
           }
         } else {
           modelTypeDisabled.value = false;
+          modelType.value = 'all';
           //初始化模型提供者
           initModelProvider();
           dataIndex.value = 'list';
@@ -399,6 +416,14 @@
           if (Object.keys(params).length > 0) {
             values.modelParams = JSON.stringify(params);
           }
+          //update-begin---author:wangshuai---date:20261012---for：【issues/9884】清空额外参数保存不生效-----------
+          if (values.id && !values.extraParams && hadExtraParams.value) {
+            if (!modelParamsRef.value) {
+              params = { ...modelParams.value };
+            }
+            values.modelParams = JSON.stringify(params);
+          }
+          //update-end---author:wangshuai---date:20261012---for：【issues/9884】清空额外参数保存不生效-----------
           delete values.extraParams;
           if(modelActivate.value){
             values.activateFlag = 1

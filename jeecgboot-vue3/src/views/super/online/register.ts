@@ -10,6 +10,11 @@ export async function register(app: App) {
   // 注册Online弹窗
   const OnlineAutoModalAsync = createAsyncComponent(() => import('./cgform/auto/default/OnlineAutoModal.vue'), {loading: true});
   app.component('OnlineAutoModal', OnlineAutoModalAsync);
+  // update-begin--author:liusq---date:20261102---for：【online表单评论】系统消息查看详情改用新版详情弹窗
+  // 注册Online详情弹窗
+  const OnlineDetailModalAsync = createAsyncComponent(() => import('./cgform/auto/default/OnlineDetailModal.vue'), {loading: true});
+  app.component('OnlineDetailModal', OnlineDetailModalAsync);
+  // update-end--author:liusq---date:20261102---for：【online表单评论】系统消息查看详情改用新版详情弹窗
 
   // 注册Online表单路由
   registerCgformRouter();

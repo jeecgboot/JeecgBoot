@@ -134,9 +134,13 @@
   watch(
     () => props.value,
     (val) => {
+      const pathValue = Array.isArray(val) ? val.join(',') : val;
+      if (props.returnUrl && pathValue === getFileListPathValue()) {
+        return;
+      }
       if (Array.isArray(val)) {
         if (props.returnUrl) {
-          parsePathsValue(val.join(','));
+          parsePathsValue(pathValue);
         } else {
           parseArrayValue(val);
         }
@@ -173,20 +177,11 @@
     }
   }
 
+  // update-begin--author:liaozhiyang---date:20260826---for:【LHZP-73】上传图片操作按钮优化（解决报错导致箭头和下载icon不显示）
   // 添加可左右移动的按钮
-  function onAddActionsButton(event) {
-    const getUploadItem = () => {
-      for (const path of event.path) {
-        if (path.classList.contains(antUploadItemCls)) {
-          return path;
-        } else if (path.classList.contains(`${prefixCls}-container`)) {
-          return null;
-        }
-      }
-      return null;
-    };
-    const uploadItem = getUploadItem();
-    if (!uploadItem) {
+  function onAddActionsButton(event: MouseEvent) {
+    const uploadItem = event.currentTarget as HTMLElement | null;
+    if (!uploadItem?.classList.contains(antUploadItemCls)) {
       return;
     }
     const actions = uploadItem.getElementsByClassName('ant-upload-list-item-actions');
@@ -198,6 +193,9 @@
     div.className = 'upload-actions-container';
     createApp(UploadItemActions, {
       element: uploadItem,
+      // update-begin--author:liaozhiyang---date:20260831---for:【LHZP-73】批量上传图片后左右移动提示-1
+      container: containerRef.value,
+      // update-end--author:liaozhiyang---date:20260831---for:【LHZP-73】批量上传图片后左右移动提示-1
       fileList: fileList,
       mover: props.mover,
       download: props.download,
@@ -207,6 +205,7 @@
     uploadItem.setAttribute('data-has-actions', 'true');
     uploadItem.removeEventListener('mouseover', onAddActionsButton);
   }
+  // update-end--author:liaozhiyang---date:20260826---for:【LHZP-73】上传图片操作按钮优化（解决报错导致箭头和下载icon不显示）
 
   // 解析数据库存储的逗号分割
   function parsePathsValue(paths) {
@@ -322,7 +321,9 @@
         successFileList = fileListTemp.filter(item=>{
           return item.uid!=info.file.uid;
         });
-        createMessage.error(`${info.file.name} 上传失败.`);
+        // update-begin--author:liaozhiyang---date:20260825---for：【LHZP-329】上传失败，显示接口的message
+        createMessage.error(`${info.file.response.message}`);
+        // update-end--author:liaozhiyang---date:20260825---for：【LHZP-329】上传失败，显示接口的message
       }
       fileListTemp = successFileList;
     } else if (info.file.status === 'error') {
@@ -373,6 +374,10 @@
       path = pathList.join(',');
     }
     emitValue(path);
+  }
+
+  function getFileListPathValue() {
+    return fileList.value.map((file) => file.response?.message).join(',');
   }
 
   // 预览文件、图片
@@ -457,51 +462,82 @@
       .ant-upload-text-icon {
         color: @primary-color;
       }
+      // update-begin--author:liaozhiyang---date:20260826---for:【LHZP-73】上传图片操作按钮优化
       .ant-upload-list-item {
-        .upload-actions-container {
-          position: absolute;
-          top: -31px;
-          left: -18px;
-          z-index: 11;
-          width: 84px;
-          height: 84px;
-          line-height: 28px;
-          text-align: center;
-          pointer-events: none;
+        &:not(.has-upload-mover-actions) {
+          .ant-upload-list-item-actions {
+            grid-template-rows: 20px;
+            row-gap: 0;
+          }
+        }
 
-          a {
-            opacity: 0.9;
-            margin: 0 5px;
+        .ant-upload-list-item-actions {
+          display: grid;
+          grid-template-columns: repeat(6, 10px);
+          grid-template-rows: repeat(2, 20px);
+          align-items: center;
+          justify-content: center;
+          gap: 8px 2px;
+
+          > a,
+          > button,
+          .j-upload-remove-trigger,
+          .upload-actions-container a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            padding: 0;
+            border: 0;
+            border-radius: 4px;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.65) !important;
+            font-size: 16px;
+            line-height: 1;
+            opacity: 1;
             cursor: pointer;
-            transition: opacity 0.3s;
-
-            .anticon {
-              color: #fff;
-              font-size: 16px;
-            }
+            transition: color 0.2s, background-color 0.2s;
+            grid-column: span 2;
 
             &:hover {
-              opacity: 1;
+              background-color: rgba(255, 255, 255, 0.2);
+              color: #fff !important;
             }
           }
+
+          .anticon,
+          .app-iconify,
+          svg,
+          svg path {
+            color: inherit !important;
+            fill: currentColor;
+          }
+        }
+
+        .upload-actions-container {
+          display: contents;
 
           .upload-mover-handler,
           .upload-download-handler {
-            position: absolute;
-            pointer-events: auto;
+            display: contents;
           }
 
           .upload-mover-handler {
-            width: 100%;
-            bottom: 0;
-          }
+            a:first-child {
+              grid-row: 2;
+              grid-column: 2 / span 2;
+            }
 
-          .upload-download-handler {
-            top: -4px;
-            right: -4px;
+            a:last-child {
+              grid-row: 2;
+              grid-column: 4 / span 2;
+            }
           }
         }
       }
+      // update-end--author:liaozhiyang---date:20260826---for:【LHZP-73】上传图片操作按钮优化
     }
   }
 

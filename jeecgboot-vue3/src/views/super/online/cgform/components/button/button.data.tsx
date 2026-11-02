@@ -1,9 +1,10 @@
 import {Icon} from "@/components/Icon";
 
-export function getButtonIconRender({text}) {
+export function getButtonIconRender({text, buttonCode}) {
   if (!text) {
     return ''
   }
+  const iconPrefix = buttonCode === 'aigc_mock_data' ? 'mdi:' : 'ant-design:';
   // @ts-ignore
-  return <Icon icon={'ant-design:' + text}/>;
+  return <Icon icon={iconPrefix + text}/>;
 }

@@ -26,6 +26,11 @@ import java.util.Set;
  */
 public interface ISysBaseAPI extends CommonAPI {
 
+	/**
+	 * 批量查询 Popup 字典项。
+	 */
+	List<DictModel> queryPopupDictItems(String reportCode, String dictCode, String dictText, String dataList);
+
     //=======OLD 系统消息推送接口============================
     /**
      * 1发送系统消息

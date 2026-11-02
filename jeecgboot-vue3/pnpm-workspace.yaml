@@ -1,0 +1,11 @@
+# pnpm 11+ 不再从 .npmrc 读取这些设置，需放在这里
+shamefullyHoist: true
+strictPeerDependencies: false
+
+# pnpm 10+ 默认禁止依赖的构建脚本，这里显式放行
+allowBuilds:
+  '@logicflow/core': true
+  '@scarf/scarf': false
+  core-js: true
+  esbuild: true
+  vue-demi: true

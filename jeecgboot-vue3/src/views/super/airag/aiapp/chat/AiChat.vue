@@ -46,6 +46,8 @@
         :flowInputs="flowInputs"
         :conversationId="uuid"
         :existingSettings="getCurrentSettings"
+        :appId="appData?.id"
+        :shareToken="appData?.shareToken"
         @ok="handleSettingsOk"
       />
     </template>
@@ -166,8 +168,8 @@
       
       // 过滤掉固定参数，且必须是必填的
       const fixedParams = ['history', 'content', 'images'];
-      const requiredInputs = flowInputsList.filter((input: any) => 
-        !fixedParams.includes(input.field) && input.required
+      const requiredInputs = flowInputsList.filter((input: any) =>
+        !fixedParams.includes(input.field) && isRequired(input.required)
       );
       
       return requiredInputs.length > 0;
@@ -176,6 +178,11 @@
       return false;
     }
   });
+
+  /** 兼容流程元数据中 boolean、number 和 string 形式的必填标识。 */
+  function isRequired(required: unknown): boolean {
+    return required === true || required === 1 || required === '1' || required === 'true';
+  }
 
   // 监听appData变化，更新flowInputs
   watch(

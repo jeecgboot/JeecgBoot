@@ -9,8 +9,8 @@ export const columns = [
     slots: { customRender: 'relationType' },
   },
   {
-    title: '用户/角色编码',
-    dataIndex: 'roleCode',
+    title: '用户/角色',
+    dataIndex: 'relationName',
     width: 80,
     slots: { customRender: 'roleCode' },
   },
@@ -75,7 +75,7 @@ export const formSchema: FormSchema[] = [
     required: true,
     componentProps: {
       rowKey: 'roleCode',
-      isRadioSelection: true,
+      isRadioSelection: false,
     },
     ifShow: ({ values }) => values.relationType == 'ROLE',
   },
@@ -85,7 +85,7 @@ export const formSchema: FormSchema[] = [
     component: 'JSelectUser',
     required: true,
     componentProps: {
-      isRadioSelection: true,
+      isRadioSelection: false,
     },
     ifShow: ({ values }) => values.relationType == 'USER',
   },

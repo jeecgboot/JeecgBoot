@@ -23,7 +23,7 @@
               :table="sub.key"
               :id="sub.id"
               :disabled="onlineFormDisabled"
-              :form-template="formTemplate"
+              :form-template="sub.formTemplate"
               :main-id="getSubTableForeignKeyValue(sub.foreignKey)"
               :properties="sub.properties"
               :required-fields="sub.requiredFields"
@@ -59,7 +59,7 @@
                 <a-button-group class="sub-popup-button-group">
                   <!-- 子表内弹出新增按钮 -->
                   <a-button
-                      v-if="!onlineFormDisabled && getSubOpenAddBtnCfg.enabled"
+                      v-if="!onlineFormDisabled && getSubOpenAddBtnCfg.enabled && getBtnAuth('popup_add', sub.key)"
                       :preIcon="getSubOpenAddBtnCfg.buttonIcon"
                       @click="openSubFormModalForAdd(sub)"
                   >
@@ -67,7 +67,7 @@
                   </a-button>
                   <!-- 子表内弹出编辑按钮 -->
                   <a-button
-                      v-if="!onlineFormDisabled && getSubOpenEditBtnCfg.enabled && selectedRowIds.length === 1"
+                      v-if="!onlineFormDisabled && getSubOpenEditBtnCfg.enabled && getBtnAuth('update', sub.key) && selectedRowIds.length === 1"
                       :preIcon="getSubOpenEditBtnCfg.buttonIcon"
                       @click="openSubFormModalForEdit(sub)"
                   >
@@ -117,6 +117,7 @@
   import { useModal } from '/@/components/Modal';
   import { useCustomHook, GET_FUN_BODY_REG } from '../../../hooks/auto/useCustomHook';
   import { useAppInject } from '/@/hooks/web/useAppInject';
+  import { usePermissionStore } from '/@/store/modules/permission';
 
   const urlObject = {
     optPre: '/online/cgform/api/form/',
@@ -1181,6 +1182,15 @@
       };
       resetContext(context);
 
+      // update-begin--author:liusq---date:20260831---for：【权限控制】Tab风格一对多子表弹窗按钮按授权显示
+      const getBtnAuth = (code, tableName) => {
+        const prefix = getSubTableAuthPre(tableName);
+        const permissionStore = usePermissionStore();
+        const onlineButtonAuths = permissionStore.getOnlineSubTableAuth(prefix);
+        return !onlineButtonAuths?.includes(code);
+      };
+      // update-end--author:liusq---date:20260831---for：【权限控制】Tab风格一对多子表弹窗按钮按授权显示
+
       return {
         //主表
         tableName,
@@ -1235,6 +1245,7 @@
         getSubRemoveBtnCfg,
         getSubOpenAddBtnCfg,
         getSubOpenEditBtnCfg,
+        getBtnAuth,
       };
     },
   };

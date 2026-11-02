@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts">
-  import { ref, defineComponent } from 'vue';
+  import { ref, defineComponent, nextTick, watch } from 'vue';
   import { JVxeTypes, JVxeColumn, JVxeTableInstance } from '/@/components/jeecg/JVxeTable/types';
   import { useMessage } from '/@/hooks/web/useMessage';
 
@@ -41,8 +41,9 @@
     props: {
       loading: Boolean,
       dataSource: Array,
+      disableSearch: Boolean,
     },
-    setup() {
+    setup(props) {
       const tableRef = ref<JVxeTableInstance>();
       const columns = ref<JVxeColumn[]>([
         {
@@ -89,6 +90,7 @@
           key: 'searchFlag',
           width: 80,
           type: JVxeTypes.checkbox,
+          disabled: props.disableSearch,
           defaultChecked: false,
           customValue: ['Y', 'N'],
         },
@@ -121,6 +123,43 @@
         },
       ]);
       const { createConfirm: $confirm } = useMessage();
+
+      // update-begin--author:liaozhiyang---date:20260824---for：【LHZP-1055】online图表JSON方式禁用查询
+      /** JSON 数据不支持查询条件，取消所有是否查询选项 */
+      async function clearSearchFlags() {
+        await nextTick();
+        const values = tableRef.value?.getTableData() || [];
+        tableRef.value?.setValues(
+          values.map((item) => ({
+            rowKey: item.id,
+            values: { searchFlag: 'N' },
+          }))
+        );
+      }
+
+      watch(
+        () => props.disableSearch,
+        (disabled) => {
+          const searchColumn = columns.value.find((column) => column.key === 'searchFlag');
+          if (searchColumn) {
+            searchColumn.disabled = disabled;
+          }
+          if (disabled) {
+            clearSearchFlags();
+          }
+        },
+        { immediate: true }
+      );
+
+      watch(
+        () => props.dataSource,
+        () => {
+          if (props.disableSearch) {
+            clearSearchFlags();
+          }
+        }
+      );
+      // update-end--author:liaozhiyang---date:20260824---for：【LHZP-1055】online图表JSON方式禁用查询
 
       /** 字段名转换大小写 */
       function fieldNameConvertCase(convertCase, name) {

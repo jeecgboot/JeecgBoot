@@ -23,6 +23,7 @@ import org.jeecg.common.system.vo.DictQuery;
 import org.jeecg.common.system.vo.LoginUser;
 import org.jeecg.common.util.*;
 import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
+import org.jeecg.config.sign.annotation.SignatureCheck;
 import org.jeecg.config.shiro.ShiroRealm;
 import org.jeecg.modules.system.constant.DefIndexConst;
 import org.jeecg.modules.system.entity.SysDict;
@@ -615,6 +616,7 @@ public class SysDictController {
 	 *
 	 * @param request
 	 */
+	@RequiresPermissions("system:dict:exportXls")
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(SysDict sysDict,HttpServletRequest request) {
 		//------------------------------------------------------------------------------------------------
@@ -751,6 +753,7 @@ public class SysDictController {
 	 * @param id
 	 * @return
 	 */
+	@RequiresPermissions("system:dict:deleteRecycleBin")
 	@RequestMapping(value = "/deletePhysic/{id}", method = RequestMethod.DELETE)
 	public Result<?> deletePhysic(@PathVariable("id") String id) {
 		try {
@@ -908,4 +911,26 @@ public class SysDictController {
 			return Result.error("查询失败：" + e.getMessage());
 		}
 	}
+
+    /**
+     * 查询有效的数据字典项：表单设计器专用，用于设计器页面查询字典的维护
+     * for: 【LHZP-1163】字典换接口，过滤掉停用的
+     * @param dictCode 字典code
+     * @return
+     */
+    @SignatureCheck
+    @RequestMapping(value = "/queryEnableDictItemsByCode/{dictCode}", method = RequestMethod.GET)
+    public Result<List<DictModel>> queryEnableDictItemsByCode(@PathVariable("dictCode") String dictCode) {
+        Result<List<DictModel>> result = new Result<List<DictModel>>();
+        try {
+            List<DictModel> ls = sysDictService.queryEnableDictItemsByCode(dictCode);
+            result.setSuccess(true);
+            result.setResult(ls);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            result.error500("操作失败");
+        }
+        return result;
+    }
+    
 }

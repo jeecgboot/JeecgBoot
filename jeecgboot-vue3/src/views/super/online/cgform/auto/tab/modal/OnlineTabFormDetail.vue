@@ -23,7 +23,7 @@
             <online-sub-form-detail
               :key="subReloadKey"
               :table="sub.key"
-              :form-template="formTemplate"
+              :form-template="sub.formTemplate"
               :main-id="getSubTableForeignKeyValue(sub.foreignKey)"
               :properties="sub.properties"
             >

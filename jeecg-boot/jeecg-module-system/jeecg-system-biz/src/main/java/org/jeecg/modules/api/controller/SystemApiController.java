@@ -29,7 +29,8 @@ import java.util.Set;
  * 服务化 system模块 对外接口请求类
  * <p>
  * 仅供微服务 Feign 内部调用。单体模式下 ISysBaseAPI 为进程内调用，无需对外暴露，
- * 故只在类路径存在 jeecg-boot-starter-cloud（微服务模式）时加载，防止 /sys/api/** 被普通登录用户直接调用（2026-10-14）
+ * 故只在类路径存在 jeecg-boot-starter-cloud（微服务模式）时加载，防止 /sys/api/** 被普通登录用户直接调用
+ * （2026-10-14 GHSA-vrqv-3gwg-423j / GHSA-hh6j-6p7c-8hrf / GHSA-483m-f38h-369m / GHSA-5q28-hq94-q2fj）
  * @author: jeecg-boot
  */
 @Slf4j
@@ -42,6 +43,17 @@ public class SystemApiController {
     private SysBaseApiImpl sysBaseApi;
     @Autowired
     private ISysUserService sysUserService;
+
+	/**
+	 * 批量查询 Popup 字典项。
+	 */
+	@GetMapping("/queryPopupDictItems")
+	public List<DictModel> queryPopupDictItems(@RequestParam("reportCode") String reportCode,
+			@RequestParam("dictCode") String dictCode,
+			@RequestParam("dictText") String dictText,
+			@RequestParam("dataList") String dataList) {
+		return sysBaseApi.queryPopupDictItems(reportCode, dictCode, dictText, dataList);
+	}
 
     /**
      * 发送系统消息

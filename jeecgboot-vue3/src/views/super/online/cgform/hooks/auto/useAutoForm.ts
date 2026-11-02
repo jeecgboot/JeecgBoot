@@ -20,6 +20,7 @@ export const LINK_TABLE = 'link_table';
 
 export interface OnlSubTab {
   key: string;
+  formTemplate: number;
   properties?: any[];
   columns?: any[];
   foreignKey: string;
@@ -89,6 +90,7 @@ export function useFormItems(props, onlineFormRef) {
         defaultValueFields[key] = [];
         let temp: OnlSubTab = {
           key,
+          formTemplate: Number(item.formTemplate || 1),
           // 这个foreignKey是主表的字段
           foreignKey: item['foreignKey'],
           describe: item.describe,
@@ -248,7 +250,7 @@ export function useFormItems(props, onlineFormRef) {
       }
       // update-begin--author:liaozhiyang---date:20231222---for：【QQYUN-7515】online 下拉字典、单选组件options跟随数据库类型
       const result = a.getFormItemSchema();
-      if (result.component === 'JDictSelectTag' && a?._data?.type === 'number') {
+      if (result.component === 'JDictSelectTag' && ['number', 'integer'].includes(a?._data?.type)) {
         result.componentProps.stringToNumber = true;
       }
       // update-end-author:liaozhiyang---date:20231222---for：【QQYUN-7515】online 下拉字典、单选组件options跟随数据库类型
@@ -981,6 +983,7 @@ export function getDetailFormSchemas(props) {
         hasSubTable.value = true;
         let temp: OnlSubTab = {
           key,
+          formTemplate: Number(item.formTemplate || 1),
           // 这个foreignKey是主表的字段
           foreignKey: item['foreignKey'],
           describe: item.describe,
@@ -1023,13 +1026,15 @@ export function getDetailFormSchemas(props) {
         } else {
           let tempIndex = getFieldIndex(arr, key);
           if (tempIndex == -1) {
+            // update-begin--author:liusq---date:20261102---for：online树表详情顶级节点的父节点显示0，带上pidComponent/pidValue用于识别树表父节点字段
             let temp = Object.assign(
               {
                 field: key,
                 label: item.title,
               },
-              pick(item, ['view', 'order', 'fieldExtendJson', 'dictTable', 'dictText', 'dictCode', 'dict'])
+              pick(item, ['view', 'order', 'fieldExtendJson', 'dictTable', 'dictText', 'dictCode', 'dict', 'pidComponent', 'pidValue'])
             );
+            // update-end--author:liusq---date:20261102---for：online树表详情顶级节点的父节点显示0，带上pidComponent/pidValue用于识别树表父节点字段
             if (item.view == 'file') {
               temp['span'] = 24;
               temp['isFile'] = true;

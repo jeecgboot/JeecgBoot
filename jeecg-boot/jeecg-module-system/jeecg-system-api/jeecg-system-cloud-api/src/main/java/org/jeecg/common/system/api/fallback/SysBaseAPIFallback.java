@@ -29,6 +29,12 @@ public class SysBaseAPIFallback implements ISysBaseAPI {
     @Setter
     private Throwable cause;
 
+	@Override
+	public List<DictModel> queryPopupDictItems(String reportCode, String dictCode, String dictText, String dataList) {
+		log.error("查询popup字典项失败", cause);
+		return List.of();
+	}
+
     @Override
     public void sendSysAnnouncement(MessageDTO message) {
         log.error("发送消息失败 {}", cause);

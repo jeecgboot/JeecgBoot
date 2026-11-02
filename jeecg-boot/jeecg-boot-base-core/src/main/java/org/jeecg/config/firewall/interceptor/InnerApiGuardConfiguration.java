@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * 只在类路径不存在 jeecg-boot-starter-cloud 时（单体模式）生效；微服务模式下内部接口需供 Feign 调用，由网关拦截外部访问。
  *
  * @author scott
- * @since 2026-10-14 单体模式下内部接口可被任意登录用户直接调用
+ * @since 2026-10-14 单体模式下内部接口可被任意登录用户直接调用（GHSA-vrqv-3gwg-423j / GHSA-v952-qq2h-377j / GHSA-qj27-82m3-9q8q / GHSA-2xf5-w883-78m9）
  */
 @Configuration
 @ConditionalOnMissingClass("org.jeecg.config.JeecgCloudBaseConfig")

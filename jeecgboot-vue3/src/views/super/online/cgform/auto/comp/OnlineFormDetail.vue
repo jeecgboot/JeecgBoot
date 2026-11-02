@@ -15,7 +15,7 @@
       <a-tab-pane v-for="(sub, index) in subTabInfo" :tab="sub.describe" :key="index + ''" :forceRender="true">
         <div :style="{ 'overflow-y': 'auto', 'overflow-x': 'hidden', 'max-height': subFormHeight + 'px' }" v-if="sub.relationType == 1">
           <!-- 子表-一对一 -->
-          <online-sub-form-detail :key="subReloadKey" :table="sub.key" :form-template="formTemplate" :main-id="getSubTableForeignKeyValue(sub.foreignKey)" :properties="sub.properties"> </online-sub-form-detail>
+          <online-sub-form-detail :key="subReloadKey" :table="sub.key" :form-template="sub.formTemplate" :main-id="getSubTableForeignKeyValue(sub.foreignKey)" :properties="sub.properties"> </online-sub-form-detail>
         </div>
         <div v-else>
           <!-- 子表-一对多 -->

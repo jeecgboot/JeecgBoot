@@ -16,6 +16,8 @@ enum Api {
   packList = '/sys/tenant/packList',
   addPackPermission = '/sys/tenant/addPackPermission',
   editPackPermission = '/sys/tenant/editPackPermission',
+  // 套餐包菜单数据规则
+  packDataRule = '/sys/tenant/packDatarule',
   deleteTenantPack = '/sys/tenant/deleteTenantPack',
   recycleBinPageList = '/sys/tenant/recycleBinPageList',
   deleteLogicDeleted = '/sys/tenant/deleteLogicDeleted',
@@ -150,6 +152,19 @@ export const addPackPermission = (params) => {
 export const editPackPermission = (params) => {
   return defHttp.put({ url: Api.editPackPermission, params });
 };
+
+/**
+ * 查询套餐包菜单的数据规则
+ * @param params functionId 菜单id，packId 套餐包id
+ */
+export const queryPackDataRule = (params) =>
+  defHttp.get({ url: `${Api.packDataRule}/${params.functionId}/${params.packId}` }, { isTransformResponse: false });
+
+/**
+ * 保存套餐包菜单的数据规则
+ * @param params permissionId 菜单id，packId 套餐包id，dataRuleIds 数据规则id
+ */
+export const savePackDataRule = (params) => defHttp.post({ url: Api.packDataRule, params });
 
 /**
  * 删除菜单

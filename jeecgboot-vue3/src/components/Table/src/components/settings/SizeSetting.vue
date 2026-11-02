@@ -64,6 +64,9 @@
         table.setProps({
           size: key,
         });
+        // update-begin--author:liaozhiyang---date:20260827---for:【LHZP-511】online表格密度由默认切换到宽松后出现了滚动条
+        table.redoHeight();
+        // update-end--author:liaozhiyang---date:20260827---for:【LHZP-511】online表格密度由默认切换到宽松后出现了滚动条
         // 代码逻辑说明: 【TV360X-100】缓存表格密度
         $ls.set(cacheKey.value, key);
       }

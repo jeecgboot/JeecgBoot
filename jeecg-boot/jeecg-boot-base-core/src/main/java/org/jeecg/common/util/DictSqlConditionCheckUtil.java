@@ -209,8 +209,7 @@ public final class DictSqlConditionCheckUtil {
 		}
 		if (isComparisonExpression(expression)) {
 			BinaryExpression comparison = (BinaryExpression) expression;
-			return addConditionField(comparison.getLeftExpression(), conditionFields)
-					&& isLiteral(comparison.getRightExpression());
+			return validateComparisonExpression(comparison, conditionFields);
 		}
 		if (expression instanceof LikeExpression likeExpression) {
 			return addConditionField(likeExpression.getLeftExpression(), conditionFields)
@@ -230,6 +229,17 @@ public final class DictSqlConditionCheckUtil {
 			return addConditionField(isNullExpression.getLeftExpression(), conditionFields);
 		}
 		return false;
+	}
+
+	private static boolean validateComparisonExpression(BinaryExpression comparison, Set<String> conditionFields) {
+		Expression leftExpression = comparison.getLeftExpression();
+		Expression rightExpression = comparison.getRightExpression();
+		//update-begin---author:scott ---date:20260831  for：【issues/9840】兼容1=1字典占位条件-----------
+		if (comparison instanceof EqualsTo && isLiteral(leftExpression) && isLiteral(rightExpression)) {
+			return true;
+		}
+		//update-end---author:scott ---date:20260831  for：【issues/9840】兼容1=1字典占位条件-----------
+		return addConditionField(leftExpression, conditionFields) && isLiteral(rightExpression);
 	}
 
 	private static boolean isComparisonExpression(Expression expression) {

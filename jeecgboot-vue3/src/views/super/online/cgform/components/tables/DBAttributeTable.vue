@@ -25,6 +25,11 @@
   >
     <template #toolbarSuffix>
       <a-button type="primary" preIcon="ant-design:robot-outlined" @click="openAiModal">AI字段建议</a-button>
+      <!-- update-begin--author:liaozhiyang---date:20260824---for:【LHZP-1951】新增流程状态字段（在工具栏末尾按字段存在状态显示快捷按钮） -->
+      <a-tooltip title="新增流程状态字段">
+        <a-button v-if="actionButton && !hasBpmStatusField" type="primary" preIcon="ant-design:branches-outlined" @click="addBpmStatusField">流程状态字段</a-button>
+      </a-tooltip>
+      <!-- update-end--author:liaozhiyang---date:20260824---for:【LHZP-1951】新增流程状态字段（在工具栏末尾按字段存在状态显示快捷按钮） -->
     </template>
   </JVxeTable>
   <AiModal
@@ -39,11 +44,12 @@
 </template>
 
 <script lang="ts">
-  import { ref, getCurrentInstance, defineComponent } from 'vue';
+  import { ref, getCurrentInstance, defineComponent, computed } from 'vue';
   import { JVxeTypes, JVxeColumn } from '/@/components/jeecg/JVxeTable/types';
   import { useTableSync } from '../../hooks/useTableSync';
   import AiModal from './components/aiModal.vue';
   import { useModal } from '/@/components/Modal';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   const MySQLKeywords = [
     'ADD',
@@ -284,9 +290,10 @@
     components: {
       AiModal,
     },
-    emits: ['added', 'removed', 'inserted', 'dragged', 'syncDbType', 'syncDbIsPersist', 'syncDbIsNull'],
+    emits: ['added', 'removed', 'inserted', 'dragged', 'syncDbType', 'syncQueryMode', 'syncDbIsPersist', 'syncDbIsNull'],
     setup(props, { emit }) {
       const instance = getCurrentInstance();
+      const { createMessage: $message } = useMessage();
       const addBatching = ref(false);
       const columns = ref<JVxeColumn[]>([
         {
@@ -436,6 +443,14 @@
 
       const setup = useTableSync(columns);
       const { tableRef, loading, dataSource, tableHeight, tableProps, setDataSource, validateData } = setup;
+      // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-1951】新增流程状态字段（监听表格增删并控制快捷按钮显隐）
+      const tableDataVersion = ref(0);
+      const hasBpmStatusField = computed(() => {
+        tableDataVersion.value;
+        const tableData = tableRef.value?.getTableData() ?? dataSource.value;
+        return tableData.some((row) => row.dbFieldName === 'bpm_status');
+      });
+      // update-end--author:liaozhiyang---date:20260824---for:【LHZP-1951】新增流程状态字段（监听表格增删并控制快捷按钮显隐）
       // update-begin--author:liaozhiyang---date:20250407---for：【QQYUN-11801】ai建表字段
       const aiModalShow = ref(false);
       const [registerAiModal, { openModal }] = useModal();
@@ -443,11 +458,33 @@
         tableRef.value!.addRows(data);
       };
       // update-end--author:liaozhiyang---date:20250407---for：【QQYUN-11801】ai建表字段
+
+      // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-1951】新增流程状态字段（复用普通新增默认值并配置流程状态页面属性）
+      /** 按普通新增行的默认配置添加流程状态字段，仅覆盖流程字段要求的属性。 */
+      function addBpmStatusField() {
+        if (hasBpmStatusField.value) {
+          $message.warning('流程状态字段已存在');
+          return;
+        }
+        tableRef.value!.addRows({
+          dbFieldName: 'bpm_status',
+          dbFieldTxt: '流程状态',
+          isShowList: '1',
+          fieldShowType: 'list',
+          dictField: 'bpm_status',
+          isShowForm: '0',
+          sortFlag: '0',
+        });
+      }
+      // update-end--author:liaozhiyang---date:20260824---for:【LHZP-1951】新增流程状态字段（复用普通新增默认值并配置流程状态页面属性）
+
       function handleAdded() {
+        tableDataVersion.value++;
         emit('added', instance);
       }
 
       function handleRemoved(event) {
+        tableDataVersion.value++;
         removeIds = removeIds.concat(event.deleteRows.map((r) => r.id));
         emit('removed', { ...event, removeIds, target: instance });
       }
@@ -503,6 +540,9 @@
           } else if (row['dbLength'] === '0') {
             target.setValues([{ rowKey: row.id, values: { dbLength: '32' } }]);
           }
+          // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（字段类型改变后通知页面属性更新查询类型）
+          emit('syncQueryMode', { oldValue, row });
+          // update-end--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（字段类型改变后通知页面属性更新查询类型）
         } else if (col.key === 'dbIsPersist') {
           // update-begin--author:liaozhiyang---date:20240313---for：【QQYUN-8485】不同步数据库的字段则去掉对应查询勾选
           emit('syncDbIsPersist', { row, value, target: instance });
@@ -634,6 +674,8 @@
         registerAiModal,
         aiModalShow,
         handleGenerate,
+        addBpmStatusField,
+        hasBpmStatusField,
       };
     },
   });

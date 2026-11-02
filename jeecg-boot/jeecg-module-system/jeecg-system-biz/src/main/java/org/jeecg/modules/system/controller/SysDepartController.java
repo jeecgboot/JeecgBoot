@@ -381,6 +381,7 @@ public class SysDepartController {
      *
      * @param request
      */
+    @RequiresPermissions("system:depart:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysDepart sysDepart,HttpServletRequest request) {
 		//------------------------------------------------------------------------------------------------
@@ -555,7 +556,7 @@ public class SysDepartController {
 			LambdaQueryWrapper<SysUser> queryUser = new LambdaQueryWrapper<SysUser>();
 			queryUser.eq(SysUser::getDelFlag,CommonConstant.DEL_FLAG_0);
 			queryUser.and(i -> i.like(SysUser::getUsername, keyWord).or().like(SysUser::getRealname, keyWord));
-			//update-begin---author:scott ---date:20261014  for：多租户模式下只查当前租户的用户，防止按关键字跨租户搜索用户信息-----------
+			//update-begin---author:scott ---date:20261014  for：【安全 GHSA-2h34-xh29-7w95】多租户模式下只查当前租户的用户，防止按关键字跨租户搜索用户信息-----------
 			if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL) {
 				Integer tenantId = oConvertUtils.getInt(TokenUtils.getTenantIdByRequest(request), 0);
 				List<String> userIds = userTenantService.getUserIdsByTenantId(tenantId);
@@ -565,7 +566,7 @@ public class SysDepartController {
 					queryUser.eq(SysUser::getId, "通过租户查询不到任何用户");
 				}
 			}
-			//update-end---author:scott ---date:20261014  for：多租户模式下只查当前租户的用户，防止按关键字跨租户搜索用户信息-----------
+			//update-end---author:scott ---date:20261014  for：【安全 GHSA-2h34-xh29-7w95】多租户模式下只查当前租户的用户，防止按关键字跨租户搜索用户信息-----------
 			List<SysUser> sysUsers = this.sysUserService.list(queryUser);
 			map.put("userList",sysUsers);
 			map.put("departList",list);

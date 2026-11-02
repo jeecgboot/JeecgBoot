@@ -921,7 +921,6 @@ export function useCodeGeneratorFormSchemas(_, handlers, single: Ref<boolean>) {
   );
   const getColSize = computed<SpanType>(() => (single.value ? 'one' : 'tow'));
   // 由于需要动态改变布局，所以使用 computed
-  // e3e3NcxzbUiGa53YYVXxWc8ADo5ISgQGx/gaZwERF91oAryDlivjqBv3wqRArgChupi+Y/Gg/swwGEyL0PuVFg==
   const formSchemas = computed<FormSchema[]>(() => [
     mapFormSchema(
       {

@@ -6,6 +6,7 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.dto.message.MessageDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.api.ISysBaseAPI;
@@ -79,6 +80,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @param sysMessageTemplate
 	 * @return
 	 */
+	@RequiresPermissions("system:messageTemplate:add")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysMessageTemplate sysMessageTemplate) {
 		sysMessageTemplateService.save(sysMessageTemplate);
@@ -91,6 +93,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @param sysMessageTemplate
 	 * @return
 	 */
+	@RequiresPermissions("system:messageTemplate:edit")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody SysMessageTemplate sysMessageTemplate) {
 		sysMessageTemplateService.updateById(sysMessageTemplate);
@@ -103,6 +106,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @param id
 	 * @return
 	 */
+	@RequiresPermissions("system:messageTemplate:delete")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
 		sysMessageTemplateService.removeById(id);
@@ -115,6 +119,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @param ids
 	 * @return
 	 */
+	@RequiresPermissions("system:messageTemplate:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 		this.sysMessageTemplateService.removeByIds(Arrays.asList(ids.split(",")));
@@ -138,6 +143,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 *
 	 * @param request
 	 */
+	@RequiresPermissions("system:messageTemplate:exportXls")
 	@GetMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request,SysMessageTemplate sysMessageTemplate) {
 		return super.exportXls(request, sysMessageTemplate, SysMessageTemplate.class,"推送消息模板");
@@ -150,6 +156,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	 * @param response
 	 * @return
 	 */
+	@RequiresPermissions("system:messageTemplate:importExcel")
 	@PostMapping(value = "/importExcel")
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -172,6 +179,7 @@ public class SysMessageTemplateController extends JeecgController<SysMessageTemp
 	/**
 	 * 发送消息
 	 */
+	@RequiresPermissions("system:messageTemplate:sendMsg")
 	@PostMapping(value = "/sendMsg")
 	public Result<SysMessageTemplate> sendMessage(@RequestBody MsgParams msgParams) {
 		Result<SysMessageTemplate> result = new Result<SysMessageTemplate>();

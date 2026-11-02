@@ -179,12 +179,11 @@ public class ShiroConfig {
         //App vue3版本查询版本接口
         filterChainDefinitionMap.put("/sys/version/app3version", "anon");
 
-        //性能监控——安全隐患泄露TOEKN（durid连接池也有）
-        //update-begin---author:scott ---date:20261024  for：actuator端点限admin角色访问，避免普通用户通过请求追踪获取他人token------------
+        //update-begin---author:scott ---date:20261023  for：【GHSA-2899-g99h-hq64】actuator不再整体免登录（请求追踪会泄露他人token）：health保留匿名供微服务监控中心探活，其余端点要求登录且为admin角色------------
         filterChainDefinitionMap.put("/actuator/health", "anon");
         filterChainDefinitionMap.put("/actuator/health/**", "anon");
         filterChainDefinitionMap.put("/actuator/**", "jwt,roles[admin]");
-        //update-end---author:scott ---date:20261024  for：actuator端点限admin角色访问------------
+        //update-end---author:scott ---date:20261023  for：【GHSA-2899-g99h-hq64】actuator不再整体免登录：health保留匿名，其余端点要求登录且为admin角色------------
         //测试模块排除
         filterChainDefinitionMap.put("/test/seata/**", "anon");
 

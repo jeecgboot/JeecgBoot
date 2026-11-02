@@ -3,6 +3,7 @@
     title="选择用户"
     @register="registerModal"
     width="100%"
+    wrapClassName="tabs-select-user-modal"
     style="top: 10px"
     @ok="handleSelectSuccess"
     :canFullscreen="true"
@@ -12,17 +13,17 @@
     <a-row>
       <!-- 左侧多tabs切换 -->
       <a-col :xs="24" :sm="6">
-        <a-card :bordered="true" :bodyStyle="{ maxHeight: 'calc(100vh - 200px)', overflow: 'hidden', padding: 0 }">
-          <a-tabs v-model:activeKey="activeTab" size="small" centered :tabBarStyle="{ margin: 10 }" @change="onTabChange">
+        <a-card class="left-select-card" :bordered="true" :bodyStyle="{ overflow: 'hidden', padding: 0 }">
+          <a-tabs class="left-select-tabs" v-model:activeKey="activeTab" size="small" centered :tabBarStyle="{ margin: 10 }" @change="onTabChange">
             <!-- 部门标签页 -->
             <a-tab-pane key="depart" tab="部门">
-              <div style="padding: 14px">
+              <div class="left-tab-content">
                 <a-alert type="info" :showIcon="true" class="alert-info">
                   <template #message>
                     <div class="alert-message-content">
                       <span class="alert-label">当前选择：</span>
                       <span v-if="departInfo.currentSelectRow.title" class="selected-title">{{ departInfo.currentSelectRow.title }}</span>
-                      <a v-if="departInfo.currentSelectRow.title" style="margin-left: 10px" @click="onClearSelectedDepart">取消选择</a>
+                      <a v-if="departInfo.currentSelectRow.title" class="clear-link" @click="onClearSelectedDepart">取消选择</a>
                     </div>
                   </template>
                 </a-alert>
@@ -52,13 +53,13 @@
 
             <!-- 岗位标签页 -->
             <a-tab-pane key="position" tab="岗位">
-              <div style="padding: 14px">
+              <div class="left-tab-content">
                 <a-alert type="info" :showIcon="true" class="alert-info">
                   <template #message>
                     <div class="alert-message-content">
                       <span class="alert-label">当前选择：</span>
                       <span v-if="positionInfo.currentSelectRow.title" class="selected-title">{{ positionInfo.currentSelectRow.title }}</span>
-                      <a v-if="positionInfo.currentSelectRow.title" style="margin-left: 10px" @click="onClearSelectedPosition">取消选择</a>
+                      <a v-if="positionInfo.currentSelectRow.title" class="clear-link" @click="onClearSelectedPosition">取消选择</a>
                     </div>
                   </template>
                 </a-alert>
@@ -70,7 +71,7 @@
                   v-model:value="positionSearchText"
                 />
                 <!--岗位列表-->
-                <div class="">
+                <div class="position-list">
                   <PostRankRelation :treeData="positionInfo.treeData" @select="onSelectPosition" />
                 </div>
               </div>
@@ -78,13 +79,13 @@
 
             <!-- 用户组标签页 -->
             <a-tab-pane key="userGroup" tab="用户组">
-              <div style="padding: 14px">
+              <div class="left-tab-content">
                 <a-alert type="info" :showIcon="true" class="alert-info">
                   <template #message>
                     <div class="alert-message-content">
                       <span class="alert-label">当前选择：</span>
                       <span v-if="userGroupInfo.currentSelectRow.title" class="selected-title">{{ userGroupInfo.currentSelectRow.title }}</span>
-                      <a v-if="userGroupInfo.currentSelectRow.title" style="margin-left: 10px" @click="onClearSelectedUserGroup">取消选择</a>
+                      <a v-if="userGroupInfo.currentSelectRow.title" class="clear-link" @click="onClearSelectedUserGroup">取消选择</a>
                     </div>
                   </template>
                 </a-alert>
@@ -601,9 +602,54 @@
 </script>
 
 <style scoped>
+  :global(.tabs-select-user-modal .jeecg-modal-content > .scroll-container > .scrollbar__wrap) {
+    margin-bottom: 0 !important;
+    overflow-y: hidden !important;
+  }
+
+  :global(.tabs-select-user-modal .jeecg-modal-content > .scroll-container > .scrollbar__bar.is-vertical) {
+    display: none;
+  }
+
+  .left-select-card :deep(.ant-card-body) {
+    height: calc(100vh - 140px);
+  }
+
+  .left-select-tabs {
+    height: 100%;
+  }
+
+  .left-select-tabs :deep(.ant-tabs-content-holder),
+  .left-select-tabs :deep(.ant-tabs-content),
+  .left-select-tabs :deep(.ant-tabs-tabpane) {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .left-tab-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .position-list {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .position-list :deep(.ant-spin-nested-loading),
+  .position-list :deep(.ant-spin-container),
+  .position-list :deep(.post-rank-tree) {
+    height: 100%;
+    min-height: 0;
+  }
+
   .user-group-list {
-    max-height: calc(100vh - 390px);
-    min-height: 150px;
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
     margin-top: 8px;
   }
@@ -654,9 +700,8 @@
   }
   /**部门树组件滚动条样式*/
   .tree-container {
-    max-height: calc(100vh - 390px); /* 视口响应式高度，兼容小屏 */
-    min-height: 150px;               /* 最小高度兜底 */
-    height: auto;                    /* 自适应内容 */
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;                /* 垂直滚动 */
     overflow-x: hidden;              /* 隐藏水平滚动 */
     position: relative;              /* 相对定位 */
@@ -689,6 +734,8 @@
   }
   .selected-title {
     display: inline-block; /* 设置为块级元素才能应用宽度限制 */
+    flex: 1;
+    min-width: 0;
     max-width: 180px; /* 最大宽度限制 */
     overflow: hidden; /* 超出部分隐藏 */
     text-overflow: ellipsis; /* 显示省略号 */
@@ -710,6 +757,7 @@
   }
 
   .clear-link {
+    flex-shrink: 0;
     color: #1890ff; /* 链接颜色 */
     text-decoration: none; /* 去除下划线 */
     white-space: nowrap; /* 禁止换行 */

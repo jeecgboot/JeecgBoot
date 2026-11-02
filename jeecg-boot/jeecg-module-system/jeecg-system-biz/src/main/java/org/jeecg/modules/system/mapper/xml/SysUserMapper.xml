@@ -55,7 +55,12 @@
 			)
 		</if>
 		<if test="username!=null and username!=''">
-			and username = #{username}
+			<bind name="bindUsername" value="'%' + username + '%'"/>
+			and username LIKE #{bindUsername}
+		</if>
+		<if test="realname!=null and realname!=''">
+			<bind name="bindRealname" value="'%' + realname + '%'"/>
+			and realname LIKE #{bindRealname}
 		</if>
 	</select>
 

@@ -24,8 +24,8 @@ export const columns: BasicColumn[] = [
     title: '按钮图标',
     align: 'center',
     dataIndex: 'buttonIcon',
-    customRender: ({text}) => {
-      return getButtonIconRender({text});
+    customRender: ({text, record}) => {
+      return getButtonIconRender({text, buttonCode: record.buttonCode});
     },
   },
   { title: '表达式', align: 'center', dataIndex: 'exp' },

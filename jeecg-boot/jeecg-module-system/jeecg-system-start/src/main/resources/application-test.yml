@@ -226,15 +226,26 @@ jeecg:
       voice: tongtong
       speed: 1.0
       volume: 0.0
-    # AI视频
+    # AI视频：支持 智普(ZHIPU) 和 MiniMax(MINIMAX)，二选一。切换时启用对应一段、注释另一段
+    # ===== 智普 ZHIPU（当前启用）=====
     ai-model-video:
       provider: ZHIPU
+      # 智普可选模型：cogvideox-3、cogvideox-2、viduq1-text、vidu2-reference
       model: ??
       apiKey: sk-??
-      apiHost: https://api.deepseek.com/v1
+      apiHost: https://open.bigmodel.cn/api/paas/v4
       timeout: 60
       ffmpeg-path:
       edge-tts-path:
+    # ===== MiniMax MINIMAX（备用，启用时取消下面注释并注释掉上面智普那段）=====
+    #ai-model-video:
+    #  provider: MINIMAX
+    #  model: MiniMax-H3
+    #  apiKey: 填写MiniMax的apiKey
+    #  apiHost: https://api.minimax.cn
+    #  timeout: 60
+    #  ffmpeg-path:
+    #  edge-tts-path:
     # 默认向量模型
     ai-model-embed:
       provider: QWEN
@@ -284,6 +295,8 @@ jeecg:
   signatureSecret: dd05f1c54d63749eda95f9fa6d49v442a
   #签名拦截接口
   signUrls: /sys/dict/getDictItems/*,/sys/dict/loadDict/*,/sys/dict/loadDictOrderByValue/*,/sys/dict/loadDictItem/*,/sys/dict/loadTreeData,/sys/api/queryTableDictItemsByCode,/sys/api/queryFilterTableDictInfo,/sys/api/queryTableDictByKeys,/sys/api/translateDictFromTable,/sys/api/translateDictFromTableByKeys,/sys/sendChangePwdSms,/sys/user/sendChangePhoneSms,/sys/sms,/desform/api/sendVerifyCode
+  # LibreOffice安装目录，非默认安装路径时按实际路径配置
+  libre-office-home:
   # 上传类型：local（本地存储）| minio（MinIO对象存储）| alioss（阿里云OSS）
   uploadType: local
   # 前端访问地址

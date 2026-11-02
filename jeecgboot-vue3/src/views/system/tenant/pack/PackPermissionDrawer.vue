@@ -32,6 +32,7 @@
       :checkStrictly="true"
       title="所拥有的的权限"
       @check="onCheck"
+      @select="onTreeNodeSelect"
     >
       <template #title="{ slotTitle, ruleFlag }">
         {{ slotTitle }}
@@ -45,13 +46,15 @@
       <a-button @click="handleSubmit(false)" type="primary" :loading="loading" ghost style="margin-right: 0.8rem">仅保存</a-button>
       <a-button @click="handleSubmit(true)" type="primary" :loading="loading">保存并关闭</a-button>
     </template>
+    <PackDataRuleDrawer @register="registerDataRuleDrawer" />
   </BasicDrawer>
 </template>
 <script lang="ts" setup>
   import { ref, unref } from 'vue';
-  import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
+  import { BasicDrawer, useDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicTree, TreeItem } from '/@/components/Tree';
   import { queryPremTreeList, editPackPermission } from '../tenant.api';
+  import PackDataRuleDrawer from './PackDataRuleDrawer.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { PACK_AUTH_CONFIG_KEY } from '/@/enums/cacheEnum';
   const emit = defineEmits(['register','success']);
@@ -72,6 +75,8 @@
   const expandedKeys = ref<any>([]);
   //父子节点选中状态是否关联 true不关联，false关联
   const checkStrictly = ref<boolean>(false);
+  // 数据规则抽屉
+  const [registerDataRuleDrawer, { openDrawer: openDataRuleDrawer }] = useDrawer();
   const [registerDrawer, { setDrawerProps, closeDrawer }] = useDrawerInner(async (data) => {
     await reset();
     setDrawerProps({ confirmLoading: false, loading: true });
@@ -163,6 +168,16 @@
     return result;
   }
   
+  /**
+   * 选中节点，打开数据权限抽屉
+   */
+  function onTreeNodeSelect(key) {
+    if (key && key.length > 0) {
+      selectedKeys.value = key;
+    }
+    openDataRuleDrawer(true, { functionId: unref(selectedKeys)[0], packId: unref(packId) });
+  }
+
   /**
    * 数据重置
    */

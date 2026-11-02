@@ -165,14 +165,14 @@ public class Issue9695_OpenApiSsrfHeaderInjectionTest {
     }
 
     // ==================================================================
-    // 二·补：网关头只接受纯路径 —— 拒绝查询串/片段/路径穿越
+    // 二·补：网关头只接受纯路径 —— 拒绝查询串/片段/路径穿越（GHSA-3c5r-mgw9-jq74）
     //   漏洞：validateGatewayBasePath 原用 uri.getPath()（解码后）重建基址，未拒绝
     //   解码后出现的 ? / #，攻击者传 X_GATEWAY_BASE_PATH: http://127.0.0.1:8080/jeecg-boot%3f
     //   （%3f 解码为 ?）即可篡改转发目标。修复：拒绝 rawQuery/rawFragment，且 path 走字符白名单、禁止 ..
     // ==================================================================
 
     @Nested
-    @DisplayName("网关头纯路径校验 —— 拒绝查询串/片段/路径穿越")
+    @DisplayName("网关头纯路径校验 —— 拒绝查询串/片段/路径穿越 (GHSA-3c5r)")
     class GatewayHeaderPathOnly {
 
         @Test

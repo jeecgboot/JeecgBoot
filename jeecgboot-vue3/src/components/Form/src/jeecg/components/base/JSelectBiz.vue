@@ -82,8 +82,10 @@
       },
       // 是否正在加载
       loading: propTypes.bool.def(false),
+      // update-begin--author:liaozhiyang---date:20260826---for:【LHZP-1820】查询区域部门和岗位组件多选时传maxTagCount
       // 最多显示多少个 tag
-      maxTagCount: propTypes.number,
+      maxTagCount: propTypes.oneOfType([propTypes.number, propTypes.string]),
+      // update-end--author:liaozhiyang---date:20260826---for:【LHZP-1820】查询区域部门和岗位组件多选时传maxTagCount
       // buttonIcon
       buttonIcon: propTypes.string.def(''),
       // 【TV360X-1002】是否是详情模式

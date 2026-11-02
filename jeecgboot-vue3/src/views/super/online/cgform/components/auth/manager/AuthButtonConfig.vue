@@ -46,6 +46,10 @@
         type: Number,
         default: 1,
       },
+      isTree: {
+        type: String,
+        default: 'N',
+      },
     },
     setup(props) {
       const cgformId = ref('');
@@ -83,7 +87,7 @@
        * 【TV360X-1017】子表权限管理按钮权限根据主表主题模版只显示所需按钮
        * */
       const getButtonList = (res) => {
-        const buttons = cloneDeep(authButtonFixedList);
+        const buttons = cloneDeep(authButtonFixedList).filter((item) => item.code !== 'addSub' || props.isTree === 'Y');
         if (res.mainRelationType != null && res.mainThemeTemplate != null && props.tableType == 3) {
           // 子表（一对一、一对多）
           let result: any = [];

@@ -38,6 +38,15 @@ import java.util.Set;
 @ConditionalOnMissingClass("org.jeecg.modules.system.service.impl.SysBaseApiImpl")
 public interface ISysBaseAPI extends CommonAPI {
 
+	/**
+	 * 批量查询 Popup 字典项。
+	 */
+	@GetMapping("/sys/api/queryPopupDictItems")
+	List<DictModel> queryPopupDictItems(@RequestParam("reportCode") String reportCode,
+			@RequestParam("dictCode") String dictCode,
+			@RequestParam("dictText") String dictText,
+			@RequestParam("dataList") String dataList);
+
     /**
      * 1发送系统消息
      * @param message 使用构造器赋值参数 如果不设置category(消息类型)则默认为2 发送系统消息

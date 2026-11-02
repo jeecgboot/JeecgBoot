@@ -203,6 +203,7 @@ public class QuartzJobController {
 	 * @param request
 	 * @param quartzJob
 	 */
+    @RequiresPermissions("system:quartzJob:exportXls")
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request, QuartzJob quartzJob) {
 		// Step.1 组装查询条件
@@ -233,6 +234,7 @@ public class QuartzJobController {
 	 * @param response
 	 * @return
 	 */
+	@RequiresPermissions("system:quartzJob:importExcel")
 	@RequestMapping(value = "/importExcel", method = RequestMethod.POST)
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

@@ -23,6 +23,7 @@ import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.service.ISysPositionService;
 import org.jeecg.modules.system.service.ISysUserPositionService;
 import org.jeecg.modules.system.service.ISysUserService;
+import org.jeecg.modules.system.service.ISysUserTenantService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -67,6 +68,9 @@ public class SysPositionController {
     @Autowired
     private ISysUserService userService;
 
+    @Autowired
+    private ISysUserTenantService userTenantService;
+
     /**
      * 分页列表查询
      *
@@ -110,6 +114,13 @@ public class SysPositionController {
     @Operation(summary = "职务表-添加")
     @PostMapping(value = "/add")
     public Result<SysPosition> add(@RequestBody SysPosition sysPosition) {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
+        Integer tenantId = sysPositionService.checkPositionAuth("system:position:add", true);
+        if (tenantId != null) {
+            // 敲敲云租户管理员新增的职务归属当前租户
+            sysPosition.setTenantId(tenantId);
+        }
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
         Result<SysPosition> result = new Result<SysPosition>();
         try {
             //编号是空的，不需要判断多租户隔离了
@@ -136,6 +147,16 @@ public class SysPositionController {
     @Operation(summary = "职务表-编辑")
     @RequestMapping(value = "/edit", method ={RequestMethod.PUT, RequestMethod.POST})
     public Result<SysPosition> edit(@RequestBody SysPosition sysPosition) {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
+        Integer tenantId = sysPositionService.checkPositionAuth("system:position:edit", true);
+        if (tenantId != null) {
+            if (!sysPositionService.isPositionInTenant(sysPosition.getId(), tenantId)) {
+                return Result.error("只能编辑当前租户的职务！");
+            }
+            // 不允许把职务改到其它租户
+            sysPosition.setTenantId(tenantId);
+        }
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
         Result<SysPosition> result = new Result<SysPosition>();
         SysPosition sysPositionEntity = sysPositionService.getById(sysPosition.getId());
         if (sysPositionEntity == null) {
@@ -161,6 +182,12 @@ public class SysPositionController {
     @Operation(summary = "职务表-通过id删除")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
+        Integer tenantId = sysPositionService.checkPositionAuth("system:position:delete", true);
+        if (tenantId != null && !sysPositionService.isPositionInTenant(id, tenantId)) {
+            return Result.error("只能删除当前租户的职务！");
+        }
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
         try {
             sysPositionService.removeById(id);
             //删除用户职位关系表
@@ -182,6 +209,10 @@ public class SysPositionController {
     @Operation(summary = "职务表-批量删除")
     @DeleteMapping(value = "/deleteBatch")
     public Result<SysPosition> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
+        // 敲敲云组织管理页面不用批量删除，不放行租户管理员
+        sysPositionService.checkPositionAuth("system:position:deleteBatch", false);
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
         Result<SysPosition> result = new Result<SysPosition>();
         if (ids == null || "".equals(ids.trim())) {
             result.error500("参数不识别！");
@@ -221,6 +252,10 @@ public class SysPositionController {
      */
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(SysPosition sysPosition,HttpServletRequest request, HttpServletResponse response) {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务导出补充权限校验-----------
+        // 敲敲云组织管理页面不用导出，不放行租户管理员
+        sysPositionService.checkPositionAuth("system:position:exportXls", false);
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务导出补充权限校验-----------
         // Step.1 组装查询条件
         QueryWrapper<SysPosition> queryWrapper = null;
         try {
@@ -271,6 +306,10 @@ public class SysPositionController {
      */
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response)throws IOException {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
+        // 敲敲云组织管理页面不用导入，不放行租户管理员
+        sysPositionService.checkPositionAuth("system:position:importExcel", false);
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
         Map<String, MultipartFile> fileMap = multipartRequest.getFileMap();
         // 错误信息
@@ -363,6 +402,13 @@ public class SysPositionController {
     public Result<IPage<SysUser>> getPositionUserList(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                                       @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
                                                       @RequestParam(name = "positionId") String positionId) {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
+        // 返回成员手机号、邮箱，按成员管理权限控制
+        Integer tenantId = sysPositionService.checkPositionAuth("system:position:edit", true);
+        if (tenantId != null && !sysPositionService.isPositionInTenant(positionId, tenantId)) {
+            return Result.error("只能查看当前租户职务的成员！");
+        }
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
 
         Page<SysUser> page = new Page<>(pageNo, pageSize);
         IPage<SysUser> pageList = userPositionService.getPositionUserList(page, positionId);
@@ -386,6 +432,18 @@ public class SysPositionController {
     @PostMapping("/savePositionUser")
     public Result<String> saveUserPosition(@RequestParam(name = "userIds") String userIds,
                                            @RequestParam(name = "positionId") String positionId) {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
+        Integer tenantId = sysPositionService.checkPositionAuth("system:position:edit", true);
+        if (tenantId != null) {
+            if (!sysPositionService.isPositionInTenant(positionId, tenantId)) {
+                return Result.error("只能操作当前租户的职务！");
+            }
+            List<String> tenantUserIds = userTenantService.getUserIdsByTenantId(tenantId);
+            if (tenantUserIds == null || !tenantUserIds.containsAll(Arrays.asList(userIds.split(",")))) {
+                return Result.error("只能添加当前租户下的用户！");
+            }
+        }
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
         userPositionService.saveUserPosition(userIds, positionId);
         return Result.ok("添加成功");
     }
@@ -400,6 +458,12 @@ public class SysPositionController {
     @DeleteMapping("/removePositionUser")
     public Result<String> removeUserPosition(@RequestParam(name = "userIds") String userIds,
                                              @RequestParam(name = "positionId") String positionId) {
+        //update-begin---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
+        Integer tenantId = sysPositionService.checkPositionAuth("system:position:edit", true);
+        if (tenantId != null && !sysPositionService.isPositionInTenant(positionId, tenantId)) {
+            return Result.error("只能操作当前租户的职务！");
+        }
+        //update-end---author:wangshuai ---date:2026-10-26  for：【GHSA-p4f8-h832-99pw】职务增删改、成员管理补充权限校验-----------
         userPositionService.removePositionUser(userIds, positionId);
         return Result.OK("移除成员成功");
     }

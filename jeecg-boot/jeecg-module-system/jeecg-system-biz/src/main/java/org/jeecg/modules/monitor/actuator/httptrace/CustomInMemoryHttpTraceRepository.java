@@ -36,9 +36,9 @@ public class CustomInMemoryHttpTraceRepository extends InMemoryHttpExchangeRepos
         // 只有当请求不是OPTIONS方法，并且URI不包含httptrace时才记录数据
         if (!"OPTIONS".equals(trace.getRequest().getMethod()) &&
                 !trace.getRequest().getUri().toString().contains("httptrace")) {
-            //update-begin---author:scott ---date:20261023  for：请求追踪记录前脱敏，避免token、cookie等凭据经追踪接口泄露------------
+            //update-begin---author:scott ---date:20261023  for：【GHSA-2899-g99h-hq64】请求追踪记录前脱敏，避免他人token、cookie等凭据经追踪接口泄露------------
             super.add(desensitize(trace));
-            //update-end---author:scott ---date:20261023  for：请求追踪记录前脱敏------------
+            //update-end---author:scott ---date:20261023  for：【GHSA-2899-g99h-hq64】请求追踪记录前脱敏------------
         }
     }
 
@@ -62,7 +62,7 @@ public class CustomInMemoryHttpTraceRepository extends InMemoryHttpExchangeRepos
      * 复制一份请求追踪记录，把请求/响应中的凭据替换为占位符后再存储
      *
      * @author scott
-     * @since 2026-10-23 请求追踪记录脱敏，避免泄露 X-Access-Token
+     * @since 2026-10-23 【GHSA-2899-g99h-hq64】请求追踪接口泄露他人 X-Access-Token
      */
     private static HttpExchange desensitize(HttpExchange trace) {
         HttpExchange.Request request = trace.getRequest();
@@ -78,7 +78,7 @@ public class CustomInMemoryHttpTraceRepository extends InMemoryHttpExchangeRepos
      * 请求头/响应头脱敏：命中 SENSITIVE_HEADERS 的头（不区分大小写）值替换为占位符
      *
      * @author scott
-     * @since 2026-10-23 请求追踪记录脱敏，避免泄露 X-Access-Token
+     * @since 2026-10-23 【GHSA-2899-g99h-hq64】请求追踪接口泄露他人 X-Access-Token
      */
     private static Map<String, List<String>> maskHeaders(Map<String, List<String>> headers) {
         if (headers == null || headers.isEmpty()) {
@@ -94,7 +94,7 @@ public class CustomInMemoryHttpTraceRepository extends InMemoryHttpExchangeRepos
      * URL 脱敏：token/access_token/x-access-token 参数值替换为占位符
      *
      * @author scott
-     * @since 2026-10-23 请求追踪记录脱敏，避免泄露 X-Access-Token
+     * @since 2026-10-23 【GHSA-2899-g99h-hq64】请求追踪接口泄露他人 X-Access-Token
      */
     private static URI maskUri(URI uri) {
         if (uri == null || uri.getRawQuery() == null) {

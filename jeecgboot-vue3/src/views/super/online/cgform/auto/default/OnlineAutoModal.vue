@@ -37,7 +37,7 @@
       :form-template="formTemplate"
       :isTree="isTreeForm"
       :pidField="pidFieldName"
-      :themeTemplate="themeTemplate"
+      :themeTemplate="$attrs.isShare && themeTemplate === 'erp' ? 'normal' : themeTemplate"
       :cgBIBtnMap="cgBIBtnMap"
       :buttonSwitch="buttonSwitch"
       @rendered="renderSuccess"

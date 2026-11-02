@@ -104,7 +104,9 @@ export const formSchema: FormSchema[] = [
       unCheckedValue: 0,
     },
     ifShow: ({ values }) => {
-      return values.provider === 'VLLM' || values.provider === 'LMSTDIO' || values.provider === 'XINFERENCE';
+      //update-begin---author:wangshuai---date:20261013---for：【issues/9888】AI 应用调用本地Ollama deepseek1.5模型时总是提示错误，AI助手没问题---
+      return values.provider === 'VLLM' || values.provider === 'LMSTDIO' || values.provider === 'XINFERENCE' || values.provider === 'OLLAMA';
+      //update-end---author:wangshuai---date:20261013---for：【issues/9888】AI 应用调用本地Ollama deepseek1.5模型时总是提示错误，AI助手没问题---
     },
   },
   {

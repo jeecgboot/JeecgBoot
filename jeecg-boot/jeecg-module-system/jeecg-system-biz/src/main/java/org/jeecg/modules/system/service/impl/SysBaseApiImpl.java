@@ -28,10 +28,12 @@ import org.jeecg.common.api.dto.PushMessageDTO;
 import org.jeecg.common.api.dto.message.*;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.UrlMatchEnum;
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.*;
 import org.jeecg.common.constant.enums.*;
 import org.jeecg.common.desensitization.util.SensitiveInfoUtil;
 import org.jeecg.common.exception.JeecgBootException;
+import org.jeecg.common.online.api.IOnlineBaseExtApi;
 import org.jeecg.common.system.api.ISysBaseAPI;
 import org.jeecg.common.system.query.QueryCondition;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -60,6 +62,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -111,6 +114,10 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 
 	@Autowired
 	private RestTemplate restTemplate;
+
+	@Lazy
+	@Autowired
+	private IOnlineBaseExtApi onlineBaseExtApi;
 
 	@Autowired
 	private ISysMessageTemplateService sysMessageTemplateService;
@@ -652,6 +659,11 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		announcement.setDelFlag(String.valueOf(CommonConstant.DEL_FLAG_0));
 		announcement.setBusId(busId);
 		announcement.setBusType(busType);
+		//update-begin---author:liusq ---date:2026-10-13  for：【LHZP-2388】【敲敲云】委托后，催办没收到系统通知-----------
+		if(SysAnnmentTypeEnum.BPM.getType().equals(busType)){
+			announcement.setNoticeType(NoticeTypeEnum.NOTICE_TYPE_FLOW.getValue());
+		}
+		//update-end---author:liusq ---date:2026-10-13  for：【LHZP-2388】【敲敲云】委托后，催办没收到系统通知-----------
 		announcement.setOpenType(SysAnnmentTypeEnum.getByType(busType).getOpenType());
 		announcement.setOpenPage(SysAnnmentTypeEnum.getByType(busType).getOpenPage());
 		sysAnnouncementMapper.insert(announcement);
@@ -1710,6 +1722,16 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 		return sysDictService.queryTableDictTextByKeys(table, text, code, Arrays.asList(keys.split(",")), dataSource);
 	}
 
+	@Override
+	public List<DictModel> queryPopupDictItems(String reportCode, String dictCode, String dictText, String dataList) {
+		try {
+			return onlineBaseExtApi.cgreportGetDataPackage(reportCode, dictText, dictCode, dataList);
+		} catch (Exception e) {
+			log.warn("数据字典加载失败, reportCode: {}", reportCode, e);
+			return Collections.emptyList();
+		}
+	}
+
 	//-------------------------------------流程节点发送模板消息-----------------------------------------------
 	@Autowired
 	private QywxSendMsgHandle qywxSendMsgHandle;
@@ -1766,15 +1788,36 @@ public class SysBaseApiImpl implements ISysBaseAPI {
 				emailSendMsgHandle.sendMessage(message);
 			}
 		}else if(MessageTypeEnum.DD.getType().equals(messageType)){
-			MSG_THREAD_POOL.execute(() -> ddSendMsgHandle.sendMessage(message));
+			executeWithTenant(() -> ddSendMsgHandle.sendMessage(message));
 		}else if(MessageTypeEnum.QYWX.getType().equals(messageType)){
-			MSG_THREAD_POOL.execute(() -> qywxSendMsgHandle.sendMessage(message));
+			executeWithTenant(() -> qywxSendMsgHandle.sendMessage(message));
 		}else if(MessageTypeEnum.FS.getType().equals(messageType)){
-			MSG_THREAD_POOL.execute(() -> fsSendMsgHandle.sendMessage(message));
+			executeWithTenant(() -> fsSendMsgHandle.sendMessage(message));
 		}else if(MessageTypeEnum.DX.getType().equals(messageType)){
-			MSG_THREAD_POOL.execute(() -> smsSendMsgHandle.sendMessage(message));
+			executeWithTenant(() -> smsSendMsgHandle.sendMessage(message));
 		}
 	}
+
+	//update-begin---author:liusq ---date:2026-10-19  for：【QQYUN-12767】钉钉/企业微信/飞书/短信异步发送时传递租户ID，修复流程消息在线程池中取到租户0的问题-----------
+	/**
+	 * 提交到消息异步线程池，并把当前线程的租户ID传递到异步线程。
+	 * <p>TenantContext 是普通 ThreadLocal，切换到线程池后取不到值，钉钉/企业微信/飞书会按租户 0 查询应用配置和第三方绑定账号，导致消息发不出去。</p>
+	 *
+	 * @param task 发送任务
+	 */
+	private void executeWithTenant(Runnable task) {
+		String tenantId = TenantContext.getTenant();
+		MSG_THREAD_POOL.execute(() -> {
+			TenantContext.setTenant(tenantId);
+			try {
+				task.run();
+			} finally {
+				// 线程池的线程会复用，必须清理，避免后续任务串租户
+				TenantContext.clear();
+			}
+		});
+	}
+	//update-end---author:liusq ---date:2026-10-19  for：【QQYUN-12767】钉钉/企业微信/飞书/短信异步发送时传递租户ID，修复流程消息在线程池中取到租户0的问题-----------
 
 	@Override
 	public String getTemplateContent(String code) {

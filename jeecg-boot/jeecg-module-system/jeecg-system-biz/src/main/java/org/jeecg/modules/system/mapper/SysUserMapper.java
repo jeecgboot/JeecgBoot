@@ -74,9 +74,10 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
 	 * @param page
 	 * @param departIds
      * @param username 用户登录账户
+	 * @param realname 用户姓名
 	 * @return
 	 */
-	IPage<SysUser> getUserByDepIds(Page page, @Param("departIds") List<String> departIds, @Param("username") String username);
+	IPage<SysUser> getUserByDepIds(Page page, @Param("departIds") List<String> departIds, @Param("username") String username, @Param("realname") String realname);
 
 	/**
 	 * 根据角色Id查询用户信息

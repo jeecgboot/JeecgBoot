@@ -64,12 +64,14 @@ export const authButtonColumns: BasicColumn[] = [
 
 export const authButtonFixedList = [
   { code: 'add', title: '新增', status: 0 },
+  { code: 'addSub', title: '添加下级', status: 0 },
   { code: 'edit', title: '编辑', status: 0 },
   { code: 'detail', title: '详情', status: 0 },
   { code: 'delete', title: '删除', status: 0 },
   { code: 'batch_delete', title: '批量删除', status: 0 },
   { code: 'export', title: '导出', status: 0 },
   { code: 'import', title: '导入', status: 0 },
+  { code: 'print', title: '打印', status: 0 },
   { code: 'query', title: '查询', status: 0 },
   { code: 'reset', title: '重置', status: 0 },
   { code: 'aigc_mock_data', title: '生成测试数据', status: 0 },

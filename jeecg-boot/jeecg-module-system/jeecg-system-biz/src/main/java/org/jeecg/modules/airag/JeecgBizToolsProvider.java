@@ -25,6 +25,7 @@ import org.jeecg.modules.system.entity.SysRole;
 import org.jeecg.modules.system.entity.SysUser;
 import org.jeecg.modules.system.mapper.SysUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +39,8 @@ import java.util.*;
  */
 @Slf4j
 @Component
+// AI工具提供者：仅在classpath存在airag模块(JeecgToolsProvider接口)时装配，去AI依赖后跳过注册，不影响应用启动
+@ConditionalOnClass(name = "org.jeecg.modules.airag.llm.handler.JeecgToolsProvider")
 public class JeecgBizToolsProvider implements JeecgToolsProvider {
 
     @Autowired

@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, unref, ref, watch, watchEffect, reactive, computed } from 'vue';
+  import { defineComponent, unref, ref, watch, watchEffect, reactive, computed, nextTick } from 'vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { createAsyncComponent } from '/@/utils/factory/createAsyncComponent';
   import { useAttrs } from '/@/hooks/core/useAttrs';
@@ -90,7 +90,7 @@
         loading: true,
       }),
     },
-    props: ['multi', 'code', 'sorter', 'groupId', 'param','showAdvancedButton', 'getFormValues', 'selected', 'rowkey'],
+    props: ['multi', 'code', 'sorter', 'groupId', 'param','showAdvancedButton', 'getFormValues', 'selected', 'rowkey', 'echoRows'],
     emits: ['ok', 'register'],
     setup(props, { emit }) {
       const { createMessage } = useMessage();
@@ -287,6 +287,86 @@
           selectRows!.value = selected;
         }
       });
+
+      // update-begin--author:liaozhiyang---date:20261029---for：popup编辑时弹窗勾选回显
+      // 待匹配项：{ match: 源字段值, placeholder: 占位行, matched: 是否已匹配 }
+      let echoPending: any[] = [];
+      /**
+       * 弹窗打开时，先把待匹配项作为占位行放入已选（保证原数据不在当前页时直接确定也不丢值）
+       */
+      function initEcho() {
+        echoPending = [];
+        const echoRows = props.echoRows;
+        if (!Array.isArray(echoRows) || echoRows.length === 0) {
+          return;
+        }
+        const rows = props.multi ? echoRows : echoRows.slice(0, 1);
+        echoPending = rows.map((match, index) => ({
+          match,
+          placeholder: { ...match, rowIndex: `__echo_${index}` },
+          matched: false,
+        }));
+        selectRows.value = echoPending.map((item) => item.placeholder);
+        checkedKeys.value = selectRows.value.map((row) => combineRowKey(row));
+        syncTableSelection();
+      }
+      /**
+       * 在当前页数据中匹配待匹配项：所有源字段都相等才算命中，命中多条取第一条，匹配过的项后续页不再匹配
+       */
+      function matchEchoRows(records) {
+        const pending = echoPending.filter((item) => !item.matched);
+        if (!pending.length || !records?.length) {
+          return;
+        }
+        // 已被其他回显项占用的行，同一行只能对应一个回显项
+        const claimedKeys = new Set(echoPending.filter((item) => item.matched && item.rowKey).map((item) => item.rowKey));
+        let changed = false;
+        pending.forEach((item) => {
+          const fields = Object.keys(item.match);
+          const row = records.find((record) => {
+            return !claimedKeys.has(combineRowKey(record)) && fields.every((field) => String(record[field] ?? '') === String(item.match[field] ?? ''));
+          });
+          if (!row) {
+            return;
+          }
+          const placeholderKey = combineRowKey(item.placeholder);
+          const rowKey = combineRowKey(row);
+          const index = checkedKeys.value.indexOf(placeholderKey);
+          item.matched = true;
+          item.rowKey = rowKey;
+          claimedKeys.add(rowKey);
+          // 占位行已被取消（如单选时改选了其他行），不再回显
+          if (index === -1) {
+            return;
+          }
+          if (checkedKeys.value.includes(rowKey)) {
+            // 该行已被手动勾选，移除占位行即可
+            checkedKeys.value.splice(index, 1);
+            selectRows.value = selectRows.value.filter((r) => combineRowKey(r) !== placeholderKey);
+          } else {
+            checkedKeys.value.splice(index, 1, rowKey);
+            selectRows.value = selectRows.value.map((r) => (combineRowKey(r) === placeholderKey ? row : r));
+          }
+          changed = true;
+        });
+        changed && syncTableSelection();
+      }
+      /**
+       * 同步 BasicTable 内部的勾选状态
+       */
+      function syncTableSelection() {
+        nextTick(() => {
+          tableRef.value?.setSelectedRowKeys?.([...checkedKeys.value]);
+        });
+      }
+      watch(
+        () => unref(visible),
+        (val) => {
+          val ? initEcho() : (echoPending = []);
+        }
+      );
+      watch(dataSource, (records) => matchEchoRows(records));
+      // update-end--author:liaozhiyang---date:20261029---for：popup编辑时弹窗勾选回显
       return {
         attrs,
         register,

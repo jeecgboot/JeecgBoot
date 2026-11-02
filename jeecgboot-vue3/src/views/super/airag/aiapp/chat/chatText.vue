@@ -1,6 +1,6 @@
 <template>
   <div v-if="parsedText != '' || error" class="textWrap" :class="[inversion === 'user' ? 'self' : (isOnlyImage ? 'chatgpt-image' : 'chatgpt')]" ref="textRef">
-    <a-tooltip v-if="inversion !== 'user' && !isOnlyImage && !error && !loading" :title="copied ? '已复制' : '复制 Markdown'">
+    <a-tooltip v-if="inversion !== 'user' && !isOnlyImage && !error && !loading && !hideCopyButton" :title="copied ? '已复制' : '复制 Markdown'">
       <a-button class="copyMarkdownBtn" type="text" size="small" :aria-label="copied ? '已复制' : '复制 Markdown'" @click="handleCopyMarkdown">
         <CheckOutlined v-if="copied" />
         <CopyOutlined v-else />
@@ -74,7 +74,9 @@
   const { domainUrl } = useGlobSetting();
   const { getIsMobile } = useAppInject();
 
-  const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'errorMsg', 'currentToolTag', 'loading', 'referenceKnowledge', 'isLast']);
+  //update-begin---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用---
+  const props = defineProps(['dateTime', 'text', 'inversion', 'error', 'errorMsg', 'currentToolTag', 'loading', 'referenceKnowledge', 'isLast', 'hideCopyButton']);
+  //update-end---author:wangshuai---date:20260827---for：【LHZP-1614】【AI】思考过程不显示工具调用---
   const textRef = ref();
   const markdownBodyRef = ref<HTMLDivElement>();
   const copied = ref(false);

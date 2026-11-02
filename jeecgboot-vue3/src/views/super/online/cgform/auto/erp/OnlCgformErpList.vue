@@ -561,4 +561,42 @@
   :deep(.ant-table-body) {
     line-height: 22px;
   }
+
+  // update-begin--author:liaozhiyang---date:20260831---for：【LHZP-1073】erp查询区域每行第一个字段的 label 取消固定宽度
+  @media (min-width: 992px) {
+    :deep(.online-query-form .ant-row > .ant-col:nth-child(4n + 1) .ant-form-item-label) {
+      flex: none;
+      width: auto !important;
+    }
+
+    :deep(.online-query-form .ant-row > .ant-col:nth-child(4n + 1) .ant-form-item-control) {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 991px) {
+    :deep(.online-query-form .ant-row > .ant-col:nth-child(2n + 1) .ant-form-item-label) {
+      flex: none;
+      width: auto !important;
+    }
+
+    :deep(.online-query-form .ant-row > .ant-col:nth-child(2n + 1) .ant-form-item-control) {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  @media (max-width: 767px) {
+    :deep(.online-query-form .ant-form-item-label) {
+      flex: none;
+      width: auto !important;
+    }
+
+    :deep(.online-query-form .ant-form-item-control) {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+  // update-end--author:liaozhiyang---date:20260831---for：【LHZP-1073】erp查询区域每行第一个字段的 label 取消固定宽度
 </style>

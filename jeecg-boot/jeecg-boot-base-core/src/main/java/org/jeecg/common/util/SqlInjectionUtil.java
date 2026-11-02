@@ -22,22 +22,22 @@ public class SqlInjectionUtil {
 	/**
 	 * sql注入黑名单数据库名
 	 */
-	public final static String XSS_STR_TABLE = "peformance_schema|information_schema";
+	public final static String XSS_STR_TABLE = "performance_schema|information_schema";
 
 	/**
 	 * 默认—sql注入关键词
 	 */
-	private final static String XSS_STR = "and |exec |peformance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|or |+|--";
+	private final static String XSS_STR = "and |exec |performance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|or |+|--";
 	/**
 	 * online报表专用—sql注入关键词
 	 */
-	private static String specialReportXssStr = "exec |peformance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |alter |delete |grant |update |drop |master |truncate |declare |--";
+	private static String specialReportXssStr = "exec |performance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |alter |delete |grant |update |drop |master |truncate |declare |--";
 	/**
 	 * 字典专用—sql注入关键词
 	 *
 	 * @updateBy: sunjianlei 20260331 加上 substring 注入检测
 	 */
-	private static String specialDictSqlXssStr = "exec |peformance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|+|--|substring |substring(";
+	private static String specialDictSqlXssStr = "exec |performance_schema|information_schema|extractvalue|updatexml|geohash|gtid_subset|gtid_subtract|insert |select |delete |update |drop |count |chr |mid |master |truncate |char |declare |;|+|--|substring |substring(";
 	/**
 	 * 完整匹配的key，不需要考虑前空格
 	 */

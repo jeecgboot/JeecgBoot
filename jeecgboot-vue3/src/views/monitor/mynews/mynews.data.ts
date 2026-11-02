@@ -1,6 +1,28 @@
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { render } from '/@/utils/common/renderUtils';
 
+/**
+ * 发布人是否为 system：系统自动发送的消息，发布人存的是 system，不是用户账号
+ * @author wangshuai
+ * @since 2026-11-02 【LHZP-1240】【消息中心】我的消息 发布人未翻译
+ */
+export function isSystemSender(sender) {
+  return sender === 'system';
+}
+
+/**
+ * 发布人显示文本：system 默认显示为「系统」，其他发布人显示 text（姓名或原值）
+ * 按发布人原值判断，就算有叫 system 的账号也不会显示成他的姓名；列表和详情弹窗共用
+ * @author wangshuai
+ * @since 2026-11-02 【LHZP-1240】【消息中心】我的消息 发布人未翻译
+ */
+export function getSenderText(sender, text) {
+  if (isSystemSender(sender)) {
+    return '系统';
+  }
+  return text;
+}
+
 export const columns: BasicColumn[] = [
   {
     title: '标题',
@@ -27,6 +49,8 @@ export const columns: BasicColumn[] = [
     title: '发布人',
     dataIndex: 'sender',
     width: 80,
+    // 账号显示后端翻译的姓名，流程通知等非账号的值原样显示；当前页没有任何发布人匹配到账号时后端不返回 sender_dictText，回退显示原值
+    customRender: ({ record }) => getSenderText(record.sender, record.sender_dictText || record.sender),
   },
   {
     title: '发布时间',

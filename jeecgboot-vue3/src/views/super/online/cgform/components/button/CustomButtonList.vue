@@ -3,7 +3,7 @@
     <template #footer>
       <a-button @click="onCancel">关闭</a-button>
       <div v-if="aiTestMode" style="float: left">
-        <a-button @click="onGenButtons">生成测试数据</a-button>
+        <a-button :loading="generating" @click="onGenButtons">生成测试数据</a-button>
       </div>
     </template>
 
@@ -83,7 +83,7 @@
         },
       });
       // 注册table数据
-      const [registerTable, { reload }, { rowSelection, selectedRowKeys }] = tableContext;
+      const [registerTable, { reload, getDataSource }, { rowSelection, selectedRowKeys }] = tableContext;
       // 注册弹窗
       const [registerModal, { closeModal }] = useModalInner(async (data) => {
         code.value = data.row.id;
@@ -92,6 +92,7 @@
       });
       // useOnlineAiTest
       const { aiTestMode, genButtons } = useOnlineTest({}, { reload }, null);
+      const generating = ref(false);
       // 注册 form 弹窗
       const [registerFormModal, formModal] = useModal();
       const isUpdate = ref(false);
@@ -135,9 +136,18 @@
         closeModal();
       }
 
-      function onGenButtons() {
-        genButtons(code.value);
+      // update-begin--author:liaozhiyang---date:20260824---for：【LHZP-195】过滤已添加的自定义按钮并防止重复提交
+      async function onGenButtons() {
+        if (generating.value) return;
+        generating.value = true;
+        try {
+          const existingButtonCodes = (getDataSource?.() || []).map((item) => item.buttonCode).filter(Boolean);
+          await genButtons(code.value, existingButtonCodes);
+        } finally {
+          generating.value = false;
+        }
       }
+      // update-end--author:liaozhiyang---date:20260824---for：【LHZP-195】过滤已添加的自定义按钮并防止重复提交
 
       // 批量删除事件
       async function onBatchDelete() {
@@ -209,6 +219,7 @@
         onEdit,
         onBatchDelete,
         aiTestMode,
+        generating,
         onGenButtons,
         registerModal,
         registerTable,

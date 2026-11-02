@@ -4,7 +4,7 @@
 <#if tableVo.extendParams?? && tableVo.extendParams.cgButtonList??>
   <#assign buttonList = tableVo.extendParams.cgButtonList?filter(btn -> btn??)>
 </#if>
-  <j-modal :title="title" maxHeight="500px" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
+  <j-modal wrapClassName="jeecg-native-form-modal" :title="title" maxHeight="500px" :width="${getModalWidth(tableVo.fieldRowNum?default(1))}" :visible="visible" @ok="handleOk" :okButtonProps="{ class: { 'jee-hidden': disableSubmit } }" @cancel="handleCancel" cancelText="关闭">
     <${entityName}Form ref="registerForm" @ok="submitCallback" :formDisabled="disableSubmit" :formBpm="false"></${entityName}Form>
    <template #footer>
       <#if buttonList?? && buttonList?size gt 0>
@@ -97,6 +97,21 @@
   /**隐藏样式-modal确定按钮 */
   .jee-hidden {
     display: none !important;
+  }
+
+  @media (max-width: 767px) {
+    .jeecg-full-screen-modal-code-generate.jeecg-native-form-modal {
+      overflow: hidden;
+    }
+
+    .jeecg-full-screen-modal-code-generate.jeecg-native-form-modal .ant-modal {
+      overflow-y: hidden;
+    }
+
+    .jeecg-full-screen-modal-code-generate.jeecg-native-form-modal .ant-modal-content {
+      height: 100dvh;
+    }
+
   }
 </style>
 <style lang="less" scoped></style>

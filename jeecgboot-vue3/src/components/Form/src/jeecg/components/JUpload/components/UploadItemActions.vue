@@ -4,7 +4,7 @@
       <Icon icon="ant-design:download" />
     </a>
   </div>
-  <div v-show="mover && list.length > 1" class="upload-mover-handler">
+  <div v-show="canMove" class="upload-mover-handler">
     <a title="向前移动" @click="onMoveForward">
       <Icon icon="ant-design:arrow-left" />
     </a>
@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { unref, computed } from 'vue';
+  import { unref, computed, watchEffect } from 'vue';
   import { Icon } from '/@/components/Icon';
   import { useMessage } from '/@/hooks/web/useMessage';
 
@@ -23,16 +23,23 @@
 
   const props = defineProps({
     element: { type: HTMLElement, required: true },
+    // update-begin--author:liaozhiyang---date:20260831---for:【LHZP-73】批量上传图片后左右移动提示-1
+    container: { type: HTMLElement, required: true },
+    // update-end--author:liaozhiyang---date:20260831---for:【LHZP-73】批量上传图片后左右移动提示-1
     fileList: { type: Object, required: true },
     mover: { type: Boolean, required: true },
     download: { type: Boolean, required: true },
     emitValue: { type: Function, required: true },
   });
   const list = computed(() => unref(props.fileList));
+  // update-begin--author:liaozhiyang---date:20260826---for:【LHZP-73】上传图片操作按钮优化
+  const canMove = computed(() => props.mover && list.value.length > 1);
+  watchEffect(() => props.element.classList.toggle('has-upload-mover-actions', canMove.value));
+  // update-end--author:liaozhiyang---date:20260826---for:【LHZP-73】上传图片操作按钮优化
 
   // 向前移动图片
   function onMoveForward() {
-    let index = getIndexByUrl();
+    let index = getIndex();
     if (index === -1) {
       createMessage.warn('移动失败：' + index);
       return;
@@ -46,7 +53,7 @@
 
   // 向后移动图片
   function onMoveBack() {
-    let index = getIndexByUrl();
+    let index = getIndex();
     if (index === -1) {
       createMessage.warn('移动失败：' + index);
       return;
@@ -64,9 +71,21 @@
       let temp = array[oldIndex];
       array[oldIndex] = array[newIndex];
       array[newIndex] = temp;
-      props.emitValue(array.map((i) => i.url).join(','));
+      props.fileList.value = array;
+      props.emitValue(array.map((i) => i.response?.message).join(','));
     }
   }
+
+  // update-begin--author:liaozhiyang---date:20260831---for:【LHZP-73】批量上传图片后左右移动提示-1
+  function getIndex() {
+    const uploadItems = Array.from(props.container.getElementsByClassName('ant-upload-list-item'));
+    const index = uploadItems.indexOf(props.element);
+    if (index >= 0 && index < unref(list).length) {
+      return index;
+    }
+    return getIndexByUrl();
+  }
+  // update-end--author:liaozhiyang---date:20260831---for:【LHZP-73】批量上传图片后左右移动提示-1
 
   function getIndexByUrl() {
     const url = props.element?.getElementsByTagName('img')[0]?.src;

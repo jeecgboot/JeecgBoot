@@ -39,7 +39,7 @@
       const loading = ref(false);
       const code = ref<string>();
       const errorTip = ref<Nullable<string>>(null);
-      // 根据不同的运行时错误显示不同的提示信息  e3e3NcxzbUiGa53YYVXxWc8ADo5ISgQGx/gaZwERF91oAryDlivjqBv3wqRArgChupi+Y/Gg/swwGEyL0PuVFg==
+      // 根据不同的运行时错误显示不同的提示信息
       const errors = reactive({ resultIsEmpty: false });
       const chartsData = ref();
       // 查询条件（map根据code隔离）

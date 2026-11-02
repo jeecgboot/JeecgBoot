@@ -1,5 +1,5 @@
 <template>
-  <BasicTable :ellipsis="true" @register="registerTable" :searchInfo="searchInfo" :columns="logColumns" :expand-column-width="16">
+  <BasicTable :ellipsis="true" @register="registerTable" :searchInfo="searchInfo" :columns="logColumns" :expand-column-width="16" :rowExpandable="() => searchInfo.logType !== '1'">
     <template #tableTitle>
       <div class="table-title-bar">
         <a-tabs defaultActiveKey="4" @change="tabChange" size="small">
@@ -40,7 +40,7 @@
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
   import { getLogList, getExportUrl } from './log.api';
   import {
-    columns,
+    loginLogColumns,
     searchFormSchema,
     operationLogColumn,
     operationSearchFormSchema,
@@ -92,7 +92,7 @@
       logColumns.value = exceptionColumns;
     } else {
       searchSchema.value = searchFormSchema;
-      logColumns.value = columns;
+      logColumns.value = loginLogColumns;
     }
     reload();
   }

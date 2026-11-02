@@ -40,6 +40,11 @@ export const userInfoSearchFormSchema: FormSchema[] = [
     label: '用户账号',
     component: 'Input',
   },
+  {
+    field: 'realname',
+    label: '用户姓名',
+    component: 'Input',
+  },
 ];
 
 // 部门角色 columns
@@ -71,7 +76,7 @@ export const departRoleSearchFormSchema: FormSchema[] = [
   {
     field: 'roleName',
     label: '部门角色名称',
-    component: 'Input',
+    component: 'JInput',
   },
 ];
 

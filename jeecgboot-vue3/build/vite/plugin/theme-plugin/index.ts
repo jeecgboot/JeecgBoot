@@ -1,8 +1,7 @@
 import type { Plugin, ResolvedConfig } from 'vite';
 import path from 'path';
 import fs from 'fs-extra';
-import { debug as Debug } from 'debug';
-import chalk from 'chalk';
+import chalk from 'picocolors';
 import { extractVariable, minifyCSS, createFileHash, formatCss } from './utils';
 import { VITE_CLIENT_ENTRY, cssLangRE, cssVariableString, CLIENT_PUBLIC_ABSOLUTE_PATH } from './constants';
 import { injectClientPlugin } from './injectClientPlugin';
@@ -23,7 +22,12 @@ export interface ViteThemeOptions {
   verbose?: boolean;
 }
 
-const debug = Debug('vite-plugin-theme');
+// 不依赖 debug 包，设置环境变量 DEBUG=vite-plugin-theme 时输出调试日志
+const debug = (...args: any[]) => {
+  if (/vite-plugin-theme/.test(process.env.DEBUG || '')) {
+    console.log('vite-plugin-theme', ...args);
+  }
+};
 
 export function viteThemePlugin(opt: ViteThemeOptions): Plugin[] {
   let isServer = false;

@@ -194,7 +194,12 @@
         <#assign extAttrs="code: '${po.dictTable?default('')}', orgFields: '${orgField}', destFields: '${po.fieldName}', popupMulti: false,">
     <#elseif po.classType=='popup_dict'>
     <#-- popup字典 -->
-        <#assign extAttrs="code: '${po.dictTable?default('')}', orgFields: '${po.dictField?default('')}', destFields: '${po.dictText?default('')}', popupMulti: ${po.extendParams.popupMulti?c},">
+    <#-- author:wangshuai--- date:20260831--for: 【LHZP-1027】代码生成 高级查询 popup字典生成的不对，没有生成字典项/【LHZP-1028】代码生成高级查询 关联记录生成没有生成字典项  -->
+        <#assign extAttrs="${dictCode}, code: '${po.dictTable?default('')}', orgFields: '${po.dictField?default('')}', destFields: '${po.dictText?default('')}', popupMulti: ${po.extendParams.popupMulti?c},">
+    <#elseif po.classType=='link_table'>
+    <#-- 关联记录在高级查询中按表字典加载可选项 -->
+        <#assign extAttrs="${dictCode},">
+    <#-- author:wangshuai--- date:20260831--for: 【LHZP-1027】代码生成 高级查询 popup字典生成的不对，没有生成字典项/【LHZP-1028】代码生成高级查询 关联记录生成没有生成字典项  -->
     </#if>
 
     <#return "${po.fieldName}: {title: '${po.filedComment}',order: ${order},${baseAttrs}${extAttrs}${picker}}" >

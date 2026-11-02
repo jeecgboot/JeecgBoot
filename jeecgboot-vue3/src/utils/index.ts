@@ -613,6 +613,7 @@ export function useConditionFilter() {
       case 'sel_depart':
       case 'link_table':
       case 'popup_dict':
+      case 'popup':
       case 'list_multi':
         return multiSelectConditionOptions;
       case 'list':

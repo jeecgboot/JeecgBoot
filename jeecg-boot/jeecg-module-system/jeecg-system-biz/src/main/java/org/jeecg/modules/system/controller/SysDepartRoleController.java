@@ -291,6 +291,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
    * @param request
    * @param sysDepartRole
    */
+  @RequiresPermissions("system:depart:role:exportXls")
   @RequestMapping(value = "/exportXls")
   public ModelAndView exportXls(HttpServletRequest request, SysDepartRole sysDepartRole) {
       return super.exportXls(request, sysDepartRole, SysDepartRole.class, "部门角色");
@@ -303,6 +304,7 @@ public class SysDepartRoleController extends JeecgController<SysDepartRole, ISys
    * @param response
    * @return
    */
+  @RequiresPermissions("system:depart:role:importExcel")
   @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
   public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
       return super.importExcel(request, response, SysDepartRole.class);

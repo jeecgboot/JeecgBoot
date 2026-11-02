@@ -229,22 +229,24 @@ public class SysTenantPackServiceImpl extends ServiceImpl<SysTenantPackMapper, S
         currentService.savePackUser(packUser);
         
         //step.2 创建租户套餐包(组织账户管理员)和 添加人员关系数据
+        query = new LambdaQueryWrapper<>();
         query.eq(SysTenantPack::getTenantId,tenantId);
         query.eq(SysTenantPack::getPackCode, TenantConstant.ACCOUNT_ADMIN);
         SysTenantPack sysTenantPackAccountAdmin = currentService.getOne(query);
         if(null == sysTenantPackAccountAdmin){
-            // 创建超级管理员
+            // 创建组织账户管理员
             SysTenantPack accountAdminPack = new SysTenantPack(tenantId, "组织账户管理员", TenantConstant.ACCOUNT_ADMIN);
             accountAdminPack.setIzSysn(CommonConstant.STATUS_0);
             currentService.saveOne(accountAdminPack);
         }
 
         //step.3 创建租户套餐包(组织应用管理员)
+        query = new LambdaQueryWrapper<>();
         query.eq(SysTenantPack::getTenantId,tenantId);
         query.eq(SysTenantPack::getPackCode, TenantConstant.APP_ADMIN);
         SysTenantPack sysTenantPackAppAdmin = currentService.getOne(query);
         if(null == sysTenantPackAppAdmin){
-            // 创建超级管理员
+            // 创建组织应用管理员
             SysTenantPack appAdminPack = new SysTenantPack(tenantId, "组织应用管理员", TenantConstant.APP_ADMIN);
             appAdminPack.setIzSysn(CommonConstant.STATUS_0);
             currentService.saveOne(appAdminPack);

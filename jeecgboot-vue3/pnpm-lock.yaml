@@ -288,6 +288,9 @@ importers:
       big.js:
         specifier: ^6.2.2
         version: 6.2.2
+      clean-css:
+        specifier: ^5.3.3
+        version: 5.3.3
       commitizen:
         specifier: ^4.3.2
         version: 4.3.2(@types/node@20.19.43)(typescript@5.9.3)

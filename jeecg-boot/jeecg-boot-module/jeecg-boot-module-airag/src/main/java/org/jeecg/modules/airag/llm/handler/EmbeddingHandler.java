@@ -843,6 +843,20 @@ public class EmbeddingHandler implements IEmbeddingHandler {
         return null;
     }
 
+    //update-begin---author:wangshuai ---date:20260820  for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传: AI流程文件变量传入LLM前统一解析-----------
+    @Override
+    public String parseFileContent(String filePath) {
+        AssertUtils.assertNotEmpty("文件地址不能为空", filePath);
+        String localFilePath = ensureFile(filePath);
+        Document document = new TikaDocumentParser(AutoDetectParser::new, null, null, null)
+                .parse(new File(localFilePath));
+        if (document == null || oConvertUtils.isEmpty(document.text())) {
+            throw new JeecgBootException("文件内容为空或无法解析");
+        }
+        return document.text();
+    }
+    //update-end---author:wangshuai ---date:20260820  for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传:AI流程文件变量传入LLM前统一解析-----------
+
     @NotNull
     private static StringBuffer replaceImageUrl(String content, String abstractBaseUrl, String relativeBaseUrl) {
         // 正则表达式匹配md文件中的图片语法 ![alt text](image url)
@@ -983,6 +997,12 @@ public class EmbeddingHandler implements IEmbeddingHandler {
             filePath = target.toString();
             //update-end---author:wangshuai---date:2026-03-30---for:【issues/9424】CommandExecUtil 命令执行过程中存在疑似路径遍历漏洞/【issues/9425】EmbeddingHandler 知识库解析过程中疑似存在路径遍历漏洞---
         }
+        //update-begin---author:scott ---date:20260820  for：知识库文件写入禁止空文件假成功-----------
+        File sourceFile = new File(filePath);
+        if (!sourceFile.isFile() || sourceFile.length() == 0) {
+            throw new JeecgBootException("文件内容为空或文件不存在，无法写入知识库");
+        }
+        //update-end---author:scott ---date:20260820  for：知识库文件写入禁止空文件假成功-----------
         return filePath;
     }
 

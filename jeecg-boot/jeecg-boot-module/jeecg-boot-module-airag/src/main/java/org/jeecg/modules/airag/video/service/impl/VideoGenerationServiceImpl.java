@@ -41,6 +41,8 @@ public class VideoGenerationServiceImpl implements IVideoGenerationService {
 
     private static final String REDIS_KEY_PREFIX = "airag:video:";
 
+	private static final String MINIMAX_DEFAULT_MODEL = "MiniMax-H3";
+
     private static final Map<String, List<String>> PRESET_PROMPTS = new LinkedHashMap<>();
 
     static {
@@ -131,6 +133,9 @@ public class VideoGenerationServiceImpl implements IVideoGenerationService {
     @Override
     public VideoTaskResultVo submitTask(VideoGenerateVo vo) {
         AiChatConfig.ModelConfig config = aiChatConfig.getAiModelVideo();
+		if (isMiniMaxProvider(config.getProvider())) {
+			return submitMiniMaxTask(vo, config);
+		}
         String apiKey = config.getApiKey();
         String model = config.getModel();
         String baseUrl = getVideoApiBaseUrl(config);
@@ -177,19 +182,7 @@ public class VideoGenerationServiceImpl implements IVideoGenerationService {
             log.info("视频生成任务提交响应: status={}, body={}", response.statusCode(), response.body());
 
             if (response.statusCode() != 200) {
-                VideoTaskResultVo result = new VideoTaskResultVo();
-                result.setStatus("FAIL");
-                String errorMsg = "提交任务失败，状态码: " + response.statusCode();
-                try {
-                    JSONObject errorJson = JSON.parseObject(response.body());
-                    JSONObject errorObj = errorJson.getJSONObject("error");
-                    if (errorObj != null && errorObj.getString("message") != null) {
-                        errorMsg += "，" + errorObj.getString("message");
-                    }
-                } catch (Exception ignored) {
-                }
-                result.setMessage(errorMsg);
-                return result;
+                return buildFailResult(null, buildApiErrorMessage("提交视频任务", response.statusCode(), response.body()));
             }
 
             JSONObject respJson = JSON.parseObject(response.body());
@@ -213,9 +206,116 @@ public class VideoGenerationServiceImpl implements IVideoGenerationService {
         }
     }
 
+	/**
+	 * 提交 MiniMax H3 异步视频生成任务。
+	 */
+	private VideoTaskResultVo submitMiniMaxTask(VideoGenerateVo vo, AiChatConfig.ModelConfig config) {
+		try {
+			JSONObject body = new JSONObject();
+			body.put("model", MINIMAX_DEFAULT_MODEL);
+			JSONArray content = new JSONArray();
+			JSONObject textContent = new JSONObject();
+			textContent.put("type", "text");
+			textContent.put("text", vo.getPrompt());
+			content.add(textContent);
+			body.put("content", content);
+			body.put("resolution", "2K");
+			body.put("duration", vo.getDuration() == null ? 5 : vo.getDuration());
+			body.put("ratio", convertSizeToAspectRatio(vo.getSize()));
+
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(URI.create(getVideoApiBaseUrl(config) + "/v2/video_generation"))
+					.header("Authorization", "Bearer " + config.getApiKey())
+					.header("Content-Type", "application/json")
+					.POST(HttpRequest.BodyPublishers.ofString(body.toJSONString()))
+					.timeout(Duration.ofSeconds(30))
+					.build();
+			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			log.info("MiniMax视频生成任务提交响应: status={}, body={}", response.statusCode(), response.body());
+			if (response.statusCode() != 200) {
+				return buildFailResult(null, buildApiErrorMessage("提交视频任务", response.statusCode(), response.body()));
+			}
+
+			JSONObject responseJson = JSON.parseObject(response.body());
+			String taskId = responseJson.getString("task_id");
+			if (taskId == null || taskId.isBlank()) {
+				return buildFailResult(null, "MiniMax视频任务提交成功，但未返回task_id");
+			}
+			// 缓存生成文案，任务完成后用于保存生成历史。
+			redisUtil.set(REDIS_KEY_PREFIX + "prompt:" + taskId, vo.getPrompt(), 86400);
+			VideoTaskResultVo result = new VideoTaskResultVo();
+			result.setTaskId(taskId);
+			result.setStatus("PROCESSING");
+			return result;
+		} catch (Exception e) {
+			log.error("提交MiniMax视频生成任务异常", e);
+			return buildFailResult(null, "提交MiniMax视频任务异常: " + e.getMessage());
+		}
+	}
+
+	/**
+	 * 查询 MiniMax H3 异步视频生成任务。
+	 */
+	private VideoTaskResultVo queryMiniMaxTask(String taskId, AiChatConfig.ModelConfig config) {
+		try {
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(URI.create(getVideoApiBaseUrl(config) + "/v2/query/video_generation/" + taskId))
+					.header("Authorization", "Bearer " + config.getApiKey())
+					.GET()
+					.timeout(Duration.ofSeconds(30))
+					.build();
+			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			if (response.statusCode() != 200) {
+				return buildFailResult(taskId, buildApiErrorMessage("查询视频任务", response.statusCode(), response.body()));
+			}
+
+			JSONObject responseJson = JSON.parseObject(response.body());
+			JSONObject task = responseJson.getJSONObject("task");
+			if (task == null) {
+				return buildFailResult(taskId, "MiniMax查询响应中缺少task");
+			}
+			String status = task.getString("status");
+			log.info("查询MiniMax视频任务: taskId={}, 任务状态={}", taskId, status);
+			if ("succeeded".equalsIgnoreCase(status)) {
+				JSONObject taskContent = task.getJSONObject("content");
+				String remoteVideoUrl = taskContent == null ? null : taskContent.getString("url");
+				if (remoteVideoUrl == null || remoteVideoUrl.isBlank()) {
+					return buildFailResult(taskId, "MiniMax视频生成成功，但未返回视频地址");
+				}
+				VideoTaskResultVo result = new VideoTaskResultVo();
+				result.setTaskId(taskId);
+				result.setStatus("SUCCESS");
+				String localVideoPath = downloadToLocal(remoteVideoUrl, "video_" + taskId + ".mp4");
+				result.setVideoUrl(localVideoPath);
+
+				// 前端会轮询任务状态，删除成功的请求负责入库，避免同一视频重复写入生成历史。
+				String promptKey = REDIS_KEY_PREFIX + "prompt:" + taskId;
+				Object cachedPrompt = redisTemplate.opsForValue().get(promptKey);
+				if (cachedPrompt != null && Boolean.TRUE.equals(redisTemplate.delete(promptKey))) {
+					saveVideoToRedis(result, cachedPrompt.toString());
+				}
+				return result;
+			}
+			if ("failed".equalsIgnoreCase(status) || "cancelled".equalsIgnoreCase(status)) {
+				return buildFailResult(taskId, parseMiniMaxTaskError(task, status));
+			}
+
+			VideoTaskResultVo result = new VideoTaskResultVo();
+			result.setTaskId(taskId);
+			result.setStatus("PROCESSING");
+			return result;
+		} catch (Exception e) {
+			log.error("查询MiniMax视频任务异常, taskId={}", taskId, e);
+			return buildFailResult(taskId, "查询MiniMax视频任务异常: " + e.getMessage());
+		}
+	}
+
     @Override
     public VideoTaskResultVo queryTask(String taskId) {
         AiChatConfig.ModelConfig config = aiChatConfig.getAiModelVideo();
+		if (isMiniMaxProvider(config.getProvider())) {
+			return queryMiniMaxTask(taskId, config);
+		}
         String apiKey = config.getApiKey();
         String baseUrl = getVideoApiBaseUrl(config);
 
@@ -230,12 +330,8 @@ public class VideoGenerationServiceImpl implements IVideoGenerationService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                log.error("查询视频任务HTTP失败: taskId={}, httpStatus={}", taskId, response.statusCode());
-                VideoTaskResultVo result = new VideoTaskResultVo();
-                result.setTaskId(taskId);
-                result.setStatus("FAIL");
-                result.setMessage("查询任务失败，状态码: " + response.statusCode());
-                return result;
+                log.error("查询视频任务HTTP失败: taskId={}, httpStatus={}, body={}", taskId, response.statusCode(), response.body());
+                return buildFailResult(taskId, buildApiErrorMessage("查询视频任务", response.statusCode(), response.body()));
             }
 
             JSONObject respJson = JSON.parseObject(response.body());
@@ -312,6 +408,68 @@ public class VideoGenerationServiceImpl implements IVideoGenerationService {
             return result;
         }
     }
+
+	private boolean isMiniMaxProvider(String provider) {
+		return "MINIMAX".equalsIgnoreCase(provider);
+	}
+
+	private VideoTaskResultVo buildFailResult(String taskId, String message) {
+		VideoTaskResultVo result = new VideoTaskResultVo();
+		result.setTaskId(taskId);
+		result.setStatus("FAIL");
+		result.setMessage(message);
+		return result;
+	}
+
+	/**
+	 * 将视频模型接口的HTTP错误转换为可操作的提示，避免 401 等被误认为是系统登录失效。
+	 *
+	 * @param action       操作名称，如“提交视频任务”
+	 * @param statusCode   第三方接口HTTP状态码
+	 * @param responseBody 第三方接口响应体
+	 */
+	private String buildApiErrorMessage(String action, int statusCode, String responseBody) {
+		String reason = switch (statusCode) {
+			case 401, 403 -> "视频模型 API Key 无效或已过期，请联系管理员检查配置 jeecg.ai-chat.ai-model-video.apiKey";
+			case 404 -> "视频模型接口地址或模型不存在，请检查配置 jeecg.ai-chat.ai-model-video 的 apiHost 和 model";
+			case 429 -> "视频模型调用频率超限或账户余额不足，请稍后重试或检查模型平台账户额度";
+			case 400 -> "请求参数不被视频模型接受，请调整描述、尺寸或时长后重试";
+			default -> statusCode >= 500 ? "视频模型服务暂时不可用，请稍后重试" : "视频模型接口调用异常";
+		};
+		String apiMessage = parseApiErrorMessage(responseBody);
+		String detail = apiMessage == null ? "HTTP " + statusCode : "HTTP " + statusCode + "，平台返回：" + apiMessage;
+		return action + "失败：" + reason + "（" + detail + "）";
+	}
+
+	/**
+	 * 从第三方错误响应中提取错误信息，兼容智谱 error.message 与 MiniMax base_resp.status_msg。
+	 */
+	private String parseApiErrorMessage(String responseBody) {
+		try {
+			JSONObject responseJson = JSON.parseObject(responseBody);
+			JSONObject error = responseJson.getJSONObject("error");
+			if (error != null && error.getString("message") != null) {
+				return error.getString("message");
+			}
+			JSONObject baseResp = responseJson.getJSONObject("base_resp");
+			if (baseResp != null && baseResp.getString("status_msg") != null) {
+				return baseResp.getString("status_msg");
+			}
+			return responseJson.getString("message");
+		} catch (Exception ignored) {
+			// 非JSON错误响应不返回平台信息。
+			return null;
+		}
+	}
+
+	private String parseMiniMaxTaskError(JSONObject task, String status) {
+		JSONObject error = task.getJSONObject("error");
+		if (error != null && error.getString("message") != null) {
+			return error.getString("message");
+		}
+		String message = task.getString("message");
+		return message == null || message.isBlank() ? "MiniMax视频任务状态: " + status : message;
+	}
 
     @Override
     public VideoTaskResultVo addVoiceover(String taskId, String prompt) {

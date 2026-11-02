@@ -112,7 +112,7 @@ export const dictItemSearchFormSchema: FormSchema[] = [
   {
     label: '名称',
     field: 'itemText',
-    component: 'Input',
+    component: 'JInput',
   },
   {
     label: '状态',

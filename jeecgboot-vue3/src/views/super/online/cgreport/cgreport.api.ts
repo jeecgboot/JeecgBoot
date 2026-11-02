@@ -42,7 +42,6 @@ export const deleteOne = (params, handleSuccess) => {
 };
 /**
  * 批量删除
- * e3e3NcxzbUiGa53YYVXxWc8ADo5ISgQGx/gaZwERF91oAryDlivjqBv3wqRArgChupi+Y/Gg/swwGEyL0PuVFg==
  * @param params
  */
 export const batchDelete = (params, handleSuccess) => {

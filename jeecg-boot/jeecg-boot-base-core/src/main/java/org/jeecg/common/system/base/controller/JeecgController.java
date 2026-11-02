@@ -222,6 +222,9 @@ public class JeecgController<T, S extends IService<T>> {
             params.setNeedSave(true);
             try {
                 List<T> list = ExcelImportUtil.importExcel(file.getInputStream(), clazz, params);
+                // update-begin--author:wangshuai---date:20260901---for：【LHZP-985】代码生成 单表和树导出popup字典没有翻译：导入添加翻译
+				beforeImport(list);
+                // update-end--author:wangshuai---date:20260804---for：【LHZP-985】代码生成 单表和树导出popup字典没有翻译：导入添加翻译
                 // 代码逻辑说明: 批量插入数据
                 long start = System.currentTimeMillis();
                 service.saveBatch(list);
@@ -248,4 +251,13 @@ public class JeecgController<T, S extends IService<T>> {
         }
         return Result.error("文件导入失败！");
     }
+
+	/**
+	 * 数据持久化前处理导入数据。
+	 *
+	 * @param list 导入数据
+	 */
+	protected void beforeImport(List<T> list) {
+		// 供生成的控制器扩展导入前处理逻辑
+	}
 }

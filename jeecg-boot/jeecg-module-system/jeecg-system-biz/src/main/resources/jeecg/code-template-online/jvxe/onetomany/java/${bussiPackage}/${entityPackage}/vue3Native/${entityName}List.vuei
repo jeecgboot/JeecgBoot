@@ -524,6 +524,9 @@
    */
   function searchReset() {
     formRef.value.resetFields();
+    Object.keys(queryParam).forEach((key) => {
+      delete queryParam[key];
+    });
     selectedRowKeys.value = [];
     //刷新数据
     reload();

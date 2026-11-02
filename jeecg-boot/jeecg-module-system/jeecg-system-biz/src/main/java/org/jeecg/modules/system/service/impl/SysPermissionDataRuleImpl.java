@@ -6,6 +6,7 @@ import java.util.Set;
 
 import jakarta.annotation.Resource;
 
+import org.jeecg.common.config.TenantContext;
 import org.jeecg.common.constant.CommonConstant;
 import org.jeecg.common.system.query.QueryGenerator;
 import org.jeecg.common.util.oConvertUtils;
@@ -60,7 +61,11 @@ public class SysPermissionDataRuleImpl extends ServiceImpl<SysPermissionDataRule
 
 	@Override
 	public List<SysPermissionDataRule> queryPermissionDataRules(String username,String permissionId) {
-		List<String> idsList = this.baseMapper.queryDataRuleIds(username, permissionId);
+		//update-begin---author:scott ---date:20261012  for：【issues/9820】追加当前租户套餐包菜单的数据规则（套餐包按租户隔离，只取请求头中当前租户的）-----------
+		int tenant = oConvertUtils.getInt(TenantContext.getTenant(), -1);
+		Integer tenantId = tenant != -1 ? tenant : null;
+		List<String> idsList = this.baseMapper.queryDataRuleIds(username, permissionId, tenantId);
+		//update-end---author:scott ---date:20261012  for：【issues/9820】追加当前租户套餐包菜单的数据规则（套餐包按租户隔离，只取请求头中当前租户的）-----------
 		// 代码逻辑说明: 数据权限失效问题处理--------------------
 		if(idsList==null || idsList.size()==0) {
 			return null;

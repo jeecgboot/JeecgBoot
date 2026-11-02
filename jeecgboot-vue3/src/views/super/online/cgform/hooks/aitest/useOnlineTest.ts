@@ -11,7 +11,8 @@ export function useOnlineTest(data, methods, form: Nullable<FormActionType>) {
   }
 
   // 自定义按钮
-  function genButtons(code) {
+  // 开源版不含AI测试数据，此处为空实现；参数签名与 CustomButtonList.vue 的调用保持一致（LHZP-195）
+  async function genButtons(code, existingButtonCodes: string[] = []) {
   }
 
   // 生成java增强

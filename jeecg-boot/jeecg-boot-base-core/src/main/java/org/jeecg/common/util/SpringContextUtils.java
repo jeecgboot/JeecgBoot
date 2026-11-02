@@ -73,6 +73,13 @@ public class SpringContextUtils implements ApplicationContextAware {
 		//2.【兼容】SSL认证之后，request.getScheme()获取不到https的问题
 		// https://blog.csdn.net/weixin_34376986/article/details/89767950
 		String scheme = request.getHeader(CommonConstant.X_FORWARDED_SCHEME);
+		//update-begin---author:scott ---date:20261013  for：【jimureport/issues/4786】HTTPS反代下只传X-Forwarded-Proto时页面资源仍为http://，Mixed Content白屏-----------
+		if(oConvertUtils.isEmpty(scheme)){
+			// 多级代理时形如 "https, http"，取第一个（最靠近浏览器的那一跳）
+			String proto = request.getHeader(CommonConstant.X_FORWARDED_PROTO);
+			scheme = oConvertUtils.isNotEmpty(proto) ? proto.split(",")[0].trim() : null;
+		}
+		//update-end---author:scott ---date:20261013  for：【jimureport/issues/4786】HTTPS反代下只传X-Forwarded-Proto时页面资源仍为http://，Mixed Content白屏-----------
 		if(scheme!=null && !request.getScheme().equals(scheme)){
 			domain = domain.replace(request.getScheme(),scheme);
 		}

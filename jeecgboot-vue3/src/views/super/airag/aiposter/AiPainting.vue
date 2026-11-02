@@ -61,11 +61,11 @@
         <div v-if="generatedImage" class="result-image-wrapper group">
           <img :src="generatedImage" class="result-image" alt="Generated Image" />
           <div class="image-actions">
-            <a-button type="primary" ghost @click="handlePreview">
+            <a-button class="preview-button" @click="handlePreview">
               <Icon icon="ant-design:eye-outlined" />
               预览
             </a-button>
-            <a-button type="primary" ghost @click="handleDownload">
+            <a-button type="primary" @click="handleDownload">
               <Icon icon="ant-design:download-outlined" />
               下载
             </a-button>
@@ -407,18 +407,30 @@
 
     .image-actions {
       position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      display: none;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 10px;
+      padding: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
       border-radius: 8px;
-      backdrop-filter: blur(2px);
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      backdrop-filter: blur(6px);
+
+      .preview-button {
+        color: #1677ff;
+        border-color: #1677ff;
+      }
     }
 
     &:hover .image-actions {
-      display: flex;
+      opacity: 1;
     }
   }
 </style>

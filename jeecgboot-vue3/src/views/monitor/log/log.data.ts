@@ -41,6 +41,8 @@ export const columns: BasicColumn[] = [
   },
 ];
 
+export const loginLogColumns: BasicColumn[] = columns.filter((column) => column.dataIndex !== 'costTime');
+
 /**
  * 操作日志需要操作类型
  */

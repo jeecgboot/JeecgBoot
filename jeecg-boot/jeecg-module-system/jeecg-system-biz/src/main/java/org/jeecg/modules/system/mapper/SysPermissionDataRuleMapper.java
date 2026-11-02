@@ -21,8 +21,9 @@ public interface SysPermissionDataRuleMapper extends BaseMapper<SysPermissionDat
 	  * 根据用户名和权限id查询
 	 * @param username
 	 * @param permissionId
+	 * @param tenantId 当前租户ID（请求头 tenant-id），不为空时追加该租户套餐包的数据规则
 	 * @return
 	 */
-	public List<String> queryDataRuleIds(@Param("username") String username,@Param("permissionId") String permissionId);
+	public List<String> queryDataRuleIds(@Param("username") String username,@Param("permissionId") String permissionId,@Param("tenantId") Integer tenantId);
 
 }

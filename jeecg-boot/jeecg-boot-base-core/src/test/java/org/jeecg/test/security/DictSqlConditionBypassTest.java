@@ -52,6 +52,7 @@ public class DictSqlConditionBypassTest {
     @DisplayName("回归：引号内的 # 与正常条件放行")
     void normalConditionAllowed() {
         assertDoesNotThrow(() -> check("username = 'a#b'"));
+        assertDoesNotThrow(() -> check("1=1"));
         assertDoesNotThrow(() -> check("status = '1' and sex in ('1','2') order by create_time desc"));
         assertDoesNotThrow(() -> check("u.username like 'adm%' and `realname` is not null"));
     }

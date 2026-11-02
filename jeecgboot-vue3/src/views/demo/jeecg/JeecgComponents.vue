@@ -163,7 +163,7 @@
           passwordTestLoading.value = false;
         }
       }
-      
+
       const superQueryConfig = {
         name:{ title: "名称", view: "text", type: "string", order: 1 },
         birthday:{ title: "生日", view: "date", type: "string", order: 2 },

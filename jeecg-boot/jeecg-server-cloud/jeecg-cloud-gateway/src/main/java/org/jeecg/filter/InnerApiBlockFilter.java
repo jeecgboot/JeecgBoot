@@ -18,31 +18,32 @@ import java.util.Locale;
 import java.util.Set;
 
 /**
- * 禁止外部经网关访问微服务内部接口 /sys/api/**、/airag/api/**、/online/api/**、/drag/api/**
+ * 禁止外部经网关访问微服务内部接口 /sys/api/**、/airag/api/**、/online/api/**、/drag/api/**、/airag/flow/api/**、/eoa/api/**、/desform/inner/api/**、/act/designer/miniDesFlow/inner/api/**
  * <p>
  * 这些是各服务提供给其它微服务的 Feign 内部接口（含数据源明文口令、用户资料、任意表数据读写等），
  * Feign 按服务名直连，不经过网关，因此在网关拦截不影响内部调用。
  *
  * @author scott
- * @since 2026-10-14 微服务模式下外部请求可经网关直调内部接口
+ * @since 2026-10-14 微服务模式下外部请求可经网关直调内部接口（GHSA-vrqv-3gwg-423j / GHSA-hh6j-6p7c-8hrf / GHSA-483m-f38h-369m / GHSA-5q28-hq94-q2fj）
  */
 @Slf4j
 @Component
 public class InnerApiBlockFilter implements GlobalFilter, Ordered {
 
     /**
-     * 微服务内部接口路径前缀（小写）
+     * 微服务内部接口路径前缀（小写）：/sys/api、/airag/api、/online/api、/drag/api、/airag/flow/api、/eoa/api（GHSA-v952-qq2h-377j / GHSA-qj27-82m3-9q8q / GHSA-2xf5-w883-78m9）
      */
-    private static final String[] INNER_API_PREFIXES = {"/sys/api/", "/airag/api/", "/online/api/", "/drag/api/"};
+    private static final String[] INNER_API_PREFIXES = {"/sys/api/", "/airag/api/", "/online/api/", "/drag/api/", "/airag/flow/api/", "/eoa/api/", "/desform/inner/api/", "/act/designer/minidesflow/inner/api/"};
 
     /**
-     * 放行的内部接口（规范化后的小写路径）：前端字典翻译在用
+     * 放行的接口（规范化后的小写路径）：旧版 PC 端、移动端 EOA 协同催办仍直接调用的过渡接口（下个版本删除）；前端字典翻译在用的 Online 报表字典
      */
     private static final Set<String> ALLOW_PATHS = Set.of("/online/api/cgreportgetdatapackage");
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = normalizePath(exchange.getRequest().getURI().getRawPath());
+        //update-begin---author:scott ---date:20261014  for：【GHSA-v952-qq2h-377j/GHSA-qj27-82m3-9q8q】网关拦截的内部接口由 /sys/api 扩展为多个前缀，增加 /airag/api、/online/api、/drag/api、/airag/flow/api、/eoa/api-----------
         for (String prefix : INNER_API_PREFIXES) {
             int idx = path.indexOf(prefix);
             if (idx >= 0 || path.endsWith(prefix.substring(0, prefix.length() - 1))) {
@@ -53,6 +54,7 @@ public class InnerApiBlockFilter implements GlobalFilter, Ordered {
                 }
             }
         }
+        //update-end---author:scott ---date:20261014  for：【GHSA-v952-qq2h-377j/GHSA-qj27-82m3-9q8q】网关拦截的内部接口由 /sys/api 扩展为多个前缀，增加 /airag/api、/online/api、/drag/api、/airag/flow/api、/eoa/api-----------
         return chain.filter(exchange);
     }
 

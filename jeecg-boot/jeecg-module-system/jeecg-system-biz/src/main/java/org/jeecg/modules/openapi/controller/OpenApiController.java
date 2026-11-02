@@ -158,9 +158,9 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
      * @param path
      * @return
      */
-    //update-begin---author:scott ---date:20261024  for：/call 不再接受 OPTIONS、TRACE，OPTIONS 不能再作为转发入口绕过认证-----------
+    //update-begin---author:scott ---date:20261024  for：【GHSA-m3rc-w9wv-5qmw】/call 不再接受 OPTIONS、TRACE，OPTIONS 不能再作为转发入口绕过认证-----------
     @RequestMapping(value = "/call/{path}", method = {RequestMethod.GET,RequestMethod.POST,RequestMethod.DELETE,RequestMethod.PUT,RequestMethod.PATCH,RequestMethod.HEAD})
-    //update-end---author:scott ---date:20261024  for：/call 不再接受 OPTIONS、TRACE-----------
+    //update-end---author:scott ---date:20261024  for：【GHSA-m3rc-w9wv-5qmw】/call 不再接受 OPTIONS、TRACE-----------
     public Result<?> call(@PathVariable String path, @RequestBody(required = false) String json, HttpServletRequest request) {
         OpenApi openApi = service.findByPath(path);
         if (Objects.isNull(openApi)) {
@@ -523,7 +523,7 @@ public class OpenApiController extends JeecgController<OpenApi, OpenApiService> 
         info.setDescription("OpenAPI 接口列表");
         info.setVersion("3.9.5");
         info.setTitle("OpenAPI 接口列表");
-        info.setTermsOfService("https://jeecg.com");
+        //info.setTermsOfService("https://jeecg.com");
 
         SwaggerInfoContact contact = new SwaggerInfoContact();
         contact.setName("jeecg@qq.com");

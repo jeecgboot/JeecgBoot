@@ -91,6 +91,11 @@ public class SysRoleIndex {
 	@Dict(dicCode = "relation_type")
 	private java.lang.String relationType;
 
+	/**关联用户/角色名称(翻译字段，非数据库字段)*/
+	@TableField(exist = false)
+	@Schema(description = "关联用户/角色名称")
+	private java.lang.String relationName;
+
 
 	public SysRoleIndex() {
 

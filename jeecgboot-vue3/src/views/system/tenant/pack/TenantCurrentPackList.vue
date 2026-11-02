@@ -110,7 +110,7 @@
             onClick: seeTenantPackUser.bind(null, record),
           },
           {
-            label: '权限详情',
+            label: '套餐详情',
             onClick: handleDetail.bind(null, record),
           },
         ];

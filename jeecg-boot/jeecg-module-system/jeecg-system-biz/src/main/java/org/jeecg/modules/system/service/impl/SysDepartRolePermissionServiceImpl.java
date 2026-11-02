@@ -7,6 +7,8 @@ import org.jeecg.common.util.oConvertUtils;
 import org.jeecg.modules.system.entity.SysDepartRolePermission;
 import org.jeecg.modules.system.mapper.SysDepartRolePermissionMapper;
 import org.jeecg.modules.system.service.ISysDepartRolePermissionService;
+import org.jeecg.modules.system.service.ISysDepartRoleUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,6 +24,9 @@ import java.util.*;
  */
 @Service
 public class SysDepartRolePermissionServiceImpl extends ServiceImpl<SysDepartRolePermissionMapper, SysDepartRolePermission> implements ISysDepartRolePermissionService {
+
+    @Autowired
+    private ISysDepartRoleUserService sysDepartRoleUserService;
 
     @Override
     public void saveDeptRolePermission(String roleId, String permissionIds, String lastPermissionIds) {
@@ -54,6 +59,9 @@ public class SysDepartRolePermissionServiceImpl extends ServiceImpl<SysDepartRol
                 this.remove(new QueryWrapper<SysDepartRolePermission>().lambda().eq(SysDepartRolePermission::getRoleId, roleId).eq(SysDepartRolePermission::getPermissionId, permissionId));
             }
         }
+        //update-begin---author:scott ---date:20261029  for：【LHZP-1129】部门角色授权后清理相关用户Shiro权限缓存，无需重新登录即生效-----------
+        sysDepartRoleUserService.clearDeptRoleUserAuthCache(roleId);
+        //update-end---author:scott ---date:20261029  for：【LHZP-1129】部门角色授权后清理相关用户Shiro权限缓存，无需重新登录即生效-----------
     }
 
     /**

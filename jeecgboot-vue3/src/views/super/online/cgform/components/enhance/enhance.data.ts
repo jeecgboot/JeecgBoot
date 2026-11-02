@@ -4,6 +4,8 @@ import { onlineDefaultButton } from '../../cgform.data';
 // update-begin--author:jeecg---date:20260513---for：【QQYUN-15337】online表单SQL增强支持指定数据源
 import { initDictOptions } from '/@/utils/dict';
 // update-end--author:jeecg---date:20260513---for：【QQYUN-15337】online表单SQL增强支持指定数据源
+//只支持开始的增强按钮
+const START_EVENT_ONLY_BUTTONS = ['import', 'export', 'query'];
 
 export function useJavaColumns(btnList: Ref<any[]>) {
   let columns: BasicColumn[] = [
@@ -87,6 +89,13 @@ export function useJavaFormSchemas(btnList: Ref<any[]>) {
           ],
         },
         defaultValue: 'end',
+        ifShow: ({ values, model }) => {
+          const isStartEventOnly = START_EVENT_ONLY_BUTTONS.includes(values.buttonCode);
+          if (isStartEventOnly) {
+            model.event = 'start';
+          }
+          return !isStartEventOnly;
+        },
       },
       {
         label: '类型',

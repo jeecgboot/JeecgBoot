@@ -93,6 +93,9 @@
           key: 'queryDefVal',
           width: 130,
           type: JVxeTypes.input,
+          props: {
+            allowClear: true,
+          },
           defaultValue: '',
         },
         {

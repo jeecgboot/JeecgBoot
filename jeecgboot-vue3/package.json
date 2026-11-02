@@ -118,6 +118,7 @@
     "@vue/compiler-sfc": "^3.5.39",
     "@vue/test-utils": "^2.4.11",
     "autoprefixer": "^10.5.2",
+    "clean-css": "^5.3.3",
     "commitizen": "^4.3.2",
     "conventional-changelog-cli": "^4.1.0",
     "cross-env": "^7.0.3",

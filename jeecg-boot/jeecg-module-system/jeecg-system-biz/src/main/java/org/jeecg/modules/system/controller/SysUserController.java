@@ -12,6 +12,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.jeecg.common.api.vo.Result;
@@ -57,6 +59,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -127,6 +131,7 @@ public class SysUserController {
      * @return
      */
     @PermissionData(pageComponent = "system/UserList")
+    @RequiresPermissions(value = {"system:user:list", "system:user:select"}, logical = Logical.OR)
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
 	public Result<IPage<SysUser>> queryPageList(SysUser user,@RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
 									  @RequestParam(name="pageSize", defaultValue="10") Integer pageSize,HttpServletRequest req) {
@@ -143,8 +148,65 @@ public class SysUserController {
             }
         }
         //------------------------------------------------------------------------------------------------
-        return sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
+        Result<IPage<SysUser>> result = sysUserService.queryPageList(req, queryWrapper, pageSize, pageNo);
+        //update-begin---author:scott ---date:20260911  for：【安全修复 GHSA-8cj9-3528-wp9p】/sys/user/list 缺少功能级权限校验，任意登录用户可拉取全租户用户信息，此处按权限分级脱敏-----------
+        if (!hasUserListAuth() && null != result.getResult()) {
+            desensitizeUserContact(result.getResult());
+        }
+        //update-end---author:scott ---date:20260911  for：【安全修复 GHSA-8cj9-3528-wp9p】-----------
+        return result;
 	}
+
+    /**
+     * 判断当前登录用户是否具备用户列表查看权限（无权限时响应需剥离隐私字段）
+     */
+    private boolean hasUserListAuth() {
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            return subject.isPermitted("system:user:list") || subject.isPermitted("system:user:listAll");
+        } catch (Exception e) {
+            // 取不到权限上下文时按最小权限处理，避免敏感字段外泄
+            log.warn("获取用户列表权限失败，按无权限处理：" + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * 无用户列表查看权限时可见的字段白名单：选人组件、通讯录等普通用户场景所需的最小字段集
+     * 未列入白名单的字段一律置空（手机号、邮箱、生日、租户、岗位内部ID、审计字段等），
+     * 采用白名单而非逐字段清空，可避免实体后续新增字段时遗漏而再次泄露
+     */
+    private static final Set<String> USER_LIST_VISIBLE_FIELDS = new HashSet<>(Arrays.asList(
+            "id", "username", "realname", "avatar", "sex", "workNo", "sign", "signEnable",
+            "post", "postText", "orgCodeTxt", "status", "izHideContact", "sort"
+    ));
+
+    /**
+     * 对无用户列表查看权限的响应做字段级脱敏：仅保留白名单字段
+     */
+    private void desensitizeUserContact(IPage<SysUser> page) {
+        if (null == page || oConvertUtils.listIsEmpty(page.getRecords())) {
+            return;
+        }
+        for (SysUser user : page.getRecords()) {
+            if (null == user) {
+                continue;
+            }
+            for (Field field : oConvertUtils.getAllFields(user)) {
+                // 跳过静态字段、基本类型（无法置null）以及白名单字段
+                if (Modifier.isStatic(field.getModifiers()) || field.getType().isPrimitive()
+                        || USER_LIST_VISIBLE_FIELDS.contains(field.getName())) {
+                    continue;
+                }
+                try {
+                    field.setAccessible(true);
+                    field.set(user, null);
+                } catch (Exception e) {
+                    log.warn("用户列表脱敏失败，字段：{}，原因：{}", field.getName(), e.getMessage());
+                }
+            }
+        }
+    }
 
     /**
      * 获取系统用户数据（查询全部用户，不做租户隔离）
@@ -316,6 +378,13 @@ public class SysUserController {
 			sysUserService.checkUserAdminRejectDel(ids);
 			String status = jsonObject.getString("status");
 			String[] arr = ids.split(",");
+            // update-begin--author:wangshuai---date:20261028---for：【LHZP-1066】【系统管理】用户管理 已冻结的用户 可重复冻结
+			// 已冻结的用户可重复冻结，已是目标状态的用户不允许重复操作------------
+			long sameStatusCount = sysUserService.count(new LambdaQueryWrapper<SysUser>().in(SysUser::getId, Arrays.asList(arr)).eq(SysUser::getStatus, Integer.parseInt(status)));
+			if (sameStatusCount > 0) {
+				return Result.error(CommonConstant.USER_FREEZE.toString().equals(status) ? "所选用户中包含已冻结的用户，请勿重复冻结！" : "所选用户中包含未冻结的用户，无需解冻！");
+			}
+            // update-end--author:wangshuai---date:20261028---for：【LHZP-1066】【系统管理】用户管理 已冻结的用户 可重复冻结
             for (String id : arr) {
 				if(oConvertUtils.isNotEmpty(id)) {
                     // 代码逻辑说明: [QQYUN-5577]用户列表-冻结用户，再解冻之后，用户还是无法登陆，有缓存问题 #5066------------
@@ -490,6 +559,7 @@ public class SysUserController {
      * @param id
      * @return
      */
+    @RequiresPermissions("system:user:select")
     @RequestMapping(value = "/queryUserByDepId", method = RequestMethod.GET)
     public Result<List<SysUser>> queryUserByDepId(@RequestParam(name = "id", required = true) String id,@RequestParam(name="realname",required=false) String realname,
                                                   @RequestParam(name="status",required=false) Integer status) {
@@ -527,6 +597,7 @@ public class SysUserController {
      * @param username
      * @return
      */
+    @RequiresPermissions("system:user:select")
     @RequestMapping(value = "/queryUserComponentData", method = RequestMethod.GET)
     public Result<IPage<SysUser>> queryUserComponentData(
             @RequestParam(name="pageNo", defaultValue="1") Integer pageNo,
@@ -899,6 +970,7 @@ public class SysUserController {
         Page<SysUser> page = new Page<SysUser>(pageNo, pageSize);
         String depId = req.getParameter("depId");
         String username = req.getParameter("username");
+		String realname = req.getParameter("realname");
         //根据部门ID查询,当前和下级所有的部门IDS
         List<String> subDepids = new ArrayList<>();
         //部门id为空时，查询我的部门下所有用户
@@ -914,7 +986,7 @@ public class SysUserController {
             subDepids = sysDepartService.getSubDepIdsByDepId(depId);
         }
         if(subDepids != null && subDepids.size()>0){
-            IPage<SysUser> pageList = sysUserService.getUserByDepIds(page,subDepids,username);
+            IPage<SysUser> pageList = sysUserService.getUserByDepIds(page,subDepids,username,realname);
             //批量查询用户的所属部门
             //step.1 先拿到全部的 useids
             //step.2 通过 useids，一次性查询用户的所属部门名字
@@ -1004,6 +1076,7 @@ public class SysUserController {
     /**
      * 根据 orgCode 查询用户，包括公司、子公司、岗位部门下的用户
      */
+    @RequiresPermissions("system:user:select")
     @GetMapping("/queryDepartPostByOrgCode")
     public Result<?> queryDepartPostByOrgCode(@RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
                                               @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize,
@@ -1151,6 +1224,49 @@ public class SysUserController {
             result.error500("删除失败！");
         }
         return result;
+    }
+
+    /**
+     * 部门管理-用户列表：将用户移出部门或岗位（只删除关联关系，不删除用户）
+     * 只处理当前部门/岗位的直属成员，部门会同时清理该部门下的岗位和负责部门，岗位会清空主岗位、删除兼职岗位
+     *
+     * @param depId   部门或岗位id
+     * @param userIds 用户id，多个用逗号分隔
+     * @return
+     * @author wangshuai
+     * @since 2026-10-30 【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作
+     */
+    @RequiresPermissions("system:user:deleteUserInDepartBatch")
+    @DeleteMapping("/removeDepartUser")
+    public Result<String> removeDepartUser(@RequestParam(name = "depId") String depId,
+                                           @RequestParam(name = "userIds") String userIds) {
+        try {
+            //去掉空值和重复的用户id
+            List<String> userIdList = new ArrayList<>();
+            String[] userIdArr = userIds.split(",");
+            for (String userId : userIdArr) {
+                if (oConvertUtils.isEmpty(userId) || userIdList.contains(userId)) {
+                    continue;
+                }
+                userIdList.add(userId);
+            }
+            //只移出当前部门/岗位的直属成员
+            List<String> removeUserIds = sysUserService.removeDepartUser(depId, userIdList);
+            if (removeUserIds.isEmpty()) {
+                return Result.error("移出失败，目标用户不是当前部门/岗位的直属成员！");
+            }
+            //删除用户在该部门的部门角色
+            departRoleUserService.removeDeptRoleUser(removeUserIds, depId);
+            //有用户不是直属成员，没有移出
+            int skipCount = userIdList.size() - removeUserIds.size();
+            if (skipCount > 0) {
+                return Result.OK("已移出" + removeUserIds.size() + "人，其余" + skipCount + "人不是当前部门/岗位的直属成员，未移出");
+            }
+            return Result.OK("移出成功!");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return Result.error("移出失败！");
+        }
     }
     
     /**

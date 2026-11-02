@@ -71,6 +71,8 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
         QueryWrapper<SysRoleIndex> queryWrapper = QueryGenerator.initQueryWrapper(sysRoleIndex, req.getParameterMap());
         Page<SysRoleIndex> page = new Page<SysRoleIndex>(pageNo, pageSize);
         IPage<SysRoleIndex> pageList = sysRoleIndexService.page(page, queryWrapper);
+        // 翻译用户/角色名称
+        sysRoleIndexService.fillRelationName(pageList.getRecords());
         return Result.OK(pageList);
     }
 
@@ -171,6 +173,7 @@ public class SysRoleIndexController extends JeecgController<SysRoleIndex, ISysRo
      * @param request
      * @param sysRoleIndex
      */
+    @RequiresPermissions("system:roleindex:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, SysRoleIndex sysRoleIndex) {
         return super.exportXls(request, sysRoleIndex, SysRoleIndex.class, "角色首页配置");

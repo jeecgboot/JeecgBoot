@@ -12,8 +12,7 @@
         @register="regModal"
         :code="code"
         :multi="multi"
-        :selected="selected"
-        :rowkey="valueFiled"
+        :echoRows="echoRows"
         :sorter="sorter"
         :groupId="''"
         :param="param"
@@ -77,7 +76,6 @@
       const code = props.dictCode.split(',')[0];
       const labelFiled = props.dictCode.split(',')[1];
       const valueFiled = props.dictCode.split(',')[2];
-      const selected = ref([]);
       if (!code || !valueFiled || !labelFiled) {
         createMessage.error('popupDict参数未正确配置!');
       }
@@ -94,8 +92,36 @@
         if (props.disabled) {
           return;
         }
+        echoRows.value = buildEchoRows();
         openModal(true);
       }
+
+      // update-begin--author:liaozhiyang---date:20261029---for：【LHZP-3】popup字典编辑时弹窗勾选回显
+      const echoRows = ref<any[]>([]);
+      /**
+       * 当前值转成字符串数组（存储字段可能是数字类型，统一按字符串比较）
+       */
+      function getValues(): string[] {
+        const value = props.value;
+        if (value === undefined || value === null || value === '') {
+          return [];
+        }
+        const values = props.multi ? String(value).split(props.spliter) : [String(value)];
+        return values.filter((v) => v !== '');
+      }
+      /**
+       * 根据当前值生成弹窗回显的待匹配行 [{存储字段: 值}]，弹窗中多条匹配时勾选第一条
+       */
+      function buildEchoRows() {
+        return getValues().map((v) => ({ [valueFiled]: v }));
+      }
+      /**
+       * 按存储值反查显示文本（存储字段不唯一时取第一条，与列表后端翻译一致）
+       */
+      function translate(callBack) {
+        cgRpConfigId.value ? loadData({ callBack }) : loadColumnsInfo({ callBack });
+      }
+      // update-end--author:liaozhiyang---date:20261029---for：【LHZP-3】popup字典编辑时弹窗勾选回显
       /**
        * liaozhiyang
        * 20260522
@@ -120,38 +146,31 @@
       /**
        * 监听value数值
        */
+      /**
+       * 根据 props.value 同步显示值（单向同步，不触发 update:value）
+       */
+      function syncFromProps() {
+        syncingFromProps = true;
+        // update-begin--author:liusq---date:20260720---for：【LHZP-1003】单表pop字典，设置后，编辑打开，回显数据陷入循环查询的死循环
+        // 代码逻辑说明: 必须使用实时的props.value而非闭包捕获的val，否则在异步回调时
+        // defaultValue与记录值不同时，多个callBack会交替覆盖formModel，导致无限刷新
+        // update-begin--author:liaozhiyang---date:20261029---for：【LHZP-3】存储字段为数字时，显示值与options的value类型不一致导致不翻译
+        const values = getValues();
+        showText.value = props.multi ? values : values[0] ?? '';
+        // update-end--author:liaozhiyang---date:20261029---for：【LHZP-3】存储字段为数字时，显示值与options的value类型不一致导致不翻译
+        // update-end--author:liusq---date:20260720---for：【LHZP-1003】单表pop字典，设置后，编辑打开，回显数据陷入循环查询的死循环
+        syncShowLabel();
+        nextTick(() => {
+          syncingFromProps = false;
+        });
+      }
       watch(
         () => props.value,
         () => {
-          const callBack = () => {
-            syncingFromProps = true;
-            // update-begin--author:liusq---date:20260720---for：【LHZP-1003】单表pop字典，设置后，编辑打开，回显数据陷入循环查询的死循环
-            // 代码逻辑说明: 必须使用实时的props.value而非闭包捕获的val，否则在异步回调时
-            // defaultValue与记录值不同时，多个callBack会交替覆盖formModel，导致无限刷新
-            const currentValue = props.value;
-            if (props.multi) {
-              showText.value = currentValue && currentValue.length > 0 ? currentValue.split(props.spliter) : [];
-            } else {
-              showText.value = currentValue ?? '';
-            }
-            // update-end--author:liusq---date:20260720---for：【LHZP-1003】单表pop字典，设置后，编辑打开，回显数据陷入循环查询的死循环
-            // update-begin--author:liaozhiyang---date:20260714---for：【LHZP-392】pop字典外面删除了，弹窗里面还是勾选
-            const currentValues = (props.multi ? showText.value : showText.value ? [showText.value] : []).map((v: any) => String(v));
-            selected.value = (selected.value || []).filter((r: any) => currentValues.includes(String(r[valueFiled])));
-            // update-end--author:liaozhiyang---date:20260714---for：【LHZP-392】pop字典外面删除了，弹窗里面还是勾选
-            syncShowLabel();
-            nextTick(() => {
-              syncingFromProps = false;
-            });
-          };
           // 先回显已保存值，接口返回后再用加载到的 options 替换为显示文本，避免编辑弹窗短暂空白
-          callBack();
+          syncFromProps();
           if (props.value || props.defaultValue) {
-            if (cgRpConfigId.value) {
-              loadData({ callBack });
-            } else {
-              loadColumnsInfo({ callBack });
-            }
+            translate(syncFromProps);
           }
         },
         { immediate: true }
@@ -203,10 +222,15 @@
           .then((res) => {
             let data = res.result;
             if (data.records?.length) {
-              options.value = data.records.map((item) => {
-                return { value: item[valueFiled], text: item[labelFiled] };
+              // update-begin--author:liaozhiyang---date:20261029---for：【LHZP-3】popup字典编辑时弹窗勾选回显
+              // 存储字段不唯一时反查会返回多条，同一个值只取第一条的显示文本；value统一转字符串，与显示值类型一致
+              const map = new Map();
+              data.records.forEach((item) => {
+                const key = String(item[valueFiled]);
+                !map.has(key) && map.set(key, { value: key, text: item[labelFiled] });
               });
-              selected.value = data.records;
+              options.value = [...map.values()];
+              // update-end--author:liaozhiyang---date:20261029---for：【LHZP-3】popup字典编辑时弹窗勾选回显
             }
           })
           .finally(() => {
@@ -243,10 +267,15 @@
           }
           //update-end author:liaozhiyang date:20260522 for：【QQYUN-15493】新增a-input模式下
         }
+        // update-begin--author:liaozhiyang---date:20261029---for：【LHZP-3】popup字典编辑时弹窗勾选回显
+        // 选择后需按存储值重新翻译
+        const needTranslate = result != null && result !== '' && String(props.value ?? '') === String(result);
+        // update-end--author:liaozhiyang---date:20261029---for：【LHZP-3】popup字典编辑时弹窗勾选回显
         nextTick(() => {
           emit('change', result);
           emit('update:value', result);
           emit('options-change', options.value);
+          needTranslate && translate(syncFromProps);
         });
       }
 
@@ -260,7 +289,7 @@
         code,
         options,
         loading,
-        selected,
+        echoRows,
         valueFiled,
       };
     },

@@ -3,6 +3,7 @@ package org.jeecg.modules.system.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.RandomUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -25,6 +26,8 @@ import org.jeecg.config.mybatis.MybatisPlusSaasConfig;
 import org.jeecg.config.sign.annotation.SignatureCheck;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.modules.system.entity.*;
+import org.jeecg.modules.system.mapper.SysPackPermissionMapper;
+import org.jeecg.modules.system.service.ISysPermissionDataRuleService;
 import org.jeecg.modules.system.service.ISysTenantPackService;
 import org.jeecg.modules.system.service.ISysTenantService;
 import org.jeecg.modules.system.service.ISysUserService;
@@ -67,6 +70,12 @@ public class SysTenantController {
 
     @Autowired
     private ISysDepartService sysDepartService;
+
+    @Autowired
+    private SysPackPermissionMapper sysPackPermissionMapper;
+
+    @Autowired
+    private ISysPermissionDataRuleService sysPermissionDataRuleService;
 
     /**
      * 获取列表数据
@@ -363,6 +372,65 @@ public class SysTenantController {
     public Result<String> editPackPermission(@RequestBody SysTenantPack sysTenantPack) {
         sysTenantPackService.editPackPermission(sysTenantPack);
         return Result.ok("修改租户产品包成功");
+    }
+
+    /**
+     * 查询套餐包菜单的数据规则
+     *
+     * @param permissionId 菜单id
+     * @param packId 套餐包id
+     * @return datarule：菜单下的数据规则，drChecked：套餐包已选的数据规则
+     * @author scott
+     * @since 2026-10-12 【issues/9820】租户套餐包菜单支持分配数据规则
+     */
+    @GetMapping(value = "/packDatarule/{permissionId}/{packId}")
+    public Result<?> loadPackDatarule(@PathVariable("permissionId") String permissionId, @PathVariable("packId") String packId) {
+        List<SysPermissionDataRule> list = sysPermissionDataRuleService.getPermRuleListByPermId(permissionId);
+        if (list == null || list.size() == 0) {
+            return Result.error("未找到权限配置信息");
+        }
+        Map<String, Object> map = new HashMap<>(5);
+        map.put("datarule", list);
+        LambdaQueryWrapper<SysPackPermission> query = new LambdaQueryWrapper<SysPackPermission>()
+                .eq(SysPackPermission::getPermissionId, permissionId)
+                .eq(SysPackPermission::getPackId, packId)
+                .isNotNull(SysPackPermission::getDataRuleIds);
+        List<SysPackPermission> packPermissions = sysPackPermissionMapper.selectList(query);
+        SysPackPermission packPermission = packPermissions.isEmpty() ? null : packPermissions.get(0);
+        if (packPermission != null && oConvertUtils.isNotEmpty(packPermission.getDataRuleIds())) {
+            String drChecked = packPermission.getDataRuleIds();
+            map.put("drChecked", drChecked.endsWith(",") ? drChecked.substring(0, drChecked.length() - 1) : drChecked);
+        }
+        return Result.ok(map);
+    }
+
+    /**
+     * 保存数据规则至套餐包菜单关联表
+     *
+     * @param jsonObject permissionId 菜单id，packId 套餐包id，dataRuleIds 数据规则id
+     * @return
+     * @author scott
+     * @since 2026-10-12 【issues/9820】租户套餐包菜单支持分配数据规则
+     */
+    @PostMapping(value = "/packDatarule")
+    @RequiresPermissions("system:tenant:edit:pack")
+    public Result<String> savePackDatarule(@RequestBody JSONObject jsonObject) {
+        String permissionId = jsonObject.getString("permissionId");
+        String packId = jsonObject.getString("packId");
+        String dataRuleIds = jsonObject.getString("dataRuleIds");
+        log.info("保存套餐包数据规则>>菜单ID:{}，套餐包ID:{}，数据权限ID:{}", permissionId, packId, dataRuleIds);
+        LambdaQueryWrapper<SysPackPermission> query = new LambdaQueryWrapper<SysPackPermission>()
+                .eq(SysPackPermission::getPermissionId, permissionId)
+                .eq(SysPackPermission::getPackId, packId);
+        List<SysPackPermission> packPermissions = sysPackPermissionMapper.selectList(query);
+        if (packPermissions.isEmpty()) {
+            return Result.error("请先保存套餐包菜单权限!");
+        }
+        for (SysPackPermission packPermission : packPermissions) {
+            packPermission.setDataRuleIds(dataRuleIds);
+            sysPackPermissionMapper.updateById(packPermission);
+        }
+        return Result.ok("保存成功!");
     }
 
     /**

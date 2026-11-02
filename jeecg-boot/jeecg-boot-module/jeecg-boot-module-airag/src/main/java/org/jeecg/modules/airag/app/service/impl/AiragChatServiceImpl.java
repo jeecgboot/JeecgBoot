@@ -418,6 +418,12 @@ public class AiragChatServiceImpl implements IAiragChatService {
                     files.addAll(currMsg.getFiles());
                     cacheMsg.setFiles(files);
                 }
+				if (currMsg.getOutputValues() != null) {
+					cacheMsg.setOutputValues(currMsg.getOutputValues());
+				}
+				if (currMsg.getOutputTypes() != null) {
+					cacheMsg.setOutputTypes(currMsg.getOutputTypes());
+				}
             } else {
                 currContent = obj.toString();
             }
@@ -1029,6 +1035,19 @@ public class AiragChatServiceImpl implements IAiragChatService {
     }
 
     /**
+     * 将流程最终输出保存到刚追加的AI消息中
+     */
+    private void setFlowResult(ChatConversation chatConversation, EventFlowData data) {
+        List<MessageHistory> histories = chatConversation.getMessages();
+        if (oConvertUtils.isObjectEmpty(histories)) {
+            return;
+        }
+        MessageHistory historyMessage = histories.get(histories.size() - 1);
+        historyMessage.setOutputValues(data.getOutputValues());
+        historyMessage.setOutputTypes(data.getOutputTypes());
+    }
+
+    /**
      * 发送聊天消息
      *
      * @param chatConversation
@@ -1254,6 +1273,7 @@ public class AiragChatServiceImpl implements IAiragChatService {
                         msgEventData.setRequestId(requestId);
                         sendMessage2Client(emitter, msgEventData);
                         appendMessage(messages, aiMessage, chatConversation, topicId);
+                        setFlowResult(chatConversation, data);
                         // 保存会话
                         //update-begin---author:wangshuai---date:2025-12-10---for:【QQYUN-14127】【AI】AI应用门户---
                         saveChatConversation(chatConversation, false, httpRequest, sendParams.getSessionType());
@@ -1375,7 +1395,10 @@ public class AiragChatServiceImpl implements IAiragChatService {
         
         //流程不为空，构建插件（携带应用上下文参数，供变量/记忆节点使用）
         if(oConvertUtils.isNotEmpty(flowId)){
-            Map<String, Object> result = airagFlowPluginService.getFlowsToPlugin(flowId, aiApp.getId(), memoryId);
+            // update-begin--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
+            // 把当前消息上传的图片带给关联流程，流程开始节点的 images 入参由服务端注入（例如「示例_OCR」流程）
+            Map<String, Object> result = airagFlowPluginService.getFlowsToPlugin(flowId, aiApp.getId(), memoryId, sendParams.getImages());
+            // update-end--author:wangshuai---date:20261012---for：【issues/9872】智能体中，涉及图片输入的流程无法关联对话中上传的图片
             this.addPluginToParams(aiChatParams, result);
         }
 
@@ -1632,7 +1655,9 @@ public class AiragChatServiceImpl implements IAiragChatService {
             }
         }
         final boolean finalShowToolProcess = showToolProcess;
+        //update-begin---author:wangshuai ---date:20260827  for：【LHZP-1614】【AI】工具调用名称翻译为流程名-----------
         final Map<String, String> toolDisplayNames = finalShowToolProcess ? getFlowToolDisplayNames(chatConversation.getApp()) : Collections.emptyMap();
+        //update-end---author:wangshuai ---date:20260827  for：【LHZP-1614】【AI】工具调用名称翻译为流程名-----------
 
         //update-begin---author:wangshuai ---date:20260804  for：【LHZP-1591】智普模型单轮只调用变量工具时兜底写入记忆库-----------
         Set<String> executedToolNames = ConcurrentHashMap.newKeySet();

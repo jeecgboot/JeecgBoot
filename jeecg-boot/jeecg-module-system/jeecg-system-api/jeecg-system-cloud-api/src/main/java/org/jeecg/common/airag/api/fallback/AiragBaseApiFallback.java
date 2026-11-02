@@ -42,4 +42,9 @@ public class AiragBaseApiFallback implements IAiragBaseApi {
         return null;
     }
 
+    @Override
+    public String parseFileContent(String filePath) {
+        return null;
+    }
+
 }

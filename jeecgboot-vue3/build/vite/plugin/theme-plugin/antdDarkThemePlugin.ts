@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import less from 'less';
 import { createFileHash, minifyCSS, extractVariable } from './utils';
-import chalk from 'chalk';
+import chalk from 'picocolors';
 import { colorRE, linkID } from './constants';
 import { injectClientPlugin } from './injectClientPlugin';
 import { lessPlugin } from './preprocessor/less';

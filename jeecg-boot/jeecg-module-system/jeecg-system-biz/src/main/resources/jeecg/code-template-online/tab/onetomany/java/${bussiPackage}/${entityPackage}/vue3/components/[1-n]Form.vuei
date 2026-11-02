@@ -82,6 +82,13 @@
     overflow: auto;
     height: 340px;
   }
+
+  @media screen and (max-width: 767px) {
+    .basic-modal-form {
+      height: calc(100dvh - 180px);
+      min-height: 340px;
+    }
+  }
 </style>
 </#if>
 </#list>

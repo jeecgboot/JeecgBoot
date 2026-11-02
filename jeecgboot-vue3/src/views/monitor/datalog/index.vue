@@ -22,6 +22,7 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useModal } from '/@/components/Modal';
   import { useListPage } from '/@/hooks/system/useListPage';
+  import { getTableList } from '/@/api/common/api';
 
   const [registerModal, { openModal }] = useModal();
   const { createMessage } = useMessage();
@@ -32,6 +33,7 @@
       title: '数据日志列表',
       api: getDataLogList,
       columns: columns,
+      afterFetch: translateCreateBy,
       formConfig: {
         labelWidth: 80,
         schemas: searchFormSchema,
@@ -47,6 +49,24 @@
     if (!rows || rows.length !== 2) return false;
     return rows[0].dataId === rows[1].dataId;
   });
+
+  /** 批量将创建人账号翻译为用户姓名 */
+  async function translateCreateBy(records) {
+    const usernames = [...new Set(records?.map((item) => item.createBy).filter(Boolean))];
+    if (!usernames.length) {
+      return records;
+    }
+    try {
+      const userInfo = await getTableList({ username: usernames.join(','), isMultiTranslate: true });
+      const realnameMap = new Map(userInfo?.records?.map((item) => [item.username, item.realname]));
+      records.forEach((record) => {
+        record.createBy = realnameMap.get(record.createBy) || record.createBy;
+      });
+    } catch (_error) {
+      // 翻译失败时保留原账号，不影响日志列表展示
+    }
+    return records;
+  }
 
   function handleCompare() {
     const rows = selectedRows.value;

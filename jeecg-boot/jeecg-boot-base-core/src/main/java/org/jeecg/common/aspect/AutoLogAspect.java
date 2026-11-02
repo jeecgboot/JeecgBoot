@@ -13,10 +13,12 @@ import org.jeecg.common.api.dto.LogDTO;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.constant.CommonConstant;
+import org.jeecg.common.constant.enums.ClientTerminalTypeEnum;
 import org.jeecg.common.constant.enums.ModuleType;
 import org.jeecg.common.constant.enums.OperateTypeEnum;
 import org.jeecg.modules.base.service.BaseCommonService;
 import org.jeecg.common.system.vo.LoginUser;
+import org.jeecg.common.util.BrowserUtils;
 import org.jeecg.common.util.IpUtils;
 import org.jeecg.common.util.SpringContextUtils;
 import org.jeecg.common.util.oConvertUtils;
@@ -99,6 +101,12 @@ public class AutoLogAspect {
         dto.setRequestParam(getReqestParams(request,joinPoint));
         //设置IP地址
         dto.setIp(IpUtils.getIpAddr(request));
+        //设置客户端
+        if (BrowserUtils.isDesktop(request)) {
+            dto.setClientType(ClientTerminalTypeEnum.PC.getKey());
+        } else {
+            dto.setClientType(ClientTerminalTypeEnum.APP.getKey());
+        }
         //获取登录用户信息
         LoginUser sysUser = (LoginUser) SecurityUtils.getSubject().getPrincipal();
         if(sysUser!=null){

@@ -21,6 +21,19 @@
 			join sys_user e on d.user_id = e.id
 			where e.username = #{username} and b.id = #{permissionId}
 		<!--update end Author:lvdandan  Date:20200213 for：加入部门权限 -->
+		<!-- update-begin author:scott date:20261012 for：【issues/9820】租户套餐包菜单的数据规则，只取当前租户下的套餐包 -->
+		<if test="tenantId != null">
+		union
+		select a.data_rule_ids
+			from sys_tenant_pack_perms a
+			join sys_tenant_pack b on a.pack_id = b.id and b.status = '1'
+			join sys_tenant st on st.id = b.tenant_id and st.del_flag = 0
+			join sys_tenant_pack_user c on c.pack_id = b.id and c.status = '1'
+			join sys_user e on c.user_id = e.id
+			where e.username = #{username} and a.permission_id = #{permissionId} and b.tenant_id = #{tenantId}
+		</if>
+		<!-- update-end author:scott date:20261012 for：【issues/9820】租户套餐包菜单的数据规则，只取当前租户下的套餐包 -->
+
 	</select>
 
 </mapper>

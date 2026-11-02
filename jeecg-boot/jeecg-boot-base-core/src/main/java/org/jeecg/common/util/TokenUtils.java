@@ -71,7 +71,7 @@ public class TokenUtils {
         if (oConvertUtils.isNotEmpty(tenantId) && "undefined".equals(tenantId)) {
             return null;
         }
-        //update-begin---author:scott ---date:20261015  for：URL参数tenantId未经登录校验，多租户模式下须属于当前登录用户，否则忽略参数改用请求头（请求头已由ShiroRealm校验），防止传参冒充其他租户-----------
+        //update-begin---author:scott ---date:20261015  for：【安全 GHSA-2h34-xh29-7w95】URL参数tenantId未经登录校验，多租户模式下须属于当前登录用户，否则忽略参数改用请求头（请求头已由ShiroRealm校验），防止传参冒充其他租户-----------
         if (MybatisPlusSaasConfig.OPEN_SYSTEM_TENANT_CONTROL && oConvertUtils.isNotEmpty(tenantId)) {
             String headerTenantId = oConvertUtils.getString(request.getHeader(CommonConstant.TENANT_ID));
             if (!tenantId.equals(headerTenantId) && !"0".equals(tenantId) && !isLoginUserTenant(tenantId)) {
@@ -79,11 +79,11 @@ public class TokenUtils {
                 return oConvertUtils.isNotEmpty(headerTenantId) && !"undefined".equals(headerTenantId) ? headerTenantId : null;
             }
         }
-        //update-end---author:scott ---date:20261015  for：URL参数tenantId未经登录校验，多租户模式下须属于当前登录用户，否则忽略参数改用请求头（请求头已由ShiroRealm校验），防止传参冒充其他租户-----------
+        //update-end---author:scott ---date:20261015  for：【安全 GHSA-2h34-xh29-7w95】URL参数tenantId未经登录校验，多租户模式下须属于当前登录用户，否则忽略参数改用请求头（请求头已由ShiroRealm校验），防止传参冒充其他租户-----------
         return tenantId;
     }
 
-    //update-begin---author:scott ---date:20261015  for：校验租户是否属于当前登录用户-----------
+    //update-begin---author:scott ---date:20261015  for：【安全 GHSA-2h34-xh29-7w95】校验租户是否属于当前登录用户-----------
     /**
      * 租户是否属于当前登录用户（未登录时返回true，保持原逻辑，由各接口自身鉴权）
      *
@@ -103,7 +103,7 @@ public class TokenUtils {
         String relTenantIds = loginUser.getRelTenantIds();
         return oConvertUtils.isNotEmpty(relTenantIds) && oConvertUtils.isIn(tenantId, relTenantIds.split(","));
     }
-    //update-end---author:scott ---date:20261015  for：校验租户是否属于当前登录用户-----------
+    //update-end---author:scott ---date:20261015  for：【安全 GHSA-2h34-xh29-7w95】校验租户是否属于当前登录用户-----------
 
     /**
      * 获取 request 里传递的 lowAppId (低代码应用ID)

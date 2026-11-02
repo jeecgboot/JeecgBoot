@@ -109,6 +109,7 @@
     clearSelect: propTypes.bool.def(false),
     allowClear: propTypes.bool.def(false),
     iconPrefixSave: propTypes.bool.def(true),
+    iconPrefix: propTypes.string.def('ant-design'),
   });
 
   const emit = defineEmits(['change', 'update:value']);
@@ -143,7 +144,7 @@
     // 代码逻辑说明: 【TV360X-136】按钮图标改成图标组件选择
     let value = props.value;
     if (!props.iconPrefixSave && value) {
-      value = `ant-design:${value}`;
+      value = `${props.iconPrefix}:${value}`;
     }
     currentSelect.value = value;
   });
@@ -154,7 +155,7 @@
       // 代码逻辑说明: 【TV360X-136】按钮图标改成图标组件选择
       let value = v;
       if (!props.iconPrefixSave && value) {
-        value = value.split('ant-design:')[1];
+        value = value.split(':').pop();
       }
       emit('update:value', value);
       return emit('change', value);

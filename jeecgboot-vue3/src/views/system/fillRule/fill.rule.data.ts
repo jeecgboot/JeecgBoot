@@ -32,13 +32,13 @@ export const searchFormSchema: FormSchema[] = [
   {
     field: 'ruleName',
     label: '规则名称',
-    component: 'Input',
+    component: 'JInput',
     colProps: { span: 6 },
   },
   {
     field: 'ruleCode',
     label: '规则编码',
-    component: 'Input',
+    component: 'JInput',
     colProps: { span: 6 },
   },
 ];

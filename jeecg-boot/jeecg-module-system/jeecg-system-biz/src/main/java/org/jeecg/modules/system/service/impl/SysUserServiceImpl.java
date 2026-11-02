@@ -426,19 +426,36 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		//只有 X-Version=v3 的时候，才读取sys_role_index表获取角色首页配置
 		boolean isV3 = CommonConstant.VERSION_V3.equals(version);
 		if (isV3) {
-			//1.先查询 用户USER级别 的所有首页配置
 			if(oConvertUtils.isNotEmpty(username)){
-				LambdaQueryWrapper<SysRoleIndex> routeIndexUserQuery = new LambdaQueryWrapper<>();
-				//角色首页状态0：未开启  1：开启
-				routeIndexUserQuery.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
-				routeIndexUserQuery.eq(SysRoleIndex::getRelationType, CommonConstant.HOME_RELATION_USER);
-				routeIndexUserQuery.eq(SysRoleIndex::getRoleCode, username);
-				//优先级正序排序
-				routeIndexUserQuery.orderByAsc(SysRoleIndex::getPriority);
-				List<SysRoleIndex> list = sysRoleIndexService.list(routeIndexUserQuery);
-				if (CollectionUtils.isNotEmpty(list)) {
-					roleIndex = list.get(0);
-				}else{
+				//update-begin---author:lvdandan ---date:20260901  for：【LHZP-1145】【vue3】首页配置，用户和角色应该需支持多选
+				//1.先查询 用户USER级别 的所有首页配置
+				LambdaQueryWrapper<SysRoleIndex> personalIndexQuery = new LambdaQueryWrapper<>();
+				personalIndexQuery.eq(SysRoleIndex::getRelationType, CommonConstant.HOME_RELATION_USER);
+				personalIndexQuery.eq(SysRoleIndex::getRoleCode, username);
+				personalIndexQuery.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
+				personalIndexQuery.orderByAsc(SysRoleIndex::getPriority);
+				List<SysRoleIndex> personalIndexList = sysRoleIndexService.list(personalIndexQuery);
+				List<SysRoleIndex> list = Collections.emptyList();
+				boolean queryRoleIndex = true;
+				if (CollectionUtils.isNotEmpty(personalIndexList)) {
+					roleIndex = personalIndexList.get(0);
+					queryRoleIndex = false;
+				} else {
+					LambdaQueryWrapper<SysRoleIndex> routeIndexUserQuery = new LambdaQueryWrapper<>();
+					//角色首页状态0：未开启  1：开启
+					routeIndexUserQuery.eq(SysRoleIndex::getStatus, CommonConstant.STATUS_1);
+					routeIndexUserQuery.eq(SysRoleIndex::getRelationType, CommonConstant.HOME_RELATION_USER);
+					//优先级正序排序
+					routeIndexUserQuery.orderByAsc(SysRoleIndex::getPriority);
+					list = sysRoleIndexService.list(routeIndexUserQuery).stream()
+							.filter(item -> containsAnyRelationCode(item.getRoleCode(), Collections.singleton(username)))
+							.collect(Collectors.toList());
+					if (CollectionUtils.isNotEmpty(list)) {
+						roleIndex = list.get(0);
+						queryRoleIndex = false;
+					}
+				}
+				if (queryRoleIndex) {
 				   //2.用户没有配置，再查询 角色ROLE级别 的所有首页配置
 					LambdaQueryWrapper<SysRoleIndex> routeIndexQuery = new LambdaQueryWrapper<>();
 					//角色首页状态0：未开启  1：开启
@@ -450,13 +467,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 					String componentUrl = RoleIndexConfigEnum.getIndexByRoles(roles);
 					roleIndex = new SysRoleIndex(componentUrl);
 					//用户所有角色
-					// 代码逻辑说明: [QQYUN-13187]【新用户登录报错】没有添加角色时 报错
-					if(CollectionUtil.isNotEmpty(roles)){
-						routeIndexQuery.in(SysRoleIndex::getRoleCode, roles);
-					}
 					//优先级正序排序
 					routeIndexQuery.orderByAsc(SysRoleIndex::getPriority);
-					list = sysRoleIndexService.list(routeIndexQuery);
+					list = sysRoleIndexService.list(routeIndexQuery).stream()
+							.filter(item -> containsAnyRelationCode(item.getRoleCode(), roles))
+							.collect(Collectors.toList());
+					//update-end---author:lvdandan ---date:20260901  for：【LHZP-1145】【vue3】首页配置，用户和角色应该需支持多选
 					if (CollectionUtils.isNotEmpty(list)) {
 						roleIndex = list.get(0);
 					}
@@ -474,6 +490,27 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 			}
 		}
 		return roleIndex;
+	}
+
+	/**
+	 * 判断逗号分隔的关联编码是否与目标编码存在交集
+	 *
+	 * @param relationCodes 逗号分隔的用户或角色编码
+	 * @param targetCodes 目标用户或角色编码
+	 * @return true：存在匹配编码，false：不存在匹配编码
+	 */
+	private boolean containsAnyRelationCode(String relationCodes, Collection<String> targetCodes) {
+		if (oConvertUtils.isEmpty(relationCodes) || CollectionUtil.isEmpty(targetCodes)) {
+			return false;
+		}
+		Set<String> relationCodeSet = Arrays.stream(relationCodes.split(SymbolConstant.COMMA))
+				.map(String::trim)
+				.filter(oConvertUtils::isNotEmpty)
+				.collect(Collectors.toSet());
+		return targetCodes.stream()
+				.filter(oConvertUtils::isNotEmpty)
+				.map(String::trim)
+				.anyMatch(relationCodeSet::contains);
 	}
 
 	/**
@@ -589,9 +626,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	}
 
 	@Override
-	public IPage<SysUser> getUserByDepIds(Page<SysUser> page, List<String> departIds, String username) {
+	public IPage<SysUser> getUserByDepIds(Page<SysUser> page, List<String> departIds, String username, String realname) {
         //update-begin---author:wangshuai ---date:20260811  for：[LHZP-1141]【系统管理】我的部门编辑用户关联信息未正确回显------------
-        IPage<SysUser> pageList = userMapper.getUserByDepIds(page, departIds,username);
+        IPage<SysUser> pageList = userMapper.getUserByDepIds(page, departIds, username, realname);
 		List<String> userIds = pageList.getRecords().stream().map(SysUser::getId).collect(Collectors.toList());
 		if (CollectionUtil.isEmpty(userIds)) {
 			return pageList;
@@ -2982,7 +3019,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             List<String> userIds = sysDepartModels.stream().map(SysUserSysDepPostModel::getId).toList();
             //获取部门名称
             Map<String, String> useDepNames = this.getDepNamesByUserIds(userIds);
+            //update-begin---author:wangshuai ---date:20261030  for：【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作-----------
+            //当前部门/岗位下的用户（列表中还包含下级部门、岗位的用户）
+            Set<String> currentDepartPostUserIds = this.getCurrentDepartPostUserIdsByOrgCode(orgCode, userIds);
+            //update-end---author:wangshuai ---date:20261030  for：【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作-----------
             sysDepartModels.forEach(item -> {
+                //update-begin---author:wangshuai ---date:20261030  for：【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作-----------
+                //追加是否为当前部门或当前职位下的用户，前端才会显示移出的操作按钮
+                item.setIzCurrentDepartPost(currentDepartPostUserIds.contains(item.getId()));
+                //update-end---author:wangshuai ---date:20261030  for：【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作-----------
                 List<String> positionList = sysUserPositionMapper.getPositionIdByUserId(item.getId());
                 item.setPost(CommonUtils.getSplitText(positionList,SymbolConstant.COMMA));
                 item.setOrgCodeTxt(useDepNames.get(item.getId()));
@@ -3001,6 +3046,314 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             });
         }
         return page.setRecords(sysDepartModels);
+    }
+
+    /**
+     * 根据部门/岗位编码获取当前部门/岗位下的用户id（不含下级部门、岗位的用户）
+     *
+     * @param orgCode 部门/岗位编码
+     * @param userIds 用户id
+     * @return
+     * @author wangshuai
+     * @since 2026-10-30 【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作
+     */
+    private Set<String> getCurrentDepartPostUserIdsByOrgCode(String orgCode, List<String> userIds) {
+        if (oConvertUtils.isEmpty(orgCode)) {
+            return new HashSet<>();
+        }
+        LambdaQueryWrapper<SysDepart> departQuery = new LambdaQueryWrapper<>();
+        departQuery.eq(SysDepart::getOrgCode, orgCode);
+        SysDepart depart = sysDepartMapper.selectOne(departQuery);
+        if (depart == null) {
+            return new HashSet<>();
+        }
+        ///回去当前部门和岗位下的用户id
+        return this.getCurrentDepartPostUserIds(depart, userIds);
+    }
+
+    /**
+     * 获取当前部门/岗位下的用户id（不含下级部门、岗位的用户）
+     * 公司、子公司、部门：所属部门是当前部门；岗位：主岗位或兼职岗位是当前岗位
+     *
+     * @param depart  部门/岗位
+     * @param userIds 用户id
+     * @return
+     * @author wangshuai
+     * @since 2026-10-30 【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作
+     */
+    private Set<String> getCurrentDepartPostUserIds(SysDepart depart, List<String> userIds) {
+        Set<String> currentDepartPostUserIds = new HashSet<>();
+        if (CollectionUtil.isEmpty(userIds)) {
+            return currentDepartPostUserIds;
+        }
+        String depId = depart.getId();
+        boolean isPost = DepartCategoryEnum.DEPART_CATEGORY_POST.getValue().equals(depart.getOrgCategory());
+        if (isPost) {
+            //岗位：主岗位是当前岗位
+            LambdaQueryWrapper<SysUser> userQuery = new LambdaQueryWrapper<>();
+            userQuery.select(SysUser::getId);
+            userQuery.eq(SysUser::getMainDepPostId, depId);
+            userQuery.in(SysUser::getId, userIds);
+            List<SysUser> userList = userMapper.selectList(userQuery);
+            for (SysUser user : userList) {
+                currentDepartPostUserIds.add(user.getId());
+            }
+            //岗位：兼职岗位是当前岗位
+            LambdaQueryWrapper<SysUserDepPost> depPostQuery = new LambdaQueryWrapper<>();
+            depPostQuery.select(SysUserDepPost::getUserId);
+            depPostQuery.eq(SysUserDepPost::getDepId, depId);
+            depPostQuery.in(SysUserDepPost::getUserId, userIds);
+            List<String> depPostUserIds = depPostMapper.selectObjs(depPostQuery);
+            for (String depPostUserId : depPostUserIds) {
+                currentDepartPostUserIds.add(depPostUserId);
+            }
+        } else {
+            //公司、子公司、部门：所属部门是当前部门
+            LambdaQueryWrapper<SysUserDepart> userDepartQuery = new LambdaQueryWrapper<>();
+            userDepartQuery.select(SysUserDepart::getUserId);
+            userDepartQuery.eq(SysUserDepart::getDepId, depId);
+            userDepartQuery.in(SysUserDepart::getUserId, userIds);
+            List<String> departUserIds = sysUserDepartMapper.selectObjs(userDepartQuery);
+            for (String departUserId : departUserIds) {
+                currentDepartPostUserIds.add(departUserId);
+            }
+        }
+        return currentDepartPostUserIds;
+    }
+
+    /**
+     * 将用户移出部门或岗位（只删除关联关系，不删除用户）
+     *
+     * @param depId   部门或岗位id
+     * @param userIds 用户id
+     * @return 实际移出的用户id
+     * @author wangshuai
+     * @since 2026-10-30 【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = {CacheConstant.SYS_USERS_CACHE}, allEntries = true)
+    public List<String> removeDepartUser(String depId, List<String> userIds) {
+        List<String> removeUserIds = new ArrayList<>();
+        SysDepart depart = sysDepartMapper.selectById(depId);
+        if (depart == null) {
+            return removeUserIds;
+        }
+        //只移出当前部门/岗位下的用户，下级部门、岗位的用户不处理
+        Set<String> currentDepartPostUserIds = this.getCurrentDepartPostUserIds(depart, userIds);
+        if (currentDepartPostUserIds.isEmpty()) {
+            return removeUserIds;
+        }
+        removeUserIds.addAll(currentDepartPostUserIds);
+        boolean isPost = DepartCategoryEnum.DEPART_CATEGORY_POST.getValue().equals(depart.getOrgCategory());
+        //岗位
+        if (isPost) {
+            //step.1 移出岗位：清空主岗位
+            //使用LambdaUpdateWrapper，避免为空时受全局 updateStrategy 影响导致不更新
+            LambdaUpdateWrapper<SysUser> userUpdate = new LambdaUpdateWrapper<>();
+            userUpdate.in(SysUser::getId, removeUserIds);
+            userUpdate.eq(SysUser::getMainDepPostId, depId);
+            userUpdate.set(SysUser::getMainDepPostId, null);
+            userMapper.update(userUpdate);
+            //step.2 移出岗位：删除兼职岗位
+            LambdaQueryWrapper<SysUserDepPost> depPostQuery = new LambdaQueryWrapper<>();
+            depPostQuery.in(SysUserDepPost::getUserId, removeUserIds);
+            depPostQuery.eq(SysUserDepPost::getDepId, depId);
+            depPostMapper.delete(depPostQuery);
+        } else {
+            //step.1 移出公司、子公司、部门：删除所属部门关系
+            LambdaQueryWrapper<SysUserDepart> userDepartQuery = new LambdaQueryWrapper<>();
+            userDepartQuery.eq(SysUserDepart::getDepId, depId);
+            userDepartQuery.in(SysUserDepart::getUserId, removeUserIds);
+            sysUserDepartMapper.delete(userDepartQuery);
+            //step.2 清理已不在其它所属部门下的主岗位、兼职岗位（与用户编辑页修改所属部门时的规则一致），要在删除所属部门关系之后执行
+            //已不再当前部门、公司了 下面的岗位需要清掉，因为岗位是根据公司和部门来的
+            this.removeDepPostOutOfDepart(depart, removeUserIds);
+            //step.3 取消该部门的负责人（负责部门只能从所属部门中选择）
+            this.removeChargeDepart(depId, removeUserIds);
+        }
+        return removeUserIds;
+    }
+
+    /**
+     * 移出部门后，清理用户在该部门下、且已不在其它所属部门下的主岗位和兼职岗位
+     *
+     * @param depart  移出的部门
+     * @param userIds 用户id
+     * @author wangshuai
+     * @since 2026-10-30 【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作
+     */
+    private void removeDepPostOutOfDepart(SysDepart depart, List<String> userIds) {
+        //step.1 查询用户的主岗位
+        LambdaQueryWrapper<SysUser> userQuery = new LambdaQueryWrapper<>();
+        userQuery.select(SysUser::getId, SysUser::getMainDepPostId);
+        userQuery.in(SysUser::getId, userIds);
+        List<SysUser> userList = userMapper.selectList(userQuery);
+        //step.2 查询用户的兼职岗位
+        LambdaQueryWrapper<SysUserDepPost> depPostQuery = new LambdaQueryWrapper<>();
+        depPostQuery.select(SysUserDepPost::getId, SysUserDepPost::getUserId, SysUserDepPost::getDepId);
+        depPostQuery.in(SysUserDepPost::getUserId, userIds);
+        List<SysUserDepPost> depPostList = depPostMapper.selectList(depPostQuery);
+        //step.3 查询用户移出后剩余的所属部门
+        LambdaQueryWrapper<SysUserDepart> userDepartQuery = new LambdaQueryWrapper<>();
+        userDepartQuery.select(SysUserDepart::getUserId, SysUserDepart::getDepId);
+        userDepartQuery.in(SysUserDepart::getUserId, userIds);
+        List<SysUserDepart> userDepartList = sysUserDepartMapper.selectList(userDepartQuery);
+        //step.4 查询岗位和剩余所属部门的编号
+        Set<String> departIds = new HashSet<>();
+        //主岗位
+        for (SysUser user : userList) {
+            if (oConvertUtils.isNotEmpty(user.getMainDepPostId())) {
+                departIds.add(user.getMainDepPostId());
+            }
+        }
+        //兼职岗位
+        for (SysUserDepPost depPost : depPostList) {
+            departIds.add(depPost.getDepId());
+        }
+        //所属的用户部门
+        for (SysUserDepart userDepart : userDepartList) {
+            departIds.add(userDepart.getDepId());
+        }
+        if (departIds.isEmpty()) {
+            return;
+        }
+        //根据要删除的部门id查询部门编码
+        LambdaQueryWrapper<SysDepart> departQuery = new LambdaQueryWrapper<>();
+        departQuery.select(SysDepart::getId, SysDepart::getOrgCode);
+        departQuery.in(SysDepart::getId, departIds);
+        List<SysDepart> departList = sysDepartMapper.selectList(departQuery);
+        //key：部门/岗位id，value：编码
+        Map<String, String> orgCodeMap = new HashMap<>();
+        for (SysDepart sysDepart : departList) {
+            orgCodeMap.put(sysDepart.getId(), sysDepart.getOrgCode());
+        }
+        //key：用户id，value：用户剩余所属部门的编码
+        Map<String, List<String>> userOrgCodeMap = new HashMap<>();
+        for (SysUserDepart userDepart : userDepartList) {
+            String orgCode = orgCodeMap.get(userDepart.getDepId());
+            if (orgCode == null) {
+                continue;
+            }
+            List<String> userOrgCodes = userOrgCodeMap.get(userDepart.getUserId());
+            if (userOrgCodes == null) {
+                userOrgCodes = new ArrayList<>();
+                userOrgCodeMap.put(userDepart.getUserId(), userOrgCodes);
+            }
+            userOrgCodes.add(orgCode);
+        }
+        //step.5 清空主岗位
+        List<String> clearMainPostUserIds = new ArrayList<>();
+        for (SysUser user : userList) {
+            if (oConvertUtils.isEmpty(user.getMainDepPostId())) {
+                continue;
+            }
+            String postOrgCode = orgCodeMap.get(user.getMainDepPostId());
+            List<String> userOrgCodes = userOrgCodeMap.get(user.getId());
+            if (this.isDepPostOutOfDepart(postOrgCode, depart.getOrgCode(), userOrgCodes)) {
+                clearMainPostUserIds.add(user.getId());
+            }
+        }
+        if (!clearMainPostUserIds.isEmpty()) {
+            //使用LambdaUpdateWrapper，避免为空时受全局 updateStrategy 影响导致不更新
+            LambdaUpdateWrapper<SysUser> userUpdate = new LambdaUpdateWrapper<>();
+            userUpdate.in(SysUser::getId, clearMainPostUserIds);
+            userUpdate.set(SysUser::getMainDepPostId, null);
+            userMapper.update(userUpdate);
+        }
+        //step.6 删除兼职岗位
+        List<String> removeDepPostIds = new ArrayList<>();
+        for (SysUserDepPost depPost : depPostList) {
+            String postOrgCode = orgCodeMap.get(depPost.getDepId());
+            List<String> userOrgCodes = userOrgCodeMap.get(depPost.getUserId());
+            if (this.isDepPostOutOfDepart(postOrgCode, depart.getOrgCode(), userOrgCodes)) {
+                removeDepPostIds.add(depPost.getId());
+            }
+        }
+        if (!removeDepPostIds.isEmpty()) {
+            LambdaQueryWrapper<SysUserDepPost> removeDepPostQuery = new LambdaQueryWrapper<>();
+            removeDepPostQuery.in(SysUserDepPost::getId, removeDepPostIds);
+            depPostMapper.delete(removeDepPostQuery);
+        }
+    }
+
+    /**
+     * 岗位是否在移出的部门下，且已不在用户其它所属部门下
+     *
+     * @param postOrgCode   岗位编码 A01A01
+     * @param departOrgCode 移出的部门编码 A01
+     * @param userOrgCodes  用户剩余所属部门的编码
+     * @return
+     * @author wangshuai
+     * @since 2026-10-30 【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作
+     */
+    private boolean isDepPostOutOfDepart(String postOrgCode, String departOrgCode, List<String> userOrgCodes) {
+        //岗位不在移出的部门下，不处理
+        if (postOrgCode == null || !postOrgCode.startsWith(departOrgCode)) {
+            return false;
+        }
+        //用户已经没有其它所属部门
+        if (userOrgCodes == null) {
+            return true;
+        }
+        //岗位还在用户其它所属部门下，保留
+        for (String userOrgCode : userOrgCodes) {
+            //编码是逐级拼接的，岗位编码以所属部门的编码开头，就说明岗位在这个部门下
+            //例：公司 A01 下有部门 A01A01，部门下有岗位 A01A01A01，用户从部门 A01A01 移出
+            //用户还在公司 A01：A01A01A01 以 A01 开头，岗位还在公司下，返回 false，岗位保留
+            //用户只剩部门 A01A02：A01A01A01 不以 A01A02 开头，循环结束后返回 true，岗位移除
+            if (postOrgCode.startsWith(userOrgCode)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 取消用户在该部门的负责人
+     *
+     * @param depId   部门id
+     * @param userIds 用户id
+     * @author wangshuai
+     * @since 2026-10-30 【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作
+     */
+    private void removeChargeDepart(String depId, List<String> userIds) {
+        LambdaQueryWrapper<SysUser> userQuery = new LambdaQueryWrapper<>();
+        userQuery.select(SysUser::getId, SysUser::getDepartIds);
+        userQuery.in(SysUser::getId, userIds);
+        userQuery.like(SysUser::getDepartIds, depId);
+        List<SysUser> userList = userMapper.selectList(userQuery);
+        for (SysUser user : userList) {
+            //去掉当前部门后的负责部门
+            List<String> newDepartIds = new ArrayList<>();
+            boolean isChargeDepart = false;
+            String[] departIds = user.getDepartIds().split(SymbolConstant.COMMA);
+            for (String departId : departIds) {
+                if (oConvertUtils.isEmpty(departId)) {
+                    continue;
+                }
+                if (departId.equals(depId)) {
+                    isChargeDepart = true;
+                } else {
+                    newDepartIds.add(departId);
+                }
+            }
+            //防止 like 匹配到其它部门id，不是当前部门的负责人时跳过
+            if (!isChargeDepart) {
+                continue;
+            }
+            //使用LambdaUpdateWrapper，避免为空时受全局 updateStrategy 影响导致不更新
+            LambdaUpdateWrapper<SysUser> userUpdate = new LambdaUpdateWrapper<>();
+            userUpdate.eq(SysUser::getId, user.getId());
+            if (newDepartIds.isEmpty()) {
+                //负责部门为空时，说明已经是普通用户
+                userUpdate.set(SysUser::getDepartIds, null);
+                userUpdate.set(SysUser::getUserIdentity, CommonConstant.USER_IDENTITY_1);
+            } else {
+                userUpdate.set(SysUser::getDepartIds, String.join(SymbolConstant.COMMA, newDepartIds));
+            }
+            userMapper.update(userUpdate);
+        }
     }
 
     /**

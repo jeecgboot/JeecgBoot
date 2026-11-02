@@ -139,9 +139,10 @@ public interface ISysUserService extends IService<SysUser> {
 	 * @param page
      * @param departIds  部门id集合
      * @param username 用户账户名称
+	 * @param realname 用户姓名
 	 * @return
 	 */
-	public IPage<SysUser> getUserByDepIds(Page<SysUser> page, List<String> departIds, String username);
+	public IPage<SysUser> getUserByDepIds(Page<SysUser> page, List<String> departIds, String username, String realname);
 
 	/**
 	 * 根据 userIds查询，查询用户所属部门的名称（多个部门名逗号隔开）
@@ -524,6 +525,19 @@ public interface ISysUserService extends IService<SysUser> {
      * @return
      */
     IPage<SysUserSysDepPostModel> queryDepartPostUserByOrgCode(String orgCode, SysUser userParams, IPage page);
+
+    /**
+     * 将用户移出部门或岗位（只删除关联关系，不删除用户），只处理当前部门/岗位的直属成员
+     * 部门：删除所属部门关系，清理已不在其它所属部门下的主岗位、兼职岗位，并取消该部门的负责人
+     * 岗位：清空主岗位、删除兼职岗位
+     *
+     * @param depId   部门或岗位id
+     * @param userIds 用户id
+     * @return 实际移出的用户id
+     * @author wangshuai
+     * @since 2026-10-30 【LHZP-1194】部门管理 用户列表 是不是少一个移出的操作
+     */
+    List<String> removeDepartUser(String depId, List<String> userIds);
 
     /**
      * 根据 orgCode 查询用户信息（部门全路径，主岗位和兼职岗位的信息），包括公司、子公司、部门

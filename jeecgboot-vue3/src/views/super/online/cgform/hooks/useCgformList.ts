@@ -15,11 +15,14 @@ import {
   doDatabaseSync,
   doCopyTable,
   list,
+  queryHeadById,
 } from '../cgform.api';
 // import { useCopyModal } from './useCopyCgformModal';
 import { isArray } from '/@/utils/is';
 import {useCgformStore} from "../store/cgformState";
 import {showListDeleteConfirm} from "./useCgformWidgets.jsx";
+import { getTenantId, getToken } from '/@/utils/auth';
+import { useGlobSetting } from '/@/hooks/setting';
 
 interface IOptions {
   // 页面类型
@@ -32,6 +35,7 @@ interface IOptions {
 export function useCgformList(options: IOptions) {
   const isNormalPage = options.pageType === CgformPageType.normal;
   const router = useRouter();
+  const glob = useGlobSetting();
   const cgformStore = useCgformStore();
   const tableRef = ref();
   // 列表页面公共参数、方法
@@ -59,7 +63,7 @@ export function useCgformList(options: IOptions) {
   // 注册table数据
   const [, { reload, setLoading }, { selectedRowKeys, selectedRows }] = tableContext;
 
-  // 注册编辑弹窗 e3e3NcxzbUiGa53YYVXxWc8ADo5ISgQGx/gaZwERF91oAryDlivjqBv3wqRArgChupi+Y/Gg/swwGEyL0PuVFg==
+  // 注册编辑弹窗
   const [registerCgformModal, cgformModal] = useModal();
   // 注册从数据库导入表单
   const [registerDbToOnlineModal, dbToOnlineModal] = useModal();
@@ -91,9 +95,35 @@ export function useCgformList(options: IOptions) {
   }
   let thatRecord: Nullable<Recordable> = null
 
-  function onEdit(record) {
+  async function onEdit(record) {
     thatRecord = record
-    cgformModal.openModal(true, { isUpdate: true, record });
+    // update-begin---author:liusq---date:20261013---for:【LHZP-1967】打印设计生成后表单扩展配置未带出报表地址
+    // 列表行数据可能已过期（打印设计会在后台回写 extConfigJson 中的报表地址），报表地址为空时重新查询一次最新配置，
+    // 避免弹窗显示旧值，且保存时用旧的 extConfigJson 覆盖掉后台已写入的报表地址
+    let latest = record;
+    if (!getReportPrintUrl(record)) {
+      try {
+        const head = await queryHeadById(record.id);
+        if (head && head.id) {
+          latest = { ...record, ...head };
+        }
+      } catch (e) {
+        console.warn('查询表单最新配置失败，使用列表数据', e);
+      }
+    }
+    cgformModal.openModal(true, { isUpdate: true, record: latest });
+    // update-end---author:liusq---date:20261013---for:【LHZP-1967】打印设计生成后表单扩展配置未带出报表地址
+  }
+
+  /**
+   * 获取扩展配置中的报表地址
+   */
+  function getReportPrintUrl(record) {
+    try {
+      return JSON.parse(record.extConfigJson || '{}')?.reportPrintUrl;
+    } catch (e) {
+      return '';
+    }
   }
 
   function onSuccess() {
@@ -241,6 +271,33 @@ export function useCgformList(options: IOptions) {
       // update-end--author:liaozhiyang---date:20230818---for：【QQYUN-5803】online一对多Erp风格
     }
   }
+
+  // update-begin---author:wangshuai---date:20260831---for:【LHZP-1967】Online表单生成积木报表打印模板
+  /**
+   * 打开Online表单对应的积木报表设计页面。
+   */
+  function onPrintTemplate(record, regeneration = false) {
+    const openTemplate = () => {
+      const params = new URLSearchParams({
+        onlineId: record.id,
+        token: getToken() || '',
+        regeneration: String(regeneration),
+        tenantId: getTenantId() || '',
+      });
+      window.open(`${glob.domainUrl}/jmreport/generateTemplateByOnline?${params.toString()}`, '_blank');
+    };
+    if (!regeneration) {
+      openTemplate();
+      return;
+    }
+    $confirm({
+      title: '重新生成打印报表',
+      content: '重新生成后报表样式将会重置，是否继续？',
+      iconType: 'warning',
+      onOk: openTemplate,
+    });
+  }
+  // update-end---author:wangshuai---date:20260831---for:【LHZP-1967】Online表单生成积木报表打印模板
 
   // 同步数据库
   function onSyncDatabase(record) {
@@ -435,7 +492,7 @@ export function useCgformList(options: IOptions) {
       },
       {
         label: '权限控制',
-        onClick: () => authManagerDrawer.openDrawer(true, { cgformId: record.id, tableType: record.tableType}),
+        onClick: () => authManagerDrawer.openDrawer(true, { cgformId: record.id, tableType: record.tableType, isTree: record.isTree }),
       },
       {
         label: '角色授权',
@@ -473,6 +530,18 @@ export function useCgformList(options: IOptions) {
         onClick: () => onCopyTable(record),
         ifShow: () => isNormalPage,
       },
+      // update-begin---author:wangshuai---date:20260831---for:【LHZP-1967】Online表单生成积木报表打印模板
+      {
+        label: '打印设计',
+        onClick: () => onPrintTemplate(record),
+        ifShow: () => isNormalPage && record.isDbSynch == 'Y' && record.tableType !== 3,
+      },
+      {
+        label: '生成打印',
+        onClick: () => onPrintTemplate(record, true),
+        ifShow: () => isNormalPage && record.isDbSynch == 'Y' && record.tableType !== 3,
+      },
+      // update-end---author:wangshuai---date:20260831---for:【LHZP-1967】Online表单生成积木报表打印模板
       // update-begin--author:liaozhiyang---date:20240313---for：【QQYUN-8485】online删除提示优化
       {
         label: '删除',

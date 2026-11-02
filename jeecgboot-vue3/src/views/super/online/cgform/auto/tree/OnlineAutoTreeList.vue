@@ -65,6 +65,20 @@
         >
           <span>{{cgBIBtnMap['export'].buttonName}}</span>
         </a-button>
+        <!-- update-begin--author:liusq---date:20261102---for：【QQYUN-11801】树表列表补充生成测试数据按钮 -->
+        <a-tooltip
+          v-if="!isConfigCurRoute && (tableType == 1 || tableType == 2) && buttonSwitch.aigc_mock_data && cgBIBtnMap['aigc_mock_data']?.enabled && dataSource.length == 0 && !hasQueryCondition && !loading"
+          :open="false"
+          placement="bottom"
+        >
+          <template #title>
+            <span>当有数据、有查询条件或生成测试数据后该按钮会隐藏</span>
+          </template>
+          <a-button preIcon="mdi:robot-love-outline" :loading="testDataLoading" @click="handleAddTestData(currentTableName, reload)">
+            {{ cgBIBtnMap['aigc_mock_data'].buttonName }}
+          </a-button>
+        </a-tooltip>
+        <!-- update-end--author:liusq---date:20261102---for：【QQYUN-11801】树表列表补充生成测试数据按钮 -->
 
         <!-- 自定义按钮 -->
         <template v-if="cgTopButtonList && cgTopButtonList.length > 0" v-for="(item, index) in cgTopButtonList">
@@ -218,6 +232,10 @@
     setup() {
       const { createMessage: $message } = useMessage();
       const onlineTreeTableRef = ref();
+      // update-begin--author:liusq---date:20261102---for：【QQYUN-11801】树表列表补充生成测试数据按钮
+      const currentTableName = ref('');
+      const tableType = ref('');
+      // update-end--author:liusq---date:20261102---for：【QQYUN-11801】树表列表补充生成测试数据按钮
 
       // 树形列表增加了最后3个配置项【树】
       const {
@@ -227,6 +245,7 @@
         loading,
         reload,
         dataSource,
+        hasQueryCondition,
         pagination,
         handleSpecialConfig,
         getColumnList,
@@ -242,6 +261,7 @@
         tableReloading,
         onlineExtConfigJson,
         handleFormConfig,
+        isConfigCurRoute,
         pageLoading,
       } = useOnlineTableContext();
 
@@ -270,6 +290,8 @@
         handleAdd,
         handleEdit,
         handleBatchDelete,
+        handleAddTestData,
+        testDataLoading,
         registerImportModal,
         onImportExcel,
         onExportExcel,
@@ -320,8 +342,10 @@
       async function initAutoList() {
         loading.value = true;
         // 1.列配置信息
-        let columnResult = await getColumnList(Tree);
+        let columnResult: any = await getColumnList(Tree);
         handleTableConfig(columnResult);
+        currentTableName.value = columnResult.currentTableName;
+        tableType.value = columnResult.tableType;
         // 2.加载数据
         await loadData();
         loading.value = false;
@@ -495,7 +519,9 @@
        */
       function getTreeDropDownActions(record) {
         let arr = getDropDownActions(record, {'themeTemplate': Tree});
-        arr.unshift(addChildButton(record));
+        if (buttonSwitch.addSub) {
+          arr.unshift(addChildButton(record));
+        }
         return arr;
       }
 
@@ -518,6 +544,7 @@
         columns,
         actionColumn,
         dataSource,
+        hasQueryCondition,
         pagination,
         rowSelection,
         selectedKeys,
@@ -541,6 +568,11 @@
         cgButtonActionHandler,
         cgButtonLinkHandler,
         handleBatchDelete,
+        handleAddTestData,
+        testDataLoading,
+        currentTableName,
+        tableType,
+        isConfigCurRoute,
 
         // table-slot
         downloadRowFile,

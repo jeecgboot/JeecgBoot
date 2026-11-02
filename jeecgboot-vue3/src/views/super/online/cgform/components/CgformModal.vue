@@ -42,6 +42,7 @@
                 @dragged="onTableDragged"
                 @inserted="onTableInserted"
                 @syncDbType="onTableSyncDbType"
+                @syncQueryMode="onTableSyncQueryMode"
                 @syncDbIsPersist="onTableSyncDbIsPersist"
                 @syncDbIsNull="onTableSyncDbIsNull"
               />
@@ -200,7 +201,7 @@
         const entry = entries[0];
         if (entry) {
           onlFormContentFormHeight.value = entry.contentRect.height;
-          vxetableHeight.value = onlFormContentRef.value!.offsetHeight - onlFormContentFormHeight.value - 128;
+          vxetableHeight.value = onlFormContentRef.value!.offsetHeight - onlFormContentFormHeight.value - 110;
         }
       });
 
@@ -451,6 +452,17 @@
       let onTableAddedQueue: Promise<unknown> = Promise.resolve();
       // update-end--author:liaozhiyang---date:20260506---for:【issues/9593】树表的页面属性中子节点和父节点的属性串了
 
+      // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（补齐直接插入页面属性行的默认查询类型）
+      /** 新增页面属性行时，只在未明确配置查询类型的 String 文本框上应用模糊查询默认值。 */
+      function withPageQueryModeDefault(row: Recordable) {
+        const isTextControl = !row.fieldShowType || row.fieldShowType === 'text';
+        if (row.dbType === 'string' && isTextControl && !row.queryMode) {
+          return { ...row, queryMode: 'like' };
+        }
+        return row;
+      }
+      // update-end--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（补齐直接插入页面属性行的默认查询类型）
+
       /** 当新增了的时候应立即同步 */
       function onTableAdded() {
         // update-begin--author:liaozhiyang---date:20260506---for: 【issues/9593】树表的页面属性中子节点和父节点的属性串了
@@ -480,11 +492,14 @@
                 if (!jvxeRef) continue;
                 const tFullData = jvxeRef.getXTable().internalData.tableFullData;
                 const tSysIndex = tFullData.findIndex((row) => SYS_BUILT_IN_FIELDS.includes(row.dbFieldName));
+                // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（系统字段前新增时设置页面属性默认查询类型）
+                const targetRowData = t === pageTable ? withPageQueryModeDefault(newRowData) : newRowData;
+                // update-end--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（系统字段前新增时设置页面属性默认查询类型）
                 // 串行 await 附表 insertRows/addRows，确保下一次队列任务读到的是完全收尾后的状态
                 if (tSysIndex !== -1) {
-                  await jvxeRef.insertRows(newRowData, tSysIndex);
+                  await jvxeRef.insertRows(targetRowData, tSysIndex);
                 } else {
-                  await jvxeRef.addRows(newRowData);
+                  await jvxeRef.addRows(targetRowData);
                 }
               }
               return;
@@ -515,7 +530,7 @@
       async function onTableInserted(event) {
         let { insertIndex, row } = event;
         let { pageTable, checkTable, fkTable, queryTable } = tables;
-        pageTable.value!.tableRef!.insertRows(row, insertIndex);
+        pageTable.value!.tableRef!.insertRows(withPageQueryModeDefault(row), insertIndex);
         checkTable.value!.tableRef!.insertRows(row, insertIndex);
         fkTable.value!.tableRef!.insertRows(row, insertIndex);
         queryTable.value!.tableRef!.insertRows(row, insertIndex);
@@ -534,6 +549,12 @@
       function onTableSyncDbType(event) {
         tables.pageTable.value!.syncFieldShowType(event.row);
       }
+      // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（数据库字段类型变化时同步页面查询类型）
+      /** 数据库字段类型变化时同步页面属性的默认查询类型。 */
+      function onTableSyncQueryMode(event) {
+        tables.pageTable.value!.syncQueryMode(event);
+      }
+      // update-end--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（数据库字段类型变化时同步页面查询类型）
       // update-begin--author:liaozhiyang---date:20240313---for：【QQYUN-8485】不同步数据库的字段则去掉对应查询勾选
       /** 当dbIsPersist（同步数据库） value变化时同步 查询去掉勾选 */
       function onTableSyncDbIsPersist(event) {
@@ -883,6 +904,7 @@
         onTableDragged,
         onTableInserted,
         onTableSyncDbType,
+        onTableSyncQueryMode,
         onTableQuery,
         onExtConfigSaved,
         registerModal,
@@ -952,11 +974,4 @@
     }
   }
   // update-begin--author:liaozhiyang---date:20240717---for：【TV360X-829】根据字典名称和字段备注快速定位到行
-</style>
-<style>
-  .onlForm-config-modal {
-    .scroll-container .scrollbar__wrap {
-      margin-bottom: 0 !important;
-    }
-  }
 </style>

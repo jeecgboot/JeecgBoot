@@ -51,7 +51,11 @@
 	   		and sa.titile LIKE concat(concat('%',#{announcementSendModel.titile}),'%')
 	   </if>
 	   <if test="announcementSendModel.sender !=null and announcementSendModel.sender != ''">
-	   		and sa.sender LIKE concat(concat('%',#{announcementSendModel.sender}),'%')
+	   		<!-- update-begin author:wangshuai date:20261102 for：【LHZP-1240】【消息中心】我的消息 发布人未翻译 -->
+	   		<!-- 发布人：列表显示的是姓名，所以按账号原值或用户姓名都能模糊查询 -->
+	   		and (sa.sender LIKE concat(concat('%',#{announcementSendModel.sender}),'%')
+	   			or sa.sender in (select su.username from sys_user su where su.realname LIKE concat(concat('%',#{announcementSendModel.sender}),'%')))
+	   		<!-- update-end author:wangshuai date:20261102 for：【LHZP-1240】【消息中心】我的消息 发布人未翻译 -->
 	   </if>
 		<if test="announcementSendModel.noticeType !=null and announcementSendModel.noticeType != ''">
 			and sa.notice_type = #{announcementSendModel.noticeType}

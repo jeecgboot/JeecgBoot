@@ -17,6 +17,7 @@ import org.jeecg.modules.airag.app.entity.AiragApp;
 import org.jeecg.modules.airag.app.service.IAiragAppService;
 import org.jeecg.modules.airag.app.service.IAiragVariableService;
 import org.jeecg.modules.airag.llm.consts.LLMConsts;
+import org.jeecg.modules.airag.common.handler.IEmbeddingHandler;
 import org.jeecg.modules.airag.llm.entity.AiragKnowledgeDoc;
 import org.jeecg.modules.airag.llm.service.IAiragKnowledgeDocService;
 import org.jeecg.modules.airag.prompts.entity.AiragPrompts;
@@ -35,6 +36,9 @@ public class AiragBaseApiImpl implements IAiragBaseApi {
 
     @Autowired
     private IAiragKnowledgeDocService airagKnowledgeDocService;
+
+    @Autowired
+    private IEmbeddingHandler embeddingHandler;
 
     @Override
     public String knowledgeWriteTextDocument(String knowledgeId, String title, String content, String segmentConfig) {
@@ -176,6 +180,12 @@ public class AiragBaseApiImpl implements IAiragBaseApi {
             return null;
         }
         return prompt.getContent();
+    }
+
+    @Override
+    public String parseFileContent(String filePath) {
+        AssertUtils.assertNotEmpty("文件地址不能为空", filePath);
+        return embeddingHandler.parseFileContent(filePath);
     }
 
 }

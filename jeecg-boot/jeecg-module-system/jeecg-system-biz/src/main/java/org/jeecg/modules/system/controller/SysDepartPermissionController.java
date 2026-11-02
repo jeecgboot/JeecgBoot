@@ -159,6 +159,7 @@ public class SysDepartPermissionController extends JeecgController<SysDepartPerm
 	* @param request
 	* @param sysDepartPermission
 	*/
+	@RequiresPermissions("system:depart:permission:exportXls")
 	@RequestMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request, SysDepartPermission sysDepartPermission) {
 	  return super.exportXls(request, sysDepartPermission, SysDepartPermission.class, "部门权限表");

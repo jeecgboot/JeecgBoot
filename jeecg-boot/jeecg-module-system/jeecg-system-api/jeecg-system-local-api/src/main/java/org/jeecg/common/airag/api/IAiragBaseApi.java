@@ -76,4 +76,9 @@ public interface IAiragBaseApi {
      */
     String getPromptContent(String promptId);
 
+    /**
+     * 解析本地、MinIO或OSS文件内容。
+     */
+    String parseFileContent(String filePath);
+
 }

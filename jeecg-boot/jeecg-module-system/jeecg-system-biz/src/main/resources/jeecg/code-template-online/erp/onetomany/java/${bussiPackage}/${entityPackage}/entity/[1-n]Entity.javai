@@ -51,14 +51,6 @@ public class ${subTab.entityName} implements Serializable {
         </#if>
     <#elseif po.classType=='link_table'>
         <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicCode = "${po.dictField}", dicText = "${po.dictText?split(",")[0]}"'>
-    <#elseif po.classType=='popup_dict'>
-        <#if po.dictTable?default("")?trim?length gt 1>
-            <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText}", dicCode = "${po.dictField}"'>
-        </#if>
-    <#elseif po.classType=='popup'>
-        <#if po.dictTable?default("")?trim?length gt 1>
-            <#assign list_field_dictCode=', dictTable = "${po.dictTable}", dicText = "${po.dictText}", dicCode = "${po.dictField}"'>
-        </#if>
     </#if>
 	/**${po.filedComment}*/
 <#if po.fieldName == primaryKeyField>
@@ -79,12 +71,14 @@ public class ${subTab.entityName} implements Serializable {
     @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
 		</#if>
 	<#elseif !subTab.foreignKeys?seq_contains(po.fieldName?cap_first)>
-    <#if !excel_ignore_arr?seq_contains("${po.fieldName}")  && !excel_ignore_classType_arr?seq_contains("${po.classType}")>
+    <#if po.classType=='popup_dict' && !excel_ignore_arr?seq_contains("${po.fieldName}")>
+	@Excel(name = "${po.filedComment}", width = 15)
+    <#elseif !excel_ignore_arr?seq_contains("${po.fieldName}")  && !excel_ignore_classType_arr?seq_contains("${po.classType}")>
 	@Excel(name = "${po.filedComment}", width = 15${list_field_dictCode})
 	</#if>
 	</#if>
 </#if>
-  <#if list_field_dictCode?length gt 1>
+  <#if po.classType!='popup_dict' && list_field_dictCode?length gt 1>
     @Dict(${list_field_dictCode?substring(2)})
   </#if>
 	<#-- 大字段转换 -->

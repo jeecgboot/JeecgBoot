@@ -8,6 +8,7 @@ export enum Api {
   removeRecord = '/online/cgform/head/removeRecord',
   copyOnline = '/online/cgform/head/copyOnline',
   copyTable = '/online/cgform/head/copyOnlineTable',
+  queryById = '/online/cgform/head/queryById',
 
   // CgformModal页面API
   addAll = '/online/cgform/api/addAll',
@@ -24,6 +25,14 @@ export enum Api {
  * @param params
  */
 export const list = (params) => defHttp.get({ url: Api.list, params });
+
+// update-begin---author:liusq---date:20261013---for:【LHZP-1967】打印设计生成后表单扩展配置未带出报表地址
+/**
+ * 根据ID查询表单配置（获取最新的 extConfigJson 等）
+ * @param id
+ */
+export const queryHeadById = (id: string) => defHttp.get({ url: Api.queryById, params: { id } });
+// update-end---author:liusq---date:20261013---for:【LHZP-1967】打印设计生成后表单扩展配置未带出报表地址
 
 // 批量移除（移除只会删除表单配置）
 export const doBatchRemove = (idList: string[]) => doRemove(idList, 0);
@@ -64,7 +73,7 @@ export const doCopyTable = (id, tableName, params?) => defHttp.get({ url: `${Api
 
 // 弹窗formApi
 export const formApi = {
-  // 查询表字段 e3e3NcxzbUiGa53YYVXxWc8ADo5ISgQGx/gaZwERF91oAryDlivjqBv3wqRArgChupi+Y/Gg/swwGEyL0PuVFg==
+  // 查询表字段
   doQueryField: (headId: string, params?) => defHttp.get({ url: Api.queryField, params: { headId, ...params } }),
   // 查询表index配置
   doQueryIndexes: (headId: string, params?) => defHttp.get({ url: Api.queryIndex, params: { headId, ...params } }),

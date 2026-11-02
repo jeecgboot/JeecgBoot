@@ -5,6 +5,7 @@ import java.util.Arrays;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.system.base.controller.JeecgController;
 import org.jeecg.common.system.query.QueryGenerator;
@@ -49,6 +50,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @param req
 	 * @return
 	 */
+	@RequiresPermissions("system:message:list")
 	@GetMapping(value = "/list")
 	public Result<?> queryPageList(SysMessage sysMessage, @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize, HttpServletRequest req) {
@@ -64,6 +66,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @param sysMessage
 	 * @return
 	 */
+	@RequiresPermissions("system:message:add")
 	@PostMapping(value = "/add")
 	public Result<?> add(@RequestBody SysMessage sysMessage) {
 		sysMessageService.save(sysMessage);
@@ -76,6 +79,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @param sysMessage
 	 * @return
 	 */
+	@RequiresPermissions("system:message:edit")
 	@PutMapping(value = "/edit")
 	public Result<?> edit(@RequestBody SysMessage sysMessage) {	
 		sysMessageService.updateById(sysMessage);
@@ -89,6 +93,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @param id
 	 * @return
 	 */
+	@RequiresPermissions("system:message:delete")
 	@DeleteMapping(value = "/delete")
 	public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
 		sysMessageService.removeById(id);
@@ -101,6 +106,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @param ids
 	 * @return
 	 */
+	@RequiresPermissions("system:message:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch")
 	public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
 
@@ -114,6 +120,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @param id
 	 * @return
 	 */
+	@RequiresPermissions("system:message:queryById")
 	@GetMapping(value = "/queryById")
 	public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
 		SysMessage sysMessage = sysMessageService.getById(id);
@@ -125,6 +132,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 *
 	 * @param request
 	 */
+	@RequiresPermissions("system:message:exportXls")
 	@GetMapping(value = "/exportXls")
 	public ModelAndView exportXls(HttpServletRequest request, SysMessage sysMessage) {
 		return super.exportXls(request,sysMessage,SysMessage.class, "推送消息模板");
@@ -137,6 +145,7 @@ public class SysMessageController extends JeecgController<SysMessage, ISysMessag
 	 * @param response
 	 * @return
 	 */
+	@RequiresPermissions("system:message:importExcel")
 	@PostMapping(value = "/importExcel")
 	public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
 		return super.importExcel(request, response, SysMessage.class);

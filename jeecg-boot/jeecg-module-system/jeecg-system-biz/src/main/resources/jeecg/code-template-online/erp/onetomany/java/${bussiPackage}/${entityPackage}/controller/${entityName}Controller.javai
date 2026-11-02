@@ -42,6 +42,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.jeecg.common.system.api.ISysBaseAPI;
+<#assign has_popup_dict=false>
+<#list originalColumns as po><#if po.classType=='popup_dict'><#assign has_popup_dict=true></#if></#list>
+<#list subTables as sub><#list sub.originalColumns as po><#if po.classType=='popup_dict'><#assign has_popup_dict=true></#if></#list></#list>
 <#assign has_multi_query_field=false>
 <#list originalColumns as po>
 <#if po.isQuery=='Y' && (po.classType=='list' || po.classType=='list_multi' || po.classType=='radio' || po.classType=='checkbox' || po.classType=='popup_dict' || po.classType=='sel_user' || po.classType=='sel_depart')>
@@ -63,6 +67,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 @RequestMapping("/${entityPackagePath}/${entityName?uncap_first}")
 @Slf4j
 public class ${entityName}Controller extends JeecgController<${entityName}, I${entityName}Service> {
+	<#if has_popup_dict>
+	@Autowired
+	private ISysBaseAPI sysBaseApi;
+	</#if>
 
 	@Autowired
 	private I${entityName}Service ${entityName?uncap_first}Service;
@@ -227,7 +235,16 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
   </#if>
   </#list>
  </#if>
+<#if has_popup_dict>
+        ModelAndView mv = super.exportXls(request, ${entityName?uncap_first}, ${entityName}.class, "${tableVo.ftlDescription}");
+        List<${entityName}> exportList = (List<${entityName}>) mv.getModel().get(NormalExcelConstants.DATA_LIST);
+        <#list originalColumns as po><#if po.classType=='popup_dict'>
+        translatePopupDict(exportList, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", false);
+        </#if></#list>
+        return mv;
+<#else>
         return super.exportXls(request, ${entityName?uncap_first}, ${entityName}.class, "${tableVo.ftlDescription}");
+</#if>
     }
 
     /**
@@ -247,6 +264,76 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
        </#if>
         return super.importExcel(request, response, ${entityName}.class);
     }
+<#if has_popup_dict>
+
+	@Override
+	protected void beforeImport(List<${entityName}> importList) {
+		<#list originalColumns as po><#if po.classType=='popup_dict'>
+		translatePopupDict(importList, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", true);
+		</#if></#list>
+	}
+
+	/**
+	 * 翻译 Excel 导入、导出中的 Popup 字典值。
+	 */
+	private <T> void translatePopupDict(List<T> dataList, String fieldName,
+			String reportCode, String dictCode, String dictText, boolean strict) {
+		if (dataList == null || dataList.isEmpty()) {
+			return;
+		}
+		try {
+			java.util.LinkedHashSet<String> keys = new java.util.LinkedHashSet<>();
+			for (T item : dataList) {
+				Object value = cn.hutool.core.util.ReflectUtil.getFieldValue(item, fieldName);
+				if (value != null) {
+					Arrays.stream(value.toString().split(",")).filter(oConvertUtils::isNotEmpty).forEach(keys::add);
+				}
+			}
+			if (keys.isEmpty()) {
+				return;
+			}
+			List<org.jeecg.common.system.vo.DictModel> options = sysBaseApi.queryPopupDictItems(
+					reportCode, dictCode, dictText, strict ? "" : String.join(",", keys));
+			Map<String, String> textMap = new HashMap<>();
+			if (options != null) {
+				for (org.jeecg.common.system.vo.DictModel option : options) {
+					if (strict) {
+						if (keys.contains(option.getText())) {
+							textMap.putIfAbsent(option.getText(), option.getValue());
+						}
+						if (keys.contains(option.getValue())) {
+							textMap.putIfAbsent(option.getValue(), option.getValue());
+						}
+					} else {
+						textMap.put(option.getValue(), option.getText());
+					}
+				}
+			}
+			for (T item : dataList) {
+				Object value = cn.hutool.core.util.ReflectUtil.getFieldValue(item, fieldName);
+				if (value == null) {
+					continue;
+				}
+				String translated = Arrays.stream(value.toString().split(",")).map(key -> {
+					String text = textMap.get(key);
+					if (strict && text == null) {
+						throw new org.jeecg.common.exception.JeecgBootException(
+								"Popup字典值不存在，字段：" + fieldName + "，值：" + key);
+					}
+					return text == null ? key : text;
+				}).collect(Collectors.joining(","));
+				cn.hutool.core.util.ReflectUtil.setFieldValue(item, fieldName, translated);
+			}
+		} catch (org.jeecg.common.exception.JeecgBootException e) {
+			throw e;
+		} catch (Exception e) {
+			if (strict) {
+				throw new org.jeecg.common.exception.JeecgBootException("Popup字典导入翻译失败，字段：" + fieldName, e);
+			}
+			log.warn("Popup字典导出翻译失败，字段：{}", fieldName, e);
+		}
+	}
+</#if>
 	/*---------------------------------主表处理-end-------------------------------------*/
 	
 	<#list subTables as sub>
@@ -276,6 +363,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${sub.ftlDescription}-添加")
 	@Operation(summary="${sub.ftlDescription}-添加")
+	@RequiresPermissions("${entityPackage}:${tableName}:add")
 	@PostMapping(value = "/add${sub.entityName}")
 	public Result<String> add${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
 		${sub.entityName?uncap_first}Service.save(${sub.entityName?uncap_first});
@@ -289,6 +377,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${sub.ftlDescription}-编辑")
 	@Operation(summary="${sub.ftlDescription}-编辑")
+	@RequiresPermissions("${entityPackage}:${tableName}:edit")
 	@RequestMapping(value = "/edit${sub.entityName}", method = {RequestMethod.PUT,RequestMethod.POST})
 	public Result<String> edit${sub.entityName}(@RequestBody ${sub.entityName} ${sub.entityName?uncap_first}) {
 		${sub.entityName?uncap_first}Service.updateById(${sub.entityName?uncap_first});
@@ -302,6 +391,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${sub.ftlDescription}-通过id删除")
 	@Operation(summary="${sub.ftlDescription}-通过id删除")
+	@RequiresPermissions("${entityPackage}:${tableName}:delete")
 	@DeleteMapping(value = "/delete${sub.entityName}")
 	public Result<String> delete${sub.entityName}(@RequestParam(name="id",required=true) String id) {
 		${sub.entityName?uncap_first}Service.removeById(id);
@@ -315,6 +405,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 	 */
 	@AutoLog(value = "${sub.ftlDescription}-批量删除")
 	@Operation(summary="${sub.ftlDescription}-批量删除")
+	@RequiresPermissions("${entityPackage}:${tableName}:deleteBatch")
 	@DeleteMapping(value = "/deleteBatch${sub.entityName}")
 	public Result<String> deleteBatch${sub.entityName}(@RequestParam(name="ids",required=true) String ids) {
 	    this.${sub.entityName?uncap_first}Service.removeByIds(Arrays.asList(ids.split(",")));
@@ -325,6 +416,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
      * 导出
      * @return
      */
+    @RequiresPermissions("${entityPackage}:${tableName}:exportXls")
     @RequestMapping(value = "/export${sub.entityName}")
     public ModelAndView export${sub.entityName}(HttpServletRequest request, ${sub.entityName} ${sub.entityName?uncap_first}) {
 		 // Step.1 组装查询条件
@@ -343,6 +435,9 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 		 } else {
 			 exportList = pageList;
 		 }
+		 <#list sub.originalColumns as po><#if po.classType=='popup_dict'>
+		 translatePopupDict(exportList, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", false);
+		 </#if></#list>
 
 		 // Step.3 AutoPoi 导出Excel
 		 ModelAndView mv = new ModelAndView(new JeecgEntityExcelView());
@@ -358,6 +453,7 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
      * 导入
      * @return
      */
+    @RequiresPermissions("${entityPackage}:${tableName}:importExcel")
     @RequestMapping(value = "/import${sub.entityName}/{mainId}")
     public Result<?> import${sub.entityName}(HttpServletRequest request, HttpServletResponse response, @PathVariable("mainId") String mainId) {
 		 MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -371,6 +467,9 @@ public class ${entityName}Controller extends JeecgController<${entityName}, I${e
 			 params.setNeedSave(true);
 			 try {
 				 List<${sub.entityName}> list = ExcelImportUtil.importExcel(file.getInputStream(), ${sub.entityName}.class, params);
+				 <#list sub.originalColumns as po><#if po.classType=='popup_dict'>
+				 translatePopupDict(list, "${po.fieldName}", "${po.dictTable}", "${po.dictField}", "${po.dictText}", true);
+				 </#if></#list>
                  <#if sub.foreignRelationType == '1'>
                  // 一对一子表：每个主表记录只能对应一条子表，导入前需校验
                  if (list != null && !list.isEmpty()) {

@@ -19,6 +19,9 @@ public class SysDepartExportVo {
     /**英文名*/
     @Excel(name="英文名",width=15)
     private String departNameEn;
+    /**机构简称*/
+    @Excel(name="机构简称",width=15)
+    private String departNameAbbr;
     /**排序*/
     @Excel(name="排序",width=15)
     private Integer departOrder;

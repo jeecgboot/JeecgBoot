@@ -94,5 +94,6 @@ public class SysTenantPack implements Serializable {
         this.packCode = packCode;
         this.packName = packName;
         this.status = "1";
+        this.packType = "custom";
     }
 }

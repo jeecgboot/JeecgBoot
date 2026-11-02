@@ -1,7 +1,6 @@
 package org.jeecg.config;
 
 import lombok.Data;
-import org.jeecg.ai.factory.AiModelFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -94,7 +93,7 @@ public class AiChatConfig {
         /**
          * 供应商
          */
-        private String provider = AiModelFactory.AIMODEL_TYPE_QWEN;
+        private String provider = "QWEN"; //AiModelFactory.AIMODEL_TYPE_QWEN
     }
 
     @Data

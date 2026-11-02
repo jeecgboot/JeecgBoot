@@ -56,6 +56,10 @@ export interface DetailFormSchema {
   dictText?: string;
   dictCode?: string;
   dict?: string;
+  // 是否树表父节点字段 1是 0否
+  pidComponent?: number;
+  // 树根节点的父ID值，默认0
+  pidValue?: string;
   fieldExtendJson?: string;
   ifShow?: boolean | ((renderCallbackParams: RenderCallbackParams) => boolean);
   // update-begin--author:liaozhiyang---date:20240425---for：【issues/6139】online详情支持js增强loaded事件及设置值、获取值、隐藏功能
@@ -375,6 +379,12 @@ export function useDetailForm(props: any) {
   //自定义树
   async function getTreeDataText(item, formData) {
     let { dict, field } = item;
+    // update-begin--author:liusq---date:20261102---for：online树表详情顶级节点的父节点显示0
+    // 树表父节点字段：顶级节点的父ID是根节点值(默认0)，没有对应的节点，不显示（与编辑页JTreeSelect一致）
+    if (item.pidComponent == 1 && formData[field] == (item.pidValue || '0')) {
+      return '';
+    }
+    // update-end--author:liusq---date:20261102---for：online树表详情顶级节点的父节点显示0
     let arr = [];
     if (dictOptionsMap[field]) {
       arr = dictOptionsMap[field];

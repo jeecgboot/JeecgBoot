@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * airag baseAPI Controller
  * <p>
  * 仅供微服务 Feign 内部调用。单体模式下为进程内调用，无需对外暴露，
- * 故只在类路径存在 jeecg-boot-starter-cloud（微服务模式）时加载（2026-10-14）
+ * 故只在类路径存在 jeecg-boot-starter-cloud（微服务模式）时加载（2026-10-14 GHSA-v952-qq2h-377j）
  *
  * @author sjlei
  * @date 2025-12-30
@@ -76,6 +76,11 @@ public class AiragBaseApiController implements IAiragBaseApi {
     @PostMapping("/airag/api/getPromptContent")
     public String getPromptContent(@RequestParam("promptId") String promptId) {
         return airagBaseApi.getPromptContent(promptId);
+    }
+
+    @PostMapping("/airag/api/parseFileContent")
+    public String parseFileContent(@RequestParam("filePath") String filePath) {
+        return airagBaseApi.parseFileContent(filePath);
     }
 
 }

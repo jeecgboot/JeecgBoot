@@ -32,7 +32,8 @@ public class ResourceUtil {
      */
     private final static String[] BASE_SCAN_PACKAGES = {
             "org.jeecg.common.constant.enums",
-            "org.jeecg.modules.message.enums"
+            "org.jeecg.modules.message.enums",
+            "org.jeecg.modules.online.low.enums"
     };
     
     /**

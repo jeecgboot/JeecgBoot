@@ -7,6 +7,7 @@ const { createConfirm } = useMessage();
 export enum Api {
   queryDepartTreeSync = '/sys/sysDepart/queryDepartTreeSync',
   searchByDepartManage = '/sys/sysDepart/searchByDepartManage',
+  queryAllParentId = '/sys/sysDepart/queryAllParentId',
   save = '/sys/sysDepart/add',
   edit = '/sys/sysDepart/edit',
   delete = '/sys/sysDepart/delete',
@@ -37,6 +38,8 @@ export enum Api {
   updateChangeDepart = '/sys/sysDepart/updateChangeDepart',
   //获取负责部门
   getDepartmentHead = '/sys/sysDepart/getDepartmentHead',
+  //将用户移出部门/岗位
+  removeDepartUser = '/sys/user/removeDepartUser',
 }
 
 /**
@@ -48,6 +51,11 @@ export const queryDepartTreeSync = (params?) => defHttp.get({ url: Api.queryDepa
  * 部门管理页面专用搜索，搜索结果支持继续展开下级
  */
 export const searchByDepartManage = (params) => defHttp.get({ url: Api.searchByDepartManage, params });
+
+/**
+ * 获取部门节点及其所有上级
+ */
+export const queryAllParentId = (params) => defHttp.get({ url: Api.queryAllParentId, params });
 
 /**
  * 获取部门和岗位树列表
@@ -175,3 +183,10 @@ export const updateChangeDepart = (params) => defHttp.put({ url: Api.updateChang
  * @param params
  */
 export const getDepartmentHead = (params) => defHttp.get({ url: Api.getDepartmentHead, params });
+
+/**
+ * 将用户移出部门/岗位（只删除关联关系，不删除用户）
+ *
+ * @param params depId：部门或岗位id，userIds：用户id，多个用逗号分隔
+ */
+export const removeDepartUser = (params) => defHttp.delete({ url: Api.removeDepartUser, params }, { joinParamsToUrl: true });

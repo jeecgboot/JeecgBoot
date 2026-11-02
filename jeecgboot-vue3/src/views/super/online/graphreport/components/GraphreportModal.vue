@@ -22,7 +22,7 @@
       <!-- 子表单区域 -->
       <a-tabs animated v-model:activeKey="activeKey">
         <a-tab-pane tab="列表字段" key="field" forceRender>
-          <FieldTable ref="fieldTableRef" :dataSource="fieldTable.dataSource" />
+          <FieldTable ref="fieldTableRef" :dataSource="fieldTable.dataSource" :disableSearch="dataType === 'json'" />
         </a-tab-pane>
         <a-tab-pane tab="图表参数" key="params" forceRender>
           <ParamsTable ref="paramsTableRef" :dataSource="paramsTable.dataSource" />
@@ -264,6 +264,12 @@
       /** 整理成formData */
       function classifyIntoFormData(mainValues) {
         let main = Object.assign(model, mainValues);
+        // update-begin--author:liaozhiyang---date:20260824---for：【LHZP-1055】online图表JSON方式禁用查询
+        const fieldData = fieldTableRef.value?.tableRef?.getTableData() || [];
+        if (main.dataType === 'json') {
+          fieldData.forEach((item) => (item.searchFlag = 'N'));
+        }
+        // update-end--author:liaozhiyang---date:20260824---for：【LHZP-1055】online图表JSON方式禁用查询
         if (isArray(main.graphType)) {
           main.graphType = main.graphType.join(',');
         }
@@ -272,7 +278,7 @@
         }
         return {
           ...main,
-          onlGraphreportItemList: fieldTableRef.value?.tableRef?.getTableData(),
+          onlGraphreportItemList: fieldData,
           paramsList: paramsTableRef.value?.tableRef?.getTableData(),
         };
       }

@@ -52,7 +52,7 @@
                 accept=".jpg,.jpeg,.png"
                 name="file"
                 :showUploadList="false"
-                :headers="headers"
+                :headers="uploadHeaders"
                 :beforeUpload="(file) => beforeUpload(file, input.field)"
                 @change="(info) => handleChange(info, input.field)"
                 :multiple="true"
@@ -74,6 +74,15 @@
             :placeholder="`请输入${input.name}`"
             style="width: 100%"
           />
+          <!-- 文件类型 -->
+          <JFileUploadSlot
+            v-else-if="input.type === 'file'"
+            :value="formData[input.field] || ''"
+            :uploadUrl="uploadUrl"
+            :accept="input.accept"
+            :useAuthHeaders="useAuthHeaders"
+            @update:value="(val) => updateFormField(input.field, val)"
+          />
           <!-- 其他类型使用文本输入 -->
           <a-input
             v-else
@@ -92,11 +101,14 @@
   import { Icon } from '/@/components/Icon';
   import { getFileAccessHttpUrl, getHeaders } from '@/utils/common/compUtils';
   import { useGlobSetting } from '@/hooks/setting';
+  import { JFileUploadSlot } from '@jeecg/aiflow';
 
   const props = defineProps<{
     flowInputs: any[];
     conversationId: string;
     existingSettings?: Record<string, any>;
+    appId?: string;
+    shareToken?: string;
   }>();
 
   const emit = defineEmits<{
@@ -110,8 +122,21 @@
 
   const globSetting = useGlobSetting();
   const baseUploadUrl = globSetting.uploadUrl;
-  const uploadUrl = `${baseUploadUrl}/airag/chat/upload`;
-  const headers = getHeaders();
+  // update-begin--author:wangshuai---date:20260820---for：【LHZP-1627】需要传递token和 shareToken
+  const useAuthHeaders = computed(() => !props.shareToken);
+  const uploadHeaders = computed(() => (useAuthHeaders.value ? getHeaders() : {}));
+  const uploadUrl = computed(() => {
+    const url = `${baseUploadUrl}/airag/chat/upload`;
+    if (!props.appId) {
+      return url;
+    }
+    const params = new URLSearchParams({ appId: props.appId });
+    if (props.shareToken) {
+      params.set('shareToken', props.shareToken);
+    }
+    return `${url}?${params.toString()}`;
+  });
+  // update-end--author:wangshuai---date:20260820---for：【LHZP-1627】需要传递token和 shareToken
 
   // 过滤掉固定参数（history, content, images）
   const flowInputs = computed(() => {
@@ -124,13 +149,43 @@
     if (flowInputs.value.length === 0) return true;
     return flowInputs.value.every((input) => {
       if (!input.required) return true;
-      const value = formData.value[input.field];
-      if (input.type === 'picture') {
-        return imageFileList.value[input.field] && imageFileList.value[input.field].length > 0;
-      }
-      return value !== undefined && value !== null && value !== '';
+    // update-begin--author:wangshuai---date:20260820---for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传
+      return hasFieldValue(input);
     });
   });
+
+  /**
+   * 判断流程入参是否已有有效值，用于必填校验和“开始对话”按钮状态。
+   * 图片检查上传列表，文件检查上传后返回的地址，其他数组和普通值分别判断。
+   *
+   * @param input 流程入参配置
+   */
+  function hasFieldValue(input: any): boolean {
+    const value = formData.value[input.field];
+    if (input.type === 'picture') {
+      const list = imageFileList.value[input.field];
+      return Array.isArray(list) && list.length > 0;
+    }
+    if (input.type === 'file') {
+      return typeof value === 'string' && value.trim() !== '';
+    }
+    if (Array.isArray(value)) {
+      return value.length > 0;
+    }
+    return value !== undefined && value !== null && value !== '';
+  }
+
+  /**
+   * 更新指定流程入参，并通过创建新对象触发 Vue 响应式更新。
+   * 文件类型保存上传接口返回的文件地址，图片类型保存文件地址数组。
+   *
+   * @param field 流程入参字段名
+   * @param value 流程入参值
+   */
+  function updateFormField(field: string, value: any) {
+    formData.value = { ...formData.value, [field]: value };
+  }
+  // update-end--author:wangshuai---date:20260820---for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传
 
   // 上传前处理
   const beforeUpload = (file: any, field: string) => {
@@ -175,9 +230,9 @@
       
       // 图片类型始终作为数组存储，触发响应式更新
       imageFileList.value = { ...imageFileList.value };
-      formData.value[field] = [...imageFileList.value[field]];
-      
-      console.log(`[图片上传] 当前图片数量: ${imageFileList.value[field].length}`, imageFileList.value[field]);
+      // update-begin--author:wangshuai---date:20260820---for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传
+      updateFormField(field, [...imageFileList.value[field]]);
+      // update-end--author:wangshuai---date:20260820---for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传
     }
   };
 
@@ -204,13 +259,13 @@
       
       // 触发响应式更新
       imageFileList.value = { ...imageFileList.value };
-      
-      // 图片类型始终作为数组存储，删除后更新
-      formData.value[field] = imageFileList.value[field].length > 0 
-        ? [...imageFileList.value[field]] 
-        : [];
-      
-      console.log(`[图片删除] 当前图片数量: ${imageFileList.value[field].length}`, imageFileList.value[field]);
+
+      // update-begin--author:wangshuai---date:20260820---for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传
+      updateFormField(
+        field,
+        imageFileList.value[field].length > 0 ? [...imageFileList.value[field]] : [],
+      );
+      // update-end--author:wangshuai---date:20260820---for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传
     }
   };
 
@@ -231,10 +286,14 @@
             const urls = Array.isArray(props.existingSettings![key]) 
               ? props.existingSettings![key] 
               : (props.existingSettings![key] ? [props.existingSettings![key]] : []);
-            imageFileList.value[key] = urls.filter(url => url); // 过滤空值
-            formData.value[key] = [...imageFileList.value[key]]; // 始终作为数组
+            // update-begin--author:wangshuai---date:20260820---for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传
+            imageFileList.value[key] = urls.filter((url) => url);
+            updateFormField(key, [...imageFileList.value[key]]);
+          } else if (input.type === 'file') {
+            updateFormField(key, props.existingSettings![key] || '');
           } else {
-            formData.value[key] = props.existingSettings![key];
+            updateFormField(key, props.existingSettings![key]);
+            // update-end--author:wangshuai---date:20260820---for：【LHZP-1627】ai流程文件必填，但是在ai聊天中 是文件输入，而不是文件上传
           }
         }
       });

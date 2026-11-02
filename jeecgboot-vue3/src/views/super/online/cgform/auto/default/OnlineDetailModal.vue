@@ -10,7 +10,7 @@
         </a-col>
       </a-row>
     </template>
-    <online-form-detail ref="onlineFormCompRef" :id="id" :form-template="formTemplate" :show-sub="showSub" :themeTemplate="themeTemplate" :isShare="isShare" @rendered="renderSuccess" />
+    <online-form-detail ref="onlineFormCompRef" :id="id" :form-template="formTemplate" :show-sub="showSub" :themeTemplate="isShare && themeTemplate === 'erp' ? 'normal' : themeTemplate" :isShare="isShare" @rendered="renderSuccess" />
 
     <template #comment>
       <comment-panel ref="commentPanelRef" :tableId="tableId" :tableName="tableName" :dataId="formDataId"></comment-panel>

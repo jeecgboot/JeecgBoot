@@ -56,6 +56,11 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- AI 基础能力（LLMHandler/AiModelFactory）：商业版经 airag-flow 间接引入，开源版没有 airag-flow，需直接声明 -->
+        <dependency>
+            <groupId>org.jeecgframework.boot3</groupId>
+            <artifactId>jeecg-boot-starter-ai</artifactId>
+        </dependency>
         <!-- system单体 api-->
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
@@ -74,7 +79,7 @@
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-aiflow-boot4</artifactId>
-            <version>3.9.5</version>
+            <version>3.9.6</version>
         </dependency>
         <!-- begin 注意：这几个依赖体积较大，每个约50MB。若发布时需要使用，请将 <scope>provided</scope> 删除 -->
         <dependency>

@@ -145,6 +145,7 @@ public class SysLogController extends JeecgController<SysLog, ISysLogService> {
 	 * @param request
 	 * @param syslog
 	 */
+	@RequiresPermissions("system:log:exportXls")
 	@RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, SysLog syslog) {
         // 复制参数，移除排序相关键（column/order 等）防止前端传入排序影响导出顺序

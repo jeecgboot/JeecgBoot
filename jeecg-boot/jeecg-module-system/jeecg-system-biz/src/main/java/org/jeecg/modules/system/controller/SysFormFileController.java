@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jeecg.common.api.vo.Result;
 import org.jeecg.common.aspect.annotation.AutoLog;
 import org.jeecg.common.system.base.controller.JeecgController;
@@ -45,6 +46,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      */
     @AutoLog(value = "表单评论文件-分页列表查询")
     @Operation(summary = "表单评论文件-分页列表查询")
+    @RequiresPermissions("system:formFile:list")
     @GetMapping(value = "/list")
     public Result<?> queryPageList(SysFormFile sysFormFile,
                                    @RequestParam(name = "pageNo", defaultValue = "1") Integer pageNo,
@@ -64,6 +66,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      */
     @AutoLog(value = "表单评论文件-添加")
     @Operation(summary = "表单评论文件-添加")
+    @RequiresPermissions("system:formFile:add")
     @PostMapping(value = "/add")
     public Result<?> add(@RequestBody SysFormFile sysFormFile) {
         sysFormFileService.save(sysFormFile);
@@ -78,6 +81,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      */
     @AutoLog(value = "表单评论文件-编辑")
     @Operation(summary = "表单评论文件-编辑")
+    @RequiresPermissions("system:formFile:edit")
     @RequestMapping(value = "/edit", method = {RequestMethod.PUT, RequestMethod.POST})
     public Result<?> edit(@RequestBody SysFormFile sysFormFile) {
         sysFormFileService.updateById(sysFormFile);
@@ -92,6 +96,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      */
     @AutoLog(value = "表单评论文件-通过id删除")
     @Operation(summary = "表单评论文件-通过id删除")
+    @RequiresPermissions("system:formFile:delete")
     @DeleteMapping(value = "/delete")
     public Result<?> delete(@RequestParam(name = "id", required = true) String id) {
         sysFormFileService.removeById(id);
@@ -106,6 +111,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      */
     @AutoLog(value = "表单评论文件-批量删除")
     @Operation(summary = "表单评论文件-批量删除")
+    @RequiresPermissions("system:formFile:deleteBatch")
     @DeleteMapping(value = "/deleteBatch")
     public Result<?> deleteBatch(@RequestParam(name = "ids", required = true) String ids) {
         this.sysFormFileService.removeByIds(Arrays.asList(ids.split(",")));
@@ -120,6 +126,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      */
     @AutoLog(value = "表单评论文件-通过id查询")
     @Operation(summary = "表单评论文件-通过id查询")
+    @RequiresPermissions("system:formFile:queryById")
     @GetMapping(value = "/queryById")
     public Result<?> queryById(@RequestParam(name = "id", required = true) String id) {
         SysFormFile sysFormFile = sysFormFileService.getById(id);
@@ -132,6 +139,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      * @param request
      * @param sysFormFile
      */
+    @RequiresPermissions("system:formFile:exportXls")
     @RequestMapping(value = "/exportXls")
     public ModelAndView exportXls(HttpServletRequest request, SysFormFile sysFormFile) {
         return super.exportXls(request, sysFormFile, SysFormFile.class, "表单评论文件");
@@ -144,6 +152,7 @@ public class SysFormFileController extends JeecgController<SysFormFile, ISysForm
      * @param response
      * @return
      */
+    @RequiresPermissions("system:formFile:importExcel")
     @RequestMapping(value = "/importExcel", method = RequestMethod.POST)
     public Result<?> importExcel(HttpServletRequest request, HttpServletResponse response) {
         return super.importExcel(request, response, SysFormFile.class);

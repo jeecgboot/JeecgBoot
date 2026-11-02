@@ -325,6 +325,21 @@
       const setup = useTableSync(columns);
       const { tableRef, tables } = setup;
 
+      // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（新增页面属性行时设置默认查询类型）
+      /** 同步数据库字段时，仅为新增的 String 文本框设置模糊查询默认值。 */
+      async function syncTable(dbTable) {
+        const existingIds = new Set(tableRef.value!.getTableData().map((row) => row.id));
+        await setup.syncTable(dbTable);
+        const values = tableRef.value!
+          .getTableData()
+          .filter((row) => !existingIds.has(row.id) && row.dbType === 'string' && row.fieldShowType === 'text')
+          .map((row) => ({ rowKey: row.id, values: { queryMode: 'like' } }));
+        if (values.length > 0) {
+          tableRef.value!.setValues(values);
+        }
+      }
+      // update-end--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（新增页面属性行时设置默认查询类型）
+
       function validateFieldShowType({ cellValue, row }, callback) {
         let { dbTable } = tables;
         // 获取到 dbTable（数据库属性） 中的数据
@@ -664,6 +679,11 @@
             },
           ]);
         }
+        // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（控件类型变化时同步默认查询类型）
+        if (col?.key === 'fieldShowType') {
+          syncQueryMode({ row });
+        }
+        // update-end--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（控件类型变化时同步默认查询类型）
         // update-end--author:liaozhiyang---date:20260714---for【LHZP-489】他表字段禁用查询
       }
       /**
@@ -692,20 +712,19 @@
           callback(true);
         }
       }
-      const syncQueryMode = ({oldValue, row}) => {
-        // 当字段类型旧值是string时，且查询类型是模糊查询，改成精确查询
-        if (row.dbType != 'string' && oldValue == 'string') {
-          const curTableRow = tableRef.value!.getTableData({ rowIds: [row.id] })[0];
-          if (curTableRow.queryMode == 'like') {
-            tableRef.value!.setValues([
-              {
-                rowKey: row.id,
-                values: { queryMode: 'single' },
-              },
-            ]);
-          }
+      // update-begin--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（按字段类型和控件类型设置模糊或普通查询）
+      const syncQueryMode = ({ row }) => {
+        const curTableRow = tableRef.value!.getTableData({ rowIds: [row.id] })[0];
+        if (!curTableRow) {
+          return;
+        }
+        const dbRow = tables.dbTable.value!.tableRef!.getTableData({ rowIds: [row.id] })[0];
+        const queryMode = dbRow?.dbType === 'string' && curTableRow.fieldShowType === 'text' ? 'like' : 'single';
+        if ((queryMode === 'like' && curTableRow.queryMode !== 'like') || (queryMode === 'single' && curTableRow.queryMode === 'like')) {
+          tableRef.value!.setValues([{ rowKey: row.id, values: { queryMode } }]);
         }
       };
+      // update-end--author:liaozhiyang---date:20260824---for:【LHZP-160】字段类型是String且控件是文本框默认模糊查询（按字段类型和控件类型设置模糊或普通查询）
 
       /**
        * 2024-04-17
@@ -762,7 +781,7 @@
       }
       // update-end-author:liaozhiyang---date:2026-05-20---for:【QQYUN-15464】字典Table/Code/Text 合成一列
 
-      return { ...setup, columns, enableQuery, syncFieldShowType, changePageType,
+      return { ...setup, syncTable, columns, enableQuery, syncFieldShowType, changePageType,
         showConfigButton, showFieldConfig,
         registerExtJsonModal, handleExtJson, openConfig,
         registerModal, handleConfigData,
@@ -809,6 +828,36 @@
       flex: 1;
       min-width: 0;
     }
+    // update-begin--author:liaozhiyang---date:20260831---for:【LHZP-157】字典编码默认不出现边框
+    > :deep(.dict-config-input.ant-input-affix-wrapper) {
+      border-color: transparent;
+      background-color: transparent;
+      box-shadow: none;
+      transition-property: border-color, box-shadow;
+      &:hover {
+        border-color: transparent;
+        background-color: transparent;
+      }
+      .ant-input,
+      .ant-input:hover {
+        background-color: transparent;
+      }
+      &:focus-within {
+        border-color: @primary-color;
+        background-color: @component-background;
+        box-shadow: 0 0 0 2px fade(@primary-color, 20%);
+        .ant-input {
+          background-color: @component-background;
+        }
+        .ant-input-clear-icon {
+          visibility: visible;
+        }
+      }
+      .ant-input-clear-icon {
+        visibility: hidden;
+      }
+    }
+    // update-end--author:liaozhiyang---date:20260831---for:【LHZP-157】字典编码默认不出现边框
     .dict-config-summary {
       flex: 1;
       min-width: 0;

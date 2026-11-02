@@ -121,6 +121,8 @@ export function useOnlineTableContext(params: any = {}) {
   const pagination = ref<Page | false>(false);
   // table 数据 切换路由即发生数据改变 正常情况下会走一遍setup 缓存情况下 走事件onActivated----问题是不用重新请求column吗？ 只需要加载数据？ 待测试
   const dataSource = ref<Array<object>>([]);
+  // 当前列表数据是否由查询条件（普通查询或高级查询）查出
+  const hasQueryCondition = ref(false);
   // 表格是否重载
   const tableReloading = ref(true);
   // online表单扩展配置
@@ -463,8 +465,25 @@ export function useOnlineTableContext(params: any = {}) {
     return filterObj(params);
   }
 
+  /**
+   * liaozhiyang
+   * 20261026
+   * 【QQYUN-11801】生成测试数据按钮区分是否有查询条件（普通查询/高级查询）
+   * 当前是否有查询条件（普通查询 或 高级查询）
+   */
+  function checkHasQueryCondition() {
+    const { queryParam, superQuery } = onlineTableContext;
+    const isEmpty = (value) => value === undefined || value === null || value === '' || (Array.isArray(value) && value.length === 0);
+    // 普通查询：任一查询字段有值
+    const hasNormalQuery = !!queryParam && Object.values(queryParam).some((value) => !isEmpty(value));
+    // 高级查询：有查询条件项
+    const hasSuperQuery = Array.isArray(superQuery?.params) && superQuery.params.length > 0;
+    return hasNormalQuery || hasSuperQuery;
+  }
+
   // 查询玩数据后 获取页面数据、数据总数
   function handleDataResult(result) {
+    hasQueryCondition.value = checkHasQueryCondition();
     let total = 0;
     if (Number(result.total) > 0) {
       if (onlineTableContext.isTree() === true) {
@@ -836,6 +855,7 @@ export function useOnlineTableContext(params: any = {}) {
     loading,
     reload,
     dataSource,
+    hasQueryCondition,
     pagination,
     tableReloading,
     handleSpecialConfig,

@@ -79,7 +79,6 @@
       const [registerTable, { reload }, { rowSelection, selectedRowKeys }] = tableContext;
       /**
        * excel导入导出配置
-       * e3e3NcxzbUiGa53YYVXxWc8ADo5ISgQGx/gaZwERF91oAryDlivjqBv3wqRArgChupi+Y/Gg/swwGEyL0PuVFg==
        */
       const excelConfig = {
         export: {
