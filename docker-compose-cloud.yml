@@ -134,7 +134,7 @@ services:
           sleep 5;
         done;
         echo 'jeecg-system is registered, starting gateway.';
-        exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-gateway-3.9.5.jar
+        exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-gateway-3.9.6.jar
     networks:
       - jeecg-boot
 

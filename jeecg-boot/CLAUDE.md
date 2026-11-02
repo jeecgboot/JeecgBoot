@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-JeecgBoot 3.9.5 — a Java low-code development platform built on **Spring Boot 4.1.0**, **Java 17** (also supports 21, 24). It runs as a monolithic app by default, with an optional Spring Cloud microservices mode. Uses `jakarta` namespace (not `javax`) throughout.
+JeecgBoot 3.9.6 — a Java low-code development platform built on **Spring Boot 4.1.0**, **Java 17** (also supports 21, 24). It runs as a monolithic app by default, with an optional Spring Cloud microservices mode. Uses `jakarta` namespace (not `javax`) throughout.
 
 ## Build & Run Commands
 

@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jeecgframework.boot3</groupId>
   <artifactId>jeecg-boot-parent</artifactId>
-  <version>3.9.5</version>
+  <version>3.9.6</version>
   <packaging>pom</packaging>
   <name>JEECG BOOT ${project.version}</name>
 
@@ -28,7 +28,7 @@
 	</parent>
 
 	<properties>
-		<jeecgboot.version>3.9.5</jeecgboot.version>
+		<jeecgboot.version>3.9.6</jeecgboot.version>
 		<jeecg-starter.version>3.9.6</jeecg-starter.version>
 		<skipTests>true</skipTests>
 		<!-- JDK版本支持17、21、24、25 -->

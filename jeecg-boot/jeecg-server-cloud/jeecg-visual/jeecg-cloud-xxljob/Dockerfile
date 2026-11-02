@@ -15,7 +15,7 @@ WORKDIR /jeecg-cloud-xxljob
 
 EXPOSE 9080
 
-ADD ./target/jeecg-cloud-xxljob-3.9.5.jar ./
+ADD ./target/jeecg-cloud-xxljob-3.9.6.jar ./
 
-CMD exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-xxljob-3.9.5.jar
+CMD exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-cloud-xxljob-3.9.6.jar
 

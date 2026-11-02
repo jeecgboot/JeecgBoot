@@ -16,9 +16,9 @@ WORKDIR /jeecg-boot
 EXPOSE 8080
 
 #ADD ./src/main/resources/jeecg ./config/jeecg
-ADD ./target/jeecg-system-start-3.9.5.jar ./
+ADD ./target/jeecg-system-start-3.9.6.jar ./
 
 RUN mkdir -p /jeecg-boot/config
 
 # 【PR#9345】编码已通过JAVA_TOOL_OPTIONS设置；去掉sleep 60，容器启动后立即拉起应用（依赖库就绪由docker-compose的healthcheck+depends_on: service_healthy保证）
-CMD exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-system-start-3.9.5.jar
+CMD exec java -Djava.security.egd=file:/dev/./urandom -jar jeecg-system-start-3.9.6.jar
