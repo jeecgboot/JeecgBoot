@@ -69,6 +69,13 @@
             <groupId>io.github.pig-mesh.sofa</groupId>
             <artifactId>jraft-core</artifactId>
             <version>${jraft.version}</version>
+            <!-- 排除 sofa bolt 带进来的 hessian 3.3.6：与 com.caucho:hessian 4.0.66 包名相同，先加载时 nacos 启动报 SerializerFactory.getClassFactory() 不存在 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alipay.sofa</groupId>
+                    <artifactId>hessian</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <!--达梦数据库驱动 -->

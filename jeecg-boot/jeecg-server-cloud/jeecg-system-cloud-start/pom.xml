@@ -42,12 +42,12 @@
             <artifactId>jeecg-boot-starter-job</artifactId>
         </dependency>
 
-        <!-- feign 熔断限流、分布式锁、xxljob示例 -->
+        <!-- feign 熔断限流、分布式锁、xxljob示例（默认注释：依赖 rabbitmq，docker-compose 里没有 rabbitmq 时 system 启动要多等 7 分钟）
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
             <artifactId>jeecg-cloud-test-more</artifactId>
             <version>${jeecgboot.version}</version>
-        </dependency>
+        </dependency>-->
         <!-- rabbitmq例子
         <dependency>
             <groupId>org.jeecgframework.boot3</groupId>
