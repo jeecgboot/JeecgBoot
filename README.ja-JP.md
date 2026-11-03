@@ -226,9 +226,9 @@ JeecgBoot AIローコードプラットフォームは、あらゆるJ2EEプロ�
 
 - 永続化レイヤーフレームワーク：MybatisPlus 3.5.16
 
-- レポートツール：JimuReport 2.5.1
+- レポートツール：JimuReport 2.5.6.1
 
-- 大画面デザイン：JimuBI v2.5.0
+- 大画面デザイン：JimuBI v2.5.6.1
 
 - セキュリティフレームワーク：Apache Shiro 3.0.0、Jwt 4.5.0
 

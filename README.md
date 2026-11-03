@@ -195,8 +195,8 @@ JeecgBoot平台提供了一套完善的AI应用管理系统模块，是一套类
 - 微服务框架： Spring Cloud Alibaba 2025.1.0.0
 - AI框架：langchain4j 1.17.2，AI模型支持 `ChatGPT` `DeepSeek` `千问` `智普` `minimax`、`本地模型`等
 - 持久层框架：MybatisPlus 3.5.16
-- 报表工具： JimuReport 2.5.1
-- 大屏设计： JimuBI v2.5.0
+- 报表工具： JimuReport 2.5.6.1
+- 大屏设计： JimuBI v2.5.6.1
 - 安全框架：Apache Shiro 3.0.0，Jwt 4.5.0
 - 微服务技术栈：Spring Cloud Alibaba、Nacos、Gateway、Sentinel、Skywalking
 - 数据库连接池：阿里巴巴Druid 1.2.28
