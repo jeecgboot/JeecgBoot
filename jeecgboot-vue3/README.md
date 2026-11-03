@@ -35,6 +35,7 @@ JeecgBoot-Vue3采用 Vue3.0、Vite、 Ant-Design-Vue4、TypeScript 等新技术�
 
 *   本地环境安装 `Node.js 、npm 、pnpm`
 *   Node.js 版本要求`Node 20+` 版本以上
+*   pnpm 版本要求`10+` 版本以上
 
  ` ( 因为Vite5 不再支持已 EOL 的 Node.js 14 / 16 / 17 / 19，现在需要 Node 20+ )`
 
