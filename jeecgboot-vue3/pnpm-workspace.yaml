@@ -9,3 +9,5 @@ allowBuilds:
   core-js: true
   esbuild: true
   vue-demi: true
+minimumReleaseAgeExclude:
+  - '@jeecg/aiflow@3.9.6-beta'

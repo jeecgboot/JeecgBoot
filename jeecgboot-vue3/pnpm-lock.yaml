@@ -18,8 +18,8 @@ importers:
         specifier: ^3.1.1
         version: 3.1.1
       '@jeecg/aiflow':
-        specifier: file:./jeecg-aiflow-3.9.6-beta.tgz
-        version: file:jeecg-aiflow-3.9.6-beta.tgz
+        specifier: 3.9.6-beta
+        version: 3.9.6-beta
       '@logicflow/core':
         specifier: ^2.2.4
         version: 2.2.4
@@ -1593,9 +1593,8 @@ packages:
     resolution: {integrity: sha512-+Sg6GCR/wy1oSmQDFq4LQDAhm3ETKnorxN+y5nbLULOR3P0c14f2Wurzj3/xqPXtasLFfHd5iRFQ7AJt4KH2cw==, tarball: https://registry.npmmirror.com/@istanbuljs/schema/-/schema-0.1.6.tgz}
     engines: {node: '>=8'}
 
-  '@jeecg/aiflow@file:jeecg-aiflow-3.9.6-beta.tgz':
-    resolution: {integrity: sha512-4AbSRHCI+OwTO7JH6sTMoEymDez+s2YVODgLcNWE9hFWRiaxVvrHKFGWtWIhWWy2nD4GPyFDZjJcYKpdrq98DQ==, tarball: file:jeecg-aiflow-3.9.6-beta.tgz}
-    version: 3.9.6-beta
+  '@jeecg/aiflow@3.9.6-beta':
+    resolution: {integrity: sha512-4AbSRHCI+OwTO7JH6sTMoEymDez+s2YVODgLcNWE9hFWRiaxVvrHKFGWtWIhWWy2nD4GPyFDZjJcYKpdrq98DQ==}
 
   '@jest/console@29.7.0':
     resolution: {integrity: sha512-5Ni4CU7XHQi32IJ398EEP4RrB8eV09sXP2ROqD4bksHrnTree52PsxvX8tpL8LvTZ3pFzXyPbNQReSN41CAhOg==, tarball: https://registry.npmmirror.com/@jest/console/-/console-29.7.0.tgz}
@@ -3628,7 +3627,7 @@ packages:
     resolution: {integrity: sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==, tarball: https://registry.npmmirror.com/de-indent/-/de-indent-1.0.2.tgz}
 
   debug@2.6.9:
-    resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==, tarball: https://registry.npmmirror.com/debug/-/debug-2.6.9.tgz}
+    resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
     peerDependencies:
       supports-color: '*'
     peerDependenciesMeta:
@@ -3636,7 +3635,7 @@ packages:
         optional: true
 
   debug@4.3.4:
-    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==, tarball: https://registry.npmmirror.com/debug/-/debug-4.3.4.tgz}
+    resolution: {integrity: sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==}
     engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
@@ -4492,6 +4491,7 @@ packages:
   glob@11.1.0:
     resolution: {integrity: sha512-vuNwKSaKiqm7g0THUBu2x7ckSs3XJLXE+2ssL7/MfTGPLLcrJQ/4Uq1CjPTtO5cCIiRxqvN6Twy1qOwhL0Xjcw==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@7.2.3:
@@ -9245,7 +9245,7 @@ snapshots:
 
   '@istanbuljs/schema@0.1.6': {}
 
-  '@jeecg/aiflow@file:jeecg-aiflow-3.9.6-beta.tgz': {}
+  '@jeecg/aiflow@3.9.6-beta': {}
 
   '@jest/console@29.7.0':
     dependencies:
