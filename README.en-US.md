@@ -4,7 +4,7 @@
 
 
 
-JEECG BOOT AI Low Code Platform
+JEECG BOOT — Free & Open-Source AI Low-Code Platform
 ===============
 
 Current version: 3.9.6 (2026-11-05)
@@ -16,10 +16,11 @@ Current version: 3.9.6 (2026-11-05)
 [![](https://img.shields.io/badge/version-3.9.6-brightgreen.svg)](https://github.com/jeecgboot/JeecgBoot)
 [![GitHub stars](https://img.shields.io/github/stars/zhangdaiscott/jeecg-boot.svg?style=social&label=Stars)](https://github.com/zhangdaiscott/jeecg-boot)
 [![GitHub forks](https://img.shields.io/github/forks/zhangdaiscott/jeecg-boot.svg?style=social&label=Fork)](https://github.com/zhangdaiscott/jeecg-boot)
+[![](https://img.shields.io/badge/Free%20%26%20Open%20Source-Commercial%20Use%20OK-success.svg)](https://github.com/jeecgboot/JeecgBoot/blob/master/LICENSE)
 [![Skills](https://img.shields.io/badge/AI%20Skills-Natural%20Language%20Coding-ff4d4f.svg)](https://jeecg.com/skills)
 
 
-> **JeecgBoot is the open-source foundation for building complex business systems in the AI era.**
+> **JeecgBoot is a free and open-source AI low-code platform (Apache-2.0, free for personal and commercial use), and the open-source foundation for building complex business systems in the AI era.**
 > Enterprise-grade capabilities such as permissions, multi-tenancy, data permissions, workflow, reports, dashboards and AI knowledge bases are built in and proven across countless projects. AI only needs to configure or generate the *business-specific* part through Skills — one sentence gets you a business system that runs, stays maintainable and remains fully extensible.
 
 > 🔥 **AI Skills — Natural Language Programming**: paired with Claude Code, generate full-stack code, BPMN flows, forms, reports and dashboards from a single sentence. Covering every JeecgBoot low-code scenario.
@@ -34,9 +35,9 @@ Current version: 3.9.6 (2026-11-05)
 Project introduction
 -----------------------------------
 
-<h3 align="center">Enterprise AI Low-Code Development Platform · The Business-System Foundation for AI Coding</h3>
+<h3 align="center">Free & Open-Source AI Low-Code Development Platform · The Business-System Foundation for AI Coding</h3>
 
-JeecgBoot is an AI-powered low-code development platform built around **low-code development, an AI application platform, and an AI knowledge base**. With the release of AI Skills for natural-language programming, the platform enters the Low-Code v2.0 era: developers can generate an entire system or business module from a single request, while AI automatically produces the frontend and backend code, database DDL, and menu permissions, ready to run and extend. Teams can also rapidly build enterprise AI applications and intelligent knowledge bases while focusing more of their effort on core business logic.
+JeecgBoot is a **free and open-source** AI-powered low-code development platform built around **low-code development, an AI application platform, and an AI knowledge base**. With the release of AI Skills for natural-language programming, the platform enters the Low-Code v2.0 era: developers can generate an entire system or business module from a single request, while AI automatically produces the frontend and backend code, database DDL, and menu permissions, ready to run and extend. Teams can also rapidly build enterprise AI applications and intelligent knowledge bases while focusing more of their effort on core business logic.
 
 The platform provides complete AI application development capabilities, including AI chat assistants, knowledge bases, visual workflow orchestration, MCP, and plugins, with support for mainstream models such as ChatGPT, DeepSeek, and Ollama.
 
